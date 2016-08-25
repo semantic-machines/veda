@@ -877,10 +877,9 @@ d:SYK-RMSG_account
     v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
     v-s:owner d:SYK-RMSG_person;
     v-s:updateCounter "1"^^xsd:integer;
-    v-s:login "SYK_RMSG"^^xsd:string;
+    v-s:login "SYK-RMSG"^^xsd:string;
     v-s:mailbox "Group.Syk-RSM@mondigroup.com"^^xsd:string;
     rdfs:label "SYK-RMSG 123"^^xsd:string.
-
 ## Персона ##
 d:SYK-RMSG_person
     a v-s:Person;
@@ -892,14 +891,12 @@ d:SYK-RMSG_person
     rdfs:label "SYK-RMSG_person"@ru;
     v-s:lastName "Аппаратчик ТУ ЦРЩ и ПИ"@ru;
     v-s:defaultAppointment d:SYK-RMSG_appointment.
-    
 ##  Должность ##
 d:SYK-RMSG_position
     a v-s:Position;
     v-s:origin "manual"^^xsd:string;
     rdfs:label "Аппаратчик ТУ ЦРЩ и ПИ"@ru;
     v-s:parentUnit d:mondi_department_50001724.    
-
 ## Назначение ##
 d:SYK-RMSG_appointment
     a v-s:Appointment;
@@ -911,10 +908,3051 @@ d:SYK-RMSG_appointment
     v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
     rdfs:label "Назначение. Группа. Аппаратчик ТУ ЦРЩ и ПИ"@ru.
 
-d:Membership_SYK-RMSG
-  rdf:type v-s:Membership ;
-  v-s:memberOf td:UserGroup_1 ;
-  v-s:resource d:SYK-RMSG_person ;
-  rdfs:label "Membership_SYK-RMSG"@en ;
-  rdfs:label "Членство_SYK-RMSG"@ru ;
-.
+#########
+d:SYK-VES-PM11_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-VES-PM11_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-VES-PM11"^^xsd:string;
+    v-s:mailbox "syk-ves-pm11@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-VES-PM11_account"^^xsd:string.
+d:SYK-VES-PM11_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-VES-PM11_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-VES-PM11_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-VES-PM11_person"@ru;
+    v-s:lastName "Весовщик БМ11"@ru;
+    v-s:defaultAppointment d:SYK-VES-PM11_appointment.
+d:SYK-VES-PM11_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Весовщик БМ11"@ru;
+    v-s:parentUnit d:mondi_department_50001726.    
+d:SYK-VES-PM11_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-VES-PM11_person;
+    v-s:occupation d:SYK-VES-PM11_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Весовщик БМ11"@ru.
+
+#########
+d:SYK-VES-PM14_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-VES-PM14_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-VES-PM14"^^xsd:string;
+    v-s:mailbox "syk-ves-pm14@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-VES-PM14_account"^^xsd:string.
+d:SYK-VES-PM14_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-VES-PM14_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-VES-PM14_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-VES-PM14_person"@ru;
+    v-s:lastName "Весовщик БМ14"@ru;
+    v-s:defaultAppointment d:SYK-VES-PM14_appointment.
+d:SYK-VES-PM14_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Весовщик БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-VES-PM14_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-VES-PM14_person;
+    v-s:occupation d:SYK-VES-PM14_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Весовщик БМ14"@ru.
+    
+
+#########
+d:SYK-VES-PM15_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-VES-PM15_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-VES-PM15"^^xsd:string;
+    v-s:mailbox "syk-ves-pm15@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-VES-PM15_account"^^xsd:string.
+d:SYK-VES-PM15_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-VES-PM15_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-VES-PM15_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-VES-PM15_person"@ru;
+    v-s:lastName "Весовщик БМ15"@ru;
+    v-s:defaultAppointment d:SYK-VES-PM15_appointment.
+d:SYK-VES-PM15_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Весовщик БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-VES-PM15_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-VES-PM15_person;
+    v-s:occupation d:SYK-VES-PM15_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Весовщик БМ15"@ru.
+
+
+#########
+d:SYK-VES-PM21_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-VES-PM21_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-VES-PM21"^^xsd:string;
+    v-s:mailbox "syk-ves-pm21@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-VES-PM21_account"^^xsd:string.
+d:SYK-VES-PM21_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-VES-PM21_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-VES-PM21_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-VES-PM21_person"@ru;
+    v-s:lastName "Весовщик БМ21"@ru;
+    v-s:defaultAppointment d:SYK-VES-PM21_appointment.
+d:SYK-VES-PM21_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Весовщик БМ21"@ru;
+    v-s:parentUnit d:mondi_department_50001729.
+d:SYK-VES-PM21_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-VES-PM21_person;
+    v-s:occupation d:SYK-VES-PM21_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Весовщик БМ21"@ru.
+
+
+#########
+d:SYK-SKDG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SKDG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SKDG"^^xsd:string;
+    v-s:mailbox "Group.Syk-SKD-Nsmen@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SKDG_account"^^xsd:string.
+d:SYK-SKDG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SKDG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SKDG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SKDG_person"@ru;
+    v-s:lastName "Дежурная часть АСБ мониторинг"@ru;
+    v-s:defaultAppointment d:SYK-SKDG_appointment.
+d:SYK-SKDG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Дежурная часть АСБ мониторинг"@ru;
+    v-s:parentUnit d:asb_monitoring.
+d:SYK-SKDG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SKDG_person;
+    v-s:occupation d:SYK-SKDG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Дежурная часть АСБ мониторинг"@ru.
+d:asb_monitoring
+    a v-s:Department;
+    rdfs:label "АСБ-мониторинг"@ru;
+    v-s:parentUnit d:mondi_department_21003135;
+    v-s:updateCounter "1"^^xsd:integer.
+
+
+#########
+d:SYK-PVV_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PVV_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PVV"^^xsd:string;
+    v-s:mailbox "syk-pvv@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PVV_account"^^xsd:string.
+d:SYK-PVV_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PVV_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PVV_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PVV_person"@ru;
+    v-s:lastName "Диспетчер ПВВ"@ru;
+    v-s:defaultAppointment d:SYK-PVV_appointment.
+d:SYK-PVV_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Диспетчер ПВВ"@ru;
+    v-s:parentUnit d:mondi_department_50001725.
+d:SYK-PVV_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PVV_person;
+    v-s:occupation d:SYK-PVV_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Диспетчер ПВВ"@ru.
+
+
+#########
+d:DISPATP2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:DISPATP2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "DISPATP2"^^xsd:string;
+    v-s:mailbox "Syk-DispATP2.ATP2@mondigroup.com"^^xsd:string;
+    rdfs:label "DISPATP2_account"^^xsd:string.
+d:DISPATP2_person
+    a v-s:Person;
+    v-s:hasAppointment d:DISPATP2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:DISPATP2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "DISPATP2_person"@ru;
+    v-s:lastName "Диспетчер САТ"@ru;
+    v-s:defaultAppointment d:DISPATP2_appointment.
+d:DISPATP2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Диспетчер САТ"@ru;
+    v-s:parentUnit d:mondi_department_50003410.
+d:DISPATP2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:DISPATP2_person;
+    v-s:occupation d:DISPATP2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Диспетчер САТ"@ru.
+
+
+#########
+d:SYK-FIREDEPT-01_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-FIREDEPT-01_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-FIREDEPT-01"^^xsd:string;
+    v-s:mailbox "Group.Syk-Firedept-01@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-FIREDEPT-01_account"^^xsd:string.
+d:SYK-FIREDEPT-01_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-FIREDEPT-01_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-FIREDEPT-01_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-FIREDEPT-01_person"@ru;
+    v-s:lastName "ЕДСС ПГС"@ru;
+    v-s:defaultAppointment d:SYK-FIREDEPT-01_appointment.
+d:SYK-FIREDEPT-01_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "ЕДСС ПГС"@ru;
+    v-s:parentUnit d:mondi_department_50003410.
+d:SYK-FIREDEPT-01_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-FIREDEPT-01_person;
+    v-s:occupation d:SYK-FIREDEPT-01_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. ЕДСС ПГС"@ru.
+d:pgs
+    a v-s:Department;
+    rdfs:label "ООО ПожГазСервис"@ru;
+    v-s:parentUnit d:mondi_department_21003135;
+    v-s:updateCounter "1"^^xsd:integer.
+
+
+#########
+d:SYK-RTISI_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-RTISI_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-RTISI"^^xsd:string;
+    v-s:mailbox "Group.Syk-RTiSI@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-RTISI_account"^^xsd:string.
+d:SYK-RTISI_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-RTISI_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-RTISI_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-RTISI_person"@ru;
+    v-s:lastName "Инженер РТ и СИ"@ru;
+    v-s:defaultAppointment d:SYK-RTISI_appointment.
+d:SYK-RTISI_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Инженер РТ и СИ"@ru;
+    v-s:parentUnit d:mondi_department_50002277.
+d:SYK-RTISI_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-RTISI_person;
+    v-s:occupation d:SYK-RTISI_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Инженер РТ и СИ"@ru.
+
+
+
+#########
+d:SYK-CES1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CES1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CES1"^^xsd:string;
+    v-s:mailbox "syk-ces1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CES1_account"^^xsd:string.
+d:SYK-CES1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CES1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CES1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CES1_person"@ru;
+    v-s:lastName "Инженер центральной электрической службы"@ru;
+    v-s:defaultAppointment d:SYK-CES1_appointment.
+d:SYK-CES1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Инженер центральной электрической службы"@ru;
+    v-s:parentUnit d:mondi_department_50001788.
+d:SYK-CES1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CES1_person;
+    v-s:occupation d:SYK-CES1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Инженер центральной электрической службы"@ru.
+
+
+#########
+d:SYK-LABVAR_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-LABVAR_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-LABVAR"^^xsd:string;
+    v-s:mailbox "syk-labvar@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-LABVAR_account"^^xsd:string.
+d:SYK-LABVAR_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-LABVAR_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-LABVAR_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-LABVAR_person"@ru;
+    v-s:lastName "Лаборант ВОЦ"@ru;
+    v-s:defaultAppointment d:SYK-LABVAR_appointment.
+d:SYK-LABVAR_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Лаборант ВОЦ"@ru;
+    v-s:parentUnit d:mondi_department_50001723.
+d:SYK-LABVAR_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-LABVAR_person;
+    v-s:occupation d:SYK-LABVAR_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Лаборант ВОЦ"@ru.
+
+
+
+#########
+d:SYK-LGPG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-LGPG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-LGPG"^^xsd:string;
+    v-s:mailbox "Group.Syk-LGP22@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-LGPG_account"^^xsd:string.
+d:SYK-LGPG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-LGPG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-LGPG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-LGPG_person"@ru;
+    v-s:lastName "Лаборант ГПБ ПЛТК"@ru;
+    v-s:defaultAppointment d:SYK-LGPG_appointment.
+d:SYK-LGPG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Лаборант ГПБ ПЛТК"@ru;
+    v-s:parentUnit d:mondi_department_50003638.
+d:SYK-LGPG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-LGPG_person;
+    v-s:occupation d:SYK-LGPG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Лаборант ГПБ ПЛТК"@ru.
+
+
+#########
+d:SYK-LABPVV_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-LABPVV_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-LABPVV"^^xsd:string;
+    v-s:mailbox "syk-labpvv@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-LABPVV_account"^^xsd:string.
+d:SYK-LABPVV_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-LABPVV_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-LABPVV_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-LABPVV_person"@ru;
+    v-s:lastName "Лаборант ПВВ"@ru;
+    v-s:defaultAppointment d:SYK-LABPVV_appointment.
+d:SYK-LABPVV_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Лаборант ПВВ"@ru;
+    v-s:parentUnit d:mondi_department_50001725.
+d:SYK-LABPVV_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-LABPVV_person;
+    v-s:occupation d:SYK-LABPVV_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Лаборант ПВВ"@ru.
+
+
+#########
+d:SYK-SANLAB_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SANLAB_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SANLAB"^^xsd:string;
+    v-s:mailbox "syk-sanlab@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SANLAB_account"^^xsd:string.
+d:SYK-SANLAB_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SANLAB_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SANLAB_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SANLAB_person"@ru;
+    v-s:lastName "Лаборант санитарно-промышленной лаборатории"@ru;
+    v-s:defaultAppointment d:SYK-LABPVV_appointment.
+d:SYK-SANLAB_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Лаборант санитарно-промышленной лаборатории"@ru;
+    v-s:parentUnit d:mondi_department_50001744.
+d:SYK-SANLAB_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SANLAB_person;
+    v-s:occupation d:SYK-SANLAB_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Лаборант санитарно-промышленной лаборатории"@ru.
+
+
+#########
+d:SYK-HIM01_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-HIM0_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-HIM0"^^xsd:string;
+    v-s:mailbox "syk-him01@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-HIM0_account"^^xsd:string.
+d:SYK-HIM0_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-HIM0_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-HIM0_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-HIM0_person"@ru;
+    v-s:lastName "Лаборант химического анализа ЦВОС УВКХ"@ru;
+    v-s:defaultAppointment d:SYK-HIM0_appointment.
+d:SYK-HIM0_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Лаборант химического анализа ЦВОС УВКХ"@ru;
+    v-s:parentUnit d:mondi_department_50002376.
+d:SYK-HIM0_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-HIM0_person;
+    v-s:occupation d:SYK-HIM0_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Лаборант химического анализа ЦВОС УВКХ"@ru.
+
+
+
+#########
+d:SYK-LAB-LRLP2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-LAB-LRLP2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-LAB-LRLP2"^^xsd:string;
+    v-s:mailbox "syk-lab-lrlp2@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-LAB-LRLP2_account"^^xsd:string.
+d:SYK-LAB-LRLP2_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-LAB-LRLP2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-LAB-LRLP2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-LAB-LRLP2_person"@ru;
+    v-s:lastName "Лаборант ЦРЩПИ2"@ru;
+    v-s:defaultAppointment d:SYK-LAB-LRLP2_appointment.
+d:SYK-LAB-LRLP2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Лаборант ЦРЩПИ2"@ru;
+    v-s:parentUnit d:mondi_department_50001724.
+d:SYK-LAB-LRLP2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-LAB-LRLP2_person;
+    v-s:occupation d:SYK-LAB-LRLP2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Лаборант ЦРЩПИ2"@ru.
+	
+
+#########
+d:SYK-VOC_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-VOC_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-VOC"^^xsd:string;
+    v-s:mailbox "Syk-VOC@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-VOC_account"^^xsd:string.
+d:SYK-VOC_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-VOC_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-VOC_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-VOC_person"@ru;
+    v-s:lastName "Мастер ВОЦ"@ru;
+    v-s:defaultAppointment d:SYK-VOC_appointment.
+d:SYK-VOC_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер ВОЦ"@ru;
+    v-s:parentUnit d:mondi_department_50001723.
+d:SYK-VOC_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-VOC_person;
+    v-s:occupation d:SYK-VOC_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер ВОЦ"@ru.	
+
+
+#########
+d:SYK-MASTERS-LH_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTERS-LH_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTERS-LH"^^xsd:string;
+    v-s:mailbox "syk-masters-lh@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTERS-LH_account"^^xsd:string.
+d:SYK-MASTERS-LH_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTERS-LH_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTERS-LH_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTERS-LH_person"@ru;
+    v-s:lastName "Мастер лесохимии ЦРЩПИ"@ru;
+    v-s:defaultAppointment d:SYK-MASTERS-LH_appointment.
+d:SYK-MASTERS-LH_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер лесохимии ЦРЩПИ"@ru;
+    v-s:parentUnit d:mondi_department_50001724.
+d:SYK-MASTERS-LH_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTERS-LH_person;
+    v-s:occupation d:SYK-MASTERS-LH_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер лесохимии ЦРЩПИ"@ru.	
+
+
+#########
+d:SYK-MASTERS-CTMP_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTERS-CTMP_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTERS-CTMP"^^xsd:string;
+    v-s:mailbox "syk-masters-ctmp@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTERS-CTMP_account"^^xsd:string.
+d:SYK-MASTERS-CTMP_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTERS-CTMP_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTERS-CTMP_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTERS-CTMP_person"@ru;
+    v-s:lastName "Мастер ПВВ"@ru;
+    v-s:defaultAppointment d:SYK-MASTERS-CTMP_appointment.
+d:SYK-MASTERS-CTMP_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер ПВВ"@ru;
+    v-s:parentUnit d:mondi_department_50001725.
+d:SYK-MASTERS-CTMP_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTERS-CTMP_person;
+    v-s:occupation d:SYK-MASTERS-CTMP_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер ПВВ"@ru.	
+
+
+#########
+d:SYK-MASTERS-PM21_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTERS-PM21_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTERS-PM21"^^xsd:string;
+    v-s:mailbox "syk-masters-pm21@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTERS-PM21_account"^^xsd:string.
+d:SYK-MASTERS-PM21_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTERS-PM21_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTERS-PM21_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTERS-PM21_person"@ru;
+    v-s:lastName "Мастер смены БМ21"@ru;
+    v-s:defaultAppointment d:SYK-MASTERS-PM21_appointment.
+d:SYK-MASTERS-PM21_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены БМ21"@ru;
+    v-s:parentUnit d:mondi_department_50001729.
+d:SYK-MASTERS-PM21_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTERS-PM21_person;
+    v-s:occupation d:SYK-MASTERS-PM21_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены БМ21"@ru.	
+
+
+#########
+d:SYK-PM1G_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PM1G_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PM1G"^^xsd:string;
+    v-s:mailbox "Group.Syk-PM1-Masters@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PM1G_account"^^xsd:string.
+d:SYK-PM1G_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PM1G_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PM1G_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PM1G_person"@ru;
+    v-s:lastName "Мастер смены БФ1"@ru;
+    v-s:defaultAppointment d:SYK-PM1G_appointment.
+d:SYK-PM1G_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены БФ1"@ru;
+    v-s:parentUnit d:mondi_department_50001726.
+d:SYK-PM1G_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PM1G_person;
+    v-s:occupation d:SYK-PM1G_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены БФ1"@ru.	
+
+
+#########
+d:SYK-SGP0_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP0_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP0"^^xsd:string;
+    v-s:mailbox "syk-sgp0@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP0_account"^^xsd:string.
+d:SYK-SGP0_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP0_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP0_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP0_person"@ru;
+    v-s:lastName "Мастер смены СГП"@ru;
+    v-s:defaultAppointment d:SYK-SGP0_appointment.
+d:SYK-SGP0_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены СГП"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP0_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP0_person;
+    v-s:occupation d:SYK-SGP0_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены СГП"@ru.	
+
+
+
+#########
+d:SYK-MASTERS-DPC1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTERS-DPC1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTERS-DPC1"^^xsd:string;
+    v-s:mailbox "SYK-Masters-DPC1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTERS-DPC1_account"^^xsd:string.
+d:SYK-MASTERS-DPC1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTERS-DPC1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTERS-DPC1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTERS-DPC1_person"@ru;
+    v-s:lastName "Мастер смены ЦПДС ДПЦ-1"@ru;
+    v-s:defaultAppointment d:SYK-MASTERS-DPC1_appointment.
+d:SYK-MASTERS-DPC1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены ЦПДС ДПЦ-1"@ru;
+    v-s:parentUnit d:mondi_department_50002977.
+d:SYK-MASTERS-DPC1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTERS-DPC1_person;
+    v-s:occupation d:SYK-MASTERS-DPC1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены ЦПДС ДПЦ-1"@ru.	
+
+
+
+#########
+d:SYK-MASD_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASD_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASD"^^xsd:string;
+    v-s:mailbox "DPC2.Syk-Masters@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASD_account"^^xsd:string.
+d:SYK-MASD_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASD_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASD_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASD_person"@ru;
+    v-s:lastName "Мастер смены ЦПДС ДПЦ-2"@ru;
+    v-s:defaultAppointment d:SYK-MASD_appointment.
+d:SYK-MASD_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены ЦПДС ДПЦ-2"@ru;
+    v-s:parentUnit d:mondi_department_50002977.
+d:SYK-MASD_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASD_person;
+    v-s:occupation d:SYK-MASD_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены ЦПДС ДПЦ-2"@ru.	
+
+
+#########
+d:SYK-MASTERS-CPH1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTERS-CPH1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTERS-CPH1"^^xsd:string;
+    v-s:mailbox "syk-masters-cph1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTERS-CPH1_account"^^xsd:string.
+d:SYK-MASTERS-CPH1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTERS-CPH1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTERS-CPH1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTERS-CPH1_person"@ru;
+    v-s:lastName "Мастер смены ЦПХ"@ru;
+    v-s:defaultAppointment d:SYK-MASTERS-CPH1_appointment.
+d:SYK-MASTERS-CPH1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены ЦПХ"@ru;
+    v-s:parentUnit d:mondi_department_50000871.
+d:SYK-MASTERS-CPH1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTERS-CPH1_person;
+    v-s:occupation d:SYK-MASTERS-CPH1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены ЦПХ"@ru.	
+
+
+#########
+d:SYK-MASTERS-RCM_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTERS-RCM_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTERS-RCM"^^xsd:string;
+    v-s:mailbox "syk-masters-rcm@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTERS-RCM_account"^^xsd:string.
+d:SYK-MASTERS-RCM_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTERS-RCM_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTERS-RCM_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTERS-RCM_person"@ru;
+    v-s:lastName "Мастер смены ЦРЩПИ участка РСМ и СТПГ"@ru;
+    v-s:defaultAppointment d:SYK-MASTERS-RCM_appointment.
+d:SYK-MASTERS-RCM_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер смены ЦРЩПИ участка РСМ и СТПГ"@ru;
+    v-s:parentUnit d:mondi_department_50001724.
+d:SYK-MASTERS-RCM_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTERS-RCM_person;
+    v-s:occupation d:SYK-MASTERS-RCM_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер смены ЦРЩПИ участка РСМ и СТПГ"@ru.	
+
+
+
+#########
+d:SYK-PDMG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PDMG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PDMG"^^xsd:string;
+    v-s:mailbox "Group.Syk-PDMasters@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PDMG_account"^^xsd:string.
+d:SYK-PDMG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PDMG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PDMG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PDMG_person"@ru;
+    v-s:lastName "Мастер сушильной машины"@ru;
+    v-s:defaultAppointment d:SYK-PDMG_appointment.
+d:SYK-PDMG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер сушильной машины"@ru;
+    v-s:parentUnit d:mondi_department_50003297.
+d:SYK-PDMG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PDMG_person;
+    v-s:occupation d:SYK-PDMG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер сушильной машины"@ru.	
+
+
+
+#########
+d:SYK-SMEN-WATR_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-WATR_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-WATR"^^xsd:string;
+    v-s:mailbox "syk-smen-watr@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-WATR_account"^^xsd:string.
+d:SYK-SMEN-WATR_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-WATR_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-WATR_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-WATR_person"@ru;
+    v-s:lastName "Мастер УВКХ"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-WATR_appointment.
+d:SYK-SMEN-WATR_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер УВКХ"@ru;
+    v-s:parentUnit d:mondi_department_50002377.
+d:SYK-SMEN-WATR_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-WATR_person;
+    v-s:occupation d:SYK-SMEN-WATR_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер УВКХ"@ru.	
+
+
+
+#########
+d:SYK-MASTER-CCRO_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MASTER-CCRO_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MASTER-CCRO"^^xsd:string;
+    v-s:mailbox "Group.Syk-Master-CCRO@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MASTER-CCRO_account"^^xsd:string.
+d:SYK-MASTER-CCRO_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MASTER-CCRO_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MASTER-CCRO_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MASTER-CCRO_person"@ru;
+    v-s:lastName "Мастер УТО ЦЦРО"@ru;
+    v-s:defaultAppointment d:SYK-MASTER-CCRO_appointment.
+d:SYK-MASTER-CCRO_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Мастер УТО ЦЦРО"@ru;
+    v-s:parentUnit d:mondi_department_50003433.
+d:SYK-MASTER-CCRO_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MASTER-CCRO_person;
+    v-s:occupation d:SYK-MASTER-CCRO_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Мастер УТО ЦЦРО"@ru.	
+	
+
+#########
+d:SYK-MACG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-MACG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-MACG"^^xsd:string;
+    v-s:mailbox "Group.Syk-Machinist-PM21@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-MACG_account"^^xsd:string.
+d:SYK-MACG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-MACG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-MACG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-MACG_person"@ru;
+    v-s:lastName "Машинист БМ21"@ru;
+    v-s:defaultAppointment d:SYK-MACG_appointment.
+d:SYK-MACG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Машинист БМ21"@ru;
+    v-s:parentUnit d:mondi_department_50001729.
+d:SYK-MACG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-MACG_person;
+    v-s:occupation d:SYK-MACG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Машинист БМ21"@ru.	
+
+
+
+#########
+d:SYK-KS1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-KS1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-KS1"^^xsd:string;
+    v-s:mailbox "syk-ks1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-KS1_account"^^xsd:string.
+d:SYK-KS1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-KS1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-KS1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-KS1_person"@ru;
+    v-s:lastName "Машинист компрессорных установок 1"@ru;
+    v-s:defaultAppointment d:SYK-KS1_appointment.
+d:SYK-KS1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Машинист компрессорных установок 1"@ru;
+    v-s:parentUnit d:mondi_department_50002005.
+d:SYK-KS1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-KS1_person;
+    v-s:occupation d:SYK-KS1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Машинист компрессорных установок 1"@ru.	
+
+
+#########
+d:SYK-KS2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-KS2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-KS2"^^xsd:string;
+    v-s:mailbox "syk-ks2@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-KS2_account"^^xsd:string.
+d:SYK-KS2_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-KS2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-KS2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-KS2_person"@ru;
+    v-s:lastName "Машинист компрессорных установок 2"@ru;
+    v-s:defaultAppointment d:SYK-KS2_appointment.
+d:SYK-KS2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Машинист компрессорных установок 2"@ru;
+    v-s:parentUnit d:mondi_department_50002005.
+d:SYK-KS2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-KS2_person;
+    v-s:occupation d:SYK-KS2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Машинист компрессорных установок 2"@ru.	
+
+
+
+#########
+d:SYK-NSMEN-KTC1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-NSMEN-KTC1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-NSMEN-KTC1"^^xsd:string;
+    v-s:mailbox "syk-nsmen-ktc1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-NSMEN-KTC1_account"^^xsd:string.
+d:SYK-NSMEN-KTC1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-NSMEN-KTC1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-NSMEN-KTC1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-NSMEN-KTC1_person"@ru;
+    v-s:lastName "Начальник смены КТЦ1"@ru;
+    v-s:defaultAppointment d:SYK-NSMEN-KTC1_appointment.
+d:SYK-NSMEN-KTC1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Начальник смены КТЦ1"@ru;
+    v-s:parentUnit d:mondi_department_50000883.
+d:SYK-NSMEN-KTC1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-NSMEN-KTC1_person;
+    v-s:occupation d:SYK-NSMEN-KTC1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Начальник смены КТЦ1"@ru.	
+
+
+
+#########
+d:SYK-NSMEN-PP_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-NSMEN-PP_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-NSMEN-PP"^^xsd:string;
+    v-s:mailbox "syk-nsmen-pp@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-NSMEN-PP_account"^^xsd:string.
+d:SYK-NSMEN-PP_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-NSMEN-PP_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-NSMEN-PP_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-NSMEN-PP_person"@ru;
+    v-s:lastName "Начальник смены ТЭЦ"@ru;
+    v-s:defaultAppointment d:SYK-NSMEN-PP_appointment.
+d:SYK-NSMEN-PP_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Начальник смены ТЭЦ"@ru;
+    v-s:parentUnit d:mondi_department_50000882.
+d:SYK-NSMEN-PP_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-NSMEN-PP_person;
+    v-s:occupation d:SYK-NSMEN-PP_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Начальник смены ТЭЦ"@ru.	
+
+
+
+#########
+d:SYK-CTOG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CTOG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CTOG"^^xsd:string;
+    v-s:mailbox "GRoup.syk-CTOR@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CTOG_account"^^xsd:string.
+d:SYK-CTOG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CTOG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CTOG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CTOG_person"@ru;
+    v-s:lastName "Начальник смены участка ЦТО и РЭО ЦЭС"@ru;
+    v-s:defaultAppointment d:SYK-CTOG_appointment.
+d:SYK-CTOG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Начальник смены участка ЦТО и РЭО ЦЭС"@ru;
+    v-s:parentUnit d:mondi_department_50003457.
+d:SYK-CTOG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CTOG_person;
+    v-s:occupation d:SYK-CTOG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Начальник смены участка ЦТО и РЭО ЦЭС"@ru.	
+
+
+
+#########
+d:SYK-HVP1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-HVP1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-HVP1"^^xsd:string;
+    v-s:mailbox "SYK-HVP1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-HVP1_account"^^xsd:string.
+d:SYK-HVP1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-HVP1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-HVP1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-HVP1_person"@ru;
+    v-s:lastName "Начальник смены ЦВС УЭС ЭП"@ru;
+    v-s:defaultAppointment d:SYK-HVP1_appointment.
+d:SYK-HVP1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Начальник смены ЦВС УЭС ЭП"@ru;
+    v-s:parentUnit d:mondi_department_50002006.
+d:SYK-HVP1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-HVP1_person;
+    v-s:occupation d:SYK-HVP1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Начальник смены ЦВС УЭС ЭП"@ru.	
+
+
+
+#########
+d:NSMENTAG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:NSMENTAG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "NSMENTAG"^^xsd:string;
+    v-s:mailbox "Syk-NSmen-TAI.Group@mondigroup.com"^^xsd:string;
+    rdfs:label "NSMENTAG_account"^^xsd:string.
+d:NSMENTAG_person
+    a v-s:Person;
+    v-s:hasAppointment d:NSMENTAG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:NSMENTAG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "NSMENTAG_person"@ru;
+    v-s:lastName "Начальник смены ЦТАИ ТЭЦ"@ru;
+    v-s:defaultAppointment d:NSMENTAG_appointment.
+d:NSMENTAG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Начальник смены ЦТАИ ТЭЦ"@ru;
+    v-s:parentUnit d:mondi_department_50000885.
+d:NSMENTAG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:NSMENTAG_person;
+    v-s:occupation d:NSMENTAG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Начальник смены ЦТАИ ТЭЦ"@ru.	
+
+
+
+
+#########
+d:SYK-NSMEN-EC_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-NSMEN-EC_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-NSMEN-EC"^^xsd:string;
+    v-s:mailbox "syk-nsmen-ec@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-NSMEN-EC_account"^^xsd:string.
+d:SYK-NSMEN-EC_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-NSMEN-EC_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-NSMEN-EC_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-NSMEN-EC_person"@ru;
+    v-s:lastName "Начальник смены ЭЦ ТЭЦ"@ru;
+    v-s:defaultAppointment d:SYK-NSMEN-EC_appointment.
+d:SYK-NSMEN-EC_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Начальник смены ЭЦ ТЭЦ"@ru;
+    v-s:parentUnit d:mondi_department_50000885.
+d:SYK-NSMEN-EC_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-NSMEN-EC_person;
+    v-s:occupation d:SYK-NSMEN-EC_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Начальник смены ЭЦ ТЭЦ"@ru.	
+
+
+#########
+d:SYK-CONTROL-PM11_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CONTROL-PM11_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CONTROL-PM11"^^xsd:string;
+    v-s:mailbox "syk-control-pm11@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CONTROL-PM11_account"^^xsd:string.
+d:SYK-CONTROL-PM11_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM11_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CONTROL-PM11_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CONTROL-PM11_person"@ru;
+    v-s:lastName "Оператор пульта БМ11"@ru;
+    v-s:defaultAppointment d:SYK-CONTROL-PM11_appointment.
+d:SYK-CONTROL-PM11_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта БМ11"@ru;
+    v-s:parentUnit d:mondi_department_50001726.
+d:SYK-CONTROL-PM11_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CONTROL-PM11_person;
+    v-s:occupation d:SYK-CONTROL-PM11_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта БМ11"@ru.	
+
+
+
+#########
+d:SYK-PULT14_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PULT14_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PULT14"^^xsd:string;
+    v-s:mailbox "syk-pult14@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PULT14_account"^^xsd:string.
+d:SYK-PULT14_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM11_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PULT14_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PULT14_person"@ru;
+    v-s:lastName "Оператор пульта БМ14"@ru;
+    v-s:defaultAppointment d:SYK-PULT14_appointment.
+d:SYK-PULT14_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-PULT14_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PULT14_person;
+    v-s:occupation d:SYK-PULT14_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта БМ14"@ru.	
+
+
+#########
+d:SYK-CONTROL-PM21_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CONTROL-PM21_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CONTROL-PM21"^^xsd:string;
+    v-s:mailbox "syk-control-pm21@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CONTROL-PM21_account"^^xsd:string.
+d:SYK-CONTROL-PM21_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM21_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CONTROL-PM21_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CONTROL-PM21_person"@ru;
+    v-s:lastName "Оператор пульта БМ21"@ru;
+    v-s:defaultAppointment d:SYK-CONTROL-PM21_appointment.
+d:SYK-CONTROL-PM21_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта БМ21"@ru;
+    v-s:parentUnit d:mondi_department_50001729.
+d:SYK-CONTROL-PM21_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CONTROL-PM21_person;
+    v-s:occupation d:SYK-CONTROL-PM21_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта БМ21"@ru.	
+
+
+
+#########
+d:SYK-PULT-WATR_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PULT-WATR_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PULT-WATR"^^xsd:string;
+    v-s:mailbox "syk-pult-watr@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PULT-WATR_account"^^xsd:string.
+d:SYK-PULT-WATR_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PULT-WATR_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PULT-WATR_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PULT-WATR_person"@ru;
+    v-s:lastName "Оператор пульта управления ЦВОС УВКХ"@ru;
+    v-s:defaultAppointment d:SYK-PULT-WATR_appointment.
+d:SYK-PULT-WATR_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта управления ЦВОС УВКХ"@ru;
+    v-s:parentUnit d:mondi_department_50002386.
+d:SYK-PULT-WATR_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PULT-WATR_person;
+    v-s:occupation d:SYK-PULT-WATR_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта управления ЦВОС УВКХ"@ru.	
+
+
+
+#########
+d:SYK-WOOD-PULT-1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-WOOD-PULT-1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-WOOD-PULT-1"^^xsd:string;
+    v-s:mailbox "syk-wood-pult-1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-WOOD-PULT-1_account"^^xsd:string.
+d:SYK-WOOD-PULT-1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-WOOD-PULT-1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-WOOD-PULT-1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-WOOD-PULT-1_person"@ru;
+    v-s:lastName "Оператор пульта ЦПДС ДСУ"@ru;
+    v-s:defaultAppointment d:SYK-WOOD-PULT-1_appointment.
+d:SYK-WOOD-PULT-1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта ЦПДС ДСУ"@ru;
+    v-s:parentUnit d:mondi_department_50001665.
+d:SYK-WOOD-PULT-1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-WOOD-PULT-1_person;
+    v-s:occupation d:SYK-WOOD-PULT-1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта ЦПДС ДСУ"@ru.	
+
+
+#########
+d:SYK-PULT-PM15-1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PULT-PM15-1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PULT-PM15-1"^^xsd:string;
+    v-s:mailbox "syk-pult-pm15-1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PULT-PM15-1_account"^^xsd:string.
+d:SYK-PULT-PM15-1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PULT-PM15-1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PULT-PM15-1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PULT-PM15-1_person"@ru;
+    v-s:lastName "Оператор пульта1 БМ15"@ru;
+    v-s:defaultAppointment d:SYK-PULT-PM15-1_appointment.
+d:SYK-PULT-PM15-1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта1 БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-PULT-PM15-1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PULT-PM15-1_person;
+    v-s:occupation d:SYK-PULT-PM15-1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта1 БМ15"@ru.	
+
+
+#########
+d:SYK-PULT-PM15-2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PULT-PM15-2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PULT-PM15-2"^^xsd:string;
+    v-s:mailbox "syk-pult-pm15-2@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PULT-PM15-2_account"^^xsd:string.
+d:SYK-PULT-PM15-2_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PULT-PM15-2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PULT-PM15-2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PULT-PM15-2_person"@ru;
+    v-s:lastName "Оператор пульта2 БМ15"@ru;
+    v-s:defaultAppointment d:SYK-PULT-PM15-2_appointment.
+d:SYK-PULT-PM15-2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта2 БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-PULT-PM15-2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PULT-PM15-2_person;
+    v-s:occupation d:SYK-PULT-PM15-2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта2 БМ15"@ru.	
+
+
+
+#########
+d:SYK-CONTROL-PM14-4_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CONTROL-PM14-4_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CONTROL-PM14-4"^^xsd:string;
+    v-s:mailbox "syk-control-pm14-4@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CONTROL-PM14-4_account"^^xsd:string.
+d:SYK-CONTROL-PM14-4_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM14-4_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CONTROL-PM14-4_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CONTROL-PM14-4_person"@ru;
+    v-s:lastName "Оператор пульта4 БМ14"@ru;
+    v-s:defaultAppointment d:SYK-CONTROL-PM14-4_appointment.
+d:SYK-CONTROL-PM14-4_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта4 БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-CONTROL-PM14-4_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CONTROL-PM14-4_person;
+    v-s:occupation d:SYK-CONTROL-PM14-4_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта4 БМ14"@ru.	
+
+
+
+#########
+d:SYK-CONTROL-PM15-5_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CONTROL-PM15-5_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CONTROL-PM15-5"^^xsd:string;
+    v-s:mailbox "syk-control-pm15-5@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CONTROL-PM15-5_account"^^xsd:string.
+d:SYK-CONTROL-PM15-5_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM15-5_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CONTROL-PM15-5_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CONTROL-PM15-5_person"@ru;
+    v-s:lastName "Оператор пульта5 БМ15"@ru;
+    v-s:defaultAppointment d:SYK-CONTROL-PM15-5_appointment.
+d:SYK-CONTROL-PM15-5_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта5 БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-CONTROL-PM15-5_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CONTROL-PM15-5_person;
+    v-s:occupation d:SYK-CONTROL-PM15-5_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта5 БМ15"@ru.	
+
+
+
+#########
+d:SYK-CONTROL-PM15-6_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CONTROL-PM15-6_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CONTROL-PM15-6"^^xsd:string;
+    v-s:mailbox "syk-control-pm15-6@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CONTROL-PM15-6_account"^^xsd:string.
+d:SYK-CONTROL-PM15-6_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM15-6_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CONTROL-PM15-6_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CONTROL-PM15-6_person"@ru;
+    v-s:lastName "Оператор пульта6 БМ15"@ru;
+    v-s:defaultAppointment d:SYK-CONTROL-PM15-6_appointment.
+d:SYK-CONTROL-PM15-6_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта6 БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-CONTROL-PM15-6_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CONTROL-PM15-6_person;
+    v-s:occupation d:SYK-CONTROL-PM15-6_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта6 БМ15"@ru.	
+
+
+
+#########
+d:SYK-CONTROL-PM14-7_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CONTROL-PM14-7_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CONTROL-PM14-7"^^xsd:string;
+    v-s:mailbox "syk-control-pm14-7@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CONTROL-PM14-7_account"^^xsd:string.
+d:SYK-CONTROL-PM14-7_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CONTROL-PM14-7_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CONTROL-PM14-7_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CONTROL-PM14-7_person"@ru;
+    v-s:lastName "Оператор пульта7 БМ14"@ru;
+    v-s:defaultAppointment d:SYK-CONTROL-PM14-7_appointment.
+d:SYK-CONTROL-PM14-7_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Оператор пульта7 БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-CONTROL-PM14-7_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CONTROL-PM14-7_person;
+    v-s:occupation d:SYK-CONTROL-PM14-7_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Оператор пульта7 БМ14"@ru.	
+
+
+
+
+#########
+d:SYK-SGP11_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP11_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP11"^^xsd:string;
+    v-s:mailbox "syk-sgp11@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP11_account"^^xsd:string.
+d:SYK-SGP11_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP11_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP11_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP11_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 11"@ru;
+    v-s:defaultAppointment d:SYK-SGP11_appointment.
+d:SYK-SGP11_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 11"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP11_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP11_person;
+    v-s:occupation d:SYK-SGP11_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 11"@ru.	
+#########
+d:SYK-SGP12_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP12_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP12"^^xsd:string;
+    v-s:mailbox "syk-sgp12@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP12_account"^^xsd:string.
+d:SYK-SGP12_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP12_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP12_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP12_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 12"@ru;
+    v-s:defaultAppointment d:SYK-SGP12_appointment.
+d:SYK-SGP12_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 12"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP12_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP12_person;
+    v-s:occupation d:SYK-SGP12_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 12"@ru.	
+#########
+d:SYK-SGP13_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP13_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP13"^^xsd:string;
+    v-s:mailbox "syk-sgp13@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP13_account"^^xsd:string.
+d:SYK-SGP13_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP13_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP13_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP13_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 13"@ru;
+    v-s:defaultAppointment d:SYK-SGP13_appointment.
+d:SYK-SGP13_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 13"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP13_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP13_person;
+    v-s:occupation d:SYK-SGP13_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 13"@ru.	
+#########
+d:SYK-SGP14_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP14_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP14"^^xsd:string;
+    v-s:mailbox "syk-sgp14@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP14_account"^^xsd:string.
+d:SYK-SGP14_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP14_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP14_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP14_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 14"@ru;
+    v-s:defaultAppointment d:SYK-SGP14_appointment.
+d:SYK-SGP14_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 14"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP14_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP14_person;
+    v-s:occupation d:SYK-SGP14_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 14"@ru.	
+
+
+
+#########
+d:SYK-SGP21_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP21_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP21"^^xsd:string;
+    v-s:mailbox "syk-sgp21@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP21_account"^^xsd:string.
+d:SYK-SGP21_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP21_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP21_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP21_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 21"@ru;
+    v-s:defaultAppointment d:SYK-SGP21_appointment.
+d:SYK-SGP21_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 21"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP21_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP21_person;
+    v-s:occupation d:SYK-SGP21_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 21"@ru.	
+#########
+d:SYK-SGP22_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP22_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP22"^^xsd:string;
+    v-s:mailbox "syk-sgp22@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP22_account"^^xsd:string.
+d:SYK-SGP22_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP22_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP22_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP22_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 22"@ru;
+    v-s:defaultAppointment d:SYK-SGP22_appointment.
+d:SYK-SGP22_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 22"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP22_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP22_person;
+    v-s:occupation d:SYK-SGP22_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 22"@ru.	
+#########
+d:SYK-SGP23_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP23_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP23"^^xsd:string;
+    v-s:mailbox "syk-sgp23@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP23_account"^^xsd:string.
+d:SYK-SGP23_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP23_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP23_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP23_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 23"@ru;
+    v-s:defaultAppointment d:SYK-SGP23_appointment.
+d:SYK-SGP23_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 23"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP23_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP23_person;
+    v-s:occupation d:SYK-SGP23_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 23"@ru.	
+#########
+d:SYK-SGP24_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP24_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP24"^^xsd:string;
+    v-s:mailbox "syk-sgp24@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP24_account"^^xsd:string.
+d:SYK-SGP24_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP24_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP24_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP24_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 24"@ru;
+    v-s:defaultAppointment d:SYK-SGP24_appointment.
+d:SYK-SGP24_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 24"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP24_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP24_person;
+    v-s:occupation d:SYK-SGP24_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 24"@ru.	
+
+
+
+
+#########
+d:SYK-SGP31_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP31_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP31"^^xsd:string;
+    v-s:mailbox "syk-sgp31@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP31_account"^^xsd:string.
+d:SYK-SGP31_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP31_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP31_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP31_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 31"@ru;
+    v-s:defaultAppointment d:SYK-SGP31_appointment.
+d:SYK-SGP31_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 31"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP31_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP31_person;
+    v-s:occupation d:SYK-SGP31_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 31"@ru.	
+#########
+d:SYK-SGP32_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP32_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP32"^^xsd:string;
+    v-s:mailbox "syk-sgp32@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP32_account"^^xsd:string.
+d:SYK-SGP32_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP32_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP32_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP32_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 32"@ru;
+    v-s:defaultAppointment d:SYK-SGP32_appointment.
+d:SYK-SGP32_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 32"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP32_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP32_person;
+    v-s:occupation d:SYK-SGP32_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 32"@ru.	
+#########
+d:SYK-SGP33_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP33_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP33"^^xsd:string;
+    v-s:mailbox "syk-sgp33@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP33_account"^^xsd:string.
+d:SYK-SGP33_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP33_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP33_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP33_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 33"@ru;
+    v-s:defaultAppointment d:SYK-SGP33_appointment.
+d:SYK-SGP33_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 33"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP33_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP33_person;
+    v-s:occupation d:SYK-SGP33_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 33"@ru.	
+#########
+d:SYK-SGP34_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP34_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP34"^^xsd:string;
+    v-s:mailbox "syk-sgp34@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP34_account"^^xsd:string.
+d:SYK-SGP34_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP34_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP34_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP34_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 34"@ru;
+    v-s:defaultAppointment d:SYK-SGP34_appointment.
+d:SYK-SGP34_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 34"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP34_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP34_person;
+    v-s:occupation d:SYK-SGP34_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 34"@ru.	
+
+
+
+#########
+d:SYK-SGP41_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP41_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP41"^^xsd:string;
+    v-s:mailbox "syk-sgp41@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP41_account"^^xsd:string.
+d:SYK-SGP41_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP41_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP41_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP41_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 41"@ru;
+    v-s:defaultAppointment d:SYK-SGP41_appointment.
+d:SYK-SGP41_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 41"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP41_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP41_person;
+    v-s:occupation d:SYK-SGP41_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 41"@ru.	
+#########
+d:SYK-SGP42_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP42_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP42"^^xsd:string;
+    v-s:mailbox "syk-sgp42@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP42_account"^^xsd:string.
+d:SYK-SGP42_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP42_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP42_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP42_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 42"@ru;
+    v-s:defaultAppointment d:SYK-SGP42_appointment.
+d:SYK-SGP42_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 42"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP42_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP42_person;
+    v-s:occupation d:SYK-SGP42_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 42"@ru.	
+#########
+d:SYK-SGP43_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP43_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP43"^^xsd:string;
+    v-s:mailbox "syk-sgp43@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP43_account"^^xsd:string.
+d:SYK-SGP43_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP43_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP43_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP43_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 43"@ru;
+    v-s:defaultAppointment d:SYK-SGP43_appointment.
+d:SYK-SGP43_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 43"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP43_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP43_person;
+    v-s:occupation d:SYK-SGP43_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 43"@ru.	
+#########
+d:SYK-SGP44_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SGP44_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SGP44"^^xsd:string;
+    v-s:mailbox "syk-sgp44@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SGP44_account"^^xsd:string.
+d:SYK-SGP44_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SGP44_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SGP44_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SGP44_person"@ru;
+    v-s:lastName "Приемосдатчик СГП 44"@ru;
+    v-s:defaultAppointment d:SYK-SGP44_appointment.
+d:SYK-SGP44_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Приемосдатчик СГП 44"@ru;
+    v-s:parentUnit d:mondi_department_50001705.
+d:SYK-SGP44_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SGP44_person;
+    v-s:occupation d:SYK-SGP44_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Приемосдатчик СГП 44"@ru.	
+
+
+#########
+d:SYK-OHRANA_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-OHRANA_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-OHRANA"^^xsd:string;
+    v-s:mailbox "syk-ohrana@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-OHRANA_account"^^xsd:string.
+d:SYK-OHRANA_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-OHRANA_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-OHRANA_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-OHRANA_person"@ru;
+    v-s:lastName "Пульт управления ООО ЧОП Эгида"@ru;
+    v-s:defaultAppointment d:SYK-OHRANA_appointment.
+d:SYK-OHRANA_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Пульт управления ООО ЧОП Эгида"@ru;
+    v-s:parentUnit d:egida.
+d:SYK-OHRANA_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-OHRANA_person;
+    v-s:occupation d:SYK-OHRANA_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Пульт управления ООО ЧОП Эгида"@ru.	
+d:egida
+    a v-s:Department;
+    rdfs:label "ООО ЧОП Эгида"@ru;
+    v-s:parentUnit d:mondi_department_21003135;
+    v-s:updateCounter "1"^^xsd:integer.
+
+
+
+#########
+d:SYK-HOTEL1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-HOTEL1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-HOTEL1"^^xsd:string;
+    v-s:mailbox "syk-hotel1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-HOTEL1_account"^^xsd:string.
+d:SYK-HOTEL1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-HOTEL1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-HOTEL1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-HOTEL1_person"@ru;
+    v-s:lastName "Работник гостиницы Виктория"@ru;
+    v-s:defaultAppointment d:SYK-HOTEL1_appointment.
+d:SYK-HOTEL1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник гостиницы Виктория"@ru;
+    v-s:parentUnit d:mondi_department_50001687.
+d:SYK-HOTEL1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-HOTEL1_person;
+    v-s:occupation d:SYK-HOTEL1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник гостиницы Виктория"@ru.	
+
+
+#########
+d:SYK-HOTEL2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-HOTEL2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-HOTEL2"^^xsd:string;
+    v-s:mailbox "syk-hotel2@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-HOTEL2_account"^^xsd:string.
+d:SYK-HOTEL2_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-HOTEL2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-HOTEL2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-HOTEL2_person"@ru;
+    v-s:lastName "Работник2 гостиницы Виктория"@ru;
+    v-s:defaultAppointment d:SYK-HOTEL2_appointment.
+d:SYK-HOTEL2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник2 гостиницы Виктория"@ru;
+    v-s:parentUnit d:mondi_department_50001687.
+d:SYK-HOTEL2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-HOTEL2_person;
+    v-s:occupation d:SYK-HOTEL2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник2 гостиницы Виктория"@ru.	
+
+
+
+#########
+d:SYK-PRS_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PRS_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PRS"^^xsd:string;
+    v-s:mailbox "syk-prs@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PRS_account"^^xsd:string.
+d:SYK-PRS_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PRS_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PRS_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PRS_person"@ru;
+    v-s:lastName "Работник на ПРС БМ14"@ru;
+    v-s:defaultAppointment d:SYK-PRS_appointment.
+d:SYK-PRS_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник на ПРС БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-PRS_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PRS_person;
+    v-s:occupation d:SYK-PRS_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник на ПРС БМ14"@ru.	
+
+
+
+#########
+d:SYK-SMEN-PM11_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM11_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM11"^^xsd:string;
+    v-s:mailbox "syk-smen-pm11@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM11_account"^^xsd:string.
+d:SYK-SMEN-PM11_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM11_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM11_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM11_person"@ru;
+    v-s:lastName "Работник смены БМ11"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM11_appointment.
+d:SYK-SMEN-PM11_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены БМ11"@ru;
+    v-s:parentUnit d:mondi_department_50001726.
+d:SYK-SMEN-PM11_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM11_person;
+    v-s:occupation d:SYK-SMEN-PM11_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены БМ11"@ru.	
+
+
+
+
+#########
+d:SYK-SMEN-PM14_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM14_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM14"^^xsd:string;
+    v-s:mailbox "syk-smen-pm14@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM14_account"^^xsd:string.
+d:SYK-SMEN-PM14_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM14_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM14_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM14_person"@ru;
+    v-s:lastName "Работник смены БМ14"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM14_appointment.
+d:SYK-SMEN-PM14_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-SMEN-PM14_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM14_person;
+    v-s:occupation d:SYK-SMEN-PM14_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены БМ14"@ru.	
+
+
+
+#########
+d:SYK-SMEN-PM15_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM15_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM15"^^xsd:string;
+    v-s:mailbox "syk-smen-pm15@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM15_account"^^xsd:string.
+d:SYK-SMEN-PM15_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM15_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM15_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM15_person"@ru;
+    v-s:lastName "Работник смены БМ15"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM15_appointment.
+d:SYK-SMEN-PM15_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-SMEN-PM15_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM15_person;
+    v-s:occupation d:SYK-SMEN-PM15_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены БМ15"@ru.	
+
+
+
+#########
+d:SYK-SMEN-PM21_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM21_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM21"^^xsd:string;
+    v-s:mailbox "syk-smen-pm21@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM21_account"^^xsd:string.
+d:SYK-SMEN-PM21_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM21_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM21_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM21_person"@ru;
+    v-s:lastName "Работник смены БМ21"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM21_appointment.
+d:SYK-SMEN-PM21_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены БМ21"@ru;
+    v-s:parentUnit d:mondi_department_50001729.
+d:SYK-SMEN-PM21_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM21_person;
+    v-s:occupation d:SYK-SMEN-PM21_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены БМ21"@ru.	
+
+
+
+#########
+d:SYK-SMEN-PM14I_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM14I_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM14I"^^xsd:string;
+    v-s:mailbox "syk-smen-pm14i@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM14I_account"^^xsd:string.
+d:SYK-SMEN-PM14I_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM14I_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM14I_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM14I_person"@ru;
+    v-s:lastName "Работник смены КИП БМ14"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM14I_appointment.
+d:SYK-SMEN-PM14I_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены КИП БМ14"@ru;
+    v-s:parentUnit d:mondi_department_50001727.
+d:SYK-SMEN-PM14I_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM14I_person;
+    v-s:occupation d:SYK-SMEN-PM14I_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены КИП БМ14"@ru.	
+
+
+#########
+d:SYK-SMEN-PM15I_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM15I_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM15I"^^xsd:string;
+    v-s:mailbox "syk-smen-pm15i@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM15I_account"^^xsd:string.
+d:SYK-SMEN-PM15I_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM15I_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM15I_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM15I_person"@ru;
+    v-s:lastName "Работник смены КИП БМ15"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM15I_appointment.
+d:SYK-SMEN-PM15I_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены КИП БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-SMEN-PM15I_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM15I_person;
+    v-s:occupation d:SYK-SMEN-PM15I_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены КИП БМ15"@ru.	
+
+
+
+#########
+d:SYK-SMEN-CTMP_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-CTMP_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-CTMP"^^xsd:string;
+    v-s:mailbox "syk-smen-ctmp@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-CTMP_account"^^xsd:string.
+d:SYK-SMEN-CTMP_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-CTMP_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-CTMP_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-CTMP_person"@ru;
+    v-s:lastName "Работник смены Цеха ПВВ ПЦ"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-CTMP_appointment.
+d:SYK-SMEN-CTMP_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены Цеха ПВВ ПЦ"@ru;
+    v-s:parentUnit d:mondi_department_50001725.
+d:SYK-SMEN-CTMP_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-CTMP_person;
+    v-s:occupation d:SYK-SMEN-CTMP_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены Цеха ПВВ ПЦ"@ru.	
+
+
+#########
+d:SYK-SMEN-CHKT_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-CHKT_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-CHKT"^^xsd:string;
+    v-s:mailbox "syk-smen-chkt@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-CHKT_account"^^xsd:string.
+d:SYK-SMEN-CHKT_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-CHKT_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-CHKT_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-CHKT_person"@ru;
+    v-s:lastName "Работник смены ЦПХ"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-CHKT_appointment.
+d:SYK-SMEN-CHKT_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены ЦПХ"@ru;
+    v-s:parentUnit d:mondi_department_50001731.
+d:SYK-SMEN-CHKT_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-CHKT_person;
+    v-s:occupation d:SYK-SMEN-CHKT_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены ЦПХ"@ru.	
+
+
+
+#########
+d:SYK-SMEN-PM15-1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM15-1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM15-1"^^xsd:string;
+    v-s:mailbox "syk-smen-pm15-1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM15-1_account"^^xsd:string.
+d:SYK-SMEN-PM15-1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM15-1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM15-1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM15-1_person"@ru;
+    v-s:lastName "Работник смены1 БМ15"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM15-1_appointment.
+d:SYK-SMEN-PM15-1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены1 БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-SMEN-PM15-1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM15-1_person;
+    v-s:occupation d:SYK-SMEN-PM15-1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены1 БМ15"@ru.	
+
+
+#########
+d:SYK-SMEN-PM15-2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-SMEN-PM15-2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-SMEN-PM15-2"^^xsd:string;
+    v-s:mailbox "syk-smen-pm15-2@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-SMEN-PM15-2_account"^^xsd:string.
+d:SYK-SMEN-PM15-2_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-SMEN-PM15-2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-SMEN-PM15-2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-SMEN-PM15-2_person"@ru;
+    v-s:lastName "Работник смены2 БМ15"@ru;
+    v-s:defaultAppointment d:SYK-SMEN-PM15-2_appointment.
+d:SYK-SMEN-PM15-2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник смены2 БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-SMEN-PM15-2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-SMEN-PM15-2_person;
+    v-s:occupation d:SYK-SMEN-PM15-2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник смены2 БМ15"@ru.	
+
+
+#########
+d:SYK-VSTATION2_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-VSTATION2_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-VSTATION2"^^xsd:string;
+    v-s:mailbox "syk-vstation2@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-VSTATION2_account"^^xsd:string.
+d:SYK-VSTATION2_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-VSTATION2_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-VSTATION2_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-VSTATION2_person"@ru;
+    v-s:lastName "Работник ЦРЩПИ"@ru;
+    v-s:defaultAppointment d:SYK-VSTATION2_appointment.
+d:SYK-VSTATION2_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Работник ЦРЩПИ"@ru;
+    v-s:parentUnit d:mondi_department_50001724.
+d:SYK-VSTATION2_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-VSTATION2_person;
+    v-s:occupation d:SYK-VSTATION2_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+	rdfs:label "Назначение. Группа. Работник ЦРЩПИ"@ru.	
+
+
+
+#########
+d:SYK-RADUGA_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-RADUGA_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-RADUGA"^^xsd:string;
+    v-s:mailbox "Group.Syk-Raduga@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-RADUGA_account"^^xsd:string.
+d:SYK-RADUGA_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-RADUGA_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-RADUGA_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-RADUGA_person"@ru;
+    v-s:lastName "Специалист ООО Радуга"@ru;
+    v-s:defaultAppointment d:SYK-RADUGA_appointment.
+d:SYK-RADUGA_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Специалист ООО Радуга"@ru;
+    v-s:parentUnit d:raduga.
+d:SYK-RADUGA_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-RADUGA_person;
+    v-s:occupation d:SYK-RADUGA_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Специалист ООО Радуга"@ru.
+d:raduga
+    a v-s:Department;
+    rdfs:label "ООО Радуга"@ru;
+    v-s:parentUnit d:mondi_department_21003135;
+    v-s:updateCounter "1"^^xsd:integer.
+
+
+
+#########
+d:SYK-CCDG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-CCDG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-CCDG"^^xsd:string;
+    v-s:mailbox "Group.Syk-CCD@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-CCDG_account"^^xsd:string.
+d:SYK-CCDG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-CCDG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-CCDG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-CCDG_person"@ru;
+    v-s:lastName "Специалист ОТО эксп"@ru;
+    v-s:defaultAppointment d:SYK-CCDG_appointment.
+d:SYK-CCDG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Специалист ОТО эксп"@ru;
+    v-s:parentUnit d:mondi_department_50001720.
+d:SYK-CCDG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-CCDG_person;
+    v-s:occupation d:SYK-CCDG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Специалист ОТО эксп"@ru.
+
+
+
+#########
+d:SYK-PP1_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PP1_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PP1"^^xsd:string;
+    v-s:mailbox "syk-pp1@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PP1_account"^^xsd:string.
+d:SYK-PP1_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PP1_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PP1_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PP1_person"@ru;
+    v-s:lastName "Старший аппаратчик ХЦ ТЭЦ"@ru;
+    v-s:defaultAppointment d:SYK-PP1_appointment.
+d:SYK-PP1_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Старший аппаратчик ХЦ ТЭЦ"@ru;
+    v-s:parentUnit d:mondi_department_50000887.
+d:SYK-PP1_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PP1_person;
+    v-s:occupation d:SYK-PP1_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Старший аппаратчик ХЦ ТЭЦ"@ru.
+
+
+
+#########
+d:SYK-EMOUNTER-PM15_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-EMOUNTER-PM15_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-EMOUNTER-PM15"^^xsd:string;
+    v-s:mailbox "syk-emounter-pm15@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-EMOUNTER-PM15_account"^^xsd:string.
+d:SYK-EMOUNTER-PM15_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-EMOUNTER-PM15_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-EMOUNTER-PM15_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-EMOUNTER-PM15_person"@ru;
+    v-s:lastName "Электромонтер БМ15"@ru;
+    v-s:defaultAppointment d:SYK-EMOUNTER-PM15_appointment.
+d:SYK-EMOUNTER-PM15_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Электромонтер БМ15"@ru;
+    v-s:parentUnit d:mondi_department_50001728.
+d:SYK-EMOUNTER-PM15_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-EMOUNTER-PM15_person;
+    v-s:occupation d:SYK-EMOUNTER-PM15_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Электромонтер БМ15"@ru.
+
+
+
+#########
+d:SYK-PPMG_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-PPMG_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-PPMG"^^xsd:string;
+    v-s:mailbox "Group.syk-PPMS-Emounter@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-PPMG_account"^^xsd:string.
+d:SYK-PPMG_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-PPMG_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-PPMG_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-PPMG_person"@ru;
+    v-s:lastName "Электромонтер СТЭО ПБ"@ru;
+    v-s:defaultAppointment d:SYK-PPMG_appointment.
+d:SYK-PPMG_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Электромонтер СТЭО ПБ"@ru;
+    v-s:parentUnit d:mondi_department_50003451.
+d:SYK-PPMG_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-PPMG_person;
+    v-s:occupation d:SYK-PPMG_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Электромонтер СТЭО ПБ"@ru.
+
+
+
+#########
+d:SYK-EDISP_account
+    a v-s:Account;
+    v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string;
+    v-s:owner d:SYK-EDISP_person;
+    v-s:updateCounter "1"^^xsd:integer;
+    v-s:login "SYK-EDISP"^^xsd:string;
+    v-s:mailbox "syk-edisp@mondigroup.com@mondigroup.com"^^xsd:string;
+    rdfs:label "SYK-EDISP_account"^^xsd:string.
+d:SYK-EDISP_person
+    a v-s:Person;
+    v-s:hasAppointment d:SYK-EDISP_appointment;
+    v-s:updateCounter "5"^^xsd:integer;
+    v-s:hasAccount d:SYK-EDISP_account;
+    v-s:firstName "Группа"@ru;
+    v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
+    rdfs:label "SYK-EDISP_person"@ru;
+    v-s:lastName "Энергодиспетчер"@ru;
+    v-s:defaultAppointment d:SYK-EDISP_appointment.
+d:SYK-EDISP_position
+    a v-s:Position;
+    v-s:origin "manual"^^xsd:string;
+    rdfs:label "Энергодиспетчер"@ru;
+    v-s:parentUnit d:mondi_department_50001732.
+d:SYK-EDISP_appointment
+    a v-s:Appointment;
+    v-s:updateCounter "2"^^xsd:integer;
+    v-s:employee d:SYK-EDISP_person;
+    v-s:occupation d:SYK-EDISP_position;
+    v-s:official "true"^^xsd:boolean;
+    v-s:startTime "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    v-s:published "2014-01-30T11:35:11.000Z"^^xsd:dateTime;
+    rdfs:label "Назначение. Группа. Энергодиспетчер"@ru.
