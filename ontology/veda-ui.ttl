@@ -332,6 +332,14 @@ v-ui:optionObjectValue
   rdfs:label "Option object value"@en ;
   rdfs:range rdfs:Resource ;
 .
+v-ui:rangeRestriction
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "Ограничение области значений"@ru ;
+  rdfs:label "Range restriction"@en ;
+  rdfs:range owl:Class ;
+  rdfs:range rdfs:Class ;
+.
 v-ui:queryPrefix
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
