@@ -104,6 +104,17 @@ v-s:numerationCommitedIntervalEnd
   rdfs:label "Numeration commited interval end"@en ;
   rdfs:range xsd:integer ;
 .
+
+# --- Numerations ---
+
+v-s:RegistrationNumberSimpleNumeration
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:SimpleNumeration ;
+.
+
+# --- Rules ---
+
 v-s:SimpleNumeration
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;

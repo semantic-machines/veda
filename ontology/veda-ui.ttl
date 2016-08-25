@@ -547,7 +547,7 @@ v-ui:PSFromToForBond
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
+#  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
 .
 v-ui:BondTemplate
   rdf:type v-ui:ClassTemplate ;
