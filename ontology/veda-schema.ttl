@@ -151,6 +151,35 @@ v-s:fileThumbnail
   rdfs:label "Миниатюра"@ru ;
   rdfs:range v-s:File ;
 .
+### ------------------------------------------------------
+v-s:Level
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Level"@en ;
+  rdfs:label "Уровень"@ru ;
+.
+### ------------------------------------------------------
+v-s:Bond
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Bond"@en ;
+  rdfs:label "Связь"@ru ;
+.
+v-s:from
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Bond ;
+  rdfs:label "from"@en ;
+  rdfs:label "от"@ru ;
+  rdfs:range v-s:Thing ;
+.
+v-s:to
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Bond ;
+  rdfs:label "to"@en ;
+  rdfs:label "к"@ru ;
+  rdfs:range v-s:Thing ;
+.
+
 ### veda-workflow
 
 

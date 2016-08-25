@@ -561,17 +561,19 @@ v-s:hasLevel
   rdfs:range v-s:Level ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:hasPriority
+v-s:hasPriorityLevel
   rdf:type owl:ObjectProperty ;
+  rdfs:subPropertyOf v-s:hasLevel ;
   rdfs:label "Level"@en ;
-  rdfs:label "Приоритет"@ru ;
+  rdfs:label "Уровень приоритета"@ru ;
   rdfs:range v-s:Level ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:hasPriority
+v-s:hasRatingLevel
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Priority"@en ;
-  rdfs:label "Приоритет"@ru ;
+  rdfs:subPropertyOf v-s:hasLevel ;
+  rdfs:label "Rating level"@en ;
+  rdfs:label "Уровень оценки"@ru ;
   rdfs:range v-s:Level ;
   rdfs:domain v-s:Measurable ;
 .
@@ -590,29 +592,4 @@ v-s:rate
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:Level
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Level"@en ;
-  rdfs:label "Уровень"@ru ;
-.
-v-s:Bond
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Bond"@en ;
-  rdfs:label "Связь"@ru ;
-.
-v-s:from
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Bond ;
-  rdfs:label "from"@en ;
-  rdfs:label "от"@ru ;
-  rdfs:range v-s:Thing ;
-.
-v-s:to
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Bond ;
-  rdfs:label "to"@en ;
-  rdfs:label "к"@ru ;
-  rdfs:range v-s:Thing ;
-.
+
