@@ -498,7 +498,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           if (property_uri === "@") {
             propertyContainer.text( about.id );
           } else if (about[property_uri] !== undefined) {
-            var formatted = about[property_uri].map(formatValue).join(" ");
+            var formatted = about[property_uri].map(veda.Util.formatValue).join(" ");
             propertyContainer.text( formatted );
           }
         }
@@ -705,26 +705,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return template;
   }
 
-  function formatValue (value) {
-    var formatted;
-    switch (true) {
-      case value instanceof Date:
-        formatted = veda.Util.formatDate(value);
-        break;
-      case value instanceof Number:
-        formatted = veda.Util.formatNumber(value);
-        break;
-      default:
-        formatted = value.toString();
-    }
-    return formatted;
-  }
-
   function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
     propertyContainer.empty();
     individual[property_uri].map( function (value, i) {
       var valueHolder = $("<span class='value-holder'/>");
-      propertyContainer.append(valueHolder.text( formatValue(value) ));
+      propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
       var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
       var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
       var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");

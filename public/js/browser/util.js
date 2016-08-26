@@ -38,6 +38,20 @@ veda.Module(function Util(veda) { "use strict";
     return n > 9 ? n : "0" + n;
   };
 
+  veda.Util.formatValue = function (value) {
+    var formatted;
+    switch (true) {
+      case value instanceof Date:
+        formatted = veda.Util.formatDate(value);
+        break;
+      case value instanceof Number:
+        formatted = veda.Util.formatNumber(value);
+        break;
+      default:
+        formatted = value.toString();
+    }
+    return formatted;
+  };
   veda.Util.formatDate = function (date) {
     var day = date.getDate(),
       month = date.getMonth() + 1,
