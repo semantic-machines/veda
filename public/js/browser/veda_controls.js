@@ -1220,12 +1220,29 @@
     function createValue() {
       var newVal = new veda.IndividualModel();
       newVal["rdf:type"] = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"];
-      select(newVal);
+      return newVal;
     }
 
     // Create feature
     if ( this.hasClass("create") || this.hasClass("full") ) {
-      create.click(createValue);
+      var inModal = this.hasClass("create-modal");
+      create.click( function () {
+        var newVal = createValue();
+        if ( inModal ) {
+          var modal = $("#search-modal-template").html();
+          var $modal = $(modal);
+          $modal.modal();
+          $("body").append($modal);
+          var cntr = $(".modal-body", $modal);
+          newVal.present(cntr, undefined, "edit");
+
+          $("#ok", $modal).click( function (e) {
+            select(newVal);
+          });
+        } else {
+          select(newVal);
+        }
+      });
     } else {
       create.remove();
     }
