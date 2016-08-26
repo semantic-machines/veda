@@ -19,6 +19,7 @@
 v-s:Initiative
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Journaling ;  
   rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Contractual ;
@@ -210,6 +211,7 @@ v-s:hasMemberOfWorkGroup
 #--------------------------------------------------
 v-s:Effect
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;  
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Effect"@en ;

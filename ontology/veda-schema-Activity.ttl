@@ -16,14 +16,12 @@
 
 v-s:Activity
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
 .
@@ -59,6 +57,7 @@ v-s:hasAction
 #---------------------------------------------------------
 v-s:Meeting
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Meeting"@en ;
@@ -88,6 +87,7 @@ v-s:moderator
 #---------------------------------------------------------
 v-s:Audit
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:label "Audit"@en ;
   rdfs:label "Аудит"@ru ;
@@ -115,32 +115,9 @@ v-s:checkedOrganization
 .
 
 #---------------------------------------------------------
-v-s:Action
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Activity ;
-  rdfs:subClassOf v-s:Measurable ;
-  rdfs:subClassOf v-s:Controlled ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Мероприятие"@ru ;
-.
-v-s:hasTerm
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Term"@en ;
-  rdfs:label "Срок"@ru ;
-  rdfs:range v-s:Term ;
-  rdfs:domain v-s:Action ;
-.
-#---------------------------------------------------------
-v-s:Term
-  rdf:type owl:Class ;
-  rdfs:label "Term"@en ;
-  rdfs:label "Срок"@ru ;
-  rdfs:subClassOf v-s:Thing ;
-.
-
-#---------------------------------------------------------
 v-s:investigation
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:label "investigation"@en ;
   rdfs:label "Расследование"@ru ;

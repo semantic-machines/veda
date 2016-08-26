@@ -11,97 +11,13 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
-### -------------------------------------------------------
-v-s:Temporal
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource  ;
-  rdfs:label "Temporal thing"@en ;
-  rdfs:label "Временная сущность"@ru ;
-.
-v-s:date
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date"@en ;
-  rdfs:label "Дата"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:datePlan
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date plan"@en ;
-  rdfs:label "Плановая дата"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateFact
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date of fact"@en ;
-  rdfs:label "Дата фактическая"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateFrom
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date start"@en ;
-  rdfs:label "Дата начала"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateTo
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date finish"@en ;
-  rdfs:label "Дата окончания"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateFromPlan
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date start plan"@en ;
-  rdfs:label "Дата начала плановая"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateToPlan
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date finish plan"@en ;
-  rdfs:label "Дата окончания плановая"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateFromFact
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date start fact"@en ;
-  rdfs:label "Дата начала фактическая"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:dateToFact
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date finish fact"@en ;
-  rdfs:label "Дата окончания фактическая"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:year
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Year"@en ;
-  rdfs:label "Год"@ru ;
-  rdfs:range xsd:integer ;
-  rdfs:domain v-s:Temporal ;
-.
-v-s:duration
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Duration"@en ;
-  rdfs:label "Длительность"@ru ;
-  rdfs:range xsd:integer ;
-  rdfs:domain v-s:Temporal ;
-.
+
 ### -------------------------------------------------------
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-#  rdfs:subClassOf v-s:Journaling ;
-#  rdfs:subClassOf v-s:Exportable ;
-#  rdfs:subClassOf v-s:ClassAuthorized ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Thing"@en ;
   rdfs:label "Любая сущность"@ru ;
 .
@@ -295,6 +211,90 @@ v-s:hasStatus
   rdfs:domain v-s:Thing ;
 .
 ### -------------------------------------------------------
+v-s:Temporal
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource  ;
+  rdfs:label "Temporal thing"@en ;
+  rdfs:label "Временная сущность"@ru ;
+.
+v-s:date
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date"@en ;
+  rdfs:label "Дата"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:datePlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date plan"@en ;
+  rdfs:label "Плановая дата"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date of fact"@en ;
+  rdfs:label "Дата фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFrom
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start"@en ;
+  rdfs:label "Дата начала"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish"@en ;
+  rdfs:label "Дата окончания"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFromPlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start plan"@en ;
+  rdfs:label "Дата начала плановая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateToPlan
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish plan"@en ;
+  rdfs:label "Дата окончания плановая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateFromFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date start fact"@en ;
+  rdfs:label "Дата начала фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateToFact
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date finish fact"@en ;
+  rdfs:label "Дата окончания фактическая"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:year
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Year"@en ;
+  rdfs:label "Год"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:duration
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Duration"@en ;
+  rdfs:label "Длительность"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Temporal ;
+.
+### -------------------------------------------------------
 v-s:Spatial
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -422,27 +422,6 @@ v-s:taskDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Task description"@en ;
   rdfs:label "Описание задачи"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Controlled ;
-.
-v-s:recommendationDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Recommendation"@en ;
-  rdfs:label "Рекомендация"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Controlled ;
-.
-v-s:observationDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Observation"@en ;
-  rdfs:label "Наблюдение"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Controlled ;
-.
-v-s:deviationDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Deviation"@en ;
-  rdfs:label "Отклонение"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Controlled ;
 .
