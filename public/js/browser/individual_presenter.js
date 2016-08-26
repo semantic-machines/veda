@@ -616,7 +616,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var state = true;
 
       function modeHandler(e) {
-        if (spec) state = validate(template, spec, individual[rel_uri], rel_uri);
+        state = validate(template, spec, individual[rel_uri], rel_uri);
         e.stopPropagation();
         e.type === "edit" ?
           state ? control.removeClass("has-error") : control.addClass("has-error")
@@ -628,7 +628,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       function propertyModifiedHandler(doc_rel_uri) {
         if (doc_rel_uri === rel_uri) {
-          if (spec) state = validate(template, spec, individual[rel_uri], rel_uri);
+          state = validate(template, spec, individual[rel_uri], rel_uri);
           if (mode === "edit") {
             state ? control.removeClass("has-error") : control.addClass("has-error");
           }
@@ -850,9 +850,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
   // Property validation according to specification
   function validate(template, spec, values, property_uri) {
+    var result = true;
+    if (!spec) {
+      template.trigger("validate");
+      return result;
+    }
     var valid = template.data("valid");
     valid[spec.id] = valid[spec.id] || {};
-    var result = true;
     // cardinality check
     if (spec.hasValue("v-ui:minCardinality")) {
       result = result && (
