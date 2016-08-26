@@ -144,6 +144,7 @@
     var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
       control = veda_literal_input.call(this, opts);
     var ta = $("textarea", control);
+    ta.attr("rows", this.attr("rows"));
     autosize(ta);
     setTimeout (function () {
       autosize.update(ta);
@@ -511,6 +512,7 @@
     var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
       control = veda_multilingual.call(this, opts);
     var ta = $("textarea", control);
+    ta.attr("rows", this.attr("rows"));
     autosize(ta);
     setTimeout (function () {
       autosize.update(ta);
