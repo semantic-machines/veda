@@ -827,6 +827,32 @@ v-ui:LabelLinkTemplate
   """ ;
 .
 
+v-ui:IconModalTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с меткой и ссылкой"@ru ;
+  rdfs:label "Template with label & link"@en ;
+  v-ui:template """
+<a href="#" class="fa fa-search"></a>
+<script>
+  //# sourceURL=v-ui:IconModalTemplate
+  template.on("click", function (e) {
+    e.preventDefault();
+    var modal = $("#individual-modal-template").html();
+    var $modal = $(modal).modal();
+    $("body").append($modal);
+    var cntr = $(".modal-body", $modal);
+    var newMode = "view";
+    var parentTmpl = template.parent().closest("[resource]");
+    if (parentTmpl.attr("resource") === individual.id) {
+      newMode = parentTmpl.attr("mode");
+    }
+    individual.present(cntr, undefined, newMode);
+    template.on("remove", function () { $modal.remove(); });
+  });
+</script>
+  """ ;
+.
+
 v-ui:LabelEmptyLinkTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон без имени класса, но с меткой (модальное окно)"@ru ;

@@ -1231,7 +1231,7 @@
       create.click( function () {
         var newVal = createValue();
         if ( inModal ) {
-          var modal = $("#search-modal-template").html();
+          var modal = $("#individual-modal-template").html();
           var $modal = $(modal);
           $modal.modal();
           $("body").append($modal);
