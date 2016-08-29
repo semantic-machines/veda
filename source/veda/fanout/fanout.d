@@ -76,6 +76,8 @@ class FanoutProcess : VedaModule
 	
     override bool configure()
     {
+        log.trace("use configuration: %s", node);
+
         connect_to_mysql(context);
         connect_to_smtp(context);
         
@@ -504,6 +506,7 @@ class FanoutProcess : VedaModule
             Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
+            log.trace("connect_to_smtp:found gates: %s", gates);
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
@@ -515,13 +518,21 @@ class FanoutProcess : VedaModule
                     {
                         try
                         {
-                            smtp_conn = new MailSender(connection.getFirstLiteral("v-s:host"), cast(ushort)connection.getFirstInteger("v-s:port"));
-
+        		    log.trace("found connect to smtp [%s]", connection);
+			    auto host = connection.getFirstLiteral("v-s:host");
+			    auto port = cast(ushort)connection.getFirstInteger("v-s:port");
+                            smtp_conn = new MailSender(host, port);
+writeln ("@1");
                             if (smtp_conn is null)
-                                return;
+			    {	
+        			log.trace("fail connect to smtp [%s] %s:%d", connection.uri, host, port);			    
+                                continue;
+			    }
+writeln ("@2");
 
                             string login = connection.getFirstLiteral("v-s:login");
                             string pass  = connection.getFirstLiteral("v-s:password");
+writeln ("@3");
 
                             if (login !is null && login.length > 0)
                                 smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
@@ -532,6 +543,14 @@ class FanoutProcess : VedaModule
                                 smtp_conn = null;
                             else
                                 log.trace("success connection to SMTP server: [%s]", connection);
+writeln ("@4");
+
+                            if (smtp_conn is null)
+			    {	
+        			log.trace("fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);			    
+                                continue;
+			    }
+
                         }
                         catch (Throwable ex)
                         {
@@ -541,6 +560,10 @@ class FanoutProcess : VedaModule
                         }
                     }
                 }
+		else
+		{
+        	    log.trace("WARN:connect_to_smtp:connection [%s] no content [v-s:transport]", connection);
+		}
             }
         }
         catch (Throwable ex)
@@ -556,9 +579,8 @@ class FanoutProcess : VedaModule
         {
             Ticket sticket = context.sys_ticket();
 
-            log.trace("use configuration: %s", node);
             Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
-            log.trace("found gates: %s", gates);
+            log.trace("connect_to_mysql:found gates: %s", gates);
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
