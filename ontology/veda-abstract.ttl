@@ -578,4 +578,11 @@ v-s:rate
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
-
+v-s:costs
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Level ;
+  rdfs:label "Costs"@en ;
+  rdfs:label "Стоимость"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Measurable ;
+.
