@@ -10,7 +10,7 @@
       input = $(".form-control", control),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : input.attr("placeholder"),
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       property_uri = opts.property_uri,
       individual = opts.individual;
 
@@ -27,26 +27,24 @@
       input.val("");
     }
 
-    if (spec) {
-      if (isSingle) {
-        change = function (value) {
-          individual[property_uri] = [value];
-        };
-        input.val(individual[property_uri][0]);
-        individual.on("individual:propertyModified", singleValueHandler);
-        control.one("remove", function () {
-          individual.off("individual:propertyModified", singleValueHandler);
-        });
-      }
+    if (isSingle) {
+      change = function (value) {
+        individual[property_uri] = [value];
+      };
+      input.val(individual[property_uri][0]);
+      individual.on("individual:propertyModified", singleValueHandler);
+      control.one("remove", function () {
+        individual.off("individual:propertyModified", singleValueHandler);
+      });
+    }
 
-      if (spec.hasValue("v-ui:tooltip")) {
-        control.tooltip({
-          title: spec["v-ui:tooltip"].join(", "),
-          placement: "bottom",
-          container: control,
-          trigger: "focus"
-        });
-      }
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "focus"
+      });
     }
 
     input.on("change focusout", function () {
@@ -197,7 +195,7 @@
       control = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       property_uri = opts.property_uri,
       individual = opts.individual,
       input = $(".form-control", control),
@@ -292,7 +290,7 @@
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       input = $("input", control);
     control.datetimepicker({
       locale: "ru",
@@ -319,7 +317,7 @@
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
       property_uri = opts.property_uri,
       individual = opts.individual,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       input = $("input", control),
       change;
 
@@ -421,7 +419,7 @@
       property_uri = opts.property_uri,
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       undef = $("li", control),
       langTag = $(".language-tag", control),
       input = $(".form-control", control),
@@ -608,7 +606,7 @@
       property_uri = opts.property_uri,
       parser = opts.parser,
       spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       optionProperty = opts.optionProperty,
       select = $("select", control),
       first_opt = $("option", control);
@@ -1081,7 +1079,7 @@
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.rel_uri,
-        isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1;
+        isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true;
       var fileInput = $("#file", control);
       if (!isSingle) fileInput.attr("multiple", "multiple");
       var btn = $("#btn", control);
@@ -1130,7 +1128,7 @@
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.rel_uri,
-        isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+        isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
         id = veda.Util.guid();
       form.attr("target", id);
       iframe.attr("id", id).attr("name", id).attr("src", "javascript:void(0);");
@@ -1189,7 +1187,7 @@
       selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
       displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ],
       rel_uri = opts.rel_uri,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       create = $("#create", control),
       dropdown = $("#dropdown", control),
       fulltext = $("#fulltext", control),
@@ -1597,7 +1595,7 @@
       rel_uri = opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1,
+      isSingle = spec ? spec.hasValue("v-ui:maxCardinality") && spec["v-ui:maxCardinality"][0] == 1 : true,
       isObligatory = spec && spec.hasValue("v-ui:minCardinality") && spec["v-ui:minCardinality"][0] == 1,
       optionProperty = opts.optionProperty,
       select = $("select", control),
