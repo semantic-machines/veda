@@ -1449,7 +1449,7 @@ s-wf:net_coordination
   v-wf:consistsOf d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4, d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
   v-wf:consistsOf d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de, d:a8a52f5c1-84fb-0976-794a-5c66b93258e7, d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b, d:a6caa3c11-9333-4270-549f-e899df057223;
   v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local, s-wf:map_last_actor_4_PLV_actor;
-  v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
+  v-wf:inputVariable s-wf:var_msg_template, s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
   v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
   v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action.
@@ -1728,7 +1728,7 @@ s-wf:ss1 a v-s:SavedSearch;
 s-wf:map_msg_template_4_SV_default_template
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_msg_template ;
-  v-wf:mappingExpression  "newUri ('m-l:msg-template-optiflow')";
+  v-wf:mappingExpression  "process.getInputVariable('$template')?process.getInputVariable('$template'):newUri ('m-l:msg-template-optiflow')";
   rdfs:isDefinedBy s-wf: ;
 .
 
