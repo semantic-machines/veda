@@ -1228,6 +1228,7 @@
       var inModal = this.hasClass("create-modal");
       create.click( function () {
         var newVal = createValue();
+        select(newVal);
         if ( inModal ) {
           var modal = $("#individual-modal-template").html();
           var $modal = $(modal);
@@ -1235,12 +1236,6 @@
           $("body").append($modal);
           var cntr = $(".modal-body", $modal);
           newVal.present(cntr, undefined, "edit");
-
-          $("#ok", $modal).click( function (e) {
-            select(newVal);
-          });
-        } else {
-          select(newVal);
         }
       });
     } else {
