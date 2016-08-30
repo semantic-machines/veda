@@ -119,7 +119,7 @@ v-s:Investigation
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Activity ;
-  rdfs:label "investigation"@en ;
+  rdfs:label "Investigation"@en ;
   rdfs:label "Расследование"@ru ;
 .
 

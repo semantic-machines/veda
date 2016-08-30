@@ -35,13 +35,7 @@ v-s:hasTerm
   rdfs:range v-s:Term ;
   rdfs:domain v-s:Action ;
 .
-v-s:hasActionRisk
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Risk"@en ;
-  rdfs:label "Риск"@ru ;
-  rdfs:range v-s:Risk ;
-  rdfs:domain v-s:Action ;
-.
+
 #---------------------------------------------------------
 v-s:Term
   rdf:type owl:Class ;
