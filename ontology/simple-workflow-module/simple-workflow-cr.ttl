@@ -25,7 +25,21 @@ s-wf:net_complex_route a v-wf:Net;
   v-wf:localVariable s-wf:var_right_1;
   v-wf:consistsOf s-wf:ic1, s-wf:f_ic1_t1, s-wf:t1, s-wf:f_t1_oc1, s-wf:f_t1_t2, s-wf:t2, s-wf:f_c1_t3, s-wf:c2, s-wf:f_c2_t8, s-wf:t3, s-wf:f_t3_c2, s-wf:f_t3_t4, s-wf:t4, s-wf:f_t4_c2, s-wf:f_t4_t5, s-wf:t5, s-wf:f_t5_c2, s-wf:f_t5_t6, s-wf:t6, s-wf:f_t6_c2, s-wf:f_t6_t7, s-wf:t7, s-wf:f_t7_c2, s-wf:t8, s-wf:f_c3_t9, s-wf:t9, s-wf:f_t9_oc1, s-wf:oc1, s-wf:f_t8_t3, s-wf:f_t8_t4, s-wf:f_t8_t5, s-wf:f_t8_t6, s-wf:f_t8_t7, s-wf:f_t2_t3, s-wf:f_t8_t9, s-wf:t_instruction, s-wf:t_examination, s-wf:t_auto_instruction, s-wf:t_review, s-wf:t_distribution, s-wf:f_tdistr_t9, s-wf:f_t7_texamin, s-wf:f_t7_treview, s-wf:f_t7_tinstr, s-wf:f_t7_tautoinstr, s-wf:f_tinstr_tdistr, s-wf:f_treview_tdistr, s-wf:f_texam_tdistr;
   rdfs:label "Комплексный маршрут"@ru;
-  v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator_1, s-wf:var_coordinator_2, s-wf:var_coordinator_3, s-wf:var_signer, s-wf:var_reviewer.
+  v-wf:inputVariable 
+  	s-wf:var_doc_id, 
+  	s-wf:var_initiator, 
+  	s-wf:var_informing_recipient, 
+  	s-wf:var_coordinator_1, 
+  	s-wf:var_coordinator_2, 
+  	s-wf:var_coordinator_3, 
+  	s-wf:var_coordinator_4, 
+  	s-wf:var_coordinator_5, 
+  	s-wf:var_coordinator_6, 
+  	s-wf:var_signer, 
+  	s-wf:var_approver, 
+  	s-wf:var_executor, 
+  	s-wf:var_reviewer, 
+	s-wf:var_distribution_recipient.
 
 s-wf:ic1 a v-wf:InputCondition;
   rdfs:isDefinedBy s-wfc: ;
@@ -397,6 +411,13 @@ s-wf:f_texam_tdistr a v-wf:Flow;
 
 #---------------
 
+s-wf:var_informing_recipient
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "informing" ;
+  rdfs:label "Список информирования"@ru ;
+.
+
 s-wf:var_coordinator_1
   rdf:type v-wf:VarDefine ;
   rdfs:isDefinedBy s-wfc: ;
@@ -404,17 +425,66 @@ s-wf:var_coordinator_1
   rdfs:label "Список согласующих 1 уровень"@ru ;
 .
 
-s-wf:executor_def_1
-  rdf:type v-wf:ExecutorDefinition ;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:executorExpression "process.getInputVariable ('coordinatorLevel1')" ;
-.
-
 s-wf:var_coordinator_2
   rdf:type v-wf:VarDefine ;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:varDefineName "coordinatorLevel2" ;
   rdfs:label "Список согласующих 2 уровень"@ru ;
+.
+
+s-wf:var_coordinator_3
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "coordinatorLevel3" ;
+  rdfs:label "Список согласующих 3 уровень"@ru ;
+.
+
+s-wf:var_coordinator_4
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "coordinatorLevel4" ;
+  rdfs:label "Список согласующих 4 уровень"@ru ;
+.
+
+s-wf:var_coordinator_5
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "coordinatorLevel5" ;
+  rdfs:label "Список согласующих 5 уровень"@ru ;
+.
+
+s-wf:var_coordinator_6
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "coordinatorLevel6" ;
+  rdfs:label "Список согласующих 6 уровень"@ru ;
+.
+
+s-wf:var_approver
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "approver" ;
+  rdfs:label "Список утверждающих"@ru ;
+.
+
+s-wf:var_executor
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "executor" ;
+  rdfs:label "Список исполнителей"@ru ;
+.
+
+s-wf:var_distribution_recipient
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:varDefineName "distribution" ;
+  rdfs:label "Список рассылки"@ru ;
+.
+
+s-wf:executor_def_1
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "process.getInputVariable ('coordinatorLevel1')" ;
 .
 
 s-wf:executor_def_2
@@ -489,13 +559,6 @@ s-wf:map_user_task_form_label_remake
   v-wf:mapToVariable s-wf:user_task_form_label ;
   v-wf:mappingExpression  "newStr ('Доработать документ')" ;
   rdfs:label "User_task_form_label=доработать"@ru ;
-.
-
-s-wf:var_coordinator_3
-  rdf:type v-wf:VarDefine ;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:varDefineName "coordinatorLevel3" ;
-  rdfs:label "Список согласующих 3 уровень"@ru ;
 .
 
 s-wf:executor_def_3
