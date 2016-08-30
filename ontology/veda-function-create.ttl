@@ -273,7 +273,9 @@ v-fc:BlankTemplate
   });
   function saveHandler () {
     delete self.object;
-    riot.route("#/" + object.id);
+    setTimeout(function () {
+      object.present("#main");
+    }, 100);
   }
   function cancelHandler () { window.history.back(); }
 </script>
