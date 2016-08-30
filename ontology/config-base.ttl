@@ -214,6 +214,7 @@ cfg:Permission_7
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "Permission to read groups for all users"@en ;
   rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
+  v-s:deleted "true"^^xsd:boolean ;
 .
 
 ##################### EVENT HANDLERS #####################
