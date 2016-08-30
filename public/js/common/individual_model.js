@@ -314,33 +314,35 @@ veda.Module(function (veda) { "use strict";
   proto.reset = function () {
     var self = this;
     self.trigger("individual:beforeReset");
-    if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
-      veda.drafts.remove(this.id);
-    }
-    this._.filtered = {};
-    var original;
-    try {
-      original = get_individual(veda.ticket, this.id);
-    } catch (e) {
-      original = {};
-    }
-    Object.keys(self.properties).map(function (property_uri) {
-      if (property_uri === "@" || property_uri === "rdf:type") {
+    if (!this._.isNew) {
+      if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
+        veda.drafts.remove(this.id);
+      }
+      this._.filtered = {};
+      var original;
+      try {
+        original = get_individual(veda.ticket, this.id);
+      } catch (e) {
+        original = {};
+      }
+      Object.keys(self.properties).map(function (property_uri) {
+        if (property_uri === "@" || property_uri === "rdf:type") {
+          delete original[property_uri];
+          return;
+        }
+        if (original[property_uri] && original[property_uri].length) {
+          self[property_uri] = original[property_uri].map( parser );
+        } else {
+          self[property_uri] = [];
+        }
         delete original[property_uri];
-        return;
-      }
-      if (original[property_uri] && original[property_uri].length) {
+      });
+      Object.keys(original).map(function (property_uri) {
         self[property_uri] = original[property_uri].map( parser );
-      } else {
-        self[property_uri] = [];
-      }
-      delete original[property_uri];
-    });
-    Object.keys(original).map(function (property_uri) {
-      self[property_uri] = original[property_uri].map( parser );
-    });
-    self._.isNew = false;
-    self._.isSync = true;
+      });
+      self._.isNew = false;
+      self._.isSync = true;
+    }
     self.trigger("individual:afterReset");
     return this;
   };
