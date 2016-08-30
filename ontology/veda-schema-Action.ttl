@@ -6,7 +6,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 
-<http://semantic-machines.com/veda/veda-schema-Activity/>
+<http://semantic-machines.com/veda/veda-schema-Action/>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology. Action"@en ;
   rdfs:label "Онтология системы Veda. Задача"@ru ;
@@ -16,15 +16,15 @@
 #---------------------------------------------------------
 v-s:Action
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;  
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Embedded ;      
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:subClassOf v-s:Registered ;  
-  rdfs:subClassOf v-s:Temporal ;  
-  rdfs:subClassOf v-s:Spatial ;   
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Spatial ;
   rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
 .

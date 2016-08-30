@@ -6,7 +6,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 
-<http://semantic-machines.com/veda/veda-schema-Activity/>
+<http://semantic-machines.com/veda/veda-schema-Asset/>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology. Asset"@en ;
   rdfs:label "Онтология системы Veda. Основное средство"@ru ;
