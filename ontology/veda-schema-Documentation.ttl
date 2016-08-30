@@ -53,26 +53,26 @@ v-s:Comment
 #---------------------------------------------------------
 v-s:Risk
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;  
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Embedded ;      
-  rdfs:subClassOf v-s:Measurable ; 
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Risk"@en ;
   rdfs:label "Риск"@ru ;
 .
-v-s:consicvens
+v-s:consequence
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Сonsicvens"@en ;
+  rdfs:label "Consequence"@en ;
   rdfs:label "Последствия"@ru ;
   rdfs:range xsd:string ;
-  rdfs:domain v-s:Thing ;
+  rdfs:domain v-s:Risk ;
 .
 #---------------------------------------------------------
 v-s:Observation
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;  
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Embedded ;      
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Controlled ;
@@ -91,9 +91,9 @@ v-s:deviationDescription
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;  
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Embedded ;      
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Controlled ;
