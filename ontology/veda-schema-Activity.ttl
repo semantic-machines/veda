@@ -57,7 +57,7 @@ v-s:hasAction
 #---------------------------------------------------------
 v-s:Meeting
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Enumerated ;  
   rdfs:subClassOf v-s:Activity ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Meeting"@en ;
@@ -87,7 +87,7 @@ v-s:moderator
 #---------------------------------------------------------
 v-s:Audit
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Enumerated ;  
   rdfs:subClassOf v-s:Activity ;
   rdfs:label "Audit"@en ;
   rdfs:label "Аудит"@ru ;
@@ -117,12 +117,19 @@ v-s:checkedOrganization
 #---------------------------------------------------------
 v-s:Investigation
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:label "Investigation"@en ;
   rdfs:label "Расследование"@ru ;
 .
-
+#---------------------------------------------------------
+v-s:ActionPlan
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "Action plan"@en ;
+  rdfs:label "План мероприятий"@ru ;
+.
 #-- Спецификации Аттрибутов ---------------------------
 
 v-s:PsDateToForAction
