@@ -1412,7 +1412,7 @@
   };
   $.fn.veda_link.defaults = {
     template: $("#link-control-template").html(),
-    limit: 20
+    limit: 100
   };
 
   // OBJECT CHECKBOX GROUP CONTROL
