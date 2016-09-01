@@ -17,23 +17,23 @@
 
 v-s:StatusDraft
   rdf:type v-s:Status ;
-  rdfs:label "Not send"@en ;
+  rdfs:label "Not sent"@en ;
   rdfs:label "Не отправлено"@ru ;
 .
-v-s:StatusImplementing
+v-s:StatusImplementation
   rdf:type v-s:Status ;
-  rdfs:label "Implementing"@en ;
-  rdfs:label "В проработке"@ru ;
+  rdfs:label "Implementation"@en ;
+  rdfs:label "Реализация"@ru ;
 .
-v-s:Status
+v-s:StatusPreparation
   rdf:type v-s:Status ;
-  rdfs:label ""@en ;
-  rdfs:label "Проработка. Согласование. Утверждение"@ru ;
+  rdfs:label "Preparation"@en ;
+  rdfs:label "Подготовка"@ru ;
 .
 v-s:StatusReview
   rdf:type v-s:Status ;
   rdfs:label "Review"@en ;
-  rdfs:label "Рассматривается"@ru ;
+  rdfs:label "Рассмотрение"@ru ;
 .
 v-s:StatusCalculationEffect
   rdf:type v-s:Status ;
@@ -45,25 +45,25 @@ v-s:StatusAgreed
   rdfs:label "Agreed"@en ;
   rdfs:label "Утверждено"@ru ;
 .
-v-s:Status
+v-s:StatusFinishedFullyImplemented
   rdf:type v-s:Status ;
-  rdfs:label ""@en ;
-  rdfs:label "В работе в настоящий момент"@ru ;
-.
-v-s:Status
-  rdf:type v-s:Status ;
-  rdfs:label ""@en ;
+  rdfs:label "Finished. Fully implemented"@en ;
   rdfs:label "Завершен. Выполнен полностью"@ru ;
 .
-v-s:Status
+v-s:StatusFinishedPartiallyImplemented
   rdf:type v-s:Status ;
-  rdfs:label ""@en ;
+  rdfs:label "Finished. Partially implemented"@en ;
   rdfs:label "Завершен. Выполнен частично"@ru ;
 .
 v-s:StatusIntroduced
   rdf:type v-s:Status ;
   rdfs:label "Introduced"@en ;
-  rdfs:label "Внедрено"@ru ;
+  rdfs:label "Введено"@ru ;
+.
+v-s:StatusImplemented
+  rdf:type v-s:Status ;
+  rdfs:label "Implemented"@en ;
+  rdfs:label "Реализовано"@ru ;
 .
 v-s:StatusCheckedEffect
   rdf:type v-s:Status ;
@@ -95,12 +95,11 @@ v-s:StatusRejected
   rdfs:label "Rejected"@en ;
   rdfs:label "Отклонено"@ru ;
 .
-v-s:Status
+v-s:StatusRejectedRiskAccepted
   rdf:type v-s:Status ;
-  rdfs:label ""@en ;
-  rdfs:label "Отменен. Не будет выполняться. Риски приняты"@ru ;
+  rdfs:label "Rejected. Risk accepted"@en ;
+  rdfs:label "Отклонено. Риски приняты"@ru ;
 .
-
 
 # -- вид обслуживания (останова обрудования) --
 
