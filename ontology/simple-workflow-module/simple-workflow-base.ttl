@@ -380,6 +380,34 @@ s-wf:ComplexRouteStartForm_coordinator3
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
 .
+
+s-wf:ComplexRouteStartForm_coordinator4
+  rdf:type rdf:Property ;
+  rdfs:label "Согласующий 4 уровня"@ru ;
+  rdfs:label "Coordinator 4 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range v-s:Appointment ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordinator5
+  rdf:type rdf:Property ;
+  rdfs:label "Согласующий 5 уровня"@ru ;
+  rdfs:label "Coordinator 5 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range v-s:Appointment ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordinator6
+  rdf:type rdf:Property ;
+  rdfs:label "Согласующий 6 уровня"@ru ;
+  rdfs:label "Coordinator 6 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range v-s:Appointment ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:ComplexRouteStartForm_reviewer
   rdf:type rdf:Property ;
   rdfs:label "Рассматривающий"@ru ;
