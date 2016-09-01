@@ -54,6 +54,13 @@ v-s:ViewDetails
   rdfs:label "Подробнее"@ru ;
   rdfs:label "View details"@en ;
 .
+
+v-s:Clone
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сделать копию"@ru ;
+  rdfs:label "Make a copy"@en ;
+.
+
 v-s:NewTasks
   rdf:type v-s:Bundle ;
   rdfs:label "Новые задачи"@ru ;
@@ -226,6 +233,11 @@ v-s:SendInstruction
   rdf:type v-s:Bundle ;
   rdfs:label "Выдать поручение"@ru ;
   rdfs:label "Send instruction"@en ;
+.
+v-s:SendComplex
+  rdf:type v-s:Bundle ;
+  rdfs:label "Отправить по комплексному маршруту"@ru ;
+  rdfs:label "Complex workflow route"@en ;
 .
 v-s:Total
   rdf:type v-s:Bundle ;

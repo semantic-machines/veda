@@ -356,46 +356,184 @@ s-wf:ComplexRouteStartForm
   rdfs:label "Complex route start form"@en ;
   rdfs:isDefinedBy s-wf: ;
 .
-s-wf:ComplexRouteStartForm_coordinator1
+
+s-wf:SimpleRouteStartForm
+  rdf:type rdfs:Class ;
+  rdfs:subClassOf v-wf:StartForm ;
+  rdfs:label "Стартовая форма сети Простой маршрут"@ru ;
+  rdfs:label "Simple route start form"@en ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SimpleRouteStartForm_participant
   rdf:type rdf:Property ;
-  rdfs:label "Согласующий 1 уровня"@ru ;
-  rdfs:label "Coordinator 1 level"@en ;
-  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:label "Участник"@ru ;
+  rdfs:label "Participant"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
 .
-s-wf:ComplexRouteStartForm_coordinator2
+
+s-wf:SimpleRouteStartForm_comment
   rdf:type rdf:Property ;
-  rdfs:label "Согласующий 2 уровня"@ru ;
-  rdfs:label "Coordinator 3 level"@en ;
-  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:label "Участник"@ru ;
+  rdfs:label "Participant"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
 .
-s-wf:ComplexRouteStartForm_coordinator3
+
+s-wf:SimpleRouteStartForm_visible
   rdf:type rdf:Property ;
-  rdfs:label "Согласующий 3 уровня"@ru ;
-  rdfs:label "Coordinator 3 level"@en ;
-  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:label "Видимый"@ru ;
+  rdfs:label "Visible"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:boolean ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SimpleRouteStartForm_editable
+  rdf:type rdf:Property ;
+  rdfs:label "Редактируемый"@ru ;
+  rdfs:label "Editable"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:boolean ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SimpleRouteStartForm_controlled
+  rdf:type rdf:Property ;
+  rdfs:label "Контролируемый"@ru ;
+  rdfs:label "Controlled"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:boolean ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SimpleRouteStartForm_controller
+  rdf:type rdf:Property ;
+  rdfs:label "Контроллирующий"@ru ;
+  rdfs:label "Controller"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
 .
-s-wf:ComplexRouteStartForm_reviewer
+
+s-wf:SimpleRouteStartForm_deadlineDate
   rdf:type rdf:Property ;
-  rdfs:label "Рассматривающий"@ru ;
-  rdfs:label "Reviewer"@en ;
-  rdfs:domain s-wf:ComplexRouteStartForm ;
-  rdfs:range v-s:Appointment ;
+  rdfs:label "Контрольный срок"@ru ;
+  rdfs:label "Deadline"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:dateTime ;
   rdfs:isDefinedBy s-wf: ;
 .
-s-wf:ComplexRouteStartForm_signer
+
+s-wf:SimpleRouteStartForm_deadlineInDays
   rdf:type rdf:Property ;
-  rdfs:label "Подписывающий"@ru ;
-  rdfs:label "Signer"@en ;
-  rdfs:domain s-wf:ComplexRouteStartForm ;
-  rdfs:range v-s:Appointment ;
+  rdfs:label "В днях"@ru ;
+  rdfs:label "In days"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:boolean ;
   rdfs:isDefinedBy s-wf: ;
 .
+
+s-wf:SimpleRouteStartForm_deadlineDays
+  rdf:type rdf:Property ;
+  rdfs:label "Контрольный срок"@ru ;
+  rdfs:label "Deadline"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:integer ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordination1
+  rdf:type rdf:Property ;
+  rdfs:label "Согласование 1 уровня"@ru ;
+  rdfs:label "Coordination 1 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordination2
+  rdf:type rdf:Property ;
+  rdfs:label "Согласование 2 уровня"@ru ;
+  rdfs:label "Coordination 2 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordination3
+  rdf:type rdf:Property ;
+  rdfs:label "Согласование 3 уровня"@ru ;
+  rdfs:label "Coordination 3 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordination4
+  rdf:type rdf:Property ;
+  rdfs:label "Согласование 4 уровня"@ru ;
+  rdfs:label "Coordination 4 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordination5
+  rdf:type rdf:Property ;
+  rdfs:label "Согласование 5 уровня"@ru ;
+  rdfs:label "Coordination 5 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_coordination6
+  rdf:type rdf:Property ;
+  rdfs:label "Согласование 6 уровня"@ru ;
+  rdfs:label "Coordination 6 level"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SingleRouteStartForm_Template
+  rdfs:isDefinedBy s-wf: ;
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
+  rdfs:label "Single route start form template"@en ;
+  v-ui:forClass s-wf:SingleRouteStartForm ;
+  v-ui:template """
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <div class="col-md-6">
+          <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
+          </div>
+          <div class="col-md-6 text-right">
+            <a href="#/@"><span property="@">ID</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-md-4">             
+          </div>
+          <div class="col-md-4">             
+          </div>
+          <div class="col-md-4">             
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  """ ;
+.
+
 s-wf:ComplexRouteStartForm_Template
   rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
@@ -441,29 +579,15 @@ s-wf:ComplexRouteStartForm_Template
         <hr />
         <div class="row">
             <div class="col-md-4">
-               <em about="s-wf:ComplexRouteStartForm_coordinator1" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordinator1" template="td:AppointmentTemplate2"></div>
+               <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_coordination1" template="s-wf:SingleRouteStartForm_Template"></div>
             </div>
             <div class="col-md-4">
-               <em about="s-wf:ComplexRouteStartForm_coordinator2" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordinator2" template="td:AppointmentTemplate2"></div>
             </div>
             <div class="col-md-4">
-               <em about="s-wf:ComplexRouteStartForm_coordinator3" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordinator3" template="td:AppointmentTemplate2"></div>
             </div>
         </div>
         <hr />
-        <div class="row">
-            <div class="col-md-4">
-               <em about="s-wf:ComplexRouteStartForm_reviewer" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_reviewer" template="td:AppointmentTemplate2"></div>
-            </div>
-            <div class="col-md-4">
-               <em about="s-wf:ComplexRouteStartForm_signer" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_signer" template="td:AppointmentTemplate2"></div>
-            </div>
-        </div>
       </div>
       <div class="panel-footer">
         <button type="button" class="action btn btn-primary" id="edit" about="v-s:Edit" property="rdfs:label"/>
@@ -475,6 +599,25 @@ s-wf:ComplexRouteStartForm_Template
     </div>
   </div>
 <script type="text/javascript">
+  var stages = [
+  	'informing', 
+  	'coordinator1', 
+  	'coordinator2', 
+  	'coordinator3', 
+  	'coordinator4', 
+  	'coordinator5', 
+  	'coordinator6', 
+  	'signre', 
+  	'approvalre', 
+  	'reviewre', 
+  	'executor', 
+  	'examinator',
+  	'distribution'
+  ];
+  stages.forEach(function(stage) {
+  	console.log(stage);
+  	
+  });
 //# sourceURL=s-wf:ComplexRouteStartForm_Template
 jsWorkflow.ready(function () {
   $( "#save_and_start_process" ).click(function() {
@@ -1449,7 +1592,7 @@ s-wf:net_coordination
   v-wf:consistsOf d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4, d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
   v-wf:consistsOf d:a8b89a22d-23b9-1c1c-c5dc-3443fd3972de, d:a8a52f5c1-84fb-0976-794a-5c66b93258e7, d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b, d:a6caa3c11-9333-4270-549f-e899df057223;
   v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local, s-wf:map_last_actor_4_PLV_actor;
-  v-wf:inputVariable s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
+  v-wf:inputVariable s-wf:var_msg_template, s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
   v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
   v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action.
@@ -1728,7 +1871,7 @@ s-wf:ss1 a v-s:SavedSearch;
 s-wf:map_msg_template_4_SV_default_template
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_msg_template ;
-  v-wf:mappingExpression  "newUri ('m-l:msg-template-optiflow')";
+  v-wf:mappingExpression  "process.getInputVariable('$template')?process.getInputVariable('$template'):newUri ('m-l:msg-template-optiflow')";
   rdfs:isDefinedBy s-wf: ;
 .
 
