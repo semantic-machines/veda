@@ -20,40 +20,60 @@ v-s:StatusDraft
   rdfs:label "Not send"@en ;
   rdfs:label "Не отправлено"@ru ;
 .
+v-s:StatusImplementing
+  rdf:type v-s:Status ;
+  rdfs:label "Implementing"@en ;
+  rdfs:label "В проработке"@ru ;
+.
+v-s:Status
+  rdf:type v-s:Status ;
+  rdfs:label ""@en ;
+  rdfs:label "Проработка. Согласование. Утверждение"@ru ;
+.
 v-s:StatusReview
   rdf:type v-s:Status ;
   rdfs:label "Review"@en ;
   rdfs:label "Рассматривается"@ru ;
-.
-v-s:StatusAgreed
-  rdf:type v-s:Status ;
-  rdfs:label "Agreed"@en ;
-  rdfs:label "Утверждено"@ru ;
-.
-v-s:StatusRejected
-  rdf:type v-s:Status ;
-  rdfs:label "Rejected"@en ;
-  rdfs:label "Отклонено"@ru ;
-.
-v-s:StatusIntroduced
-  rdf:type v-s:Status ;
-  rdfs:label "Introduced"@en ;
-  rdfs:label "Внедрено"@ru ;
 .
 v-s:StatusCalculationEffect
   rdf:type v-s:Status ;
   rdfs:label "Calculation effect"@en ;
   rdfs:label "Расчет эффекта"@ru ;
 .
-v-s:StatusPaymentPending
+v-s:StatusAgreed
   rdf:type v-s:Status ;
-  rdfs:label "Payment pending"@en ;
-  rdfs:label "Ожидает оплаты"@ru ;
+  rdfs:label "Agreed"@en ;
+  rdfs:label "Утверждено"@ru ;
+.
+v-s:Status
+  rdf:type v-s:Status ;
+  rdfs:label ""@en ;
+  rdfs:label "В работе в настоящий момент"@ru ;
+.
+v-s:Status
+  rdf:type v-s:Status ;
+  rdfs:label ""@en ;
+  rdfs:label "Завершен. Выполнен полностью"@ru ;
+.
+v-s:Status
+  rdf:type v-s:Status ;
+  rdfs:label ""@en ;
+  rdfs:label "Завершен. Выполнен частично"@ru ;
+.
+v-s:StatusIntroduced
+  rdf:type v-s:Status ;
+  rdfs:label "Introduced"@en ;
+  rdfs:label "Внедрено"@ru ;
 .
 v-s:StatusCheckedEffect
   rdf:type v-s:Status ;
   rdfs:label "Checked effect"@en ;
   rdfs:label "Подтверждение эффекта"@ru ;
+.
+v-s:StatusPaymentPending
+  rdf:type v-s:Status ;
+  rdfs:label "Payment pending"@en ;
+  rdfs:label "Ожидает оплаты"@ru ;
 .
 v-s:StatusPaid
   rdf:type v-s:Status ;
@@ -70,10 +90,15 @@ v-s:StatusPostponed
   rdfs:label "Postponed"@en ;
   rdfs:label "Отложено"@ru ;
 .
-v-s:StatusImplementing
+v-s:StatusRejected
   rdf:type v-s:Status ;
-  rdfs:label "Implementing"@en ;
-  rdfs:label "В проработке"@ru ;
+  rdfs:label "Rejected"@en ;
+  rdfs:label "Отклонено"@ru ;
+.
+v-s:Status
+  rdf:type v-s:Status ;
+  rdfs:label ""@en ;
+  rdfs:label "Отменен. Не будет выполняться. Риски приняты"@ru ;
 .
 
 
