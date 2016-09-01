@@ -20,7 +20,6 @@ v-s:Initiative
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Journaling ;  
-  rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Initiative"@en ;
@@ -71,6 +70,7 @@ v-s:hasMaintenanceKind
   rdfs:range v-s:MaintenanceKind ;
   rdfs:domain v-s:Initiative ;
 .
+#   --- Название связано в Проектом а не с инициативой
 v-s:hasProjectPlan
   rdf:type owl:ObjectProperty ;
   rdfs:label "Project plan"@en ;
@@ -207,6 +207,13 @@ v-s:hasMemberOfWorkGroup
   rdfs:label "Work group members"@en ;
   rdfs:range v-s:MemberOfWorkGroup ;
   rdfs:domain v-s:Project ;
+.
+#--------------------------------------------------
+v-s:Process
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Initiative ;
+  rdfs:label "Project"@en ;
+  rdfs:label "Проект"@ru ;
 .
 #--------------------------------------------------
 v-s:Effect
