@@ -804,7 +804,7 @@ s-wf:UserTaskFormTemplate
     </div>
 
     <div class="panel-footer">
-      <button type="button" class="action btn btn-primary -view edit -search" id="send" about="v-s:Send" property="rdfs:label"/>
+      <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
       <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
 <!--  Добавить кнопку Выдать задачу
       <div class="btn-group dropup">
