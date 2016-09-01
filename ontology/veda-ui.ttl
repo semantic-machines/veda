@@ -347,6 +347,13 @@ v-ui:queryPrefix
   rdfs:label "Query prefix"@en ;
   rdfs:range xsd:string ;
 .
+v-ui:sort
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "Сортировка"@ru ;
+  rdfs:label "Sorting"@en ;
+  rdfs:range xsd:string ;
+.
 v-ui:treeRoot
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
