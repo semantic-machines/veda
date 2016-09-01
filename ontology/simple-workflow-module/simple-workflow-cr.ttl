@@ -33,20 +33,53 @@ s-wf:net_complex_route a v-wf:Net;
   	s-wf:cr_informing_task,
   	s-wf:crf_i_to_c1,
   	s-wf:cr_c1,
+  	s-wf:crf_c1_to_c2,
+  	s-wf:crf_c1_to_jp,
   	s-wf:cr_c2,
+  	s-wf:crf_c2_to_c3,
+  	s-wf:crf_c2_to_jp,
   	s-wf:cr_c3,
+  	s-wf:crf_c3_to_c4,
+  	s-wf:crf_c3_to_jp,
   	s-wf:cr_c4,
+  	s-wf:crf_c4_to_c5,
+  	s-wf:crf_c4_to_jp,
   	s-wf:cr_c5,
+  	s-wf:crf_c5_to_c6,
+  	s-wf:crf_c5_to_jp,
   	s-wf:cr_c6,
-  	s-wf:cr_join_point, 
+  	s-wf:crf_c6_to_jp,
+  	s-wf:cr_join_point,
+  	s-wf:crf_jp_to_rework, 
+  	s-wf:cr_rework,
+	s-wf:crf_rework_to_c1,
+	s-wf:crf_rework_to_c2,
+	s-wf:crf_rework_to_c3,
+	s-wf:crf_rework_to_c4,
+	s-wf:crf_rework_to_c5,
+	s-wf:crf_rework_to_c6,
+	s-wf:crf_rework_to_rr,
+	s-wf:crf_rework_to_s,
+	s-wf:crf_rework_to_a,
   	s-wf:cr_sign,
+  	s-wf:crf_s_to_a,
+  	s-wf:crf_s_to_jp,
   	s-wf:cr_approval,
-  	s-wf:cr_instruction, 
-  	s-wf:cr_examination, 
+  	s-wf:crf_a_to_e,
+  	s-wf:crf_a_to_i,
+  	s-wf:crf_a_to_r,
+  	s-wf:crf_a_to_ai,
+  	s-wf:cr_instruction,
+  	s-wf:crf_i_to_d, 
+  	s-wf:cr_examination,
+  	s-wf:crf_e_to_d,  	
   	s-wf:cr_auto_instruction, 
-  	s-wf:cr_review, 
+  	s-wf:cr_review,
+  	s-wf:crf_r_to_d,
   	s-wf:cr_distribution, 
-  	s-wf:cr_c2_t8, s-wf:f_t3_c2, s-wf:f_t3_t4, s-wf:f_t4_c2, s-wf:f_t4_t5, s-wf:f_t5_c2, s-wf:f_t5_t6, s-wf:f_t6_c2, s-wf:f_t6_t7, s-wf:f_t7_c2, s-wf:t8, s-wf:f_c3_t9, s-wf:t9, s-wf:f_t9_oc1, s-wf:f_informing_t3, s-wf:f_t8_t3, s-wf:f_t8_t4, s-wf:f_t8_t5, s-wf:f_t8_t6, s-wf:f_t8_t7, s-wf:f_t2_t3, s-wf:f_t8_t9, s-wf:f_tdistr_t9, s-wf:f_t7_texamin, s-wf:f_t7_treview, s-wf:f_t7_tinstr, s-wf:f_t7_tautoinstr, s-wf:f_tinstr_tdistr, s-wf:f_treview_tdistr, s-wf:f_texam_tdistr,
+  	s-wf:crf_d_to_rr,
+  	s-wf:cr_restore_rights,
+  	s-wf:crf_rr_to_finish,
   	s-wf:cr_finish;
   rdfs:label "Комплексный маршрут"@ru;
   v-wf:inputVariable 
@@ -124,14 +157,9 @@ s-wf:crf_dr_to_i a v-wf:Flow;
   
 s-wf:crf_i_to_c1 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
+  v-wf:predicate "true"^^xsd:string;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_c1.
-
-s-wf:f_c2_t8 a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:flowsInto s-wf:t8.
-
 
 s-wf:cr_informing_task a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -155,7 +183,7 @@ s-wf:cr_c1 a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
-  v-wf:hasFlow s-wf:f_t3_c2, s-wf:f_t3_t4;
+  v-wf:hasFlow s-wf:crf_c1_to_c2, s-wf:crf_c1_to_jp;
   v-wf:executor s-wf:executor_def_1;
   v-wf:startingJournalMap s-wf:map_jrn_msg_t3_b, s-wf:map_jrn_msg_t3_b_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
   v-wf:completedJournalMap s-wf:map_jrn_msg_t3_e, s-wf:map_jrn_msg_t3_e_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
@@ -163,14 +191,14 @@ s-wf:cr_c1 a v-wf:Task;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator1, s-wf:map_coordinator1_1.
 
-s-wf:f_t3_c2 a v-wf:Flow;
+s-wf:crf_c1_to_jp a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_join_point;
   v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
 .
 
-s-wf:f_t3_t4 a v-wf:Flow;
+s-wf:crf_c1_to_c2 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_c2;
@@ -184,20 +212,20 @@ s-wf:cr_c2 a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
-  v-wf:hasFlow s-wf:f_t4_c2, s-wf:f_t4_t5;
+  v-wf:hasFlow s-wf:crf_c2_to_c3, s-wf:crf_c2_to_jp;
   v-wf:executor s-wf:executor_def_2;
   rdfs:label "Согласование 2"^^xsd:string;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator2, s-wf:map_coordinator2_1.
 
-s-wf:f_t4_c2 a v-wf:Flow;
+s-wf:crf_c2_to_jp a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_join_point;
   v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
 .
 
-s-wf:f_t4_t5 a v-wf:Flow;
+s-wf:crf_c2_to_c3 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_c3;
@@ -211,11 +239,25 @@ s-wf:cr_c3 a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
-  v-wf:hasFlow s-wf:f_t5_c2, s-wf:f_t5_t6;
+  v-wf:hasFlow s-wf:crf_c3_to_c4, s-wf:crf_c3_to_jp;
   v-wf:executor s-wf:executor_def_3;
   rdfs:label "Согласование 3"^^xsd:string;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
+
+s-wf:crf_c3_to_jp a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_join_point;
+  v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
+.
+
+s-wf:crf_c3_to_c4 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_c4;
+  v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
+.
 
 s-wf:cr_c4 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -224,11 +266,25 @@ s-wf:cr_c4 a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
-  v-wf:hasFlow s-wf:f_t5_c2, s-wf:f_t5_t6;
+  v-wf:hasFlow s-wf:crf_c4_to_c5, s-wf:crf_c4_to_jp;
   v-wf:executor s-wf:executor_def_3;
   rdfs:label "Согласование 4"^^xsd:string;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
+
+s-wf:crf_c4_to_jp a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_join_point;
+  v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
+.
+
+s-wf:crf_c4_to_c5 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_c5;
+  v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
+.
 
 s-wf:cr_c5 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -237,11 +293,25 @@ s-wf:cr_c5 a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
-  v-wf:hasFlow s-wf:f_t5_c2, s-wf:f_t5_t6;
+  v-wf:hasFlow s-wf:crf_c5_to_c6, s-wf:crf_c5_to_jp;
   v-wf:executor s-wf:executor_def_3;
   rdfs:label "Согласование 5"^^xsd:string;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
+
+s-wf:crf_c5_to_jp a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_join_point;
+  v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
+.
+
+s-wf:crf_c5_to_c6 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_c6;
+  v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
+.
 
 s-wf:cr_c6 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -250,33 +320,39 @@ s-wf:cr_c6 a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
-  v-wf:hasFlow s-wf:f_t5_c2, s-wf:f_t5_t6;
+  v-wf:hasFlow s-wf:crf_c6_to_jp, s-wf:crf_c6_to_s;
   v-wf:executor s-wf:executor_def_3;
   rdfs:label "Согласование 6"^^xsd:string;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
 
-s-wf:cr_join_point a v-wf:Condition;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "650"^^xsd:integer;
-  v-wf:locationY "350"^^xsd:integer;
-  v-wf:belongsTo s-wf:net_complex_route;
-  rdfs:label ""^^xsd:string;  
-  v-wf:hasFlow s-wf:f_c2_t8.
-
-s-wf:f_t5_c2 a v-wf:Flow;
+s-wf:crf_c6_to_jp a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_join_point;
   v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == false";
 .
 
-s-wf:f_t5_t6 a v-wf:Flow;
+s-wf:crf_c6_to_s a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_sign;
   v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true";
 .
+
+s-wf:cr_join_point a v-wf:Condition;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:locationX "710"^^xsd:integer;
+  v-wf:locationY "350"^^xsd:integer;
+  v-wf:belongsTo s-wf:net_complex_route;
+  rdfs:label ""^^xsd:string;  
+  v-wf:hasFlow s-wf:crf_jp_to_rework.
+  
+s-wf:crf_jp_to_rework a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_rework.  
 
 s-wf:cr_sign a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -285,7 +361,7 @@ s-wf:cr_sign a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
-  v-wf:hasFlow s-wf:f_t6_c2, s-wf:f_t6_t7;
+  v-wf:hasFlow s-wf:crf_s_to_a, s-wf:crf_s_to_jp;
   v-wf:executor s-wf:executor_signer;
   rdfs:label "Подписание"^^xsd:string;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_t6_b, s-wf:map_jrn_msg_t3_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
@@ -294,13 +370,13 @@ s-wf:cr_sign a v-wf:Task;
   v-wf:completedMapping s-wf:map_set_result_from_process;
   v-wf:startDecisionTransform s-wf:tr_sign_form.
 
-s-wf:f_t6_c2 a v-wf:Flow;
+s-wf:crf_s_to_jp a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_join_point;
   v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionSign')) == false"^^xsd:string.
 
-s-wf:f_t6_t7 a v-wf:Flow;
+s-wf:crf_s_to_a a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_approval;
@@ -312,146 +388,161 @@ s-wf:cr_approval a v-wf:Task;
   v-wf:locationY "200"^^xsd:integer;
   v-wf:split v-wf:OR;
   v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:hasFlow s-wf:f_t7_c2, s-wf:f_t7_texamin, s-wf:f_t7_treview, s-wf:f_t7_tinstr, s-wf:f_t7_tautoinstr;
+  v-wf:hasFlow s-wf:crf_a_to_jp, s-wf:crf_a_to_e, s-wf:crf_a_to_r, s-wf:crf_a_to_i, s-wf:crf_a_to_ai;
   rdfs:label "Утверждение"^^xsd:string;
   v-wf:executor s-wf:executor_reviewer;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_approv_form;
 .
-s-wf:f_t7_c2 a v-wf:Flow;
+s-wf:crf_a_to_jp a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_join_point;
   v-wf:predicate "is_exists_result (result) == true && is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == false".
 
-s-wf:f_t7_texamin a v-wf:Flow;
+s-wf:crf_a_to_e a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:flowsInto s-wf:cr_examination;
   v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
-s-wf:f_t7_treview a v-wf:Flow;
+s-wf:crf_a_to_r a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:flowsInto s-wf:cr_review;
   v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
-s-wf:f_t7_tinstr a v-wf:Flow;
+s-wf:crf_a_to_i a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:flowsInto s-wf:cr_instruction;
   v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
-s-wf:f_t7_tautoinstr a v-wf:Flow;
+s-wf:crf_a_to_ai a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:flowsInto s-wf:cr_auto_instruction;
   v-wf:predicate "is_exists_result (result) == false || is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionApprove')) == true".
 
-s-wf:t8 a v-wf:Task;
+s-wf:cr_rework a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "650"^^xsd:integer;
-  v-wf:locationY "328"^^xsd:integer;
+  v-wf:locationX "770"^^xsd:integer;
+  v-wf:locationY "-100"^^xsd:integer;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
-  v-wf:hasFlow s-wf:f_t8_t3, s-wf:f_t8_t4, s-wf:f_t8_t5, s-wf:f_t8_t6, s-wf:f_t8_t7, s-wf:f_t8_t9;
+  v-wf:hasFlow s-wf:crf_rework_to_c1, s-wf:crf_rework_to_c2, s-wf:crf_rework_to_c3, s-wf:crf_rework_to_c4, s-wf:crf_rework_to_c5, s-wf:crf_rework_to_c6;
+  v-wf:hasFlow s-wf:crf_rework_to_s, s-wf:crf_rework_to_a, s-wf:crf_rework_to_rr;
   v-wf:executor s-wf:executor_initiator;
   rdfs:label "Доработать"^^xsd:string;
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:startDecisionTransform s-wf:tr_refine_form.
 
-s-wf:f_c3_t9 a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:flowsInto s-wf:t9.
-
-s-wf:t9 a v-wf:Task;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "1255"^^xsd:integer;
-  v-wf:locationY "353"^^xsd:integer;
-  v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:hasFlow s-wf:f_t9_oc1;
-  v-wf:executor s-wf:codelet_restore_right;
-  rdfs:label "Восстановить права"^^xsd:string;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_orig_rights.
-
-s-wf:f_t9_oc1 a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:flowsInto s-wf:cr_finish.
-
-s-wf:cr_finish a v-wf:OutputCondition;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "1200"^^xsd:integer;
-  v-wf:locationY "500"^^xsd:integer;
-  rdfs:label "Финиш"^^xsd:string;
-  v-wf:belongsTo s-wf:net_complex_route.
-
-s-wf:f_informing_t3 a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:flowsInto s-wf:cr_c1;
-  v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination1')) == true"^^xsd:string.
-  
-s-wf:f_t8_t3 a v-wf:Flow;
+s-wf:crf_rework_to_c1 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:flowsInto s-wf:cr_c1;
   v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination1')) == true"^^xsd:string.
 
-s-wf:f_t8_t4 a v-wf:Flow;
+s-wf:crf_rework_to_c2 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:flowsInto s-wf:cr_c2;
   v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination2')) == true"^^xsd:string.
 
-s-wf:f_t8_t5 a v-wf:Flow;
+s-wf:crf_rework_to_c3 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:flowsInto s-wf:cr_c3;
   v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination3')) == true"^^xsd:string.
 
-s-wf:f_t8_t6 a v-wf:Flow;
+s-wf:crf_rework_to_c4 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:flowsInto s-wf:cr_c4;
+  v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination4')) == true"^^xsd:string.
+
+s-wf:crf_rework_to_c5 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:flowsInto s-wf:cr_c5;
+  v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination5')) == true"^^xsd:string.
+
+s-wf:crf_rework_to_c6 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:flowsInto s-wf:cr_c6;
+  v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoCoordination6')) == true"^^xsd:string.
+
+s-wf:crf_rework_to_s a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:flowsInto s-wf:cr_sign;
   v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoSign')) == true"^^xsd:string.
 
-s-wf:f_t8_t7 a v-wf:Flow;
+s-wf:crf_rework_to_a a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:flowsInto s-wf:cr_approval;
   v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionGoReview')) == true"^^xsd:string.
 
-s-wf:f_t2_t3 a v-wf:Flow;
+s-wf:crf_rework_to_rr a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
-  v-wf:flowsInto s-wf:cr_c1.
+  v-wf:predicate "is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_restore_rights.
 
-s-wf:f_t8_t9 a v-wf:Flow;
+s-wf:cr_restore_rights a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
-  rdfs:label ""^^xsd:string;
-  v-wf:flowsInto s-wf:t9.
+  v-wf:locationX "1800"^^xsd:integer;
+  v-wf:locationY "-250"^^xsd:integer;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:hasFlow s-wf:crf_rr_to_finish;
+  v-wf:executor s-wf:codelet_restore_right;
+  rdfs:label "Восстановить права"^^xsd:string;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_orig_rights.
+
+s-wf:crf_rr_to_finish a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_finish.
+
+s-wf:cr_finish a v-wf:OutputCondition;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:locationX "1900"^^xsd:integer;
+  v-wf:locationY "500"^^xsd:integer;
+  rdfs:label "Финиш"^^xsd:string;
+  v-wf:belongsTo s-wf:net_complex_route.
 
 s-wf:cr_instruction a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
-  v-wf:hasFlow s-wf:f_tinstr_tdistr;
+  v-wf:hasFlow s-wf:crf_i_to_d;
   v-wf:executor s-wf:executor_reviewer;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_instruct_form;
   rdfs:label "Поручение"^^xsd:string.
 
+s-wf:crf_i_to_d a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  rdfs:label ""^^xsd:string;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_distribution.
+
 s-wf:cr_examination a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "350"^^xsd:integer;
-  v-wf:hasFlow s-wf:f_texam_tdistr;
+  v-wf:hasFlow s-wf:crf_e_to_d;
   v-wf:executor s-wf:executor_reviewer;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_examin_form;
   rdfs:label "Ознакомление"^^xsd:string.
-
+  
+s-wf:crf_e_to_d a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  rdfs:label ""^^xsd:string;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_distribution.
+  
 s-wf:cr_auto_instruction a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
@@ -466,42 +557,34 @@ s-wf:cr_review a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "50"^^xsd:integer;
-  v-wf:hasFlow s-wf:f_treview_tdistr;
+  v-wf:hasFlow s-wf:crf_r_to_d;
   v-wf:executor s-wf:executor_reviewer;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_review_form;
   rdfs:label "Рассмотрение"^^xsd:string.
 
+s-wf:crf_r_to_d a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  rdfs:label ""^^xsd:string;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_distribution.
+
 s-wf:cr_distribution a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1650"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
   v-wf:join v-wf:AND;
-  v-wf:hasFlow s-wf:f_tdistr_t9;
+  v-wf:hasFlow s-wf:crf_d_to_rr;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:executor s-wf:codelet_distribution;
   rdfs:label "Рассылка"^^xsd:string.
 
-s-wf:f_tdistr_t9 a v-wf:Flow;
+s-wf:crf_d_to_rr a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
-  v-wf:flowsInto s-wf:t9.
-
-s-wf:f_tinstr_tdistr a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  rdfs:label ""^^xsd:string;
-  v-wf:flowsInto s-wf:cr_distribution.
-
-s-wf:f_treview_tdistr a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  rdfs:label ""^^xsd:string;
-  v-wf:flowsInto s-wf:cr_distribution.
-
-s-wf:f_texam_tdistr a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  rdfs:label ""^^xsd:string;
-  v-wf:flowsInto s-wf:cr_distribution.
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_restore_rights.
 
 #---------------
 
