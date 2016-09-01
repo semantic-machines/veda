@@ -538,14 +538,14 @@ v-ui:VersionedTemplate
 </script>
 """ ;
 .
-v-ui:PSCommentForBond
-  rdf:type v-ui:PropertySpecification ;
-  rdfs:label "Спецификация свойств для класса v-s:Bond"@ru ;
-  rdfs:label "Specification for v-s:Bond class"@en ;
-  v-ui:forClass v-s:Bond ;
-  v-ui:forProperty rdfs:comment ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
+v-ui:PSHasBondThing
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:hasBond для класса v-s:Thing"@ru ;
+  rdfs:label "Specification v-s:hasBond for v-s:Thing class"@en ;
+  v-ui:forClass v-s:Thing ;
+  v-ui:forProperty v-s:hasBond ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
 .
 v-ui:PSFromToForBond
   rdf:type v-ui:ObjectPropertySpecification ;
