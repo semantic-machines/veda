@@ -45,16 +45,6 @@ v-s:StatusAgreed
   rdfs:label "Agreed"@en ;
   rdfs:label "Утверждено"@ru ;
 .
-v-s:StatusFinishedFullyImplemented
-  rdf:type v-s:Status ;
-  rdfs:label "Finished. Fully implemented"@en ;
-  rdfs:label "Завершен. Выполнен полностью"@ru ;
-.
-v-s:StatusFinishedPartiallyImplemented
-  rdf:type v-s:Status ;
-  rdfs:label "Finished. Partially implemented"@en ;
-  rdfs:label "Завершен. Выполнен частично"@ru ;
-.
 v-s:StatusIntroduced
   rdf:type v-s:Status ;
   rdfs:label "Introduced"@en ;
@@ -64,6 +54,11 @@ v-s:StatusImplemented
   rdf:type v-s:Status ;
   rdfs:label "Implemented"@en ;
   rdfs:label "Реализовано"@ru ;
+.
+v-s:StatusImplementedPartially
+  rdf:type v-s:Status ;
+  rdfs:label "Implemented partially"@en ;
+  rdfs:label "Реализовано частично"@ru ;
 .
 v-s:StatusCheckedEffect
   rdf:type v-s:Status ;

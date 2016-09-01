@@ -682,18 +682,6 @@ v-df:PsresponsibleInDecision
   rdfs:label "Спецификация руководителя проекта для класса Решение тех.комитета"@ru ;
 .
 
-v-df:PsDescriptionInDecision
-  rdf:type v-ui:StringPropertySpecification ;
-  v-ui:forClass v-s:Activity ;
-  v-ui:forProperty v-s:description ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
-  rdfs:label "Comment propertys specification for IdeaRouteStartForm"@en ;
-  rdfs:label "Спецификация комментария в поручении стартовой формы"@ru ;
-.
-
 v-wf:permission_c_on_decision
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
