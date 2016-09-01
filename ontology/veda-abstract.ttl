@@ -397,6 +397,27 @@ v-s:contributor
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:checkedDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Checked department"@en ;
+  rdfs:label "Проверяемое подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:checkedOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Checked organization"@en ;
+  rdfs:label "Проверяемый подрядчик"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:checkedProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Checked Process"@en ;
+  rdfs:label "Проверяемый процесс"@ru ;
+  rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "Responsible"@en ;
@@ -416,6 +437,13 @@ v-s:responsibleOrganization
   rdfs:label "Responsible organization"@en ;
   rdfs:label "Ответственная организация"@ru ;
   rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:responsibleProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible рrocess"@en ;
+  rdfs:label "Ответственный процесс"@ru ;
+  rdfs:range v-s:Process ;
   rdfs:domain v-s:Controlled ;
 .
 v-s:taskDescription

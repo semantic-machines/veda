@@ -99,20 +99,8 @@ v-s:auditor
   rdfs:label "Аудитор"@ru ;
   rdfs:domain v-s:Audit ;
 .
-v-s:checkedDepartment
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Checked department"@en ;
-  rdfs:label "Проверяемое подразделение"@ru ;
-  rdfs:range v-s:Department ;
-  rdfs:domain v-s:Audit ;
-.
-v-s:checkedOrganization
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Checked organization"@en ;
-  rdfs:label "Проверяемый подрядчик"@ru ;
-  rdfs:range v-s:Organization ;
-  rdfs:domain v-s:Audit ;
-.
+
+
 
 #---------------------------------------------------------
 v-s:Investigation
