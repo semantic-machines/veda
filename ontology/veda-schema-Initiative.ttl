@@ -436,7 +436,7 @@ v-s:ProjectPlan
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Valuable ;
+  rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Project plan"@en ;
   rdfs:label "План мероприятий проекта"@ru ;
 .
@@ -491,7 +491,7 @@ v-s:ProjectPhaseCost
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Valuable ;
+  rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Project phase costs"@en ;
   rdfs:label "Затраты на фазу проекта"@ru ;
 .
