@@ -35,10 +35,6 @@ function clickButton(driver, button) {
     driver.sleep(basic.FAST_OPERATION);
     driver.findElement({css:'button[id="'+ button +'"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
-    if (button == "save") {
-        driver.findElement({css:'button[id="'+ button +'"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
-    }
 }
 
 basic.getDrivers().forEach(function(drv){

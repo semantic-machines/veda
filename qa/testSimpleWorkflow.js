@@ -18,8 +18,6 @@ function clickButton(driver, button) {
 function put(driver, type, text) {
 	driver.findElement({css:'div[property="' + type + '"]+veda-control[type="multilingualText"] textarea[class="form-control"]'}).sendKeys(text)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill "+ type +" field");});
-	driver.findElement({css:'strong[about="' + type + '"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click "+ type +" field");});
 }
 
 
@@ -70,14 +68,13 @@ basic.getDrivers().forEach (function (drv) {
 	put(driver, 'v-wf:segregateElement', "contentName('@')");
 
 	driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);");
-	put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'v-wf:DecisionForm')");
-	put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm')");
-	put(driver, 'v-wf:aggregate', "putString ('rdfs:label', 'задание')");
-	put(driver, 'v-wf:aggregate', "putBoolean ('v-wf:isCompleted', false)");
-	put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to')");
-	put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder')");
-	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')");
-	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')");
+	put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'v-wf:DecisionForm');");
+	put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm');");
+	put(driver, 'v-wf:aggregate', "putString ('rdfs:label', 'задание');");
+	put(driver, 'v-wf:aggregate', "putBoolean ('v-wf:isCompleted', false);");
+	put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to');");
+	put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');");
+	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');");
 	clickButton(driver, "save");
 
 
@@ -167,7 +164,7 @@ basic.getDrivers().forEach (function (drv) {
 	driver.sleep(basic.FAST_OPERATION);
 
 	driver.findElement({css:'a[property="rdfs:label"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'label' button");});
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot find a task");});
 
 	driver.quit();
 });
