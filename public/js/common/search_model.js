@@ -2,7 +2,7 @@
 
 veda.Module(function (veda) { "use strict";
 
-  veda.SearchModel = function (q, container, queryPrefix) {
+  veda.SearchModel = function (q, container, queryPrefix, sort) {
     var self = riot.observable(this);
     var results_keys;
 
@@ -103,6 +103,7 @@ veda.Module(function (veda) { "use strict";
     // Search if params given
     self.q = q;
     self.queryPrefix = queryPrefix;
+    self.sort = sort || "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc";
     if (self.q || self.queryPrefix) self.search();
 
     return self;
