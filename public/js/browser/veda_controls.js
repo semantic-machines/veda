@@ -1305,20 +1305,17 @@
         {
           name: "dataset",
           source: function (q, cb) {
-            var limit = opts.limit || -1;
-            var s = new veda.SearchModel(q, null, queryPrefix);
-            var results = [];
-            for (var uri in s.results) {
-              if (limit-- === 0) break;
-              results.push(s.results[uri]);
-            }
-            cb(results);
+            var limit = opts.limit || 0,
+                queryString = q ? "(" + queryPrefix + ") && ( '*' == '" + q + "*')" : queryPrefix,
+                queryResult = query(veda.ticket, queryString, null, null, null, limit, limit ),
+                individuals = queryResult.length ? get_individuals(veda.ticket, queryResult) : [],
+                result = individuals.map( function (json) {
+                  return new veda.IndividualModel(json);
+                });
+            cb(result);
           },
           displayKey: function (individual) {
             var result;
-            /*try {
-              result = riot.render(template, individual);
-            }*/
             try {
               result = template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
             } catch (ex) {
@@ -1415,7 +1412,7 @@
   };
   $.fn.veda_link.defaults = {
     template: $("#link-control-template").html(),
-    limit: 100
+    limit: 20
   };
 
   // OBJECT CHECKBOX GROUP CONTROL
