@@ -1308,10 +1308,15 @@
             var limit = opts.limit || 0,
                 queryString = q ? "(" + queryPrefix + ") && ( '*' == '" + q + "*')" : queryPrefix,
                 queryResult = query(veda.ticket, queryString, null, null, null, limit, limit ),
-                individuals = queryResult.length ? get_individuals(veda.ticket, queryResult) : [],
-                result = individuals.map( function (json) {
-                  return new veda.IndividualModel(json);
-                });
+                cached = [],
+                result = [],
+                getList = queryResult.filter( function (uri, index) {
+                  return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
+                }),
+                individuals = getList.length ? get_individuals(veda.ticket, getList) : [];
+            individuals.map( function (json) {
+              result.push( new veda.IndividualModel(json) );
+            });
             cb(result);
           },
           displayKey: function (individual) {
