@@ -264,7 +264,7 @@
     template: $("#numeration-control-template").html(),
     parser: function (input) {
       var int = parseInt( input.replace(",", "."), 10 );
-      return !isNaN(int) ? int : null;
+      return !isNaN(int) ? "" + int : null;
     }
   };
 
