@@ -1197,6 +1197,17 @@ v-ui:FileTemplate
 </script>
   """ ;
 .
+
+v-ui:PSAttachmentThing
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:attachment для класса v-s:Thing"@ru ;
+  rdfs:label "Specification v-s:attachment for v-s:Thing class"@en ;
+  v-ui:forClass v-s:Thing ;
+  v-ui:forProperty v-s:attachment ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла 2"@ru ;
