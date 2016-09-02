@@ -942,12 +942,12 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
     }
     catch (e)
     {
-      return FIRST_VALUE;
+      return ''+FIRST_VALUE;
     }
   }
   if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'] || scope['v-s:numerationCommitedInterval'].length == 0)
   {
-    return FIRST_VALUE;
+    return ''+FIRST_VALUE;
   }
   var max = 0;
 
@@ -973,7 +973,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
       }
     });
   }
-  return max + 1;
+  return ''+(max + 1);
 }
 
 function isNumerationValueAvailable(scope, value)
