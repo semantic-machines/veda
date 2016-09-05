@@ -1440,9 +1440,7 @@
           var hld = holder.clone().appendTo(control);
           var lbl = $("label", hld);
           var cont = $("<span>").appendTo(lbl);
-          //setTimeout (function () {
-            value.present(cont, template, "view");
-          //}, 0);
+          value.present(cont, template);
           var chk = $("input", lbl).val(value.id);
           var test = individual.hasValue(rel_uri) && individual[rel_uri].filter( function (i) { return i.id === value.id }).length;
           if (test) {
@@ -1463,7 +1461,7 @@
 
     populate();
 
-    function handler(doc_rel_uri) {
+    /*function handler(doc_rel_uri) {
       if (doc_rel_uri === rel_uri) {
         populate();
       }
@@ -1471,7 +1469,7 @@
     individual.on("individual:propertyModified", handler);
     this.one("remove", function () {
       individual.off("individual:propertyModified", handler);
-    });
+    });*/
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
