@@ -99,6 +99,7 @@ basic.getDrivers().forEach(function (drv) {
 
     driver.findElement({css:'#workflow-save-button'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click save net");});
+    driver.sleep(basic.SLOW_OPERATION);
     driver.findElements({css:'h4[about="v-fc:ChooseType"]'}).then(function(elements_arr) {
         if (elements_arr.length > 0) {
             console.trace("Seems save-button does not work");
