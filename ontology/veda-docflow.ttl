@@ -912,6 +912,7 @@ v-wf:DecisionTemplate1
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса -Решение-"@ru ;
   rdfs:label "Template for -Decision- class"@en ;
+  v-ui:forClass v-wf:DecisionNotForMe ;
   v-ui:forClass v-wf:DecisionAgreed ;
   v-ui:forClass v-wf:DecisionSign ;
   v-ui:forClass v-wf:DecisionApprove ;
@@ -945,6 +946,7 @@ v-wf:DecisionRedirectTemplateSpec1
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:forProperty rdfs:comment ;
+  v-ui:forClass v-wf:DecisionNotForMe ;
   v-ui:forClass v-wf:DecisionRejected ;
   v-ui:forClass v-wf:DecisionPostponed ;
   v-ui:forClass v-wf:DecisionRemake ;
