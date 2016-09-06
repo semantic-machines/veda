@@ -206,16 +206,16 @@ cfg:Permission_6
   rdfs:label "Permission to read dictionaries for all users"@en ;
   rdfs:label "Разрешение на чтение справочников для всех пользователей"@ru ;
 .
-cfg:Permission_7
-  rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-  v-s:permissionObject v-s:Group_group ;
-  v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "Permission to read groups for all users"@en ;
-  rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
-  v-s:deleted "true"^^xsd:boolean ;
-.
+#cfg:Permission_7
+#  rdf:type v-s:PermissionStatement ;
+#  v-s:author cfg:VedaSystem ;
+#  v-s:permissionSubject cfg:AllUsersGroup ;
+#  v-s:permissionObject v-s:Group_group ;
+#  v-s:canRead "true"^^xsd:boolean ;
+#  rdfs:label "Permission to read groups for all users "@en ;
+#  rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
+#  v-s:deleted "true"^^xsd:boolean ;
+#.
 
 ##################### EVENT HANDLERS #####################
 
