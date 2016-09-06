@@ -205,7 +205,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
             }
             else
             {
-                Right *nrr = new Right(mb.uri, access, false);
+                Right *nrr = new Right(mb.uri, access, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
             }
         }
