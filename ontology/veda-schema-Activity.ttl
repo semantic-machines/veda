@@ -99,7 +99,13 @@ v-s:auditor
   rdfs:label "Аудитор"@ru ;
   rdfs:domain v-s:Audit ;
 .
-
+v-s:chiefAuditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:Appointment ;
+  rdfs:label "Chief auditor"@en ;
+  rdfs:label "Ведущий аудитор"@ru ;
+  rdfs:domain v-s:Audit ;
+.
 
 
 #---------------------------------------------------------
