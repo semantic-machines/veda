@@ -24,111 +24,97 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
 
     var specs = $.extend.apply ({}, [].concat(
-      individual["rdf:type"]
-        .filter( function (_class) {
-          return _class instanceof veda.IndividualModel;
-        })
-        .map( function (_class) {
+        individual["rdf:type"].map( function (_class) {
           return _class.specsByProps;
         })
       )
     );
-    var rendered = [], scripts = [];
 
-    //try {
-      if (template) {
-        if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
-        if (template instanceof String) template = $( template.toString() );
-        if (typeof template === "string") {
-          if (template === "generic") {
-            var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
-            template = genericTemplate(individual, _class);
-          } else if (template === "json") {
-            var pre = $("<pre>"),
-              json = individual.properties,
-              ordered = {};
-            Object.keys(json).sort().forEach(function(key) {
-              ordered[key] = json[key];
-            });
-            json = JSON.stringify(ordered, null, 2);
-            pre.text(json);
-            container.html(pre);
-            container.show(250);
-            return;
-          } else if (template === "ttl") {
-            var list = new veda.IndividualListModel(individual);
-            veda.Util.toTTL(list, function (error, result) {
-              var ttl = $("<div class='container-fluid'></div>").append( $("<pre></pre>").text(result) );
-              container.html(ttl);
-              container.show(250);
-            });
-            return;
-          } else {
-            template = $( template );
-          }
+    var toRender = [];
+
+    if (template) {
+      if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
+      if (template instanceof String) template = $( template.toString() );
+      if (typeof template === "string") {
+        if (template === "generic") {
+          var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
+          template = genericTemplate(individual, _class);
+        } else if (template === "json") {
+          var pre = $("<pre>"),
+            json = individual.properties,
+            ordered = {};
+          Object.keys(json).sort().forEach(function(key) {
+            ordered[key] = json[key];
+          });
+          json = JSON.stringify(ordered, null, 2);
+          pre.text(json);
+          container.html(pre);
+          container.show("fade", 250);
+          return;
+        } else if (template === "ttl") {
+          var list = new veda.IndividualListModel(individual);
+          veda.Util.toTTL(list, function (error, result) {
+            var ttl = $("<div class='container-fluid'></div>").append( $("<pre></pre>").text(result) );
+            container.html(ttl);
+            container.show("fade", 250);
+          });
+          return;
+        } else {
+          template = $( template );
         }
-        var $scripts = template.filter("script");
-        $scripts.map(function () { scripts.push( $(this).text() ); });
-        template = template.filter("*:not(script)");
-        rendered.push({
-          template: renderTemplate(individual, container, template, specs, mode),
-          scripts: scripts
-        });
-
-      } else {
-        rendered = individual["rdf:type"]
-          .filter( function (_class) {
-            return _class instanceof veda.IndividualModel;
-          })
-          .map( function (_class) {
-            var template, scripts = [], specs;
-            if (_class.template && _class.template["v-ui:template"]) {
-              // Get template from class
-              template = $( _class.template["v-ui:template"][0].toString() );
-              var $scripts = template.filter("script");
-              $scripts.map(function () { scripts.push( $(this).text() ); });
-              //template = template.first();
-              template = template.filter("*:not(script)");
-            } else {
-              // Construct generic template
-              template = genericTemplate(individual, _class);
-            }
-            specs = _class.specsByProps || {};
-            return {
-              template: renderTemplate(individual, container, template, specs, mode),
-              scripts: scripts
-            };
-          });
       }
+      toRender = [ template ];
 
-      if (!rendered.length) {
-        template = genericTemplate(individual);
-        rendered.push({
-          template: renderTemplate(individual, container, template, specs, mode),
-          scripts: scripts
-        });
-      }
-
-      rendered.map( function (view) {
-        view.template
-          .attr("resource", individual.id)
-          .attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
-        container.append(view.template);
-
-        individual.trigger("individual:templateReady", view.template);
-        // Timeout to wait all related individuals to render
-        setTimeout(function () {
-          view.template.trigger(mode);
-          view.scripts.map( function (script) {
-            var presenter = new Function("veda", "individual", "container", "template", "mode", script);
-            presenter(veda, individual, container, view.template, mode);
-          });
-        }, 0);
+    } else {
+      toRender = individual["rdf:type"].map( function (_class) {
+        if (_class.template && _class.template["v-ui:template"]) {
+          // Get template from class
+          template = $( _class.template["v-ui:template"][0].toString() );
+        } else {
+          // Construct generic template
+          template = genericTemplate(individual, _class);
+        }
+        return template;
       });
-    //} catch (ex) {
-    //  console ? console.log("Error presenting", individual.id, ex) : null;
-    //  individual.present(container, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate"));
-    //}
+    }
+
+    toRender.map( function (template) {
+      var pre_render_src,
+          pre_render,
+          post_render_src,
+          post_render;
+
+      template = template.filter(function () { return this.nodeType === 1 });
+
+      if (template.first().is("script")) {
+        pre_render_src = template.first().text();
+        pre_render = new Function("veda", "individual", "container", "template", "mode", pre_render_src);
+      }
+      if (template.last().is("script")) {
+        post_render_src = template.last().text();
+        post_render = new Function("veda", "individual", "container", "template", "mode", post_render_src);
+      }
+      template = template.filter("*:not(script)");
+
+      if (pre_render) {
+        pre_render(veda, individual, container, template, mode);
+      }
+
+      template = renderTemplate (individual, container, template, specs, mode);
+      template
+        .attr("resource", individual.id)
+        .attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
+      container.append(template);
+      individual.trigger("individual:templateReady", template);
+
+      // Timeout to wait all related individuals to render
+      setTimeout(function () {
+        template.trigger(mode);
+        if (post_render) {
+          post_render(veda, individual, container, template, mode);
+        }
+      }, 0);
+    });
 
     if (container.prop("id") === "main") { container.show("fade", 250); }
   });
