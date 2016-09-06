@@ -1333,7 +1333,7 @@ N3Writer.prototype = {
       for (var prefixIRI in this._prefixIRIs)
         prefixIRIs += prefixIRIs ? '|' + prefixIRI : prefixIRI;
       prefixIRIs = prefixIRIs.replace(/[\]\/\(\)\*\+\?\.\\\$]/g, '\\$&');
-      this._prefixRegex = new RegExp('^(' + prefixIRIs + ')([a-zA-Z][\\-_a-zA-Z0-9]*)$');
+      this._prefixRegex = new RegExp('^(' + prefixIRIs + ')([a-zA-Z0-9][\\-_a-zA-Z0-9]*)$');
     }
     // End a prefix block with a newline
     this._write(hasPrefixes ? '\n' : '', done);
