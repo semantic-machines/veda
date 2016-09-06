@@ -190,7 +190,7 @@ s-wf:map_possible_decision
 s-wf:possible_decision_after_return
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:possible_decision ;
-  v-wf:mappingExpression  "[newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionBreak')]" ;
+  v-wf:mappingExpression  "[newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionAgreed')]" ;
 .
 
 s-wf:map_decision_route_to_add_reaction
@@ -1604,7 +1604,7 @@ s-wf:net_coordination
   a v-wf:Net;
   rdfs:label "Универсальный маршрут 1"@ru;
   v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t3_t1;
-  v-wf:consistsOf s-wf:nc_return_to_initiator;
+  v-wf:consistsOf s-wf:nc_return_to_initiator, s-wf:nc_finish, s-wf:nc_to_finish;
   v-wf:consistsOf s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1, s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
   v-wf:consistsOf s-wf:additional_user_response, d:a65787936-f51e-a83c-f537-95eaaa02c21a, d:afdd3ebd0-7934-8d38-1f68-158a05f0330d, d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
   v-wf:consistsOf d:a3d7c838c-df12-e9ec-48c6-a96f3bb7e13f, d:abc5142af-b501-1ec6-8ee0-acb767f078a4, d:a16bb1fd3-64eb-a7bb-501d-889b2aa4500d, d:aec10d9da-789d-fd65-a094-bd4ed7b14822;
@@ -1782,8 +1782,29 @@ s-wf:nc_return_to_initiator
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
-  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
-  
+  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;  
+.
+
+s-wf:nc_oc
+  a v-wf:Task;
+  v-wf:locationX "1090"^^xsd:integer;
+  v-wf:locationY "430"^^xsd:integer;
+  v-wf:hasFlow s-wf:nc_to_finish, s-wf:nc_r_to_i_return;
+  rdfs:label "Контроль"^^xsd:string;  
+  v-wf:belongsTo s-wf:net_coordination;
+  v-wf:startDecisionTransform s-wf:tr_actor_form;
+  v-wf:completeDecisionTransform s-wf:tr_taken_decision;
+  v-wf:expectedResultType s-wf:UserTaskForm;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
+  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
+  v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
+  v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
+  v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
+  v-wf:executor s-wf:def_exec_actor;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
+  rdfs:isDefinedBy s-wf: ;
+  v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
+  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;  
 .
 
 s-wf:nc_r_to_i_return a v-wf:Flow;
@@ -1795,9 +1816,16 @@ s-wf:nc_r_to_i_return a v-wf:Flow;
 
 s-wf:nc_r_to_i_finish a v-wf:Flow;
   rdfs:isDefinedBy s-wf:;
-  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionBreak')) == true"^^xsd:string;
+  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_oc;
+.
+
+s-wf:nc_to_finish a v-wf:Flow;
+  rdfs:isDefinedBy s-wf:;
+  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
+  v-wf:belongsTo s-wf:net_coordination;
+  v-wf:flowsInto s-wf:nc_finish;
 .
 
 s-wf:nc_t2_to_r a v-wf:Flow;
@@ -1853,6 +1881,13 @@ s-wf:map_t2_sm3
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_t2_sm_control
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_actor_task_comment ;
+  v-wf:mappingExpression  "newStr('Принять отчёт')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_t2_sm5
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_actor_task_comment ;
@@ -1861,11 +1896,11 @@ s-wf:map_t2_sm5
 .
 
 
-s-wf:nc_oc v-wf:locationY "431"^^xsd:integer;
+s-wf:nc_finish v-wf:locationY "431"^^xsd:integer;
   a v-wf:OutputCondition;
   rdfs:label "C2c"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
-  v-wf:locationX "1044"^^xsd:integer;
+  v-wf:locationX "1300"^^xsd:integer;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>.
 
 s-wf:nc_f_ic_t1 a v-wf:Flow;
