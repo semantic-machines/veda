@@ -57,7 +57,7 @@ v-s:hasAction
 #---------------------------------------------------------
 v-s:Meeting
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Enumerated ;  
+  rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Meeting"@en ;
@@ -87,7 +87,7 @@ v-s:moderator
 #---------------------------------------------------------
 v-s:Audit
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Enumerated ;  
+  rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:label "Audit"@en ;
   rdfs:label "Аудит"@ru ;
@@ -99,8 +99,15 @@ v-s:auditor
   rdfs:label "Аудитор"@ru ;
   rdfs:domain v-s:Audit ;
 .
-
-
+v-s:PsAuditorForAudit
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Audit ;
+  v-ui:forProperty v-s:auditor ;
+  v-ui:maxCardinality 10 ;
+  v-ui:minCardinality 0 ;
+  rdfs:label "v-s:auditor property specification for v-s:Audit class"@en ;
+  rdfs:label "Спецификация свойства v-s:auditor для класса v-s:Audit"@ru ;
+.
 
 #---------------------------------------------------------
 v-s:Investigation
