@@ -210,6 +210,13 @@ v-s:hasStatus
   rdfs:range v-s:Status ;
   rdfs:domain v-s:Thing ;
 .
+v-s:hasSector
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sector"@en ;
+  rdfs:label "Отрасль экономической деятельности"@ru ;
+  rdfs:range v-s:Sector ;
+  rdfs:domain v-s:Thing ;
+.
 ### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;

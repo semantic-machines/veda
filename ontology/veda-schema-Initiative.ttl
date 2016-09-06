@@ -158,14 +158,7 @@ v-s:hasEffects
   rdfs:range v-s:Effects ;
   rdfs:domain v-s:Initiative ;
 .
-# -- Может подругому назвать
-v-s:hasSector
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Sector"@en ;
-  rdfs:label "Отрасль экономической деятельности"@ru ;
-  rdfs:range v-s:Sector ;
-  rdfs:domain v-s:Initiative ;
-.
+
 #--------------------------------------------------
 v-s:Idea
   rdf:type owl:Class ;
