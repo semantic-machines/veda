@@ -7,7 +7,7 @@ module veda.core.impl.thread_context;
 private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
-           std.json;
+           std.json, std.regex;
     import bind.xapian_d_header;
 
 //    version (libV8)
@@ -585,6 +585,8 @@ class PThreadContext : Context
 
             if (login == null || login.length < 1 || password == null || password.length < 6)
                 return ticket;
+
+	    	login = replaceAll(login, regex(r"[-]","g"), " +");
 
             Ticket       sticket         = sys_ticket;
             Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
