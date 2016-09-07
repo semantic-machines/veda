@@ -43,6 +43,13 @@ v-s:NormativeDocument
   rdfs:label "Normative Document"@en ;
   rdfs:label "Нормативный документ"@ru ;
 .
+v-s:hasRequiremen
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Requirement"@en ;
+  rdfs:label "Требование"@ru ;
+  rdfs:range v-s:NormativeDocumentRequirement ;
+  rdfs:domain v-s:NormativeDocument ;
+.
 #---------------------------------------------------------
 v-s:Comment
   rdf:type owl:Class ;
