@@ -545,40 +545,40 @@ v-ui:VersionedTemplate
 </script>
 """ ;
 .
-v-ui:PSHasBondThing
+v-ui:PSHasLinkThing
   rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:hasBond для класса v-s:Thing"@ru ;
-  rdfs:label "Specification v-s:hasBond for v-s:Thing class"@en ;
+  rdfs:label "Спецификация свойства v-s:hasLink для класса v-s:Thing"@ru ;
+  rdfs:label "Specification v-s:hasLink for v-s:Thing class"@en ;
   v-ui:forClass v-s:Thing ;
-  v-ui:forProperty v-s:hasBond ;
+  v-ui:forProperty v-s:hasLink ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
 .
-v-ui:PSFromToForBond
+v-ui:PSFromToForLink
   rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойств from to для класса v-s:Bond"@ru ;
-  rdfs:label "Specification from to for v-s:Bond class"@en ;
-  v-ui:forClass v-s:Bond ;
+  rdfs:label "Спецификация свойств from to для класса v-s:Link"@ru ;
+  rdfs:label "Specification from to for v-s:Link class"@en ;
+  v-ui:forClass v-s:Link ;
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
 #  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
 .
-v-ui:BondTemplate
+v-ui:LinkTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон со связью"@ru ;
-  rdfs:label "Template with bond"@en ;
+  rdfs:label "Template with link"@en ;
   v-ui:template """
 <div>
-  <h4 about="v-s:hasBond" property="rdfs:label"></h4>
-  <veda-control type="link" rel="v-s:hasBond" class="-view edit search create"></veda-control>
-  <div rel="v-s:hasBond" embedded="true">
+  <h4 about="v-s:hasLink" property="rdfs:label"></h4>
+  <veda-control type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
+  <div rel="v-s:hasLink" embedded="true">
     <div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:20px 20px 0 0;">
       <div class="panel-body">
         <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
         <veda-control type="string" property="rdfs:comment" class="-view edit search"></veda-control>
         <br class="-view edit search">
-        <em about="v-s:hasBond" property="rdfs:label" class="-view edit search"></em>
+        <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
         <veda-control type="link" rel="v-s:to" class="-view edit search fullsearch fulltext dropdown"></veda-control>
         <span rel="v-s:from" template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
         <div class="view -edit -search">
@@ -593,13 +593,13 @@ v-ui:BondTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:BondTemplate
+  //# sourceURL=v-ui:LinkTemplate
   individual.on("individual:propertyModified", handler);
   template.on("remove", function () {
     individual.off("individual:propertyModified", handler);
   });
   function handler (property_uri, values) {
-    if (property_uri === "v-s:hasBond" && values.length !== 0) {
+    if (property_uri === "v-s:hasLink" && values.length !== 0) {
       values.map(function (item) {
         if (!item.hasValue("v-s:from")) {
           item["v-s:from"] = [individual];
@@ -1835,7 +1835,7 @@ td:PersonTemplate1
         <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
       </div>
     </div>
-    <div about="@" template="v-ui:BondTemplate" embedded="true"></div>
+    <div about="@" template="v-ui:LinkTemplate" embedded="true"></div>
   </div>
 """ ;
 .

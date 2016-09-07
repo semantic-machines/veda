@@ -161,11 +161,11 @@ v-s:hasClassifiedAttachment
   rdfs:range v-s:ClassifiedAttachment ;
   rdfs:domain v-s:Thing ;
 .
-v-s:hasBond
+v-s:hasLink
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Bonded object"@en ;
+  rdfs:label "Linked object"@en ;
   rdfs:label "Связанный объект"@ru ;
-  rdfs:range v-s:Bond ;
+  rdfs:range v-s:Link ;
   rdfs:domain v-s:Thing ;
 .
 v-s:tag

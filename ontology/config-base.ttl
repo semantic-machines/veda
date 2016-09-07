@@ -1003,32 +1003,32 @@ cfg:Event_15
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки связей документов" ;
   rdfs:comment "Скрипт обработки связей документов" ;
-  v-s:filter v-s:Bond ;
+  v-s:filter v-s:Link ;
   v-s:script """
-  var bondUri = document["@"],
-      bondToUri = getUri(document["v-s:to"]),
-      bondFromUri = getUri(document["v-s:from"]),
-      bondTo = get_individual(ticket, bondToUri),
-      bondFrom = get_individual(ticket, bondFromUri),
-      containsThisBond;
-  if (bondTo) {
-    bondTo["v-s:hasBond"] = bondTo["v-s:hasBond"] || [];
-    containsThisBond = !!bondTo["v-s:hasBond"].filter(function (item) {
-      return (item.data === bondUri);
+  var linkUri = document["@"],
+      linkToUri = getUri(document["v-s:to"]),
+      linkFromUri = getUri(document["v-s:from"]),
+      linkTo = get_individual(ticket, linkToUri),
+      linkFrom = get_individual(ticket, linkFromUri),
+      containsThisLink;
+  if (linkTo) {
+    linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"] || [];
+    containsThisLink = !!linkTo["v-s:hasLink"].filter(function (item) {
+      return (item.data === linkUri);
     }).length;
-    if (!containsThisBond) {
-      bondTo["v-s:hasBond"].push({type: _Uri, data: bondUri});
-      put_individual(ticket, bondTo, _event_id);
+    if (!containsThisLink) {
+      linkTo["v-s:hasLink"].push({type: _Uri, data: linkUri});
+      put_individual(ticket, linkTo, _event_id);
     }
   }
-  if (bondFrom) {
-    bondFrom["v-s:hasBond"] = bondFrom["v-s:hasBond"] || [];
-    containsThisBond = !!bondFrom["v-s:hasBond"].filter(function (item) {
-      return (item.data === bondUri);
+  if (linkFrom) {
+    linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"] || [];
+    containsThisLink = !!linkFrom["v-s:hasLink"].filter(function (item) {
+      return (item.data === linkUri);
     }).length;
-    if (!containsThisBond) {
-      bondFrom["v-s:hasBond"].push({type: _Uri, data: bondUri});
-      put_individual(ticket, bondFrom, _event_id);
+    if (!containsThisLink) {
+      linkFrom["v-s:hasLink"].push({type: _Uri, data: linkUri});
+      put_individual(ticket, linkFrom, _event_id);
     }
   }
   """ ;
