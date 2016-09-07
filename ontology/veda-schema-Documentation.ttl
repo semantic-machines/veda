@@ -88,6 +88,13 @@ v-s:deviationDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
+v-s:isPositiveObservation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Positive observation"@en ;
+  rdfs:label "Положительное наблюдение"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Observation ;
+.
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
