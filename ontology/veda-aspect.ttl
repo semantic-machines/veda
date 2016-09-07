@@ -173,10 +173,10 @@ v-s:PersonalAspectTemplate
               </a>
             </div>
             <script>
-              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template
               var tasks = individual.tasks;
               tasks.search();
               $("#tasks-count", template).text(tasks.count);
+              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template
             </script>
           </div>
         </div>
@@ -203,10 +203,10 @@ v-s:PersonalAspectTemplate
               </a>
             </div>
             <script>
-              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_2
               var tasks = individual.tasks;
               tasks.search();
               $("#tasks-count", template).text(tasks.count);
+              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_2
             </script>
           </div>
         </div>
@@ -233,10 +233,10 @@ v-s:PersonalAspectTemplate
               </a>
             </div>
             <script>
-              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_3
               var tasks = individual.tasks;
               tasks.search();
               $("#tasks-count", template).text(tasks.count);
+              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_3
             </script>
           </div>
         </div>

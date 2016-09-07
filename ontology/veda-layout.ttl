@@ -48,7 +48,6 @@ v-l:MainPageTemplate
           <li class="btn-group" id="preferred-language" about="v-ui:AvailableLanguage" rel="rdf:value">
             <button about="@" property="rdfs:label" class="btn btn-xs btn-success navbar-btn"></button>
             <script>
-              //# sourceURL=v-l:MainPageTemplate_inline_template_for_language_switch
               handler("v-ui:preferredLanguage");
               veda.user.preferences.on("individual:propertyModified", handler);
               template.on("remove", function () {
@@ -67,6 +66,7 @@ v-l:MainPageTemplate
                   }
                 }
               }
+              //# sourceURL=v-l:MainPageTemplate_inline_template_for_language_switch
             </script>
           </li>
           <li id="user-info"></li>
@@ -94,12 +94,12 @@ v-l:MainPageTemplate
   </nav>
 </div>
 <script>
-  //# sourceURL=v-l:MainPageTemplate
   // Render user
   var userInfo = $("#user-info", template);
   var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
   userInfo.empty();
   veda.user.present(userInfo, userInfoTmpl);
+  //# sourceURL=v-l:MainPageTemplate
 </script>
   """ ;
 .
@@ -163,7 +163,6 @@ v-l:MenuItemViewTemplate
 </li>
 <li class="divider"></li>
 <script>
-  //# sourceURL=v-l:MenuItemViewTemplate
   var stcTmpl = template.eq(0), objTmpl = template.eq(1), subTmpl = template.eq(2), divTmpl = template.eq(3);
   if (individual.id === "v-l:Divider") {
     stcTmpl.remove();
@@ -194,6 +193,7 @@ v-l:MenuItemViewTemplate
     }
   }
   template.toggleClass("hidden show");
+  //# sourceURL=v-l:MenuItemViewTemplate
 </script>
   """
 .

@@ -507,10 +507,10 @@ v-wf:SimpleNetTemplate
   </table>
 </div>
 <script>
-  //# sourceURL=v-wf:SimpleNetTemplate
   $('#taskTemplateProperties [rel="v-wf:inputVariable"] [typeof="v-wf:VarDefine"]').draggable({
     revert:true
   });
+  //# sourceURL=v-wf:SimpleNetTemplate
 </script>
   """ ;
 .
@@ -598,7 +598,6 @@ v-wf:NetTemplate
 </div>
 
 <script type="text/javascript">
-//# sourceURL=v-wf:NetTemplate
 var wrapper = $(".workflow-canvas-wrapper", template),
   height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
   fullWidth = $("#full-width", template),
@@ -625,6 +624,7 @@ jsWorkflow.ready(function () {
       delete veda.net
     });
 });
+//# sourceURL=v-wf:NetTemplate
 </script>
   """ ;
 .
@@ -685,7 +685,6 @@ v-wf:ProcessTemplate
 </div>
 
 <script type="text/javascript">
-//# sourceURL=v-wf:ProcessTemplate
 var wrapper = $(".workflow-canvas-wrapper", template),
   height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
   fullWidth = $("#full-width", template),
@@ -706,6 +705,7 @@ jsWorkflow.ready(function () {
     // Initialize workflow with workflow container id
     var net = workflow.init('workflow-canvas', veda, individual, template, container);
 });
+//# sourceURL=v-wf:ProcessTemplate
 </script>
   """ ;
 .
@@ -1159,7 +1159,6 @@ v-wf:TaskTemplateAsProperties
   </table>
 </div>
 <script>
-  //# sourceURL=v-wf:TaskTemplateAsProperties
   function handler (property_uri, values) {
     if (property_uri === "v-wf:join" || property_uri === "v-wf:split") {
        var $state = $('#' + veda.Util.escape4$(individual.id));
@@ -1185,6 +1184,7 @@ v-wf:TaskTemplateAsProperties
       $(this).parent().parent().appendTo($('#taskTemplateProperties'));
      }
   });
+  //# sourceURL=v-wf:TaskTemplateAsProperties
 </script>
   """ ;
   .
@@ -1240,7 +1240,6 @@ v-wf:ConditionTemplateAsProperties
   </table>
 </div>
 <script>
-  //# sourceURL=v-wf:ConditionTemplateAsProperties
   function handler (property_uri, values) {
     if (property_uri === "rdfs:label") {
       var $state = $('#' + veda.Util.escape4$(individual.id));
@@ -1252,6 +1251,7 @@ v-wf:ConditionTemplateAsProperties
   template.on("remove", function () {
     individual.off("individual:propertyModified");
   });
+  //# sourceURL=v-wf:ConditionTemplateAsProperties
 </script>
   """ ;
   .
@@ -1301,7 +1301,6 @@ v-wf:FlowTemplateAsProperties
   </table>
 </div>
 <script>
-  //# sourceURL=v-wf:FlowTemplateAsProperties
   function handler (property_uri, values)
   {
     if (property_uri === "rdfs:label")
@@ -1327,6 +1326,7 @@ v-wf:FlowTemplateAsProperties
   template.on("remove", function () {
     individual.off("individual:propertyModified");
   });
+  //# sourceURL=v-wf:FlowTemplateAsProperties
 </script>
   """ ;
 .
@@ -1392,7 +1392,6 @@ v-wf:ProcessPropsTemplate
   </tr>
 </div>
 <script>
-  //# sourceURL=v-wf:ProcessPropsTemplate
   if (typeof individual !== "undefined") {
     $('#processTemplateProperties > tbody > tr > td > span[about]').each(function () {
        if (!individual.hasValue($(this).attr('about'))) {
@@ -1400,6 +1399,7 @@ v-wf:ProcessPropsTemplate
        }
     });
   }
+  //# sourceURL=v-wf:ProcessPropsTemplate
 </script>
   """
 .
@@ -1454,7 +1454,6 @@ v-wf:WorkItemTemplate
   </tr>
 </div>
 <script>
-  //# sourceURL=v-wf:WorkItemTemplate
   if (typeof individual !== "undefined") {
     $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
        if (!individual.hasValue($(this).attr('about'))) {
@@ -1462,6 +1461,7 @@ v-wf:WorkItemTemplate
        }
     });
   }
+  //# sourceURL=v-wf:WorkItemTemplate
 </script>
 """ ;
   .
@@ -1482,7 +1482,6 @@ v-wf:VariableTemplate
   </div>
 </span>
 <script type="text/javascript">
-  //# sourceURL=v-wf:VariableTemplate
   if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
   var valHolder = $("#values", template);
   individual["v-wf:variableValue"].map( function (value) {
@@ -1494,6 +1493,7 @@ v-wf:VariableTemplate
     }
     valHolder.append(el);
   });
+  //# sourceURL=v-wf:VariableTemplate
 </script>
   """ ;
   .
@@ -1531,12 +1531,12 @@ v-wf:WorkOrderTemplate
   <br/>
 </div>
 <script>
-  //# sourceURL=v-wf:WorkOrderTemplate
   if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
   if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
   if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
   if (!individual.hasValue("v-wf:isProcess")) $("#isProcess", template).remove();
   if (!individual.hasValue("v-wf:traceJournal")) $("#traceJournal", template).remove();
+  //# sourceURL=v-wf:WorkOrderTemplate
 </script>
   """ ;
   .
@@ -1551,7 +1551,6 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div></div>
 <script>
-  //# sourceURL=v-wf:DecisionFormTemplate
   individual.one("individual:beforeSave", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
       individual["v-wf:read"] = [true];
@@ -1564,6 +1563,7 @@ v-wf:DecisionFormTemplate
       individual.save();
     }
   });
+  //# sourceURL=v-wf:DecisionFormTemplate
 </script>
   """ ;
   .
@@ -2271,8 +2271,8 @@ v-ui:TaskGivenTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:TaskGivenTemplate
   if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
+  //# sourceURL=v-ui:TaskGivenTemplate
 </script>
   """ ;
 .
@@ -2316,9 +2316,9 @@ v-ui:TaskCompletedTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:TaskCompletedTemplate
   if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
   if (!individual.hasValue("v-wf:takenDecision")) $("#decision", template).remove();
+  //# sourceURL=v-ui:TaskCompletedTemplate
 </script>
   """ ;
 .
@@ -2347,8 +2347,8 @@ v-ui:ProcessEventTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:ProcessEventTemplate
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
+  //# sourceURL=v-ui:ProcessEventTemplate
 </script>
   """ ;
 .
@@ -2388,13 +2388,13 @@ v-ui:WorkItemStartedEventTemplate
   <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
 <script>
-  //# sourceURL=v-ui:WorkItemStartedEventTemplate
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
+  //# sourceURL=v-ui:WorkItemStartedEventTemplate
 </script>
   """ ;
 .
@@ -2433,13 +2433,13 @@ v-ui:DecisionFormStartedEventTemplate
   <div rel="v-s:subJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
 <script>
-  //# sourceURL=v-ui:DecisionFormStartedEventTemplate
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:subJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
+  //# sourceURL=v-ui:DecisionFormStartedEventTemplate
 </script>
   """ ;
 .
@@ -2468,12 +2468,12 @@ v-ui:TraceEventTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:TraceEventTemplate
   var pre = $("pre", template),
       txt = pre.text(),
       re = new RegExp('"([\\w-]+:[\\w-]+)"','g'),
       txt2 = txt.replace(re, "<a href='#/$1'>'$1'</a>");
   pre.html(txt2);
+  //# sourceURL=v-ui:TraceEventTemplate
 </script>
   """ ;
 .

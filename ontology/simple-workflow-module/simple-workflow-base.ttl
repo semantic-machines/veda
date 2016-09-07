@@ -624,12 +624,12 @@ s-wf:ComplexRouteStartForm_Template
     console.log(stage);
 
   });
-//# sourceURL=s-wf:ComplexRouteStartForm_Template
 jsWorkflow.ready(function () {
   $( "#save_and_start_process" ).click(function() {
     alert( "Handler for .click() called." + document );
   });
 });
+//# sourceURL=s-wf:ComplexRouteStartForm_Template
 </script>
   """ ;
 .
@@ -976,7 +976,6 @@ s-wf:UserTaskFormTemplate
   </div>
 </div>
 <script type="text/javascript">
-  //# sourceURL=s-wf:UserTaskFormTemplate
   var radioTmpl = $(".radio.decision", template);
   if (individual.hasValue("v-wf:possibleDecisionClass")) {
     individual["v-wf:possibleDecisionClass"].map( function (value, index) {
@@ -1018,6 +1017,7 @@ s-wf:UserTaskFormTemplate
   $("#cancel", template).click( function () {
     window.history.back();
   });
+  //# sourceURL=s-wf:UserTaskFormTemplate
 </script>
   """ ;
   .

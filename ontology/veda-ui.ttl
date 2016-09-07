@@ -512,7 +512,6 @@ v-ui:VersionedTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:VersionedTemplate
   var actual = individual["v-s:actualVersion"][0];
   if (!actual) { return; }
   var tmpl = ''
@@ -542,6 +541,7 @@ v-ui:VersionedTemplate
       renderVersion(previous, ++counter, --limit);
     }
   }
+  //# sourceURL=v-ui:VersionedTemplate
 </script>
 """ ;
 .
@@ -593,7 +593,6 @@ v-ui:LinkTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:LinkTemplate
   individual.on("individual:propertyModified", handler);
   template.on("remove", function () {
     individual.off("individual:propertyModified", handler);
@@ -607,6 +606,7 @@ v-ui:LinkTemplate
       });
     }
   }
+  //# sourceURL=v-ui:LinkTemplate
 </script>
 """ ;
 .
@@ -638,8 +638,8 @@ v-ui:ImageAppointmentTemplate
           </div>
         </div>
         <script>
-          //# sourceURL=v-ui:ImageAppointmentTemplate
           individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
+          //# sourceURL=v-ui:ImageAppointmentTemplate
         </script>
     </a>
   </div>
@@ -792,7 +792,6 @@ v-ui:LabelTemplate
   v-ui:template """
   <span about="@" property="rdfs:label"></span>
   <script>
-    //# sourceURL=v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
@@ -800,6 +799,7 @@ v-ui:LabelTemplate
       "display": "inline-block",
       "margin": "0 7px 7px 0"
     });
+    //# sourceURL=v-ui:LabelTemplate
   </script>
   """ ;
 .
@@ -812,10 +812,10 @@ v-ui:LabelTemplateWithEditLink
     # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
   <script>
-    //# sourceURL=v-ui:LabelTemplateWithEditLink
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
+    //# sourceURL=v-ui:LabelTemplateWithEditLink
   </script>
   """ ;
 .
@@ -826,10 +826,10 @@ v-ui:LabelLinkTemplate
   v-ui:template """
   <a href="#/@"><span property="rdfs:label"></span></a>
   <script>
-    //# sourceURL=v-ui:LabelLinkTemplate
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
+    //# sourceURL=v-ui:LabelLinkTemplate
   </script>
   """ ;
 .
@@ -841,7 +841,6 @@ v-ui:IconModalTemplate
   v-ui:template """
 <a href="#" class="fa fa-search"></a>
 <script>
-  //# sourceURL=v-ui:IconModalTemplate
   template.on("click", function (e) {
     e.preventDefault();
     var modal = $("#individual-modal-template").html();
@@ -856,6 +855,7 @@ v-ui:IconModalTemplate
     individual.present(cntr, undefined, newMode);
     template.on("remove", function () { $modal.remove(); });
   });
+  //# sourceURL=v-ui:IconModalTemplate
 </script>
   """ ;
 .
@@ -867,10 +867,10 @@ v-ui:LabelEmptyLinkTemplate
   v-ui:template """
 <a href="#" property="rdfs:label"></a>
 <script>
-  //# sourceURL=v-ui:LabelEmptyLinkTemplate
   if (!individual.hasValue("rdfs:label")) {
     template.text(individual.id);
   }
+  //# sourceURL=v-ui:LabelEmptyLinkTemplate
 </script>
   """ ;
 .
@@ -881,10 +881,10 @@ v-ui:LabelBlockLinkTemplate
   v-ui:template """
   <div><a id="label" href="#/@" property="rdfs:label"></a></div>
   <script>
-    //# sourceURL=v-ui:LabelBlockLinkTemplate
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
+    //# sourceURL=v-ui:LabelBlockLinkTemplate
   </script>
   """ ;
 .
@@ -895,7 +895,6 @@ v-ui:ClassNameLabelLinkTemplate
   v-ui:template """
   <span><a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
   <script>
-    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
@@ -903,6 +902,7 @@ v-ui:ClassNameLabelLinkTemplate
       "display": "inline-block",
       "margin": "0 7px 7px 0"
     });
+    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
   </script>
   """ ;
 .
@@ -913,7 +913,6 @@ v-ui:ClassNameLabelTemplate
   v-ui:template """
   <span><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></span>
   <script>
-    //# sourceURL=v-ui:ClassNameLabelTemplate
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
@@ -921,6 +920,7 @@ v-ui:ClassNameLabelTemplate
       "display": "inline-block",
       "margin": "0 7px 7px 0"
     });
+    //# sourceURL=v-ui:ClassNameLabelTemplate
   </script>
   """ ;
 .
@@ -1189,11 +1189,11 @@ v-ui:FileTemplate
   <span id="icon" class="label label-primary"></span> <a href="/files/@"><span about="@" property="v-s:fileName"></span></a>
 </div>
 <script>
-  //# sourceURL=v-ui:FileTemplate
   var fn = individual["v-s:fileName"][0],
     idx = fn.lastIndexOf("."),
     ext = fn.substr(idx + 1);
   $("span#icon", template).text(ext);
+  //# sourceURL=v-ui:FileTemplate
 </script>
   """ ;
 .
@@ -1233,11 +1233,11 @@ v-ui:FileTemplateWithComment
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:FileTemplateWithComment
   var fn = individual["v-s:fileName"][0],
     idx = fn.lastIndexOf("."),
     ext = fn.substr(idx + 1);
   $("span#icon", template).text(ext);
+  //# sourceURL=v-ui:FileTemplateWithComment
 </script>
   """ ;
 .
@@ -1250,8 +1250,8 @@ v-ui:ImageTemplate
   <a href="/files/@"><img class="img-thumbnail"></a>
 </div>
 <script>
-  //# sourceURL=v-ui:ImageTemplate
    $("img", template).attr("src", "/files/" + individual.id);
+  //# sourceURL=v-ui:ImageTemplate
 </script>
   """ ;
 .
@@ -1273,7 +1273,6 @@ v-ui:ModalImageTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-ui:ModalImageTemplate
   $("img", template).attr("src", "/files/" + individual.id);
   var modal;
   $("#link", template).click(function (e) {
@@ -1281,6 +1280,7 @@ v-ui:ModalImageTemplate
     if (!modal) modal = $("#modal", template).modal();
     modal.modal("show");
   });
+  //# sourceURL=v-ui:ModalImageTemplate
 </script>
   """ ;
 .
@@ -1291,8 +1291,8 @@ v-ui:ImageSimpleTemplateWithoutBorder
   v-ui:template """
 <img width="100%">
 <script>
-  //# sourceURL=v-ui:ImageSimpleTemplateWithoutBorder
   template.attr("src", "/files/" + individual.id);
+  //# sourceURL=v-ui:ImageSimpleTemplateWithoutBorder
 </script>
   """ ;
 .
@@ -1305,8 +1305,8 @@ v-ui:ImageSimpleTemplate
   <img class="img-thumbnail">
 </div>
 <script>
-  //# sourceURL=v-ui:ImageSimpleTemplate
   $("img", template).attr("src", "/files/" + individual.id);
+  //# sourceURL=v-ui:ImageSimpleTemplate
 </script>
   """ ;
 .
@@ -1317,8 +1317,8 @@ v-ui:ImageSimpleTemplateTransparent
   v-ui:template """
 <img width="100%">
 <script>
-  //# sourceURL=v-ui:ImageSimpleTemplateTransparent
   template.attr("src", "/files/" + individual.id);
+  //# sourceURL=v-ui:ImageSimpleTemplateTransparent
 </script>
   """ ;
 .
@@ -1331,8 +1331,8 @@ v-ui:ImageTemplateTransparent
   <a href="/files/@"><img width="100%"></a>
 </div>
 <script>
-  //# sourceURL=v-ui:ImageTemplateTransparent
   $("img", template).attr("src", "/files/" + individual.id);
+  //# sourceURL=v-ui:ImageTemplateTransparent
 </script>
   """ ;
 .
@@ -1461,7 +1461,6 @@ v-ui:DocumentEventTemplate
   <div rel="v-s:processJournal" template="v-ui:SubJournalTemplate"></div>
 </div>
 <script>
-  //# sourceURL=v-ui:DocumentEventTemplate
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
   if (individual.hasValue("v-s:actor") && individual['v-s:actor'][0].id == 'cfg:VedaSystem') {
     template.hide();
@@ -1471,10 +1470,7 @@ v-ui:DocumentEventTemplate
     $("div[rel='v-s:processJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-</script>
 
-<script>
-  //# sourceURL=v-ui:DocumentEventTemplate_2
   if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id == 'v-s:ProcessStarted') {
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
@@ -1499,6 +1495,7 @@ v-ui:DocumentEventTemplate
     $(".row", template).addClass('text-danger');
     //$(".row", template).each(function(e) { $(e); });
   }
+  //# sourceURL=v-ui:DocumentEventTemplate
 </script>
   """ ;
 .
@@ -1565,8 +1562,8 @@ v-ui:PermissionStatementTemplate
   </div>
   </div>
   <script>
-    //# sourceURL=v-ui:PermissionStatementTemplate
     if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
+    //# sourceURL=v-ui:PermissionStatementTemplate
   </script>
   """ ;
 .
@@ -1583,7 +1580,6 @@ v-ui:TreeTemplate
   </table>
 </div>
 <script>
-  //# sourceURL=v-ui:TreeTemplate
   var tbody = $("#tbody", template),
     thead = $("#thead", template),
     headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>";
@@ -1746,6 +1742,7 @@ v-ui:TreeTemplate
     }
     return res;
   }
+  //# sourceURL=v-ui:TreeTemplate
 </script>
   """ ;
 .

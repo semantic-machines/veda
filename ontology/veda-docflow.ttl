@@ -322,7 +322,6 @@ v-df:QuestionRouteStartFormTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-df:QuestionRouteStartFormTemplate
   console.log("cancel btn", $("#cancel", template));
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
@@ -332,6 +331,7 @@ v-df:QuestionRouteStartFormTemplate
       window.history.back();
     }
   });
+  //# sourceURL=v-df:QuestionRouteStartFormTemplate
 </script>
 """ ;
 .
@@ -402,7 +402,6 @@ v-df:InstructionRouteStartFormTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-df:InstructionRouteStartFormTemplate
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
@@ -411,6 +410,7 @@ v-df:InstructionRouteStartFormTemplate
       window.history.back();
     }
   });
+  //# sourceURL=v-df:InstructionRouteStartFormTemplate
 </script>
 """ ;
 .
