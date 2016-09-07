@@ -166,8 +166,14 @@ Resource json_to_resource(const Json resource_json)
         try
         {
             string val = resource_json[ "data" ].get!string;
+            long   tm;
 //	    writeln ("@v j->r #0 ", val);
-            long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+
+            if (val.indexOf('-') >= 1)
+                tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            else
+                tm = to!long (val);
+
             resource = tm;
 //	    writeln ("@v j->r #1 ", tm);
         }

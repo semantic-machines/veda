@@ -420,9 +420,16 @@ v-s:checkedOrganization
 .
 v-s:checkedProcess
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Checked Process"@en ;
+  rdfs:label "Checked process"@en ;
   rdfs:label "Проверяемый процесс"@ru ;
   rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:checkedRequirement
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Checked requirement"@en ;
+  rdfs:label "Проверяемое требование"@ru ;
+  rdfs:range v-s:NormativeDocumentRequirement ;
   rdfs:domain v-s:Controlled ;
 .
 v-s:responsible
