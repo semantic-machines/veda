@@ -208,6 +208,22 @@ v-s:Process
   rdfs:label "Process"@en ;
   rdfs:label "Процесс"@ru ;
 .
+# -- Может обобщить с Руководителем проекта
+v-s:processManager
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Process manager"@en ;
+  rdfs:label "Руководитель процесса"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Process ;
+.
+v-s:involvedDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Involved department"@en ;
+  rdfs:label "Вовлеченные подразделения"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Process ;
+.
+
 #--------------------------------------------------
 v-s:Effect
   rdf:type owl:Class ;

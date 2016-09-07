@@ -106,6 +106,13 @@ v-s:chiefAuditor
   rdfs:label "Ведущий аудитор"@ru ;
   rdfs:domain v-s:Audit ;
 .
+v-s:toCheckNormativeDocumentRequirement
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:Appointment ;
+  rdfs:label "Checked normative document requirement"@en ;
+  rdfs:label "Проверяемые требования"@ru ;
+  rdfs:domain v-s:Audit ;
+.
 
 v-s:PsAuditorForAudit
   rdf:type v-ui:ObjectPropertySpecification ;

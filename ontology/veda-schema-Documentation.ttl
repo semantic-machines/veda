@@ -95,6 +95,13 @@ v-s:isPositiveObservation
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Observation ;
 .
+v-s:CheckedNormativeDocumentRequirement
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:Appointment ;
+  rdfs:label "Checked normative document requirement"@en ;
+  rdfs:label "Проверяемые требования"@ru ;
+  rdfs:domain v-s:Observation ;
+.
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
