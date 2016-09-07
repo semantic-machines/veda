@@ -20,6 +20,7 @@ v-s:Activity
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
+  rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Activity"@en ;
@@ -104,13 +105,6 @@ v-s:chiefAuditor
   rdfs:range v-s:Appointment ;
   rdfs:label "Chief auditor"@en ;
   rdfs:label "Ведущий аудитор"@ru ;
-  rdfs:domain v-s:Audit ;
-.
-v-s:toCheckNormativeDocumentRequirement
-  rdf:type owl:ObjectProperty ;
-  rdfs:range v-s:Appointment ;
-  rdfs:label "Checked normative document requirement"@en ;
-  rdfs:label "Проверяемые требования"@ru ;
   rdfs:domain v-s:Audit ;
 .
 
