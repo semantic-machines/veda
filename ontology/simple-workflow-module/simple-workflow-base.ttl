@@ -506,12 +506,12 @@ s-wf:ComplexRouteStartForm_coordination6
   rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:SingleRouteStartForm_Template
+s-wf:SimpleRouteStartForm_Template
   rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
-  v-ui:forClass s-wf:SingleRouteStartForm ;
+  v-ui:forClass s-wf:SimpleRouteStartForm ;
   v-ui:template """
   <div class="container-fluid">
     <div class="panel panel-default">
@@ -527,11 +527,11 @@ s-wf:SingleRouteStartForm_Template
       </div>
       <div class="panel-body">
         <div class="row">
-          <div class="col-md-4">             
+          <div class="col-md-4">
           </div>
-          <div class="col-md-4">             
+          <div class="col-md-4">
           </div>
-          <div class="col-md-4">             
+          <div class="col-md-4">
           </div>
         </div>
       </div>
@@ -586,7 +586,7 @@ s-wf:ComplexRouteStartForm_Template
         <div class="row">
             <div class="col-md-4">
                <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination1" template="s-wf:SingleRouteStartForm_Template"></div>
+               <div rel="s-wf:ComplexRouteStartForm_coordination1" template="s-wf:SimpleRouteStartForm_Template"></div>
             </div>
             <div class="col-md-4">
             </div>
@@ -606,23 +606,23 @@ s-wf:ComplexRouteStartForm_Template
   </div>
 <script type="text/javascript">
   var stages = [
-  	'informing', 
-  	'coordinator1', 
-  	'coordinator2', 
-  	'coordinator3', 
-  	'coordinator4', 
-  	'coordinator5', 
-  	'coordinator6', 
-  	'signre', 
-  	'approvalre', 
-  	'reviewre', 
-  	'executor', 
-  	'examinator',
-  	'distribution'
+    'informing',
+    'coordinator1',
+    'coordinator2',
+    'coordinator3',
+    'coordinator4',
+    'coordinator5',
+    'coordinator6',
+    'signre',
+    'approvalre',
+    'reviewre',
+    'executor',
+    'examinator',
+    'distribution'
   ];
   stages.forEach(function(stage) {
-  	console.log(stage);
-  	
+    console.log(stage);
+
   });
 //# sourceURL=s-wf:ComplexRouteStartForm_Template
 jsWorkflow.ready(function () {
@@ -1627,7 +1627,7 @@ s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
 
 d:abaa42215-965f-a032-aada-31be82a54e95 a v-wf:Flow;
   v-s:author td:RomanKarpov-Analyst1;
-  v-wf:predicate "true"^^xsd:string;  
+  v-wf:predicate "true"^^xsd:string;
   v-s:created "2015-11-09T12:51:20.156Z"^^xsd:dateTime;
   v-wf:flowsInto s-wf:nc_t1.
 
@@ -1768,7 +1768,7 @@ s-wf:nc_return_to_initiator
   v-wf:locationX "865"^^xsd:integer;
   v-wf:locationY "650"^^xsd:integer;
   v-wf:hasFlow s-wf:nc_r_to_i_return, s-wf:nc_r_to_i_finish;
-  rdfs:label "Обработка отказа"^^xsd:string;  
+  rdfs:label "Обработка отказа"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
@@ -1782,7 +1782,7 @@ s-wf:nc_return_to_initiator
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
-  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;  
+  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
 
 s-wf:nc_oc
@@ -1790,7 +1790,7 @@ s-wf:nc_oc
   v-wf:locationX "1090"^^xsd:integer;
   v-wf:locationY "430"^^xsd:integer;
   v-wf:hasFlow s-wf:nc_to_finish, s-wf:nc_r_to_i_return;
-  rdfs:label "Контроль"^^xsd:string;  
+  rdfs:label "Контроль"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
@@ -1804,7 +1804,7 @@ s-wf:nc_oc
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
-  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;  
+  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
 
 s-wf:nc_r_to_i_return a v-wf:Flow;
@@ -1911,7 +1911,7 @@ s-wf:nc_f_ic_t1 a v-wf:Flow;
 
 s-wf:nc_f_t1_t2 a v-wf:Flow;
   rdfs:isDefinedBy s-wf: ;
-  v-wf:predicate "true"^^xsd:string;  
+  v-wf:predicate "true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_t2.
 
@@ -1937,7 +1937,7 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4
 
 d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e a v-wf:Flow;
   v-s:author td:RomanKarpov-Analyst1;
-  v-wf:predicate "true"^^xsd:string;  
+  v-wf:predicate "true"^^xsd:string;
   v-s:created "2015-11-10T18:08:39.178Z"^^xsd:dateTime;
   v-wf:flowsInto s-wf:c1.
 
@@ -1963,7 +1963,7 @@ d:a74e1dea7-75e9-9d5f-b942-d1a7f2b91b2b a v-wf:Flow;
 
 d:a6caa3c11-9333-4270-549f-e899df057223 a v-wf:Flow;
   v-s:author td:RomanKarpov-Analyst1;
-  v-wf:predicate "true"^^xsd:string;  
+  v-wf:predicate "true"^^xsd:string;
   v-s:created "2015-11-25T09:21:02.222Z"^^xsd:dateTime;
   v-wf:flowsInto s-wf:nc_oc.
 
