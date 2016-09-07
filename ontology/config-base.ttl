@@ -1053,7 +1053,6 @@ cfg:Event_16
     if (!contains) {
       parent[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
       put_individual(ticket, parent, _event_id);
-      print("EVENT_16", "backward: ", JSON.stringify(document), "parent: ", JSON.stringify(parent));
     }
   }
   """ ;
