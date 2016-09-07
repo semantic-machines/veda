@@ -522,17 +522,14 @@ class FanoutProcess : VedaModule
 			    auto host = connection.getFirstLiteral("v-s:host");
 			    auto port = cast(ushort)connection.getFirstInteger("v-s:port");
                             smtp_conn = new MailSender(host, port);
-writeln ("@1");
                             if (smtp_conn is null)
 			    {	
         			log.trace("fail connect to smtp [%s] %s:%d", connection.uri, host, port);			    
                                 continue;
 			    }
-writeln ("@2");
 
                             string login = connection.getFirstLiteral("v-s:login");
                             string pass  = connection.getFirstLiteral("v-s:password");
-writeln ("@3");
 
                             if (login !is null && login.length > 0)
                                 smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
@@ -543,7 +540,6 @@ writeln ("@3");
                                 smtp_conn = null;
                             else
                                 log.trace("success connection to SMTP server: [%s]", connection);
-writeln ("@4");
 
                             if (smtp_conn is null)
 			    {	
