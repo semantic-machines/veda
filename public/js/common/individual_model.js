@@ -408,14 +408,14 @@ veda.Module(function (veda) { "use strict";
    * @return {boolean} is requested property exists in this individual
    */
   proto.hasValue = function (property_uri, value) {
-    if (typeof value === "undefined") {
-      return !!(this[property_uri] && this[property_uri].length);
-    } else {
+    var result = !!(this[property_uri] && this[property_uri].length);
+    if (typeof value !== "undefined") {
       var serialized = serializer(value);
-      return !!this.properties[property_uri].filter( function (item) {
+      result = result && this.properties[property_uri].filter( function (item) {
         return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
     }
+    return result;
   };
 
   /**
