@@ -180,6 +180,20 @@ v-s:to
   rdfs:range v-s:Thing ;
 .
 ### ------------------------------------------------------
+v-s:BackwardLink
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Reverse Link"@en ;
+  rdfs:label "Обратная связь"@ru ;
+.
+v-s:backwardProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BackwardLink ;
+  rdfs:label "backward property"@en ;
+  rdfs:label "обратное свойство"@ru ;
+  rdfs:range owl:ObjectProperty ;
+.
+### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;

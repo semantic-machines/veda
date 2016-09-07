@@ -1033,3 +1033,28 @@ cfg:Event_15
   }
   """ ;
 .
+
+cfg:Event_16
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки обратных ссылок" ;
+  rdfs:comment "Скрипт обработки обратных ссылок" ;
+  v-s:filter v-s:BackwardLink ;
+  v-s:script """
+  var backwardLinkUri = document["@"],
+      backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
+      parentUri = getUri(document["v-s:parent"]),
+      parent = get_individual(ticket, parentUri);
+  if (parent && backwardPropertyUri) {
+    parent[backwardPropertyUri] = parent[backwardPropertyUri] || [];
+    var contains = !!parent[backwardPropertyUri].filter(function (item) {
+      return (item.data === backwardLinkUri);
+    }).length;
+    if (!contains) {
+      parent[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+      put_individual(ticket, parent, _event_id);
+      print("EVENT_16", "backward: ", JSON.stringify(document), "parent: ", JSON.stringify(parent));
+    }
+  }
+  """ ;
+.
