@@ -411,7 +411,7 @@ veda.Module(function (veda) { "use strict";
     var result = !!(this[property_uri] && this[property_uri].length);
     if (typeof value !== "undefined") {
       var serialized = serializer(value);
-      result = result && this.properties[property_uri].filter( function (item) {
+      result = result && !!this.properties[property_uri].filter( function (item) {
         return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
     }
