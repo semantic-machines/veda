@@ -284,4 +284,8 @@ v-b:Status
   rdfs:label "Статус"@ru ;
   rdfs:label "Status"@en ;
 .
-
+v-s:NoRightsForOperation
+  rdf:type v-s:Bundle ;
+  rdfs:label "У вас нет прав для выполнения этой операции"@ru ;
+  rdfs:label "You have no rights to perform this opertion"@en ;
+.
