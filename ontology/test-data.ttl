@@ -888,7 +888,7 @@ d:SYK-RMSG_person
     v-s:hasAccount d:SYK-RMSG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-RMSG;
+    rdfs:label "SYK-RMSG";
     v-s:lastName "Аппаратчик ТУ ЦРЩ и ПИ"@ru;
     v-s:defaultAppointment d:SYK-RMSG_appointment.
 ##  Должность ##
@@ -924,7 +924,7 @@ d:SYK-VES-PM11_person
     v-s:hasAccount d:SYK-VES-PM11_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-VES-PM11;
+    rdfs:label "SYK-VES-PM11";
     v-s:lastName "Весовщик БМ11"@ru;
     v-s:defaultAppointment d:SYK-VES-PM11_appointment.
 d:SYK-VES-PM11_position
@@ -958,7 +958,7 @@ d:SYK-VES-PM14_person
     v-s:hasAccount d:SYK-VES-PM14_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-VES-PM14;
+    rdfs:label "SYK-VES-PM14";
     v-s:lastName "Весовщик БМ14"@ru;
     v-s:defaultAppointment d:SYK-VES-PM14_appointment.
 d:SYK-VES-PM14_position
@@ -993,7 +993,7 @@ d:SYK-VES-PM15_person
     v-s:hasAccount d:SYK-VES-PM15_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-VES-PM15;
+    rdfs:label "SYK-VES-PM15";
     v-s:lastName "Весовщик БМ15"@ru;
     v-s:defaultAppointment d:SYK-VES-PM15_appointment.
 d:SYK-VES-PM15_position
@@ -1028,7 +1028,7 @@ d:SYK-VES-PM21_person
     v-s:hasAccount d:SYK-VES-PM21_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-VES-PM21;
+    rdfs:label "SYK-VES-PM21";
     v-s:lastName "Весовщик БМ21"@ru;
     v-s:defaultAppointment d:SYK-VES-PM21_appointment.
 d:SYK-VES-PM21_position
@@ -1063,7 +1063,7 @@ d:SYK-SKDG_person
     v-s:hasAccount d:SYK-SKDG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SKDG;
+    rdfs:label "SYK-SKDG";
     v-s:lastName "Дежурная часть АСБ мониторинг"@ru;
     v-s:defaultAppointment d:SYK-SKDG_appointment.
 d:SYK-SKDG_position
@@ -1103,7 +1103,7 @@ d:SYK-PVV_person
     v-s:hasAccount d:SYK-PVV_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PVV;
+    rdfs:label "SYK-PVV";
     v-s:lastName "Диспетчер ПВВ"@ru;
     v-s:defaultAppointment d:SYK-PVV_appointment.
 d:SYK-PVV_position
@@ -1138,7 +1138,7 @@ d:DISPATP2_person
     v-s:hasAccount d:DISPATP2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "DISPATP2;
+    rdfs:label "DISPATP2";
     v-s:lastName "Диспетчер САТ"@ru;
     v-s:defaultAppointment d:DISPATP2_appointment.
 d:DISPATP2_position
@@ -1173,7 +1173,7 @@ d:SYK-FIREDEPT-01_person
     v-s:hasAccount d:SYK-FIREDEPT-01_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-FIREDEPT-01;
+    rdfs:label "SYK-FIREDEPT-01";
     v-s:lastName "ЕДСС ПГС"@ru;
     v-s:defaultAppointment d:SYK-FIREDEPT-01_appointment.
 d:SYK-FIREDEPT-01_position
@@ -1213,7 +1213,7 @@ d:SYK-RTISI_person
     v-s:hasAccount d:SYK-RTISI_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-RTISI;
+    rdfs:label "SYK-RTISI";
     v-s:lastName "Инженер РТ и СИ"@ru;
     v-s:defaultAppointment d:SYK-RTISI_appointment.
 d:SYK-RTISI_position
@@ -1249,7 +1249,7 @@ d:SYK-CES1_person
     v-s:hasAccount d:SYK-CES1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CES1;
+    rdfs:label "SYK-CES1";
     v-s:lastName "Инженер центральной электрической службы"@ru;
     v-s:defaultAppointment d:SYK-CES1_appointment.
 d:SYK-CES1_position
@@ -1284,7 +1284,7 @@ d:SYK-LABVAR_person
     v-s:hasAccount d:SYK-LABVAR_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-LABVAR;
+    rdfs:label "SYK-LABVAR";
     v-s:lastName "Лаборант ВОЦ"@ru;
     v-s:defaultAppointment d:SYK-LABVAR_appointment.
 d:SYK-LABVAR_position
@@ -1320,7 +1320,7 @@ d:SYK-LGPG_person
     v-s:hasAccount d:SYK-LGPG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-LGPG;
+    rdfs:label "SYK-LGPG";
     v-s:lastName "Лаборант ГПБ ПЛТК"@ru;
     v-s:defaultAppointment d:SYK-LGPG_appointment.
 d:SYK-LGPG_position
@@ -1355,7 +1355,7 @@ d:SYK-LABPVV_person
     v-s:hasAccount d:SYK-LABPVV_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-LABPVV;
+    rdfs:label "SYK-LABPVV";
     v-s:lastName "Лаборант ПВВ"@ru;
     v-s:defaultAppointment d:SYK-LABPVV_appointment.
 d:SYK-LABPVV_position
@@ -1390,7 +1390,7 @@ d:SYK-SANLAB_person
     v-s:hasAccount d:SYK-SANLAB_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SANLAB;
+    rdfs:label "SYK-SANLAB";
     v-s:lastName "Лаборант санитарно-промышленной лаборатории"@ru;
     v-s:defaultAppointment d:SYK-LABPVV_appointment.
 d:SYK-SANLAB_position
@@ -1425,7 +1425,7 @@ d:SYK-HIM0_person
     v-s:hasAccount d:SYK-HIM0_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-HIM0;
+    rdfs:label "SYK-HIM0";
     v-s:lastName "Лаборант химического анализа ЦВОС УВКХ"@ru;
     v-s:defaultAppointment d:SYK-HIM0_appointment.
 d:SYK-HIM0_position
@@ -1461,7 +1461,7 @@ d:SYK-LAB-LRLP2_person
     v-s:hasAccount d:SYK-LAB-LRLP2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-LAB-LRLP2;
+    rdfs:label "SYK-LAB-LRLP2";
     v-s:lastName "Лаборант ЦРЩПИ2"@ru;
     v-s:defaultAppointment d:SYK-LAB-LRLP2_appointment.
 d:SYK-LAB-LRLP2_position
@@ -1496,7 +1496,7 @@ d:SYK-VOC_person
     v-s:hasAccount d:SYK-VOC_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-VOC;
+    rdfs:label "SYK-VOC";
     v-s:lastName "Мастер ВОЦ"@ru;
     v-s:defaultAppointment d:SYK-VOC_appointment.
 d:SYK-VOC_position
@@ -1531,7 +1531,7 @@ d:SYK-MASTERS-LH_person
     v-s:hasAccount d:SYK-MASTERS-LH_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTERS-LH;
+    rdfs:label "SYK-MASTERS-LH";
     v-s:lastName "Мастер лесохимии ЦРЩПИ"@ru;
     v-s:defaultAppointment d:SYK-MASTERS-LH_appointment.
 d:SYK-MASTERS-LH_position
@@ -1566,7 +1566,7 @@ d:SYK-MASTERS-CTMP_person
     v-s:hasAccount d:SYK-MASTERS-CTMP_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTERS-CTMP;
+    rdfs:label "SYK-MASTERS-CTMP";
     v-s:lastName "Мастер ПВВ"@ru;
     v-s:defaultAppointment d:SYK-MASTERS-CTMP_appointment.
 d:SYK-MASTERS-CTMP_position
@@ -1601,7 +1601,7 @@ d:SYK-MASTERS-PM21_person
     v-s:hasAccount d:SYK-MASTERS-PM21_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTERS-PM21;
+    rdfs:label "SYK-MASTERS-PM21";
     v-s:lastName "Мастер смены БМ21"@ru;
     v-s:defaultAppointment d:SYK-MASTERS-PM21_appointment.
 d:SYK-MASTERS-PM21_position
@@ -1636,7 +1636,7 @@ d:SYK-PM1G_person
     v-s:hasAccount d:SYK-PM1G_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PM1G;
+    rdfs:label "SYK-PM1G";
     v-s:lastName "Мастер смены БФ1"@ru;
     v-s:defaultAppointment d:SYK-PM1G_appointment.
 d:SYK-PM1G_position
@@ -1671,7 +1671,7 @@ d:SYK-SGP0_person
     v-s:hasAccount d:SYK-SGP0_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP0;
+    rdfs:label "SYK-SGP0";
     v-s:lastName "Мастер смены СГП"@ru;
     v-s:defaultAppointment d:SYK-SGP0_appointment.
 d:SYK-SGP0_position
@@ -1707,7 +1707,7 @@ d:SYK-MASTERS-DPC1_person
     v-s:hasAccount d:SYK-MASTERS-DPC1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTERS-DPC1;
+    rdfs:label "SYK-MASTERS-DPC1";
     v-s:lastName "Мастер смены ЦПДС ДПЦ-1"@ru;
     v-s:defaultAppointment d:SYK-MASTERS-DPC1_appointment.
 d:SYK-MASTERS-DPC1_position
@@ -1743,7 +1743,7 @@ d:SYK-MASD_person
     v-s:hasAccount d:SYK-MASD_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASD;
+    rdfs:label "SYK-MASD";
     v-s:lastName "Мастер смены ЦПДС ДПЦ-2"@ru;
     v-s:defaultAppointment d:SYK-MASD_appointment.
 d:SYK-MASD_position
@@ -1778,7 +1778,7 @@ d:SYK-MASTERS-CPH1_person
     v-s:hasAccount d:SYK-MASTERS-CPH1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTERS-CPH1;
+    rdfs:label "SYK-MASTERS-CPH1";
     v-s:lastName "Мастер смены ЦПХ"@ru;
     v-s:defaultAppointment d:SYK-MASTERS-CPH1_appointment.
 d:SYK-MASTERS-CPH1_position
@@ -1813,7 +1813,7 @@ d:SYK-MASTERS-RCM_person
     v-s:hasAccount d:SYK-MASTERS-RCM_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTERS-RCM;
+    rdfs:label "SYK-MASTERS-RCM";
     v-s:lastName "Мастер смены ЦРЩПИ участка РСМ и СТПГ"@ru;
     v-s:defaultAppointment d:SYK-MASTERS-RCM_appointment.
 d:SYK-MASTERS-RCM_position
@@ -1849,7 +1849,7 @@ d:SYK-PDMG_person
     v-s:hasAccount d:SYK-PDMG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PDMG;
+    rdfs:label "SYK-PDMG";
     v-s:lastName "Мастер сушильной машины"@ru;
     v-s:defaultAppointment d:SYK-PDMG_appointment.
 d:SYK-PDMG_position
@@ -1885,7 +1885,7 @@ d:SYK-SMEN-WATR_person
     v-s:hasAccount d:SYK-SMEN-WATR_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-WATR;
+    rdfs:label "SYK-SMEN-WATR";
     v-s:lastName "Мастер УВКХ"@ru;
     v-s:defaultAppointment d:SYK-SMEN-WATR_appointment.
 d:SYK-SMEN-WATR_position
@@ -1921,7 +1921,7 @@ d:SYK-MASTER-CCRO_person
     v-s:hasAccount d:SYK-MASTER-CCRO_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MASTER-CCRO;
+    rdfs:label "SYK-MASTER-CCRO";
     v-s:lastName "Мастер УТО ЦЦРО"@ru;
     v-s:defaultAppointment d:SYK-MASTER-CCRO_appointment.
 d:SYK-MASTER-CCRO_position
@@ -1956,7 +1956,7 @@ d:SYK-MACG_person
     v-s:hasAccount d:SYK-MACG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-MACG;
+    rdfs:label "SYK-MACG";
     v-s:lastName "Машинист БМ21"@ru;
     v-s:defaultAppointment d:SYK-MACG_appointment.
 d:SYK-MACG_position
@@ -1992,7 +1992,7 @@ d:SYK-KS1_person
     v-s:hasAccount d:SYK-KS1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-KS1;
+    rdfs:label "SYK-KS1";
     v-s:lastName "Машинист компрессорных установок 1"@ru;
     v-s:defaultAppointment d:SYK-KS1_appointment.
 d:SYK-KS1_position
@@ -2027,7 +2027,7 @@ d:SYK-KS2_person
     v-s:hasAccount d:SYK-KS2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-KS2;
+    rdfs:label "SYK-KS2";
     v-s:lastName "Машинист компрессорных установок 2"@ru;
     v-s:defaultAppointment d:SYK-KS2_appointment.
 d:SYK-KS2_position
@@ -2063,7 +2063,7 @@ d:SYK-NSMEN-KTC1_person
     v-s:hasAccount d:SYK-NSMEN-KTC1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-NSMEN-KTC1;
+    rdfs:label "SYK-NSMEN-KTC1";
     v-s:lastName "Начальник смены КТЦ1"@ru;
     v-s:defaultAppointment d:SYK-NSMEN-KTC1_appointment.
 d:SYK-NSMEN-KTC1_position
@@ -2099,7 +2099,7 @@ d:SYK-NSMEN-PP_person
     v-s:hasAccount d:SYK-NSMEN-PP_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-NSMEN-PP;
+    rdfs:label "SYK-NSMEN-PP";
     v-s:lastName "Начальник смены ТЭЦ"@ru;
     v-s:defaultAppointment d:SYK-NSMEN-PP_appointment.
 d:SYK-NSMEN-PP_position
@@ -2135,7 +2135,7 @@ d:SYK-CTOG_person
     v-s:hasAccount d:SYK-CTOG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CTOG;
+    rdfs:label "SYK-CTOG";
     v-s:lastName "Начальник смены участка ЦТО и РЭО ЦЭС"@ru;
     v-s:defaultAppointment d:SYK-CTOG_appointment.
 d:SYK-CTOG_position
@@ -2171,7 +2171,7 @@ d:SYK-HVP1_person
     v-s:hasAccount d:SYK-HVP1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-HVP1;
+    rdfs:label "SYK-HVP1";
     v-s:lastName "Начальник смены ЦВС УЭС ЭП"@ru;
     v-s:defaultAppointment d:SYK-HVP1_appointment.
 d:SYK-HVP1_position
@@ -2207,7 +2207,7 @@ d:NSMENTAG_person
     v-s:hasAccount d:NSMENTAG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "NSMENTAG;
+    rdfs:label "NSMENTAG";
     v-s:lastName "Начальник смены ЦТАИ ТЭЦ"@ru;
     v-s:defaultAppointment d:NSMENTAG_appointment.
 d:NSMENTAG_position
@@ -2244,7 +2244,7 @@ d:SYK-NSMEN-EC_person
     v-s:hasAccount d:SYK-NSMEN-EC_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-NSMEN-EC;
+    rdfs:label "SYK-NSMEN-EC";
     v-s:lastName "Начальник смены ЭЦ ТЭЦ"@ru;
     v-s:defaultAppointment d:SYK-NSMEN-EC_appointment.
 d:SYK-NSMEN-EC_position
@@ -2279,7 +2279,7 @@ d:SYK-CONTROL-PM11_person
     v-s:hasAccount d:SYK-CONTROL-PM11_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CONTROL-PM11;
+    rdfs:label "SYK-CONTROL-PM11";
     v-s:lastName "Оператор пульта БМ11"@ru;
     v-s:defaultAppointment d:SYK-CONTROL-PM11_appointment.
 d:SYK-CONTROL-PM11_position
@@ -2315,7 +2315,7 @@ d:SYK-PULT14_person
     v-s:hasAccount d:SYK-PULT14_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PULT14;
+    rdfs:label "SYK-PULT14";
     v-s:lastName "Оператор пульта БМ14"@ru;
     v-s:defaultAppointment d:SYK-PULT14_appointment.
 d:SYK-PULT14_position
@@ -2350,7 +2350,7 @@ d:SYK-CONTROL-PM21_person
     v-s:hasAccount d:SYK-CONTROL-PM21_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CONTROL-PM21;
+    rdfs:label "SYK-CONTROL-PM21";
     v-s:lastName "Оператор пульта БМ21"@ru;
     v-s:defaultAppointment d:SYK-CONTROL-PM21_appointment.
 d:SYK-CONTROL-PM21_position
@@ -2386,7 +2386,7 @@ d:SYK-PULT-WATR_person
     v-s:hasAccount d:SYK-PULT-WATR_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PULT-WATR;
+    rdfs:label "SYK-PULT-WATR";
     v-s:lastName "Оператор пульта управления ЦВОС УВКХ"@ru;
     v-s:defaultAppointment d:SYK-PULT-WATR_appointment.
 d:SYK-PULT-WATR_position
@@ -2422,7 +2422,7 @@ d:SYK-WOOD-PULT-1_person
     v-s:hasAccount d:SYK-WOOD-PULT-1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-WOOD-PULT-1;
+    rdfs:label "SYK-WOOD-PULT-1";
     v-s:lastName "Оператор пульта ЦПДС ДСУ"@ru;
     v-s:defaultAppointment d:SYK-WOOD-PULT-1_appointment.
 d:SYK-WOOD-PULT-1_position
@@ -2457,7 +2457,7 @@ d:SYK-PULT-PM15-1_person
     v-s:hasAccount d:SYK-PULT-PM15-1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PULT-PM15-1;
+    rdfs:label "SYK-PULT-PM15-1";
     v-s:lastName "Оператор пульта1 БМ15"@ru;
     v-s:defaultAppointment d:SYK-PULT-PM15-1_appointment.
 d:SYK-PULT-PM15-1_position
@@ -2492,7 +2492,7 @@ d:SYK-PULT-PM15-2_person
     v-s:hasAccount d:SYK-PULT-PM15-2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PULT-PM15-2;
+    rdfs:label "SYK-PULT-PM15-2";
     v-s:lastName "Оператор пульта2 БМ15"@ru;
     v-s:defaultAppointment d:SYK-PULT-PM15-2_appointment.
 d:SYK-PULT-PM15-2_position
@@ -2528,7 +2528,7 @@ d:SYK-CONTROL-PM14-4_person
     v-s:hasAccount d:SYK-CONTROL-PM14-4_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CONTROL-PM14-4;
+    rdfs:label "SYK-CONTROL-PM14-4";
     v-s:lastName "Оператор пульта4 БМ14"@ru;
     v-s:defaultAppointment d:SYK-CONTROL-PM14-4_appointment.
 d:SYK-CONTROL-PM14-4_position
@@ -2564,7 +2564,7 @@ d:SYK-CONTROL-PM15-5_person
     v-s:hasAccount d:SYK-CONTROL-PM15-5_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CONTROL-PM15-5;
+    rdfs:label "SYK-CONTROL-PM15-5";
     v-s:lastName "Оператор пульта5 БМ15"@ru;
     v-s:defaultAppointment d:SYK-CONTROL-PM15-5_appointment.
 d:SYK-CONTROL-PM15-5_position
@@ -2600,7 +2600,7 @@ d:SYK-CONTROL-PM15-6_person
     v-s:hasAccount d:SYK-CONTROL-PM15-6_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CONTROL-PM15-6;
+    rdfs:label "SYK-CONTROL-PM15-6";
     v-s:lastName "Оператор пульта6 БМ15"@ru;
     v-s:defaultAppointment d:SYK-CONTROL-PM15-6_appointment.
 d:SYK-CONTROL-PM15-6_position
@@ -2636,7 +2636,7 @@ d:SYK-CONTROL-PM14-7_person
     v-s:hasAccount d:SYK-CONTROL-PM14-7_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CONTROL-PM14-7;
+    rdfs:label "SYK-CONTROL-PM14-7";
     v-s:lastName "Оператор пульта7 БМ14"@ru;
     v-s:defaultAppointment d:SYK-CONTROL-PM14-7_appointment.
 d:SYK-CONTROL-PM14-7_position
@@ -2673,7 +2673,7 @@ d:SYK-SGP11_person
     v-s:hasAccount d:SYK-SGP11_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP11;
+    rdfs:label "SYK-SGP11";
     v-s:lastName "Приемосдатчик СГП 11"@ru;
     v-s:defaultAppointment d:SYK-SGP11_appointment.
 d:SYK-SGP11_position
@@ -2706,7 +2706,7 @@ d:SYK-SGP12_person
     v-s:hasAccount d:SYK-SGP12_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP12;
+    rdfs:label "SYK-SGP12";
     v-s:lastName "Приемосдатчик СГП 12"@ru;
     v-s:defaultAppointment d:SYK-SGP12_appointment.
 d:SYK-SGP12_position
@@ -2739,7 +2739,7 @@ d:SYK-SGP13_person
     v-s:hasAccount d:SYK-SGP13_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP13;
+    rdfs:label "SYK-SGP13";
     v-s:lastName "Приемосдатчик СГП 13"@ru;
     v-s:defaultAppointment d:SYK-SGP13_appointment.
 d:SYK-SGP13_position
@@ -2772,7 +2772,7 @@ d:SYK-SGP14_person
     v-s:hasAccount d:SYK-SGP14_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP14;
+    rdfs:label "SYK-SGP14";
     v-s:lastName "Приемосдатчик СГП 14"@ru;
     v-s:defaultAppointment d:SYK-SGP14_appointment.
 d:SYK-SGP14_position
@@ -2808,7 +2808,7 @@ d:SYK-SGP21_person
     v-s:hasAccount d:SYK-SGP21_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP21;
+    rdfs:label "SYK-SGP21";
     v-s:lastName "Приемосдатчик СГП 21"@ru;
     v-s:defaultAppointment d:SYK-SGP21_appointment.
 d:SYK-SGP21_position
@@ -2841,7 +2841,7 @@ d:SYK-SGP22_person
     v-s:hasAccount d:SYK-SGP22_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP22;
+    rdfs:label "SYK-SGP22";
     v-s:lastName "Приемосдатчик СГП 22"@ru;
     v-s:defaultAppointment d:SYK-SGP22_appointment.
 d:SYK-SGP22_position
@@ -2874,7 +2874,7 @@ d:SYK-SGP23_person
     v-s:hasAccount d:SYK-SGP23_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP23;
+    rdfs:label "SYK-SGP23";
     v-s:lastName "Приемосдатчик СГП 23"@ru;
     v-s:defaultAppointment d:SYK-SGP23_appointment.
 d:SYK-SGP23_position
@@ -2907,7 +2907,7 @@ d:SYK-SGP24_person
     v-s:hasAccount d:SYK-SGP24_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP24;
+    rdfs:label "SYK-SGP24";
     v-s:lastName "Приемосдатчик СГП 24"@ru;
     v-s:defaultAppointment d:SYK-SGP24_appointment.
 d:SYK-SGP24_position
@@ -2944,7 +2944,7 @@ d:SYK-SGP31_person
     v-s:hasAccount d:SYK-SGP31_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP31;
+    rdfs:label "SYK-SGP31";
     v-s:lastName "Приемосдатчик СГП 31"@ru;
     v-s:defaultAppointment d:SYK-SGP31_appointment.
 d:SYK-SGP31_position
@@ -2977,7 +2977,7 @@ d:SYK-SGP32_person
     v-s:hasAccount d:SYK-SGP32_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP32;
+    rdfs:label "SYK-SGP32";
     v-s:lastName "Приемосдатчик СГП 32"@ru;
     v-s:defaultAppointment d:SYK-SGP32_appointment.
 d:SYK-SGP32_position
@@ -3010,7 +3010,7 @@ d:SYK-SGP33_person
     v-s:hasAccount d:SYK-SGP33_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP33;
+    rdfs:label "SYK-SGP33";
     v-s:lastName "Приемосдатчик СГП 33"@ru;
     v-s:defaultAppointment d:SYK-SGP33_appointment.
 d:SYK-SGP33_position
@@ -3043,7 +3043,7 @@ d:SYK-SGP34_person
     v-s:hasAccount d:SYK-SGP34_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP34;
+    rdfs:label "SYK-SGP34";
     v-s:lastName "Приемосдатчик СГП 34"@ru;
     v-s:defaultAppointment d:SYK-SGP34_appointment.
 d:SYK-SGP34_position
@@ -3079,7 +3079,7 @@ d:SYK-SGP41_person
     v-s:hasAccount d:SYK-SGP41_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP41;
+    rdfs:label "SYK-SGP41";
     v-s:lastName "Приемосдатчик СГП 41"@ru;
     v-s:defaultAppointment d:SYK-SGP41_appointment.
 d:SYK-SGP41_position
@@ -3112,7 +3112,7 @@ d:SYK-SGP42_person
     v-s:hasAccount d:SYK-SGP42_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP42;
+    rdfs:label "SYK-SGP42";
     v-s:lastName "Приемосдатчик СГП 42"@ru;
     v-s:defaultAppointment d:SYK-SGP42_appointment.
 d:SYK-SGP42_position
@@ -3145,7 +3145,7 @@ d:SYK-SGP43_person
     v-s:hasAccount d:SYK-SGP43_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP43;
+    rdfs:label "SYK-SGP43";
     v-s:lastName "Приемосдатчик СГП 43"@ru;
     v-s:defaultAppointment d:SYK-SGP43_appointment.
 d:SYK-SGP43_position
@@ -3178,7 +3178,7 @@ d:SYK-SGP44_person
     v-s:hasAccount d:SYK-SGP44_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SGP44;
+    rdfs:label "SYK-SGP44";
     v-s:lastName "Приемосдатчик СГП 44"@ru;
     v-s:defaultAppointment d:SYK-SGP44_appointment.
 d:SYK-SGP44_position
@@ -3213,7 +3213,7 @@ d:SYK-OHRANA_person
     v-s:hasAccount d:SYK-OHRANA_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-OHRANA;
+    rdfs:label "SYK-OHRANA";
     v-s:lastName "Пульт управления ООО ЧОП Эгида"@ru;
     v-s:defaultAppointment d:SYK-OHRANA_appointment.
 d:SYK-OHRANA_position
@@ -3254,7 +3254,7 @@ d:SYK-HOTEL1_person
     v-s:hasAccount d:SYK-HOTEL1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-HOTEL1;
+    rdfs:label "SYK-HOTEL1";
     v-s:lastName "Работник гостиницы Виктория"@ru;
     v-s:defaultAppointment d:SYK-HOTEL1_appointment.
 d:SYK-HOTEL1_position
@@ -3289,7 +3289,7 @@ d:SYK-HOTEL2_person
     v-s:hasAccount d:SYK-HOTEL2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-HOTEL2;
+    rdfs:label "SYK-HOTEL2";
     v-s:lastName "Работник2 гостиницы Виктория"@ru;
     v-s:defaultAppointment d:SYK-HOTEL2_appointment.
 d:SYK-HOTEL2_position
@@ -3325,7 +3325,7 @@ d:SYK-PRS_person
     v-s:hasAccount d:SYK-PRS_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PRS;
+    rdfs:label "SYK-PRS";
     v-s:lastName "Работник на ПРС БМ14"@ru;
     v-s:defaultAppointment d:SYK-PRS_appointment.
 d:SYK-PRS_position
@@ -3361,7 +3361,7 @@ d:SYK-SMEN-PM11_person
     v-s:hasAccount d:SYK-SMEN-PM11_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM11;
+    rdfs:label "SYK-SMEN-PM11";
     v-s:lastName "Работник смены БМ11"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM11_appointment.
 d:SYK-SMEN-PM11_position
@@ -3398,7 +3398,7 @@ d:SYK-SMEN-PM14_person
     v-s:hasAccount d:SYK-SMEN-PM14_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM14;
+    rdfs:label "SYK-SMEN-PM14";
     v-s:lastName "Работник смены БМ14"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM14_appointment.
 d:SYK-SMEN-PM14_position
@@ -3434,7 +3434,7 @@ d:SYK-SMEN-PM15_person
     v-s:hasAccount d:SYK-SMEN-PM15_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM15;
+    rdfs:label "SYK-SMEN-PM15";
     v-s:lastName "Работник смены БМ15"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM15_appointment.
 d:SYK-SMEN-PM15_position
@@ -3470,7 +3470,7 @@ d:SYK-SMEN-PM21_person
     v-s:hasAccount d:SYK-SMEN-PM21_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM21;
+    rdfs:label "SYK-SMEN-PM21";
     v-s:lastName "Работник смены БМ21"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM21_appointment.
 d:SYK-SMEN-PM21_position
@@ -3506,7 +3506,7 @@ d:SYK-SMEN-PM14I_person
     v-s:hasAccount d:SYK-SMEN-PM14I_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM14I;
+    rdfs:label "SYK-SMEN-PM14I";
     v-s:lastName "Работник смены КИП БМ14"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM14I_appointment.
 d:SYK-SMEN-PM14I_position
@@ -3541,7 +3541,7 @@ d:SYK-SMEN-PM15I_person
     v-s:hasAccount d:SYK-SMEN-PM15I_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM15I;
+    rdfs:label "SYK-SMEN-PM15I";
     v-s:lastName "Работник смены КИП БМ15"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM15I_appointment.
 d:SYK-SMEN-PM15I_position
@@ -3577,7 +3577,7 @@ d:SYK-SMEN-CTMP_person
     v-s:hasAccount d:SYK-SMEN-CTMP_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-CTMP;
+    rdfs:label "SYK-SMEN-CTMP";
     v-s:lastName "Работник смены Цеха ПВВ ПЦ"@ru;
     v-s:defaultAppointment d:SYK-SMEN-CTMP_appointment.
 d:SYK-SMEN-CTMP_position
@@ -3612,7 +3612,7 @@ d:SYK-SMEN-CHKT_person
     v-s:hasAccount d:SYK-SMEN-CHKT_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-CHKT;
+    rdfs:label "SYK-SMEN-CHKT";
     v-s:lastName "Работник смены ЦПХ"@ru;
     v-s:defaultAppointment d:SYK-SMEN-CHKT_appointment.
 d:SYK-SMEN-CHKT_position
@@ -3648,7 +3648,7 @@ d:SYK-SMEN-PM15-1_person
     v-s:hasAccount d:SYK-SMEN-PM15-1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM15-1;
+    rdfs:label "SYK-SMEN-PM15-1";
     v-s:lastName "Работник смены1 БМ15"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM15-1_appointment.
 d:SYK-SMEN-PM15-1_position
@@ -3683,7 +3683,7 @@ d:SYK-SMEN-PM15-2_person
     v-s:hasAccount d:SYK-SMEN-PM15-2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-SMEN-PM15-2;
+    rdfs:label "SYK-SMEN-PM15-2";
     v-s:lastName "Работник смены2 БМ15"@ru;
     v-s:defaultAppointment d:SYK-SMEN-PM15-2_appointment.
 d:SYK-SMEN-PM15-2_position
@@ -3718,7 +3718,7 @@ d:SYK-VSTATION2_person
     v-s:hasAccount d:SYK-VSTATION2_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-VSTATION2;
+    rdfs:label "SYK-VSTATION2";
     v-s:lastName "Работник ЦРЩПИ"@ru;
     v-s:defaultAppointment d:SYK-VSTATION2_appointment.
 d:SYK-VSTATION2_position
@@ -3754,7 +3754,7 @@ d:SYK-RADUGA_person
     v-s:hasAccount d:SYK-RADUGA_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-RADUGA;
+    rdfs:label "SYK-RADUGA";
     v-s:lastName "Специалист ООО Радуга"@ru;
     v-s:defaultAppointment d:SYK-RADUGA_appointment.
 d:SYK-RADUGA_position
@@ -3795,7 +3795,7 @@ d:SYK-CCDG_person
     v-s:hasAccount d:SYK-CCDG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-CCDG;
+    rdfs:label "SYK-CCDG";
     v-s:lastName "Специалист ОТО эксп"@ru;
     v-s:defaultAppointment d:SYK-CCDG_appointment.
 d:SYK-CCDG_position
@@ -3831,7 +3831,7 @@ d:SYK-PP1_person
     v-s:hasAccount d:SYK-PP1_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PP1;
+    rdfs:label "SYK-PP1";
     v-s:lastName "Старший аппаратчик ХЦ ТЭЦ"@ru;
     v-s:defaultAppointment d:SYK-PP1_appointment.
 d:SYK-PP1_position
@@ -3867,7 +3867,7 @@ d:SYK-EMOUNTER-PM15_person
     v-s:hasAccount d:SYK-EMOUNTER-PM15_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-EMOUNTER-PM15;
+    rdfs:label "SYK-EMOUNTER-PM15";
     v-s:lastName "Электромонтер БМ15"@ru;
     v-s:defaultAppointment d:SYK-EMOUNTER-PM15_appointment.
 d:SYK-EMOUNTER-PM15_position
@@ -3903,7 +3903,7 @@ d:SYK-PPMG_person
     v-s:hasAccount d:SYK-PPMG_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-PPMG;
+    rdfs:label "SYK-PPMG";
     v-s:lastName "Электромонтер СТЭО ПБ"@ru;
     v-s:defaultAppointment d:SYK-PPMG_appointment.
 d:SYK-PPMG_position
@@ -3939,7 +3939,7 @@ d:SYK-EDISP_person
     v-s:hasAccount d:SYK-EDISP_account;
     v-s:firstName "Группа"@ru;
     v-s:birthday "1970-07-15T20:00:00.000Z"^^xsd:dateTime;
-    rdfs:label "SYK-EDISP;
+    rdfs:label "SYK-EDISP";
     v-s:lastName "Энергодиспетчер"@ru;
     v-s:defaultAppointment d:SYK-EDISP_appointment.
 d:SYK-EDISP_position
