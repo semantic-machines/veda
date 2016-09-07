@@ -30,6 +30,13 @@ s-wf:var_initiator
   v-wf:varDefineScope v-wf:Net ;
   rdfs:isDefinedBy s-wf: ;
 .
+s-wf:var_controller
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "controller" ;
+  rdfs:label "Контролирующий"@ru ;
+  v-wf:varDefineScope v-wf:Net ;
+  rdfs:isDefinedBy s-wf: ;
+.
 s-wf:var_task_comment
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "taskComment" ;
@@ -1518,6 +1525,12 @@ s-wf:def_exec_actor
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:def_exec_controller
+  rdf:type v-wf:ExecutorDefinition ;
+  v-wf:executorExpression "get_properties_chain (process.getLocalVariable ('controller'), [{$get:'v-s:occupation'}], process.getLocalVariable ('controller'))" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:def_exec_initiator
   rdf:type v-wf:ExecutorDefinition ;
   v-wf:executorExpression "process.getInputVariable ('initiator')" ;
@@ -1557,6 +1570,17 @@ s-wf:map_set_actor_from_executor_or_PI_actor
     """;
   rdfs:isDefinedBy s-wf: ;
 .
+
+s-wf:map_set_actor_from_executor_or_PI_controller
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_controller ;
+  v-wf:mappingExpression
+    """
+        process.getInputVariable ('controller');
+    """;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 
 s-wf:map_set_add_request_actor_from_initiator
   rdf:type v-wf:Mapping ;
@@ -1612,7 +1636,7 @@ s-wf:net_coordination
   v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local, s-wf:map_last_actor_4_PLV_actor;
   v-wf:inputVariable s-wf:var_msg_template, s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
-  v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
+  v-wf:localVariable s-wf:var_result, s-wf:var_actor, s-wf:var_controller, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
   v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action.
 
 s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
@@ -1702,7 +1726,7 @@ s-wf:nc_t3
   v-wf:split v-wf:XOR;
   rdfs:label "Установить: actor = [исполнитель текущего процесса], actor_task_date_to, actor_task_action, actor_task_comment"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
-  v-wf:completedMapping s-wf:map_set_actor_from_executor_or_PI_actor, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
+  v-wf:completedMapping s-wf:map_set_actor_from_executor_or_PI_actor, s-wf:map_set_actor_from_executor_or_PI_controller, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
   v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment, s-wf:map_initiator;
   v-wf:locationX "248"^^xsd:integer.
 
@@ -1800,7 +1824,7 @@ s-wf:nc_oc
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
-  v-wf:executor s-wf:def_exec_actor;
+  v-wf:executor s-wf:def_exec_controller;
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
@@ -1823,7 +1847,7 @@ s-wf:nc_r_to_i_finish a v-wf:Flow;
 
 s-wf:nc_to_finish a v-wf:Flow;
   rdfs:isDefinedBy s-wf:;
-  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
+  v-wf:predicate "(!process.getInputVariable ('controller')) || task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_finish;
 .
