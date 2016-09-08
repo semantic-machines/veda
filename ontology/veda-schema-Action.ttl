@@ -42,5 +42,4 @@ v-s:Term
   rdfs:label "Term"@en ;
   rdfs:label "Срок"@ru ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:Journaling ;
 .

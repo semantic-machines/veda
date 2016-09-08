@@ -40,7 +40,7 @@ v-s:OutcomingLetter
 v-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Normative Document"@en ;
+  rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
 .
 v-s:hasRequiremen
@@ -49,6 +49,21 @@ v-s:hasRequiremen
   rdfs:label "Требование"@ru ;
   rdfs:range v-s:NormativeDocumentRequirement ;
   rdfs:domain v-s:NormativeDocument ;
+.
+#---------------------------------------------------------
+v-s:NormativeDocumentRequirement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Embedded ;  
+  rdfs:label "Normative document requirement"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+.
+v-s:checkQuestion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Check question"@en ;
+  rdfs:label "Контрольный вопрос"@ru ;
+  rdfs:range xsd:string ;
+  v-s:NormativeDocumentRequirement ;
 .
 #---------------------------------------------------------
 v-s:Comment
@@ -87,7 +102,6 @@ v-s:Observation
   rdfs:label "Observation"@en ;
   rdfs:label "Наблюдение"@ru ;
 .
-
 v-s:deviationDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Deviation"@en ;
@@ -102,13 +116,7 @@ v-s:isPositiveObservation
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Observation ;
 .
-v-s:CheckedNormativeDocumentRequirement
-  rdf:type owl:ObjectProperty ;
-  rdfs:range v-s:Appointment ;
-  rdfs:label "Checked normative document requirement"@en ;
-  rdfs:label "Проверяемые требования"@ru ;
-  rdfs:domain v-s:Observation ;
-.
+
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
