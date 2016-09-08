@@ -288,6 +288,17 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
 
             test_fail_read(ticket_user2, new_test_doc1_uri, new_test_doc1);
+
+	    	try
+	    	{
+        		// test UPDATE rights	
+        		res = put_individual(ticket_user2.id, new_test_doc1);
+				ok (false);
+	    	}
+	    	catch (e)
+	    	{
+				ok (true);
+	    	}	    
         });
 
     test(
