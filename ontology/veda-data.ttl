@@ -98,11 +98,11 @@ v-s:StatusRejectedRiskAccepted
 
 # -- вид обслуживания (останова обрудования) --
 
-d:d8f4df97c49fd99ff23fe6bd9d491ca2e
+d:8f4df97c49fd99ff23fe6bd9d491ca2e
   rdf:type v-s:MaintenanceKind ;
   rdfs:label "Ежемесячный"@ru ;
 .
-d:d9eb9e3ee7b06641bbe895d94093f09d3
+d:9eb9e3ee7b06641bbe895d94093f09d3
   rdf:type v-s:MaintenanceKind ;
   rdfs:label "Ежегодный"@ru ;
 .
