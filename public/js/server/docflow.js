@@ -1128,7 +1128,7 @@ function prepare_start_form(ticket, document)
     var new_process_uri = genUri();
 
     var author_uri;
-    var ff = get_property_chain(ticket, document, 'v-s:publisher', 'v-s:employee');
+    var ff = get_property_chain(ticket, document, 'v-s:creator', 'v-s:employee');
     if (ff)
         author_uri = getUri(ff['field']);
 

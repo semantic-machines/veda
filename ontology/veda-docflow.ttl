@@ -469,7 +469,7 @@ v-df:rul_QuestionTransform4
 .
 v-df:rul_QuestionTransform5
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:publisher')" ;
+  v-wf:segregateElement "contentName('v-s:creator')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'initiator')";
@@ -566,7 +566,7 @@ v-df:rul_InstructionTransform4
 .
 v-df:rul_InstructionTransform5
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:publisher')" ;
+  v-wf:segregateElement "contentName('v-s:creator')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'initiator')";

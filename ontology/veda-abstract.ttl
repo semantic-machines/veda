@@ -56,6 +56,13 @@ v-s:publisher
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Thing ;
 .
+v-s:creator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Creator"@en ;
+  rdfs:label "Создатель"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:lastEditor
   rdf:type owl:ObjectProperty ;
   rdfs:label "Last editor"@en ;

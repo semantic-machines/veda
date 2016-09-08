@@ -256,8 +256,8 @@ put_individual(ticket, membership, _event_id);
 cfg:Event_2
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner) и издателям (v-s:publisher)";
-  rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner) и издателям (v-s:publisher)";
+  rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
+  rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -283,7 +283,7 @@ if (is_new && !is_ontology) {
 */
 
 var doc_uri = document['@'],
-  owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher"];
+  owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
 
 owner_properties.map(function (property_uri) {
   var owner_uri = getUri( document[property_uri] );
@@ -345,7 +345,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 {
 //  print('+J');
 
-    var publisher_uri = getUri(document['v-s:publisher']);
+    var publisher_uri = getUri(document['v-s:creator']);
 //  print('+J1 '+document['@']);
 //  print('+J1 '+toJson(document));
     if (!publisher_uri) { return; }

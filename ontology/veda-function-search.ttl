@@ -571,6 +571,7 @@ v-fs:AttributiveRequestModel
     "rdf:type",
     "v-s:author",
     "v-s:publisher",
+    "v-s:creator",
     "v-s:lastEditor",
     "v-s:created",
     "v-s:edited",

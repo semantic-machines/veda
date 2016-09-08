@@ -2297,8 +2297,8 @@ v-ui:TaskCompletedTemplate
       <div id="decision">
         <div rel="v-wf:takenDecision">
           <span>
-            <span about="v-s:publisher" property="rdfs:label"></span>:
-            <strong rel="v-s:publisher" template="v-ui:LabelTemplate"></strong>
+            <span about="v-s:creator" property="rdfs:label"></span>:
+            <strong rel="v-s:creator" template="v-ui:LabelTemplate"></strong>
           </span>
         </div>
         <span about="v-wf:takenDecision" property="rdfs:label"></span>:

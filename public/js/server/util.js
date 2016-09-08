@@ -330,7 +330,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     );
     version['v-s:created'] = [{data: new Date(), type: _Datetime}];
     version['v-s:edited'] = [];
-    version['v-s:publisher'] = newUri(user_uri);
+    version['v-s:creator'] = newUri(user_uri);
     version['v-s:lastEditor'] = [];
 
     put_individual(ticket, version, _event_id);

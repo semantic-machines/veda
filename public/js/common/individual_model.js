@@ -67,7 +67,7 @@ veda.Module(function (veda) { "use strict";
       this["v-s:edited"] = [ now ];
       this["v-s:lastEditor"] = [ editor ];
       if (!this.hasValue("v-s:created")) this["v-s:created"] = [ now ];
-      if (!this.hasValue("v-s:publisher")) this["v-s:publisher"] = [ editor ];
+      if (!this.hasValue("v-s:creator")) this["v-s:creator"] = [ editor ];
     });
 
     if (container) {

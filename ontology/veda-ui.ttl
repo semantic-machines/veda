@@ -445,10 +445,10 @@ v-ui:SystemPropertiesTemplate
   <br>
   <div class="row">
     <div class="col-md-3 col-xs-6">
-      <em about="v-s:publisher" property="rdfs:label"></em>
-      <veda-control type="link" rel="v-s:publisher" class="-view -edit search fulltext dropdown"></veda-control>
-      <div about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></div>
-      <div rel="v-s:publisher" template="v-ui:LabelTemplate" class="-view -edit search"></div>
+      <em about="v-s:creator" property="rdfs:label"></em>
+      <veda-control type="link" rel="v-s:creator" class="-view -edit search fulltext dropdown"></veda-control>
+      <div about="@" rel="v-s:creator" template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <div rel="v-s:creator" template="v-ui:LabelTemplate" class="-view -edit search"></div>
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:created" property="rdfs:label"></em>
@@ -493,7 +493,7 @@ v-ui:VersionedTemplate
           <th width="1%">#</th>
           <th about="rdfs:label" property="rdfs:label"></th>
           <th about="v-s:created" property="rdfs:label"></th>
-          <th about="v-s:publisher" property="rdfs:label"></th>
+          <th about="v-s:creator" property="rdfs:label"></th>
         </tr>
       </thead>
       <tbody id="versions"></tbody>
@@ -519,7 +519,7 @@ v-ui:VersionedTemplate
       + '<td>#</td>'
       + '<td about="@" template="v-ui:LabelLinkTemplate" class="view edit -search"></td>'
       + '<td about="@" property="v-s:created" class="view edit -search"></td>'
-      + '<td about="@" rel="v-s:publisher" template="v-ui:LabelTemplate" class="view edit -search"></td>'
+      + '<td about="@" rel="v-s:creator" template="v-ui:LabelTemplate" class="view edit -search"></td>'
     + '</tr>';
   var tbody = $("#versions", template);
   var btn = $("button", template).click(function () {
@@ -586,7 +586,7 @@ v-ui:LinkTemplate
         </div>
         <span rel="v-s:to" template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
         <div class="view -edit -search" style="font-style:italic">
-          <small property="v-s:publisher"></small><small property="v-s:created"></small>
+          <small property="v-s:creator"></small><small property="v-s:created"></small>
         </div>
       </div>
     </div>
@@ -1228,7 +1228,7 @@ v-ui:FileTemplateWithComment
       </a>
     </div>
     <div class="view -edit -search" style="font-style:italic">
-      <small rel="v-s:publisher" template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
+      <small rel="v-s:creator" template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
     </div>
   </div>
 </div>
