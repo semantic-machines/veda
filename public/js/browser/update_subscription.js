@@ -56,10 +56,10 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
         }
       break;
       default:
-        try {
-          // Update individuals
-          uris = msg.split(",");
-          for (var i = 0; i < uris.length; i++) {
+        // Update individuals
+        uris = msg.split(",");
+        for (var i = 0; i < uris.length; i++) {
+          try {
             var tmp = uris[i].split("="),
                 uri = tmp[0],
                 updateCounter = parseInt(tmp[1]),
@@ -75,9 +75,9 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
             if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
               individual.reset();
             }
+          } catch (e) {
+            console.log("error: individual update service failed for id =", uri, e);
           }
-        } catch (e) {
-          //console.log("error: individual update service failed", e);
         }
       break;
     }
