@@ -54,7 +54,7 @@ v-s:hasRequiremen
 v-s:NormativeDocumentRequirement
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:Embedded ;  
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Normative document requirement"@en ;
   rdfs:label "Нормативный документ"@ru ;
 .
@@ -63,7 +63,7 @@ v-s:checkQuestion
   rdfs:label "Check question"@en ;
   rdfs:label "Контрольный вопрос"@ru ;
   rdfs:range xsd:string ;
-  rdfs:domain v-s:NormativeDocumentRequirement ;  
+  rdfs:domain v-s:NormativeDocumentRequirement ;
 .
 #---------------------------------------------------------
 v-s:Comment
