@@ -1044,16 +1044,19 @@ cfg:Event_16
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       parentUri = getUri(document["v-s:parent"]),
+      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
       parent = get_individual(ticket, parentUri);
-  if (parent && backwardPropertyUri) {
-    parent[backwardPropertyUri] = parent[backwardPropertyUri] || [];
-    var contains = !!parent[backwardPropertyUri].filter(function (item) {
-      return (item.data === backwardLinkUri);
-    }).length;
-    if (!contains) {
-      parent[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
-      put_individual(ticket, parent, _event_id);
-    }
+  if (!parent || !backwardPropertyUri) { return; }
+  parent[backwardPropertyUri] = parent[backwardPropertyUri] || [];
+  var filtered = parent[backwardPropertyUri].filter(function (item) {
+    return (item.data !== backwardLinkUri);
+  });
+  var contains = filtered.length !== parent[backwardPropertyUri].length;
+  if (isDeleted) {
+    parent[backwardPropertyUri] = filtered;
+  } else if (!contains) {
+    parent[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
   }
+  put_individual(ticket, parent, _event_id);
   """ ;
 .
