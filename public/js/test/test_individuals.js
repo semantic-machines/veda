@@ -473,6 +473,7 @@ for (i = 0; i < 1; i++)
             new_test_doc3['v-s:memberOf'] = newUri(memberOf);
             var res = put_individual(ticket.id, new_test_doc3);
             wait_module(subject_manager, res.op_id);
+            wait_module(acl_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);

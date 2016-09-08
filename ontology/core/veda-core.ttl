@@ -136,18 +136,6 @@ v-s:PermissionStatement
   rdfs:label "Запись о выдаче прав"@ru ;
 .
 
-v-s:Person
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:comment "A person." ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Person"@en ;
-  rdfs:label "Персона"@ru ;
-.
-
 v-s:Transform
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;

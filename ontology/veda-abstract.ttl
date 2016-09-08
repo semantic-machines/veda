@@ -224,6 +224,13 @@ v-s:hasSector
   rdfs:range v-s:Sector ;
   rdfs:domain v-s:Thing ;
 .
+v-s:origin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Origin"@en ;
+  rdfs:label "Происхождение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
 ### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
