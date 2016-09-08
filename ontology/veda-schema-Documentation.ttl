@@ -63,7 +63,7 @@ v-s:checkQuestion
   rdfs:label "Check question"@en ;
   rdfs:label "Контрольный вопрос"@ru ;
   rdfs:range xsd:string ;
-  v-s:NormativeDocumentRequirement ;
+  rdfs:domain v-s:NormativeDocumentRequirement ;  
 .
 #---------------------------------------------------------
 v-s:Comment
