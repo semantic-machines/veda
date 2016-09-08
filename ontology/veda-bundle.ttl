@@ -289,3 +289,8 @@ v-s:NoRightsForOperation
   rdfs:label "У вас нет прав для выполнения этой операции"@ru ;
   rdfs:label "You have no rights to perform this opertion"@en ;
 .
+v-s:Attention
+  rdf:type v-s:Bundle ;
+  rdfs:label "Внимание!"@ru ;
+  rdfs:label "Attention!"@en ;
+.

@@ -244,6 +244,10 @@ v-fc:BlankTemplate
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="blank">
       <div id="object"></div>
+      <div id="no-rights" class="alert alert-warning container hidden">
+        <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
+        <button class="btn btn-default" about="v-s:Back" property="rdfs:label" onclick="window.history.back();"></button>
+      </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="mgmt">
       <em about="rdfs:label" property="rdfs:label"></em>
@@ -263,21 +267,27 @@ v-fc:BlankTemplate
   var self = individual,
       holder = $("#object", template),
       object = self.object;
-  object.present(holder, undefined, "edit");
 
-  object.one("individual:afterSave", saveHandler);
-  object.one("individual:afterReset", cancelHandler);
-  template.on("remove", function () {
-    object.off("individual:afterSave", saveHandler);
-    object.off("individual:afterReset", cancelHandler);
-  });
-  function saveHandler () {
-    delete self.object;
-    setTimeout(function () {
-      object.present("#main");
-    }, 100);
+  var _class = object["rdf:type"][0];
+  if (_class.rights.hasValue("v-s:canCreate", true)) {
+    object.present(holder, undefined, "edit");
+
+    object.one("individual:afterSave", saveHandler);
+    object.one("individual:afterReset", cancelHandler);
+    template.on("remove", function () {
+      object.off("individual:afterSave", saveHandler);
+      object.off("individual:afterReset", cancelHandler);
+    });
+    function saveHandler () {
+      delete self.object;
+      setTimeout(function () {
+        object.present("#main");
+      }, 100);
+    }
+    function cancelHandler () { window.history.back(); }
+  } else {
+    $("#no-rights", template).removeClass("hidden");
   }
-  function cancelHandler () { window.history.back(); }
   //# sourceURL=v-fc:BlankTemplate
 </script>
   """
