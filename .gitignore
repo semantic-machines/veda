@@ -33,3 +33,4 @@ veda.properties
 veda-ft-indexer
 veda-bootstrap
 *.out
+/veda-ttlreader
