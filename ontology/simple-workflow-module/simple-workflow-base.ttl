@@ -2016,7 +2016,7 @@ s-wf:ss1 a v-s:SavedSearch;
 s-wf:map_msg_template_4_SV_default_template
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_msg_template ;
-  v-wf:mappingExpression  "process.getInputVariable('$template')?process.getInputVariable('$template'):newUri ('m-l:msg-template-optiflow')";
+  v-wf:mappingExpression  "process.getInputVariable('$template')?process.getInputVariable('$template'):newUri ('m-l:msg-template-universal')";
   rdfs:isDefinedBy s-wf: ;
 .
 
