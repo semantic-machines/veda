@@ -2,21 +2,34 @@
 
 function down_right_and_store(process, task)
 {
+    return change_rights(process, task, [{"data":"-r--"}]);
+}
+
+function change_rights(process, task, rightset)
+{
     try
     {
 print ("@JS down_right_and_store");
         var doc_id = process.getInputVariable('docId');
 print ("@JS doc_id=", toJson (doc_id));
+print ("@JS rightset=", toJson (rightset));
+        var rset = []; 
+        if (rightset[0].data.indexOf('r')>=0) {
+            rset.push(can_read);
+        }
+        if (rightset[0].data.indexOf('u')>=0) {
+            rset.push(can_update);
+        }
 
         if (doc_id)
         {
-	    var executor = process.getExecutor();
-
-	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
+    	    var executor = process.getExecutor();
+    
+    	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
 print ("@JS executor=", toJson (executor));
-	    if (executor)
-        	addRight(ticket, [can_read], getUri (executor), getUri (doc_id));
+    	    if (executor)
+            	addRight(ticket, rset, getUri (executor), getUri (doc_id));
 
             var instanceOf = getUri(process['v-wf:instanceOf']);
 
