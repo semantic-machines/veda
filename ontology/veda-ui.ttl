@@ -442,7 +442,6 @@ v-ui:SystemPropertiesTemplate
   v-ui:template """
 <div>
   <h4 about="v-s:SystemProperties" property="rdfs:label"></h4>
-  <br>
   <div class="row">
     <div class="col-md-3 col-xs-6">
       <em about="v-s:creator" property="rdfs:label"></em>
@@ -1882,7 +1881,6 @@ td:AppointmentTemplate1
             <veda-control rel="v-s:occupation" type="link" class="-view edit search fullsearch fulltext"></veda-control>
           </div>
         </div>
-        <br>
         <div class="row">
           <div class="col-md-6">
             <em about="v-s:parentUnit" property="rdfs:label"></em>
@@ -1933,7 +1931,7 @@ td:AccountTemplate1
       </div>
       </div>
       <div class="panel-body">
-        <h3 property="rdfs:label"><br></h3>
+        <h3 property="rdfs:label"></h3>
         <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
         <div class="row">
             <div class="col-md-12">
@@ -1946,12 +1944,12 @@ td:AccountTemplate1
         <div class="row">
           <div class="col-md-6">
                <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
-               <div property="v-s:mailbox"><br></div>
+               <div property="v-s:mailbox"></div>
                <veda-control property="v-s:mailbox" type="string" class="-view edit search"></veda-control>
           </div>
           <div class="col-md-6">
                <em about="v-s:login" property="rdfs:label">Логин</em>
-               <div property="v-s:login"><br></div>
+               <div property="v-s:login"></div>
                <veda-control property="v-s:login" type="string" class="-view edit search"></veda-control>
         </div>
         </div>
