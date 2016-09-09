@@ -1,0 +1,46 @@
+{
+	"name": "veda-ttlreader",
+	"description": "veda-ttlreader",
+	"dependencies": {
+		"pacahon_third_party": "1.0.13", 
+		"backtrace-d": "0.1.0", 
+		"requests": "0.3.0",
+                "libasync": "0.7.9"
+	},
+        "versions": ["libRequests", "isModule"],
+        "license": "LGPL v3",
+        "libs": [
+                "raptor2"
+        ],
+	"sourcePaths":[
+            "../../veda/common",
+            "../../veda/onto",
+            "../../veda/util",
+            "../../veda/core/impl",
+            "../../veda/core/az",
+            "../../veda/core/search",
+            "../../veda/core/storage",
+            "../../veda/core/common",
+            "../../veda/ttlreader"
+	],
+        "sourceFiles":[
+	"../../lib64/libxapiand.a",
+        "../../veda/core/bind/lmdb_header.d",
+	"../../veda/core/bind/xapian_d_header.d",
+	"../../veda/core/util/utils.d",
+        "../../veda/core/bind/libraptor_header.d",
+	"../../veda/core/util/raptor2individual.d"
+	],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	},
+	{
+	    "name": "trace-app",
+	    "versions": ["trace_api_l1"],
+	    "targetType": "executable"
+	    
+	}]
+}
