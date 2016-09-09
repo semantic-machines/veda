@@ -421,12 +421,12 @@ veda.Module(function Util(veda) { "use strict";
 
     Object.getOwnPropertyNames(individual.properties).forEach(function (key)
     {
-      if (key !== '@') {
-          var hiddenField = document.createElement("input");
-          hiddenField.setAttribute("type", "hidden");
-          hiddenField.setAttribute("name", key.replace(':','_'));
-          hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
-          form.appendChild(hiddenField);
+      if ( key !== '@' && individual.hasValue(key) ) {
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", key.replace(':','_'));
+        hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
+        form.appendChild(hiddenField);
       }
     });
     document.body.appendChild(form);
