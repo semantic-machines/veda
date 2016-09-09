@@ -270,11 +270,6 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
 void processed(string[] changes, Context context)
 {
-    string guest_ticket = context.get_ticket_from_storage("guest");
-
-    if (guest_ticket is null)
-        context.create_new_ticket("cfg:Guest", "4000000", "guest");
-
     Ticket sticket = context.sys_ticket();
     log.trace("find systicket [%s]", sticket.id);
 

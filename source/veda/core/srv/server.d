@@ -159,6 +159,11 @@ Context init_core(string node_id)
             register(text(key), value);
 
         sticket = core_context.sys_ticket(true);
+	    string guest_ticket = core_context.get_ticket_from_storage("guest");
+
+	    if (guest_ticket is null)
+	        core_context.create_new_ticket("cfg:Guest", "4000000", "guest");
+        
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //        tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
