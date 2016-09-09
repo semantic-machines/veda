@@ -57,29 +57,28 @@ private enum CMD : byte
     NOP    = 64
 }
 
-File          *ff_key2slot_r = null;
+File *ff_key2slot_r = null;
 public int[ string ] read_key2slot()
 {
     int[ string ] key2slot;
 
-	if (ff_key2slot_r is null)
-	{
-		string file_name_key2slot = xapian_info_path ~ "/key2slot";
-	try
-	{
-		ff_key2slot_r = new File(file_name_key2slot, "r");
-	}
-	catch (Exception ex){}
-	
-	}
+    if (ff_key2slot_r is null)
+    {
+        string file_name_key2slot = xapian_info_path ~ "/key2slot";
+        try
+        {
+            ff_key2slot_r = new File(file_name_key2slot, "r");
+        }
+        catch (Exception ex) {}
+    }
 
-	if (ff_key2slot_r !is null)
-	{
-            ff_key2slot_r.seek(0);
-            auto buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
-            key2slot = deserialize_key2slot(cast(string)buf);
+    if (ff_key2slot_r !is null)
+    {
+        ff_key2slot_r.seek(0);
+        auto buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
+        key2slot = deserialize_key2slot(cast(string)buf);
 //            writeln("@context:read_key2slot:key2slot", key2slot);
-	}
+    }
     return key2slot;
 }
 
@@ -116,17 +115,17 @@ class PThreadContext : Context
     private bool        API_ready = true;
     private string      external_write_storage_url;
 
-	public Authorization acl_indexes ()
-	{
-		if (_acl_indexes is null)
-	        _acl_indexes        = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl");
-	        
-		return  _acl_indexes;
-	}
-	
+    public Authorization acl_indexes()
+    {
+        if (_acl_indexes is null)
+            _acl_indexes = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl");
+
+        return _acl_indexes;
+    }
+
     this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage_url = null, Authorization in_acl_indexes = null)
     {
-		_acl_indexes = in_acl_indexes;
+        _acl_indexes = in_acl_indexes;
 
         external_write_storage_url = _external_write_storage_url;
 
@@ -145,8 +144,8 @@ class PThreadContext : Context
         name = context_name;
         id   = _id;
 
-        is_traced_module[ P_MODULE.ticket_manager ]   = true;
-        is_traced_module[ P_MODULE.subject_manager ]  = true;
+        is_traced_module[ P_MODULE.ticket_manager ]  = true;
+        is_traced_module[ P_MODULE.subject_manager ] = true;
 //        is_traced_module[ P_MODULE.acl_preparer ]      = true;
 //        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
 //        is_traced_module[ P_MODULE.scripts ]          = true;
@@ -224,6 +223,18 @@ class PThreadContext : Context
 
                     long op_id;
                     storage_module.put(P_MODULE.ticket_manager, "systicket", ticket.id, false, op_id);
+                    log.trace("systicket [%s] was created", ticket.id);
+
+                    Individual sys_account_permission;
+                    sys_account_permission.uri = "p:" ~ ticket.id;
+                    sys_account_permission.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
+                    sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
+                    sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
+                    sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
+                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", false, false);
+
+                    if (opres.result == ResultCode.OK)
+                        log.trace("permission [%s] was created", sys_account_permission);
                 }
                 catch (Exception ex)
                 {
@@ -327,7 +338,7 @@ class PThreadContext : Context
 
     public int[ string ] get_key2slot()
     {
-		return read_key2slot ();
+        return read_key2slot();
 //        string key2slot_str;
 
 //        if (inividuals_storage !is null)
@@ -486,7 +497,7 @@ class PThreadContext : Context
 
         new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
 
-        if (ticket_id !is null)
+        if (ticket_id !is null && ticket_id.length > 0)
             new_ticket.uri = ticket_id;
         else
         {
@@ -586,7 +597,7 @@ class PThreadContext : Context
             if (login == null || login.length < 1 || password == null || password.length < 6)
                 return ticket;
 
-	    	login = replaceAll(login, regex(r"[-]","g"), " +");
+            login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket;
             Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
@@ -797,9 +808,9 @@ class PThreadContext : Context
 
         if (acl_indexes !is null)
         {
-        	//log.trace ("reopen_ro_acl_storage_db");
+            //log.trace ("reopen_ro_acl_storage_db");
             acl_indexes.reopen_db();
-        }    
+        }
     }
 
     // ////////// external ////////////
@@ -1341,8 +1352,8 @@ class PThreadContext : Context
                             // для обновляемого индивида проверим доступность бита Update
                             if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, this, true) != Access.can_update)
                             {
-    	                    	    res.result = ResultCode.Not_Authorized;
-	                            return res;
+                                res.result = ResultCode.Not_Authorized;
+                                return res;
                             }
 
                             // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
@@ -1389,13 +1400,13 @@ class PThreadContext : Context
                     indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
                     string new_state = individual2cbor(indv);
-                    
+
                     if (new_state.length > max_size_of_individual)
                     {
-	                    res.result = ResultCode.Size_too_large;
-	                    return res;
-                    }    
-	                    
+                        res.result = ResultCode.Size_too_large;
+                        return res;
+                    }
+
 
                     res.result = storage_module.put(P_MODULE.subject_manager, indv.uri, new_state, ignore_freeze,
                                                     res.op_id);
@@ -1536,7 +1547,7 @@ class PThreadContext : Context
                     {
                         result = true;
 
-                        string res;// = veda.core.threads.acl_manager.backup(backup_id);
+                        string res; // = veda.core.threads.acl_manager.backup(backup_id);
 
                         if (res == "")
                             result = false;
@@ -1619,77 +1630,78 @@ class PThreadContext : Context
         }
         return res;
     }
-    
+
     //////////////////////////////////////////////// MODULES INTERACTION
-    
-private struct ModuleInfo
-{
-    string name;
-    long   op_id;
-    long   committed_op_id;
-    bool   is_Ok;
-}
 
-private string[ P_MODULE ] fn_info_r__2__pmodule;
-private File *[ P_MODULE ] ff_info_r__2__pmodule;
-private ubyte[] buff;
-
-private ModuleInfo get_info(P_MODULE _module)
-{
-    ModuleInfo res;
-
-    res.is_Ok = false;
-
-    try
+    private struct ModuleInfo
     {
-        string fn_info_r = fn_info_r__2__pmodule.get(_module, null);
-		File *ff_info_r;
-		
-        if (fn_info_r is null)
+        string name;
+        long   op_id;
+        long   committed_op_id;
+        bool   is_Ok;
+    }
+
+    private         string[ P_MODULE ] fn_info_r__2__pmodule;
+    private File *[ P_MODULE ] ff_info_r__2__pmodule;
+    private ubyte[] buff;
+
+    private ModuleInfo get_info(P_MODULE _module)
+    {
+        ModuleInfo res;
+
+        res.is_Ok = false;
+
+        try
         {
-            fn_info_r = module_info_path ~ "/" ~ text(_module) ~ "_info";
-            ff_info_r = new File(fn_info_r, "r");
-            fn_info_r__2__pmodule[ _module ] = fn_info_r;
-            ff_info_r__2__pmodule[ _module ] = ff_info_r;
-        }
-        else
-        {
-	        ff_info_r = ff_info_r__2__pmodule.get(_module, null);
-        }   
-        
-        if (ff_info_r !is null)
-        {
-			ff_info_r.seek(0);
-			
-			if (buff is null) buff  = new ubyte[ 4096];
-			        	
-			ubyte[] newbuff = ff_info_r.rawRead(buff);
-            string str = cast(string)newbuff[0..$];
-            if (str !is null)
-            {            	
-                string[] ch = str[ 0..$ - 1 ].split(';');
-                //writeln("@ queue.get_info ch=", ch);
-                if (ch.length != 3)
+            string fn_info_r = fn_info_r__2__pmodule.get(_module, null);
+            File   *ff_info_r;
+
+            if (fn_info_r is null)
+            {
+                fn_info_r                        = module_info_path ~ "/" ~ text(_module) ~ "_info";
+                ff_info_r                        = new File(fn_info_r, "r");
+                fn_info_r__2__pmodule[ _module ] = fn_info_r;
+                ff_info_r__2__pmodule[ _module ] = ff_info_r;
+            }
+            else
+            {
+                ff_info_r = ff_info_r__2__pmodule.get(_module, null);
+            }
+
+            if (ff_info_r !is null)
+            {
+                ff_info_r.seek(0);
+
+                if (buff is null)
+                    buff = new ubyte[ 4096 ];
+
+                ubyte[] newbuff = ff_info_r.rawRead(buff);
+                string  str     = cast(string)newbuff[ 0..$ ];
+                if (str !is null)
                 {
-                    return res;
+                    string[] ch = str[ 0..$ - 1 ].split(';');
+                    //writeln("@ queue.get_info ch=", ch);
+                    if (ch.length != 3)
+                    {
+                        return res;
+                    }
+                    res.name            = ch[ 0 ];
+                    res.op_id           = to!long (ch[ 1 ]);
+                    res.committed_op_id = to!long (ch[ 2 ]);
+                    res.is_Ok           = true;
                 }
-                res.name            = ch[ 0 ];
-                res.op_id           = to!long (ch[ 1 ]);
-                res.committed_op_id = to!long (ch[ 2 ]);
-                res.is_Ok = true;
             }
         }
-    }
-    catch (Throwable tr)
-    {
-        log.trace("vmodule:get_info fail, err=%s", tr.msg);
+        catch (Throwable tr)
+        {
+            log.trace("vmodule:get_info fail, err=%s", tr.msg);
+        }
+
+        //writefln ("info[%s], res(%s): name=%s, op_id=%d, committed_op_id=%d", text (_module), text (res.is_Ok), res.name, res.op_id, res.committed_op_id);
+
+        return res;
     }
 
-                    	//writefln ("info[%s], res(%s): name=%s, op_id=%d, committed_op_id=%d", text (_module), text (res.is_Ok), res.name, res.op_id, res.committed_op_id);
-
-    return res;
-}    
-    
 
     public long get_operation_state(P_MODULE module_id)
     {
@@ -1697,12 +1709,13 @@ private ModuleInfo get_info(P_MODULE _module)
 
         version (useInnerModules)
         {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id ==
+                P_MODULE.ltr_scripts)
             {
-            	ModuleInfo info = get_info(module_id);
-            	
-            	if (info.is_Ok)
-	            	res = info.committed_op_id;
+                ModuleInfo info = get_info(module_id);
+
+                if (info.is_Ok)
+                    res = info.committed_op_id;
             }
             else if (module_id == P_MODULE.acl_preparer)
             {
@@ -1722,18 +1735,19 @@ private ModuleInfo get_info(P_MODULE _module)
     }
 
 
-    public  bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
+    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
     {
         if (module_id == id)
             return false;
 
         version (useInnerModules)
         {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id == P_MODULE.ltr_scripts)
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id ==
+                P_MODULE.ltr_scripts)
             {
                 return wait_module(module_id, op_id, timeout);
             }
-            else 
+            else
             {
                 Tid tid = getTid(module_id);
                 if (tid != Tid.init)
@@ -1746,34 +1760,34 @@ private ModuleInfo get_info(P_MODULE _module)
         }
         return true;
     }
-    
-private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
-{    
-    long wait_time = 0;
-    long op_id_from_module = 0;
-    //writefln ("wait_module pm=%s op_id=%d", text (pm), op_id);
-    while (wait_op_id > op_id_from_module)
+
+    private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
     {
-		ModuleInfo info = get_info(pm);
-            	
-        if (info.is_Ok)
-	       	op_id_from_module = info.committed_op_id;
-		else
-            return false;		
-	       	    	
-        if (op_id_from_module >= wait_op_id)
-            return true;
+        long wait_time         = 0;
+        long op_id_from_module = 0;
 
-        core.thread.Thread.sleep(dur!("msecs")(100));
-        wait_time += 100;
-
-        if (wait_time > timeout)
+        //writefln ("wait_module pm=%s op_id=%d", text (pm), op_id);
+        while (wait_op_id > op_id_from_module)
         {
-            log.trace("WARN! timeout (wait opid=%d, opid from module = %d) wait_module:%s", wait_op_id, op_id_from_module, text (pm));
-            return false;
+            ModuleInfo info = get_info(pm);
+
+            if (info.is_Ok)
+                op_id_from_module = info.committed_op_id;
+            else
+                return false;
+
+            if (op_id_from_module >= wait_op_id)
+                return true;
+
+            core.thread.Thread.sleep(dur!("msecs")(100));
+            wait_time += 100;
+
+            if (wait_time > timeout)
+            {
+                log.trace("WARN! timeout (wait opid=%d, opid from module = %d) wait_module:%s", wait_op_id, op_id_from_module, text(pm));
+                return false;
+            }
         }
+        return true;
     }
-    return true;
-}
-    
 }

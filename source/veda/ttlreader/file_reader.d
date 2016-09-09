@@ -5,9 +5,9 @@
 module veda.core.io.file_reader;
 
 import libasync, libasync.watcher, libasync.threads;
-import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib;
+import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
-       std.digest.md, std.utf, std.path, std.stdio : writeln, File;
+       std.digest.md, std.utf, std.path, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.core.util.raptor2individual, veda.util.cbor8individual;
 import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
        veda.core.common.know_predicates,
@@ -19,35 +19,58 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "FILE");
+    {
+        process_name = "ttl_reader";
+        _log         = new logger("veda-core-" ~ process_name, "log", "FILE");
+    }
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
+bool f_listen_exit = false;
 
 shared static ~this() { destroyAsyncThreads(); }
+extern (C) void handleTermination1(int _signal)
+{
+    log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    log.close();
+    writeln("!SYS: ", process_name, ": exit");
+    f_listen_exit = true;
+}
+
+shared static this()
+{
+    bsd_signal(SIGINT, &handleTermination1);
+    process_name = "ttl_reader";
+}
 
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
-void file_reader_thread(P_MODULE id, string node_id, int checktime)
+void main(char[][] args)
 {
-    core.thread.Thread tr = core.thread.Thread.getThis();
-    tr.name = std.conv.text(id);
+    string parent_url = "http://127.0.0.1:8080";
+
+    core.thread.Thread.sleep(dur!("seconds")(2));
+//	int checktime = 30;
+
+//    core.thread.Thread tr = core.thread.Thread.getThis();
+//    tr.name = std.conv.text(id);
 
     try { mkdir("ontology"); } catch (Exception ex) {}
 
     ubyte[] out_data;
 
-    // SEND ready
-    receive((Tid tid_response_reciever)
-            {
-                send(tid_response_reciever, true);
-            });
+//    // SEND ready
+//    receive((Tid tid_response_reciever)
+//            {
+//                send(tid_response_reciever, true);
+//            });
 
-    Context context = new PThreadContext(node_id, "file_reader", id);
+    Context context = new PThreadContext(process_name, "file_reader", P_MODULE.file_reader, parent_url);
 
     auto    oFiles = dirEntries(onto_path, SpanMode.depth);
 
     long    count_individuals = context.count_individuals();
-    if (count_individuals < 2)
+    if (count_individuals < 10)
     {
         string[] files;
 
@@ -78,6 +101,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
                     do
                     {
                         cnt = watcher.readChanges(changes);
+
                         string[] _files;
 
                         foreach (i; 0 .. cnt)
@@ -93,6 +117,11 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 //                        processed(files, context);
                         if (_files.length > 0)
                         {
+                            processed(_files, context);
+                        }
+/*
+                        if (_files.length > 0)
+                        {
                             auto oFiles = dirEntries(onto_path, SpanMode.depth);
                             string[] files;
 
@@ -106,6 +135,7 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
 
                             processed(files, context);
                         }
+ */
                     } while (cnt > 0);
                 });
 
@@ -117,7 +147,12 @@ void file_reader_thread(P_MODULE id, string node_id, int checktime)
     }
 
     while (ev_loop.loop())
-        continue;
+    {
+        if (f_listen_exit)
+            break;
+        else
+            continue;
+    }
 }
 
 //SysTime[ string ] file_modification_time;
@@ -241,6 +276,7 @@ void processed(string[] changes, Context context)
         context.create_new_ticket("cfg:Guest", "4000000", "guest");
 
     Ticket sticket = context.sys_ticket();
+    log.trace("find systicket [%s]", sticket.id);
 
     Individual[ string ] individuals = check_and_read_changed(changes, context);
 
@@ -362,7 +398,13 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
             indv_ttl_file.addResource("v-s:resource", Resource(DataType.Uri, ss.uri));
 
+            Resources type = ss.getResources(rdf__type);
 
+            if (type is Resources.init)
+            {
+                log.trace("Skip invalid individual (not content type), [%s]", *ss);
+                continue;
+            }
 //            if (context !is null)
 //                try
 //                {
@@ -374,12 +416,21 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
             Individual indv_in_storage = individuals.get(ss.uri, Individual.init);
 
+            if (indv_in_storage !is Individual.init)
+            {
+                log.trace("Skip individual (already defined), [%s]", *ss);
+                continue;
+            }
+
+            individuals[ ss.uri ] = *ss;
+/*
             // обьеденить данные: ss = ss + indv_in_storage
             Individual ss1 = ss.apply(indv_in_storage);
 
             individuals[ ss.uri ] = ss1.repare_unique("rdf:type");
             if (trace_msg[ 33 ] == 1)
                 log.trace("apply, uri=%s %s", ss.uri, ss1);
+ */
         }
 
 //        if (context !is null)

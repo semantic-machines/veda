@@ -8,7 +8,7 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import util.logger, veda.core.util.utils, veda.core.threads.load_info;
-    import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context, veda.core.io.file_reader;
+    import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
     import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager;
     import veda.onto.individual, veda.onto.resource;
 }
@@ -161,8 +161,8 @@ Context init_core(string node_id)
         sticket = core_context.sys_ticket(true);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
-        wait_starting_thread(P_MODULE.file_reader, tids);
+//        tids[ P_MODULE.file_reader ] = spawn(&veda.core.io.file_reader.file_reader_thread, P_MODULE.file_reader, node_id, 5);
+//        wait_starting_thread(P_MODULE.file_reader, tids);
 
 //        io.file_reader.processed(core_context);
         if (node.getStatus() != ResultCode.OK)
