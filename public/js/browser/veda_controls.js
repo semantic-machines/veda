@@ -1237,6 +1237,12 @@
           $("body").append($modal);
           var cntr = $(".modal-body", $modal);
           newVal.present(cntr, undefined, "edit");
+          newVal.one("individual:beforeReset", function () {
+            $modal.modal("hide").remove();
+          });
+          newVal.one("individual:afterSave", function () {
+            $modal.modal("hide").remove();
+          });
         }
       });
     } else {

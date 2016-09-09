@@ -853,6 +853,12 @@ v-ui:IconModalTemplate
       newMode = parentTmpl.attr("mode");
     }
     individual.present(cntr, undefined, newMode);
+    individual.one("individual:beforeReset", function () {
+      $modal.modal("hide").remove();
+    });
+    individual.one("individual:afterSave", function () {
+      $modal.modal("hide").remove();
+    });
     template.on("remove", function () { $modal.remove(); });
   });
   //# sourceURL=v-ui:IconModalTemplate

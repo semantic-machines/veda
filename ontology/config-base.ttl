@@ -1045,18 +1045,26 @@ cfg:Event_16
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       parentUri = getUri(document["v-s:parent"]),
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
-      parent = get_individual(ticket, parentUri);
-  if (!parent || !backwardPropertyUri) { return; }
-  parent[backwardPropertyUri] = parent[backwardPropertyUri] || [];
-  var filtered = parent[backwardPropertyUri].filter(function (item) {
-    return (item.data !== backwardLinkUri);
-  });
-  var contains = filtered.length !== parent[backwardPropertyUri].length;
-  if (isDeleted) {
-    parent[backwardPropertyUri] = filtered;
-  } else if (!contains) {
+      parent = get_individual(ticket, parentUri),
+      parent_original = JSON.stringify(parent);
+  if (!parent || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
+    return;
+  } else if (isDeleted) {
+    for (var property_uri in parent) {
+      if (property_uri === "@") { continue; }
+      parent[property_uri] = parent[property_uri].filter(function (item) {
+        return (item.data !== backwardLinkUri);
+      });
+    }
+  } else if (backwardPropertyUri) {
+    parent[backwardPropertyUri] = parent[backwardPropertyUri] || [];
+    parent[backwardPropertyUri] = parent[backwardPropertyUri].filter(function (item) {
+      return (item.data !== backwardLinkUri);
+    });
     parent[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
   }
-  put_individual(ticket, parent, _event_id);
+  if (JSON.stringify(parent).length !== parent_original.length) {
+    put_individual(ticket, parent, _event_id);
+  }
   """ ;
 .
