@@ -194,12 +194,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     function afterRecoverHandler() {
       deletedAlert.remove();
+      template.removeClass("deleted");
     }
     function afterDeleteHandler() {
-      template.prepend(deletedAlert);
-      recoverBtn.click(function () {
-        template.trigger("recover");
-      });
+      template.addClass("deleted");
+      if ( container.prop("id") === "main" ) {
+        template.prepend(deletedAlert);
+        recoverBtn.click(function () {
+          template.trigger("recover");
+        });
+      }
     }
     individual.on("individual:afterRecover", afterRecoverHandler);
     individual.on("individual:afterDelete", afterDeleteHandler);
