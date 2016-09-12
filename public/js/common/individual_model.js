@@ -287,7 +287,12 @@ veda.Module(function (veda) { "use strict";
     try {
       put_individual(veda.ticket, this.properties);
     } catch (e) {
-      this.draft(parent);
+      if (e.status !== 472) {
+        this.draft(parent);
+      } else {
+        //alert("Нет прав на изменение объекта\nNo rights to modify object\n\n" + this.toString());
+        console.log("Нет прав на изменение объекта / No rights to modify object\n\n" + this.toString());
+      }
     }
     this._.isNew = false;
     this._.isSync = true;
