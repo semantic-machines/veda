@@ -271,23 +271,25 @@ v-fc:BlankTemplate
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
     object.present(holder, undefined, "edit");
-
     object.one("individual:afterSave", saveHandler);
     object.one("individual:afterReset", cancelHandler);
     template.on("remove", function () {
       object.off("individual:afterSave", saveHandler);
       object.off("individual:afterReset", cancelHandler);
-    });
-    function saveHandler () {
+      self.off("individual:beforeSave");
+      self.off("individual:afterSave");
       delete self.object;
-      setTimeout(function () {
-        object.present("#main");
-      }, 100);
-    }
-    function cancelHandler () { window.history.back(); }
+    });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
+  function saveHandler () {
+    delete self.object;
+    setTimeout(function () {
+      object.present("#main");
+    }, 100);
+  }
+  function cancelHandler () { window.history.back(); }
   //# sourceURL=v-fc:BlankTemplate
 </script>
   """
