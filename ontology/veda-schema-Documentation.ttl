@@ -109,6 +109,13 @@ v-s:deviationDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
+v-s:recommendationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Recommendation"@en ;
+  rdfs:label "Рекомендация"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
 v-s:isPositiveObservation
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Positive observation"@en ;
