@@ -463,10 +463,11 @@ veda.Module(function (veda) { "use strict";
    * Clone individual with different (generated) id
    * @return {veda.IndividualModel} clone of this individual with different id.
    */
-  proto.clone = function (uri) {
+  proto.clone = function () {
     var individual = JSON.parse( JSON.stringify(this.properties) );
     individual["@"] = veda.Util.genUri();
     var clone = new veda.IndividualModel(individual);
+    clone.isNew(true);
     return clone;
   };
 
@@ -475,8 +476,8 @@ veda.Module(function (veda) { "use strict";
    * Check whether individual is synchronized with db
    * @return {boolean}
    */
-  proto.isSync = function () {
-    return this._.isSync;
+  proto.isSync = function (value) {
+    return ( typeof value !== "undefined" ? this._.isSync = value : this._.isSync );
   };
 
   /**
@@ -484,8 +485,8 @@ veda.Module(function (veda) { "use strict";
    * Check whether individual is new (not saved in db)
    * @return {boolean}
    */
-  proto.isNew = function () {
-    return this._.isNew;
+  proto.isNew = function (value) {
+    return ( typeof value !== "undefined" ? this._.isNew = value : this._.isNew );
   };
 
   /**
