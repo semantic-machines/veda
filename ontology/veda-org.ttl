@@ -57,6 +57,16 @@ v-s:hasFunctionalChief
   rdfs:range v-s:Appointment ;
 .
 ### ------------------------------------------------------
+v-s:OrgGroup
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:comment "organizational group"@en ;
+  rdfs:comment "организационная группа"@ru ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "organizational group"@en ;
+  rdfs:label "организационная группа"@ru ;
+.
+### ------------------------------------------------------
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
