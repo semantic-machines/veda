@@ -1781,7 +1781,7 @@ td:PersonTemplate1
             <div class="row">
               <div class="col-md-12">
                 <h3>
-                  <span property="rdfs:label"><br></span>
+                  <span property="rdfs:label"></span>
                   <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
                 </h3>
               </div>
@@ -1789,22 +1789,22 @@ td:PersonTemplate1
             <div class="row">
               <div class="col-md-3">
                 <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-                <div property="v-s:lastName"><br></div>
+                <div property="v-s:lastName"></div>
                 <veda-control property="v-s:lastName" type="string" class="-view edit search"></veda-control>
               </div>
               <div class="col-md-3">
                 <em about="v-s:firstName" property="rdfs:label">Имя</em>
-                <div property="v-s:firstName"><br></div>
+                <div property="v-s:firstName"></div>
                 <veda-control property="v-s:firstName" type="string" class="-view edit search"></veda-control>
               </div>
               <div class="col-md-3">
                 <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-                <div property="v-s:middleName"><br></div>
+                <div property="v-s:middleName"></div>
                 <veda-control property="v-s:middleName" type="string" class="-view edit search"></veda-control>
               </div>
                 <div class="col-md-3">
                 <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-                <div property="v-s:birthday"><br></div>
+                <div property="v-s:birthday"></div>
                 <veda-control property="v-s:birthday" type="dateTime" class="-view edit search"></veda-control>
               </div>
             </div>
