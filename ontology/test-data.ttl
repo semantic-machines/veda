@@ -766,3 +766,10 @@ d:khvostia_financialController
   rdfs:label "Хвостикова : Финансовый контролер"@ru
 .
 
+d:Bychina_create_Person
+  rdf:type v-s:PermissionStatement ;
+  v-s:author cfg:VedaSystem ;
+  v-s:permissionSubject td:AndreyBychin ;
+  v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
+  v-s:canCreate "true"^^xsd:boolean ;
+.
