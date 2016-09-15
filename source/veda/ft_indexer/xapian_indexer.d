@@ -755,7 +755,7 @@ public class IndexerContext
         if (err != 0)
             log.trace("EX! FT:commit:deleted fail=%d", counter);
 
-        set_count_indexed(counter);
+//        set_count_indexed(counter);
         //log.trace("@FT:commit=%d", counter);
     }
 
