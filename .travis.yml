@@ -70,7 +70,5 @@ after_script:
   - grunt coveralls
   - date    
   - cat $PWD/veda-core-_*.log          
-  - cat $PWD/veda-core-scripts_*.log          
-  - cat $PWD/veda-core-fanout_*.log          
   - cat $PWD/veda_s.log
   
