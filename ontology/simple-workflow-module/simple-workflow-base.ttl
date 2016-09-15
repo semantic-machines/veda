@@ -618,7 +618,7 @@ s-wf:ComplexRouteStartForm_Template
       </div>
     </div>
   </div>
-<script type="text/javascript">
+<script>
   var stages = [
     'informing',
     'coordinator1',
@@ -882,7 +882,7 @@ s-wf:codelet_down_right
   rdfs:label "Понизить права" ;
   v-s:script """
   process.getInputVariable ('rightset')?
-  change_rights (process, task, process.getInputVariable ('rightset')) : 
+  change_rights (process, task, process.getInputVariable ('rightset')) :
   down_right_and_store (process, task)
 """ ;
   rdfs:isDefinedBy s-wf: ;
@@ -991,7 +991,7 @@ s-wf:UserTaskFormTemplate
 
   </div>
 </div>
-<script type="text/javascript">
+<script>
   var radioTmpl = $(".radio.decision", template);
   if (individual.hasValue("v-wf:possibleDecisionClass")) {
     individual["v-wf:possibleDecisionClass"].map( function (value, index) {
