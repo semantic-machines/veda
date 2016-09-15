@@ -14,13 +14,16 @@
   v-s:loadPriority 6 ;
 .
 
-### CLASSES ###
-### ------------------------------------------------------
+# ------------------------------------------------------------ КЛАССЫ --
+
 v-s:OrganizationUnit
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Spatial ;
+  rdfs:subClassOf v-s:Registered ;      
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
@@ -56,38 +59,81 @@ v-s:hasFunctionalChief
   rdfs:domain v-s:OrganizationUnit ;
   rdfs:range v-s:Appointment ;
 .
-### ------------------------------------------------------
-v-s:OrgGroup
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:OrganizationUnit ;
-  rdfs:comment "organizational group"@en ;
-  rdfs:comment "организационная группа"@ru ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "organizational group"@en ;
-  rdfs:label "организационная группа"@ru ;
-.
-### ------------------------------------------------------
+
+# ------------------------------------------------------------ 
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
-  rdfs:comment "An organization"@en ;
-  rdfs:comment "Организация, юридическое лицо"@ru ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
 .
+v-s:taxId
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "VAT"@en ;
+  rdfs:label "ИНН"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:taxRegistrationCause
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Tax registration cause classifier"@en ;
+  rdfs:label "КПП"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:taxRegistrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Tax registration number"@en ;
+  rdfs:label "ОГРН"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:hasContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contractor"@en ;
+  rdfs:label "Контрагент"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:hasSeparateDivision
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Separate division"@en ;
+  rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:hasOrganizationDossier
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Separate division"@en ;
+  rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:range v-s:OrganizationDossier ;
+  rdfs:domain v-s:Organization ;
+.
 
-### ------------------------------------------------------
+# ------------------------------------------------------------ 
 v-s:Department
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
-  rdfs:comment "Department"@en ;
-  rdfs:comment "Структурное подразделение организации"@ru ;
   rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
 .
+v-s:parentOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Separate division"@en ;
+  rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Department ;
+.
+# ------------------------------------------------------------ 
+v-s:SeparateDivision
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Organization ;
+  rdfs:subClassOf v-s:Department ;  
+  rdfs:label "Separate division"@en ;
+  rdfs:label "Обособленное подразделение"@ru ;
+.
 
-### ------------------------------------------------------
+# ------------------------------------------------------------ 
 v-s:Position
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
@@ -95,7 +141,7 @@ v-s:Position
   rdfs:label "Должность"@ru ;
 .
 
-### ------------------------------------------------------
+# ------------------------------------------------------------ 
 v-s:HRRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -109,7 +155,7 @@ v-s:employee
   rdfs:label "Работник"@ru ;
   rdfs:range v-s:Person ;
 .
-### ------------------------------------------------------
+# ------------------------------------------------------------ 
 v-s:Appointment
   rdf:type owl:Class ;
   rdfs:label "Appointment"@en ;
@@ -137,16 +183,14 @@ v-s:valid
   rdfs:label "Valid"@en ;
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
-.
-### ------------------------------------------------------
+# ------------------------------------------------------------ 
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
   rdfs:label "Отсутствие"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
 .
-
-### ------------------------------------------------------
+# ------------------------------------------------------------ 
 v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -173,4 +217,4 @@ v-s:defaultAppointment
   rdfs:domain v-s:Person ;
 .
 
-### INDIVIDUALS ###
+

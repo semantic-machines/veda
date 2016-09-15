@@ -144,3 +144,21 @@ v-s:WorkReport
   rdfs:label "Work Report"@en ;
   rdfs:label "Отчет о работе"@ru ;
 .
+# ------------------------------------------------------------ 
+v-s:Contractor
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;  
+  rdfs:subClassOf v-s:Organization ;
+  rdfs:label "Contractor"@en ;
+  rdfs:label "Контрагент"@ru ;
+.
+# ------------------------------------------------------------ 
+v-s:OrganizationDossier
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;  
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:СlassifiedRus ;
+  rdfs:subClassOf v-s:BackwardLink ;    
+  rdfs:label "Organization dossier"@en ;
+  rdfs:label "Досье по организации"@ru ;
+.
