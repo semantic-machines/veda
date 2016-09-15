@@ -251,72 +251,70 @@ class VedaModule
 
             string data = cs.pop();
 
-            if (data !is null)
+            if (data is null)
+                break;
+
+            count_readed++;
+
+            Individual imm;
+
+            if (data !is null && cbor2individual(&imm, data) < 0)
             {
-                count_readed++;
+                log.trace("ERR! invalid individual:[%s]", data);
+                continue;
+            }
 
-                Individual imm;
+            string  new_bin  = imm.getFirstLiteral("new_state");
+            string  prev_bin = imm.getFirstLiteral("prev_state");
+            string  user_uri = imm.getFirstLiteral("user_uri");
+            string  event_id = imm.getFirstLiteral("event_id");
+            INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
+            op_id = imm.getFirstInteger("op_id");
 
-                if (data !is null && cbor2individual(&imm, data) < 0)
+            Individual prev_indv, new_indv;
+            if (new_bin !is null && cbor2individual(&new_indv, new_bin) < 0)
+            {
+                log.trace("ERR! invalid individual:[%s]", new_bin);
+            }
+            else
+            {
+                //writeln ("@read from queue new_indv.uri=", new_indv.uri, ", op_id=", op_id);
+
+                if (prev_bin !is null && cbor2individual(&prev_indv, prev_bin) < 0)
                 {
-                    log.trace("ERR! invalid individual:[%s]", data);
-                    continue;
+                    log.trace("ERR! invalid individual:[%s]", prev_bin);
                 }
+            }
 
-                string  new_bin  = imm.getFirstLiteral("new_state");
-                string  prev_bin = imm.getFirstLiteral("prev_state");
-                string  user_uri = imm.getFirstLiteral("user_uri");
-                string  event_id = imm.getFirstLiteral("event_id");
-                INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
-                op_id = imm.getFirstInteger("op_id");
+            count_success_prepared++;
 
-                Individual prev_indv, new_indv;
-                if (new_bin !is null && cbor2individual(&new_indv, new_bin) < 0)
+            //writeln ("%1 prev_bin=[", prev_bin, "], \nnew_bin=[", new_bin, "]");
+            if (onto is null)
+                onto = context.get_onto();
+
+            onto.update_class_in_hierarchy(new_indv, true);
+
+            cache_of_indv.put(new_indv.uri, new_bin);
+
+            try
+            {
+                bool res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, op_id);
+
+                if (res == true)
                 {
-                    log.trace("ERR! invalid individual:[%s]", new_bin);
+                    cs.commit();
+                    put_info();
                 }
                 else
                 {
-                    //writeln ("@read from queue new_indv.uri=", new_indv.uri, ", op_id=", op_id);
-
-                    if (prev_bin !is null && cbor2individual(&prev_indv, prev_bin) < 0)
-                    {
-                        log.trace("ERR! invalid individual:[%s]", prev_bin);
-                    }
-                }
-
-                count_success_prepared++;
-
-                //writeln ("%1 prev_bin=[", prev_bin, "], \nnew_bin=[", new_bin, "]");
-                if (onto is null)
-                    onto = context.get_onto();
-
-                onto.update_class_in_hierarchy(new_indv, true);
-
-                cache_of_indv.put(new_indv.uri, new_bin);
-
-                try
-                {
-                    bool res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, op_id);
-
-                    if (res == true)
-                    {
-                        cs.commit();
-                        put_info();
-                    }
-                    else
-                    {
-                        log.trace("message fail prepared, sleep and repeate...");
-                        core.thread.Thread.sleep(dur!("seconds")(10));
-                    }
-                }
-                catch (Throwable ex)
-                {
-                    log.trace("EX! ex=%s", ex.msg);
+                    log.trace("message fail prepared, sleep and repeate...");
+                    core.thread.Thread.sleep(dur!("seconds")(10));
                 }
             }
-            else
-                break;
+            catch (Throwable ex)
+            {
+                log.trace("EX! ex=%s", ex.msg);
+            }
         }
         if (count_readed != count_success_prepared)
             log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
@@ -390,6 +388,8 @@ private int websocket_write_back(lws *wsi_in, string str)
 }
 
 long last_committed_op_id;
+long last_check_time;
+
 
 extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
 {
@@ -398,12 +398,22 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
     switch (reason)
     {
     case lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID:
+
         g_child_process.thread_id();
         if (last_committed_op_id < g_child_process.committed_op_id)
         {
             last_committed_op_id = g_child_process.committed_op_id;
             g_child_process.put_info();
         }
+
+        long now = Clock.currTime().stdTime();
+
+        if (now - last_check_time > 1_000_000)
+        {
+            last_check_time = now;
+            g_child_process.prepare_queue();
+        }
+
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
