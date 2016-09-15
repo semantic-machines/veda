@@ -597,7 +597,7 @@ v-wf:NetTemplate
     </ul>
 </div>
 
-<script type="text/javascript">
+<script>
 var wrapper = $(".workflow-canvas-wrapper", template),
   height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
   fullWidth = $("#full-width", template),
@@ -684,7 +684,7 @@ v-wf:ProcessTemplate
   </div>
 </div>
 
-<script type="text/javascript">
+<script>
 var wrapper = $(".workflow-canvas-wrapper", template),
   height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
   fullWidth = $("#full-width", template),
@@ -1481,7 +1481,7 @@ v-wf:VariableTemplate
     <ul><li rel="v-wf:variableScope" template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
   </div>
 </span>
-<script type="text/javascript">
+<script>
   if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
   var valHolder = $("#values", template);
   individual["v-wf:variableValue"].map( function (value) {
