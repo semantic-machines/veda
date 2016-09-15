@@ -1122,7 +1122,7 @@ v-fs:AttributiveSearchTemplate
   }
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
-<div class="container-fluid">
+<div class="container">
   <h2 about="@" property="rdfs:label"></h2>
   <div id="params">
     <hr>

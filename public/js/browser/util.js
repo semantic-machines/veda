@@ -185,7 +185,7 @@ veda.Module(function Util(veda) { "use strict";
     return result;
   };
 
-  veda.Util.queryFromIndividual = function (individual) {
+  /*veda.Util.queryFromIndividual = function (individual) {
     // Serialize individual as search query
     var query;
     var allProps = Object.getOwnPropertyNames(individual.properties)
@@ -254,6 +254,106 @@ veda.Module(function Util(veda) { "use strict";
       .join("&&");
     query = allProps ? "(" + allProps + ")" : undefined;
     return query;
+  }
+*/
+
+  veda.Util.queryFromIndividual = function (individual) {
+    var query;
+    var flat = veda.Util.flatten(individual.properties);
+    var allProps = Object.getOwnPropertyNames(flat)
+      .map(function (property_uri) {
+        if (property_uri === "@") { return }
+        var values = flat[property_uri];
+        var oneProp;
+        switch (values[0].type) {
+          case "Integer":
+          case "Decimal":
+            oneProp =
+              values.length === 1 ? "'" + property_uri + "'==[" + values[0].data + "," + values[0].data + "]" :
+              values.length > 1 ? "'" + property_uri + "'==[" + values[0].data + "," + values[values.length-1].data + "]" :
+              undefined;
+            break;
+          // Date
+          case "Datetime":
+              var start = values[0].data.substring(0,10)+"T00:00:00",
+                  end;
+              if (values.length === 1) {
+                end = values[0].data.substring(0,10)+"T23:59:59";
+                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
+              } else if (values.length > 1) {
+                end = values[values.length-1].data.substring(0,10)+"T23:59:59";
+                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
+              } else {
+                oneProp = undefined;
+              }
+            break;
+          case "Boolean":
+            oneProp = values
+              .map( function (value) {
+                return "'" + property_uri + "'=='" + value.data + "'";
+              })
+              .join("||");
+            break;
+          case "String":
+            oneProp = values
+              .filter(function(item){return !!item && !!item.valueOf();})
+              .map( function (value) {
+                return "'" + property_uri + "'=='" + value.data + "*'";
+              })
+              .join("||");
+            break;
+          case "Uri":
+            oneProp = values
+              .filter(function(item){return !!item && !!item.valueOf();})
+              .map( function (value) {
+                return "'" + property_uri + "'=='" + value.data + "'";
+              })
+              .join("||");
+            break;
+        }
+        return oneProp ? "(" + oneProp + ")" : undefined;
+      })
+      .filter(function(item){return !!item;})
+      .join("&&");
+    query = allProps ? "(" + allProps + ")" : undefined;
+    return query;
+  }
+
+  veda.Util.flatten = function flatten(object, prefix, union, depth) {
+    if (typeof union === "undefined") {
+      union = {};
+    }
+    if (typeof prefix === "undefined") {
+      prefix = "";
+    }
+    if (typeof depth === "undefined") {
+      depth = 0;
+    }
+    if (depth === 5) {
+      return;
+    }
+    for (var property_uri in object) {
+      if (property_uri === "@") { continue; }
+      var values = object[property_uri];
+      var prefixed = prefix ? prefix + "." + property_uri : property_uri;
+      for (var i = 0; i < values.length; i++) {
+        var value = values[i];
+        if (value.type === "Uri") {
+          var individ = new veda.IndividualModel(value.data);
+          //if ( true ) {
+          if ( individ.isNew() ) {
+            flatten(individ.properties, prefixed, union, depth+1);
+          } else {
+            union[prefixed] = union[prefixed] ? union[prefixed] : [];
+            union[prefixed].push( value );
+          }
+        } else {
+          union[prefixed] = union[prefixed] ? union[prefixed] : [];
+          union[prefixed].push( value );
+        }
+      }
+    }
+    return union;
   }
 
   veda.Util.transform = function (individual, template, transformId, modal) {
