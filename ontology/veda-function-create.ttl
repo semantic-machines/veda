@@ -105,7 +105,7 @@ v-fc:FunctionCreateTemplate
     </div>
     <div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
       <h4 about="v-fc:ChooseType" property="rdfs:label"></h4>
-      <veda-control rel="v-fc:targetType" type="link" class="fulltext dropdown"></veda-control>
+      <veda-control rel="v-fc:targetType" data-type="link" class="fulltext dropdown"></veda-control>
       <br>
       <div id="holder"></div>
     </div>
@@ -252,7 +252,7 @@ v-fc:BlankTemplate
     <div role="tabpanel" class="tab-pane" id="mgmt">
       <em about="rdfs:label" property="rdfs:label"></em>
       <p property="rdfs:label" class="view -edit search"></p>
-      <veda-control type="string" property="rdfs:label" class="-view edit search"></veda-control>
+      <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
       <br>
       <div>
         <button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
