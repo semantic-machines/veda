@@ -44,9 +44,9 @@ basic.getDrivers().forEach(function(drv){
     basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
     driver.executeScript("document.querySelector('strong[about=\"rdfs:label\"]').scrollIntoView(true);");
-    driver.findElement({css:'veda-control[type="multilingualString"]'}).click()
+    driver.findElement({css:'veda-control[data-type="multilingualString"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click label field");});
-    driver.findElement({css:'veda-control[type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
+    driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill label field");});
     clickButton(driver, "save");
     driver.sleep(basic.FAST_OPERATION);
