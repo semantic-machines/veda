@@ -211,7 +211,7 @@ interface Context
 
     int[ string ] get_key2slot();
 
-    public bool ft_check_for_reload(void delegate() load);
+//    public bool ft_check_for_reload(void delegate() load);
     public bool acl_check_for_reload(void delegate() load);
 
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
@@ -491,17 +491,17 @@ public long get_acl_manager_op_id()
 
 ////
 
-private shared long count_indexed = 0;
+//private shared long count_indexed = 0;
 
-public void set_count_indexed(long data)
-{
-    atomicStore(count_indexed, data);
-}
+//public void set_count_indexed(long data)
+//{
+//    atomicStore(count_indexed, data);
+//}
 
-public long get_count_indexed()
-{
-    return atomicLoad(count_indexed);
-}
+//public long get_count_indexed()
+//{
+//    return atomicLoad(count_indexed);
+//}
 
 /////////////////////////////// global_systicket //////////////////////////
 

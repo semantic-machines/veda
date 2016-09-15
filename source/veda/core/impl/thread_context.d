@@ -417,12 +417,12 @@ class PThreadContext : Context
 
     int  _timeout = 10;
 
-    long ft_local_count;
-    long ft_local_time_check = 0;
-    public bool ft_check_for_reload(void delegate() load)
-    {
-        return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
-    }
+//    long ft_local_count;
+//    long ft_local_time_check = 0;
+//    public bool ft_check_for_reload(void delegate() load)
+//    {
+//        return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
+//    }
 
     long acl_local_count;
     long acl_local_time_check = 0;
