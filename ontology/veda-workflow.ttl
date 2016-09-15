@@ -757,15 +757,6 @@ v-wf:taskPropertySpecification4
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
 .
-v-wf:taskPropertySpecification5
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация ожидаемого типа результата для класса Задача"@ru ;
-  rdfs:label "Expected result type property specification for Task class"@en ;
-  v-ui:forClass v-wf:Task ;
-  v-ui:forProperty v-wf:expectedResultType ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:queryPrefix "('rdf:type'=='owl:Class')"^^xsd:string ;
-.
 v-wf:taskPropertySpecification6
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация трансформаций для класса Задача"@ru ;
@@ -784,6 +775,7 @@ v-wf:taskPropertySpecification7
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:queryPrefix "('rdf:type'=='v-wf:ExecutorDefinition' ||  'rdf:type'=='v-s:Codelet' ||  'rdf:type'=='v-s:Appointment')"^^xsd:string ;
 .
+
 v-wf:taskPropertySpecification8
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация исполнителя для класса Задача"@ru ;
@@ -807,6 +799,7 @@ v-wf:taskPropertySpecification10
   rdfs:label "Mapper property specification for Task class"@en ;
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:startingMapping, v-wf:completedMapping, v-wf:startingExecutorJournalMap, v-wf:completedExecutorJournalMap, v-wf:startingJournalMap, v-wf:completedJournalMap, v-wf:wosResultsMapping ;
+  v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
   v-ui:queryPrefix "('rdf:type'=='v-wf:Mapping')"^^xsd:string ;
 .
 v-wf:taskPropertySpecification11
@@ -816,7 +809,7 @@ v-wf:taskPropertySpecification11
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:taskDecisionForm ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:queryPrefix "('rdf:type'=='v-wf:DecisionForm')"^^xsd:string ;
+  v-ui:queryPrefix "('rdfs:subClassOf'=='v-wf:DecisionForm')"^^xsd:string ;
 .
 v-wf:mappingPropertySpecification1
   rdf:type v-ui:StringPropertySpecification ;
@@ -824,6 +817,8 @@ v-wf:mappingPropertySpecification1
   rdfs:label "Property specification for Mapping"@en ;
   v-ui:forClass v-wf:Mapping ;
   v-ui:forProperty v-wf:mappingExpression ;
+  v-ui:forProperty v-wf:mapToVariable ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:variablesPropertySpecification1
@@ -2504,3 +2499,515 @@ v-wf:DoNotSend
   rdfs:label "Не отправлять"@ru ;
 .
 
+v-wf:TaskTemplateAsModal
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Задача (модальное окно)"@ru ;
+  rdfs:label "Template for Task class (modal window)"@en ;
+  v-ui:forClass v-wf:Task ;
+  v-ui:template """
+<div>
+  <div class="row">
+    <div class="col-md-12">
+      <strong><span about="@" property="@"></span></strong>
+    </div>
+  </div>
+<!-- LABEL & POSITION -->   
+  <hr class="margin-sm">
+  <div class="row">  
+    <div class="col-md-8">
+      <h4 about="rdfs:label" property="rdfs:label"></h4> 
+      <veda-control type="string" property="rdfs:label"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <strong><span about="v-wf:locationX" property="rdfs:label"></span></strong> :
+      <veda-control property="v-wf:locationX" type="integer"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <strong><span about="v-wf:locationY" property="rdfs:label"></span></strong> : 
+      <veda-control property="v-wf:locationY" type="integer"></veda-control>
+    </div>
+  </div>
+<!-- SUBNET -->  
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-3">
+	    <h4 about="v-wf:subNet" property="rdfs:label"></h4>
+    </div>
+    <div class="col-md-9">
+	    <veda-control type="link" rel="v-wf:subNet" class="fulltext dropdown"></veda-control>
+    </div>
+  </div>
+<!-- FLOWS & SPLIT/JOIN -->    
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-10">
+	    <h4 about="v-wf:hasFlow" property="rdfs:label"></h4>
+    	<div rel="v-wf:hasFlow" template="v-wf:FlowTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:hasFlow" class="-view edit search -create"></veda-control>
+    </div>
+    <div class="col-md-2">
+    	<div>
+    		<h4 about="v-wf:join" property="rdfs:label"></h4>
+        	<veda-control rel="v-wf:join" type="objectSelect" class="fulltext dropdown"></veda-control>
+    	</div>
+    	<div>
+    		<h4 about="v-wf:split" property="rdfs:label"></h4>
+        	<veda-control rel="v-wf:split" type="objectSelect" class="fulltext dropdown"></veda-control>
+    	</div>
+    </div>
+  </div>
+<!-- EXECUTOR -->  
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:executor" property="rdfs:label"></h4>
+    	<div about="@" rel="v-wf:executor" template="v-wf:ExecutorTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:executor" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+<!-- DECISIONS MAPPING -->  
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:startDecisionTransform" property="rdfs:label"></h4>
+    	<div rel="v-wf:startDecisionTransform" template="v-wf:TransformTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:startDecisionTransform" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:completeDecisionTransform" property="rdfs:label"></h4>
+    	<div rel="v-wf:completeDecisionTransform" template="v-wf:TransformTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:completeDecisionTransform" class="-view edit search create"></veda-control>
+    </div>
+  </div>  
+<!-- VARIABLES MAPPING -->
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:startingMapping" property="rdfs:label"></h4>
+    	<div rel="v-wf:startingMapping" template="v-wf:MappingTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:startingMapping" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:completedMapping" property="rdfs:label"></h4>
+    	<div rel="v-wf:completedMapping" template="v-wf:MappingTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:completedMapping" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+<!-- EXECUTOR JOURNAL MAPPING -->
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:startingExecutorJournalMap" property="rdfs:label"></h4>
+    	<div rel="v-wf:startingExecutorJournalMap" template="v-wf:MappingTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:startingExecutorJournalMap" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:completedExecutorJournalMap" property="rdfs:label"></h4>
+    	<div rel="v-wf:completedExecutorJournalMap" template="v-wf:MappingTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:completedExecutorJournalMap" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+<!-- JOURNAL MAPPING -->
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:startingJournalMap" property="rdfs:label"></h4>
+    	<div rel="v-wf:startingJournalMap" template="v-wf:MappingTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:startingJournalMap" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:completedJournalMap" property="rdfs:label"></h4>
+    	<div rel="v-wf:completedJournalMap" template="v-wf:MappingTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:completedJournalMap" class="-view edit search create"></veda-control>
+    </div>
+  </div>  
+<!-- EXPECTED RESULT TYPE & MAPPING -->  
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
+        <veda-control about="@" rel="v-wf:expectedResultType" type="link" class="fulltext dropdown"></veda-control>
+<!--      	
+      	<veda-control rel="v-wf:expectedResultType" type="objectSelect" class="fulltext dropdown"></veda-control>
+    	<div about="@" rel="v-wf:expectedResultType" template="v-ui:LabelTemplate" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
+-->	    
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="v-wf:wosResultsMapping" property="rdfs:label"></h4>
+    	<div about="@" rel="v-wf:wosResultsMapping" template="v-wf:TransformTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:wosResultsMapping" class="-view edit search create"></veda-control>
+    </div>
+  </div>
+<!-- COMMENT -->  
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12">
+	    <h4 about="rdfs:comment" property="rdfs:label"></h4>
+	    <veda-control type="string" property="rdfs:comment"></veda-control>
+    </div>
+  </div>
+<!-- BUTTONS -->    
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-12 well well-sm">
+	  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+	  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+	</div>
+  </div>
+</div>  
+<script>
+  $("#cancel, #save", template).click(function () {
+    var modal = template.closest(".modal");
+    if (modal.length) {
+      modal.modal("hide");
+    } else {
+      window.history.back();
+    }
+  });
+</script>
+  """ ;
+.
+
+v-wf:ExecutorTemplateEmbedded
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Transform class (embedded template)"@en ;
+  v-ui:forClass v-wf:ExecutorDefinition ;
+  v-ui:forClass v-s:Appointment ;
+  v-ui:forClass v-s:Codelet ;
+  v-ui:template """
+<div>
+  <div class="row">
+    <div class="col-md-4">    
+   		<input id="executordefinition" name="dzen" type="radio" value="executordefinition"> <span about="v-wf:ExecutorDefinition" property="rdfs:label"></span>
+   	</div>	
+    <div class="col-md-4">    
+   		<input id="codelet" name="dzen" type="radio" value="codelet"> <span about="v-s:Codelet" property="rdfs:label"></span>
+   	</div>	
+    <div class="col-md-4">    
+   		<input id="appointment" name="dzen" type="radio" value="appointment"> <span about="v-s:Appointment" property="rdfs:label"></span>
+   	</div>	
+  </div>	
+  <div class="row executordefinition">
+    <div class="col-md-3">    
+      <span about="v-wf:executorExpression" property="rdfs:label"> :
+    </div>
+    <div class="col-md-9">
+      <veda-control type="source" mode="javascript" property="v-wf:executorExpression" style="width:95%"></veda-control>
+    </div>
+  </div>
+  <div class="row codelet">
+    <div class="col-md-3">    
+      <span about="v-s:script" property="rdfs:label"> :
+    </div>
+    <div class="col-md-9">
+      <veda-control type="source" mode="javascript" property="v-s:script" style="width:95%"></veda-control>
+    </div>
+  </div>
+  <div class="row appointment">
+    <div class="col-md-3">    
+      <span about="v-s:Appointment" property="rdfs:label"> :
+    </div>
+    <div class="col-md-9">
+        <veda-control rel="@" type="link" class="fulltext dropdown"></veda-control>
+    </div>
+  </div>
+  
+</div>
+<script>
+  $('.CodeMirror', template).each(function (idx) {
+	$(this).height(40);
+  });
+  $('#executordefinition', template).on('click', function() {
+  	$('.executordefinition', template).show();
+  	$('.codelet', template).hide();
+  	$('.appointment', template).hide();
+  });
+  $('#codelet', template).on('click', function() {
+  	$('.executordefinition', template).hide();
+  	$('.codelet', template).show();
+  	$('.appointment', template).hide();
+  });
+  $('#appointment', template).on('click', function() {
+  	$('.executordefinition', template).hide();
+  	$('.codelet', template).hide();
+  	$('.appointment', template).show();
+  });
+  console.log(individual['rdf:type'][0].id);
+  if (individual.hasValue('rdf:type')) {
+	  if (individual['rdf:type'][0].id == 'v-wf:ExecutorDefinition') $('#executordefinition', template).trigger('click');
+	  if (individual['rdf:type'][0].id == 'v-s:Codelet') $('#codelet', template).trigger('click');
+	  if (individual['rdf:type'][0].id == 'v-s:Appointment') $('#appointment', template).trigger('click');
+  } else {
+  	  $('#codelet', template).trigger('click');
+  }
+</script>
+""".
+
+
+v-wf:taskPropertySpecification12
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-wf:Task ;
+  v-ui:forProperty v-wf:hasFlow ;
+  v-ui:forProperty v-wf:startDecisionTransform ;
+  v-ui:forProperty v-wf:completeDecisionTransform ;
+  v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
+.
+
+v-wf:MappingTemplateEmbedded
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Transform class (embedded template)"@en ;
+  v-ui:forClass v-wf:Mapping ;
+  v-ui:template """
+<div>
+  <div class="row">
+    <div class="col-md-3">
+		<div about="@" rel="v-wf:mapToVariable" template="v-wf:VariableTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:mapToVariable" class="view edit search -create"></veda-control>
+    </div>
+    <div class="col-md-9">
+      <veda-control type="source" mode="javascript" property="v-wf:mappingExpression" style="width:95%"></veda-control>
+    </div>
+  </div>
+</div>
+<script>
+  $('.CodeMirror', template).each(function (idx) {
+	$(this).height(40);
+  });
+</script>
+""".
+
+v-wf:VariableTemplateEmbedded
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Определение переменной (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Var define class (embedded template)"@en ;
+  v-ui:forClass v-wf:VarDefine ;
+  v-ui:template """
+<div>
+  <div class="row">
+    <div class="col-md-12">
+	    <veda-control type="string" property="v-wf:varDefineName"></veda-control>
+    </div>
+  </div>
+<!-- v-wf:varDefineScope -->
+</div>""". 
+
+v-wf:TransformTemplateEmbedded
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Transform class (embedded template)"@en ;
+  v-ui:forClass v-wf:Transform ;
+  v-ui:template """
+<div>
+  <div class="row">
+    <div class="col-md-12">
+		<div rel="v-wf:transformRule" template="v-wf:RuleTemplateEmbedded" embedded="true"></div>
+	    <veda-control type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
+    </div>
+  </div>
+</div>
+""".
+
+v-wf:rulePropertySpecification1
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-wf:Rule ;
+  v-ui:forProperty v-wf:segregateObject ;
+  v-ui:forProperty v-wf:segregateElement ;
+  v-ui:forProperty v-wf:conversion ;
+  v-ui:forProperty v-wf:create ;
+  v-ui:forProperty v-wf:aggregate ;
+  v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
+.
+
+v-wf:transformPropertySpecification1
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-wf:Transform ;
+  v-ui:forProperty v-wf:create ;
+  v-ui:forProperty v-wf:transformRule ;
+  v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
+.
+
+v-wf:RuleTemplateEmbedded
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Transform class (embedded template)"@en ;
+  v-ui:forClass v-wf:Rule ;
+  v-ui:template """
+<div>
+  <div class="row">
+    <div class="col-md-1">
+  		<strong>Segregate Object</strong>
+    </div>
+    <div class="col-md-5">
+		<div property="v-wf:segregateObject"></div>
+	    <veda-control type="string" property="v-wf:segregateObject" class="view edit search -create"></veda-control>
+    </div>
+    <div class="col-md-1">
+  		<strong>Segregate Element</strong>
+    </div>
+    <div class="col-md-5">
+		<div property="v-wf:segregateElement"></div>
+	    <veda-control type="string" property="v-wf:segregateElement" class="view edit search -create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-1">
+  		<strong>Create</strong>
+    </div>
+    <div class="col-md-5">
+		<div property="v-wf:create"></div>
+	    <veda-control type="string" property="v-wf:create" class="view edit search -create"></veda-control>
+    </div>
+    <div class="col-md-1">
+  		<strong>Conversion</strong>
+    </div>
+    <div class="col-md-5">
+		<div property="v-wf:conversion"></div>
+	    <veda-control type="string" property="v-wf:conversion" class="view edit search -create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-1">
+  		<strong>Aggregate</strong>
+    </div>
+    <div class="col-md-11">
+		<div property="v-wf:aggregate"></div>
+	    <veda-control type="string" property="v-wf:aggregate" class="view edit search -create"></veda-control>
+    </div>
+  </div>
+</div>
+""".
+
+v-wf:FlowTemplateEmbedded
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Поток (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Flow class (embedded template)"@en ;
+  v-ui:forClass v-wf:Flow ;
+  v-ui:template """
+<div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+	  <div class="row">
+	    <div class="col-md-3">    
+	      <span about="v-wf:flowsInto" property="rdfs:label"> :
+	    </div>
+	    <div class="col-md-9">
+	      <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+	    </div>
+	  </div>
+    </div>
+    <div class="panel-body">
+	  <div class="row">
+	    <div class="col-md-4">
+	      <span about="rdfs:label" property="rdfs:label"></span> : 
+	      <veda-control type="string" property="rdfs:label"></veda-control>
+	    </div>
+	    <div class="col-md-8">
+	      <span about="v-wf:predicate" property="rdfs:label"></span> : 
+	      <veda-control type="source" mode="javascript" property="v-wf:predicate"></veda-control>
+	    </div>
+	  </div>	  
+    </div>
+  </div>
+</div>
+<script>
+  $('.CodeMirror', template).each(function (idx) {
+	$(this).height(40);
+  });
+</script>
+""".
+
+v-wf:FlowTemplateAsModal
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Поток (модальное окно)"@ru ;
+  rdfs:label "Template for Flow class"@en ;
+  v-ui:forClass v-wf:Flow ;
+  v-ui:template """
+<div>
+  <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
+    <thead>
+      <tr>
+      <td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
+      <td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+      </tr>
+    </thead>
+    <tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
+      <td><span about="rdfs:label" property="rdfs:label"></span></td>
+    <td>
+      <veda-control id="VClabel" type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
+      <div id="viewVClabel" about="@" property="rdfs:label"></div>
+    </td>
+  </tr>
+  <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+      <td><span about="rdfs:comment" property="rdfs:label"></span></td>
+    <td>
+      <veda-control id="VCcomment" type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
+      <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+    </td>
+  </tr>
+  <tr onclick="javascript: $('#VCpredicate').show().trigger('edit'); $('#viewVCpredicate').hide();">
+      <td><span about="v-wf:predicate" property="rdfs:label"></span></td>
+    <td>
+      <veda-control id="VCpredicate" type="source" mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
+      <div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
+    </td>
+  </tr>
+  <tr>
+      <td><span about="v-wf:flowsInto" property="rdfs:label"></span></td>
+    <td>
+      <strong><span about="@" rel="v-wf:flowsInto" template="v-ui:LabelTemplate"></span></strong>
+    </td>
+  </tr>
+  </table>
+</div>
+<script>
+  function handler (property_uri, values)
+  {
+    if (property_uri === "rdfs:label")
+    {
+      if (veda.net)
+      {
+        $.each(veda.net.getAllConnections(), function (idx, connection)
+        {
+           if(connection.id === individual.id) {
+              var value = (typeof values[0] === 'undefined')?'':values[0];
+              if (connection.getOverlay('flowLabel') == undefined) {
+                connection.addOverlay(["Label", { label: value, location:0.5, id: "flowLabel"} ]);
+              } else {
+                connection.getOverlay('flowLabel').setLabel(value);
+              }
+           }
+        });
+      }
+    }
+  }
+  individual.on("individual:propertyModified", handler);
+
+  template.on("remove", function () {
+    individual.off("individual:propertyModified");
+  });
+  //# sourceURL=v-wf:FlowTemplateAsProperties
+</script>
+  """ ;
+.
+  

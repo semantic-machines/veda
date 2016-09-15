@@ -359,7 +359,7 @@ veda.Module(function Util(veda) { "use strict";
   veda.Util.transform = function (individual, template, transformId, modal) {
     var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
     if (modal) {
-      veda.Util.showModal(startForm, 'edit');
+      veda.Util.showModal(startForm, undefined, 'edit');
     } else {
       startForm.present('#main', undefined, 'edit');
     }
@@ -385,7 +385,7 @@ veda.Module(function Util(veda) { "use strict";
     if (transformId !== undefined) {
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
       if (modal) {
-        veda.Util.showModal(startForm, 'edit');
+        veda.Util.showModal(startForm, undefined, 'edit');
       } else {
         riot.route( ["#", startForm.id, '#main', undefined, "edit"].join("/") );
         //startForm.present('#main', undefined, 'edit');
@@ -413,7 +413,7 @@ veda.Module(function Util(veda) { "use strict";
           var res = s.results[res_id];
           var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
           if (modal) {
-            veda.Util.showModal(startForm, 'edit');
+            veda.Util.showModal(startForm, undefined, 'edit');
           } else {
                   riot.route("#/" + startForm.id + "///edit", true);
           }
@@ -564,7 +564,7 @@ veda.Module(function Util(veda) { "use strict";
   }
 
 
-  veda.Util.showModal = function (individual, mode) {
+  veda.Util.showModal = function (individual, template, mode) {
     if (typeof mode == 'undefined') {
       mode = 'view';
     }
@@ -577,7 +577,7 @@ veda.Module(function Util(veda) { "use strict";
     $("body").append(container);
 
     var holder = $("<div>");
-    individual.present(holder, undefined, mode);
+    individual.present(holder, template, mode);
     holder.appendTo($(".modal-body", container));
   }
 

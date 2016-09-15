@@ -549,7 +549,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 if (mode=='edit') {
                   windows.bind("dblclick", function() {
                       var _this = this;
-                    riot.route("#/" + $(_this).attr('id')+"///edit", true);
+                      veda.Util.showModal(new veda.IndividualModel($(_this).attr('id')), new veda.IndividualModel('v-wf:TaskTemplateAsModal'), 'edit');
                   });
 
                   instance.draggable(windows, {
