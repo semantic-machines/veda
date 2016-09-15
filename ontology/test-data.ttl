@@ -49,68 +49,13 @@ td:script_onto_rename
 .
 
 
-td:AdministrativeDocument
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:label "Administrative document"@en ;
-  rdfs:label "Распорядительный документ"@ru ;
-.
 
-td:content
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain td:AdministrativeDocument ;
-  rdfs:label "Content"@en ;
-  rdfs:label "Содержание"@ru ;
-  rdfs:range xsd:string ;
-.
-
-td:signer
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain td:AdministrativeDocument ;
-  rdfs:label "Signer"@en ;
-  rdfs:label "Подписант"@ru ;
-  rdfs:range v-s:Appointment ;
-.
-
-td:File_1
-  rdf:type v-s:File ;
-  v-s:fileURI "111.pdf" ;
-.
 
 td:khvostiaImage
   rdf:type v-s:File ;
   v-s:fileUri "Khvostia" ;
   v-s:fileName "Khvostia" ;
   v-s:filePath "/mondi" ;
-.
-
-td:AdministrativeDocument_2
-  rdf:type td:AdministrativeDocument ;
-  td:content "To comply the federal law №135-FL issued 12.10.2012 I order..."@en ;
-  td:content "Во исполнение федерального закона №135-ФЗ от 12.10.2012 приказываю..."@ru ;
-  td:signer td:ValeriyBushenev-Programmer1 ;
-  v-s:actualVersion td:AdministrativeDocument_2 ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  v-s:previousVersion td:AdministrativeDocument_1 ;
-  v-s:published "2014-01-30T12:13:11"^^xsd:dateTime ;
-  rdfs:label "AdministrativeDocument_2"@en ;
-  rdfs:label "Распорядительный документ_2"@ru ;
-.
-
-td:AdministrativeDocument_1
-  rdf:type td:AdministrativeDocument ;
-  td:content "2 To comply the federal law №153-FL issued 12.10.2012 I order..."@en ;
-  td:content "2 Во исполнение федерального закона №153-ФЗ от 12.10.2012 приказываю..."@ru ;
-  td:signer td:ValeriyBushenev-Programmer1 ;
-  v-s:actualVersion td:AdministrativeDocument_2 ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:42:27"^^xsd:dateTime ;
-  v-s:nextVersion td:AdministrativeDocument_2 ;
-  v-s:published "2014-01-30T12:13:11"^^xsd:dateTime ;
-  rdfs:label "AdministrativeDocument_1"@en ;
-  rdfs:label "Распорядительный документ_1"@ru ;
 .
 
 td:Analyst1
@@ -143,7 +88,6 @@ td:AndreyBychin
   rdfs:label "Andrey Bychin"@en ;
   rdfs:label "Андрей Бычин"@ru ;
 .
-
 td:AndreyBychin-Analyst2
   rdf:type v-s:Appointment ;
   v-s:author td:RomanKarpov-Analyst1 ;
@@ -156,31 +100,6 @@ td:AndreyBychin-Analyst2
   rdfs:label "Андрей Бычин : Аналитик"@ru ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
-
-td:AndreyBychin-ExecutiveDirector
-  rdf:type v-s:Appointment ;
-  v-s:official "true"^^xsd:boolean ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:employee td:AndreyBychin ;
-  v-s:occupation td:ExecutiveDirector ;
-  v-s:official "true"^^xsd:boolean ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Андрей Бычин : Исполнительный директор"@ru ;
-  v-s:parentUnit td:SemanticMachines ;
-.
-
-td:ApplicationDevelopmentGroup
-  rdf:type v-s:Department ;
-  v-s:childUnit td:Analyst1 ;
-  v-s:childUnit td:Programmer1 ;
-  v-s:parentUnit td:CCIP ;
-  v-s:hasChief td:RomanKarpov-Analyst1;
-  rdfs:label "Application development group"@en ;
-  rdfs:label "Группа прикладного програмирования"@ru ;
-.
-
 td:BushenevV
   rdf:type v-s:Account ;
   v-s:login "BushenevV"^^xsd:string ;
@@ -189,7 +108,6 @@ td:BushenevV
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevV" ;
 .
-
 td:BushenevVT
   rdf:type v-s:Account ;
   v-s:login "BushenevVT"^^xsd:string ;
@@ -198,7 +116,6 @@ td:BushenevVT
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevVT" ;
 .
-
 td:BychinA
   rdf:type v-s:Account ;
   v-s:login "BychinA"^^xsd:string ;
@@ -207,7 +124,6 @@ td:BychinA
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BychinA" ;
 .
-
 td:BychinAT
   rdf:type v-s:Account ;
   v-s:login "BychinAT"^^xsd:string ;
@@ -217,25 +133,17 @@ td:BychinAT
   rdfs:label "BychinAT" ;
 .
 
-td:CCIP
-  rdf:type v-s:Department ;
-  v-s:childUnit td:ApplicationDevelopmentGroup ;
-  v-s:parentUnit td:MondiSyktyvkar ;
-  rdfs:label "Competence center information process"@en ;
-  rdfs:label "Управление информационных технологий"@ru ;
-  v-s:hasChief d:khvostia_administratorAsppd;
-.
 
 td:CommercialDirector
   rdf:type v-s:Position ;
-  v-s:parentUnit td:SemanticMachines ;
+  v-s:parentUnit d:org_RU1121001280 ;
   rdfs:label "Commercial director"@en ;
   rdfs:label "Коммерческий директор"@ru ;
 .
 
 td:ExecutiveDirector
   rdf:type v-s:Position ;
-  v-s:parentUnit td:SemanticMachines ;
+  v-s:parentUnit d:org_RU1121001280 ;
   rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
 .
@@ -375,9 +283,8 @@ td:Membership_13
   rdfs:label "Членство_12"@ru ;
 .
 
-td:MondiSyktyvkar
+d:org_RU1121003135
   rdf:type v-s:Organization ;
-  v-s:childUnit td:CCIP ;
   rdfs:label "Mondi Syktyvkar, OJSC"@en ;
   rdfs:label "ОАО Монди СЛПК"@ru ;
 .
@@ -526,10 +433,10 @@ td:RomanKarpov-CommercialDirector
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
   rdfs:label "Роман Карпов : Коммерческий директор"@ru ;
-  v-s:parentUnit td:SemanticMachines ;
+  v-s:parentUnit d:org_RU1121001280 ;
 .
 
-td:SemanticMachines
+d:org_RU1121001280
   rdf:type v-s:Organization ;
   v-s:childUnit td:CommercialDirector ;
   v-s:childUnit td:TechnicalDirector ;
@@ -539,7 +446,7 @@ td:SemanticMachines
 
 td:TechnicalDirector
   rdf:type v-s:Position ;
-  v-s:parentUnit td:SemanticMachines ;
+  v-s:parentUnit d:org_RU1121001280 ;
   rdfs:label "Technical director"@en ;
   rdfs:label "Технический директор"@ru ;
 .
@@ -588,7 +495,7 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:published "2014-01-30T15:30:21"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
   rdfs:label "Валерий Бушенев : Технический директор"@ru ;
-  v-s:parentUnit td:SemanticMachines ;
+  v-s:parentUnit d:org_RU1121001280 ;
 .
 
 td:SavedSearch1
@@ -841,15 +748,6 @@ v-wf:UserTaskForm1
   v-wf:possibleDecisionClass v-wf:DecisionBreak ;
   v-wf:from td:RomanKarpov-Analyst1 ;
 .
-
-cfg:Bychina_create_Person
-  rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
-  v-s:permissionSubject td:AndreyBychin ;
-  v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
-  v-s:canCreate "true"^^xsd:boolean ;
-.
-
 
 d:khvostia_dismantlingProjectSpecialist
   a v-s:Appointment;

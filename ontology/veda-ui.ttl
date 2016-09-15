@@ -2023,8 +2023,8 @@ td:PropertySpecification5
   v-ui:forProperty v-s:employee ;
   v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:treeRoot td:MondiSyktyvkar ;
-  v-ui:treeRoot td:MondiSyktyvkar ;
+  v-ui:treeRoot d:org_RU1121003135 ;
+  v-ui:treeRoot d:org_RU1121003135 ;
   v-ui:treeInProperty v-s:parentUnit ;
   v-ui:treeDisplayedProperty rdfs:label ;
 .
