@@ -387,8 +387,8 @@ s-wf:SimpleRouteStartForm
 
 s-wf:SimpleRouteStartForm_participant
   rdf:type rdf:Property ;
-  rdfs:label "Участник"@ru ;
-  rdfs:label "Participant"@en ;
+  rdfs:label "Кому"@ru ;
+  rdfs:label "To"@en ;
   rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
@@ -396,8 +396,8 @@ s-wf:SimpleRouteStartForm_participant
 
 s-wf:SimpleRouteStartForm_comment
   rdf:type rdf:Property ;
-  rdfs:label "Участник"@ru ;
-  rdfs:label "Participant"@en ;
+  rdfs:label "Комментарий"@ru ;
+  rdfs:label "Comment"@en ;
   rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
@@ -412,10 +412,10 @@ s-wf:SimpleRouteStartForm_visible
   rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:SimpleRouteStartForm_editable
+s-wf:SimpleRouteStartForm_viewonly
   rdf:type rdf:Property ;
-  rdfs:label "Редактируемый"@ru ;
-  rdfs:label "Editable"@en ;
+  rdfs:label "Только просмотр"@ru ;
+  rdfs:label "View only"@en ;
   rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range xsd:boolean ;
   rdfs:isDefinedBy s-wf: ;
@@ -448,21 +448,30 @@ s-wf:SimpleRouteStartForm_deadlineDate
   rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:SimpleRouteStartForm_deadlineInDays
-  rdf:type rdf:Property ;
-  rdfs:label "В днях"@ru ;
-  rdfs:label "In days"@en ;
-  rdfs:domain s-wf:SimpleRouteStartForm ;
-  rdfs:range xsd:boolean ;
-  rdfs:isDefinedBy s-wf: ;
-.
+#s-wf:SimpleRouteStartForm_deadlineInDays
+#  rdf:type rdf:Property ;
+#  rdfs:label "В днях"@ru ;
+#  rdfs:label "In days"@en ;
+#  rdfs:domain s-wf:SimpleRouteStartForm ;
+#  rdfs:range xsd:boolean ;
+#  rdfs:isDefinedBy s-wf: ;
+#.
 
 s-wf:SimpleRouteStartForm_deadlineDays
   rdf:type rdf:Property ;
-  rdfs:label "Контрольный срок"@ru ;
-  rdfs:label "Deadline"@en ;
+  rdfs:label "Контрольный срок (дней)"@ru ;
+  rdfs:label "Deadline (days)"@en ;
   rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range xsd:integer ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_informing
+  rdf:type rdf:Property ;
+  rdfs:label "Информирование"@ru ;
+  rdfs:label "Informing"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -520,38 +529,172 @@ s-wf:ComplexRouteStartForm_coordination6
   rdfs:isDefinedBy s-wf: ;
 .
 
-s-wf:SimpleRouteStartForm_Template
+s-wf:ComplexRouteStartForm_sign
+  rdf:type rdf:Property ;
+  rdfs:label "Подписание"@ru ;
+  rdfs:label "Sign"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_approval
+  rdf:type rdf:Property ;
+  rdfs:label "Утверждение"@ru ;
+  rdfs:label "Approval"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_examination
+  rdf:type rdf:Property ;
+  rdfs:label "Ознакомление"@ru ;
+  rdfs:label "Examination"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_review
+  rdf:type rdf:Property ;
+  rdfs:label "Рассмотрение"@ru ;
+  rdfs:label "Review"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_instruction
+  rdf:type rdf:Property ;
+  rdfs:label "Поручение"@ru ;
+  rdfs:label "Instruction"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_distribution
+  rdf:type rdf:Property ;
+  rdfs:label "Рассылка уведомлений"@ru ;
+  rdfs:label "Distribution"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SimpleRouteStartFormMinimal_Template
   rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:forClass s-wf:SimpleRouteStartForm ;
   v-ui:template """
-  <div class="container-fluid">
+  <div>
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-          <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
-          </div>
-          <div class="col-md-6 text-right">
-            <a href="#/@"><span property="@">ID</span></a>
-          </div>
-        </div>
-      </div>
       <div class="panel-body">
         <div class="row">
-          <div class="col-md-4">
-          </div>
-          <div class="col-md-4">
-          </div>
-          <div class="col-md-4">
+          <div class="col-md-12">
+			<strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
+			<div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+        	<veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
           </div>
         </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+			<strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
+			<div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+        	<veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+          </div>
+        </div>
+        <br />
       </div>
     </div>
   </div>
   """ ;
+.
+
+s-wf:SimpleRouteStartFormShort_Template
+  rdfs:isDefinedBy s-wf: ;
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
+  rdfs:label "Single route start form template"@en ;
+  v-ui:forClass s-wf:SimpleRouteStartForm ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+		<div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+	    <div class="row">
+	      <div class="col-md-6">
+			<strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
+			<div property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+	    	<veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+	      </div>
+	      <div class="col-md-6">
+	      </div>
+	    </div>
+      </div>
+    </div>
+    <br />
+  </div>
+  """ ;
+.
+
+s-wf:SimpleRouteStartFormFull_Template
+  rdfs:isDefinedBy s-wf: ;
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
+  rdfs:label "Single route start form template"@en ;
+  v-ui:forClass s-wf:SimpleRouteStartForm ;
+  v-ui:template """
+  <div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+		<div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+        <div class="row">
+          <div class="col-md-6">
+			<strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
+			<div property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+        	<veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+          </div>
+          <div class="col-md-6">
+			<strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
+			<div property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
+        	<veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+			<strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
+			<div property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
+        	<veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </div>
+  """ ;
+.
+
+
+s-wf:controllerSpecification
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass s-wf:SimpleRouteStartForm ;
+  v-ui:forProperty s-wf:SimpleRouteStartForm_controller ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+.
+
+s-wf:participantSpecification
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass s-wf:SimpleRouteStartForm ;
+  v-ui:forProperty s-wf:SimpleRouteStartForm_participant ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
 .
 
 s-wf:ComplexRouteStartForm_Template
@@ -561,6 +704,54 @@ s-wf:ComplexRouteStartForm_Template
   rdfs:label "Complex route start form template"@en ;
   v-ui:forClass s-wf:ComplexRouteStartForm ;
   v-ui:template """
+  <script>  
+    // Default values fill
+    var stages = [
+      'informing',
+      'coordination1',
+      'coordination2',
+      'coordination3',
+      'coordination4',
+      'coordination5',
+      'coordination6',
+      'sign',
+      'approval',
+      'review',
+      'instruction',
+      'examination',
+      'distribution'
+    ];
+    
+    var routes = [];    
+    
+	var doc = individual['v-wf:processedDocument'][0];
+	
+  	stages.forEach(function(stage) {
+      routes[stage] = new veda.IndividualModel();
+      routes[stage] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
+      individual['s-wf:ComplexRouteStartForm_'+stage] = [routes[stage]];
+    }
+    
+    // Custom values fill
+	if (doc['rdf:type'][0].id === "mnd-s:Idea") {		
+	  routes['coordination1']['s-wf:SimpleRouteStartForm_participant'] = doc['v-s:creator']; 					    
+	  routes['sign']['s-wf:SimpleRouteStartForm_participant'] = doc['v-s:author'];
+	  routes['sign']['s-wf:SimpleRouteStartForm_viewonly'] = [true]; 				
+	}
+			
+    stages.forEach(function(stage) {
+      var routeid = 's-wf:ComplexRouteStartForm_'+stage;
+      if (individual.hasValue(routeid)) {
+    	var sub = individual[routeid][0];
+    	if (sub['s-wf:SimpleRouteStartForm_viewonly'][0] == true) {
+    		$('.'+stage, template).find('veda-control.edit').addClass('-edit');	
+    		$('.'+stage, template).find('veda-control.edit').removeClass('-edit');	
+    	}
+      } else {
+//    	$('.'+stage, template).hide();
+      }
+    });  
+  </script>
   <div class="container-fluid">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -598,13 +789,70 @@ s-wf:ComplexRouteStartForm_Template
         </div>
         <hr />
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 informing">
+               <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_informing" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 coordination1">
                <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartForm_Template"></div>
+               <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination1" class="-view edit search create"></veda-control>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 coordination2">
+               <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination2" class="-view edit search create"></veda-control>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 coordination3">
+               <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination3" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 coordination4">
+               <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination4" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 coordination5">
+               <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination5" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 coordination6">
+               <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination6" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 sign">
+               <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_sign" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 approval">
+               <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_approval" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 review">
+               <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_review" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 instruction">
+               <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 examination">
+               <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 distribution">
+               <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_distribution" class="-view edit search create"></veda-control>
             </div>
         </div>
         <hr />
@@ -618,26 +866,7 @@ s-wf:ComplexRouteStartForm_Template
       </div>
     </div>
   </div>
-<script>
-  var stages = [
-    'informing',
-    'coordinator1',
-    'coordinator2',
-    'coordinator3',
-    'coordinator4',
-    'coordinator5',
-    'coordinator6',
-    'signre',
-    'approvalre',
-    'reviewre',
-    'executor',
-    'examinator',
-    'distribution'
-  ];
-  stages.forEach(function(stage) {
-    console.log(stage);
-
-  });
+<script type="text/javascript">
 jsWorkflow.ready(function () {
   $( "#save_and_start_process" ).click(function() {
     alert( "Handler for .click() called." + document );
