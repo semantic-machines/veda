@@ -16,7 +16,7 @@ function clickButton(driver, button) {
 }
 
 function put(driver, type, text) {
-	driver.findElement({css:'div[property="' + type + '"]+veda-control[type="multilingualText"] textarea[class="form-control"]'}).sendKeys(text)
+	driver.findElement({css:'div[property="' + type + '"]+veda-control[data-type="multilingualText"] textarea[class="form-control"]'}).sendKeys(text)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill "+ type +" field");});
 }
 
@@ -61,7 +61,7 @@ basic.getDrivers().forEach (function (drv) {
 
 	basic.openCreateDocumentForm(driver, 'Правило', 'v-wf:Rule');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
-	driver.findElement({css:'div[property="rdfs:label"]+veda-control[type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
+	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
 
 	driver.executeScript("document.querySelector('div[property=\"v-wf:segregateElement\"]').scrollIntoView(true);");
@@ -80,7 +80,7 @@ basic.getDrivers().forEach (function (drv) {
 
 	basic.openCreateDocumentForm(driver, 'Трансформация', 'v-wf:Transform');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
-	driver.findElement({css:'div[property="rdfs:label"]+veda-control[type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp + 1)
+	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp + 1)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
 	driver.executeScript("document.querySelector('strong[about=\"v-wf:transformRule\"]').scrollIntoView(true);");
 	basic.chooseFromDropdown(driver, 'v-wf:transformRule', timeStamp, timeStamp);
