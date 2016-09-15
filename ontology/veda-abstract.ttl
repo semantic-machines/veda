@@ -599,6 +599,14 @@ v-s:hasRatingLevel
   rdfs:range v-s:Level ;
   rdfs:domain v-s:Measurable ;
 .
+v-s:hasRiskLevel
+  rdf:type owl:ObjectProperty ;
+  rdfs:subPropertyOf v-s:hasLevel ;
+  rdfs:label "Risk level"@en ;
+  rdfs:label "Уровень риска"@ru ;
+  rdfs:range v-s:Level ;
+  rdfs:domain v-s:Measurable ;
+.
 v-s:count
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Count"@en ;

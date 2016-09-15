@@ -55,6 +55,21 @@ v-s:hasAction
   rdfs:subPropertyOf v-s:hasActivity ;
   rdfs:domain v-s:Activity ;
 .
+v-s:activityApprover
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Approver"@en ;
+  rdfs:label "Утверждающий"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:activityCoordinator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Coordinator"@en ;
+  rdfs:label "Согласующий"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Activity ;
+.
+
 #---------------------------------------------------------
 v-s:Meeting
   rdf:type owl:Class ;
