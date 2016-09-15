@@ -986,7 +986,7 @@
     opts.change = function (value) {
       individual[property_uri] = [value];
     }
-    if (typeof self.attr('mode') !== "undefined") opts.sourceMode = self.attr('mode');
+    if (typeof self.attr('data-mode') !== "undefined") opts.sourceMode = self.attr('data-mode');
     if (property_uri === "v-s:script") opts.sourceMode = "javascript";
     if (property_uri === "v-ui:template") opts.sourceMode = "htmlmixed";
     var editor = CodeMirror(editorEl, {
@@ -1173,7 +1173,7 @@
   $.fn.veda_link = function( options ) {
     var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
       control = $(opts.template),
-      template = this.attr("template") || "{individual['rdfs:label'].join(', ')}",
+      template = this.attr("data-template") || "{individual['rdfs:label'].join(', ')}",
       individual = opts.individual,
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
@@ -1437,7 +1437,7 @@
       spec = opts.spec,
       optionProperty = opts.optionProperty,
       holder = $(".checkbox", control),
-      template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
+      template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
 
     function populate() {
       if (spec && spec.hasValue(optionProperty)) {
@@ -1517,7 +1517,7 @@
       spec = opts.spec,
       optionProperty = opts.optionProperty,
       holder = $(".radio", control),
-      template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
+      template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
 
     function populate() {
       if (spec && spec.hasValue(optionProperty)) {
@@ -1602,7 +1602,7 @@
       optionProperty = opts.optionProperty,
       select = $("select", control),
         first_opt = $("option", control),
-      template = new veda.IndividualModel( this.attr("template") || "v-ui:LabelTemplate" );
+      template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
 
     function populate() {
       if (spec && spec.hasValue(optionProperty)) {

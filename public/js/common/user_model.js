@@ -8,6 +8,8 @@ veda.Module(function (veda) { "use strict";
 
     if ( self["rdf:type"][0].id !== "v-s:Person" ) { return self; }
 
+    veda.user = self;
+
     var langs = (new veda.IndividualModel("v-ui:AvailableLanguage"))["rdf:value"];
     self.availableLanguages = langs.reduce (
       function (acc, language) {

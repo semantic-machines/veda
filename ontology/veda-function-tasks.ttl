@@ -232,13 +232,13 @@ v-ft:TaskTemplate
 <tr>
   <td>###</td>
   <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-  <td rel="v-wf:from" template="v-ui:LabelTemplate"></td>
-  <td rel="v-wf:to" template="v-ui:LabelTemplate"></td>
+  <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+  <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
   <td>
     <a href="#/@" property="rdfs:label"></a>
     <p><span property="v-s:description"></span></p>
   </td>
-  <td rel="v-wf:onDocument" template="v-ui:ClassNameLabelTemplate"></td>
+  <td rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
   <td property="v-wf:dateGiven"></td>
 </tr>
 <script>

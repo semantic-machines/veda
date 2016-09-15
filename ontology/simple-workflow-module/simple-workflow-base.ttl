@@ -577,30 +577,30 @@ s-wf:ComplexRouteStartForm_Template
         <div class="row">
             <div class="col-md-4">
                <em about="v-wf:processInitiator" property="rdfs:label"></em>
-               <div rel="v-wf:processInitiator" template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
+               <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:processedDocument" property="rdfs:label"></em>
-               <div rel="v-wf:processedDocument" template="v-ui:ClassNameLabelLinkTemplate"></div>
+               <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:forNet" property="rdfs:label"></em>
-               <div rel="v-wf:forNet" template="v-ui:ClassNameLabelLinkTemplate"></div>
+               <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:isProcess" property="rdfs:label"></em>
-               <div rel="v-wf:isProcess" template="v-ui:ClassNameLabelLinkTemplate"></div>
+               <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
             <div class="col-md-4">
                <em about="v-wf:useTransformation" property="rdfs:label"></em>
-               <div rel="v-wf:useTransformation" template="v-ui:ClassNameLabelLinkTemplate"></div>
+               <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
             </div>
         </div>
         <hr />
         <div class="row">
             <div class="col-md-4">
                <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination1" template="s-wf:SimpleRouteStartForm_Template"></div>
+               <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartForm_Template"></div>
             </div>
             <div class="col-md-4">
             </div>
@@ -943,11 +943,11 @@ s-wf:UserTaskFormTemplate
       <div class="row">
         <div class="col-md-3">
           <em about="v-wf:from" property="rdfs:label"></em>
-          <div about="@" rel="v-wf:from" template="v-ui:LabelTemplate"></div>
+          <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
         </div>
         <div class="col-md-3">
            <em about="v-wf:to" property="rdfs:label"></em>
-           <div about="@" rel="v-wf:to" template="v-ui:LabelTemplate"></div>
+           <div about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
         </div>
         <div class="col-md-3">
           <em about="v-s:description" property="rdfs:label"></em>
@@ -965,7 +965,7 @@ s-wf:UserTaskFormTemplate
           <input type="radio" name="decisionRadios">
         </label>
       </div>
-      <div about="@" rel="v-wf:takenDecision" embedded="true"></div>
+      <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
     </div>
 
     <div class="panel-footer">

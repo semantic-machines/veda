@@ -139,7 +139,7 @@ v-s:PersonalAspectTemplate
   <div class="row">
     <div class="col-md-2">
       <div about="@" rel="v-s:owner">
-        <div rel="v-s:hasImage" template="v-ui:ImageTemplate"></div>
+        <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
         <br/>
         <a href="#/@">
           <span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
@@ -259,7 +259,7 @@ v-s:PersonalAspectTemplate
               <br>
             </div>
           </div>
-          <veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
+          <veda-control data-type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
         </div>
       </div>
     </div>
@@ -275,7 +275,7 @@ v-s:PersonalAspectTemplate
               <br>
             </div>
           </div>
-          <veda-control type="link" rel="v-s:hasBlank" class="fulltext dropdown -view edit"></veda-control>
+          <veda-control data-type="link" rel="v-s:hasBlank" class="fulltext dropdown -view edit"></veda-control>
         </div>
       </div>
     </div>
@@ -291,7 +291,7 @@ v-s:PersonalAspectTemplate
               <br>
             </div>
           </div>
-          <veda-control type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
+          <veda-control data-type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
         </div>
       </div>
     </div>
@@ -306,7 +306,7 @@ v-s:PersonalAspectTemplate
           <ol rel="v-s:hasDocumentDraft">
             <li><a href="#/@" property="rdfs:label"></a></li>
           </ol>
-          <!--veda-control type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
+          <!--veda-control data-type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
         </div>
       </div>
     </div>
