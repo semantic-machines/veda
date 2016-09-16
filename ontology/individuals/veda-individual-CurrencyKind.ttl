@@ -7,10 +7,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
-<http://semantic-machines.com/veda/dictionary-CurrencyKind>
+<http://semantic-machines.com/veda/veda-CurrencyKind-individual>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda ontology. Dictionary - CurrencyKind"@en ;
-  rdfs:label "Онтология Веды. Справочник Вид валюты"@ru ;
+  rdfs:label "Veda ontology. individual - CurrencyKind"@en ;
+  rdfs:label "Онтология Веды. Записи справочника Вид валюты"@ru ;
   v-s:loadPriority 10 ;
 .
 
