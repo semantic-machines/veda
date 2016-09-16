@@ -343,9 +343,8 @@ class VedaStorageRest : VedaStorageRest_API
         // найдем в хранилище указанного субьекта
 
         //writeln("@v uri=", uri);
-		auto ticket_ff = "ticket" in req.form;
- 
-		string _ticket;
+		auto ticket_ff = "ticket" in req.query;
+ 		string _ticket;
  
 		if (ticket_ff !is null)
 			_ticket = cast(string)*ticket_ff;
