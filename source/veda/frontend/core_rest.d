@@ -343,8 +343,14 @@ class VedaStorageRest : VedaStorageRest_API
         // найдем в хранилище указанного субьекта
 
         //writeln("@v uri=", uri);
-
-        string _ticket = req.cookies.get("ticket", "");
+		auto ticket_ff = "ticket" in req.form;
+ 
+		string _ticket;
+ 
+		if (ticket_ff !is null)
+			_ticket = cast(string)*ticket_ff;
+		else		 
+	        _ticket = req.cookies.get("ticket", "");
 
         //writeln("@v ticket=", _ticket);
 
