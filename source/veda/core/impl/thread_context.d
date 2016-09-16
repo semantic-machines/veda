@@ -8,7 +8,7 @@ private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json, std.regex;
-    import bind.xapian_d_header;
+    import veda.core.bind.xapian_d_header;
 
 //    version (libV8)
 //    {

@@ -7,7 +7,7 @@
 
  */
 
-module bind.xapian_d_header;
+module veda.core.bind.xapian_d_header;
 
 
 /// Enum of stem strategy

@@ -2,7 +2,7 @@
  * indexer property
  */
 
-module search.indexer_property;
+module veda.core.search.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.log_msg;
@@ -109,7 +109,7 @@ class IndexerProperty
                 add_schema_data(indv);
             }
             database__2__true[ "base" ] = true;
-            //writeln ("@@1 class__2__database=", class__2__database);
+            log.trace ("load indexes: class_property__2__indiviual=%s", class_property__2__indiviual);
         }
     }
 
