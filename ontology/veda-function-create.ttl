@@ -177,7 +177,9 @@ this._init = function () {
     if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
       self.object[property_uri] = self[property_uri].map(function (item) {
         // Embedded blanks are for v-s:Embedded objects only
-        item.object["v-s:parent"] = [ self.object ];
+        if (property_uri !== "v-s:parent") { // Prevent mutual v-s:parent links
+          item.object["v-s:parent"] = [ self.object ];
+        }
         return item.object;
       });
     } else {
