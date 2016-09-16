@@ -183,6 +183,7 @@ v-s:valid
   rdfs:label "Valid"@en ;
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
+.
 # ------------------------------------------------------------ 
 v-s:Absence
   rdf:type owl:Class ;
