@@ -132,6 +132,14 @@ v-s:SeparateDivision
   rdfs:label "Separate division"@en ;
   rdfs:label "Обособленное подразделение"@ru ;
 .
+# ------------------------------------------------------------ 
+v-s:OrgGroup
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Organizational group"@en ;
+  rdfs:label "Oрганизационная группа"@ru ;
+.
 
 # ------------------------------------------------------------ 
 v-s:Position
