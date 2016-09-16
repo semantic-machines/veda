@@ -38,8 +38,6 @@ before_script:
   - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda_s.log 2>&1"
   - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
   - cat $PWD/veda-core-_*.log          
-  - cat $PWD/veda-core-scripts_*.log          
-  - cat $PWD/veda-core-fanout_*.log          
   - cat $PWD/veda_s.log
 
 # Run API & integration test
@@ -70,7 +68,5 @@ after_script:
   - grunt coveralls
   - date    
   - cat $PWD/veda-core-_*.log          
-  - cat $PWD/veda-core-scripts_*.log          
-  - cat $PWD/veda-core-fanout_*.log          
   - cat $PWD/veda_s.log
   
