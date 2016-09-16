@@ -363,7 +363,9 @@
     control.datetimepicker({
       locale: "ru",
       allowInputToggle: true,
-      format: "DD.MM.YYYY HH:mm"
+      format: "DD.MM.YYYY HH:mm",
+      sideBySide: true,
+      useCurrent: true
     });
 
     input.on("change focusout", function () {
