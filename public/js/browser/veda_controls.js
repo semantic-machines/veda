@@ -1313,9 +1313,16 @@
         },
         {
           name: "dataset",
-          source: function (q, cb) {
+          source: function (input, cb) {
+            var queryString;
+            if ( input ) {
+              var tokens = input.trim().replace("*", "").split(" ");
+              var q = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
+              queryString = "(" + queryPrefix + ") && (" + q + ")" ;
+            } else {
+              queryString = queryPrefix;
+            }
             var limit = opts.limit || 0,
-                queryString = q ? "(" + queryPrefix + ") && ( '*' == '" + q + "*')" : queryPrefix,
                 queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ),
                 cached = [],
                 result = [],
