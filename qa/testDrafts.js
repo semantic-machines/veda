@@ -89,8 +89,8 @@ basic.getDrivers().forEach(function(drv) {
     driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person");});
-    driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click middle name control for person");});
+    driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click last name control for person");});
     //Сохраняем его как нормальный документ
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
     // Документ становится возможно сохранить
