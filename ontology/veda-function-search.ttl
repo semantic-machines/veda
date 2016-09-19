@@ -1182,7 +1182,7 @@ v-fs:AttributiveSearchTemplate
     var header = $(this);
     var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
     header.prepend(a, " ");
-    var property_uri = header.children("[about]").attr("about");
+    var property_uri = header.attr("data-orderby");
     if (sortBy.indexOf(property_uri) >= 0) {
       a.removeClass("text-muted");
       if (dir === "desc") { a.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt"); }
@@ -1194,7 +1194,7 @@ v-fs:AttributiveSearchTemplate
       $(".orderby a", template).addClass("text-muted");
       var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
       $this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
-      self["v-fs:sortOrder"] = ["'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir + " , " + "'" + property_uri + "'" + dir];
+      self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
       search();
     });
   });

@@ -438,7 +438,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       function embeddedHandler(doc_rel_uri, values) {
         if (doc_rel_uri === rel_uri) {
           values.map(function (value) {
-            if (value.id !== about.id) {
+            if (value.id !== about.id && rel_uri !== "v-s:parent" && !value.hasValue("v-s:parent")) {
               value["v-s:parent"] = [about];
             }
           });
