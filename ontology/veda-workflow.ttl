@@ -2685,9 +2685,6 @@ v-wf:ExecutorTemplateEmbedded
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
   rdfs:label "Template for Transform class (embedded template)"@en ;
-  v-ui:forClass v-wf:ExecutorDefinition ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forClass v-s:Codelet ;
   v-ui:template """
 <div>
   <div class="row">
