@@ -1,13 +1,12 @@
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
-@prefix : <http://semantic-machines.com/veda/dictionary-CurrencyKind/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-CurrencyKind/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix td: <http://semantic-machines.com/veda/test-data/> .
 
-<http://semantic-machines.com/veda/veda-CurrencyKind-individual>
+<http://semantic-machines.com/veda/veda-individual-CurrencyKind>
   rdf:type owl:Ontology ;
   rdfs:label "Veda ontology. individual - CurrencyKind"@en ;
   rdfs:label "Онтология Веды. Записи справочника Вид валюты"@ru ;
