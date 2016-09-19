@@ -17,25 +17,16 @@ d:longTerm
   a v-s:Term;
   rdfs:label "LT"^^xsd:string;
   rdfs:comment "Long-term: > 4 месяцев"^^xsd:string;
-  v-s:edited "2016-06-16T13:53:20.574Z"^^xsd:dateTime;
-  v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
-  v-s:created "2016-06-16T13:53:20.574Z"^^xsd:dateTime;
-  v-s:creator td:AleksandraKhvostikova-Analyst1.
+.
 
 d:middleTerm
   a v-s:Term;
   rdfs:label "MT"^^xsd:string;
   rdfs:comment "Middle-term: 1-4 месяца"^^xsd:string;
-  v-s:edited "2016-06-16T13:53:30.404Z"^^xsd:dateTime;
-  v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
-  v-s:created "2016-06-16T13:53:30.404Z"^^xsd:dateTime;
-  v-s:creator td:AleksandraKhvostikova-Analyst1.
+.
 
 d:quikWin
   a v-s:Term;
   rdfs:label "QW"^^xsd:string;
   rdfs:comment "Quick win: < 1 месяца"^^xsd:string;
-  v-s:edited "2016-06-16T13:53:39.476Z"^^xsd:dateTime;
-  v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
-  v-s:created "2016-06-16T13:53:39.476Z"^^xsd:dateTime;
-  v-s:creator td:AleksandraKhvostikova-Analyst1.
+.

@@ -40,7 +40,6 @@ d:a6121c30f-052a-e9b6-319f-0c9ead8b9732
     a v-s:DocumentKind;
     v-s:hasParentLink d:ae1b879f0-4339-9a0a-feca-e12c0f00aff3;
     rdfs:label "Приемочная документация"^^xsd:string;
-    v-s:creator td:AleksandraKhvostikova;
 .
 
 d:aca36e76a-a32d-ab00-a6e4-3d0337340121
