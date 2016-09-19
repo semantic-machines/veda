@@ -422,10 +422,12 @@ public class IndexerContext
                                     {
                                         foreach (value; values)
                                         {
-                                            //writeln (tab, "@@@5.0 value = ", value);
                                             // ссылка на наследуемый индекс, переходим вниз
                                             Individual inhr_idx = iproperty.get_index(value.uri);
-                                            //writeln (tab, "@@@5.1 inhr_idx = ", inhr_idx);
+                                            
+					                        if (trace_msg[ 220 ] == 1)
+	                                            log.trace ("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value, inhr_idx);
+                                            
                                             if (inhr_idx != Individual.init)
                                             {
                                                 Resources forProperties =
@@ -434,10 +436,12 @@ public class IndexerContext
                                                 {
                                                     foreach (forProperty; forProperties)
                                                     {
-                                                        //writeln (tab, "@@@5.2 forProperty = ", forProperty);
                                                         Resources links =
                                                             inner_indv.getResources(forProperty.uri);
-                                                        //writeln (tab, "@@@5.3 links = ", links);
+                                                        
+								                        if (trace_msg[ 220 ] == 1)
+				                                            log.trace ("forProperty=[%s], links=[%s]", forProperty, links);
+                                                        
                                                         foreach (link; links)
                                                         {
                                                             prepare_index(inhr_idx, link,
