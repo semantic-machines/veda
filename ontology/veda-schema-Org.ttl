@@ -19,8 +19,6 @@
 v-s:OrganizationUnit
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;      
@@ -203,9 +201,7 @@ v-s:Absence
 v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:ManuallyVersioned ;
   rdfs:comment "A person." ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Person"@en ;
