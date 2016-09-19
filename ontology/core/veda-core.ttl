@@ -70,13 +70,6 @@ v-s:Account
   rdfs:label "Учетная запись"@ru ;
 .
 
-v-s:Email
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Deliverable ;
-  rdfs:label "E-mail"@en ;
-  rdfs:label "Электронное письмо"@ru ;
-.
-
 v-s:Codelet
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -142,63 +135,11 @@ v-s:Transform
   rdfs:label "Для переливки из старой системы"@ru ;
 .
 
-v-s:Versioned
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Versioned thing"@en ;
-  rdfs:label "Версионная сущность"@ru ;
-.
-
-v-s:ManuallyVersioned
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Versioned ;
-  rdfs:label "Versioned thing, versions are created manually"@en ;
-  rdfs:label "Версионная сущность, версии создаются вручную"@ru ;
-.
-
-v-s:triggerVersionCreation
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ManuallyVersioned ;
-  rdfs:label "Initiate version creation"@en ;
-  rdfs:label "Инициировать создание версии"@ru ;
-  rdfs:range xsd:boolean ;
-.
-
-v-s:AutomaticallyVersioned
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Versioned ;
-  rdfs:label "Versioned thing, versions are created automatically"@en ;
-  rdfs:label "Версионная сущность, версии создаются автоматически"@ru ;
-.
-
 v-s:Version
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:label "Version"@en ;
   rdfs:label "Версия"@ru ;
-.
-
-v-s:Exportable
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Exportable thing"@en ;
-  rdfs:label "Выгружаемая сущность"@ru ;
-.
-
-v-s:Deliverable
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Сущность подлежащая доставке"@ru ;
-  rdfs:label "Deliverable thing"@en ;
-.
-
-v-s:ClassAuthorized
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Class authorized resource"@en ;
-  rdfs:label "Ресурс авторизуемый по классу"@ru ;
-  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
-  rdfs:comment "Superclass for classes whose individuals should be authorized by class"@ru ;
 .
 
 v-s:ClassModel
@@ -208,12 +149,6 @@ v-s:ClassModel
   rdfs:label "Модель класса"@ru ;
 .
 
-v-s:Embedded
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Embedded"@en ;
-  rdfs:label "Вложенный"@ru ;
-.
 
 ### PROPERTIES ###
 
@@ -292,33 +227,11 @@ v-s:fileUri
   rdfs:range xsd:string ;
 .
 
-v-s:parent
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Embedded ;
-  rdfs:label "Parent"@en ;
-  rdfs:label "Родитель"@ru ;
-  rdfs:range rdfs:Resource ;
-.
 
-v-s:actualVersion
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Versioned ;
-  rdfs:label "Actual version"@en ;
-  rdfs:label "Актуальная версия"@ru ;
-  rdfs:range v-s:Versioned ;
-.
 
-v-s:birthday
-  rdf:type owl:DatatypeProperty ;
-  rdf:type owl:FunctionalProperty ;
-  rdfs:comment "The birthday of this Person."@en ;
-  rdfs:comment "День рождения этой персоны"@ru ;
-  rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Birthday"@en ;
-  rdfs:label "День рождения"@ru ;
-  rdfs:range xsd:dateTime ;
-.
+
+
+
 
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
@@ -378,42 +291,11 @@ v-s:filter
   rdfs:range rdfs:Resource ;
 .
 
-v-s:firstName
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The first name of a person."@en ;
-  rdfs:comment "Имя персоны."@ru ;
-  rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "First name"@en ;
-  rdfs:label "Имя"@ru ;
-  rdfs:range xsd:string ;
-.
-
 v-s:fullUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
   rdfs:label "Full URL"@en ;
   rdfs:label "Полный URL"@ru ;
-  rdfs:range xsd:string ;
-.
-
-v-s:hasAccount
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:OrganizationUnit ;
-  rdfs:domain v-s:Person ;
-  rdfs:label "Account"@en ;
-  rdfs:label "Учетная запись"@ru ;
-  rdfs:range v-s:Account ;
-.
-
-v-s:lastName
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The last name of a person."@en ;
-  rdfs:comment "Фамилия персоны"@ru ;
-  rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Last name"@en ;
-  rdfs:label "Фамилия"@ru ;
   rdfs:range xsd:string ;
 .
 
@@ -443,15 +325,6 @@ v-s:memberOf
   rdfs:label "Член группы"@ru ;
   rdfs:range v-s:Group ;
 .
-
-v-s:middleName
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Person ;
-  rdfs:label "Middle name"@en ;
-  rdfs:label "Отчество"@ru ;
-  rdfs:range xsd:string ;
-.
-
 v-s:nextVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Versioned ;
@@ -459,9 +332,6 @@ v-s:nextVersion
   rdfs:label "Следующая версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
-
-
-
 v-s:password
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
@@ -469,7 +339,6 @@ v-s:password
   rdfs:label "Пароль"@ru ;
   rdfs:range xsd:string ;
 .
-
 v-s:permissionObject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "An object to which rights are granted."@en ;

@@ -179,27 +179,7 @@ v-s:to
   rdfs:label "к"@ru ;
   rdfs:range v-s:Thing ;
 .
-### ------------------------------------------------------
-v-s:BackwardLink
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Reverse Link"@en ;
-  rdfs:label "Обратная связь"@ru ;
-.
-v-s:backwardTarget
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:BackwardLink ;
-  rdfs:label "backward target"@en ;
-  rdfs:label "целевой объект"@ru ;
-  rdfs:range rdfs:Resource ;
-.
-v-s:backwardProperty
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:BackwardLink ;
-  rdfs:label "backward property"@en ;
-  rdfs:label "целевое свойство"@ru ;
-  rdfs:range owl:ObjectProperty ;
-.
+
 ### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;

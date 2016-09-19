@@ -207,6 +207,52 @@ v-s:Person
   rdfs:label "Person"@en ;
   rdfs:label "Персона"@ru ;
 .
+v-s:birthday
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "The birthday of this Person."@en ;
+  rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Birthday"@en ;
+  rdfs:label "День рождения"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:firstName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The first name of a person."@en ;
+  rdfs:comment "Имя персоны."@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "First name"@en ;
+  rdfs:label "Имя"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:lastName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The last name of a person."@en ;
+  rdfs:comment "Фамилия персоны"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Last name"@en ;
+  rdfs:label "Фамилия"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:middleName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "Middle name"@en ;
+  rdfs:label "Отчество"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:hasAccount
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "Account"@en ;
+  rdfs:label "Учетная запись"@ru ;
+  rdfs:range v-s:Account ;
+.
 v-s:hasAppointment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Appointment"@en ;
