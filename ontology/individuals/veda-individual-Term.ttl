@@ -1,0 +1,41 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-Term/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-Term>
+  rdf:type owl:Ontology ;
+  rdfs:label "Mondi ontology. Dictionary - Term"@en ;
+  rdfs:label "Онтология Монди. Справочник Срок"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+d:longTerm
+  a v-s:Term;
+  rdfs:label "LT"^^xsd:string;
+  rdfs:comment "Long-term: > 4 месяцев"^^xsd:string;
+  v-s:edited "2016-06-16T13:53:20.574Z"^^xsd:dateTime;
+  v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
+  v-s:created "2016-06-16T13:53:20.574Z"^^xsd:dateTime;
+  v-s:creator td:AleksandraKhvostikova-Analyst1.
+
+d:middleTerm
+  a v-s:Term;
+  rdfs:label "MT"^^xsd:string;
+  rdfs:comment "Middle-term: 1-4 месяца"^^xsd:string;
+  v-s:edited "2016-06-16T13:53:30.404Z"^^xsd:dateTime;
+  v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
+  v-s:created "2016-06-16T13:53:30.404Z"^^xsd:dateTime;
+  v-s:creator td:AleksandraKhvostikova-Analyst1.
+
+d:quikWin
+  a v-s:Term;
+  rdfs:label "QW"^^xsd:string;
+  rdfs:comment "Quick win: < 1 месяца"^^xsd:string;
+  v-s:edited "2016-06-16T13:53:39.476Z"^^xsd:dateTime;
+  v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
+  v-s:created "2016-06-16T13:53:39.476Z"^^xsd:dateTime;
+  v-s:creator td:AleksandraKhvostikova-Analyst1.
