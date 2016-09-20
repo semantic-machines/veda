@@ -50,12 +50,12 @@ function update(driver, key) {
 		driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).clear();
 		driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys(key)
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
-		driver.sleep(basic.FAST_OPERATION);
+		driver.sleep(basic.SLOW_OPERATION);
 	}
 	driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
 	driver.findElement({id:'save'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 }
 
 
@@ -73,10 +73,11 @@ basic.getDrivers().forEach (function (drv) {
 	driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
 	driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys(timeStamp + 1)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
+	driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
 	driver.findElement({id:'save'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 
 	assertCounts(driver, 1, 1, 0);
 
@@ -86,7 +87,7 @@ basic.getDrivers().forEach (function (drv) {
 	update(driver, '');
 	assertCounts(driver, 3, 1, 2);
 
-	update(driver, timeStamp + 3);
+	update(driver, timeStamp + 3)
 	assertCounts(driver, 4, 1, 3);
 
 	driver.quit();	
