@@ -75,6 +75,10 @@ basic.getDrivers().forEach (function (drv) {
 	put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to');");
 	put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');");
 	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');");
+	driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
+	driver.findElement({css:'button[id="save"]'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");})
+	driver.sleep(basic.SLOW_OPERATION);
 	clickButton(driver, "save");
 
 
