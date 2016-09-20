@@ -1,19 +1,20 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     person = require('./person.js'),
+	timeStamp = ''+Math.round(+new Date()/1000);
     assert = require('assert');
 
-function assertCounts(driver, drv, totalCount, createCount, updateCount) {
+function assertCounts(driver, totalCount, createCount, updateCount) {
 	// 		Go to journal
 	driver.wait
 	(
 	  function () {
-		  	driver.sleep(basic.SLOW_OPERATION);
+		  driver.sleep(basic.SLOW_OPERATION);
 		  return webdriver.until.elementLocated({css:'div.journal-record'});
 	  },
 	  basic.EXTRA_SLOW_OPERATION
-	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find person, after save operation");});
-
+	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find action, after save operation");});
+	driver.executeScript("document.querySelector('#journal').scrollIntoView(true);");
 	driver.sleep(basic.SLOW_OPERATION).then(function() {
 		driver.findElement({css:'#journal'}).click()
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button");});
@@ -32,76 +33,61 @@ function assertCounts(driver, drv, totalCount, createCount, updateCount) {
 			assert.equal(updateCount, result.length);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `update` journal elements count");});
 		// 		Return to document
-		driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Person"] a'}).click()
+		driver.findElement({css:'[rel="v-s:onDocument"] [typeof="v-s:Action"] a'}).click()
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click to return on main document");});
 	});
 }
+
+
+function update(driver, key) {
+	driver.sleep(basic.FAST_OPERATION);
+	driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
+	driver.findElement({css:'#edit'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button");});
+	driver.sleep(basic.FAST_OPERATION);
+	if (key != '') {
+		driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
+		driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).clear();
+		driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys(key)
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
+		driver.sleep(basic.FAST_OPERATION);
+	}
+	driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
+	driver.findElement({id:'save'}).click()
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
+	driver.sleep(basic.FAST_OPERATION);
+}
+
 
 basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
 
-	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
-	var now = new Date();
-	person.createPerson(driver, drv, 'Букин', 'Геннадий','first', ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
-	
-	// Check Journal (+1 new version)	
-	assertCounts(driver, drv, 1, 1, 0);
-	
-	// Update individual	
-	//		Click edit
-	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #edit').scrollIntoView(true);");
-	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button");});
-	//		Change something
-	driver.executeScript("document.querySelector('[property=\"v-s:middleName\"] + veda-control input').scrollIntoView(true);");
-	driver.findElement({css:'[property="v-s:middleName"] .glyphicon-remove'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old v-s:middleName value");});
-	driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys('second')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson");});
-	driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson");});
-	//		Click save
-	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #save').scrollIntoView(true);");
-	driver.findElement({css:'#main > div > div > div.panel-footer > #save'}).click()
+	basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
+
+	basic.openCreateDocumentForm(driver, 'Мероприятие', "v-s:Action");
+	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
+	driver.findElement({css:'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]'}).sendKeys(timeStamp)
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
+	driver.sleep(basic.FAST_OPERATION);
+	driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
+	driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys(timeStamp + 1)
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
+	driver.sleep(basic.FAST_OPERATION);
+	driver.findElement({id:'save'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
-	
-	// Check Journal (+1 new version)
-	assertCounts(driver, drv, 2, 1, 1);
-	
-	// Update nothing
-	//		Click edit
-	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #edit').scrollIntoView(true);");
-	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button");});
-	//		Click save
-	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #save').scrollIntoView(true);");
-	driver.findElement({css:'#main > div > div > div.panel-footer > #save'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
-	
-	// Check Journal (no changes)
-	assertCounts(driver, drv, 3, 1, 2);
-	
-	// Update individual	
-	//		Click edit
-	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #edit').scrollIntoView(true);");
-	driver.findElement({css:'#main > div > div > div.panel-footer > #edit'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button");});
-	//		Change something
-	driver.executeScript("document.querySelector('[property=\"v-s:middleName\"] + veda-control input').scrollIntoView(true);");
-	driver.findElement({css:'[property="v-s:middleName"] .glyphicon-remove'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old v-s:middleName value");});
-	driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys('third')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson");});
-	driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson");});
-	//		Click save
-	driver.executeScript("document.querySelector('#main > div > div > div.panel-footer > #save').scrollIntoView(true);");
-	driver.findElement({css:'#main > div > div > div.panel-footer > #save'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
-	
-	// Check Journal (+1 new version)
-	assertCounts(driver, drv, 4, 1, 3);
-	
+	driver.sleep(basic.FAST_OPERATION);
+
+	assertCounts(driver, 1, 1, 0);
+
+	update(driver, timeStamp + 2);
+	assertCounts(driver, 2, 1, 1);
+
+	update(driver, '');
+	assertCounts(driver, 3, 1, 2);
+
+	update(driver, timeStamp + 3);
+	assertCounts(driver, 4, 1, 3);
+
 	driver.quit();	
 });
