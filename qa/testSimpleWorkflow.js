@@ -78,6 +78,7 @@ basic.getDrivers().forEach (function (drv) {
 	clickButton(driver, "save");
 
 
+    driver.sleep(basic.SLOW_OPERATION);    
 	basic.openCreateDocumentForm(driver, 'Трансформация', 'v-wf:Transform');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
 	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp + 1)
