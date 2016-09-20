@@ -1132,7 +1132,7 @@ v-fs:AttributiveSearchTemplate
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <button class="btn btn-default xls"><i class="fa fa-table fa-lg"></i></button>
     <hr>
-    <h3 class="search-result-label" about="v-fs:Results" property="rdfs:label"></h3>
+    <h3><span class="search-result-label" about="v-fs:Results" property="rdfs:label"></span> <span class="result-count"></span></h3>
   </div>
   <div class="search-result table-responsive"></div>
   <div class="not-found alert alert-warning hidden">
@@ -1159,16 +1159,14 @@ v-fs:AttributiveSearchTemplate
   // Render search form
   if ( searchBlank ) {
     searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
-    search();
   } else {
     $("#params", template).remove();
-    search();
   }
+
+  search();
 
   // Search button handler
   searchButton.click(function () {
-    self.page = 0;
-    self.result = [];
     search();
   });
 
@@ -1235,6 +1233,8 @@ v-fs:AttributiveSearchTemplate
         renderResult();
       }
     });
+
+    $(".result-count", template).text("(" + self.result.length + ")");
   }
 
   // Scroll to results
@@ -1250,6 +1250,8 @@ v-fs:AttributiveSearchTemplate
 
   //Search
   function search() {
+    self.page = 0;
+    self.result = [];
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
     var queryString = [];
     if ( searchBlank ) { queryString.push( veda.Util.queryFromIndividual(searchBlank.object) ) }
@@ -1291,7 +1293,9 @@ v-fs:AttributiveSearchTemplate
       var result = new veda.IndividualModel( self.result[i] );
       result.present($("tbody", tbl), tmpl);
     }
-    tableToExcel(tbl[0], self["rdfs:label"].join(", "));
+    setTimeout(function () {
+      tableToExcel(tbl[0], self["rdfs:label"].join(", "));
+    }, 3000);
   });
 
   //# sourceURL=v-fs:AttributiveSearchTemplate_post
