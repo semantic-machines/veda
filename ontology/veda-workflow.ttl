@@ -2767,9 +2767,8 @@ v-wf:taskPropertySpecification12
 v-wf:MappingTemplateEmbedded
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
-  rdfs:label "Template for Transform class (embedded template)"@en ;
-  v-ui:forClass v-wf:Mapping ;
+  rdfs:label "Шаблон для класса Мэппинг (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Mapping class (embedded template)"@en ;
   v-ui:template """
 <div>
   <div class="row">
@@ -2794,7 +2793,6 @@ v-wf:VariableTemplateEmbedded
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Определение переменной (встроенный шаблон)"@ru ;
   rdfs:label "Template for Var define class (embedded template)"@en ;
-  v-ui:forClass v-wf:VarDefine ;
   v-ui:template """
 <div>
   <div class="row">
@@ -2810,7 +2808,6 @@ v-wf:TransformTemplateEmbedded
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
   rdfs:label "Template for Transform class (embedded template)"@en ;
-  v-ui:forClass v-wf:Transform ;
   v-ui:template """
 <div>
   <div class="row">
@@ -2844,9 +2841,8 @@ v-wf:transformPropertySpecification1
 v-wf:RuleTemplateEmbedded
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса Транфсформация (встроенный шаблон)"@ru ;
-  rdfs:label "Template for Transform class (embedded template)"@en ;
-  v-ui:forClass v-wf:Rule ;
+  rdfs:label "Шаблон для класса Правило (встроенный шаблон)"@ru ;
+  rdfs:label "Template for Rule class (embedded template)"@en ;
   v-ui:template """
 <div>
   <div class="row">
@@ -2898,7 +2894,6 @@ v-wf:FlowTemplateEmbedded
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Поток (встроенный шаблон)"@ru ;
   rdfs:label "Template for Flow class (embedded template)"@en ;
-  v-ui:forClass v-wf:Flow ;
   v-ui:template """
 <div>
   <div class="panel panel-default">
@@ -2938,7 +2933,6 @@ v-wf:FlowTemplateAsModal
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Поток (модальное окно)"@ru ;
   rdfs:label "Template for Flow class"@en ;
-  v-ui:forClass v-wf:Flow ;
   v-ui:template """
 <div>
   <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
