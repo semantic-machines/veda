@@ -31,7 +31,9 @@ public void set_updated_uid(string uid, long opid, long update_counter)
     synchronized (_mutex)
     {
         //log.trace ("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
-        _info_2_uid[ uid ] = UidInfo(update_counter, opid);
+        if ((uid in _info_2_uid) !is null)
+            _info_2_uid[ uid ] = UidInfo(update_counter, opid);
+
         atomicStore(_last_opid, opid);
     }
 }
@@ -44,10 +46,14 @@ public long get_counter_4_uid(string uid)
     {
         if ((uid in _info_2_uid) !is null)
             res = _info_2_uid[ uid ].update_counter;
+        else
+            _info_2_uid[ uid ] = UidInfo(0, 0);
+
         //log.trace ("get_counter_4_uid(uid=%s)=%d", uid, res);
     }
     return res;
 }
+
 
 public long get_last_opid()
 {
