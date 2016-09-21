@@ -404,11 +404,11 @@ v-s:ClassifiedAttachment
 .
 #--------------------------------------------------
 # -- Перенести в другой файл
-v-s:DocumentKind
+v-s:FileContentClassifier
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Document Kind"@en ;
-  rdfs:label "Вид документа"@ru ;
+  rdfs:label "File content classifier"@en ;
+  rdfs:label "Содержимое файла"@ru ;
 .
 #--------------------------------------------------
 v-s:ProjectStage
@@ -583,13 +583,12 @@ v-s:hasProjectPhaseKind
   rdfs:domain v-s:ProjectMilestone ;
 .
 # --  уточнить используется ли в этих классах
-v-s:hasDocumentKind
+v-s:hasFileContentClassifier
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Type of document"@en ;
-  rdfs:label "Вид документа"@ru ;
-  rdfs:range v-s:DocumentKind ;
-  rdfs:domain v-s:ClassifiedAttachment ;
-  rdfs:domain v-s:ProjectPhaseCost ;
+  rdfs:label "File content"@en ;
+  rdfs:label "Содержимое файла"@ru ;
+  rdfs:range v-s:FileContentClassifier ;
+  rdfs:domain v-s:File ;
 .
 v-s:PsInitiatorAuthorCoathorForInitiative
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -713,28 +712,16 @@ v-s:PsHasDocumentKind
   rdfs:label "Document kind property specification for classifiedAttachment class"@en ;
   rdfs:label "Спецификация свойства Вид документа для класса классифицированное вложение"@ru ;
 .
-v-s:PsDocumentKindForProjectPhaseCost
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:ProjectPhaseCost ;
-  v-ui:forProperty v-s:hasDocumentKind ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 0 ;
-  v-ui:queryPrefix "(('rdf:type'=='v-s:DocumentKind')&&('v-s:hasParentLink'=='d:ab8f2e964-d3d9-9d73-53b2-cdcd931c16a6'))"^^xsd:string ;
-  v-ui:tooltip "Non-required, single value. Link to instance of DocumentKind class"@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Вид документа."@ru ;
-  rdfs:label "Document kind property specification for ProjectPhase class"@en ;
-  rdfs:label "Спецификация свойства Вид документа для класса классифицированная сумма"@ru ;
-.
 v-s:PsHasParentLink
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:DocumentKind ;
+  v-ui:forClass v-s:FileContentClassifier ;
   v-ui:forProperty v-s:hasParentLink ;
   v-ui:maxCardinality 100 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-Required, multiply value. Link to instance of DocumentKind class"@en ;
-  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Виды документов."@ru ;
-  rdfs:label "Link to ParentLink specification for DocumtnKind class"@en ;
-  rdfs:label "Спецификация ссылки на родтельский документ для класса виды документов"@ru ;
+  v-ui:tooltip "Non-Required, multiply value. Link to instance of v-s:FileContentClassifier class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса v-s:FileContentClassifier."@ru ;
+  rdfs:label "Link to ParentLink specification for v-s:FileContentClassifier class"@en ;
+  rdfs:label "Спецификация ссылки на родтельский документ для класса v-s:FileContentClassifier"@ru ;
 .
 
 v-s:PsProjectManager
