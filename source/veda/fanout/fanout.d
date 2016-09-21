@@ -3,7 +3,7 @@
  */
 module veda.fanout;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, import std.socket;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
@@ -60,27 +60,27 @@ class FanoutProcess : VedaModule
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
-        committed_op_id   = op_id;
+        committed_op_id = op_id;
         return true;
     }
 
-	override void thread_id ()
-	{
-	}
-	
-	override Context create_context ()
-	{
-		return null; 
-	}
+    override void thread_id()
+    {
+    }
 
-	
+    override Context create_context()
+    {
+        return null;
+    }
+
+
     override bool configure()
     {
         log.trace("use configuration: %s", node);
 
         connect_to_mysql(context);
         connect_to_smtp(context);
-        
+
         return true;
     }
 
@@ -322,7 +322,7 @@ class FanoutProcess : VedaModule
     {
         try
         {
-        	isExistsTable = isExistsTable.init;
+            isExistsTable = isExistsTable.init;
             //log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
             //log.trace ("push_to_mysql: new_indv=%s", new_indv);
 
@@ -518,35 +518,46 @@ class FanoutProcess : VedaModule
                     {
                         try
                         {
-        		    log.trace("found connect to smtp [%s]", connection);
-			    auto host = connection.getFirstLiteral("v-s:host");
-			    auto port = cast(ushort)connection.getFirstInteger("v-s:port");
+                            log.trace("found connect to smtp [%s]", connection);
+                            auto host = connection.getFirstLiteral("v-s:host");
+                            auto port = cast(ushort)connection.getFirstInteger("v-s:port");
                             smtp_conn = new MailSender(host, port);
                             if (smtp_conn is null)
-			    {	
-        			log.trace("fail connect to smtp [%s] %s:%d", connection.uri, host, port);			    
+                            {
+                                log.trace("fail create connection [%s] %s:%d", connection.uri, host, port);
                                 continue;
-			    }
+                            }
 
-                            string login = connection.getFirstLiteral("v-s:login");
-                            string pass  = connection.getFirstLiteral("v-s:password");
+                            auto addr = new InternetHost;
+                            if (addr.getHostByName(host))
+                            {
+                                // Connecting to smtp server
+                                SmtpReply result = smtp_conn.connect();
+                                if (!result.success)
+                                {
+                                    log.trace("fail connection to smtp server [%s] %s:%d", connection.uri, host, port);
+                                    smtp_conn = null;
+                                    continue;
+                                }
+                                else
+                                    log.trace("success connection to SMTP server: [%s]", connection);
 
-                            if (login !is null && login.length > 0)
-                                smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
 
-                            // Connecting to smtp server
-                            auto result = smtp_conn.connect();
-                            if (!result.success)
-                                smtp_conn = null;
+                                string login = connection.getFirstLiteral("v-s:login");
+                                string pass  = connection.getFirstLiteral("v-s:password");
+
+                                if (login !is null && login.length > 0)
+                                    smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
+
+                                if (!result.success)
+                                {
+                                    log.trace("fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);
+                                    smtp_conn = null;
+                                    continue;
+                                }
+                            }
                             else
-                                log.trace("success connection to SMTP server: [%s]", connection);
-
-                            if (smtp_conn is null)
-			    {	
-        			log.trace("fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);			    
-                                continue;
-			    }
-
+                              log.trace("smtp server unavailable [%s] %s:%d", connection.uri, host, port);
                         }
                         catch (Throwable ex)
                         {
@@ -556,10 +567,10 @@ class FanoutProcess : VedaModule
                         }
                     }
                 }
-		else
-		{
-        	    log.trace("WARN:connect_to_smtp:connection [%s] no content [v-s:transport]", connection);
-		}
+                else
+                {
+                    log.trace("WARN:connect_to_smtp:connection [%s] no content [v-s:transport]", connection);
+                }
             }
         }
         catch (Throwable ex)
@@ -573,7 +584,7 @@ class FanoutProcess : VedaModule
     {
         try
         {
-            Ticket sticket = context.sys_ticket();
+            Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
             log.trace("connect_to_mysql:found gates: %s", gates);
