@@ -765,6 +765,9 @@ s-wf:ComplexRouteStartForm_Template
 		  }
 	    });
     }
+	$('#save_and_start_process', template).on('click', function () {	
+	   veda.Util.send(individual, template);
+	});
     //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
   </script>
   <div class="container-fluid">
@@ -873,20 +876,11 @@ s-wf:ComplexRouteStartForm_Template
         <hr />
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-primary" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-success" id="save" about="v-s:Save" property="rdfs:label"/>
         <button type="button" class="action btn btn-success" id="save_and_start_process" about="v-s:Send" property="rdfs:label"/>
-        <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-        <button type="button" class="action btn btn-link" id="delete" about="v-s:Delete" property="rdfs:label"/>
       </div>
     </div>
   </div>
-<script type="text/javascript">
-jsWorkflow.ready(function () {
-  $( "#save_and_start_process" ).click(function() {
-    alert( "Handler for .click() called." + document );
-  });
-});
+<script>
 //# sourceURL=s-wf:ComplexRouteStartForm_Template
 </script>
   """ ;
