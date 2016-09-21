@@ -3,7 +3,7 @@
  */
 module veda.fanout;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, import std.socket;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
