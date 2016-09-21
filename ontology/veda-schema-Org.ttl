@@ -21,7 +21,7 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
-  rdfs:subClassOf v-s:Registered ;      
+  rdfs:subClassOf v-s:Registered ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
@@ -58,7 +58,7 @@ v-s:hasFunctionalChief
   rdfs:range v-s:Appointment ;
 .
 
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
@@ -93,22 +93,21 @@ v-s:hasContractor
   rdfs:range v-s:Contractor ;
   rdfs:domain v-s:Organization ;
 .
-v-s:hasSeparateDivision
+v-s:hasSubsidiary
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Separate division"@en ;
+  rdfs:label "Subsidiary"@en ;
   rdfs:label "Обособленное подразделение"@ru ;
   rdfs:range v-s:Department ;
   rdfs:domain v-s:Organization ;
 .
-v-s:hasOrganizationDossier
+v-s:hasContractorProfile
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Separate division"@en ;
-  rdfs:label "Обособленное подразделение"@ru ;
-  rdfs:range v-s:OrganizationDossier ;
+  rdfs:label "Contractor profile"@en ;
+  rdfs:label "Досье контрагента"@ru ;
+  rdfs:range v-s:ContractorProfile ;
   rdfs:domain v-s:Organization ;
 .
-
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:Department
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
@@ -117,20 +116,20 @@ v-s:Department
 .
 v-s:parentOrganization
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Separate division"@en ;
-  rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:label "Parent organization"@en ;
+  rdfs:label "Основная организация"@ru ;
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Department ;
 .
-# ------------------------------------------------------------ 
-v-s:SeparateDivision
+# ------------------------------------------------------------
+v-s:Subsidiary
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Organization ;
-  rdfs:subClassOf v-s:Department ;  
-  rdfs:label "Separate division"@en ;
-  rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:subClassOf v-s:Department ;
+  rdfs:label "Subsidiary"@en ;
+  rdfs:label "Филиал"@ru ;
 .
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:OrgGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
@@ -139,7 +138,7 @@ v-s:OrgGroup
   rdfs:label "Oрганизационная группа"@ru ;
 .
 
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:Position
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
@@ -147,7 +146,7 @@ v-s:Position
   rdfs:label "Должность"@ru ;
 .
 
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:HRRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -161,13 +160,13 @@ v-s:employee
   rdfs:label "Работник"@ru ;
   rdfs:range v-s:Person ;
 .
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:Appointment
   rdf:type owl:Class ;
   rdfs:label "Appointment"@en ;
   rdfs:label "Назначение"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
-  rdfs:subClassOf v-s:OrganizationUnit ;  
+  rdfs:subClassOf v-s:OrganizationUnit ;
 .
 v-s:occupation
   rdf:type owl:ObjectProperty ;
@@ -190,14 +189,14 @@ v-s:valid
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
 .
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:Absence
   rdf:type owl:Class ;
   rdfs:label "Absence"@en ;
   rdfs:label "Отсутствие"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
 .
-# ------------------------------------------------------------ 
+# ------------------------------------------------------------
 v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -269,3 +268,598 @@ v-s:defaultAppointment
 .
 
 
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+
+v-s:PsHasSubsidiaryForOrganization
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:hasSubsidiary ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:rangeRestriction v-s:Subsidiary ;
+.
+
+# ------------------------------------------------------------ ШАБЛОНЫ --
+
+v-s:OrganizationTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Organization ;
+  rdfs:label "Template for v-s:Organization class"@en ;
+  rdfs:label "Шаблон для класса v-s:Organization"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Organization" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-4">
+        <em about="v-s:taxId" property="rdfs:label"></em>
+        <div property="v-s:taxId" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-4">
+        <em about="v-s:taxRegistrationCause" property="rdfs:label"></em>
+        <div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxRegistrationCause" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-4">
+        <em about="v-s:taxRegistrationNumber" property="rdfs:label"></em>
+        <div property="v-s:taxRegistrationNumber" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxRegistrationNumber" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:legalAddress" property="rdfs:label"></em>
+        <div property="v-s:legalAddress" class="view -edit -search"></div>
+        <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:postalAddress" property="rdfs:label"></em>
+        <div property="v-s:postalAddress" class="view -edit -search"></div>
+        <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="v-s:shortLabel" property="rdfs:label"></th>
+          <th about="v-s:taxRegistrationCause" property="rdfs:label"></th>
+          <th about="v-s:postalAddress" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="v-s:hasSubsidiary" data-embedded="true">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div property="v-s:shortLabel" class="view -edit -search"></div>
+            <veda-control property="v-s:shortLabel" data-type="string" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+            <veda-control property="v-s:taxRegistrationCause" data-type="string" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:postalAddress" class="view -edit -search"></div>
+            <veda-control property="v-s:postalAddress" data-type="string" class="-view edit search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <veda-control data-type="link" rel="v-s:hasSubsidiary" class="-view edit search create create-modal"></veda-control>
+
+    <em about="v-s:hasContractor" property="rdfs:label"></em>
+    <div rel="v-s:hasContractor" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:hasContractorProfile" property="rdfs:label"></em>
+    <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:hasContractorProfile" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:SubsidiaryTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Subsidiary ;
+  rdfs:label "Template for v-s:Subsidiary class"@en ;
+  rdfs:label "Шаблон для класса v-s:Subsidiary"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Subsidiary" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:parentOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-4">
+        <em about="v-s:taxRegistrationCause" property="rdfs:label"></em>
+        <div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxRegistrationCause" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:postalAddress" property="rdfs:label"></em>
+    <div property="v-s:postalAddress" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:comment" property="rdfs:label"></em>
+    <div property="rdfs:comment" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="rdfs:comment" class="-view edit search"></veda-control>
+
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:DepartmentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Department ;
+  rdfs:label "Template for v-s:Department class"@en ;
+  rdfs:label "Шаблон для класса v-s:Department"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Department" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:parentOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasChief" property="rdfs:label"></em>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:postalAddress" property="rdfs:label"></em>
+    <div property="v-s:postalAddress" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:ContractorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Contractor ;
+  rdfs:label "Template for v-s:Contractor class"@en ;
+  rdfs:label "Шаблон для класса v-s:Contractor"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Contractor" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-s:registrationNumber" property="rdfs:label"></em>
+        <div property="v-s:registrationNumber" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:registrationNumber" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-3">
+        <em about="v-s:taxId" property="rdfs:label"></em>
+        <div property="v-s:taxId" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:legalAddress" property="rdfs:label"></em>
+    <div property="v-s:legalAddress" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+    <br>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorLocked" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorLocked" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorDeleted" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorDeleted" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorCreditor" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorCreditor" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorDebitor" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorDebitor" property="rdfs:label"></em>
+      </label>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="mnd-s:forOrganization" property="rdfs:label"></em>
+    <div rel="mnd-s:forOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext dropdown"></veda-control>
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:ContractorProfileTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorProfile ;
+  rdfs:label "Template for v-s:ContractorProfile class"@en ;
+  rdfs:label "Шаблон для класса v-s:ContractorProfile"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:ContractorProfile" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="rdfs:comment" property="rdfs:label"></em>
+    <div property="rdfs:comment" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-s:dateFromFact" property="rdfs:label"></em>
+        <div property="v-s:dateFromFact" class="view -edit -search"></div>
+        <veda-control property="v-s:dateFromFact" data-type="dateTime" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="v-s:dateToFact" property="rdfs:label"></em>
+        <div property="v-s:dateToFact" class="view -edit -search"></div>
+        <veda-control property="v-s:dateToFact" data-type="dateTime" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:hasClassifierOKVED" property="rdfs:label"></em>
+    <div rel="v-s:hasClassifierOKVED" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:hasClassifierOKVED" class="-view edit search fulltext dropdown"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="mnd-s:hasContractorProfileDecision" property="rdfs:label"></em>
+    <div rel="mnd-s:hasContractorProfileDecision" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="mnd-s:hasContractorProfileDecision" class="-view edit search fulltext dropdown"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-md-3">
+        <em about="mnd-s:attachOrganizationProperties" property="rdfs:label"></em>
+        <div rel="mnd-s:attachOrganizationProperties" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachOrganizationProperties" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachCertificateRegistrationLegal" property="rdfs:label"></em>
+        <div rel="mnd-s:attachCertificateRegistrationLegal" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachCertificateRegistrationLegal" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachExcerptFromEGRUL" property="rdfs:label"></em>
+        <div rel="mnd-s:attachExcerptFromEGRUL" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachExcerptFromEGRUL" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachCertificateTaxRegistration" property="rdfs:label"></em>
+        <div rel="mnd-s:attachCertificateTaxRegistration" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachCertificateTaxRegistration" class="-view edit -search create"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-md-3">
+        <em about="mnd-s:attachFoundingDocument" property="rdfs:label"></em>
+        <div rel="mnd-s:attachFoundingDocument" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachFoundingDocument" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachAppointingOrder" property="rdfs:label"></em>
+        <div rel="mnd-s:attachAppointingOrder" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachAppointingOrder" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachWarrant" property="rdfs:label"></em>
+        <div rel="mnd-s:attachWarrant" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachWarrant" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachSignatureSample" property="rdfs:label"></em>
+        <div rel="mnd-s:attachSignatureSample" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachSignatureSample" class="-view edit -search create"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-md-3">
+        <em about="mnd-s:attachLicense" property="rdfs:label"></em>
+        <div rel="mnd-s:attachLicense" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachLicense" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachOtherDoc" property="rdfs:label"></em>
+        <div rel="mnd-s:attachOtherDoc" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachOtherDoc" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachTaxReport" property="rdfs:label"></em>
+        <div rel="mnd-s:attachTaxReport" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachTaxReport" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachAccountBalance" property="rdfs:label"></em>
+        <div rel="mnd-s:attachAccountBalance" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachAccountBalance" class="-view edit -search create"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-md-3">
+        <em about="mnd-s:attachTaxDeclaration" property="rdfs:label"></em>
+        <div rel="mnd-s:attachTaxDeclaration" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachTaxDeclaration" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachDocConfirmUseAddresses" property="rdfs:label"></em>
+        <div rel="mnd-s:attachDocConfirmUseAddresses" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachDocConfirmUseAddresses" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachInsurancePayments" property="rdfs:label"></em>
+        <div rel="mnd-s:attachInsurancePayments" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachInsurancePayments" class="-view edit -search create"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="mnd-s:attachSubcontract" property="rdfs:label"></em>
+        <div rel="mnd-s:attachSubcontract" data-embedded="true"></div>
+        <veda-control data-type="file" rel="mnd-s:attachSubcontract" class="-view edit -search create"></veda-control>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:ContractorProfileFileTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:ContractorProfileFile"@ru ;
+  rdfs:label "Template for class v-s:ContractorProfileFile"@en ;
+  v-ui:forClass v-s:ContractorProfileFile ;
+  v-ui:template """
+<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
+  <div class="panel-body">
+    <em about="v-s:hasFileContentClassifier" property="rdfs:label" class="-view edit search"></em>
+    <strong rel="v-s:hasFileContentClassifier" class="view -edit -search" data-template="v-ui:LabelTemplate"></strong>
+    <veda-control data-type="link" rel="v-s:hasFileContentClassifier" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+    <span property="rdfs:comment" class="view -edit -search"></span>
+    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+    <br>
+    <hr class="margin-sm view -edit -search">
+    <div>
+      <span id="icon" class="label label-primary"></span>
+      <a href="/files/@">
+        <span about="@" property="v-s:fileName"></span>
+      </a>
+    </div>
+    <em about="v-s:dateFrom" property="rdfs:label"></em>
+    <div property="v-s:dateFrom" class="view -edit -search"></div>
+    <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+
+    <em about="v-s:dateTo" property="rdfs:label"></em>
+    <div property="v-s:dateTo" class="view -edit -search"></div>
+    <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+
+    <div class="view -edit -search" style="font-style:italic">
+      <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
+    </div>
+  </div>
+</div>
+<script>
+  var fn = individual["v-s:fileName"][0],
+    idx = fn.lastIndexOf("."),
+    ext = fn.substr(idx + 1);
+  $("span#icon", template).text(ext);
+  //# sourceURL=v-s:ContractorProfileFileTemplate
+</script>
+  """ ;
+.
