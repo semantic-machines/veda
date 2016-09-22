@@ -813,8 +813,14 @@ v-s:ContractorProfileTemplate
     <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+    <button type="button" class="action btn btn-success view edit -search" id="save_and_start_process" about="v-s:Send" property="rdfs:label"/>
   </div>
 </div>
+<script>
+$('#save_and_start_process', template).on('click', function () {	
+   veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+});
+</script>
   """ ;
 .
 

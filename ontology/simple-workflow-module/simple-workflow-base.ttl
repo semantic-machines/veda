@@ -588,17 +588,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
-  v-ui:forClass s-wf:SimpleRouteStartForm ;
   v-ui:template """
-  <script>
-    var simple = 's-wf:SimpleRouteStartForm_';
-	if (individual.hasValue(simple+'participant')) {
-	   console.log('P> '+individual[simple+'participant'][0].id);
-	}
-	if (individual.hasValue(simple+'participant')) {
-	   console.log('C> '+individual[simple+'comment'][0]);
-	}
-  </script>
   <div>
     <div class="panel panel-default">
       <div class="panel-body">
@@ -629,7 +619,6 @@ s-wf:SimpleRouteStartFormShort_Template
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
-  v-ui:forClass s-wf:SimpleRouteStartForm ;
   v-ui:template """
   <div>
     <div class="panel panel-default">
@@ -656,7 +645,6 @@ s-wf:SimpleRouteStartFormFull_Template
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
-  v-ui:forClass s-wf:SimpleRouteStartForm ;
   v-ui:template """
   <div class="subroot">
     <div class="panel panel-default">
@@ -742,7 +730,7 @@ s-wf:ComplexRouteStartForm_Template
 	      routes[stage]['rdf:type'] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
 	    });
 	    
-		if (doc['rdf:type'][0].id === "mnd-s:Idea") { // Custom values fill		
+		if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill		
 		  routes['coordination1'][simple+'participant'] = doc['v-s:creator'];		   					    
 		  routes['coordination1'][simple+'visible'] = [true]; 				
 		  routes['coordination1'][simple+'comment'] = [new String('Согласуй плиз')]; 				
@@ -761,7 +749,7 @@ s-wf:ComplexRouteStartForm_Template
     		$('.'+stage, template).hide();
     	  }
 		  if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-    		$('.'+stage, template).attr('about', '@');
+    		$('.'+stage+' > div', template).attr('about', '@');
 		  }
 	    });
     }
@@ -2479,4 +2467,20 @@ s-wf:rule2currentNetFromIsProcess
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "removeThisProcess ('v-wf:isProcess')";
   v-wf:grouping "@", "1";
+.
+
+s-wf:complexRouteTransform
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule s-wf:complexRouteRule ;
+  rdfs:isDefinedBy s-wf: ;
+.
+s-wf:complexRouteRule
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_complex_route')" ;
+  v-wf:aggregate "putUri ('rdf:type', 's-wf:ComplexRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 's-wf:complexRouteTransform')" ;
+  rdfs:isDefinedBy s-wf: ;
+  v-wf:grouping "1";
 .
