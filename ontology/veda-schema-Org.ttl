@@ -658,6 +658,37 @@ v-s:ContractorProfileTemplate
   rdfs:label "Template for v-s:ContractorProfile class"@en ;
   rdfs:label "Шаблон для класса v-s:ContractorProfile"@ru ;
   v-ui:template """
+<script>
+  var props = [
+    "mnd-s:attachOrganizationProperties",
+    "mnd-s:attachCertificateRegistrationLegal",
+    "mnd-s:attachExcerptFromEGRUL",
+    "mnd-s:attachCertificateTaxRegistration",
+    "mnd-s:attachFoundingDocument",
+    "mnd-s:attachAppointingOrder",
+    "mnd-s:attachWarrant",
+    "mnd-s:attachSignatureSample",
+    "mnd-s:attachLicense",
+    "mnd-s:attachOtherDoc",
+    "mnd-s:attachTaxReport",
+    "mnd-s:attachAccountBalance",
+    "mnd-s:attachTaxDeclaration",
+    "mnd-s:attachDocConfirmUseAddresses",
+    "mnd-s:attachInsurancePayments",
+    "mnd-s:attachSubcontract"
+  ];
+  var files = $(".files", template),
+      relNameTmpl = files.children(".rel-name").remove(),
+      relValueTmpl = files.children(".rel-value").remove();
+  props.map(function (property_uri) {
+    relName = relNameTmpl.clone();
+    relName.find("strong").attr("about", property_uri);
+    relName.find("veda-control").attr("rel", property_uri);
+    relValue = relValueTmpl.clone().attr("rel", property_uri);
+    files.append(relName, relValue);
+  });
+  //# sourceURL=v-s:ContractorProfileTemplate_pre
+</script>
 <div class="container">
   <h2>
     <span about="v-s:ContractorProfile" property="rdfs:label"></span>:
@@ -701,104 +732,57 @@ v-s:ContractorProfileTemplate
     <veda-control data-type="link" rel="mnd-s:hasContractorProfileDecision" class="-view edit search fulltext dropdown"></veda-control>
 
     <hr class="view -edit -search">
+    <br>
+    <table class="table table-bordered files">
+      <thead>
+        <tr>
+          <th width="30%" about="v-s:fileName" property="rdfs:label"></th>
+          <th width="20%" about="rdfs:comment" property="rdfs:label"></th>
+          <th width="15%" about="v-s:dateFrom" property="rdfs:label"></th>
+          <th width="15%" about="v-s:dateTo" property="rdfs:label"></th>
+          <th width="20%" about="v-s:creator" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody class="rel-name">
+        <tr class="active">
+          <td colspan="5">
+            <strong about="" property="rdfs:label"></strong>
+            <veda-control style="display:inline-block;margin-left:10px" rel="" data-type="file" class="-view edit -search"></veda-control>
+          </td>
+        </tr>
+      </tbody>
+      <tbody class="rel-value" rel="" data-embedded="true">
+        <tr>
+          <td>
+            <span id="icon" class="label label-primary"></span>
+            <a href="/files/@">
+              <span about="@" property="v-s:fileName"></span>
+            </a>
+          </td>
+          <td>
+            <span property="rdfs:comment" class="view -edit -search"></span>
+            <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+          </td>
+          <td>
+            <div property="v-s:dateFrom" class="view -edit -search"></div>
+            <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+          </td>
+          <td>
+            <div property="v-s:dateTo" class="view -edit -search"></div>
+            <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+          </td>
+          <td><span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span> <span about="@" property="v-s:created"></span></td>
+        </tr>
+        <script>
+          var fn = individual["v-s:fileName"][0],
+            idx = fn.lastIndexOf("."),
+            ext = fn.substr(idx + 1);
+          $("span#icon", template).text(ext);
+          //# sourceURL=v-s:ContractorProfileFileTemplate
+        </script>
+      </tbody>
+    </table>
 
-    <div class="row">
-      <div class="col-md-3">
-        <em about="mnd-s:attachOrganizationProperties" property="rdfs:label"></em>
-        <div rel="mnd-s:attachOrganizationProperties" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachOrganizationProperties" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachCertificateRegistrationLegal" property="rdfs:label"></em>
-        <div rel="mnd-s:attachCertificateRegistrationLegal" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachCertificateRegistrationLegal" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachExcerptFromEGRUL" property="rdfs:label"></em>
-        <div rel="mnd-s:attachExcerptFromEGRUL" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachExcerptFromEGRUL" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachCertificateTaxRegistration" property="rdfs:label"></em>
-        <div rel="mnd-s:attachCertificateTaxRegistration" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachCertificateTaxRegistration" class="-view edit -search create"></veda-control>
-      </div>
-    </div>
-
-    <hr class="view -edit -search">
-
-    <div class="row">
-      <div class="col-md-3">
-        <em about="mnd-s:attachFoundingDocument" property="rdfs:label"></em>
-        <div rel="mnd-s:attachFoundingDocument" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachFoundingDocument" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachAppointingOrder" property="rdfs:label"></em>
-        <div rel="mnd-s:attachAppointingOrder" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachAppointingOrder" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachWarrant" property="rdfs:label"></em>
-        <div rel="mnd-s:attachWarrant" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachWarrant" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachSignatureSample" property="rdfs:label"></em>
-        <div rel="mnd-s:attachSignatureSample" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachSignatureSample" class="-view edit -search create"></veda-control>
-      </div>
-    </div>
-
-    <hr class="view -edit -search">
-
-    <div class="row">
-      <div class="col-md-3">
-        <em about="mnd-s:attachLicense" property="rdfs:label"></em>
-        <div rel="mnd-s:attachLicense" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachLicense" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachOtherDoc" property="rdfs:label"></em>
-        <div rel="mnd-s:attachOtherDoc" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachOtherDoc" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachTaxReport" property="rdfs:label"></em>
-        <div rel="mnd-s:attachTaxReport" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachTaxReport" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachAccountBalance" property="rdfs:label"></em>
-        <div rel="mnd-s:attachAccountBalance" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachAccountBalance" class="-view edit -search create"></veda-control>
-      </div>
-    </div>
-
-    <hr class="view -edit -search">
-
-    <div class="row">
-      <div class="col-md-3">
-        <em about="mnd-s:attachTaxDeclaration" property="rdfs:label"></em>
-        <div rel="mnd-s:attachTaxDeclaration" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachTaxDeclaration" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachDocConfirmUseAddresses" property="rdfs:label"></em>
-        <div rel="mnd-s:attachDocConfirmUseAddresses" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachDocConfirmUseAddresses" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachInsurancePayments" property="rdfs:label"></em>
-        <div rel="mnd-s:attachInsurancePayments" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachInsurancePayments" class="-view edit -search create"></veda-control>
-      </div>
-      <div class="col-md-3">
-        <em about="mnd-s:attachSubcontract" property="rdfs:label"></em>
-        <div rel="mnd-s:attachSubcontract" data-embedded="true"></div>
-        <veda-control data-type="file" rel="mnd-s:attachSubcontract" class="-view edit -search create"></veda-control>
-      </div>
-    </div>
   </div>
   <hr>
   <div id="systemProperties">
@@ -817,55 +801,10 @@ v-s:ContractorProfileTemplate
   </div>
 </div>
 <script>
-$('#save_and_start_process', template).on('click', function () {	
+$('#save_and_start_process', template).on('click', function () {
    veda.Util.send(individual, template, 's-wf:complexRouteTransform');
 });
-</script>
-  """ ;
-.
-
-v-s:ContractorProfileFileTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса v-s:ContractorProfileFile"@ru ;
-  rdfs:label "Template for class v-s:ContractorProfileFile"@en ;
-  v-ui:forClass v-s:ContractorProfileFile ;
-  v-ui:template """
-<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
-  <div class="panel-body">
-    <em about="v-s:hasFileContentClassifier" property="rdfs:label" class="-view edit search"></em>
-    <strong rel="v-s:hasFileContentClassifier" class="view -edit -search" data-template="v-ui:LabelTemplate"></strong>
-    <veda-control data-type="link" rel="v-s:hasFileContentClassifier" class="-view edit search fulltext dropdown"></veda-control>
-
-    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-    <span property="rdfs:comment" class="view -edit -search"></span>
-    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-    <br>
-    <hr class="margin-sm view -edit -search">
-    <div>
-      <span id="icon" class="label label-primary"></span>
-      <a href="/files/@">
-        <span about="@" property="v-s:fileName"></span>
-      </a>
-    </div>
-    <em about="v-s:dateFrom" property="rdfs:label"></em>
-    <div property="v-s:dateFrom" class="view -edit -search"></div>
-    <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
-
-    <em about="v-s:dateTo" property="rdfs:label"></em>
-    <div property="v-s:dateTo" class="view -edit -search"></div>
-    <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
-
-    <div class="view -edit -search" style="font-style:italic">
-      <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
-    </div>
-  </div>
-</div>
-<script>
-  var fn = individual["v-s:fileName"][0],
-    idx = fn.lastIndexOf("."),
-    ext = fn.substr(idx + 1);
-  $("span#icon", template).text(ext);
-  //# sourceURL=v-s:ContractorProfileFileTemplate
+//# sourceURL=v-s:ContractorProfileTemplate_post
 </script>
   """ ;
 .
