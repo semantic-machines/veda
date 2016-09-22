@@ -117,16 +117,12 @@ v-s:Yesterday
 
 
 ### veda-ui
-
+# ------------------------------------------------------------
 v-s:File
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
-  rdfs:comment "File"@en ;
-  rdfs:comment "Файл"@ru ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
 .
@@ -150,6 +146,14 @@ v-s:fileThumbnail
   rdfs:label "Thumbnail"@en ;
   rdfs:label "Миниатюра"@ru ;
   rdfs:range v-s:File ;
+.
+# ------------------------------------------------------------
+v-s:ClassifiedFile
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:File ;
+  rdfs:subClassOf v-s:Temporal ;  
+  rdfs:label "Classified file"@en ;
+  rdfs:label "Классифицированный Файл"@ru ;
 .
 ### ------------------------------------------------------
 v-s:Level
