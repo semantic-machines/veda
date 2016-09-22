@@ -104,7 +104,7 @@ class FanoutProcess : VedaModule
         if (ac.getStatus() != ResultCode.OK)
             return null;
 
-        return ac.resources[ "v-s:mailbox" ];
+        return ac.getResources("v-s:mailbox");
     }
 
     private Resources extract_email(ref Ticket sticket, string ap_uri)
@@ -222,9 +222,9 @@ class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
-                 log.trace("send email: prepare %s", new_indv.uri);
-            	
-            	
+                log.trace("send email: prepare %s", new_indv.uri);
+                bool is_send = false;
+
                 if (is_deleted == false)
                 {
                     string from         = new_indv.getFirstLiteral("v-wf:from");
@@ -295,6 +295,7 @@ class FanoutProcess : VedaModule
                             }
                             else
                             {
+                                is_send = true;
                                 new_indv.addResource("v-s:isSuccess", Resource(true));
                             }
 
@@ -303,8 +304,19 @@ class FanoutProcess : VedaModule
                             new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
                             //context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
                         }
+                        else
+                        {
+                            log.trace("WARN: send email[%s]: fail extract_email from field from[%s] or to[%s]", new_indv.uri, from, to);
+                        }
+                    }
+                    else
+                    {
+                        log.trace("WARN: send email[%s]: invalid field from[%s] or to[%s]", new_indv.uri, from, to);
                     }
                 }
+
+                if (is_send == false)
+                    log.trace("WARN: send email: email not prepared, %s", new_indv);
             }
         }
         catch (Throwable ex)
@@ -560,7 +572,7 @@ class FanoutProcess : VedaModule
                                 }
                             }
                             else
-                              log.trace("smtp server unavailable [%s] %s:%d", connection.uri, host, port);
+                                log.trace("smtp server unavailable [%s] %s:%d", connection.uri, host, port);
                         }
                         catch (Throwable ex)
                         {
