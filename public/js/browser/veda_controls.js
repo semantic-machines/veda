@@ -1081,17 +1081,20 @@
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.rel_uri,
+        rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
+        range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true;
       var fileInput = $("#file", control);
       if (!isSingle) fileInput.attr("multiple", "multiple");
       var btn = $("#btn", control);
+      var loadIndicator = $("i", control);
       btn.click(function (e) {
         fileInput.click();
       });
       var files = [], n;
       var uploaded = function (file, path, uri) {
         var f = new veda.IndividualModel();
-        f["rdf:type"] = [ new veda.IndividualModel("v-s:File") ];
+        f["rdf:type"] = range;
         f["v-s:fileName"] = [ file.name ];
         f["rdfs:label"] = [ file.name ];
         f["v-s:fileSize"] = [ file.size ];
@@ -1106,11 +1109,13 @@
             individual[rel_uri] = individual[rel_uri].concat(files);
           }
         }
+        loadIndicator.attr("style", "display:none");
       }
       fileInput.change(function () {
         files = [];
         n = this.files.length;
         for (var i = 0, file; (file = this.files && this.files[i]); i++) {
+          loadIndicator.removeAttr("style");
           uploadFile(file, uploaded);
         }
       });
