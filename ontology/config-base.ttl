@@ -1010,7 +1010,16 @@ cfg:Event_15
       linkFromUri = getUri(document["v-s:from"]),
       linkTo = get_individual(ticket, linkToUri),
       linkFrom = get_individual(ticket, linkFromUri),
-      containsThisLink;
+      containsThisLink,
+      membershipUri = "d:link_membership_" + linkUri.split(":").join("_") + "_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
+      membership = {
+        '@' : membershipUri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : [ newUri(linkToUri), newUri(linkFromUri) ],
+        'v-s:resource' : newUri(linkUri),
+        'rdfs:comment' : newStr('создано cfg:Event_15'),
+        'v-s:canRead'  : newBool(true)
+      };
   if (linkTo) {
     linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"] || [];
     containsThisLink = !!linkTo["v-s:hasLink"].filter(function (item) {
@@ -1030,6 +1039,10 @@ cfg:Event_15
       linkFrom["v-s:hasLink"].push({type: _Uri, data: linkUri});
       put_individual(ticket, linkFrom, _event_id);
     }
+  }
+  if (linkTo && linkFrom) {
+    put_individual(ticket, membership, _event_id);
+    print("EVENT 15", JSON.stringify(membership, null, 2));
   }
   """ ;
 .
