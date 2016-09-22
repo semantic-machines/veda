@@ -222,6 +222,9 @@ class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
+                 log.trace("send email: prepare %s", new_indv.uri);
+            	
+            	
                 if (is_deleted == false)
                 {
                     string from         = new_indv.getFirstLiteral("v-wf:from");
