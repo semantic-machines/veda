@@ -1056,17 +1056,18 @@
   };
 
   // FILE UPLOAD CONTROL
-  function uploadFile(file, cb) {
+  function uploadFile(file, success, progress) {
     var url = "/files",
-      xhr = new XMLHttpRequest(),
-      d = new Date(),
-      path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/"),
-      uri = veda.Util.guid(),
-      fd = new FormData();
+        xhr = new XMLHttpRequest(),
+        d = new Date(),
+        path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/"),
+        uri = veda.Util.guid(),
+        fd = new FormData();
     xhr.open("POST", url, true);
+    xhr.upload.onprogress = progress;
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
-        cb(file, path, uri);
+        success(file, path, uri);
       }
     };
     fd.append("file", file);
@@ -1086,8 +1087,9 @@
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true;
       var fileInput = $("#file", control);
       if (!isSingle) fileInput.attr("multiple", "multiple");
-      var btn = $("#btn", control);
-      var loadIndicator = $("i", control);
+      var btn = $("#btn", control),
+          indicatorPercentage = $(".indicator-percentage", control),
+          indicatorSpinner = $(".indicator-spinner", control);
       btn.click(function (e) {
         fileInput.click();
       });
@@ -1109,14 +1111,23 @@
             individual[rel_uri] = individual[rel_uri].concat(files);
           }
         }
-        loadIndicator.attr("style", "display:none");
-      }
+        indicatorSpinner.empty().hide();
+        indicatorPercentage.empty().hide();
+      };
+      var progress = function (progressEvent) {
+        if (progressEvent.lengthComputable) {
+          var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
+          indicatorPercentage.text("(" + percentComplete + "%)").show();
+          //indicatorPercentage.text(percentComplete + "%").show();
+        } else {
+          indicatorSpinner.show();
+        }
+      };
       fileInput.change(function () {
         files = [];
         n = this.files.length;
         for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-          loadIndicator.removeAttr("style");
-          uploadFile(file, uploaded);
+          uploadFile(file, uploaded, progress);
         }
       });
       this.on("view edit search", function (e) {
