@@ -594,17 +594,17 @@ s-wf:SimpleRouteStartFormMinimal_Template
       <div class="panel-body">
         <div class="row">
           <div class="col-md-12">
-			<strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
-			<div about="@" rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
-        	<veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
+      <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
+      <div about="@" rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
           </div>
         </div>
         <br />
         <div class="row">
           <div class="col-md-12">
-			<strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
-			<div about="@" property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
-        	<veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+      <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
+      <div about="@" property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+          <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
           </div>
         </div>
         <br />
@@ -623,16 +623,16 @@ s-wf:SimpleRouteStartFormShort_Template
   <div>
     <div class="panel panel-default">
       <div class="panel-body">
-		<div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-	    <div class="row">
-	      <div class="col-md-6">
-			<strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-			<div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
-	    	<veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
-	      </div>
-	      <div class="col-md-6">
-	      </div>
-	    </div>
+    <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      <div class="row">
+        <div class="col-md-6">
+      <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
+      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+        <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+        </div>
+        <div class="col-md-6">
+        </div>
+      </div>
       </div>
     </div>
     <br />
@@ -649,27 +649,27 @@ s-wf:SimpleRouteStartFormFull_Template
   <div class="subroot">
     <div class="panel panel-default">
       <div class="panel-body">
-		<div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+    <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
         <div class="row">
           <div class="col-md-6">
-			<strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-			<div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
-        	<veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+      <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
+      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+          <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
           </div>
           <div class="col-md-6">
-			<strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
-			<div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
-        	<veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
+      <strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
+      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
+          <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
           </div>
         </div>
         <br />
         <div class="row">
           <div class="col-md-12">
-			<strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
-			<div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
-        	<veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
+      <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
+      <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
+          <veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
           </div>
-        </div>        
+        </div>
       </div>
     </div>
   </div>
@@ -701,7 +701,7 @@ s-wf:ComplexRouteStartForm_Template
   rdfs:label "Complex route start form template"@en ;
   v-ui:forClass s-wf:ComplexRouteStartForm ;
   v-ui:template """
-  <script>  
+  <script>
     var stages = [ // Default values fill
       'informing',
       'coordination1',
@@ -720,42 +720,42 @@ s-wf:ComplexRouteStartForm_Template
     var complex = 's-wf:ComplexRouteStartForm_';
     var simple = 's-wf:SimpleRouteStartForm_';
 
-    var routes = [];    
-    
-	var doc = individual['v-wf:processedDocument'][0];
-	
-	if (doc) {
-	  	stages.forEach(function(stage) {
-	      routes[stage] = new veda.IndividualModel();
-	      routes[stage]['rdf:type'] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
-	    });
-	    
-		if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill		
-		  routes['coordination1'][simple+'participant'] = doc['v-s:creator'];		   					    
-		  routes['coordination1'][simple+'visible'] = [true]; 				
-		  routes['coordination1'][simple+'comment'] = [new String('Согласуй плиз')]; 				
-		  routes['coordination1'][simple+'deadlineDays'] = [10]; 				
-		  routes['sign'][simple+'participant'] = doc['v-s:author'];
-		  routes['sign'][simple+'editable'] = [true];
-		  routes['sign'][simple+'visible'] = [true]; 				
-		  routes['sign'][simple+'comment'] = [new String('Подпиши цуко')]; 				
-		}
-				
-	    stages.forEach(function(stage) {
-	      var routeid = complex+stage;
-          individual[routeid] = [routes[stage]];
-    	  var sub = individual[routeid][0];
-    	  if (!sub.hasValue(simple+'visible') || sub[simple+'visible'][0] == false) {
-    		$('.'+stage, template).hide();
-    	  }
-		  if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-    		$('.'+stage+' > div', template).attr('about', '@');
-		  }
-	    });
+    var routes = [];
+
+  var doc = individual['v-wf:processedDocument'][0];
+
+  if (doc) {
+      stages.forEach(function(stage) {
+        routes[stage] = new veda.IndividualModel();
+        routes[stage]['rdf:type'] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
+      });
+
+    if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill
+      routes['coordination1'][simple+'participant'] = doc['v-s:creator'];
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'comment'] = [new String('Согласуй плиз')];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+      routes['sign'][simple+'participant'] = doc['v-s:author'];
+      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'comment'] = [new String('Подпиши цуко')];
     }
-	$('#save_and_start_process', template).on('click', function () {	
-	   veda.Util.send(individual, template);
-	});
+
+      stages.forEach(function(stage) {
+        var routeid = complex+stage;
+          individual[routeid] = [routes[stage]];
+        var sub = individual[routeid][0];
+        if (!sub.hasValue(simple+'visible') || sub[simple+'visible'][0] == false) {
+        $('.'+stage, template).hide();
+        }
+      if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
+        $('.'+stage+' > div', template).attr('about', '@');
+      }
+      });
+    }
+  $('#save_and_start_process', template).on('click', function () {
+     veda.Util.send(individual, template);
+  });
     //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
   </script>
   <div class="container-fluid">
@@ -864,7 +864,7 @@ s-wf:ComplexRouteStartForm_Template
         <hr />
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-success" id="save_and_start_process" about="v-s:Send" property="rdfs:label"/>
+        <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"/>
       </div>
     </div>
   </div>
