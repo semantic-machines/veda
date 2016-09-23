@@ -704,7 +704,7 @@ v-s:PsHasSector
 v-s:PsHasDocumentKind
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:ClassifiedAttachment ;
-  v-ui:forProperty v-s:hasDocumentKind ;
+  v-ui:forProperty v-s:hasFileContentClassifier ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:tooltip "Non-required, single value. Link to instance of DocumentKind class"@en ;
