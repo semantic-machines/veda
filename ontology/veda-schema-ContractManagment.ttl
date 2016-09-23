@@ -27,7 +27,7 @@ v-s:ContractorProfile
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:СlassifiedRus ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Contractor profile"@en ;
   rdfs:label "Досье контрагента"@ru ;
@@ -62,4 +62,106 @@ v-s:PsAttachmentForInternalAccountingDocument
   v-ui:minCardinality 0 ;
   rdfs:label "Attachments specification for InternalAccountingDocument class"@en ;
   rdfs:label "Спецификация файлов для класса Внутренний бухгалтерский документ"@ru ;
+.
+
+v-s:ContractorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Contractor ;
+  rdfs:label "Template for v-s:Contractor class"@en ;
+  rdfs:label "Шаблон для класса v-s:Contractor"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Contractor" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-s:registrationNumber" property="rdfs:label"></em>
+        <div property="v-s:registrationNumber" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:registrationNumber" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-3">
+        <em about="v-s:taxId" property="rdfs:label"></em>
+        <div property="v-s:taxId" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:legalAddress" property="rdfs:label"></em>
+    <div property="v-s:legalAddress" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+    <br>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorLocked" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorLocked" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorDeleted" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorDeleted" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorCreditor" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorCreditor" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
+        <veda-control property="mnd-s:isContractorDebitor" data-type="booleanCheckbox"></veda-control>
+        <em about="mnd-s:isContractorDebitor" property="rdfs:label"></em>
+      </label>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="mnd-s:forOrganization" property="rdfs:label"></em>
+    <div rel="mnd-s:forOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext dropdown"></veda-control>
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
 .
