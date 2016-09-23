@@ -636,10 +636,10 @@ v-s:cost
   rdfs:domain v-s:Measurable ;
 .
 ### ------------------------------------------------------
-v-s:СlassifiedRus
+v-s:ClassifiedRus
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Сlassified thing"@en ;
+  rdfs:label "Classified thing"@en ;
   rdfs:label "Классифицируемая сущность общероссийскими классификаторами"@ru ;
 .
 v-s:hasClassifierOKVED
@@ -647,5 +647,5 @@ v-s:hasClassifierOKVED
   rdfs:label "Classifier OKVED"@en ;
   rdfs:label "Код ОКВЭД"@ru ;
   rdfs:range v-s:ClassifierOKVED ;
-  rdfs:domain v-s:СlassifiedRus ;
+  rdfs:domain v-s:ClassifiedRus ;
 .
