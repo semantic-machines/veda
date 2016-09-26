@@ -1117,8 +1117,8 @@
       var progress = function (progressEvent) {
         if (progressEvent.lengthComputable) {
           var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
-          indicatorPercentage.text("(" + percentComplete + "%)").show();
-          //indicatorPercentage.text(percentComplete + "%").show();
+          //indicatorPercentage.text("(" + percentComplete + "%)").show();
+          indicatorPercentage.text(percentComplete + "%").show();
         } else {
           indicatorSpinner.show();
         }
