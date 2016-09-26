@@ -76,17 +76,15 @@ td:AndreyBychin
   rdf:type v-s:Person ;
   v-s:actualVersion td:AndreyBychin ;
   v-s:birthday "1976-05-03"^^xsd:dateTime ;
-  v-s:firstName "Andrey"@en ;
-  v-s:firstName "Андрей"@ru ;
+  v-s:firstName "4"@en ;
+  v-s:firstName "4"@ru ;
   v-s:hasAccount td:BychinA ;
-  v-s:lastName "Bychin"@en ;
-  v-s:lastName "Бычин"@ru ;
-  v-s:middleName "Vladimirovitch"@en ;
-  v-s:middleName "Владимирович"@ru ;
+  v-s:lastName "Optiflow"@en ;
+  v-s:lastName "Optiflow"@ru ;
   v-ui:hasPreferences td:Preferences_AndreyBychin ;
   v-s:hasAppointment td:AndreyBychin-Analyst2 ;
-  rdfs:label "Andrey Bychin"@en ;
-  rdfs:label "Андрей Бычин"@ru ;
+  rdfs:label "Optiflow 4"@en ;
+  rdfs:label "Optiflow 4"@ru ;
 .
 td:AndreyBychin-Analyst2
   rdf:type v-s:Appointment ;
@@ -366,16 +364,14 @@ td:RomanKarpov
   rdf:type v-s:Person ;
   v-s:actualVersion td:RomanKarpov ;
   v-s:birthday "1981-01-09"^^xsd:dateTime ;
-  v-s:firstName "Roman"@en ;
-  v-s:firstName "Роман"@ru ;
+  v-s:firstName "2"@en ;
+  v-s:firstName "2"@ru ;
   v-s:hasAccount td:KarpovR ;
-  v-s:lastName "Karpov"@en ;
-  v-s:lastName "Карпов"@ru ;
-  v-s:middleName "Konstantinovitch"@en ;
-  v-s:middleName "Константинович"@ru ;
+  v-s:lastName "Optiflow"@en ;
+  v-s:lastName "Optiflow"@ru ;
   v-ui:hasPreferences td:Preferences_RomanKarpov ;
-  rdfs:label "Roman Karpov"@en ;
-  rdfs:label "Роман Карпов"@ru ;
+  rdfs:label "Optiflow 2"@en ;
+  rdfs:label "Optiflow 2"@ru ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
   v-s:hasAspect v-s:PersonalAspectKarpovr ;
 .
@@ -383,16 +379,14 @@ td:AleksandraKhvostikova
   rdf:type v-s:Person ;
   v-s:actualVersion td:AleksandraKhvostikova ;
   v-s:birthday "1984-04-28"^^xsd:dateTime ;
-  v-s:firstName "Aleksandra"@en ;
-  v-s:firstName "Александра"@ru ;
+  v-s:firstName "1"@en ;
+  v-s:firstName "1"@ru ;
   v-s:hasAccount td:KhvostiA ;
-  v-s:lastName "Khvostikova"@en ;
-  v-s:lastName "Хвостикова"@ru ;
-  v-s:middleName "Aleksandrovna"@en ;
-  v-s:middleName "Александровна"@ru ;
+  v-s:lastName "Optiflow"@en ;
+  v-s:lastName "Optiflow"@ru ;
   v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
-  rdfs:label "Aleksandra Khvostikova"@en ;
-  rdfs:label "Александра Хвостикова"@ru ;
+  rdfs:label "Optiflow 2"@en ;
+  rdfs:label "Optiflow 1"@ru ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
   v-s:hasImage td:khvostiaImage;
 .
@@ -455,17 +449,15 @@ td:ValeriyBushenev
   rdf:type v-s:Person ;
   v-s:actualVersion td:ValeriyBushenev ;
   v-s:birthday "1973-05-09"^^xsd:dateTime ;
-  v-s:firstName "Valeriy"@en ;
-  v-s:firstName "Валерий"@ru ;
+  v-s:firstName "3"@en ;
+  v-s:firstName "3"@ru ;
   v-s:hasAccount td:BushenevV ;
-  v-s:lastName "Bushenev"@en ;
-  v-s:lastName "Бушенев"@ru ;
-  v-s:middleName "Alexandrovitch"@en ;
-  v-s:middleName "Александрович"@ru ;
+  v-s:lastName "Optiflow"@en ;
+  v-s:lastName "Optiflow"@ru ;
   v-s:hasAccount td:BushenevV ;
   v-ui:hasPreferences td:Preferences_ValeriyBushenev ;
-  rdfs:label "Valeriy Bushenev"@en ;
-  rdfs:label "Валерий Бушенев"@ru ;
+  rdfs:label "Optiflow 3"@en ;
+  rdfs:label "Optiflow 3"@ru ;
 .
 
 td:ValeriyBushenev-Programmer1
