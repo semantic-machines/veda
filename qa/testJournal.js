@@ -63,7 +63,7 @@ basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
 
-        basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+        basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
 	basic.openCreateDocumentForm(driver, 'Мероприятие', "v-s:Action");
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");

@@ -57,7 +57,7 @@ basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	
 	basic.openPage(driver, drv);
-	basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
 	basic.openCreateDocumentForm(driver, 'Правило', 'v-wf:Rule');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
@@ -155,7 +155,7 @@ basic.getDrivers().forEach (function (drv) {
 	driver.findElement({css:'input[id="password"]'}).clear()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'password' field");});
 
-	basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
+	basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
 
 	driver.findElement({id:'menu'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});

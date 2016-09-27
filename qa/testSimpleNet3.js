@@ -7,7 +7,7 @@ basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);
 
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
     // Create new simple net
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
@@ -29,10 +29,10 @@ basic.getDrivers().forEach (function (drv) {
     driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCexecutor' field ");});
 
-    var find = 'Андрей Бычин';
+    var find = '4 Администратор4';
     driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(find)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute 'VCexecutor'");});
-    var executor = 'Андрей Бычин : Аналитик';
+    var executor = '4 Администратор4 : Аналитик';
     // Проверяем что запрашивамый объект появился в выпадающем списке
     driver.wait
     (
@@ -46,7 +46,7 @@ basic.getDrivers().forEach (function (drv) {
             });
         },
         basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'Андрей Бычин : Аналитик' from dropdown");});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '4 Администратор4 : Аналитик' from dropdown");});
 
     driver.findElements({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
         webdriver.promise.filter(suggestions, function(suggestion) {
@@ -58,7 +58,7 @@ basic.getDrivers().forEach (function (drv) {
                 }
             });
         }).then(function(x) { x[0].click();});
-    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Андрей Бычин :  Аналитик' from dropdown");});
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '4 Администратор4 :  Аналитик' from dropdown");});
 
 
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-task'})).perform();

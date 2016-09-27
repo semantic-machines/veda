@@ -7,7 +7,7 @@ basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	
 	basic.openPage(driver, drv);
-	basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 	var now = new Date();
 	person.createPerson(driver, drv, 'Пупкин', 'Вася', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 	

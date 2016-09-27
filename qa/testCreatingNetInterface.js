@@ -27,7 +27,7 @@ basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
 
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
 
     driver.sleep(basic.FAST_OPERATION);

@@ -41,7 +41,7 @@ basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
 
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     person.createPerson(driver, drv, 'Range', 'Of', 'DatesO', '01.01.2014');
     person.createPerson(driver, drv, 'Range', 'Of', 'DatesO', '02.12.2015');
     person.createPerson(driver, drv, 'Range', 'Of', 'DatesO', '12.07.2016');

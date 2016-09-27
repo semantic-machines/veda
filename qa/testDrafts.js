@@ -44,7 +44,7 @@ function check(driver, count) {
 basic.getDrivers().forEach(function(drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     //Создаем Черновик
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
     driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}).isEnabled().then(function (flag) {
