@@ -79,12 +79,12 @@ td:AndreyBychin
   v-s:firstName "4"@en ;
   v-s:firstName "4"@ru ;
   v-s:hasAccount td:BychinA ;
-  v-s:lastName "Optiflow"@en ;
-  v-s:lastName "Optiflow"@ru ;
+  v-s:lastName "Administrator 4"@en ;
+  v-s:lastName "Администратор 4"@ru ;
   v-ui:hasPreferences td:Preferences_AndreyBychin ;
   v-s:hasAppointment td:AndreyBychin-Analyst2 ;
-  rdfs:label "Optiflow 4"@en ;
-  rdfs:label "Optiflow 4"@ru ;
+  rdfs:label "Administrator 4"@en ;
+  rdfs:label "Администратор 4"@ru ;
 .
 td:AndreyBychin-Analyst2
   rdf:type v-s:Appointment ;
@@ -367,11 +367,11 @@ td:RomanKarpov
   v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
   v-s:hasAccount td:KarpovR ;
-  v-s:lastName "Optiflow"@en ;
-  v-s:lastName "Optiflow"@ru ;
+  v-s:lastName "Administrator 2"@en ;
+  v-s:lastName "Администратор 2"@ru ;
   v-ui:hasPreferences td:Preferences_RomanKarpov ;
-  rdfs:label "Optiflow 2"@en ;
-  rdfs:label "Optiflow 2"@ru ;
+  rdfs:label "Administrator 2"@en ;
+  rdfs:label "Администратор 2"@ru ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
   v-s:hasAspect v-s:PersonalAspectKarpovr ;
 .
@@ -382,11 +382,11 @@ td:AleksandraKhvostikova
   v-s:firstName "1"@en ;
   v-s:firstName "1"@ru ;
   v-s:hasAccount td:KhvostiA ;
-  v-s:lastName "Optiflow"@en ;
-  v-s:lastName "Optiflow"@ru ;
+  v-s:lastName "Administrator 1"@en ;
+  v-s:lastName "Администратор 1"@ru ;
   v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
-  rdfs:label "Optiflow 2"@en ;
-  rdfs:label "Optiflow 1"@ru ;
+  rdfs:label "Administrator 1"@en ;
+  rdfs:label "Администратор 1"@ru ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
   v-s:hasImage td:khvostiaImage;
 .
@@ -452,12 +452,12 @@ td:ValeriyBushenev
   v-s:firstName "3"@en ;
   v-s:firstName "3"@ru ;
   v-s:hasAccount td:BushenevV ;
-  v-s:lastName "Optiflow"@en ;
-  v-s:lastName "Optiflow"@ru ;
+  v-s:lastName "Administrator 3"@en ;
+  v-s:lastName "Администратор 3"@ru ;
   v-s:hasAccount td:BushenevV ;
   v-ui:hasPreferences td:Preferences_ValeriyBushenev ;
-  rdfs:label "Optiflow 3"@en ;
-  rdfs:label "Optiflow 3"@ru ;
+  rdfs:label "Administrator 3"@en ;
+  rdfs:label "Администратор 3"@ru ;
 .
 
 td:ValeriyBushenev-Programmer1
