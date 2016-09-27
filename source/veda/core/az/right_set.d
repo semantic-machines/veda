@@ -1,7 +1,7 @@
 module veda.core.az.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-private import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.log_msg, veda.core.common.know_predicates;
+private import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.log_msg, veda.core.common.know_predicates;
 private import veda.core.util.utils, veda.util.cbor, util.logger;
 
 public static string membership_prefix = "M";
@@ -224,14 +224,14 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
 
         ResultCode res = storage.put(key, new_record, op_id);
 
-        if (trace_msg[ 101 ] == 1)
+//        if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
     }
 }
 
 void prepare_membership(ref Individual ind, long op_id, Storage storage)
 {
-    if (trace_msg[ 114 ] == 1)
+//    if (trace_msg[ 114 ] == 1)
         log.trace("store Membership: [%s] op_id=%d", ind, op_id);
 
     prepare_right_set(ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,
@@ -240,20 +240,20 @@ void prepare_membership(ref Individual ind, long op_id, Storage storage)
 
 void prepare_permission_filter(ref Individual ind, long op_id, Storage storage)
 {
-    if (trace_msg[ 114 ] == 1)
+//    if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionFilter: [%s] op_id=%d", ind, op_id);
 
     Resource   permissionObject = ind.getFirstResource(veda_schema__permissionObject);
 
     ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, ind.uri, op_id);
 
-    if (trace_msg[ 101 ] == 1)
+//    if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
 }
 
 void prepare_permission_statement(ref Individual ind, long op_id, Storage storage)
 {
-    if (trace_msg[ 114 ] == 1)
+//    if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionStatement: [%s] op_id=%d", ind, op_id);
 
     prepare_right_set(ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);

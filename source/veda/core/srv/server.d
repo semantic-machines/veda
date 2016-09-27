@@ -9,7 +9,7 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import util.logger, veda.core.util.utils, veda.core.threads.load_info;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
-    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager;
+    import veda.core.common.define, veda.common.type, veda.core.threads.storage_manager;
     import veda.onto.individual, veda.onto.resource;
 }
 
@@ -64,7 +64,7 @@ void commiter(string thread_name)
         core.thread.Thread.sleep(dur!("seconds")(1));
         veda.core.threads.storage_manager.flush(false);
         core.thread.Thread.sleep(dur!("seconds")(1));
-        veda.core.threads.acl_manager.flush(false);
+        //veda.core.threads.acl_manager.flush(false);
     }
 }
 
@@ -85,6 +85,9 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
                 log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
                 if (res == false)
                     log.trace("FAIL START THREAD: %s", text(tid_idx));
+		else
+		    register(text(tid_idx), tid);
+
             });
     return res;
 }
@@ -130,8 +133,8 @@ Context init_core(string node_id)
         tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, text(P_MODULE.ticket_manager), tickets_db_path, node_id);
         wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-        tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer), acl_indexes_db_path);
-        wait_starting_thread(P_MODULE.acl_preparer, tids);
+        //tids[ P_MODULE.acl_manager ] = spawn(&acl_manager, text(P_MODULE.acl_manager), acl_indexes_db_path);
+        //wait_starting_thread(P_MODULE.acl_manager, tids);
 
         //tids[ P_MODULE.xapian_thread_context ] = spawn(&xapian_thread_context, text(P_MODULE.xapian_thread_context));
         //wait_starting_thread(P_MODULE.xapian_thread_context, tids);

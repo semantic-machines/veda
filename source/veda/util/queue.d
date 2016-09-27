@@ -1,7 +1,7 @@
 module veda.util.queue;
 
 import std.conv, std.stdio, std.file, std.array, std.digest.crc;
-import veda.type, veda.core.common.define, veda.util.tools;
+import veda.common.type, veda.core.common.define, veda.util.tools;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;

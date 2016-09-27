@@ -14,4 +14,5 @@ rename "s/veda-bootstrap/veda/g" *
 ./build-component.sh veda-scripts scripts
 ./build-component.sh veda-ft-indexer ft-indexer
 ./build-component.sh veda-ltr-scripts ltr-scripts
+./build-component.sh veda-acl-preparer acl-preparer
 ./build-component.sh veda-ttlreader ttlreader

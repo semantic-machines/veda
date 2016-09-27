@@ -78,7 +78,7 @@ void main(char[][] args)
     string[ string ] env;
     int      exit_code;
 
-    string[] modules = [ "veda", "veda-server", "veda-ttlreader", "veda-fanout", "veda-scripts", "veda-ft-indexer", "veda-ltr-scripts" ];
+    string[] modules = [ "veda", "veda-server", "veda-acl-preparer", "veda-scripts", "veda-ltr-scripts", "veda-ft-indexer", "veda-fanout", "veda-ttlreader" ];
     int[][ string ] command_2_pid;
 
     bool is_found_modules = false;

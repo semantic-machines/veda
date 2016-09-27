@@ -10,7 +10,7 @@ private
     import veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
            veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
-    import search.vel, veda.type;
+    import search.vel, veda.common.type;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -272,8 +272,24 @@ public void individuals_manager(string thread_name, string db_path, string node_
     int                          max_size_bin_log = 10_000_000;
     string                       bin_log_name     = get_new_binlog_name(db_path);
 
-    long                         op_id          = storage.last_op_id;
-    long                         commited_op_id = 0;
+    string                       fn_module_info_w  = null;
+    File                         *ff_module_info_w = null;
+    long                         op_id             = 0;
+    long                         committed_op_id   = 0;
+
+    process_name = text(P_MODULE.subject_manager);
+
+    fn_module_info_w = module_info_path ~ "/" ~ process_name ~ "_info";
+
+    if (exists(fn_module_info_w) == false)
+        ff_module_info_w = new File(fn_module_info_w, "w");
+    else
+    {
+        ff_module_info_w = new File(fn_module_info_w, "r+");
+
+	    ModulezInfo m_info = get_info(P_MODULE.subject_manager);
+	    op_id = m_info.committed_op_id;
+    }
 
     // SEND ready
     receive((Tid tid_response_reciever)
@@ -284,8 +300,9 @@ public void individuals_manager(string thread_name, string db_path, string node_
     string last_backup_id = "---";
 
     bool   is_freeze = false;
+	bool   is_recv_loop = true; 
 
-    while (true)
+    while (is_recv_loop)
     {
         try
         {
@@ -396,13 +413,12 @@ public void individuals_manager(string thread_name, string db_path, string node_
                             if (cmd == INDV_OP.PUT)
                             {
                                 string new_hash;
+                                op_id++;
+                                put_module_info(ff_module_info_w, process_name, op_id, op_id);
+                                set_subject_manager_op_id(op_id);
 
                                 if (storage.update_or_create(uri, msg, op_id, new_hash) == 0)
-                                {
                                     rc = ResultCode.OK;
-                                    op_id++;
-                                    set_subject_manager_op_id(op_id);
-                                }
                                 else
                                     rc = ResultCode.Fail_Store;
 
@@ -474,4 +490,8 @@ public void individuals_manager(string thread_name, string db_path, string node_
             log.trace("individuals_manager# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
+    
+            ff_module_info_w.flush();
+            ff_module_info_w.close();
+    
 }

@@ -8,7 +8,7 @@ private
     import core.thread, std.format, std.stdio, std.datetime, std.concurrency, std.datetime, std.array : appender;
     import veda.core.util.utils;
     import util.logger;
-    import veda.type, veda.core.common.context, veda.core.common.define;
+    import veda.common.type, veda.core.common.context, veda.core.common.define;
 }
 
 public bool    cinfo_exit = false;

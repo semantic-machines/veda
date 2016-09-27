@@ -11,7 +11,7 @@ module veda.core.common.context;
 private import std.concurrency, std.datetime;
 //private import bind.v8d_header;
 //private import search.vel;
-private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
 
 /// Имена процессов
 public enum P_MODULE : byte
@@ -24,9 +24,6 @@ public enum P_MODULE : byte
 
     /// Индексирование прав
     acl_preparer    = 2,
-
-    /// Полнотекстовое индексирование
-    //xapian_thread_context      = 3,
 
     /// Полнотекстовое индексирование
     fulltext_indexer           = 4,
@@ -54,6 +51,8 @@ public enum P_MODULE : byte
     dcs                        = 13,
 
     ltr_scripts                = 14,
+    
+    rest_api				   = 15,	
 
     nop                        = 99
 }
@@ -211,20 +210,16 @@ interface Context
 
     int[ string ] get_key2slot();
 
-//    public bool ft_check_for_reload(void delegate() load);
-    public bool acl_check_for_reload(void delegate() load);
-
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string uri);
     Onto get_onto();
+    public long get_operation_state(P_MODULE module_id);
 
     public string get_ticket_from_storage(string ticket_id);
 
     public Ticket *get_systicket_from_storage();
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
-
-    public long get_operation_state(P_MODULE thread_id);
 
     @property
     public Ticket sys_ticket(bool is_new = false);
@@ -460,48 +455,6 @@ public long get_subject_manager_op_id()
 {
     return atomicLoad(subject_manager_op_id);
 }
-
-///
-/*
-   private shared long indexer_op_id = 0;
-
-   public void set_indexer_op_id(long data)
-   {
-    atomicStore(indexer_op_id, data);
-   }
-
-   public long get_indexer_op_id()
-   {
-    return atomicLoad(indexer_op_id);
-   }
- */
-////
-
-private shared long acl_manager_op_id = 0;
-
-public void set_acl_manager_op_id(long data)
-{
-    atomicStore(acl_manager_op_id, data);
-}
-
-public long get_acl_manager_op_id()
-{
-    return atomicLoad(acl_manager_op_id);
-}
-
-////
-
-//private shared long count_indexed = 0;
-
-//public void set_count_indexed(long data)
-//{
-//    atomicStore(count_indexed, data);
-//}
-
-//public long get_count_indexed()
-//{
-//    return atomicLoad(count_indexed);
-//}
 
 /////////////////////////////// global_systicket //////////////////////////
 

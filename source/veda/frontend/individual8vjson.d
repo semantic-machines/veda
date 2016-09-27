@@ -2,7 +2,7 @@ module veda.frontend.individual8vjson;
 
 import std.conv, std.stdio;
 import vibe.d;
-import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
+import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;
@@ -148,7 +148,20 @@ Resource json_to_resource(const Json resource_json)
     }
     else if (type == DataType.Decimal)
     {
-        if (data_type is Json.Type.Float)
+        if (data_type is Json.Type.String)
+        {
+            string val = resource_json[ "data" ].get!string;
+
+            if (val.indexOf(',') >= 1)
+            {
+                string[] pc = val.split(',');
+                if (pc.length == 2)
+                {
+                    resource = decimal(pc[ 0 ], pc[ 1 ]);
+                }
+            }
+        }
+        else if (data_type is Json.Type.Float)
         {
             resource = decimal(resource_json[ "data" ].get!double);
         }

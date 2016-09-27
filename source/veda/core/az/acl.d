@@ -3,11 +3,11 @@ module veda.core.az.acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
+    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.log_msg, veda.util.cbor8individual;
     import veda.core.util.utils, veda.util.cbor, util.logger;
     import veda.core.storage.lmdb_storage, veda.core.az.right_set;
-	import veda.util.container;    
+    import veda.util.container;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -28,6 +28,9 @@ class Authorization : LmdbStorage
 {
     Cache!(Right *[], string) cache_of_group;
     Cache!(RightSet, string) cache_of_permission;
+    long committed_op_id;
+    long last_check_reopen_time;
+    int  acl_check_timeout = 1;
 
     this(string _path, DBMode mode, string _parent_thread_name)
     {
@@ -37,6 +40,15 @@ class Authorization : LmdbStorage
     }
 
     int count_permissions = 0;
+
+    override void open_db()
+    {
+        super.open_db();
+
+        ModulezInfo info = get_info(P_MODULE.acl_preparer);
+        committed_op_id = info.committed_op_id;
+        log.trace("*open_db op_id=%d", committed_op_id);
+    }
 
     override void reopen_db()
     {
@@ -51,16 +63,11 @@ class Authorization : LmdbStorage
         //writeln("ACL:CACHE:RESET");
     }
 
-    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                                               string subject_group,
-                                                                                                                               string right) trace =
+    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                              string subject_group,
+                                                                                                              string right) trace =
                         null)
     {
-        void reopen_db()
-        {
-            this.reopen_db();
-        }
-
         ubyte res = 0;
 
         if (ticket is null)
@@ -74,11 +81,37 @@ class Authorization : LmdbStorage
         string  str;
         int     rc;
 
-        if (is_check_for_reload)
-            context.acl_check_for_reload(&reopen_db);
+        if (db_is_open.get(path, false) == false)
+        {
+            log.trace("db %s is not opened, reopen", path);
+            reopen_db();
+//            return res;
+        }
+        else
+        {
+            long now = Clock.currStdTime() / 10000000;
+
+            if (now - last_check_reopen_time > acl_check_timeout)
+            {
+                long cur_committed_op_id = get_info(P_MODULE.acl_preparer).committed_op_id;
+                //log.trace("cur_committed_op_id=%d", cur_committed_op_id);
+
+
+                if (cur_committed_op_id > committed_op_id)
+                {
+                    log.trace("reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
+                    reopen_db();
+                }
+                last_check_reopen_time = now;
+            }
+        }
+
 
         if (db_is_open.get(path, false) == false)
+        {
+            log.trace("FAIL: return, db %s is not opened", path);
             return res;
+        }
 
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)

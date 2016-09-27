@@ -6,7 +6,7 @@
 		"backtrace-d": "0.1.0", 
 		"mysql-d": "0.3.2",
 		"smtp": "~master",
-                "requests": "0.3.0"
+                "requests": "0.2.0"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
