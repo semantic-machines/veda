@@ -317,9 +317,9 @@ v-fs:FulltextRequestModel
   self.count  = 0;
   self.selected = [];
   self.q = q;
-  self.search = function () {
+  self.search = function (qq, ss) {
     self.trigger("beforeSearch");
-    self.result = query(veda.ticket, q, sort, databases, reopen);
+    self.result = query(veda.ticket, qq ? qq : q, ss ? ss : sort, databases, reopen);
     self.count = self.result.length;
     self.trigger("afterSearch", self.result);
     return self.result;
