@@ -3,7 +3,7 @@
 # берет новые исходники из github, но не собирает
 
 DMD_VER=2.070.2
-DUB_VER=0.9.24
+DUB_VER=1.0.0
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
