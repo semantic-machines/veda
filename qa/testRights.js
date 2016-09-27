@@ -54,7 +54,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.openPage(driver, drv);
 
     //Создание документа пользователем с большими правами
-    basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
+    basic.login(driver, 'karpovrt', '123', '2', 'Administrator 2');
     var now = new Date();
     person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
