@@ -62,7 +62,7 @@ basic.getDrivers().forEach (function (drv) {
     logout(driver);
 
     //Проверка отсутсвия созданного документа и создание нового документа пользователем с меньшими правами
-    basic.login(driver, 'bychinat', '123', 'Андрей', 'Бычин');
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор 4');
     driver.findElement({id:'params-pill-ft'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-ft' button");});
     driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
@@ -72,7 +72,7 @@ basic.getDrivers().forEach (function (drv) {
     logout(driver);
 
     //Проверка наличия созданного документа пользователем с меньшими правами
-    basic.login(driver, 'karpovrt', '123', 'Роман', 'Карпов');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
     search(driver, timeStamp + 1, 1);
 
