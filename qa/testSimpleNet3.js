@@ -7,7 +7,7 @@ basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);
 
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Administrator 2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
 
     // Create new simple net
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');

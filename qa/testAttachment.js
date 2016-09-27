@@ -4,7 +4,7 @@ var webdriver = require('selenium-webdriver'),
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Administrator 2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
 
     driver.findElement({id:"menu"}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});

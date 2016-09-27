@@ -27,7 +27,7 @@ function testPager(driver) {
 basic.getDrivers().forEach(function(drv) {
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
-	basic.login(driver, 'karpovrt', '123', '2', 'Administrator 2');
+	basic.login(driver, 'karpovrt', '123', '2', 'Администратор 2');
 	menu(driver, 'v-l:Search');
 	driver.findElement({css:'#q'}).sendKeys("'v-s:created' == [2013-06-30T12:13:11, 2017-01-30T12:13:11]")
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
