@@ -245,7 +245,7 @@ public class LmdbStorage : Storage
     {
     	try
     	{
-    	log.trace ("@put #b");
+    	//log.trace ("@put #b");
     	
         if (op_id > 0)
             last_op_id = op_id;
@@ -337,7 +337,7 @@ public class LmdbStorage : Storage
     	}
     	finally
     	{
-    	log.trace ("@put #e");    		
+    	//log.trace ("@put #e");    		
     	}
     }
 
@@ -464,7 +464,7 @@ public class LmdbStorage : Storage
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
         last_op_id = op_id;
-    	log.trace ("@update #b");
+    	//log.trace ("@update #b");
 
 	try
 	{
@@ -577,7 +577,7 @@ public class LmdbStorage : Storage
         }
 	} finally
 	{
-    	log.trace ("@update #e");		
+    	//log.trace ("@update #e");		
 	}
 	
 	
