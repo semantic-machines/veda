@@ -127,6 +127,10 @@ function get_type_of_docId(task)
 
 function is_in_docflow_and_set_if_true(task)
 {
+    
+    // remove next line 
+//    return [get_new_variable('result', newUri(false))];
+    
     try
     {
         var res = false;
@@ -137,15 +141,18 @@ function is_in_docflow_and_set_if_true(task)
             if (doc_id)
             {
                 var forProcess = getUri(task.src_data['v-wf:forProcess']);
+                //print("[Z1Z] := "+toJson(forProcess));
                 var process = get_individual(task.ticket, forProcess);
+                //print("[Z2Z] := "+toJson(process));
                 if (process)
                 {
-                    var instanceOf = getUri(_process['v-wf:instanceOf']);
+                    var instanceOf = getUri(process['v-wf:instanceOf']);
 
                     var net_doc_id = instanceOf + "_" + doc_id[0].data;
                     //print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
 
-                    var in_doc_flow = get_individual(process.ticket, net_doc_id);
+                    var in_doc_flow = get_individual(task.ticket, net_doc_id);
+                    //print("[Z3Z] := "+toJson(in_doc_flow));
 
                     if (in_doc_flow)
                     {
@@ -161,14 +168,14 @@ function is_in_docflow_and_set_if_true(task)
                                 type: _Uri
                             }]
                         };
-                        put_individual(process.ticket, new_doc, _event_id);
+                        put_individual(task.ticket, new_doc, _event_id);
                     }
                 }
             }
 
         }
 
-        return [get_new_variable('res', newUri(res))];
+        return [get_new_variable('result', newUri(res))];
     }
     catch (e)
     {

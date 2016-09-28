@@ -378,9 +378,6 @@ veda.Module(function Util(veda) { "use strict";
     individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
     //$('[resource="'+individual.id+'"]').find("#save").trigger("click");
     template.trigger('save');
-    if (individual.redirectToIndividual) {
-      individual = individual.redirectToIndividual;
-    }
 
     if (transformId !== undefined) {
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
@@ -403,6 +400,7 @@ veda.Module(function Util(veda) { "use strict";
           individual.trigger("individual:afterSend");
           if (individual.sendConfirmed != true) {
             veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000,
+              individual.redirectToIndividual?individual.redirectToIndividual.id:
               individual.is('v-wf:StartForm')?individual.id:
               individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:individual['v-wf:onDocument'][0].id, "view");
           }
