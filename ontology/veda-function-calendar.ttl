@@ -76,10 +76,10 @@ v-cal:FunctionCalendarModel
         case (dueDate < today) :
           className = "fc-danger";
         break;
-        case (dueDate > today && dueDate < tomorrow) :
+        case (today < dueDate && dueDate < tomorrow) :
           className = "fc-warning";
         break;
-        case (dueDate > tomorrow) :
+        case (tomorrow < dueDate) :
           className = "fc-success";
         break;
       }
@@ -87,7 +87,6 @@ v-cal:FunctionCalendarModel
         "id": event.id,
         "title": label,
         "url": "#/" + event.id,
-        "class": "event-important",
         "className": className,
         "start": event["v-wf:dateGiven"][0].valueOf(),
         "end": event["v-wf:dateGiven"][0].valueOf() + 60 * 60 * 1000
