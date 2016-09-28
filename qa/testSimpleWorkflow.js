@@ -155,6 +155,7 @@ basic.getDrivers().forEach (function (drv) {
 	driver.findElement({css:'input[id="password"]'}).clear()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'password' field");});
 
+	driver.sleep(basic.SLOW_OPERATION);
 	basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
 
 	driver.findElement({id:'menu'}).click()
