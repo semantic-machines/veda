@@ -10,7 +10,7 @@ function clickButton(driver, button) {
 		webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
 		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'button[id="'+ button +'"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
 }
@@ -35,7 +35,7 @@ function choose(driver, type, valueToSearch, valueToChoose) {
 				}).then(function(x) { return x.length>0; });
 			});
 		},
-		basic.FAST_OPERATION
+		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '"+ valueToSearch +"' from dropdown");});
 
 
@@ -92,10 +92,10 @@ basic.getDrivers().forEach (function (drv) {
 	clickButton(driver, "save");
 
 	basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'.workflow-canvas-wrapper'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'#props-col [about="rdfs:label"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on route rdfs:label");});
 	driver.findElement({css:'#VClabel input'}).sendKeys(timeStamp)
@@ -123,20 +123,20 @@ basic.getDrivers().forEach (function (drv) {
 	new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-task .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
 	driver.findElement({css:'#workflow-save-button'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click save net");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 
 	startForm.createStartForm(driver, timeStamp, 'Ожидает отправки');
 	driver.findElement({css:'.workflow-canvas-wrapper'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
 	driver.findElement({css:'.state-io-condition-input[colored-to="red"]'})
 		.thenCatch(function (e) {basic.errorHandler(e, "Seems 'input' button is not located/red");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'.state-task[colored-to="red"]'})
 		.thenCatch(function (e) {basic.errorHandler(e, "Seems 'state-task' button is not located/red");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'.state-io-condition-output'})
 		.thenCatch(function (e) {basic.errorHandler(e, "Seems 'output' button is not located/colored");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 
 
 
@@ -145,11 +145,11 @@ basic.getDrivers().forEach (function (drv) {
 	driver.wait
 	(
 		webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'})),
-		basic.FAST_OPERATION
+		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `exit` button inside menu");});
 	driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'input[id="login"]'}).clear()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'login' field");});
 	driver.findElement({css:'input[id="password"]'}).clear()
@@ -163,11 +163,11 @@ basic.getDrivers().forEach (function (drv) {
 	driver.wait
 	(
 		webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'})),
-		basic.FAST_OPERATION
+		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `exit` button inside menu");});
 	driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
-	driver.sleep(basic.FAST_OPERATION);
+	driver.sleep(basic.SLOW_OPERATION);
 
 	driver.findElement({css:'a[property="rdfs:label"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot find a task");});
