@@ -34,3 +34,4 @@ veda-ft-indexer
 veda-bootstrap
 *.out
 /veda-ttlreader
+/backup-binlogs/

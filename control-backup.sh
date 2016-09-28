@@ -20,7 +20,7 @@ zip $backup_path/log.zip ./*.log -r
 cp ./ontology/config.ttl $backup_path/config.ttl
 
 # Detele old backups and logs
-find ./data/lmdb-individuals.* -delete
+find ./data/lmdb-individuals.* -exec mv {} ./backup-binlogs \;
 find ./data/lmdb-tickets.* -delete
 find ./*.log -delete
 rm ./veda.log
