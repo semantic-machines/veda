@@ -62,11 +62,33 @@ v-cal:FunctionCalendarModel
   this.getEvents = function (start, end) {
     return this.getEventsUris(start, end).map(function (uri) {
       var event = new veda.IndividualModel(uri);
+      var label;
+      try {
+        label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
+      } catch (e) {
+        event["rdfs:label"].join(" ");
+      }
+      var className;
+      var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
+      var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
+      var dueDate = event["v-wf:dateGiven"][0];
+      switch (true) {
+        case (dueDate < today) :
+          className = "fc-danger";
+        break;
+        case (dueDate > today && dueDate < tomorrow) :
+          className = "fc-warning";
+        break;
+        case (dueDate > tomorrow) :
+          className = "fc-success";
+        break;
+      }
       return {
         "id": event.id,
-        "title": event["rdfs:label"].join(" "),
+        "title": label,
         "url": "#/" + event.id,
         "class": "event-important",
+        "className": className,
         "start": event["v-wf:dateGiven"][0].valueOf(),
         "end": event["v-wf:dateGiven"][0].valueOf() + 60 * 60 * 1000
       }
@@ -89,42 +111,6 @@ v-cal:TasksCalendar
   v-cal:query "( ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '{1}') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '{2}') ) && ( 'v-wf:dateGiven' == [{3}T00:00:00,{4}T23:59:59] )"^^xsd:string ;
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
-v-cal:TasksNotFound
-  rdf:type v-s:Bundle ;
-  rdfs:label "Tasks not found"@en ;
-  rdfs:label "Задачи не найдены"@ru ;
-.
-v-cal:EventsBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Events"@en ;
-  rdfs:label "События"@ru ;
-.
-v-cal:TodayBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Today"@en ;
-  rdfs:label "Сегодня"@ru ;
-.
-v-cal:YearBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Year"@en ;
-  rdfs:label "Год"@ru ;
-.
-v-cal:MonthBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Month"@en ;
-  rdfs:label "Месяц"@ru ;
-.
-v-cal:WeekBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Week"@en ;
-  rdfs:label "Неделя"@ru ;
-.
-v-cal:DayBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Day"@en ;
-  rdfs:label "День"@ru ;
-.
-
 v-cal:FunctionCalendarTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "v-cal:FunctionCalendar class template"@en ;
@@ -171,6 +157,9 @@ v-cal:FunctionCalendarTemplate
   var fullCalendar = $('#fullcalendar', template);
   fullCalendar.fullCalendar(fullCalendarOptions);
 
+  template.one("remove", function () {
+    fullCalendar.fullCalendar( 'destroy' );
+  });
   //# sourceURL=v-cal:FunctionCalendarTemplate
 </script>
   """ ;
