@@ -117,7 +117,7 @@ basic.getDrivers().forEach (function (drv) {
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'v-wf:executor' field ");});
 	driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCexecutor' field ");});
-	choose(driver, 'VCexecutor', 'Андрей Бычин', 'Андрей Бычин : Аналитик');
+	choose(driver, 'VCexecutor', 'Администратор4', 'Андрей Бычин : Аналитик');
 
 	new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-task'})).perform();
 	new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-task .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
