@@ -4,8 +4,10 @@
  * This class is used to bind additional business-logic events to individuals.
  */
 veda.Module(function IndividualActions(veda) { "use strict";
-
+/*
   veda.on("individual:loaded", function (individual, container, templateOriginal, mode) {
+
+    individual.on("individual:templateReady", actionsHandler);
 
     function actionsHandler(template) {
 
@@ -14,7 +16,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
       });
 
       // Prevent excessive calls for individual that was displayed multiple times
-      //if ( container !== "#main" && template !== templateOriginal) { return; }
+      if ( typeof templateOriginal === "object" && typeof template === "object" && template !== templateOriginal) { return; }
 
       var $send = template.find("#send.action");
       var $sendButtons = template.find(".sendbutton");
@@ -40,7 +42,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
       template.on("valid", validHandler);
       template.on("invalid", inValidHandler);
 
-      $send.on("click", function () { veda.Util.send(individual, template); });
+      $send.on("click", function () {veda.Util.send(individual, template);});
       $createReport.on("click", function () {veda.Util.createReport(individual);});
       $showRights.on("click", function () {veda.Util.showRights(individual);});
       $journal.on("click", function() {
@@ -54,7 +56,7 @@ veda.Module(function IndividualActions(veda) { "use strict";
       });
     }
 
-    individual.on("individual:templateReady", actionsHandler);
   });
 
+*/
 });
