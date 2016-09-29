@@ -145,13 +145,13 @@ public class LmdbStorage : Storage
         {
             close_db();
             open_db();
-            log.trace("reopen_db %s, mode=%s, thread:%s, last_op_id=%d", _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
+	      	//log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
         }
     }
 
     public void open_db()
     {
-        //writefln ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
+      //writefln ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
         if (db_is_open.get(_path, false) == true)
         {
@@ -192,7 +192,7 @@ public class LmdbStorage : Storage
 
                     try
                     {
-                        last_op_id           = to!long (dataff[ 1 ]);
+                        last_op_id = to!long (dataff[ 1 ]);
                         committed_last_op_id = last_op_id;
                     }
                     catch (Throwable tr) {}
@@ -203,11 +203,6 @@ public class LmdbStorage : Storage
 
                 summ_hash_this_db = BigInt("0x" ~ hash_str);
                 //log.trace("open db %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
-                if (mode == DBMode.RW)
-                {
-                    MDB_stat stat = get_stat();
-                    log.trace("open_db %s, mode=%s, page_size=%d, entries=%d", _path, text(mode), stat.ms_psize, stat.ms_entries);
-                }
             }
         }
     }
@@ -243,13 +238,9 @@ public class LmdbStorage : Storage
 
     public ResultCode put(string in_key, string in_value, long op_id)
     {
-    	try
-    	{
-    	//log.trace ("@put #b");
+    	if (op_id > 0)
+	    	last_op_id = op_id;
     	
-        if (op_id > 0)
-            last_op_id = op_id;
-
         try
         {
             string _key  = in_key.dup;
@@ -334,11 +325,6 @@ public class LmdbStorage : Storage
             log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
             return ResultCode.Fail_Store;
         }
-    	}
-    	finally
-    	{
-    	//log.trace ("@put #e");    		
-    	}
     }
 
     public ResultCode remove(string in_key)
@@ -429,13 +415,13 @@ public class LmdbStorage : Storage
     public void flush(int force)
     {
         try
-        {
-            //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
-            if (mode == DBMode.RW && last_op_id > committed_last_op_id)
-            {
-                put(summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
-                committed_last_op_id = last_op_id;
-            }
+        {		
+	        //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
+			if (mode == DBMode.RW && last_op_id > committed_last_op_id)
+			{
+	 			put (summ_hash_this_db_id, "0," ~ text (last_op_id), -1);
+	 			committed_last_op_id = last_op_id;
+			}	
 
             int rc = mdb_env_sync(env, force);
 
@@ -463,11 +449,8 @@ public class LmdbStorage : Storage
 
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
-        last_op_id = op_id;
-    	//log.trace ("@update #b");
-
-	try
-	{
+    	last_op_id = op_id;
+    	
         try
         {
 //                                      StopWatch sw; sw.start;
@@ -542,7 +525,7 @@ public class LmdbStorage : Storage
                     throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
                 }
             }
- */
+*/
             rc = mdb_txn_commit(txn);
 
             if (rc == MDB_MAP_FULL)
@@ -575,73 +558,6 @@ public class LmdbStorage : Storage
             log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
             return -1;
         }
-	} finally
-	{
-    	//log.trace ("@update #e");		
-	}
-	
-	
-    }
-
-    public MDB_stat get_stat()
-    {
-        MDB_stat stat;
-        int      rc;
-
-        if (db_is_open.get(_path, false) == false)
-            return stat;
-
-        MDB_txn *txn_r;
-        MDB_dbi dbi;
-
-        rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-        if (rc == MDB_BAD_RSLOT)
-        {
-            log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-            mdb_txn_abort(txn_r);
-
-            // TODO: sleep ?
-            core.thread.Thread.sleep(dur!("msecs")(1));
-
-            rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-        }
-
-        if (rc != 0)
-        {
-            if (rc == MDB_MAP_RESIZED)
-            {
-                log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
-                return get_stat();
-            }
-
-            log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-            mdb_txn_abort(txn_r);
-            return stat;
-        }
-
-
-        try
-        {
-            rc = mdb_dbi_open(txn_r, null, 0, &dbi);
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
-            }
-
-            rc = mdb_stat(txn_r, dbi, &stat);
-
-            if (rc == 0)
-            {
-            }
-        }catch (Exception ex)
-        {
-        }
-
-        mdb_txn_abort(txn_r);
-
-        return stat;
     }
 
     public long count_entries()

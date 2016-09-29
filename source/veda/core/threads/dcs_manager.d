@@ -6,14 +6,13 @@ module veda.core.threads.dcs_manager;
 
 import core.thread, std.stdio, std.conv, std.file, std.datetime, std.outbuffer, std.string, core.atomic;
 import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
-import veda.common.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
+import veda.type, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
        veda.onto.resource, veda.util.tools;
 import vibe.core.concurrency, vibe.core.task, vibe.http.router                 : URLRouter;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
-private shared Task task_of_acl_preparer;
-private shared Task task_of_scripts;
 private shared Task task_of_ft_indexer;
+private shared Task task_of_scripts;
 private shared Task task_of_ltr_scripts;
 private shared Task task_of_fanout;
 
@@ -55,6 +54,7 @@ public long get_counter_4_uid(string uid)
     return res;
 }
 
+
 public long get_last_opid()
 {
     synchronized (_mutex)
@@ -86,9 +86,7 @@ void handleWebSocketConnection(scope WebSocket socket)
 
                     //writeln ("@module_name=", module_name);
 
-                    if (module_name == "acl_preparer")
-                        task_of_acl_preparer = Task.getThis();
-                    else if (module_name == "scripts")
+                    if (module_name == "scripts")
                         task_of_scripts = Task.getThis();
                     else if (module_name == "ltr_scripts")
                         task_of_ltr_scripts = Task.getThis();
@@ -108,19 +106,14 @@ void handleWebSocketConnection(scope WebSocket socket)
                 while (true)
                 {
                     string msg;
-
-                    try
-                    {
-                        vibe.core.concurrency.receive(
-                                                      (string _msg)
-                                                      {
-                                                          msg = _msg;
-                                                      }
-                                                      );
-                    } catch (Throwable tr)
-                    {
-                        log.trace("handleWebSocketConnection: fail recv from inner queue: err=%s.", tr.msg);
-                    }
+                    Task   task_to;
+                    vibe.core.concurrency.receive(
+                                                  (string _msg, Task _to)
+                                                  {
+                                                      msg = _msg;
+                                                      task_to = _to;
+                                                  }
+                                                  );
 
                     //log.trace("Sending '%s'.", msg);
                     socket.send(msg);
@@ -136,9 +129,7 @@ void handleWebSocketConnection(scope WebSocket socket)
         log.trace("err on chanel [%s] ex=%s", module_name, tr.msg);
     }
 
-    if (module_name == "acl_preparer")
-        task_of_acl_preparer = shared(Task).init;
-    else if (module_name == "scripts")
+    if (module_name == "scripts")
         task_of_scripts = shared(Task).init;
     else if (module_name == "ltr_scripts")
         task_of_ltr_scripts = shared(Task).init;
@@ -426,9 +417,7 @@ long timeout = 1_000;
 
 public shared(Task) getTaskOfPMODULE(P_MODULE pm)
 {
-    if (pm == P_MODULE.acl_preparer)
-        return task_of_acl_preparer;
-    else if (pm == P_MODULE.scripts)
+    if (pm == P_MODULE.scripts)
         return task_of_scripts;
     else if (pm == P_MODULE.ltr_scripts)
         return task_of_ltr_scripts;
@@ -440,6 +429,23 @@ public shared(Task) getTaskOfPMODULE(P_MODULE pm)
     return shared(Task).init;
 }
 
+
+public long get_opid(P_MODULE pm)
+{
+    long op_id_from_module;
+
+    Task task = getTaskOfPMODULE(pm);
+
+    if (task_of_scripts is shared(Task).init)
+        return -1;
+
+    vibe.core.concurrency.send(task, "get_opid", Task.getThis());
+    vibe.core.concurrency.receive((long _op_id)
+                                  {
+                                      op_id_from_module = _op_id;
+                                  });
+    return op_id_from_module;
+}
 
 public void close()
 {
@@ -487,6 +493,8 @@ void dcs_thread(string thread_name, string _node_id)
     queue.open();
 
     core.thread.Thread.sleep(dur!("msecs")(3000));
+
+    Task main_loop_task = Task.getThis();
 
     while (true)
     {
@@ -542,20 +550,17 @@ void dcs_thread(string thread_name, string _node_id)
 
                                         queue.push(cbor);
 
-                                        if (task_of_acl_preparer !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_acl_preparer, text(opid));
-
                                         if (task_of_scripts !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_scripts, text(opid));
+                                            vibe.core.concurrency.send(task_of_scripts, text(opid), main_loop_task);
 
                                         if (task_of_ltr_scripts !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_ltr_scripts, text(opid));
+                                            vibe.core.concurrency.send(task_of_ltr_scripts, text(opid), main_loop_task);
 
                                         if (task_of_fanout !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_fanout, text(opid));
+                                            vibe.core.concurrency.send(task_of_fanout, text(opid), main_loop_task);
 
                                         if (task_of_ft_indexer !is shared(Task).init)
-                                            vibe.core.concurrency.send(task_of_ft_indexer, text(opid));
+                                            vibe.core.concurrency.send(task_of_ft_indexer, text(opid), main_loop_task);
 
                                         set_updated_uid(indv_uri, opid, update_counter);
                                     },
@@ -567,3 +572,5 @@ void dcs_thread(string thread_name, string _node_id)
         }
     }
 }
+
+

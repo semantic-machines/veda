@@ -1,7 +1,7 @@
 module veda.util.individual8json;
 
 import std.conv, std.stdio, std.json, std.datetime;
-import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
+import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;

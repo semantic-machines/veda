@@ -9,7 +9,7 @@ import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, cor
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.core.util.raptor2individual, veda.util.cbor8individual;
-import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
+import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
        veda.core.common.know_predicates,
        veda.core.log_msg;
 
@@ -49,7 +49,7 @@ void main(char[][] args)
 {
     string parent_url = "http://127.0.0.1:8080";
 
-    core.thread.Thread.sleep(dur!("seconds")(4));
+    core.thread.Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
 
 //    core.thread.Thread tr = core.thread.Thread.getThis();

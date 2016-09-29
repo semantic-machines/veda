@@ -4,8 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
 import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-import veda.frontend.core_driver, veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define,
-       veda.core.log_msg;
+import veda.frontend.core_driver, veda.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////
@@ -83,7 +82,7 @@ interface VedaStorageRest_API {
     bool is_ticket_valid(string ticket);
 
     @path("get_operation_state") @method(HTTPMethod.GET)
-    long get_operation_state(int module_id, long wait_op_id);
+    long get_operation_state(int module_id);
 
     @path("restart") @method(HTTPMethod.GET)
     OpResult restart(string ticket);
@@ -344,13 +343,13 @@ class VedaStorageRest : VedaStorageRest_API
         // найдем в хранилище указанного субьекта
 
         //writeln("@v uri=", uri);
-        auto   ticket_ff = "ticket" in req.query;
-        string _ticket;
-
-        if (ticket_ff !is null)
-            _ticket = cast(string)*ticket_ff;
-        else
-            _ticket = req.cookies.get("ticket", "");
+		auto ticket_ff = "ticket" in req.query;
+ 		string _ticket;
+ 
+		if (ticket_ff !is null)
+			_ticket = cast(string)*ticket_ff;
+		else		 
+	        _ticket = req.cookies.get("ticket", "");
 
         //writeln("@v ticket=", _ticket);
 
@@ -472,12 +471,9 @@ class VedaStorageRest : VedaStorageRest_API
         return new_ticket;
     }
 
-    long get_operation_state(int module_id, long wait_op_id)
+    long get_operation_state(int module_id)
     {
-        long op_id = context.get_operation_state(cast(P_MODULE)module_id);
-
-        log.trace("get_operation_state (%s, %d)=%d", text(cast(P_MODULE)module_id), wait_op_id, op_id);
-        return op_id;
+        return context.get_operation_state(cast(P_MODULE)module_id);
     }
 
     OpResult restart(string _ticket)

@@ -6,7 +6,7 @@ module veda.onto.resource;
 
 import std.conv, std.stdio, std.datetime, std.string;
 import veda.onto.lang;
-import veda.common.type;
+import veda.type;
 
 alias Resource[] Resources;
 alias Resource *[ string ]  MapResource;

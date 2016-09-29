@@ -6,7 +6,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
     import requests.http, requests.streams;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+    import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
     import veda.core.bind.libwebsocketd;
@@ -230,7 +230,7 @@ class VedaModule
 ///////////////////////////////////////////////////
 
     // if return [false] then, no commit prepared message, and repeate
-    abstract ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+    abstract bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id);
 
@@ -298,24 +298,17 @@ class VedaModule
 
             try
             {
-                ResultCode res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, op_id);
+                bool res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, op_id);
 
-                if (res == ResultCode.OK)
+                if (res == true)
                 {
                     cs.commit();
                     put_info();
-                }
-                else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready || 
-                	res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
-                {
-                    log.trace("WARN: message fail prepared, sleep and repeate...");
-                    core.thread.Thread.sleep(dur!("seconds")(10));
                 }
                 else
                 {
-                    cs.commit();
-                    put_info();
-                    log.trace("ERR: message fail prepared, skip.");                	
+                    log.trace("message fail prepared, sleep and repeate...");
+                    core.thread.Thread.sleep(dur!("seconds")(10));
                 }
             }
             catch (Throwable ex)

@@ -1,7 +1,7 @@
 /**
  * CBOR: cbor <-> individual
 
-   Copyright: © 2014-2016 Semantic Machines
+   Copyright: © 2014-2015 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
  */
@@ -9,7 +9,7 @@
 module veda.util.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
-private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
+private import veda.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 

@@ -4,7 +4,7 @@
 module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
-import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
+import veda.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
 import veda.util.container;
 
@@ -170,7 +170,7 @@ struct TransactionItem
 TransactionItem *[ string ] transaction_buff;
 TransactionItem *[] transaction_queue;
 
-public ResultCode commit()
+public bool commit()
 {
     //if (transaction_buff.values.length > 0)
     //	writeln ("@ script: commit #1");
@@ -181,7 +181,7 @@ public ResultCode commit()
             continue;
 
         if (item.rc != ResultCode.OK)
-            return item.rc;
+            return false;
 
         Ticket *ticket = g_context.get_ticket(item.ticket_id);
 
@@ -212,7 +212,7 @@ public ResultCode commit()
         if (rc != ResultCode.OK)
         {
             log.trace("FAIL COMMIT");
-            return rc;
+            return false;
         }
         //else
         //log.trace ("SUCCESS COMMIT");
@@ -229,7 +229,7 @@ public ResultCode commit()
     //if (transaction_buff.values.length > 0)
     //	writeln ("@ script: commit #e1");
 
-    return ResultCode.OK;
+    return true;
 }
 
 extern (C++)

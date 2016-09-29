@@ -4,7 +4,7 @@
 module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule;
@@ -52,12 +52,12 @@ class ScriptProcess : VedaModule
     }
 
 
-    override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+    override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                           string event_id,
                           long op_id)
     {
         if (script_vm is null)
-            return ResultCode.Not_Ready;
+            return false;
 
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
@@ -73,7 +73,7 @@ class ScriptProcess : VedaModule
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
             {
                 committed_op_id = op_id;
-                return ResultCode.OK;
+                return true;
             }
 
             if (itype == veda_schema__Event)
@@ -161,11 +161,11 @@ class ScriptProcess : VedaModule
                     //count++;
                     script.compiled_script.run();
 
-                    ResultCode res = commit();
-                    if (res != ResultCode.OK)
+                    bool res = commit();
+                    if (res == false)
                     {
                         log.trace("fail exec event script : %s", script_id);
-                        return res;
+                        return false;
                     }
 
                     //if (trace_msg[ 300 ] == 1)
@@ -186,7 +186,7 @@ class ScriptProcess : VedaModule
         // writeln("scripts B #e *", process_name);
         committed_op_id = op_id;
 
-        return ResultCode.OK;
+        return true;
     }
 
     override bool configure()

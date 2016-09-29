@@ -11,7 +11,7 @@ private
     import std.ascii, std.csv, std.typecons, std.outbuffer;
     import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates,
            veda.core.common.context;
-    import veda.common.type;
+    import veda.type;
 }
 
 // ////// logger ///////////////////////////////////////////
@@ -575,100 +575,3 @@ string uxxxx2utf8(string so)
     else
         return so;
 }
-
-
-
-//////////////////////////////////////////////// MODULES INTERACTION
-struct ModulezInfo
-{
-    string name;
-    long   op_id;
-    long   committed_op_id = -1;
-    bool   is_Ok;
-}
-
-private string[ P_MODULE ] fn_info_r__2__pmodule;
-private File *[ P_MODULE ] ff_info_r__2__pmodule;
-private ubyte[] buff;
-
-public ModulezInfo get_info(P_MODULE _module)
-{
-//log.trace ("get_info (%s)", text(_module));
-
-    ModulezInfo res;
-
-    res.is_Ok = false;
-    try
-    {
-        string fn_info_r = fn_info_r__2__pmodule.get(_module, null);
-		File *ff_info_r;
-		
-        if (fn_info_r is null)
-        {
-            fn_info_r = module_info_path ~ "/" ~ text(_module) ~ "_info";
-            ff_info_r = new File(fn_info_r, "r");
-            if (ff_info_r.isOpen())
-            {
-	            fn_info_r__2__pmodule[ _module ] = fn_info_r;
-	            ff_info_r__2__pmodule[ _module ] = ff_info_r;
-            }
-            else
-	            return res;    
-        }
-        else
-        {
-	        ff_info_r = ff_info_r__2__pmodule.get(_module, null);
-        }   
-        
-        if (ff_info_r !is null)
-        {
-			ff_info_r.seek(0);
-			
-			if (buff is null) buff  = new ubyte[ 4096];
-			        	
-			ubyte[] newbuff = ff_info_r.rawRead(buff);
-			if (newbuff.length > 3)
-			{
-            string str = cast(string)newbuff[0..$];
-            if (str !is null)
-            {            	
-                string[] ch = str[ 0..$ - 1 ].split(';');
-                if (ch.length != 3)
-                {
-                    return res;
-                }
-                res.name            = ch[ 0 ];
-                res.op_id           = to!long (ch[ 1 ]);
-                res.committed_op_id = to!long (ch[ 2 ]);
-                res.is_Ok = true;
-            }
-			}
-        }
-    }
-    catch (Throwable tr)
-    {
-        log.trace("vmodule[%s]:get_info fail, err=%s", _module, tr.msg);
-    }
-
-                    	//writefln ("info[%s], res(%s): name=%s, op_id=%d, committed_op_id=%d", text (_module), text (res.is_Ok), res.name, res.op_id, res.committed_op_id);
-    return res;
-}    
-  
-  
-bool put_module_info (File *ff_module_info_w, string process_name, long op_id, long committed_op_id)
-{
-        try
-        {
-            ff_module_info_w.seek(0);
-            ff_module_info_w.writefln("%s;%d;%d", process_name, op_id, committed_op_id);
-            ff_module_info_w.flush();
-            log.trace("module:put_info [%s;%d;%d]", process_name, op_id, committed_op_id);
-            return true;
-        }
-        catch (Throwable tr)
-        {
-            log.trace("module:put_info [%s;%d;%d] %s", process_name, op_id, committed_op_id, tr.msg);
-            return false;
-        }
-}  
-    

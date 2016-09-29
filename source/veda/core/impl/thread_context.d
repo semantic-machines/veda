@@ -15,7 +15,7 @@ private
 //        import veda.core.bind.v8d_header;
 //    }
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
-    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
+    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, search.vql;
@@ -87,7 +87,7 @@ class PThreadContext : Context
 {
     long local_count_put;
 
-    //bool[ P_MODULE ] is_traced_module;
+    bool[ P_MODULE ] is_traced_module;
 
     private Ticket *[ string ] user_of_ticket;
 
@@ -144,8 +144,11 @@ class PThreadContext : Context
         name = context_name;
         id   = _id;
 
-        //is_traced_module[ P_MODULE.ticket_manager ]  = true;
-        //is_traced_module[ P_MODULE.subject_manager ] = true;
+        is_traced_module[ P_MODULE.ticket_manager ]  = true;
+        is_traced_module[ P_MODULE.subject_manager ] = true;
+//        is_traced_module[ P_MODULE.acl_preparer ]      = true;
+//        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
+//        is_traced_module[ P_MODULE.scripts ]          = true;
 
         getConfiguration();
 
@@ -232,8 +235,6 @@ class PThreadContext : Context
 
                     if (opres.result == ResultCode.OK)
                         log.trace("permission [%s] was created", sys_account_permission);
-		    else
-                        log.trace("FAIL: permission [%s] not created", sys_account_permission);
                 }
                 catch (Exception ex)
                 {
@@ -271,7 +272,7 @@ class PThreadContext : Context
         if (onto !is null)
         {
             long g_count_onto_update = get_count_onto_update();
-            if (g_count_onto_update > 0 && g_count_onto_update > local_count_onto_update)
+            if (g_count_onto_update > local_count_onto_update)
             {
                 local_count_onto_update = g_count_onto_update;
                 onto.load();
@@ -290,7 +291,7 @@ class PThreadContext : Context
         }
 
         //writeln ("@p ### uri=", uri, " ", request_acess);
-        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, is_check_for_reload);
+        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this, is_check_for_reload);
 
         //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
         return request_acess == res;
@@ -412,6 +413,45 @@ class PThreadContext : Context
     {
         version (useInnerModules)
             veda.core.threads.load_info.stat(command_type, sw);
+    }
+
+    int  _timeout = 10;
+
+//    long ft_local_count;
+//    long ft_local_time_check = 0;
+//    public bool ft_check_for_reload(void delegate() load)
+//    {
+//        return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
+//    }
+
+    long acl_local_count;
+    long acl_local_time_check = 0;
+    public bool acl_check_for_reload(void delegate() load)
+    {
+        return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
+    }
+
+    public bool _check_for_reload(ref long local_time_check, ref long local_count, long function() get_now_count, void delegate() load)
+    {
+        long now = Clock.currStdTime() / 10000000;
+
+//        log.trace ("@ft_check_for_reload: #1");
+
+        if (now - local_time_check > _timeout)
+        {
+            long count_now = get_now_count();
+            //log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
+
+            local_time_check = now;
+            if (count_now > local_count)
+            {
+                //log.trace("__check_for_reload:execute reload");
+                local_count = count_now;
+                load();
+                return true;
+            }
+        }
+        return false;
     }
 
     // *************************************************** external api *********************************** //
@@ -746,24 +786,26 @@ class PThreadContext : Context
 
     public void reopen_ro_subject_storage_db()
     {
-        if (inividuals_storage !is null)
-	{
-//    	    version (useInnerModules)
-//    	    {
-//    		try
-//    		{
-//        	    if (getTid(P_MODULE.subject_manager) != Tid.init)
-//            		this.wait_operation_complete(P_MODULE.subject_manager, 0);
-//    		}
-//    		catch (Exception ex) {}
-//	    }
+        try
+        {
+            if (getTid(P_MODULE.subject_manager) != Tid.init)
+                this.wait_operation_complete(P_MODULE.subject_manager, 0);
+        }
+        catch (Exception ex) {}
 
+        if (inividuals_storage !is null)
             inividuals_storage.reopen_db();
-	}
     }
 
     public void reopen_ro_acl_storage_db()
     {
+        try
+        {
+            if (getTid(P_MODULE.acl_preparer) != Tid.init)
+                this.wait_operation_complete(P_MODULE.acl_preparer, 0);
+        }
+        catch (Exception ex) {}
+
         if (acl_indexes !is null)
         {
             //log.trace ("reopen_ro_acl_storage_db");
@@ -775,13 +817,13 @@ class PThreadContext : Context
 
     public ubyte get_rights(Ticket *ticket, string uri)
     {
-        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true);
+        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true);
     }
 
     public void get_rights_origin(Ticket *ticket, string uri,
                                   void delegate(string resource_group, string subject_group, string right) trace)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace);
     }
 
     public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
@@ -824,7 +866,7 @@ class PThreadContext : Context
         {
             Individual individual = Individual.init;
 
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, true) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
             {
                 string individual_as_cbor = get_from_individual_storage(uri);
 
@@ -871,7 +913,7 @@ class PThreadContext : Context
 
             foreach (uri; uris)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, true) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
                 {
                     Individual individual         = Individual.init;
                     string     individual_as_cbor = get_from_individual_storage(uri);
@@ -917,7 +959,7 @@ class PThreadContext : Context
 
         try
         {
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, true) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
             {
                 string individual_as_cbor = get_from_individual_storage(uri);
 
@@ -1308,10 +1350,10 @@ class PThreadContext : Context
                         if (is_api_request)
                         {
                             // для обновляемого индивида проверим доступность бита Update
-                            if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true) != Access.can_update)
+                            if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, this, true) != Access.can_update)
                             {
-		                        res.result = ResultCode.Not_Authorized;
-	                            return res;
+                                res.result = ResultCode.Not_Authorized;
+                                return res;
                             }
 
                             // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
@@ -1334,7 +1376,7 @@ class PThreadContext : Context
                         {
                             if (rr.info == NEW_TYPE)
                             {
-                                if (acl_indexes.authorize(key, ticket, Access.can_create, true) != Access.can_create)
+                                if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
                                 {
                                     res.result = ResultCode.Not_Authorized;
                                     return res;
@@ -1384,6 +1426,14 @@ class PThreadContext : Context
                             inc_count_onto_update();
                         }
 
+                        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+                        {
+                            tid_acl = getTid(P_MODULE.acl_preparer);
+                            if (tid_acl != Tid.init)
+                            {
+                                send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
+                            }
+                        }
 /*
                         version (libV8)
                         {
@@ -1581,6 +1631,110 @@ class PThreadContext : Context
         return res;
     }
 
+    //////////////////////////////////////////////// MODULES INTERACTION
+
+    private struct ModuleInfo
+    {
+        string name;
+        long   op_id;
+        long   committed_op_id;
+        bool   is_Ok;
+    }
+
+    private         string[ P_MODULE ] fn_info_r__2__pmodule;
+    private File *[ P_MODULE ] ff_info_r__2__pmodule;
+    private ubyte[] buff;
+
+    private ModuleInfo get_info(P_MODULE _module)
+    {
+        ModuleInfo res;
+
+        res.is_Ok = false;
+
+        try
+        {
+            string fn_info_r = fn_info_r__2__pmodule.get(_module, null);
+            File   *ff_info_r;
+
+            if (fn_info_r is null)
+            {
+                fn_info_r                        = module_info_path ~ "/" ~ text(_module) ~ "_info";
+                ff_info_r                        = new File(fn_info_r, "r");
+                fn_info_r__2__pmodule[ _module ] = fn_info_r;
+                ff_info_r__2__pmodule[ _module ] = ff_info_r;
+            }
+            else
+            {
+                ff_info_r = ff_info_r__2__pmodule.get(_module, null);
+            }
+
+            if (ff_info_r !is null)
+            {
+                ff_info_r.seek(0);
+
+                if (buff is null)
+                    buff = new ubyte[ 4096 ];
+
+                ubyte[] newbuff = ff_info_r.rawRead(buff);
+                string  str     = cast(string)newbuff[ 0..$ ];
+                if (str !is null)
+                {
+                    string[] ch = str[ 0..$ - 1 ].split(';');
+                    //writeln("@ queue.get_info ch=", ch);
+                    if (ch.length != 3)
+                    {
+                        return res;
+                    }
+                    res.name            = ch[ 0 ];
+                    res.op_id           = to!long (ch[ 1 ]);
+                    res.committed_op_id = to!long (ch[ 2 ]);
+                    res.is_Ok           = true;
+                }
+            }
+        }
+        catch (Throwable tr)
+        {
+            log.trace("vmodule:get_info fail, err=%s", tr.msg);
+        }
+
+        //writefln ("info[%s], res(%s): name=%s, op_id=%d, committed_op_id=%d", text (_module), text (res.is_Ok), res.name, res.op_id, res.committed_op_id);
+
+        return res;
+    }
+
+
+    public long get_operation_state(P_MODULE module_id)
+    {
+        long res = -1;
+
+        version (useInnerModules)
+        {
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id ==
+                P_MODULE.ltr_scripts)
+            {
+                ModuleInfo info = get_info(module_id);
+
+                if (info.is_Ok)
+                    res = info.committed_op_id;
+            }
+            else if (module_id == P_MODULE.acl_preparer)
+            {
+                return get_acl_manager_op_id;
+            }
+            else if (module_id == P_MODULE.subject_manager)
+            {
+                return get_subject_manager_op_id;
+            }
+        }
+        return res;
+    }
+
+    public long restart_module(P_MODULE module_id)
+    {
+        return 0;
+    }
+
+
     public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
     {
         if (module_id == id)
@@ -1589,7 +1743,7 @@ class PThreadContext : Context
         version (useInnerModules)
         {
             if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id ==
-                P_MODULE.ltr_scripts || module_id == P_MODULE.acl_preparer)
+                P_MODULE.ltr_scripts)
             {
                 return wait_module(module_id, op_id, timeout);
             }
@@ -1615,7 +1769,7 @@ class PThreadContext : Context
         //writefln ("wait_module pm=%s op_id=%d", text (pm), op_id);
         while (wait_op_id > op_id_from_module)
         {
-            ModulezInfo info = get_info(pm);
+            ModuleInfo info = get_info(pm);
 
             if (info.is_Ok)
                 op_id_from_module = info.committed_op_id;
@@ -1635,32 +1789,5 @@ class PThreadContext : Context
             }
         }
         return true;
-    }
-
-    public long get_operation_state(P_MODULE module_id)
-    {
-        long res = -1;
-
-        version (useInnerModules)
-        {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id ==
-                P_MODULE.ltr_scripts || module_id == P_MODULE.acl_preparer)
-            {
-                ModulezInfo info = get_info(module_id);
-
-                if (info.is_Ok)
-                    res = info.committed_op_id;
-            }
-            else if (module_id == P_MODULE.subject_manager)
-            {
-                return get_subject_manager_op_id;
-            }
-        }
-        return res;
-    }
-
-    public long restart_module(P_MODULE module_id)
-    {
-        return 0;
     }
 }
