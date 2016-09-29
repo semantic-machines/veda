@@ -16,6 +16,7 @@
 	"sourcePaths":[
 	    "../../veda/common", 
 	    "../../veda/core",  
+	    "../../veda/bind",  
 	    "../../veda/frontend", 
 	    "../../veda/onto", 
 	    "../../veda/util",

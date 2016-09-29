@@ -3,7 +3,7 @@ module veda.core.az.acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
+    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.log_msg, veda.util.cbor8individual;
     import veda.core.util.utils, veda.util.cbor, util.logger;
     import veda.core.storage.lmdb_storage, veda.core.az.right_set;

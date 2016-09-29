@@ -24,9 +24,9 @@
 	],
         "sourceFiles":[
 	"../../lib64/libxapiand.a", 
-        "../../veda/core/bind/lmdb_header.d",
-	"../../veda/core/bind/xapian_d_header.d",
-        "../../veda/core/bind/libwebsockets.d",
+        "../../veda/bind/lmdb_header.d",
+	"../../veda/bind/xapian_d_header.d",
+        "../../veda/bind/libwebsockets.d",
  	"../../veda/core/util/utils.d"
 	],
         "libs":["websockets"],

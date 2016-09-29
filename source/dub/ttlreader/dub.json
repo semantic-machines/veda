@@ -25,10 +25,10 @@
 	],
         "sourceFiles":[
 	"../../lib64/libxapiand.a",
-        "../../veda/core/bind/lmdb_header.d",
-	"../../veda/core/bind/xapian_d_header.d",
+        "../../veda/bind/lmdb_header.d",
+	"../../veda/bind/xapian_d_header.d",
 	"../../veda/core/util/utils.d",
-        "../../veda/core/bind/libraptor_header.d",
+        "../../veda/bind/libraptor_header.d",
 	"../../veda/core/util/raptor2individual.d"
 	],
 	"configurations": [

@@ -21,10 +21,10 @@
             "../../veda/core/common"
 	],
         "sourceFiles":[
-        "../../veda/core/bind/lmdb_header.d",
-	"../../veda/core/bind/xapian_d_header.d",
+        "../../veda/bind/lmdb_header.d",
+	"../../veda/bind/xapian_d_header.d",
 	"../../veda/core/util/utils.d",
-	"../../veda/core/bind/libwebsockets.d",
+	"../../veda/bind/libwebsockets.d",
 	"../../lib64/libxapiand.a"
 	],
 	"libs":["websockets"],

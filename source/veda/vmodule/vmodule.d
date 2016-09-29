@@ -9,7 +9,7 @@ private
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
-    import veda.core.bind.libwebsocketd;
+    import veda.bind.libwebsocketd;
     import veda.util.container;
 }
 

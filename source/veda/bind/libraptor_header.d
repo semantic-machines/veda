@@ -1,7 +1,7 @@
 /**
  * обвязка к libraptor2
  */
-module bind.libraptor_header;
+module veda.bind.libraptor_header;
 
 
 // //////////////////////////  call D from C //////////////////////////////////////////

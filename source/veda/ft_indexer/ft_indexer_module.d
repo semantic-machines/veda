@@ -7,7 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-private import veda.core.bind.xapian_d_header;
+private import veda.bind.xapian_d_header;
 private import veda.core.common.context, veda.util.tools, veda.veda.ft_indexer.xapian_indexer;
 private import veda.vmodule.vmodule;
 

@@ -1,4 +1,4 @@
-module veda.core.bind.libwebsocketd;
+module veda.bind.libwebsocketd;
 
 import core.stdc.stdarg;
 import core.sys.posix.netinet.in_;
