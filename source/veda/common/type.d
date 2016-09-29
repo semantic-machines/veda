@@ -1,11 +1,11 @@
 /**
  * Общие определения
 
-   Copyright: © 2014-2015 Semantic Machines
+   Copyright: © 2014-2016 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
  */
-module veda.type;
+module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
@@ -184,6 +184,12 @@ struct decimal
 
     /// экспонента
     long exponent;
+
+    this(string m, string e)
+    {
+        mantissa = to!long (m);
+        exponent = to!long (e);
+    }
 
     /// конструктор
     this(long m, long e)
