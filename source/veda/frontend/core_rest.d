@@ -4,7 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
 import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-import veda.frontend.core_driver, veda.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.log_msg;
+import veda.frontend.core_driver, veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 
 // ////// logger ///////////////////////////////////////////

@@ -2,7 +2,7 @@ module veda.core.util.raptor2individual;
 
 import std.string, std.stdio : writeln;
 import bind.libraptor_header;
-import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.onto.lang, veda.core.util.utils;
+import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.onto.lang, veda.core.util.utils;
 
 string[ string ] prefixes;
 Individual *[ string ] _individuals;

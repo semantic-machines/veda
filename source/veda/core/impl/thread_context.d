@@ -15,7 +15,7 @@ private
 //        import veda.core.bind.v8d_header;
 //    }
     import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
-    import veda.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
+    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.log_msg;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, search.vql;

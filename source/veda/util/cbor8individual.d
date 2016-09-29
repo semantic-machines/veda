@@ -9,7 +9,7 @@
 module veda.util.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
-private import veda.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
+private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 

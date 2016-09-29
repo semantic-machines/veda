@@ -9,7 +9,7 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import util.logger, veda.core.util.utils, veda.core.threads.load_info;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.log_msg, veda.core.impl.thread_context;
-    import veda.core.common.define, veda.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager;
+    import veda.core.common.define, veda.common.type, veda.core.threads.acl_manager, veda.core.threads.storage_manager;
     import veda.onto.individual, veda.onto.resource;
 }
 

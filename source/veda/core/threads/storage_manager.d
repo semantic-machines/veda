@@ -10,7 +10,7 @@ private
     import veda.core.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.onto.individual,
            veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools;
-    import search.vel, veda.type;
+    import search.vel, veda.common.type;
 }
 
 // ////// logger ///////////////////////////////////////////
