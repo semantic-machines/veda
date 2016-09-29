@@ -912,3 +912,15 @@ svg.process-path-highlight path
 }
 
 /* TABS END */
+
+/* Fullcalendar BEGIN */
+.fc a[data-goto], .fc a[data-goto]:hover {color: inherit;}
+.fc-event.fc-default, .fc-default .fc-event-dot {background-color: #777; color:white; border-color:white; font-size:80%;}
+.fc-event.fc-primary, .fc-primary .fc-event-dot {background-color: #337ab7; color:white; border-color:white; font-size:80%;}
+.fc-event.fc-info, .fc-info .fc-event-dot {background-color: #5bc0de; color:white; border-color:white; font-size:80%;}
+.fc-event.fc-success, .fc-success .fc-event-dot {background-color: #5cb85c; color:white; border-color:white; font-size:80%;}
+.fc-event.fc-warning, .fc-warning .fc-event-dot {background-color: #f0ad4e; color:white; border-color:white; font-size:80%;}
+.fc-event.fc-danger, .fc-danger .fc-event-dot {background-color: #d9534f; color:white; border-color:white; font-size:80%;}
+.fc-event .fc-bg {opacity: 0;}
+
+/* Fullcalendar END */
