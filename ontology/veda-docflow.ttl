@@ -840,6 +840,14 @@ v-wf:DecisionExamined
   rdfs:label "Examined"@en ;
 .
 
+v-wf:DecisionReturnedToReview
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Вернуть на рассмотрение"@ru ;
+  rdfs:label "Returned to review"@en ;
+.
+
 v-wf:DecisionAchieved
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Decision ;
@@ -918,6 +926,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionReview ;
   v-ui:forClass v-wf:DecisionBreak ;
   v-ui:forClass v-wf:DecisionExamined ;
+  v-ui:forClass v-wf:DecisionReturnedToReview ;
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionRejected ;
   v-ui:forClass v-wf:DecisionPostponed ;
@@ -966,6 +975,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionBreak ;
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionExamined ;
+  v-ui:forClass v-wf:DecisionReturnedToReview ;
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;
