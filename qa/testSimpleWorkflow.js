@@ -169,6 +169,9 @@ basic.getDrivers().forEach (function (drv) {
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
 	driver.sleep(basic.SLOW_OPERATION);
 
+	var container = driver.findElement({id:'main'});
+	var content = container.innerHTML;
+	container.innerHTML = content;
 	driver.findElement({css:'a[property="rdfs:label"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot find a task");});
 
