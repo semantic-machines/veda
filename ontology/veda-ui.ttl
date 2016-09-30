@@ -845,7 +845,7 @@ v-ui:IconModalTemplate
     e.preventDefault();
     var modal = $("#individual-modal-template").html();
     var $modal = $(modal).modal();
-    container.append($modal);
+    $("body").append($modal);
     var cntr = $(".modal-body", $modal);
     var newMode = "view";
     var parentTmpl = template.parent().closest("[resource]");
