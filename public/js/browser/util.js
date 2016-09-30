@@ -298,7 +298,15 @@ veda.Module(function Util(veda) { "use strict";
             oneProp = values
               .filter(function(item){return !!item && !!item.valueOf();})
               .map( function (value) {
-                return "'" + property_uri + "'=='" + value.data + "*'";
+                //return "'" + property_uri + "'=='" + value.data + "*'";
+                var q = value.data;
+                if ( !q.match(/[\+\-\*]/) ) {
+                  q = q.split(" ")
+                       .filter(function (token) { return token.length > 1; })
+                       .map(function (token) { return "+" + token + "*"; })
+                       .join(" ");
+                }
+                return "'" + property_uri + "'=='" + q + "'";
               })
               .join("||");
             break;
