@@ -779,7 +779,7 @@ v-ui:ResourceSpec
   v-ui:forClass rdfs:Resource ;
   v-ui:forProperty rdf:type ;
   v-ui:minCardinality "1"^^xsd:integer ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:maxCardinality "10"^^xsd:integer ;
   v-ui:tooltip "Обязательно к заполнению, единственное значение. Ссылка на объект типа Класс."@ru ;
   v-ui:tooltip "Required, single value. Link to object of type Class"@en ;
   v-ui:queryPrefix "('rdf:type'=='owl:Class' || 'rdf:type'=='rdfs:Class')"^^xsd:string ;
