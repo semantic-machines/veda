@@ -1127,6 +1127,7 @@ v-fs:AttributiveSearchTemplate
   <div id="params">
     <hr>
     <h3 about="v-fs:Params" property="rdfs:label"></h3>
+    <br>
     <div class="search-form"></div>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
