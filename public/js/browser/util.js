@@ -278,7 +278,8 @@ veda.Module(function Util(veda) { "use strict";
               var start = values[0].data.substring(0,10)+"T00:00:00",
                   end;
               if (values.length === 1) {
-                end = values[0].data.substring(0,10)+"T23:59:59";
+                //end = values[0].data.substring(0,10)+"T23:59:59";
+                end = "9999" + values[0].data.substring(4,10)+"T23:59:59";
                 oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
               } else if (values.length > 1) {
                 end = values[values.length-1].data.substring(0,10)+"T23:59:59";
@@ -302,7 +303,7 @@ veda.Module(function Util(veda) { "use strict";
                 var q = value.data;
                 if ( !q.match(/[\+\-\*]/) ) {
                   q = q.split(" ")
-                       .filter(function (token) { return token.length > 1; })
+                       .filter(function (token) { return token.length > 0; })
                        .map(function (token) { return "+" + token + "*"; })
                        .join(" ");
                 }
