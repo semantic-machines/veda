@@ -333,7 +333,7 @@ class VedaModule
 
         if (sticket is Ticket.init || sticket.result != ResultCode.OK)
         {
-            writeln("SYS TICKET, systicket=", sticket);
+            log.trace("LOAD SYS TICKET: %s", sticket);
 
             bool is_superadmin = false;
 
@@ -347,7 +347,7 @@ class VedaModule
             {
                 context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
 
-                writeln("@@ child_process is_superadmin=", is_superadmin);
+                log.trace("LOAD SYS TICKET: is_superadmin=%s", text (is_superadmin));
                 core.thread.Thread.sleep(dur!("seconds")(1));
             }
         }
