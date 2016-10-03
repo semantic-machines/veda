@@ -9,7 +9,7 @@ private
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
-    import veda.bind.libwebsocketd;
+    import veda.bind.libwebsocketd, veda.vmodule.wslink;
     import veda.util.container;
 }
 
@@ -33,46 +33,37 @@ shared static this()
     bsd_signal(SIGINT, &handleTermination);
 }
 
-int        connection_flag = 0;
-int        destroy_flag    = 0;
-int        writeable_flag  = 0;
-
 VedaModule g_child_process;
 
-class VedaModule
+class VedaModule : WSLink
 {
     Cache!(string, string) cache_of_indv;
 
-    string                    fn_module_info_w  = null;
-    File                      *ff_module_info_w = null;
+    string     fn_module_info_w  = null;
+    File       *ff_module_info_w = null;
 
-    long                      op_id           = 0;
-    long                      committed_op_id = 0;
+    long       op_id           = 0;
+    long       committed_op_id = 0;
 
-    long                      count_signal           = 0;
-    long                      count_readed           = 0;
-    long                      count_success_prepared = 0;
-    Queue                     queue;
-    Consumer                  cs;
+    long       count_signal           = 0;
+    long       count_readed           = 0;
+    long       count_success_prepared = 0;
+    Queue      queue;
+    Consumer   cs;
 
-    lws_context               *ws_context;
-    lws_context_creation_info info;
-    lws                       *wsi;
-    lws_protocols[]           protocol = new lws_protocols[ 2 ];
+    Context    context;
+    Onto       onto;
 
-    Context                   context;
-    Onto                      onto;
+    Individual node;
 
-    Individual                node;
+    ushort     port;
+    string     host;
+    string     queue_name = "individuals-flow";
+    string     parent_url = "http://127.0.0.1:8080";
+    Ticket     sticket;
+    P_MODULE   module_name;
 
-    ushort                    port;
-    string                    host;
-    string                    queue_name = "individuals-flow";
-    string                    parent_url = "http://127.0.0.1:8080";
-    Ticket                    sticket;
-    P_MODULE                  module_name;
-
-    logger log()
+    override logger log()
     {
         if (_log is null)
             _log = new logger("veda-core-" ~ process_name, "log", process_name);
@@ -88,58 +79,13 @@ class VedaModule
         host             = _host;
         _log             = new logger("veda-core-" ~ process_name, "log", "PROCESS");
         fn_module_info_w = module_info_path ~ "/" ~ process_name ~ "_info";
+        super(host, port);
     }
 
     ~this()
     {
         ff_module_info_w.flush();
         ff_module_info_w.close();
-    }
-
-    private void init_chanel()
-    {
-        protocol[ 0 ].name                  = "veda-module-protocol\0";
-        protocol[ 0 ].callback              = &ws_service_callback;
-        protocol[ 0 ].per_session_data_size = 16;
-        protocol[ 0 ].rx_buffer_size        = 0;
-        protocol[ 0 ].id                    = 0;
-
-        info.port      = CONTEXT_PORT_NO_LISTEN;
-        info.protocols = &protocol[ 0 ];
-//    info.extensions = lws_get_internal_extensions();
-        info.gid     = -1;
-        info.uid     = -1;
-        info.options = 0;
-
-        ws_context = lws_create_context(&info);
-
-        //writeln("[Main] context created.");
-
-        if (ws_context is null)
-        {
-            log.trace("init_chanel: ws_context is NULL");
-            return;
-        }
-
-        lws_client_connect_info i;
-
-        i.host    = cast(char *)(host ~ "\0");
-        i.origin  = i.host;
-        i.address = i.host;
-        i.port    = port;
-        i.context = ws_context;
-        i.path    = "/ws\0";
-
-        wsi = lws_client_connect_via_info(&i);
-
-        if (wsi is null)
-        {
-            log.trace("init_chanel: wsi create error.");
-            return;
-        }
-
-        destroy_flag = 0;
-        log.trace("init_chanel: %s, is Ok", process_name);
     }
 
     void run()
@@ -187,42 +133,7 @@ class VedaModule
 
         load_systicket();
 
-        try
-        {
-            while (true)
-            {
-                if (f_listen_exit == true)
-                {
-                    log.trace("EXIT");
-                    break;
-                }
-
-                init_chanel();
-
-                bool f1 = false;
-                while (!destroy_flag)
-                {
-                    lws_service(ws_context, 50);
-
-                    // send module name
-                    if (connection_flag && f1 == false)
-                    {
-                        websocket_write_back(wsi, "module-name=" ~ process_name);
-                        lws_callback_on_writable(wsi);
-                        f1 = true;
-                    }
-                }
-
-                log.trace("DISCONNECT");
-                lws_context_destroy(ws_context);
-
-                core.thread.Thread.sleep(dur!("seconds")(1));
-            }
-        }
-        catch (Throwable tr)
-        {
-            log.trace("MAIN LOOP EXIT %s", tr.msg);
-        }
+        listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
 
         _log.close();
     }
@@ -231,8 +142,8 @@ class VedaModule
 
     // if return [false] then, no commit prepared message, and repeate
     abstract ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                          string event_id,
-                          long op_id);
+                                string event_id,
+                                long op_id);
 
     abstract bool configure();
 
@@ -305,8 +216,8 @@ class VedaModule
                     cs.commit();
                     put_info();
                 }
-                else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready || 
-                	res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
+                else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
+                         res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
                 {
                     log.trace("WARN: message fail prepared, sleep and repeate...");
                     core.thread.Thread.sleep(dur!("seconds")(10));
@@ -315,7 +226,7 @@ class VedaModule
                 {
                     cs.commit();
                     put_info();
-                    log.trace("ERR: message fail prepared, skip.");                	
+                    log.trace("ERR: message fail prepared, skip.");
                 }
             }
             catch (Throwable ex)
@@ -333,7 +244,7 @@ class VedaModule
 
         if (sticket is Ticket.init || sticket.result != ResultCode.OK)
         {
-            log.trace("LOAD SYS TICKET: %s", sticket);
+            writeln("SYS TICKET, systicket=", sticket);
 
             bool is_superadmin = false;
 
@@ -347,7 +258,7 @@ class VedaModule
             {
                 context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
 
-                log.trace("LOAD SYS TICKET: is_superadmin=%s", text (is_superadmin));
+                writeln("@@ child_process is_superadmin=", is_superadmin);
                 core.thread.Thread.sleep(dur!("seconds")(1));
             }
         }
@@ -372,115 +283,52 @@ class VedaModule
     }
 }
 
-private int websocket_write_back(lws *wsi_in, string str)
+void ev_LWS_CALLBACK_GET_THREAD_ID()
 {
-    if (str is null)
-        return -1;
+    g_child_process.thread_id();
+    if (last_committed_op_id < g_child_process.committed_op_id)
+    {
+        last_committed_op_id = g_child_process.committed_op_id;
+        g_child_process.put_info();
+    }
 
-    int     pre = LWS_SEND_BUFFER_PRE_PADDING;
-    int     n;
-    int     len = cast(int)str.length;
+    long now = Clock.currTime().stdTime();
 
-    ubyte[] _out  = new ubyte[ pre + len ];
-    ubyte[] frame = _out[ pre..pre + str.length ];
-
-    frame[ 0..$ ] = cast(ubyte[])str[ 0..$ ];
-
-    //* write out*/
-    n = lws_write(wsi_in, cast(ubyte *)frame, len, lws_write_protocol.LWS_WRITE_TEXT);
-
-    //writeln("[websocket_write_back]", str, ", n=", n);
-
-    return n;
+    if (now - last_check_time > 1_000_000)
+    {
+        last_check_time = now;
+        g_child_process.prepare_queue();
+    }
 }
+
+void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg)
+{
+    string res;
+
+    if (msg == "get_opid")
+    {
+        writeln("[CP] Client recieved:", msg);
+        long prepared_op_id;
+
+        if (g_child_process.committed_op_id != 0)
+            prepared_op_id = g_child_process.committed_op_id;
+        else
+            prepared_op_id = g_child_process.op_id;
+
+        //writeln ("@module[", process_name, "] get_op_id, return op_id=", prepared_op_id);
+
+        res = text(prepared_op_id);
+    }
+    else
+        res = "Ok";
+
+    websocket_write_back(wsi, res);     // ~ text(msg_count));
+
+    if (msg != "get_opid")
+        g_child_process.prepare_queue();
+}
+
 
 long last_committed_op_id;
 long last_check_time;
 
-
-extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
-{
-    //writeln ("@@reason=", reason);
-
-    switch (reason)
-    {
-    case lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID:
-
-        g_child_process.thread_id();
-        if (last_committed_op_id < g_child_process.committed_op_id)
-        {
-            last_committed_op_id = g_child_process.committed_op_id;
-            g_child_process.put_info();
-        }
-
-        long now = Clock.currTime().stdTime();
-
-        if (now - last_check_time > 1_000_000)
-        {
-            last_check_time = now;
-            g_child_process.prepare_queue();
-        }
-
-        break;
-
-    case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
-        //writeln("[CP]Connect with server success.");
-        connection_flag = 1;
-        break;
-
-    case lws_callback_reasons.LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-        _log.trace("[CP] Connect with server error.");
-        destroy_flag    = 1;
-        connection_flag = 0;
-        break;
-
-    case lws_callback_reasons.LWS_CALLBACK_CLOSED:
-        //writeln("[CP] LWS_CALLBACK_CLOSED");
-        destroy_flag    = 1;
-        connection_flag = 0;
-        break;
-
-    case lws_callback_reasons.LWS_CALLBACK_CLIENT_RECEIVE:
-        char[] msg = fromStringz(cast(char *)_in);
-
-        string res;
-        if (msg == "get_opid")
-        {
-            writeln("[CP] Client recieved:", msg);
-            long prepared_op_id;
-
-            if (g_child_process.committed_op_id != 0)
-                prepared_op_id = g_child_process.committed_op_id;
-            else
-                prepared_op_id = g_child_process.op_id;
-
-            //writeln ("@module[", process_name, "] get_op_id, return op_id=", prepared_op_id);
-
-            res = text(prepared_op_id);
-        }
-        else
-            res = "Ok";
-
-        websocket_write_back(wsi, res); // ~ text(msg_count));
-
-        if (msg != "get_opid")
-            g_child_process.prepare_queue();
-
-
-//        if (writeable_flag)
-//            destroy_flag = 1;
-
-        break;
-
-    case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:
-        //writeln("[CP] On writeable is called.");
-        //websocket_write_back(wsi, "test msg-count=" ~ text(msg_count));
-        //msg_count++;
-        writeable_flag = 1;
-        break;
-
-    default:
-    }
-
-    return 0;
-}
