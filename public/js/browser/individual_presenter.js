@@ -395,6 +395,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         relTemplate,
         isAbout;
 
+      var sortableOptions = {
+        delay: 150,
+        placeholder: "sortable-placeholder",
+        update: function () {
+          var uris = $(this).sortable("toArray", {attribute: "resource"});
+          individual[rel_uri] = uris.map(function (uri) {
+            return new veda.IndividualModel(uri);
+          });
+        }
+      };
+      relContainer.sortable(sortableOptions);
+
       if (about) {
         isAbout = true;
         about = (about === "@" ? individual : new veda.IndividualModel(about));
@@ -413,19 +425,28 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       rel_inline_template = null;
 
-      template.on("edit", function (e) {
-        var property = new veda.IndividualModel(rel_uri);
-        if ( isEmbedded
-           && spec
-           && spec["v-ui:minCardinality"][0] >= 1
-           && !individual.hasValue(rel_uri)
-           && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
-        ) {
-          var emptyValue = new veda.IndividualModel();
-          if ( property.hasValue("rdfs:range") ) {
-            emptyValue["rdf:type"] = property["rdfs:range"].slice(0);
+      template.on("view edit search", function (e) {
+        if (e.type === "view") {
+          relContainer.sortable("disable");
+        }
+        else if (e.type === "edit") {
+          relContainer.sortable("enable");
+          var property = new veda.IndividualModel(rel_uri);
+          if ( isEmbedded
+             && spec
+             && spec["v-ui:minCardinality"][0] >= 1
+             && !individual.hasValue(rel_uri)
+             && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
+          ) {
+            var emptyValue = new veda.IndividualModel();
+            if ( property.hasValue("rdfs:range") ) {
+              emptyValue["rdf:type"] = property["rdfs:range"].slice(0);
+            }
+            individual[rel_uri] = [emptyValue];
           }
-          individual[rel_uri] = [emptyValue];
+        }
+        else if (e.type === "search") {
+          relContainer.sortable("disable");
         }
         e.stopPropagation();
       });

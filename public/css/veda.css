@@ -410,6 +410,9 @@ fieldset[disabled] .form-control {
   width: auto;
   height: auto;
 }
+.carousel-inner {
+  overflow: hidden!important;
+}
 
 /* [BEGIN] Typeahead */
 
@@ -572,6 +575,18 @@ td > #rel-actions {
 .blue-outline {
   outline: 3px dashed #3498db!important;
   outline-offset: 3px!important;
+}
+.sortable-placeholder {
+  height: 50px;
+  outline: 3px dashed #aaa!important;
+  outline-offset: 3px!important;
+  background-color: #eee!important;
+  margin: 20px 0px;
+}
+tbody .sortable-placeholder {
+  height: 50px;
+  outline: 3px dashed #aaa!important;
+  outline-offset: -3px!important;
 }
 
 .affix {
