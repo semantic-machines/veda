@@ -1247,20 +1247,36 @@
       var inModal = this.hasClass("create-modal");
       create.click( function () {
         var newVal = createValue();
-        select(newVal);
         if ( inModal ) {
           var modal = $("#individual-modal-template").html();
           var $modal = $(modal);
+          var ok = $("#ok", $modal).click(function () {
+            select(newVal);
+          });
           $modal.modal();
           $("body").append($modal);
           var cntr = $(".modal-body", $modal);
-          newVal.present(cntr, undefined, "edit");
+          newVal.on("individual:templateReady", modalHandler);
+          function modalHandler(template) {
+            template.on("valid", function () {
+              ok.removeAttr("disabled");
+            });
+            template.on("invalid", function () {
+              ok.attr("disabled", "disabled");
+            });
+            template.on("remove", function () {
+              newVal.off("individual:templateReady", modalHandler);
+            });
+          }
           newVal.one("individual:beforeReset", function () {
             $modal.modal("hide").remove();
           });
           newVal.one("individual:afterSave", function () {
             $modal.modal("hide").remove();
           });
+          newVal.present(cntr, undefined, "edit");
+        } else {
+          select(newVal);
         }
       });
     } else {
