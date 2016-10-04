@@ -111,10 +111,10 @@ v-s:Observation
   rdfs:label "Observation"@en ;
   rdfs:label "Наблюдение"@ru ;
 .
-v-s:deviationDescription
+v-s:observationDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Deviation"@en ;
-  rdfs:label "Отклонение"@ru ;
+  rdfs:label "Observation"@en ;
+  rdfs:label "Наблюдение"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
