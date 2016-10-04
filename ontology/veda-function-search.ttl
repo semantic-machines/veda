@@ -1164,7 +1164,11 @@ v-fs:AttributiveSearchTemplate
     $("#params", template).remove();
   }
 
-  search();
+  if (self.result.length) {
+    renderResult();
+  } else {
+    search();
+  }
 
   // Search button handler
   searchButton.click(function () {
@@ -1200,7 +1204,8 @@ v-fs:AttributiveSearchTemplate
 
   // Render result
   function renderResult() {
-    //scrollToResults();
+
+    scrollToResults();
 
     resultContainer.empty();
 
@@ -1241,11 +1246,9 @@ v-fs:AttributiveSearchTemplate
   // Scroll to results
   function scrollToResults() {
     var offset = $(".search-result-label").offset();
-    offset.top -= 20;
-    offset.left -= 20;
+    offset.top -= 10;
     $('html, body').animate({
-      scrollTop: offset.top,
-      scrollLeft: offset.left
+      scrollTop: offset.top
     });
   }
 
