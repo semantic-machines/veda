@@ -113,7 +113,7 @@ class PThreadContext : Context
     private string      node_id;
 
     private bool        API_ready = true;
-    private string      external_write_storage_url;
+    private string      main_module_url;
 
     public Authorization acl_indexes()
     {
@@ -123,11 +123,11 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
-    this(string _node_id, string context_name, P_MODULE _id, string _external_write_storage_url = null, Authorization in_acl_indexes = null)
+    this(string _node_id, string context_name, P_MODULE _id, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
         _acl_indexes = in_acl_indexes;
 
-        external_write_storage_url = _external_write_storage_url;
+        main_module_url = _main_module_url;
 
         {
             import std.experimental.logger;
@@ -415,7 +415,7 @@ class PThreadContext : Context
             veda.core.threads.load_info.stat(command_type, sw);
     }
 
-    int  _timeout = 10;
+    int _timeout = 10;
 
 //    long ft_local_count;
 //    long ft_local_time_check = 0;
@@ -1022,7 +1022,7 @@ class PThreadContext : Context
                 res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
                 //veda.core.threads.xapian_indexer.send_delete(null, prev_state, res.op_id);
             }
-            if (external_write_storage_url !is null)
+            if (main_module_url !is null)
             {
                 //writeln("context:store_individual #3 ", process_name);
                 version (libRequests)
@@ -1036,7 +1036,7 @@ class PThreadContext : Context
                     if (trace_msg[ T_API_220 ] == 1)
                         log.trace("[%s] store_individual[%s] use EXTERNAL, start", name, indv.uri);
 
-                    string    url = external_write_storage_url ~ "/remove_individual";
+                    string    url = main_module_url ~ "/remove_individual";
 
                     JSONValue req_body;
                     req_body[ "ticket" ]         = ticket.id;
@@ -1143,7 +1143,7 @@ class PThreadContext : Context
             res = storage_module.unload(P_MODULE.subject_manager, queue_id);
         }
 
-        if (external_write_storage_url !is null)
+        if (main_module_url !is null)
         {
             //writeln("context:store_individual #3 ", process_name);
             version (libRequests)
@@ -1154,7 +1154,7 @@ class PThreadContext : Context
                 //rq.timeout = 1.seconds;
                 //rq.verbosity = 2;
 
-                string    url = external_write_storage_url ~ "/unload_to_queue";
+                string    url = main_module_url ~ "/unload_to_queue";
                 JSONValue req_body;
                 req_body[ "queue_id" ] = queue_id;
 
@@ -1214,7 +1214,7 @@ class PThreadContext : Context
             }
 //            writeln("context:store_individual #2 ", process_name);
 
-            if (external_write_storage_url !is null)
+            if (main_module_url !is null)
             {
                 //writeln("context:store_individual #3 ", process_name);
                 version (libRequests)
@@ -1232,13 +1232,13 @@ class PThreadContext : Context
                     string url;
 
                     if (cmd == INDV_OP.PUT)
-                        url = external_write_storage_url ~ "/put_individual";
+                        url = main_module_url ~ "/put_individual";
                     else if (cmd == INDV_OP.ADD_IN)
-                        url = external_write_storage_url ~ "/add_to_individual";
+                        url = main_module_url ~ "/add_to_individual";
                     else if (cmd == INDV_OP.SET_IN)
-                        url = external_write_storage_url ~ "/set_in_individual";
+                        url = main_module_url ~ "/set_in_individual";
                     else if (cmd == INDV_OP.REMOVE_FROM)
-                        url = external_write_storage_url ~ "/remove_from_individual";
+                        url = main_module_url ~ "/remove_from_individual";
 
                     JSONValue req_body;
                     req_body[ "ticket" ]         = ticket.id;
@@ -1679,16 +1679,21 @@ class PThreadContext : Context
                 string  str     = cast(string)newbuff[ 0..$ ];
                 if (str !is null)
                 {
-                    string[] ch = str[ 0..$ - 1 ].split(';');
-                    //writeln("@ queue.get_info ch=", ch);
-                    if (ch.length != 3)
+                    if (str.length > 2)
                     {
-                        return res;
+                        string[] ch = str[ 0..$ - 1 ].split(';');
+                        //writeln("@ queue.get_info ch=", ch);
+                        if (ch.length != 3)
+                        {
+                            return res;
+                        }
+                        res.name            = ch[ 0 ];
+                        res.op_id           = to!long (ch[ 1 ]);
+                        res.committed_op_id = to!long (ch[ 2 ]);
+                        res.is_Ok           = true;
                     }
-                    res.name            = ch[ 0 ];
-                    res.op_id           = to!long (ch[ 1 ]);
-                    res.committed_op_id = to!long (ch[ 2 ]);
-                    res.is_Ok           = true;
+                    else
+                        res.is_Ok = false;
                 }
             }
         }
