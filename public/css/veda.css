@@ -570,16 +570,20 @@ td > #rel-actions {
 }
 .red-outline {
   outline: 3px dashed #e74c3c!important;
-  outline-offset: 3px!important;
+  outline-offset: -3px!important;
 }
 .blue-outline {
   outline: 3px dashed #3498db!important;
-  outline-offset: 3px!important;
+  outline-offset: -3px!important;
+}
+.gray-outline {
+  outline: 3px dashed #aaa!important;
+  outline-offset: -3px!important;
 }
 .sortable-placeholder {
   height: 50px;
   outline: 3px dashed #aaa!important;
-  outline-offset: 3px!important;
+  outline-offset: -3px!important;
   background-color: #eee!important;
   margin: 20px 0px;
 }

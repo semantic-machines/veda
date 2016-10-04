@@ -398,6 +398,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var sortableOptions = {
         delay: 150,
         placeholder: "sortable-placeholder",
+        handle: ".button-drag",
+        cancel: "",
         update: function () {
           var uris = $(this).sortable("toArray", {attribute: "resource"});
           individual[rel_uri] = uris.map(function (uri) {
@@ -838,8 +840,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     if (!isAbout) {
       var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+      var btnDrag = $("<button class='btn btn-default button-drag'><span class='glyphicon glyphicon-move'></span></button>");
       var btnRemove = $("<button class='btn btn-default button-delete'><span class='glyphicon glyphicon-remove'></span></button>");
-      wrapper.append(btnRemove);
+      wrapper.append(btnDrag, btnRemove);
       template.on("view edit search", function (e) {
         if (e.type === "view") wrapper.hide();
         else wrapper.show();
@@ -858,6 +861,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
       btnRemove.mouseleave(function () {
         valTemplate.removeClass("red-outline");
+      });
+      btnDrag.mouseenter(function () {
+        valTemplate.addClass("gray-outline");
+      });
+      btnDrag.mouseleave(function () {
+        valTemplate.removeClass("gray-outline");
       });
       if (valTemplate.css("display") !== "inline") {
         wrapper.addClass("block");
