@@ -281,12 +281,6 @@ td:Membership_13
   rdfs:label "Членство_12"@ru ;
 .
 
-d:org_RU1121003135
-  rdf:type v-s:Organization ;
-  rdfs:label "Mondi Syktyvkar, OJSC"@en ;
-  rdfs:label "ОАО Монди СЛПК"@ru ;
-.
-
 td:Permission_2
   rdf:type v-s:PermissionStatement ;
   v-s:author td:RomanKarpov-Analyst1 ;
