@@ -780,11 +780,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       btnRemove.click(function () {
         individual[property_uri] = individual[property_uri].filter(function (_, j) {return j !== i; });
-      });
-      btnRemove.mouseenter(function () {
+      }).mouseenter(function () {
         valueHolder.addClass("red-outline");
-      });
-      btnRemove.mouseleave(function () {
+      }).mouseleave(function () {
         valueHolder.removeClass("red-outline");
       });
       btnEdit.click(function () {
@@ -800,11 +798,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             if (i === 0) item.trigger("veda_focus");
           });
         }
-      });
-      btnEdit.mouseenter(function () {
+      }).mouseenter(function () {
         valueHolder.addClass("blue-outline");
-      });
-      btnEdit.mouseleave(function () {
+      }).mouseleave(function () {
         valueHolder.removeClass("blue-outline");
       });
       //valueHolder.after( wrapper );
@@ -853,21 +849,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (valTemplate.attr("deleteButton") == "hide") {
         btnRemove.hide();
       }
-      btnRemove.on("click", function () {
+      btnRemove.click(function () {
         individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
-      });
-      btnRemove.mouseenter(function () {
+      }).mouseenter(function () {
         valTemplate.addClass("red-outline");
-      });
-      btnRemove.mouseleave(function () {
+      }).mouseleave(function () {
         valTemplate.removeClass("red-outline");
       });
+
+      //Sortable scroll bugfix
       btnDrag.mouseenter(function () {
         valTemplate.addClass("gray-outline");
-      });
-      btnDrag.mouseleave(function () {
+      }).mouseleave(function () {
         valTemplate.removeClass("gray-outline");
+      }).mousedown(function () {
+        relContainer.addClass("sortable-overflow");
+      }).mouseup(function () {
+        relContainer.removeClass("sortable-overflow");
       });
+
       if (valTemplate.css("display") !== "inline") {
         wrapper.addClass("block");
       }

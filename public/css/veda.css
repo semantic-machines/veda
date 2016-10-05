@@ -587,6 +587,9 @@ td > #rel-actions {
   background-color: #eee!important;
   margin: 20px 0px;
 }
+.sortable-overflow {
+  overflow: auto;
+}
 tbody .sortable-placeholder {
   height: 50px;
   outline: 3px dashed #aaa!important;
