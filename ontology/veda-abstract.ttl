@@ -353,7 +353,7 @@ v-s:postalAddress
 v-s:placeDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Place description"@en ;
-  rdfs:label "Описание места"@ru ;
+  rdfs:label "Место"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Spatial ;
 .
