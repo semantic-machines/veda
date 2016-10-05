@@ -1102,6 +1102,7 @@
         f["v-s:fileSize"] = [ file.size ];
         f["v-s:fileUri"] = [ uri ];
         f["v-s:filePath"] = [ path ];
+        f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
         f.save();
         files.push(f);
         if (files.length === n) {

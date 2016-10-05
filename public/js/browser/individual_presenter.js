@@ -152,7 +152,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // Trigger same events for embedded templates
     function syncEmbedded (e, parent) {
       embedded.map(function (item) {
-        item.trigger(e.type, individual.id);
+        if ( item.attr("resource") !== individual.id ) {
+          item.trigger(e.type, individual.id);
+        }
       });
       e.stopPropagation();
     }
@@ -501,7 +503,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       function embeddedHandler(doc_rel_uri, values) {
         if (doc_rel_uri === rel_uri) {
           values.map(function (value) {
-            if (value.id !== about.id && rel_uri !== "v-s:parent" && !value.hasValue("v-s:parent")) {
+            if (
+              value.id !== about.id // prevent self parent
+              && rel_uri !== "v-s:parent" // prevent circular parent
+              && !value.hasValue("v-s:parent") // do not change parent
+            ) {
               value["v-s:parent"] = [about];
             }
           });
