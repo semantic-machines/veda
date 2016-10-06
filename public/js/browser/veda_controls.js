@@ -1258,7 +1258,7 @@
           $("body").append($modal);
           var cntr = $(".modal-body", $modal);
           newVal.on("individual:templateReady", modalHandler);
-          function modalHandler(template) {
+          var modalHandler = function (template) {
             template.on("valid", function () {
               ok.removeAttr("disabled");
             });
