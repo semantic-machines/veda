@@ -153,7 +153,7 @@ v-s:ActionPlan
 
 v-s:PsDateToForAction
   rdf:type v-ui:DatetimePropertySpecification ;
-  v-ui:forClass v-s:Activity ;
+  v-ui:forClass v-s:Action ;
   v-ui:forProperty v-s:dateTo ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -165,7 +165,7 @@ v-s:PsDateToForAction
 
 v-s:PsResponsibleForAction
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Activity ;
+  v-ui:forClass v-s:Action ;
   v-ui:forProperty v-s:responsible ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
@@ -175,13 +175,5 @@ v-s:PsResponsibleForAction
   rdfs:label "Responsible property specification for Action class"@en ;
   rdfs:label "Спецификация свойства responsible для класса Action"@ru ;
 .
-v-s:PsDescriptionForAction
-  rdf:type owl:DatatypeProperty ;
-  v-ui:forClass v-s:Action ;
-  v-ui:forClass v-s:Activity ;
-  v-ui:forProperty v-s:description ;
-  rdfs:label "Desription"@en ;
-  rdfs:label "Описание"@ru ;
-  rdfs:range xsd:string ;
-.
+
 
