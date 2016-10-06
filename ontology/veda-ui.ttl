@@ -579,7 +579,7 @@ v-ui:LinkTemplate
         <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
         <br class="-view edit search">
         <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
-        <veda-control data-type="link" rel="v-s:to" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+        <veda-control data-type="link" rel="v-s:to" class="-view edit search fullsearch fulltext"></veda-control>
         <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
         <div class="view -edit -search">
           <span class="fa fa-long-arrow-down"></span> <strong property="rdfs:comment" class="view -edit -search"></strong>
