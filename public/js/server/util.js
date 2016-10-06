@@ -378,3 +378,42 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     put_individual(ticket, document, _event_id);
   }
 }
+
+function recursiveCall(elem, path, ticket, _event_id) {  
+    if (path[elem['@']]) {
+        print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);     
+        return;
+    }
+    
+    path[elem['@']] = Object.keys(path).length;
+    if (elem['v-wf:decisionFormList']) {
+      elem['v-wf:decisionFormList'].forEach(function(dfae) {
+        var df = get_individual(ticket, dfae.data)
+        if (!df['v-wf:isCompleted'] ||
+            df['v-wf:isCompleted'][0].data == false)
+          {
+          df['v-s:deleted'] = newBool(true);
+          df['v-wf:isStopped'] = newBool(true);
+          put_individual(ticket, df, _event_id);
+        }
+      });
+    }
+
+    if (elem['v-wf:workItemList']) {
+      elem['v-wf:workItemList'].forEach(function(wi) {
+        recursiveCall(get_individual(ticket, wi.data), path, ticket, _event_id);
+      });
+    }
+
+    if (elem['v-wf:workOrderList']) {
+      elem['v-wf:workOrderList'].forEach(function(wo) {
+        recursiveCall(get_individual(ticket, wo.data), path, ticket, _event_id);
+      });
+    }
+
+    if (elem['v-wf:isProcess']) {
+      elem['v-wf:isProcess'].forEach(function(p) {
+        recursiveCall(get_individual(ticket, p.data), path, ticket, _event_id);
+      });
+    }
+}
