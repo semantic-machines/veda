@@ -1194,6 +1194,8 @@ function prepare_start_form(ticket, document)
     }
 
     put_individual(ticket, new_process, _event_id);
+    
+    document['v-wf:hasStatusWorkflow'] = newUri('v-wf:IsSent');
 
     create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
 

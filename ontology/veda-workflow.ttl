@@ -1960,9 +1960,12 @@ v-wf:event_df1
   v-s:filter v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
   v-s:script """
-
-  if (!parent_script_id)
+  
+  if (!parent_script_id 
+  		&& document['v-wf:hasStatusWorkflow'] 
+  		&& document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent') {
     prepare_start_form (ticket, document);
+  }
 
 """ ;
   rdfs:label "Триггер запуска маршрута из пользовательской формы"@ru ;
@@ -1977,10 +1980,10 @@ v-wf:event_df2
 
 //  print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
-  if ((!document['v-wf:isStopped'] ||
+  if (((!document['v-wf:isStopped'] ||
       document['v-wf:isStopped'][0].data == false) && parent_script_id &&
     (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
   {
     prepare_process (ticket, document);
   }
@@ -1998,9 +2001,9 @@ v-wf:event_df3
 
   //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 
-  if (parent_script_id &&
+  if ((parent_script_id &&
     (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4'))
+     parent_script_id == 'v-wf:event_df4')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
   {
     prepare_work_item (ticket, document);
   }
@@ -2017,9 +2020,9 @@ v-wf:event_df4
   v-s:script """
 
   //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (parent_script_id &&
+  if ((parent_script_id &&
     (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
   {
     prepare_work_order (ticket, document);
   }
@@ -2034,9 +2037,9 @@ v-wf:event_df5
   v-s:filter v-wf:DecisionForm ;
   v-s:script """
 
-  if (!parent_script_id ||
+  if ((!parent_script_id ||
     (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
   {
     prepare_decision_form (ticket, document);
   }
@@ -2491,6 +2494,12 @@ v-wf:IsSent
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Is sent"@en ;
   rdfs:label "Отправлено"@ru ;
+.
+
+v-wf:Interrupted
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "Is interrupted"@en ;
+  rdfs:label "Прервано"@ru ;
 .
 
 v-wf:DoNotSend

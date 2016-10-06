@@ -1096,44 +1096,11 @@ v-wf:ProcessStopEvent
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
  */
-  function recursiveCall(elem) {
-    if (elem['v-wf:decisionFormList']) {
-      elem['v-wf:decisionFormList'].forEach(function(dfae) {
-          var df = get_individual(ticket, dfae.data)
-        if (!df['v-wf:isCompleted'] ||
-            df['v-wf:isCompleted'][0].data == false)
-          {
-          df['v-s:deleted'] = newBool(true);
-          df['v-wf:isStopped'] = newBool(true);
-          put_individual(ticket, df, _event_id);
-        }
-      });
-    }
-
-    if (elem['v-wf:workItemList']) {
-      elem['v-wf:workItemList'].forEach(function(wi) {
-        recursiveCall(get_individual(ticket, wi.data));
-        });
-      }
-
-    if (elem['v-wf:workOrderList']) {
-      elem['v-wf:workOrderList'].forEach(function(wo) {
-        recursiveCall(get_individual(ticket, wo.data));
-      });
-    }
-
-    if (elem['v-wf:isProcess']) {
-      elem['v-wf:isProcess'].forEach(function(p) {
-        recursiveCall(get_individual(ticket, p.data));
-      });
-    }
-  }
-
   if (document['v-wf:isStopped'] &&
       document['v-wf:isStopped'][0].data == true &&
       !prev_state['v-wf:isStopped']) {
     // Disable all active tasks
-    recursiveCall(document);
+    recursiveCall(document, {}, ticket, _event_id);
     // Add journal record to process
 
     var pb = get_individual(ticket, 'v-wf:ProcessStopped');
@@ -1154,8 +1121,9 @@ v-wf:ProcessStopEvent
       journal_record['rdfs:comment'] = pb['rdfs:label'];
 
       logToJournal(ticket, document['@']+'j', journal_record, true);
-
-      interrupt_process(document);
+      document.ticket = ticket;
+      interrupt_process(document, _event_id);
   }
 """ ;
 .
+
