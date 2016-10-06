@@ -854,10 +854,10 @@ v-ui:IconModalTemplate
     }
     individual.present(cntr, undefined, newMode);
     individual.one("individual:beforeReset", function () {
-      $modal.modal("hide").remove();
+      $modal.modal("hide");
     });
     individual.one("individual:afterSave", function () {
-      $modal.modal("hide").remove();
+      $modal.modal("hide");
     });
     template.on("remove", function () {
       $modal.modal("hide").remove();

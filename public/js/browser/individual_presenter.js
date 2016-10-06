@@ -152,9 +152,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // Trigger same events for embedded templates
     function syncEmbedded (e, parent) {
       embedded.map(function (item) {
-        if ( item.attr("resource") !== individual.id ) {
-          item.trigger(e.type, individual.id);
-        }
+        item.trigger(e.type, individual.id);
       });
       e.stopPropagation();
     }

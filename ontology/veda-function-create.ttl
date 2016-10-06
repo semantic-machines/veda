@@ -245,7 +245,7 @@ v-fc:BlankTemplate
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="blank">
-      <div id="object"></div>
+      <div id="object-container"></div>
       <div id="no-rights" class="alert alert-warning container hidden">
         <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
         <button class="btn btn-default" about="v-s:Back" property="rdfs:label" onclick="window.history.back();"></button>
@@ -267,12 +267,12 @@ v-fc:BlankTemplate
 <script>
   individual._init();
   var self = individual,
-      holder = $("#object", template),
+      objectContainer = $("#object-container", template),
       object = self.object;
 
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
-    object.present(holder, undefined, "edit");
+    object.present(objectContainer, undefined, "edit");
     object.one("individual:afterSave", saveHandler);
     object.one("individual:afterReset", cancelHandler);
     template.on("remove", function () {
