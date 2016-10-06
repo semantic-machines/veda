@@ -338,8 +338,8 @@ class FanoutProcess : VedaModule
         try
         {
             isExistsTable = isExistsTable.init;
-            //log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
-            //log.trace ("push_to_mysql: new_indv=%s", new_indv);
+            log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
+            log.trace ("push_to_mysql: new_indv=%s", new_indv);
 
             bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
@@ -351,13 +351,25 @@ class FanoutProcess : VedaModule
             if (isDraftOf !is null)
                 return;
 
+			bool isAutomaticallyVersioned = false;
+
+            Resources types        = new_indv.getResources("rdf:type");
+            foreach (type; types)
+            {
+                if (context.get_onto().isSubClasses(type.uri, [ "v-s:AutomaticallyVersioned" ]))
+                {
+                    isAutomaticallyVersioned = true;
+                    break;
+                }
+            }
+
+
             if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
-                                        (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+                                        (isAutomaticallyVersioned == true && previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
                 return;
 
             Resource  created = new_indv.getFirstResource("v-s:created");
 
-            Resources types        = new_indv.getResources("rdf:type");
             bool      need_prepare = false;
 
             foreach (type; types)
