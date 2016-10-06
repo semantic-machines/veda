@@ -19,14 +19,14 @@ module.exports = {
 		//driver.findElement({css:'[rel="v-s:hasAppointment"] button.button-delete'}).click().thenCatch(function (e) {basic.errorHandler(e, "Cannot delete appointment")});
 		
 		// Заполняем обязательные поля
-		driver.findElement({css:'div[id="object"] [property="rdfs:label"] + veda-control input'}).sendKeys(lastName + " " + firstName + " " + middleName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for preson");});
+		driver.findElement({css:'div[id="object-container"] [property="rdfs:label"] + veda-control input'}).sendKeys(lastName + " " + firstName + " " + middleName)
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for person");});
 		driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).sendKeys(lastName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:lastName for preson");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:lastName for person");});
 		driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).sendKeys(firstName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:firstName for preson");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:firstName for person");});
 		driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys(middleName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for person");});
 
 		driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).click()
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click v-s:birthday for person");});
@@ -59,7 +59,7 @@ module.exports = {
 		// Проверяем что сохранение успешно
 		// Переходим на страницу просмотра документа
 /*
-		driver.findElement({css:'div[id="object"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
+		driver.findElement({css:'div[id="object-container"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
 			basic.openPage(driver, drv, '#/'+individualId);	
 		}).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
 */
