@@ -606,7 +606,7 @@ owl:withRestrictions a rdf:Property ;
     owl:imports <http://www.w3.org/2000/01/rdf-schema> ;
     owl:versionIRI <http://www.w3.org/2002/07/owl> ;
     owl:versionInfo "1.2" ;
-    v-s:loadPriority 5 ; 
+    v-s:loadPriority 5 ;
     grddl:namespaceTransformation <http://dev.w3.org/cvsweb/2009/owl-grddl/owx2rdf.xsl> .
 
 owl:Thing a owl:Class ;

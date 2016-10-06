@@ -25,35 +25,7 @@ v-s:Initiative
   rdfs:label "Initiative"@en ;
   rdfs:label "Инициатива"@ru ;
 .
-# -- Может все эти тоталы должны быть в классе Effects, зачем тогда его вводили
-v-s:hasTotalPlanYearEffect
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Total plan year effect"@en ;
-  rdfs:label "Итоговый плановый годовой эффект"@ru ;
-  rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Initiative ;
-.
-v-s:hasTotalPlanOnceEffect
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Total plan once effect"@en ;
-  rdfs:label "Итоговый плановый разовый эффект"@ru ;
-  rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Initiative ;
-.
-v-s:hasTotalFactYearEffect
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Total fact year effect"@en ;
-  rdfs:label "Итоговый фактический годовой эффект"@ru ;
-  rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Initiative ;
-.
-v-s:hasTotalFactOnceEffect
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Total fact once effect"@en ;
-  rdfs:label "Итоговый фактический разовый эффект"@ru ;
-  rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Initiative ;
-.
+
 #   --- Уточнить - используется ли
 v-s:initiativeSnapshot
   rdf:type owl:ObjectProperty ;
@@ -380,6 +352,35 @@ v-s:Effects
   rdfs:label "Effects"@en ;
   rdfs:label "Эффекты"@ru ;
 .
+v-s:hasTotalPlanYearEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Total plan year effect"@en ;
+  rdfs:label "Итоговый плановый годовой эффект"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Effects ;
+.
+v-s:hasTotalPlanOnceEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Total plan once effect"@en ;
+  rdfs:label "Итоговый плановый разовый эффект"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Effects ;
+.
+v-s:hasTotalFactYearEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Total fact year effect"@en ;
+  rdfs:label "Итоговый фактический годовой эффект"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Effects ;
+.
+v-s:hasTotalFactOnceEffect
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Total fact once effect"@en ;
+  rdfs:label "Итоговый фактический разовый эффект"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Effects ;
+.
+#--------------------------------------------------
 v-s:hasEffect
   rdf:type owl:ObjectProperty ;
   rdfs:label "Effect"@en ;
@@ -425,11 +426,11 @@ v-s:ProjectKind
   rdfs:label "Вид проекта"@ru ;
 .
 #--------------------------------------------------
-# -- Надо подумать еще раз как организовать этот класс
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:HRRecord ;
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
@@ -440,14 +441,8 @@ v-s:timeEffort
   rdfs:range xsd:integer ;
   rdfs:domain v-s:MemberOfWorkGroup ;
 .
-# -- Предика введен в Активити - что он тут делает или как его сюда корректно прикрепить
-v-s:member
-  rdfs:domain v-s:MemberOfWorkGroup ;
-.
-# -- Понятно что нужен, но в целом о классе подумать
-v-s:occupation
-  rdfs:domain v-s:MemberOfWorkGroup ;
-.
+
+
 #--------------------------------------------------
 v-s:ProjectPlan
   rdf:type owl:Class ;
@@ -892,10 +887,10 @@ v-s:occupationForMemberOfWorkGroup
 v-s:PsMember
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:MemberOfWorkGroup ;
-  v-ui:forProperty v-s:member ;
+  v-ui:forProperty v-s:employee ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
   v-ui:tooltip "Non-required, multy value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Введите участников проекта"@ru ;
   rdfs:label "Member property specification for MemberOfWorkGroup class"@en ;
