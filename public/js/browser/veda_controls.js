@@ -1245,6 +1245,7 @@
 
     // Create feature
     if ( this.hasClass("create") || this.hasClass("full") ) {
+      var container = this.parent();
       var inModal = this.hasClass("create-modal");
       create.click( function () {
         var newVal = createValue();
@@ -1255,7 +1256,7 @@
             select(newVal);
           });
           $modal.modal();
-          $("body").append($modal);
+          container.append($modal);
           var cntr = $(".modal-body", $modal);
           newVal.on("individual:templateReady", modalHandler);
           var modalHandler = function (template) {
@@ -1270,10 +1271,11 @@
             });
           }
           newVal.one("individual:beforeReset", function () {
-            $modal.modal("hide").remove();
+            $modal.modal("hide");
           });
           newVal.one("individual:afterSave", function () {
-            $modal.modal("hide").remove();
+            select(newVal);
+            $modal.modal("hide");
           });
           newVal.present(cntr, undefined, "edit");
         } else {
