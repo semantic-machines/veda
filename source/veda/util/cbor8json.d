@@ -222,7 +222,7 @@ private static int read_element(JSONValue *individual, ubyte[] src, out string _
             pos += read_type_value(src[ pos..$ ], &exponent);
 
             resource_json[ "type" ] = text(DataType.Decimal);
-            resource_json[ "data" ] = decimal(mantissa.v_long, exponent.v_long).toDouble_wjp();
+            resource_json[ "data" ] = decimal(mantissa.v_long, cast(byte)exponent.v_long).asString();
 
             resources ~= resource_json;
             (*individual)[ predicate_uri ] = resources;

@@ -49,6 +49,7 @@ function generate_test_document1(ticket)
         'v-s:test_decimal4': newDecimal(90.8),
         'v-s:test_decimal5': newDecimal(7.6),
         'v-s:test_decimal6': newDecimal(0.07),
+        'v-s:test_decimal6_1': newDecimal(-0.07),
         'v-s:test_decimal7': newDecimal(0.007),
         'v-s:created': newDate(new Date()),
         'v-s:test_datetime0': newDate(new Date("2014-01-02")),

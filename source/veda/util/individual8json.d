@@ -138,7 +138,7 @@ JSONValue resource_to_json(Resource resource)
     else if (resource.type == DataType.Decimal)
     {
         decimal dd = resource.get!decimal;
-        resource_json[ "data" ] = dd.toDouble();
+        resource_json[ "data" ] = dd.asString();
     }
     else if (resource.type == DataType.Boolean)
     {
@@ -196,7 +196,7 @@ Resource json_to_resource(JSONValue resource_json)
     {
         if (data_type == JSON_TYPE.FLOAT)
         {
-            resource = decimal(resource_json.getFloat("data"));
+            resource = decimal(resource_json.getString("data"));
         }
         else if (data_type == JSON_TYPE.INTEGER)
         {

@@ -225,66 +225,8 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
 
             resource_json[ "type" ] = text(DataType.Decimal);
 
-            string str_res;
-            double res;
-            bool   is_complete = false;
-
-            if (exponent.v_long < 0)
-            {
-                string str_mantissa = text(mantissa.v_long);
-                try
-                {
-                    long lh = exponent.v_long * -1;
-                    lh = str_mantissa.length - lh;
-
-                    if (lh > 0 && lh > str_mantissa.length)
-                    {
-                        res         = decimal(mantissa.v_long, exponent.v_long).toDouble();
-                        is_complete = true;
-                    }
-
-                    string slh;
-
-                    if (is_complete == false)
-                    {
-                        if (lh >= 0)
-                        {
-                            if (lh > str_mantissa.length)
-                            {
-                                res         = decimal(mantissa.v_long, exponent.v_long).toDouble();
-                                is_complete = true;
-                            }
-                            else
-                                slh = str_mantissa[ 0 .. lh ];
-                        }
-                        else
-                            slh = "";
-
-                        string slr;
-
-                        if (lh >= 0)
-                        {
-                            slr = str_mantissa[ lh..$ ];
-                        }
-                        else
-                            slr = nullz[ 0.. (-lh) ] ~str_mantissa;
-
-                        str_res = slh ~ "." ~ slr;
-
-                        res = to!double (str_res);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    res = decimal(mantissa.v_long, exponent.v_long).toDouble();
-                }
-            }
-            else
-            {
-                res = decimal(mantissa.v_long, exponent.v_long).toDouble();
-            }
-
-            resource_json[ "data" ] = res;
+			auto dres = decimal(mantissa.v_long, cast(byte)exponent.v_long);
+            resource_json[ "data" ] = dres.asString();
 
             resources ~= resource_json;
             (*individual)[ predicate_uri ] = resources;

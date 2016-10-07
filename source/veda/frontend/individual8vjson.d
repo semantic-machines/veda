@@ -156,6 +156,10 @@ Resource json_to_resource(const Json resource_json)
         {
             resource = resource_json[ "data" ].get!long;
         }
+        else if (data_type is Json.Type.String)
+        {
+            resource = decimal(resource_json[ "data" ].get!string);
+        }
     }
     else if (type == DataType.Integer)
     {

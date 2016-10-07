@@ -182,7 +182,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
       return JSON.parse(result.responseText, function (key, value) {
         return key === "data" && this.type === "Datetime" ? new Date(value)  :
-               key === "data" && this.type === "Decimal" ? parseFloat(value) : value;
+               key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? parseFloat(value) : value;
       });
     }
     $.ajax(params).done(success).fail(fail);
@@ -213,7 +213,7 @@ veda.Module(function Backend(veda) { "use strict";
           "event_id" : event_id || "",
           "transaction_id" : transaction_id || ""
         }, function (key, value) {
-          return key === "data" && this.type === "Decimal" ? value.toString() : value;
+          return key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? value.toString() : value;
         }
       ),
       contentType: "application/json"

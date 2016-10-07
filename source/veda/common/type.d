@@ -183,16 +183,16 @@ struct decimal
     long mantissa;
 
     /// экспонента
-    long exponent;
+    byte exponent;
 
     this(string m, string e)
     {
         mantissa = to!long (m);
-        exponent = to!long (e);
+        exponent = to!byte (e);
     }
 
     /// конструктор
-    this(long m, long e)
+    this(long m, byte e)
     {
         mantissa = m;
         exponent = e;
@@ -205,7 +205,7 @@ struct decimal
 
         if (ff.length == 2)
         {
-            long sfp = ff[ 1 ].length;
+            byte sfp = cast(byte)ff[ 1 ].length;
 
             mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
             exponent = -sfp;
@@ -253,9 +253,17 @@ struct decimal
 
     string asString()
     {
-        string str_res;
+        string str_res;	
+		string sign = "";
+		string str_mantissa;
 
-        string str_mantissa = text(mantissa);
+		if (mantissa < 0)
+		{
+			sign = "-";
+	        str_mantissa = text(-mantissa);
+		}
+		else
+	        str_mantissa = text(mantissa);
 
         long   lh = exponent * -1;
 
@@ -277,9 +285,11 @@ struct decimal
             slr = str_mantissa[ lh..$ ];
         }
         else
+        {
             slr = nullz[ 0.. (-lh) ] ~str_mantissa;
+        }   
 
-        str_res = slh ~ "." ~ slr;
+        str_res = sign ~ slh ~ "." ~ slr;
         return str_res;
     }
 
