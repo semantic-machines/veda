@@ -279,6 +279,19 @@ v-s:PsHasSubsidiaryForOrganization
   v-ui:rangeRestriction v-s:Subsidiary ;
 .
 
+v-s:PsTaxIdForOrganization
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:taxId ;
+  v-ui:forProperty v-s:taxRegistrationCause ;
+  v-ui:forProperty v-s:taxRegistrationNumber ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:regexp "^[0-9a-zA-Z]{5,}$" ;
+  v-ui:tooltip "Цифро-буквенное значение. Минимум 5 символов."@ru ;
+  v-ui:tooltip "Alphanumeric value. 5 characters minimum."@en ;
+.
+
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:OrganizationTemplate
