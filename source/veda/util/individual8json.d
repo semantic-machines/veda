@@ -6,6 +6,25 @@ import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resourc
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;
 
+static this() {
+    Lang =
+    [
+        "NONE":LANG.NONE, "none":LANG.NONE,
+        "RU":LANG.RU, "ru":LANG.RU,
+        "EN":LANG.EN, "en":LANG.EN
+    ];
+
+    Resource_type =
+    [
+        "Uri":DataType.Uri,
+        "String":DataType.String,
+        "Integer":DataType.Integer,
+        "Datetime":DataType.Datetime,
+        "Decimal":DataType.Decimal,
+        "Boolean":DataType.Boolean,
+    ];
+}
+
 public string getString(ref JSONValue src, string key)
 {
     JSONValue res = src[ key ];
@@ -99,7 +118,7 @@ Individual json_to_individual(ref JSONValue individual_json)
     {
         if (property_name == "@")
         {
-            individual.uri = property_name;
+            individual.uri = property_values.str;
             continue;
         }
         Resource[] resources = Resource[].init;
