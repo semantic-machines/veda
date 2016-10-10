@@ -103,32 +103,39 @@ void acl_manager(string thread_name, string db_path)
                             storage.flush(1);
                         }
                     },
-                    (CMD cmd, EVENT type, string msg, long op_id)
+                    (CMD cmd, EVENT type, string prev_state, string new_state, long op_id)
                     {
                         if (cmd == CMD.PUT)
                         {
                             try
                             {
-                                Individual ind;
-                                if (cbor2individual(&ind, msg) < 0)
+                                Individual new_ind;
+                                if (cbor2individual(&new_ind, new_state) < 0)
                                 {
-                                    log.trace("ERR! invalid individual: [%s] op_id=%d", msg, op_id);
+                                    log.trace("ERR! invalid individual: [%s] op_id=%d", new_state, op_id);
                                     return;
                                 }
 
-                                Resources rdfType = ind.resources[ rdf__type ];
+                                Individual prev_ind;
+                                if (prev_state !is null && cbor2individual(&prev_ind, prev_state) < 0)
+                                {
+                                    log.trace("ERR! invalid individual: [%s] op_id=%d", prev_state, op_id);
+                                    return;
+                                }
+
+                                Resources rdfType = new_ind.resources[ rdf__type ];
 
                                 if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
                                 {
-                                    prepare_permission_statement(ind, op_id, storage);
+                                    prepare_permission_statement(prev_ind, new_ind, op_id, storage);
                                 }
                                 else if (rdfType.anyExists(veda_schema__Membership) == true)
                                 {
-                                    prepare_membership(ind, op_id, storage);
+                                    prepare_membership(prev_ind, new_ind, op_id, storage);
                                 }
                                 else if (rdfType.anyExists(veda_schema__PermissionFilter) == true)
                                 {
-                                    prepare_permission_filter(ind, op_id, storage);
+                                    prepare_permission_filter(prev_ind, new_ind, op_id, storage);
                                 }
                             }
                             finally

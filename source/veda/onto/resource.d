@@ -12,6 +12,29 @@ alias Resource[] Resources;
 alias Resource *[ string ]  MapResource;
 Resources        _empty_Resources = Resources.init;
 
+public Resources get_disappeared(ref Resources A, ref Resources B)
+{
+    Resources delta;
+
+    foreach (rA; A)
+    {
+        bool is_found = false;
+        foreach (rB; B)
+        {
+            if (rA == rB)
+            {
+                is_found = true;
+                break;
+            }
+        }
+
+        if (is_found == false)
+            delta ~= rA;
+    }
+
+    return delta;
+}
+
 public void setMapResources(ref Resources rss, ref MapResource hrss)
 {
     foreach (rs; rss)
@@ -112,7 +135,7 @@ struct Resource
             {
                 return rv.get!bool == m_bool;
             }
-            else  if (type == DataType.Decimal)
+            else if (type == DataType.Decimal)
             {
                 return rv.get!decimal == m_decimal;
             }
@@ -124,7 +147,7 @@ struct Resource
             {
                 return rv.get!long == m_int;
             }
-            else  if (type == DataType.String || type == DataType.Uri)
+            else if (type == DataType.String || type == DataType.Uri)
             {
                 return rv.get!string == m_string;
             }
