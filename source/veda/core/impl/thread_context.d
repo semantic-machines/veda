@@ -1439,7 +1439,7 @@ class PThreadContext : Context
                             tid_acl = getTid(P_MODULE.acl_preparer);
                             if (tid_acl != Tid.init)
                             {
-                                send(tid_acl, CMD.PUT, ev, new_state, res.op_id);
+                                send(tid_acl, CMD.PUT, ev, prev_state, new_state, res.op_id);
                             }
                         }
 /*
