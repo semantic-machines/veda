@@ -541,7 +541,10 @@ class PThreadContext : Context
         ticket.result = ResultCode.Authentication_Failed;
 
         if (login == null || login.length < 1 || tr_ticket_id.length < 6)
+        {
+            log.trace("WARN: trusted authenticate: invalid login [%s] or ticket [%s]", login, ticket);
             return ticket;
+        }    
 
         Ticket *tr_ticket = get_ticket(tr_ticket_id);
 
@@ -560,6 +563,8 @@ class PThreadContext : Context
 
             if (is_superadmin)
             {
+	            login = replaceAll(login, regex(r"[-]", "g"), " +");
+            	
                 Ticket       sticket         = sys_ticket;
                 Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
                 foreach (user; candidate_users)
@@ -574,6 +579,9 @@ class PThreadContext : Context
                 }
             }
         }
+        else
+            log.trace("WARN: trusted authenticate: problem ticket [%s]", ticket);
+        
 
         log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
