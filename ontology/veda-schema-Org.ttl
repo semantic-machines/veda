@@ -160,6 +160,13 @@ v-s:employee
   rdfs:label "Работник"@ru ;
   rdfs:range v-s:Person ;
 .
+v-s:occupation
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Occupation"@en ;
+  rdfs:label "Занимает должность"@ru ;
+  rdfs:range v-s:Position ;
+  rdfs:domain v-s:HRRecord ;
+.
 # ------------------------------------------------------------
 v-s:Appointment
   rdf:type owl:Class ;
@@ -167,13 +174,6 @@ v-s:Appointment
   rdfs:label "Назначение"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:subClassOf v-s:OrganizationUnit ;
-.
-v-s:occupation
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Occupation"@en ;
-  rdfs:label "Занимает должность"@ru ;
-  rdfs:range v-s:Position ;
-  rdfs:domain v-s:Appointment ;
 .
 v-s:official
   rdf:type owl:DatatypeProperty ;

@@ -23,7 +23,9 @@ print ("@JS rightset=", toJson (rightset));
 
         if (doc_id)
         {
-    	    var executor = process.getExecutor();
+            print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
+            print ("@JS2 executor=", toJson(process.getExecutor()));
+    	    var executor = (process.getLocalVariable ('actor'))? process.getLocalVariable ('actor') : process.getExecutor();
     
     	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
