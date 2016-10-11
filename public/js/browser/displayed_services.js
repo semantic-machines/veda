@@ -4,15 +4,22 @@ Displayed individuals services
 
  */
 
-veda.Module(function IndividualAutoupdate(veda) { "use strict";
+veda.Module(function DisplayedServices(veda) { "use strict";
 
   // Autoupdate displayed individuals that were changed on server
 
-  var subscription = veda.updateSubscription;
+  var updateService = new veda.UpdateService();
 
   veda.on("individual:loaded", updateWatch);
 
-  subscription.on("closed", function (event) {
+  updateService.on("on", function (event) {
+    //console.log("autoupdate updateService on");
+    veda.off("individual:loaded", updateWatch);
+    veda.on("individual:loaded", updateWatch);
+  });
+
+  updateService.on("off", function (event) {
+    //console.log("autoupdate updateService off");
     veda.off("individual:loaded", updateWatch);
   });
 
@@ -22,10 +29,10 @@ veda.Module(function IndividualAutoupdate(veda) { "use strict";
 
   function subscribeDisplayed(template) {
     var individual = this;
-    subscription.subscribe(individual.id);
+    updateService.subscribe(individual.id);
 
     template.one("remove", function () {
-      subscription.unsubscribe(individual.id);
+      updateService.unsubscribe(individual.id);
     });
   }
 
