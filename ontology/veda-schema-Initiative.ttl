@@ -349,6 +349,7 @@ v-s:Effects
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Effects"@en ;
   rdfs:label "Эффекты"@ru ;
 .
@@ -1040,17 +1041,7 @@ v-s:PsProjectPhaseRisk
   rdfs:label "Project phase risks property specification for ProjectPhase class"@en ;
   rdfs:label "Спецификация рисков фазы проекта для класса фаза проекта"@ru ;
 .
-v-s:PsProjectPlan
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forProperty v-s:hasProjectPlan ;
-  v-ui:forClass v-s:Initiative ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:minCardinality "1"^^xsd:integer ;
-  v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseRisk class"@en ;
-  v-ui:tooltip "План мероприятий проекта"@ru ;
-  rdfs:label "Project plan property specification for Initiative class"@en ;
-  rdfs:label "Спецификация плана мероприятий проекта для класса Инициатива"@ru ;
-.
+
 v-s:PsSum
   rdf:type v-ui:DecimalPropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
