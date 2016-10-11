@@ -80,10 +80,7 @@ veda.Module(function (veda) { "use strict";
     }
 
     // Load data
-    if (uri) self = self.load(uri);
-    else self.trigger("individual:afterLoad", self);
-
-    return self;
+    return self.load(uri);
   };
 
   var proto = veda.IndividualModel.prototype;
@@ -255,7 +252,7 @@ veda.Module(function (veda) { "use strict";
           "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
         };
       }
-    } else {
+    } else if (typeof uri === "object") {
       self.properties = uri;
     }
     if (self._.cache) veda.cache[self.id] = self;
