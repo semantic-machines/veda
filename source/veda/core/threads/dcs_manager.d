@@ -243,9 +243,9 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                             string res = get_list_of_subscribe();
 
                             if (res !is null)
-                            {
                                 socket.send("=" ~ res);
-                            }
+                            else
+                                socket.send("=");
                         }
                         else if (msg_from_sock.length == 2 && msg_from_sock[ 0 ] == '-' && msg_from_sock[ 1 ] == '*')
                         {
