@@ -54,35 +54,32 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
   // Error handling
   veda.on("error", function (error) {
+    var errorMsg = JSON.stringify(error);
+    console.log ? console.log("Error:", errorMsg) : null;
     switch (error.status) {
       case 0:
-        console.log ? console.log("Error:", JSON.stringify(error)) : null;
         $('#error-message').html("Операция не выполнена. Сервер недоступен. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Server is unavailable. <br> Please keep this page open and call support team.");
-        $('#error-description').text( JSON.stringify(error) );
+        $('#error-description').text( errorMsg );
         $('#error-modal').modal('show');
         break;
       case 422:
-        console.log ? console.log("Error:", JSON.stringify(error)) : null;
         break;
       case 429:
-        console.log ? console.log("Error:", JSON.stringify(error)) : null;
         $('#error-message').html("Операция не выполнена. Данные не сохранены. <br/> Пожалуйста,  оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. Data wasn't saved. <br/> Please keep this page open and call support team.");
-        $('#error-description').text( JSON.stringify(error) );
+        $('#error-description').text( errorMsg );
         $('#error-modal').modal('show');
         break;
       case 471:
         veda.logout();
         break;
       case 472:
-        console.log ? console.log("Error:", JSON.stringify(error)) : null;
         break;
       case 473:
         break; // handled in login screen
       default:
         $('#error-message').html("Операция не выполнена. <br/> Пожалуйста, оставайтесь на этой странице и обратитесь в службу тех. поддержки. <br/><br/> Operation failed. <br/> Please keep this page open and call support team.");
-        $('#error-description').text( JSON.stringify(error) );
+        $('#error-description').text( errorMsg );
         $('#error-modal').modal('show');
-        console.log ? console.log("Error:", JSON.stringify(error)) : null;
     }
   });
 
