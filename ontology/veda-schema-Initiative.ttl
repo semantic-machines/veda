@@ -123,11 +123,11 @@ v-s:projectManager
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Initiative ;
 .
-v-s:hasEffects
+v-s:hasEffectList
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Effects"@en ;
-  rdfs:label "Эффекты"@ru ;
-  rdfs:range v-s:Effects ;
+  rdfs:label "Effect list"@en ;
+  rdfs:label "Список эффектов"@ru ;
+  rdfs:range v-s:EffectList ;
   rdfs:domain v-s:Initiative ;
 .
 
@@ -345,41 +345,41 @@ v-s:hasKpiGroup
   rdfs:domain v-s:Effect ;
 .
 #--------------------------------------------------
-v-s:Effects
+v-s:EffectList
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Effects"@en ;
-  rdfs:label "Эффекты"@ru ;
+  rdfs:label "Effect list"@en ;
+  rdfs:label "Список эффектов"@ru ;
 .
 v-s:hasTotalPlanYearEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Total plan year effect"@en ;
   rdfs:label "Итоговый плановый годовой эффект"@ru ;
   rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Effects ;
+  rdfs:domain v-s:EffectList ;
 .
 v-s:hasTotalPlanOnceEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Total plan once effect"@en ;
   rdfs:label "Итоговый плановый разовый эффект"@ru ;
   rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Effects ;
+  rdfs:domain v-s:EffectList ;
 .
 v-s:hasTotalFactYearEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Total fact year effect"@en ;
   rdfs:label "Итоговый фактический годовой эффект"@ru ;
   rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Effects ;
+  rdfs:domain v-s:EffectList ;
 .
 v-s:hasTotalFactOnceEffect
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Total fact once effect"@en ;
   rdfs:label "Итоговый фактический разовый эффект"@ru ;
   rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Effects ;
+  rdfs:domain v-s:EffectList ;
 .
 #--------------------------------------------------
 v-s:hasEffect
@@ -387,7 +387,7 @@ v-s:hasEffect
   rdfs:label "Effect"@en ;
   rdfs:label "Эффект"@ru ;
   rdfs:range v-s:Effect ;
-  rdfs:domain v-s:Effects ;
+  rdfs:domain v-s:EffectList ;
 .
 #--------------------------------------------------
 v-s:KpiGroup
@@ -602,7 +602,7 @@ v-s:PsInitiatorAuthorCoathorForInitiative
 .
 v-s:PsHasTotalEffects
   rdf:type v-ui:DecimalPropertySpecification ;
-  v-ui:forClass v-s:Initiative ;
+  v-ui:forClass v-s:EffectList ;
   v-ui:forProperty v-s:hasTotalPlanYearEffect ;
   v-ui:forProperty v-s:hasTotalFactYearEffect ;
   v-ui:forProperty v-s:hasTotalPlanOnceEffect ;
@@ -612,7 +612,7 @@ v-s:PsHasTotalEffects
   rdfs:label "Effects property specification for FinancialEffectForIdea and FinancialEffect class"@en ;
   rdfs:label "Спецификация эффектов для класса FinancialEffectForIdea and FinancialEffect"@ru ;
 .
-v-s:PsHasEffects
+v-s:PsHasEffectAll
   rdf:type v-ui:DecimalPropertySpecification ;
   v-ui:forClass v-s:Effect ;
   v-ui:forProperty v-s:planOnceEffect ;
@@ -650,7 +650,7 @@ v-s:PsHasKpiGroup
 .
 v-s:PsHasEffect
   rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Effects ;
+  v-ui:forClass v-s:EffectList ;
   v-ui:forProperty v-s:hasEffect ;
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
@@ -660,18 +660,18 @@ v-s:PsHasEffect
   rdfs:label "hasEffect property specification for Initiative class"@en ;
   rdfs:label "Спецификация эффекта для класса Инициатива"@ru ;
 .
-v-s:PsHasEffects
+v-s:PsHasEffectList
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Idea ;
   v-ui:forClass v-s:Project ;
-  v-ui:forProperty v-s:hasEffects ;
+  v-ui:forProperty v-s:hasEffectList ;
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Effects')"^^xsd:string ;
-  v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
-  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Эффект."@ru ;
-  rdfs:label "hasEffect property specification for Initiative class"@en ;
-  rdfs:label "Спецификация эффекта для класса Инициатива"@ru ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:EffectList')"^^xsd:string ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of EffectList class"@en ;
+  v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса список эффектов."@ru ;
+  rdfs:label "hasEffectList property specification for Initiative class"@en ;
+  rdfs:label "Спецификация списка эффектов для класса Инициатива"@ru ;
 .
 v-s:PsHasStatus
   rdf:type v-ui:ObjectPropertySpecification ;
