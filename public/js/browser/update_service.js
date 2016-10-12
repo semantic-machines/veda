@@ -126,8 +126,11 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function openedHandler(event) {
-      clearInterval(connectInterval);
-      connectInterval = undefined;
+      if (connectInterval) {
+        clearInterval(connectInterval);
+        connectInterval = undefined;
+        //veda.trigger("success", {status: "Соединение восстановлено"});
+      }
       //console.log("client: socket opened", event);
       var msg = "ccus=" + veda.ticket;
       socket.send(msg); //Handshake
@@ -139,6 +142,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function closedHandler(event) {
+      //veda.trigger("danger", {status: "Соединение прервано"});
       //console.log("client: socket closed", event);
       self.trigger("off");
       if (!connectInterval) {

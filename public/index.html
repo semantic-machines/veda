@@ -50,27 +50,18 @@
       <h4><i class="fa fa-cog fa-spin fa-lg text-primary"></i> <strong>Загрузка приложения / Application loading</strong></h4>
     </div>
 
-    <!-- Error modal -->
-    <div id="error-modal" class="modal fade" tabindex="-1" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h3 class="modal-title">Ой, ошибка / Oops, error</h3>
-          </div>
-          <div class="modal-body">
-            <p id="error-message"></p>
-            <hr>
-            <code id="error-description"></code>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Notification alerts -->
+    <div id="notification-container" style="width:20%; max-height: 40%; position:fixed; bottom:10px; right:10px;z-index:99999; overflow:hidden"></div>
 
     <!-- Templates -->
+
+    <!-- Notification alert -->
+    <script type="html/template" id="notification-template">
+      <div class="alert alert-dismissible fade in" role="alert" style="display:none">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <p class="msg"><strong class="msg-icon"></strong> <strong class="msg-status"></strong> <span class="msg-description"></span></p>
+      </div>
+    </script>
 
     <!-- Login -->
     <script type="html/template" id="login-template">

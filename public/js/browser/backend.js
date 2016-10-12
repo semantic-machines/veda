@@ -13,7 +13,7 @@ veda.Module(function Backend(veda) { "use strict";
       params.async = false;
       var res = $.ajax(params);
       if (res.status >= 400 || res.status == 0) {
-        veda.trigger("error", {status: res.status, description: res.statusText});
+        veda.trigger("danger", {status: res.status, description: res.statusText});
         throw {status: res.status, description: res.statusText};
       }
       var result;
@@ -177,7 +177,7 @@ veda.Module(function Backend(veda) { "use strict";
       get_summary_time += t2 - t1;
 
       if (result.status >= 400 || result.status == 0) {
-        veda.trigger("error", {status: result.status, description: result.statusText});
+        veda.trigger("danger", {status: result.status, description: result.statusText});
         throw {status: result.status, description: result.statusText};
       }
       return JSON.parse(result.responseText, function (key, value) {
