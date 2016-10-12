@@ -532,7 +532,12 @@ veda.Module(function Util(veda) { "use strict";
         var hiddenField = document.createElement("input");
         hiddenField.setAttribute("type", "hidden");
         hiddenField.setAttribute("name", key.replace(':','_'));
-        hiddenField.setAttribute("value", (individual[key][0] instanceof veda.IndividualModel)?individual[key][0].id:individual[key][0]);
+        var value = '';
+        individual[key].forEach(function(item, i, arr) {
+            if (i>0) value+=',';
+            value+=(individual[key][i] instanceof veda.IndividualModel)?individual[key][i].id:individual[key][i]);
+        });        
+        hiddenField.setAttribute("value", value);
         form.appendChild(hiddenField);
       }
     });
