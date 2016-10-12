@@ -19,14 +19,14 @@ module.exports = {
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
         //Смотрим на процесс
         driver.sleep(basic.FAST_OPERATION);
-        driver.executeScript("document.querySelector('span[typeof=\"v-wf:Process\"]').scrollIntoView(true);");
+        driver.executeScript("document.querySelector('strong[about=\"v-wf:isProcess\"]').scrollIntoView(true);");
         driver.wait
         (
-            webdriver.until.elementIsEnabled(driver.findElement({css:'span[typeof="v-wf:Process"]'})),
+            webdriver.until.elementIsEnabled(driver.findElement({css:'div[rel="v-wf:isProcess"]'})),
             basic.FAST_OPERATION
         ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'isProcess' button");});
         driver.sleep(basic.FAST_OPERATION);
-        driver.findElement({css:'span[typeof="v-wf:Process"]'}).click()
+        driver.findElement({css:'div[rel="v-wf:isProcess"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'isProcess' button");});
     }
 }
