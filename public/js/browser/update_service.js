@@ -1,6 +1,6 @@
 /**
 
-Autoupdate subscription service for individuals that were changed on server
+Update service for individuals that were changed on server
 
  */
 
