@@ -535,8 +535,8 @@ veda.Module(function Util(veda) { "use strict";
         var value = '';
         individual[key].forEach(function(item, i, arr) {
             if (i>0) value+=',';
-            value+=(individual[key][i] instanceof veda.IndividualModel)?individual[key][i].id:individual[key][i]);
-        });        
+            value+=(individual[key][i] instanceof veda.IndividualModel)?individual[key][i].id:individual[key][i];
+        });
         hiddenField.setAttribute("value", value);
         form.appendChild(hiddenField);
       }
