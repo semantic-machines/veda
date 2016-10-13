@@ -20,14 +20,19 @@ module.exports = {
         //Смотрим на процесс
         driver.sleep(basic.SLOW_OPERATION);
         driver.executeScript("location.reload();");
-        driver.executeScript("document.querySelector('span[typeof=\"v-wf:Process\"]').scrollIntoView(true);");
         driver.wait
         (
             webdriver.until.elementIsEnabled(driver.findElement({css:'div[rel="v-wf:isProcess"]'})),
             basic.FAST_OPERATION
         ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'isProcess' button");});
+        driver.executeScript("document.querySelector('div[rel=\"v-wf:isProcess\"]').scrollIntoView(true);");
         driver.sleep(basic.FAST_OPERATION);
-        driver.findElement({css:'div[rel="v-wf:isProcess"]'}).click()
+        driver.findElement({css:'div[rel=\"v-wf:isProcess\"] #label'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'isProcess' button");});
+        driver.wait
+        (
+            webdriver.until.elementIsEnabled(driver.findElement({css:'.workflow-canvas-wrapper'})),
+            basic.FAST_OPERATION
+        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'process' canvas");});
     }
 }
