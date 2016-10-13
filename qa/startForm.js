@@ -20,7 +20,7 @@ module.exports = {
         //Смотрим на процесс
         driver.sleep(basic.SLOW_OPERATION);
         driver.executeScript("location.reload();");
-        driver.executeScript("document.querySelector('span[typeof=\"v-wf:isProcess\"]').scrollIntoView(true);");
+        driver.executeScript("document.querySelector('span[typeof=\"v-wf:Process\"]').scrollIntoView(true);");
         driver.wait
         (
             webdriver.until.elementIsEnabled(driver.findElement({css:'div[rel="v-wf:isProcess"]'})),
