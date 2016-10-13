@@ -18,8 +18,9 @@ module.exports = {
         driver.findElement({css:'#save'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
         //Смотрим на процесс
-        driver.sleep(basic.FAST_OPERATION);
-        driver.executeScript("document.querySelector('strong[about=\"v-wf:isProcess\"]').scrollIntoView(true);");
+        driver.sleep(basic.SLOW_OPERATION);
+        driver.executeScript("location.reload();");
+        driver.executeScript("document.querySelector('span[typeof=\"v-wf:isProcess\"]').scrollIntoView(true);");
         driver.wait
         (
             webdriver.until.elementIsEnabled(driver.findElement({css:'div[rel="v-wf:isProcess"]'})),
