@@ -1487,7 +1487,7 @@ v-ui:DocumentEventTemplate
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] == false)) {
       $(".stop-process", template).show();
       $(".stop-process", template).on("click", function() {
-        if (confirm((new veda.IndividualModel("v-b:AreYouSure"))["rdfs:label"])) {
+        if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
           process['v-wf:isStopped'] = [ true ];
           process.save();
         }
