@@ -20,9 +20,11 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `View Journal` button");});
 	}).then(function() {
 		driver.sleep(basic.FAST_OPERATION);
-		var container = driver.findElement({id:'main'});
-		var content = container.innerHTML;
-		container.innerHTML = content;
+		// var container = driver.findElement({id:'records'});
+		// var content = container.innerHTML;
+		// container.innerHTML = content;
+		driver.navigate().refresh();
+		driver.sleep(basic.EXTRA_SLOW_OPERATION);
 		driver.findElements({css:'div.journal-record'}).then(function (result) {
 			assert.equal(totalCount, result.length);
 		}).thenCatch(function (e) {basic.errorHandler(e, "Invalid `total` journal elements count");});
@@ -62,22 +64,25 @@ function update(driver, key) {
 basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
-
-        basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-
+	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 	basic.openCreateDocumentForm(driver, 'Мероприятие', "v-s:Action");
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
 	driver.findElement({css:'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]'}).sendKeys(timeStamp)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
 	driver.sleep(basic.FAST_OPERATION);
+
+	driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
+	//driver.findElement({css:'veda-control[rel="v-s:responsible"} div[class="inpur-group"] input[type="text"]').send()
+	basic.chooseFromDropdown(driver, 'v-s:responsible', "Роман", "Роман Карпов : Аналитик");
+	driver.sleep(basic.FAST_OPERATION);
 	driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
 	driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys(timeStamp + 1)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
-	driver.sleep(basic.SLOW_OPERATION);
+	driver.sleep(basic.FAST_OPERATION);
 	driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
 	driver.findElement({id:'save'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
-	driver.sleep(basic.SLOW_OPERATION);
+	driver.sleep(basic.FAST_OPERATION);
 
 	assertCounts(driver, 1, 1, 0);
 
