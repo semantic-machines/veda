@@ -1279,3 +1279,10 @@ s-wf:rul_transform3_complex
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'startForm_id')";
 .
+
+s-wf:map_msg_template_project
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "newUri ('m-l:msg-template-optiflow')";
+  rdfs:isDefinedBy s-wf: ;
+.
