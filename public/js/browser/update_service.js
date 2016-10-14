@@ -34,8 +34,10 @@ veda.Module(function UpdateService(veda) { "use strict";
       msgInterval = undefined;
       list = {};
       delta = {};
-      socket.send("=");
-      //console.log("client -> server: =");
+      if (socket && socket.readyState === 1) {
+        socket.send("=");
+        //console.log("client -> server: =");
+      }
     }
 
     this.subscribe = function(uri) {
@@ -64,8 +66,10 @@ veda.Module(function UpdateService(veda) { "use strict";
         msgInterval = undefined;
         list = {};
         delta = {};
-        socket.send("-*");
-        //console.log("client -> server: -*");
+        if (socket && socket.readyState === 1) {
+          socket.send("-*");
+          //console.log("client -> server: -*");
+        }
       } else {
         if ( !list[uri] ) {
           return;
@@ -99,11 +103,11 @@ veda.Module(function UpdateService(veda) { "use strict";
       subscribeMsg = subscribe.join(",");
       unsubscribeMsg = unsubscribe.join(",");
       delta = {};
-      if (subscribeMsg) {
+      if (socket && socket.readyState === 1 && subscribeMsg) {
         socket.send(subscribeMsg);
         //console.log("client -> server:", subscribeMsg);
       }
-      if (unsubscribeMsg) {
+      if (socket && socket.readyState === 1 && unsubscribeMsg) {
         socket.send(unsubscribeMsg);
         //console.log("client -> server:", unsubscribeMsg);
       }
@@ -117,7 +121,6 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     function initSocket () {
       var socket = new WebSocket(address);
-      var self = this;
       socket.onopen = openedHandler;
       socket.onclose = closedHandler;
       socket.onerror = closedHandler;
@@ -133,11 +136,20 @@ veda.Module(function UpdateService(veda) { "use strict";
       }
       //console.log("client: socket opened", event);
       var msg = "ccus=" + veda.ticket;
-      socket.send(msg); //Handshake
-      //console.log("client -> server:", msg);
+      if (socket && socket.readyState === 1) {
+        socket.send(msg); //Handshake
+        //console.log("client -> server:", msg);
+      }
       var uris = Object.keys(list);
       self.synchronize();
-      uris.map(self.subscribe);
+      //uris.map(self.subscribe);
+      uris.map(function (uri) {
+        var i = new veda.IndividualModel(uri);
+        if ( !i.isSync() && !i.isNew() ) {
+          i.reset();
+        }
+        self.subscribe(uri);
+      });
       self.trigger("on");
     }
 
@@ -156,51 +168,35 @@ veda.Module(function UpdateService(veda) { "use strict";
       var msg = event.data,
           uris;
       //console.log("server -> client:", msg);
-      switch ( true ) {
-        case ( msg.indexOf("=") === 0 ):
-          // Synchronize subscription
-          uris = msg.substr(1);
-          if (!uris) { return }
-          uris = uris.split(",");
-          for (var i = 0; i < uris.length; i++) {
-            var tmp = uris[i].split("="),
-                uri = tmp[0],
-                updateCounter = parseInt(tmp[1]),
-                list = self.list();
-            list[uri] = list[uri] ? {
-              subscribeCounter: list[uri].subscribeCounter,
-              updateCounter: updateCounter
-            } : {
-              subscribeCounter: 1,
-              updateCounter: updateCounter
-            };
+      if (msg.indexOf("=") === 0) {
+        uris = msg.substr(1);
+      } else {
+        uris = msg;
+      }
+      if (uris.length === 0) {
+        return;
+      }
+      uris = uris.split(",");
+      for (var i = 0; i < uris.length; i++) {
+        try {
+          var tmp = uris[i].split("="),
+              uri = tmp[0],
+              updateCounter = parseInt(tmp[1]),
+              individual = new veda.IndividualModel(uri),
+              list = self.list();
+          list[uri] = list[uri] ? {
+            subscribeCounter: list[uri].subscribeCounter,
+            updateCounter: updateCounter
+          } : {
+            subscribeCounter: 1,
+            updateCounter: updateCounter
+          };
+          if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
+            individual.reset();
           }
-        break;
-        default:
-          // Update individuals
-          uris = msg.split(",");
-          for (var i = 0; i < uris.length; i++) {
-            try {
-              var tmp = uris[i].split("="),
-                  uri = tmp[0],
-                  updateCounter = parseInt(tmp[1]),
-                  individual = new veda.IndividualModel(uri),
-                  list = self.list();
-              list[uri] = list[uri] ? {
-                subscribeCounter: list[uri].subscribeCounter,
-                updateCounter: updateCounter
-              } : {
-                subscribeCounter: 1,
-                updateCounter: updateCounter
-              };
-              if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
-                individual.reset();
-              }
-            } catch (e) {
-              console.log("error: individual update service failed for id =", uri, e);
-            }
-          }
-        break;
+        } catch (e) {
+          //console.log("error: individual update service failed for id =", uri, e);
+        }
       }
     }
 

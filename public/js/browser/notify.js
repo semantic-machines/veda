@@ -4,7 +4,7 @@ veda.Module(function Notify(veda) { "use strict";
 
   // Errors & notifications
   veda.on("danger info warning success", function (type, msg) {
-    console.log ? console.log( type, ":", JSON.stringify(msg) ) : null;
+    console.log ? console.log( (new Date()).toISOString(), type, ":", JSON.stringify(msg) ) : null;
     switch (msg.status) {
       case 0:
         serverWatch();
@@ -72,14 +72,15 @@ veda.Module(function Notify(veda) { "use strict";
   function serverWatch() {
     if (interval) { return; }
     var duration = 10000;
-    veda.trigger("danger", {status: "Сервер не работает"});
+    veda.trigger("danger", {status: "Связь потеряна"});
     interval = setInterval(function () {
-      veda.trigger("danger", {status: "Сервер не работает"});
-      var onto = get_individual(veda.ticket, "cfg:OntoVsn");
-      if ( onto["rdf:value"] && onto["rdf:value"].length ) {
-        veda.trigger("success", {status: "Сервер восстановлен"});
+      try {
+        get_individual(veda.ticket, "cfg:OntoVsn");
         clearInterval(interval);
         interval = undefined;
+        veda.trigger("success", {status: "Связь восстановлена"});
+      } catch (ex) {
+        veda.trigger("danger", {status: "Связь потеряна"});
       }
     }, duration);
   }

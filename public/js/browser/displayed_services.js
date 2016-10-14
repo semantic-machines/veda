@@ -12,17 +12,6 @@ veda.Module(function DisplayedServices(veda) { "use strict";
 
   veda.on("individual:loaded", updateWatch);
 
-  updateService.on("on", function (event) {
-    //console.log("autoupdate updateService on");
-    veda.off("individual:loaded", updateWatch);
-    veda.on("individual:loaded", updateWatch);
-  });
-
-  updateService.on("off", function (event) {
-    //console.log("autoupdate updateService off");
-    veda.off("individual:loaded", updateWatch);
-  });
-
   function updateWatch(individual) {
     individual.one("individual:templateReady", subscribeDisplayed);
   }

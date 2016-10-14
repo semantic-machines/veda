@@ -79,7 +79,6 @@ veda.Module(function (veda) { "use strict";
       });
     }
 
-    // Load data
     return self.load(uri);
   };
 
@@ -242,17 +241,42 @@ veda.Module(function (veda) { "use strict";
         return veda.cache[uri];
       }
       try {
-        self.properties = get_individual(veda.ticket, uri);
         self._.isNew = false;
         self._.isSync = true;
+        self.properties = get_individual(veda.ticket, uri);
       } catch (e) {
-        self.properties = {
-          "@": uri,
-          "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
-          "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
-        };
+        if (e.status === 422) {
+          self._.isNew = true;
+          self._.isSync = false;
+          self.properties = {
+            "@": uri,
+            "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+          };
+        } else if (e.status === 472) {
+          self._.isNew = false;
+          self._.isSync = false;
+          self.properties = {
+            "@": uri,
+            "rdfs:label": [
+              {type: "String", data: "No rights", lang: "EN"},
+              {type: "String", data: "Нет прав", lang: "RU"}
+            ],
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+          };
+        } else {
+          self._.isNew = false;
+          self._.isSync = false;
+          self.properties = {
+            "@": uri,
+            "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+          };
+        }
       }
     } else if (typeof uri === "object") {
+      self._.isNew = false;
+      self._.isSync = true;
       self.properties = uri;
     }
     if (self._.cache) veda.cache[self.id] = self;
@@ -287,8 +311,7 @@ veda.Module(function (veda) { "use strict";
       if (e.status !== 472) {
         this.draft(parent);
       } else {
-        //alert("Нет прав на изменение объекта\nNo rights to modify object\n\n" + this.toString());
-        console.log("Нет прав на изменение объекта / No rights to modify object\n\n" + this.toString());
+        console.log("Нет прав на создание или изменение объекта / No rights to create or modify object\n\n" + this.toString());
       }
     }
     this._.isNew = false;
@@ -328,7 +351,7 @@ veda.Module(function (veda) { "use strict";
         original = {};
       }
       Object.keys(self.properties).map(function (property_uri) {
-        if (property_uri === "@" || property_uri === "rdf:type") {
+        if (property_uri === "@") {
           delete original[property_uri];
           return;
         }

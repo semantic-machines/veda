@@ -574,6 +574,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       function langWatch () {
         propertyModifiedHandler(property_uri);
       }
+      var updateService = new veda.UpdateService();
+      updateService.subscribe(about.id);
+      template.one("remove", function () {
+        updateService.unsubscribe(about.id);
+      });
     });
 
     // Property control
