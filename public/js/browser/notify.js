@@ -9,12 +9,12 @@ veda.Module(function Notify(veda) { "use strict";
       case 0:
         serverWatch();
         break;
+      case 422:
       case 472:
         break;
       case 400:
       case 403:
       case 404:
-      case 422:
       case 429:
       case 470:
       case 471:
