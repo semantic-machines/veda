@@ -23,69 +23,69 @@
 s-wf:net_complex_route a v-wf:Net;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:localVariable s-wf:var_right_1;
-  v-wf:consistsOf  
-  	s-wf:cr_start, 
-  	s-wf:crf_start_to_car, 
-  	s-wf:cr_check_already_run, 
-  	s-wf:crf_car_to_finish, 
-  	s-wf:cr_decrease_rights, 
-  	s-wf:crf_dr_to_i,
-  	s-wf:cr_informing_task,
-  	s-wf:crf_i_to_c1,
-  	s-wf:cr_c1,
-  	s-wf:crf_c1_to_c2,
-  	s-wf:crf_c1_to_jp,
-  	s-wf:cr_c2,
-  	s-wf:crf_c2_to_c3,
-  	s-wf:crf_c2_to_jp,
-  	s-wf:cr_c3,
-  	s-wf:crf_c3_to_c4,
-  	s-wf:crf_c3_to_jp,
-  	s-wf:cr_c4,
-  	s-wf:crf_c4_to_c5,
-  	s-wf:crf_c4_to_jp,
-  	s-wf:cr_c5,
-  	s-wf:crf_c5_to_c6,
-  	s-wf:crf_c5_to_jp,
-  	s-wf:cr_c6,
-  	s-wf:crf_c6_to_jp,
-  	s-wf:cr_join_point,
-  	s-wf:crf_jp_to_rework, 
-  	s-wf:cr_rework,
-	s-wf:crf_rework_to_c1,
-	s-wf:crf_rework_to_c2,
-	s-wf:crf_rework_to_c3,
-	s-wf:crf_rework_to_c4,
-	s-wf:crf_rework_to_c5,
-	s-wf:crf_rework_to_c6,
-	s-wf:crf_rework_to_rr,
-	s-wf:crf_rework_to_s,
-	s-wf:crf_rework_to_a,
-  	s-wf:cr_sign,
-  	s-wf:crf_s_to_a,
-  	s-wf:crf_s_to_jp,
-  	s-wf:cr_approval,
-  	s-wf:crf_a_to_e,
-  	s-wf:crf_a_to_i,
-  	s-wf:crf_a_to_r,
-  	s-wf:crf_a_to_ai,
-  	s-wf:cr_instruction,
-  	s-wf:crf_i_to_d, 
-  	s-wf:cr_examination,
-  	s-wf:crf_e_to_d,  	
-  	s-wf:cr_auto_instruction, 
-  	s-wf:cr_review,
-  	s-wf:crf_r_to_d,
-  	s-wf:cr_distribution, 
-  	s-wf:crf_d_to_rr,
-  	s-wf:cr_restore_rights,
-  	s-wf:crf_rr_to_finish,
-  	s-wf:cr_finish;
+  v-wf:consistsOf
+    s-wf:cr_start,
+    s-wf:crf_start_to_car,
+    s-wf:cr_check_already_run,
+    s-wf:crf_car_to_finish,
+    s-wf:cr_decrease_rights,
+    s-wf:crf_dr_to_i,
+    s-wf:cr_informing_task,
+    s-wf:crf_i_to_c1,
+    s-wf:cr_c1,
+    s-wf:crf_c1_to_c2,
+    s-wf:crf_c1_to_jp,
+    s-wf:cr_c2,
+    s-wf:crf_c2_to_c3,
+    s-wf:crf_c2_to_jp,
+    s-wf:cr_c3,
+    s-wf:crf_c3_to_c4,
+    s-wf:crf_c3_to_jp,
+    s-wf:cr_c4,
+    s-wf:crf_c4_to_c5,
+    s-wf:crf_c4_to_jp,
+    s-wf:cr_c5,
+    s-wf:crf_c5_to_c6,
+    s-wf:crf_c5_to_jp,
+    s-wf:cr_c6,
+    s-wf:crf_c6_to_jp,
+    s-wf:cr_join_point,
+    s-wf:crf_jp_to_rework,
+    s-wf:cr_rework,
+  s-wf:crf_rework_to_c1,
+  s-wf:crf_rework_to_c2,
+  s-wf:crf_rework_to_c3,
+  s-wf:crf_rework_to_c4,
+  s-wf:crf_rework_to_c5,
+  s-wf:crf_rework_to_c6,
+  s-wf:crf_rework_to_rr,
+  s-wf:crf_rework_to_s,
+  s-wf:crf_rework_to_a,
+    s-wf:cr_sign,
+    s-wf:crf_s_to_a,
+    s-wf:crf_s_to_jp,
+    s-wf:cr_approval,
+    s-wf:crf_a_to_e,
+    s-wf:crf_a_to_i,
+    s-wf:crf_a_to_r,
+    s-wf:crf_a_to_ai,
+    s-wf:cr_instruction,
+    s-wf:crf_i_to_d,
+    s-wf:cr_examination,
+    s-wf:crf_e_to_d,
+    s-wf:cr_auto_instruction,
+    s-wf:cr_review,
+    s-wf:crf_r_to_d,
+    s-wf:cr_distribution,
+    s-wf:crf_d_to_rr,
+    s-wf:cr_restore_rights,
+    s-wf:crf_rr_to_finish,
+    s-wf:cr_finish;
   rdfs:label "Комплексный маршрут"@ru;
-  v-wf:inputVariable 
-  	s-wf:var_doc_id, 
-  	s-wf:var_startForm_id, 
-	s-wf:var_journal_initiator.
+  v-wf:inputVariable
+    s-wf:var_doc_id,
+    s-wf:var_startForm_id,
+  s-wf:var_journal_initiator.
 
 s-wf:cr_start a v-wf:InputCondition;
   rdfs:isDefinedBy s-wfc: ;
@@ -120,7 +120,7 @@ s-wf:crf_car_to_finish a v-wf:Flow;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_finish;
   v-wf:predicate "task_result.getValue('result')[0].data == 'true'"^^xsd:string.
-  
+
 
 s-wf:cr_car_to_dr a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
@@ -145,7 +145,7 @@ s-wf:crf_dr_to_i a v-wf:Flow;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:flowsInto s-wf:cr_informing_task;
   v-wf:predicate "true"^^xsd:string.
-  
+
 s-wf:crf_i_to_c1 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:predicate "true"^^xsd:string;
@@ -165,8 +165,8 @@ s-wf:cr_informing_task a v-wf:Task;
 #  v-wf:completedJournalMap s-wf:map_jrn_msg_t3_e, s-wf:map_jrn_msg_t3_e_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
   rdfs:label "Рассылка"^^xsd:string.
 #  v-wf:completedMapping s-wf:map_set_result_from_process;
-#  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator1, s-wf:map_coordinator1_1.  
-  
+#  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator1, s-wf:map_coordinator1_1.
+
 s-wf:cr_c1 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "300"^^xsd:integer;
@@ -336,14 +336,14 @@ s-wf:cr_join_point a v-wf:Condition;
   v-wf:locationX "710"^^xsd:integer;
   v-wf:locationY "350"^^xsd:integer;
   v-wf:belongsTo s-wf:net_complex_route;
-  rdfs:label ""^^xsd:string;  
+  rdfs:label ""^^xsd:string;
   v-wf:hasFlow s-wf:crf_jp_to_rework.
-  
+
 s-wf:crf_jp_to_rework a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:predicate "true"^^xsd:string;
-  v-wf:flowsInto s-wf:cr_rework.  
+  v-wf:flowsInto s-wf:cr_rework.
 
 s-wf:cr_sign a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -527,13 +527,13 @@ s-wf:cr_examination a v-wf:Task;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_examin_form;
   rdfs:label "Ознакомление"^^xsd:string.
-  
+
 s-wf:crf_e_to_d a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:predicate "true"^^xsd:string;
   v-wf:flowsInto s-wf:cr_distribution.
-  
+
 s-wf:cr_auto_instruction a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
@@ -731,6 +731,19 @@ s-wf:executor_distribution
   rdf:type v-wf:ExecutorDefinition ;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_distribution'}])" ;
+.
+s-wf:executor_4m_PLV_coordinator
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "process.getLocalVariable ('coordinator')" ;
+  rdfs:label "Исполнители из local process variable coordinator" ;
+.
+
+s-wf:executor_from_coordinator
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "process.getInputVariable ('coordinator')" ;
+  rdfs:label "Исполнители из переменной coordinator"@ru ;
 .
 
 s-wf:map_coordinator_4_PLV_coordinator
