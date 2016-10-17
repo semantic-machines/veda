@@ -153,4 +153,14 @@ v-s:WorkReport
   rdfs:label "Отчет о работе"@ru ;
 .
 # ------------------------------------------------------------
-
+v-s:Request
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:label "Work Report"@en ;
+  rdfs:label "Отчет о работе"@ru ;
+.

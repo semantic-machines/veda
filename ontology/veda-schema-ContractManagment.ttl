@@ -49,12 +49,8 @@ v-s:InternalAccountingDocument
   rdfs:label "InternalAccountingDocument"@en ;
   rdfs:label "Внутренний бухгалтерский документ"@ru ;
 .
+#v-s:attachment
 
-#-- Аттрибуты --
-
-v-s:attachment
-  rdfs:domain v-s:InternalAccountingDocument ;
-.
 v-s:PsAttachmentForInternalAccountingDocument
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:InternalAccountingDocument ;
@@ -65,6 +61,7 @@ v-s:PsAttachmentForInternalAccountingDocument
   rdfs:label "Спецификация файлов для класса Внутренний бухгалтерский документ"@ru ;
 .
 
+# ------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;
