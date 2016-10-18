@@ -111,11 +111,12 @@ JSONValue individual_to_json(Individual individual)
 
 Individual json_to_individual(ref JSONValue individual_json)
 {
-//    writeln ("\nJSON->:", individual_json);
+    //log.trace ("\nJSON->:%s", individual_json);
     Individual individual = Individual.init;
 
     foreach (string property_name, property_values; individual_json)
     {
+//    	writeln ("property_name=",property_name);
         if (property_name == "@")
         {
             individual.uri = property_values.str;
@@ -128,7 +129,7 @@ Individual json_to_individual(ref JSONValue individual_json)
         if (resources.length > 0)
             individual.resources[ property_name ] = resources;
     }
-//    writeln ("->INDIVIDUAL:", individual);
+    //log.trace ("->INDIVIDUAL:%s", individual);
     return individual;
 }
 
@@ -215,11 +216,15 @@ Resource json_to_resource(JSONValue resource_json)
     {
         if (data_type == JSON_TYPE.FLOAT)
         {
-            resource = decimal(resource_json.getString("data"));
+            resource = decimal(resource_json.getFloat ("data"));
         }
         else if (data_type == JSON_TYPE.INTEGER)
         {
-            resource = resource_json.getLong("data");
+            resource = decimal(resource_json.getLong("data"));
+        }
+        else if (data_type == JSON_TYPE.STRING)
+        {
+            resource = decimal(resource_json.getString("data"));        	
         }
     }
     else if (type == DataType.Integer)

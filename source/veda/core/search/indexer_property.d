@@ -5,7 +5,7 @@
 module veda.core.search.indexer_property;
 
 private import std.conv, std.stdio;
-private import veda.core.common.context, veda.core.log_msg;
+private import veda.core.common.context, veda.core.common.log_msg;
 private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define;
 
 // ////// logger ///////////////////////////////////////////
@@ -109,7 +109,7 @@ class IndexerProperty
                 add_schema_data(indv);
             }
             database__2__true[ "base" ] = true;
-            log.trace ("load indexes: class_property__2__indiviual=%s", class_property__2__indiviual);
+            log.trace("load indexes: class_property__2__indiviual=%s", class_property__2__indiviual);
         }
     }
 

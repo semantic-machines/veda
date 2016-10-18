@@ -2,14 +2,14 @@
    авторизация
  */
 
-module veda.core.threads.acl_manager;
+module veda.server.acl_manager;
 
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
-           veda.core.common.know_predicates, veda.core.log_msg, veda.util.cbor8individual;
-    import veda.core.util.utils, veda.util.cbor, util.logger;
+           veda.core.common.know_predicates, veda.core.common.log_msg, veda.util.cbor8individual;
+    import veda.core.util.utils, veda.util.cbor, util.logger, veda.util.module_info;
     import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
 }
 
@@ -22,7 +22,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "ACL-MANAGER");
+        _log = new logger("veda-core-server", "log", "ACL-MANAGER");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -83,14 +83,20 @@ void acl_manager(string thread_name, string db_path)
     int                          max_size_bin_log = 10_000_000;
 
     core.thread.Thread.getThis().name         = thread_name;
-    Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager");
+    Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
     string                       bin_log_name = get_new_binlog_name(db_path);
+    
+    long l_op_id;
+    long committed_op_id;
 
     // SEND ready
     receive((Tid tid_response_reciever)
             {
                 send(tid_response_reciever, true);
             });
+
+	ModuleInfoFile module_info = new ModuleInfoFile(thread_name, _log, OPEN_MODE.WRITER);
+
     while (true)
     {
         try
@@ -100,7 +106,13 @@ void acl_manager(string thread_name, string db_path)
                     {
                         if (cmd == CMD.COMMIT)
                         {
-                            storage.flush(1);
+                        	if (committed_op_id != l_op_id)
+                        	{
+	                            storage.flush(1);
+	                            log.trace ("acl commit op_id=%d", l_op_id);
+	                            committed_op_id = l_op_id;
+	                            module_info.put_info(l_op_id, committed_op_id);
+                        	}
                         }
                     },
                     (CMD cmd, EVENT type, string prev_state, string new_state, long op_id)
@@ -141,6 +153,8 @@ void acl_manager(string thread_name, string db_path)
                             finally
                             {
                                 set_acl_manager_op_id(op_id);
+                                l_op_id = op_id; 
+                                 module_info.put_info(l_op_id, committed_op_id);
                             }
                         }
                     },

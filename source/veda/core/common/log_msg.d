@@ -1,7 +1,7 @@
 /**
  * настройка логгирования
  */
-module veda.core.log_msg;
+module veda.core.common.log_msg;
 
 private import util.logger;
 

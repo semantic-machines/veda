@@ -76,3 +76,23 @@ if ! ldconfig -p | grep libwebsockets; then
     cd ..
 
 fi
+
+if ! ldconfig -p | grep libnanomsg; then
+
+    # make nanomsg dependency
+    mkdir tmp
+    wget https://github.com/nanomsg/nanomsg/archive/1.0.0.tar.gz -P tmp
+    cd tmp
+    tar -xvzf 1.0.0.tar.gz
+    cd nanomsg-1.0.0
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+    sudo ldconfig
+    cd ..
+    cd ..
+    cd ..
+
+fi

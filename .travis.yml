@@ -19,7 +19,7 @@ env:
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
   - ./control-install.sh    
-  - dub -v fetch vibe-d --version=0.7.26
+  - dub -v fetch vibe-d --version=0.7.29
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
@@ -67,6 +67,13 @@ after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
   - grunt coveralls
   - date    
-  - cat $PWD/veda-core-_*.log          
   - cat $PWD/veda_s.log
+  - cat veda-core-_*.log 
+  - cat veda-core-fanout_*.log
+  - cat veda-core-fulltext_indexer_*.log
+  - cat veda-core-ltr_scripts_*.log
+#  - cat veda-core-scripts_*.log
+  - cat veda-core-server_*.log
+  - cat veda-core-ttl_reader_*.log
+  - cat veda-core-webserver_*.log 
   

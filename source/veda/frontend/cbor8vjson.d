@@ -225,7 +225,7 @@ private static int read_element(Json *individual, ubyte[] src, out string _key, 
 
             resource_json[ "type" ] = text(DataType.Decimal);
 
-			auto dres = decimal(mantissa.v_long, cast(byte)exponent.v_long);
+            auto dres = decimal(mantissa.v_long, cast(byte)exponent.v_long);
             resource_json[ "data" ] = dres.asString();
 
             resources ~= resource_json;

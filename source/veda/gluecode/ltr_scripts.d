@@ -11,9 +11,9 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+    import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule;
-    import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -48,10 +48,10 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
-    tid_ltr_scripts = spawn(&ltrs_thread, p_script.parent_url);
+    tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
 
     p_script.run();
 
@@ -103,7 +103,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, parent_url);
+    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, log, parent_url);
 
 
     vars_for_codelet_script =
@@ -328,12 +328,16 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port)
+    this(P_MODULE _module_name, string _host, ushort _port, logger _log)
     {
-        super(_module_name, _host, _port);
+        super(_module_name, _host, _port, _log);
     }
 
     override void thread_id()
+    {
+    }
+
+    override void receive_msg(string msg)
     {
     }
 
@@ -343,8 +347,8 @@ class ScriptProcess : VedaModule
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                          string event_id,
-                          long op_id)
+                                string event_id,
+                                long op_id)
     {
         committed_op_id = op_id;
 

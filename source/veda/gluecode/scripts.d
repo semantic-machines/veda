@@ -6,9 +6,9 @@ module veda.gluecode.scripts;
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-private import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule;
-private import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 void main(char[][] args)
 {
@@ -16,7 +16,7 @@ void main(char[][] args)
 
     core.thread.Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091);
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091, new logger("veda-core-scripts", "log", ""));
 
     p_script.run();
 }
@@ -33,9 +33,9 @@ class ScriptProcess : VedaModule
 
     private ScriptVM script_vm;
 
-    this(P_MODULE _module_name, string _host, ushort _port)
+    this(P_MODULE _module_name, string _host, ushort _port, logger log)
     {
-        super(_module_name, _host, _port);
+        super(_module_name, _host, _port, log);
 
         g_cache_of_indv = cache_of_indv;
     }
@@ -46,6 +46,10 @@ class ScriptProcess : VedaModule
     {
     }
 
+    override void receive_msg(string msg)
+    {
+    }
+
     override Context create_context()
     {
         return null;
@@ -53,8 +57,8 @@ class ScriptProcess : VedaModule
 
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                          string event_id,
-                          long op_id)
+                                string event_id,
+                                long op_id)
     {
         if (script_vm is null)
             return ResultCode.Not_Ready;
@@ -156,7 +160,7 @@ class ScriptProcess : VedaModule
         count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
-                        log.trace("start exec event script : %s %s %d %s %s", script_id, individual_id, op_id, event_id, sticket);
+                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
@@ -169,7 +173,7 @@ class ScriptProcess : VedaModule
                     }
 
                     //if (trace_msg[ 300 ] == 1)
-                        log.trace("end exec event script : %s", script_id);
+                    log.trace("end exec event script : %s", script_id);
 
 
                     //*(cast(char*)script_vm) = 0;

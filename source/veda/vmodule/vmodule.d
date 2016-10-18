@@ -4,18 +4,20 @@ private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
-    import requests.http, requests.streams;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.onto.onto;
-    import veda.bind.libwebsocketd, veda.vmodule.wslink;
-    import veda.util.container;
+    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info;
+    import kaleidic.nanomsg.nano;
 }
 
-bool   f_listen_exit = false;
+bool f_listen_exit = false;
 
+// ////// logger ///////////////////////////////////////////
+import util.logger;
 logger _log;
+
+// ////// ////// ///////////////////////////////////////////
 
 extern (C) void handleTermination(int _signal)
 {
@@ -33,72 +35,66 @@ shared static this()
     bsd_signal(SIGINT, &handleTermination);
 }
 
-VedaModule g_child_process;
 
-class VedaModule : WSLink
+class VedaModule // : WSLink
 {
+    long   last_committed_op_id;
+    long   last_check_time;
+
+    int    sock;
+    string notify_chanel_url     = "tcp://127.0.0.1:9111\0";
+    bool   already_notify_chanel = false;
+
     Cache!(string, string) cache_of_indv;
 
-    string     fn_module_info_w  = null;
-    File       *ff_module_info_w = null;
+    ModuleInfoFile module_info;
 
-    long       op_id           = 0;
-    long       committed_op_id = 0;
+    long           op_id           = 0;
+    long           committed_op_id = 0;
 
-    long       count_signal           = 0;
-    long       count_readed           = 0;
-    long       count_success_prepared = 0;
-    Queue      queue;
-    Consumer   cs;
+    long           count_signal           = 0;
+    long           count_readed           = 0;
+    long           count_success_prepared = 0;
+    Queue          queue;
+    Consumer       cs;
 
-    Context    context;
-    Onto       onto;
+    Context        context;
+    Onto           onto;
 
-    Individual node;
+    Individual     node;
 
-    ushort     port;
-    string     host;
-    string     queue_name = "individuals-flow";
-    string     parent_url = "http://127.0.0.1:8080";
-    Ticket     sticket;
-    P_MODULE   module_name;
+    ushort         port;
+    string         host;
+    string         queue_name      = "individuals-flow";
+    string         main_module_url = "tcp://127.0.0.1:9112\0";
+    Ticket         sticket;
+    P_MODULE       module_name;
 
-    override logger log()
+    logger log;
+
+    this(P_MODULE _module_name, string _host, ushort _port, logger in_log)
     {
-        if (_log is null)
-            _log = new logger("veda-core-" ~ process_name, "log", process_name);
-        return _log;
-    }
+        process_name = text(_module_name);
+        module_name  = _module_name;
+        port         = _port;
+        host         = _host;
+        _log         = in_log;
+        log 		 = _log;		
 
-    this(P_MODULE _module_name, string _host, ushort _port)
-    {
-        g_child_process  = this;
-        process_name     = text(_module_name);
-        module_name      = _module_name;
-        port             = _port;
-        host             = _host;
-        _log             = new logger("veda-core-" ~ process_name, "log", "PROCESS");
-        fn_module_info_w = module_info_path ~ "/" ~ process_name ~ "_info";
-        super(host, port);
+        module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
     }
 
     ~this()
     {
-        ff_module_info_w.flush();
-        ff_module_info_w.close();
+        delete module_info;
     }
 
     void run()
     {
-        if (exists(fn_module_info_w) == false)
-            ff_module_info_w = new File(fn_module_info_w, "w");
-        else
-            ff_module_info_w = new File(fn_module_info_w, "r+");
-
         context = create_context();
 
         if (context is null)
-            context = new PThreadContext("cfg:standart_node", process_name, module_name, parent_url);
+            context = new PThreadContext("cfg:standart_node", process_name, module_name, log, main_module_url);
 
         if (node == Individual.init)
         {
@@ -133,8 +129,35 @@ class VedaModule : WSLink
 
         load_systicket();
 
-        listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
+        sock = nn_socket(AF_SP, NN_SUB);
+        if (sock >= 0)
+        {
+            int to = 1000;
+            if (nn_setsockopt(sock, NN_SOL_SOCKET, NN.RCVTIMEO, &to, to.sizeof) < 0)
+                log.trace("ERR! cannot set scoket options NN_RCVTIMEO");
 
+            if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, "".toStringz, 0) < 0)
+                log.trace("ERR! cannot set scoket options NN_SUB_SUBSCRIBE");
+
+            if (nn_connect(sock, cast(char *)notify_chanel_url) >= 0)
+            {
+                already_notify_chanel = true;
+                log.trace("success connect %s", notify_chanel_url);
+            }
+            else
+                log.trace("ERR! cannot connect socket to %s", notify_chanel_url);
+
+
+            //listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
+            if (already_notify_chanel)
+            {
+                while (true)
+                {
+                    ev_LWS_CALLBACK_GET_THREAD_ID();
+                    thread_id();
+                }
+            }
+        }
         _log.close();
     }
 
@@ -151,6 +174,8 @@ class VedaModule : WSLink
 
     abstract void thread_id();
 
+    abstract void receive_msg(string msg);
+
     private void prepare_queue()
     {
         queue.close();
@@ -163,7 +188,9 @@ class VedaModule : WSLink
             string data = cs.pop();
 
             if (data is null)
+            {
                 break;
+            }
 
             count_readed++;
 
@@ -175,9 +202,12 @@ class VedaModule : WSLink
                 continue;
             }
 
-            string  new_bin  = imm.getFirstLiteral("new_state");
+            string  new_bin = imm.getFirstLiteral("new_state");
+            //writeln ("@read from queue, new_bin=", new_bin);
             string  prev_bin = imm.getFirstLiteral("prev_state");
+            //writeln ("@read from queue, prev_bin=", prev_bin);
             string  user_uri = imm.getFirstLiteral("user_uri");
+            //writeln ("@read from queue, user_uri=", user_uri);
             string  event_id = imm.getFirstLiteral("event_id");
             INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
             op_id = imm.getFirstInteger("op_id");
@@ -189,7 +219,7 @@ class VedaModule : WSLink
             }
             else
             {
-                //writeln ("@read from queue new_indv.uri=", new_indv.uri, ", op_id=", op_id);
+//                log.trace("@read from queue new_indv.uri=%s, op_id=%s", new_indv.uri, op_id);
 
                 if (prev_bin !is null && cbor2individual(&prev_indv, prev_bin) < 0)
                 {
@@ -214,7 +244,7 @@ class VedaModule : WSLink
                 if (res == ResultCode.OK)
                 {
                     cs.commit();
-                    put_info();
+                    module_info.put_info(op_id, committed_op_id);
                 }
                 else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
                          res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
@@ -225,13 +255,13 @@ class VedaModule : WSLink
                 else
                 {
                     cs.commit();
-                    put_info();
-                    log.trace("ERR: message fail prepared, skip.");
+                    module_info.put_info(op_id, committed_op_id);
+                    log.trace("ERR! message fail prepared, skip.");
                 }
             }
             catch (Throwable ex)
             {
-                log.trace("EX! ex=%s", ex.msg);
+                log.trace("ERR! ex=%s", ex.msg);
             }
         }
         if (count_readed != count_success_prepared)
@@ -266,69 +296,47 @@ class VedaModule : WSLink
         set_global_systicket(sticket);
     }
 
-    bool put_info()
+
+    void ev_LWS_CALLBACK_GET_THREAD_ID()
     {
-        try
+        //g_child_process.thread_id();
+        if (last_committed_op_id < committed_op_id)
         {
-            ff_module_info_w.seek(0);
-            ff_module_info_w.writefln("%s;%d;%d", process_name, op_id, committed_op_id);
-            ff_module_info_w.flush();
-            return true;
+            last_committed_op_id = committed_op_id;
+            module_info.put_info(op_id, committed_op_id);
         }
-        catch (Throwable tr)
+
+        long now = Clock.currTime().stdTime();
+
+        if (now - last_check_time > 1_000_000)
         {
-            log.trace("module:put_info [%s;%d;%d] %s", process_name, op_id, committed_op_id, tr.msg);
-            return false;
+            last_check_time = now;
+            prepare_queue();
+        }
+
+        if (already_notify_chanel)
+        {
+            char *buf  = cast(char *)0;
+            int  bytes = nn_recv(sock, &buf, NN_MSG, 0, /*NN_DONTWAIT*/);
+
+            if (bytes > 0)
+            {
+                string msg = buf[ 0..bytes - 1 ].dup;
+                nn_freemsg(buf);
+
+                //log.trace("CLIENT (%s): RECEIVED %s", process_name, msg);
+
+                if (msg.indexOf("COMMIT:") >= 0)
+                {
+                    receive_msg(msg);
+                }
+                else
+                {
+                    prepare_queue();
+                }
+            }
         }
     }
 }
 
-void ev_LWS_CALLBACK_GET_THREAD_ID()
-{
-    g_child_process.thread_id();
-    if (last_committed_op_id < g_child_process.committed_op_id)
-    {
-        last_committed_op_id = g_child_process.committed_op_id;
-        g_child_process.put_info();
-    }
-
-    long now = Clock.currTime().stdTime();
-
-    if (now - last_check_time > 1_000_000)
-    {
-        last_check_time = now;
-        g_child_process.prepare_queue();
-    }
-}
-
-void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg)
-{
-    string res;
-
-    if (msg == "get_opid")
-    {
-        writeln("[CP] Client recieved:", msg);
-        long prepared_op_id;
-
-        if (g_child_process.committed_op_id != 0)
-            prepared_op_id = g_child_process.committed_op_id;
-        else
-            prepared_op_id = g_child_process.op_id;
-
-        //writeln ("@module[", process_name, "] get_op_id, return op_id=", prepared_op_id);
-
-        res = text(prepared_op_id);
-    }
-    else
-        res = "Ok";
-
-    websocket_write_back(wsi, res);     // ~ text(msg_count));
-
-    if (msg != "get_opid")
-        g_child_process.prepare_queue();
-}
-
-
-long last_committed_op_id;
-long last_check_time;
 

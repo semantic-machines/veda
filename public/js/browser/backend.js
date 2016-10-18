@@ -28,6 +28,15 @@ veda.Module(function Backend(veda) { "use strict";
     $.ajax(params).done(success).fail(fail);
   }
 
+  window.flush = function (module_id, wait_op_id, success, fail) {
+    var params = {
+      type: "GET",
+      url: "flush",
+      data: { "module_id": module_id, "wait_op_id": wait_op_id }
+    };
+    return call_server(undefined, params, success, fail);
+  }
+  
   window.get_rights = function (ticket, uri, success, fail) {
     var params = {
       type: "GET",

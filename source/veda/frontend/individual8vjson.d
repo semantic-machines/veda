@@ -7,6 +7,26 @@ import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resourc
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;
 
+static this() {
+    Lang =
+    [
+        "NONE":LANG.NONE, "none":LANG.NONE,
+        "RU":LANG.RU, "ru":LANG.RU,
+        "EN":LANG.EN, "en":LANG.EN
+    ];
+
+    Resource_type =
+    [
+        "Uri":DataType.Uri,
+        "String":DataType.String,
+        "Integer":DataType.Integer,
+        "Datetime":DataType.Datetime,
+        "Decimal":DataType.Decimal,
+        "Boolean":DataType.Boolean,
+    ];
+}
+
+
 Json individual_to_json(immutable(Individual)individual)
 {
 //    writeln ("\nINDIVIDUAL->:", individual);

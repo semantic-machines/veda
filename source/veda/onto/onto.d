@@ -11,7 +11,7 @@ private
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
     import veda.onto.resource, veda.onto.individual;
     import veda.core.util.utils, veda.util.container, util.logger;
-    import veda.core.common.know_predicates, veda.core.common.context, veda.core.log_msg, veda.core.common.define;
+    import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
 // ////// logger ///////////////////////////////////////////

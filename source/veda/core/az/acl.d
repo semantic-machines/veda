@@ -4,34 +4,26 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
-           veda.core.common.know_predicates, veda.core.log_msg, veda.util.cbor8individual;
+           veda.core.common.know_predicates, veda.core.common.log_msg, veda.util.cbor8individual;
     import veda.core.util.utils, veda.util.cbor, util.logger;
     import veda.core.storage.lmdb_storage, veda.core.az.right_set;
-	import veda.util.container;    
+    import veda.util.container;
+    import util.logger;
 }
-
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
-{
-    if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "ACL");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
 
 int max_count_in_cache = 200;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
 {
+    logger log;
     Cache!(Right *[], string) cache_of_group;
     Cache!(RightSet, string) cache_of_permission;
 
-    this(string _path, DBMode mode, string _parent_thread_name)
+    this(string _path, DBMode mode, string _parent_thread_name, logger _log)
     {
-        super(_path, mode, _parent_thread_name);
+    	log = _log;
+        super(_path, mode, _parent_thread_name, log);
         //cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache, "group");
         //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
     }
@@ -56,15 +48,25 @@ class Authorization : LmdbStorage
                                                                                                                                string right) trace =
                         null)
     {
+    	if (db_is_opened == false)
+		    open_db();	    	
+    	    	
         void reopen_db()
         {
+        	log.trace ("reopen acl.R");
             this.reopen_db();
         }
 
         ubyte res = 0;
 
         if (ticket is null)
+        {
+	        log.trace("ERR! authorize uri=%s, request_access=%s, ticket IS NULL", uri, access_to_pretty_string(request_access));
             return request_access;
+        }    
+
+    	if (db_is_opened == false)
+	    	return res;
 
         if (trace_msg[ 111 ] == 1)
             log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access));
@@ -77,8 +79,8 @@ class Authorization : LmdbStorage
         if (is_check_for_reload)
             context.acl_check_for_reload(&reopen_db);
 
-        if (db_is_open.get(path, false) == false)
-            return res;
+        //if (db_is_open.get(path, false) == false)
+        //    return res;
 
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
@@ -121,7 +123,7 @@ class Authorization : LmdbStorage
 
         if (rc != 0)
         {
-            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", path, fromStringz(mdb_strerror(rc)));
+            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR! %s", path, fromStringz(mdb_strerror(rc)));
             return res;
         }
 

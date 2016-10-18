@@ -18,7 +18,7 @@ void main(char[][] args)
 
     core.thread.Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout, "127.0.0.1", 8091);
+    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout, "127.0.0.1", 8091, new logger("veda-core-fanout", "log", ""));
 
     p_fanout.run();
 }
@@ -26,18 +26,18 @@ void main(char[][] args)
 class FanoutProcess : VedaModule
 {
     Mysql      mysql_conn;
-    string     database_name;
+    string     database_name;	
 
     MailSender smtp_conn;
 
-    this(P_MODULE _module_name, string _host, ushort _port)
+    this(P_MODULE _module_name, string _host, ushort _port, logger log)
     {
-        super(_module_name, _host, _port);
+        super(_module_name, _host, _port, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                          string event_id,
-                          long op_id)
+                                string event_id,
+                                long op_id)
     {
         try
         {
@@ -65,6 +65,10 @@ class FanoutProcess : VedaModule
     }
 
     override void thread_id()
+    {
+    }
+
+    override void receive_msg(string msg)
     {
     }
 
@@ -338,8 +342,8 @@ class FanoutProcess : VedaModule
         try
         {
             isExistsTable = isExistsTable.init;
-            log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
-            log.trace ("push_to_mysql: new_indv=%s", new_indv);
+            //log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
+            //log.trace ("push_to_mysql: new_indv=%s", new_indv);
 
             bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
@@ -351,25 +355,13 @@ class FanoutProcess : VedaModule
             if (isDraftOf !is null)
                 return;
 
-			bool isAutomaticallyVersioned = false;
-
-            Resources types        = new_indv.getResources("rdf:type");
-            foreach (type; types)
-            {
-                if (context.get_onto().isSubClasses(type.uri, [ "v-s:AutomaticallyVersioned" ]))
-                {
-                    isAutomaticallyVersioned = true;
-                    break;
-                }
-            }
-
-
             if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
-                                        (isAutomaticallyVersioned == true && previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+                                        (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
                 return;
 
             Resource  created = new_indv.getFirstResource("v-s:created");
 
+            Resources types        = new_indv.getResources("rdf:type");
             bool      need_prepare = false;
 
             foreach (type; types)

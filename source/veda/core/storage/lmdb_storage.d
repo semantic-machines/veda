@@ -11,17 +11,6 @@ private
            veda.core.storage.binlog_tools;
 }
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
-{
-    if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "LMDB");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
-
 /// Режим работы хранилища
 enum DBMode
 {
@@ -59,10 +48,13 @@ public class LmdbStorage : Storage
     string              parent_thread_name;
     long                last_op_id;
     long                committed_last_op_id;
+    logger				log; 
+    bool				db_is_opened;
 
     /// конструктор
-    this(string _path_, DBMode _mode, string _parent_thread_name)
+    this(string _path_, DBMode _mode, string _parent_thread_name, logger _log)
     {
+    	log = _log;    	
         _path                = _path_;
         db_name              = _path[ (lastIndexOf(path, '/') + 1)..$ ];
         summ_hash_this_db_id = "summ_hash_this_db";
@@ -88,6 +80,9 @@ public class LmdbStorage : Storage
 
     public Result backup(string backup_id)
     {
+    	if (db_is_opened == false)
+		    open_db();	
+    	
         string backup_path    = dbs_backup ~ "/" ~ backup_id;
         string backup_db_name = dbs_backup ~ "/" ~ backup_id ~ "/" ~ db_name;
 
@@ -145,17 +140,17 @@ public class LmdbStorage : Storage
         {
             close_db();
             open_db();
-	      	//log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
+	      	log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
         }
     }
 
     public void open_db()
     {
-      //writefln ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
+      //log.trace ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
         if (db_is_open.get(_path, false) == true)
         {
-            //writeln("@@@ open_db #2 ", _path, ", thread:", core.thread.Thread.getThis().name, ", ALREADY OPENNING, db_is_open=", db_is_open);
+            //log.trace("@@@ open_db #2 ", _path, ", thread:", core.thread.Thread.getThis().name, ", ALREADY OPENNING, db_is_open=", db_is_open);
             return;
         }
 
@@ -203,6 +198,7 @@ public class LmdbStorage : Storage
 
                 summ_hash_this_db = BigInt("0x" ~ hash_str);
                 //log.trace("open db %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
+                db_is_opened = true;
             }
         }
     }
@@ -238,6 +234,9 @@ public class LmdbStorage : Storage
 
     public ResultCode put(string in_key, string in_value, long op_id)
     {
+    	if (db_is_opened == false)
+		    open_db();	    	
+    	
     	if (op_id > 0)
 	    	last_op_id = op_id;
     	
@@ -329,6 +328,9 @@ public class LmdbStorage : Storage
 
     public ResultCode remove(string in_key)
     {
+    	if (db_is_opened == false)
+		    open_db();	
+    	
         try
         {
             string _key = in_key.dup;
@@ -449,6 +451,9 @@ public class LmdbStorage : Storage
 
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
+    	if (db_is_opened == false)
+		    open_db();	
+    	
     	last_op_id = op_id;
     	
         try
@@ -562,6 +567,9 @@ public class LmdbStorage : Storage
 
     public long count_entries()
     {
+    	if (db_is_opened == false)
+		    open_db();	
+    	
         long count = -1;
         int  rc;
 
@@ -633,6 +641,9 @@ public class LmdbStorage : Storage
 
     public string find(string uri, bool return_value = true)
     {
+    	if (db_is_opened == false)
+		    open_db();	
+    	
         if (uri is null || uri.length < 2)
             return null;
 
@@ -743,6 +754,9 @@ public class LmdbStorage : Storage
 
     public long dump_to_binlog()
     {
+    	if (db_is_opened == false)
+		    open_db();	
+    	
         int    size_bin_log     = 0;
         int    max_size_bin_log = 10_000_000;
 

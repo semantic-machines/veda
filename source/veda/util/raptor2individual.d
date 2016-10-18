@@ -1,4 +1,4 @@
-module veda.core.util.raptor2individual;
+module veda.util.raptor2individual;
 
 import std.string, std.stdio : writeln;
 import veda.bind.libraptor_header;

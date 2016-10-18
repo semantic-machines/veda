@@ -1,7 +1,7 @@
 module veda.core.az.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-private import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.log_msg,
+private import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.log_msg,
                veda.core.common.know_predicates;
 private import veda.core.util.utils, veda.util.cbor, util.logger;
 
@@ -196,7 +196,7 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     //writeln ("delta_in_set=", delta_in_set);
 
     update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-    update_right_set(delta_resource, in_set, true, useFilter, prefix, access, op_id, storage);
+    update_right_set(delta_resource, delta_in_set, true, useFilter, prefix, access, op_id, storage);
 }
 
 private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,

@@ -55,6 +55,10 @@ public enum P_MODULE : byte
 
     ltr_scripts                = 14,
 
+    webserver                  = 15,
+
+    n_chanel                   = 16,
+
     nop                        = 99
 }
 
@@ -224,7 +228,7 @@ interface Context
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
 
-    public long get_operation_state(P_MODULE thread_id);
+    public long get_operation_state(P_MODULE thread_id, long wait_op_id);
 
     @property
     public Ticket sys_ticket(bool is_new = false);
@@ -236,6 +240,12 @@ interface Context
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
+
+    version (isServer)
+    {
+        public string execute(string in_msg);
+    }
+
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
 
 

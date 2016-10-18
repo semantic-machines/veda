@@ -2,16 +2,16 @@
  * загрузка индивидов в базу данных из *.ttl
  * генерация doc/onto
  */
-module veda.core.io.file_reader;
+module veda.file_reader;
 
 import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, std.stdio : writeln, writefln, File;
-import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.core.util.raptor2individual, veda.util.cbor8individual;
+import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.util.cbor8individual, veda.util.raptor2individual;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
        veda.core.common.know_predicates,
-       veda.core.log_msg;
+       veda.core.common.log_msg;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -47,7 +47,7 @@ shared static this()
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void main(char[][] args)
 {
-    string parent_url = "http://127.0.0.1:8080";
+    string parent_url = "tcp://127.0.0.1:9112\0";
 
     core.thread.Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
@@ -65,7 +65,7 @@ void main(char[][] args)
 //                send(tid_response_reciever, true);
 //            });
 
-    Context context = new PThreadContext(process_name, "file_reader", P_MODULE.file_reader, parent_url);
+    Context context = new PThreadContext(process_name, "file_reader", P_MODULE.file_reader, log, parent_url);
 
     auto    oFiles = dirEntries(onto_path, SpanMode.depth);
 

@@ -1,7 +1,7 @@
 /**
  * отображение в консоли количества выполненных операций
  */
-module veda.core.threads.load_info;
+module veda.server.load_info;
 
 private
 {

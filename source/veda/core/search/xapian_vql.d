@@ -7,8 +7,8 @@ module veda.core.search.xapian_vql;
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.util.cbor, veda.onto.onto;
-import search.vel;
-import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.log_msg, veda.core.storage.lmdb_storage;
+import veda.core.search.vel;
+import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.core.storage.lmdb_storage;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -423,7 +423,6 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
                 //writeln("@p c_to=", c_to);
 
                 int slot = key2slot.get(token_L, -1);
-                //writeln("@p #E0");
 
                 query_r = new_Query_range(xapian_op.OP_VALUE_RANGE, slot, c_from, c_to, &err);
 
@@ -435,15 +434,11 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
                 else
                     query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
 
-                //writeln("@p #E3");
-
                 if (query_r !is null)
                     destroy_Query(query_r);
 
                 if (query_l !is null)
                     destroy_Query(query_l);
-
-                //writeln("@p #E4");
             }
             else
             {
@@ -474,8 +469,6 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
                     destroy_Query(query_l);
             }
 
-            //writeln("#E3 &&");
-
             if (tta_R !is null && tta_L is null)
             {
                 _rd = rd;
@@ -490,8 +483,6 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
         }
         else if (tta.op == "||")
         {
-//        writeln("#4.1 ||");
-
             if (tta.R !is null)
                 transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
@@ -506,8 +497,6 @@ public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out str
 
             if (query_l !is null)
                 destroy_Query(query_l);
-
-//        writeln("#4.e");
         }
         else
         {
@@ -558,7 +547,6 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
     if (trace_msg[ 200 ] == 1)
         log.trace("found =%d, @matches =%d", matches.get_matches_estimated(&err), matches.size(&err));
 
-    //writeln ("@b1 ", context.get_name);
     if (matches !is null)
     {
         XapianMSetIterator it = matches.iterator(&err);
@@ -582,15 +570,22 @@ public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
             string subject_id = cast(immutable)data_str[ 0..*data_len ].dup;
 
             if (trace_msg[ 201 ] == 1)
-                log.trace("subject_id:[%s]", subject_id);
+                log.trace("found subject_id:[%s]", subject_id);
 
             if (context.authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
             {
+                //log.trace("found subject_id:[%s] authorized", subject_id);
+                
                 add_out_element(subject_id);
                 read_count++;
                 if (read_count >= top)
                     break;
             }
+            else
+            {
+                log.trace("subject_id:[%s] not authorized", subject_id);            	
+            }
+                        
             acl_db_reopen = false;
 
             it.next(&err);

@@ -10,8 +10,9 @@ private import veda.common.type;
 private import veda.bind.xapian_d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, util.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.storage.lmdb_storage;
-private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.log_msg, veda.core.impl.thread_context;
-private import search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property;
+private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg,
+               veda.core.impl.thread_context;
+private import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -424,10 +425,11 @@ public class IndexerContext
                                         {
                                             // ссылка на наследуемый индекс, переходим вниз
                                             Individual inhr_idx = iproperty.get_index(value.uri);
-                                            
-					                        if (trace_msg[ 220 ] == 1)
-	                                            log.trace ("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value, inhr_idx);
-                                            
+
+                                            if (trace_msg[ 220 ] == 1)
+                                                log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value,
+                                                          inhr_idx);
+
                                             if (inhr_idx != Individual.init)
                                             {
                                                 Resources forProperties =
@@ -438,10 +440,10 @@ public class IndexerContext
                                                     {
                                                         Resources links =
                                                             inner_indv.getResources(forProperty.uri);
-                                                        
-								                        if (trace_msg[ 220 ] == 1)
-				                                            log.trace ("forProperty=[%s], links=[%s]", forProperty, links);
-                                                        
+
+                                                        if (trace_msg[ 220 ] == 1)
+                                                            log.trace("forProperty=[%s], links=[%s]", forProperty, links);
+
                                                         foreach (link; links)
                                                         {
                                                             prepare_index(inhr_idx, link,

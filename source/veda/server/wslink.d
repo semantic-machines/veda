@@ -1,10 +1,9 @@
-module veda.vmodule.wslink;
+module veda.server.wslink;
 
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
-    import requests.http, requests.streams;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
@@ -30,7 +29,7 @@ class WSLink
     ushort                    port;
     string                    host;
 
-    string                    parent_url = "http://127.0.0.1:8080";
+    //string                    parent_url = "http://127.0.0.1:8080";
 
     logger log()
     {
@@ -50,7 +49,7 @@ class WSLink
     {
     }
 
-    private void init_chanel(string host)
+    private void init_chanel()
     {
         protocol[ 0 ].name                  = "veda-module-protocol\0";
         protocol[ 0 ].callback              = &ws_service_callback;
@@ -111,7 +110,7 @@ class WSLink
                     break;
                 }
 
-                init_chanel(host);
+                init_chanel();
 
                 bool f1 = false;
                 while (!destroy_flag)
@@ -135,7 +134,7 @@ class WSLink
         }
         catch (Throwable tr)
         {
-            log.trace("MAIN LOOP EXIT %s", tr.msg);
+            log.trace("MAIN LOOP EXIT: %s", tr.info);
         }
 
         _log.close();
