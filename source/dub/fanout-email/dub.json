@@ -1,6 +1,6 @@
 {
-	"name": "veda-fanout",
-	"description": "veda-fanout",
+	"name": "veda-fanout-email",
+	"description": "veda-fanout-email",
 	"dependencies": {
 		"pacahon_third_party": "1.0.13", 
 		"backtrace-d": "0.1.0", 
@@ -12,7 +12,6 @@
         "license": "LGPL v3",
 	"sourcePaths":[
 	    "../../veda/common", 
-	    "../../veda/fanout", 
 	    "../../veda/onto",  
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
@@ -33,7 +32,8 @@
         "../../veda/util/container.d",
         "../../veda/util/cbor.d",
         "../../veda/util/cbor8individual.d",
-        "../../veda/util/module_info.d"
+        "../../veda/util/module_info.d",
+        "../../veda/fanout/fanout_email.d"
 	],
         "libs":["nanomsg"],
 	"configurations": [

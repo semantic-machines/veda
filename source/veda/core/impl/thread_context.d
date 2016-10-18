@@ -1661,8 +1661,8 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout || module_id ==
-                P_MODULE.ltr_scripts)
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email || 
+            	module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
             {
                 return wait_module(module_id, op_id, timeout);
             }

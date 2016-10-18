@@ -1,4 +1,4 @@
-#sudo ifdown -a
+sudo ifdown -a
 
 #!/bin/sh
 rm *.log
@@ -11,12 +11,13 @@ fi
 ./build-component.sh veda-bootstrap bootstrap
 rm veda
 rename "s/veda-bootstrap/veda/g" *
-./build-component.sh veda-webserver webserver
-./build-component.sh veda-server server
-./build-component.sh veda-fanout fanout
-./build-component.sh veda-scripts scripts
-./build-component.sh veda-ft-indexer ft-indexer
-./build-component.sh veda-ltr-scripts ltr-scripts
-./build-component.sh veda-ttlreader ttlreader
+#./build-component.sh veda-webserver webserver
+#./build-component.sh veda-server server
+./build-component.sh veda-fanout-email fanout-email
+./build-component.sh veda-fanout-sql fanout-sql
+#./build-component.sh veda-scripts scripts
+#./build-component.sh veda-ft-indexer ft-indexer
+#./build-component.sh veda-ltr-scripts ltr-scripts
+#./build-component.sh veda-ttlreader ttlreader
 
-#sudo ifup -a
+sudo ifup -a

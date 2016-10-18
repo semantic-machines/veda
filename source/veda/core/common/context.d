@@ -48,10 +48,10 @@ public enum P_MODULE : byte
 
     zmq_listener               = 11,
 
-    fanout                     = 12,
+    fanout_email               = 12,
 
     //// data change signal
-    dcs                        = 13,
+    fanout_sql                 = 13,
 
     ltr_scripts                = 14,
 
