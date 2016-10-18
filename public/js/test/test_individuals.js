@@ -553,6 +553,8 @@ for (i = 0; i < 1; i++)
             var res = put_individual(ticket_user1.id, new_test_doc3, false);
             var res = put_individual(ticket_user1.id, new_test_doc4, false);
 
+	    	flush (fulltext_indexer, res.op_id);
+
             wait_module(fulltext_indexer, res.op_id);
             wait_module(subject_manager, res.op_id);
             wait_module(acl_manager, res.op_id);
