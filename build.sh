@@ -1,4 +1,4 @@
-sudo ifdown -a
+#sudo ifdown -a
 
 #!/bin/sh
 rm *.log
@@ -19,4 +19,4 @@ rename "s/veda-bootstrap/veda/g" *
 ./build-component.sh veda-ltr-scripts ltr-scripts
 ./build-component.sh veda-ttlreader ttlreader
 
-sudo ifup -a
+#sudo ifup -a
