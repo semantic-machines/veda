@@ -245,6 +245,13 @@ v-s:Report
   rdfs:label "Отчет"@ru ;
 .
 
+v-s:ReportParametersForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Report parameters form"@en ;
+  rdfs:label "Форма параметров отчета"@ru ;
+.
 
 ################################ REPORTS END ####################################################
 
