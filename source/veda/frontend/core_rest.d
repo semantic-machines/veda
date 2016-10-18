@@ -502,7 +502,6 @@ class VedaStorageRest : VedaStorageRest_API
 
         ResultCode rc = ResultCode.Internal_Server_Error;
 
-
         try
         {
             Individual[ string ] onto_individuals =
@@ -512,8 +511,8 @@ class VedaStorageRest : VedaStorageRest_API
 
             if (individual != Individual.init)
             {
+                res = individual_to_json(individual);
                 rc = ResultCode.OK;
-                res ~= cast(immutable) individual_to_json(individual);
             }
             else
             {

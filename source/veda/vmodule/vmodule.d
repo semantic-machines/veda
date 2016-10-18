@@ -21,8 +21,10 @@ logger _log;
 
 extern (C) void handleTermination(int _signal)
 {
-    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    
+    if (_log !is null)
+	    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     //_log.close();
 
     writeln("!SYS: ", process_name, ": preparation for the exit.");

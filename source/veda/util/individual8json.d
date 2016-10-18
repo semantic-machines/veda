@@ -116,7 +116,7 @@ Individual json_to_individual(ref JSONValue individual_json)
 
     foreach (string property_name, property_values; individual_json)
     {
-//    	writeln ("property_name=",property_name);
+//      writeln ("property_name=",property_name);
         if (property_name == "@")
         {
             individual.uri = property_values.str;
@@ -184,71 +184,83 @@ JSONValue resource_to_json(Resource resource)
 
 Resource json_to_resource(JSONValue resource_json)
 {
+    //writeln ("resource_json=", resource_json);
     Resource resource = Resource.init;
 
-    DataType type;
+    try
+    {
+        DataType type;
 
-    if (resource_json[ "type" ].type == JSON_TYPE.INTEGER)
-        type = cast(DataType)resource_json.getLong("type");
-    else
-        type = Resource_type.get(resource_json.getString("type"), DataType.String);
+        if (resource_json[ "type" ].type == JSON_TYPE.INTEGER)
+            type = cast(DataType)resource_json.getLong("type");
+        else
+            type = Resource_type.get(resource_json.getString("type"), DataType.String);
 
-    auto data_type = resource_json[ "data" ].type;
+        auto data_type = resource_json[ "data" ].type;
 
-    if (type == DataType.String)
-    {
-        if (resource_json[ "lang" ].type == JSON_TYPE.STRING)
-            resource.lang = Lang.get(resource_json.getString("lang"), Lang[ "NONE" ]);
-        resource.data = resource_json.getString("data");
-    }
-    else if (type == DataType.Boolean)
-    {
-        if (data_type == JSON_TYPE.TRUE || data_type == JSON_TYPE.FALSE)
+        if (type == DataType.String)
         {
-            resource = resource_json.getBool("data");
+            JSONValue jlang = resource_json.object.get("lang", JSONValue.init);
+
+            if (jlang !is JSONValue.init)
+            {
+                //writeln ("#1 jlang=", jlang);
+                if (jlang.type == JSON_TYPE.STRING)
+                    resource.lang = Lang.get(jlang.str, Lang[ "NONE" ]);
+
+                if (jlang.type == JSON_TYPE.INTEGER)
+                    resource.lang = cast(LANG)jlang.integer;
+            }
+            else
+            {
+                //writeln ("#2 jlang=", jlang);
+            }
+            resource.data = resource_json.getString("data");
         }
-    }
-    else if (type == DataType.Uri)
-    {
-        resource.data = resource_json.getString("data");
-    }
-    else if (type == DataType.Decimal)
-    {
-        if (data_type == JSON_TYPE.FLOAT)
+        else if (type == DataType.Boolean)
         {
-            resource = decimal(resource_json.getFloat ("data"));
+            if (data_type == JSON_TYPE.TRUE || data_type == JSON_TYPE.FALSE)
+            {
+                resource = resource_json.getBool("data");
+            }
         }
-        else if (data_type == JSON_TYPE.INTEGER)
+        else if (type == DataType.Uri)
         {
-            resource = decimal(resource_json.getLong("data"));
+            resource.data = resource_json.getString("data");
         }
-        else if (data_type == JSON_TYPE.STRING)
+        else if (type == DataType.Decimal)
         {
-            resource = decimal(resource_json.getString("data"));        	
+            if (data_type == JSON_TYPE.FLOAT)
+            {
+                resource = decimal(resource_json.getFloat("data"));
+            }
+            else if (data_type == JSON_TYPE.INTEGER)
+            {
+                resource = decimal(resource_json.getLong("data"));
+            }
+            else if (data_type == JSON_TYPE.STRING)
+            {
+                resource = decimal(resource_json.getString("data"));
+            }
         }
-    }
-    else if (type == DataType.Integer)
-    {
-        resource = resource_json.getLong("data");
-    }
-    else if (type == DataType.Datetime)
-    {
-        try
+        else if (type == DataType.Integer)
+        {
+            resource = resource_json.getLong("data");
+        }
+        else if (type == DataType.Datetime)
         {
             string val = resource_json.getString("data");
-//	    writeln ("@v j->r #0 ", val);
-            long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            long   tm  = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
             resource = tm;
-//	    writeln ("@v j->r #1 ", tm);
         }
-        catch (Exception ex)
-        {
-            writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
-        }
-//	writeln ("@v j->r #2");
+
+        resource.type = type;
+    }
+    catch (Exception ex)
+    {
+        writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
     }
 
-    resource.type = type;
     return resource;
 }
 

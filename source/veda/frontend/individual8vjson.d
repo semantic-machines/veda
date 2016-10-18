@@ -29,7 +29,7 @@ static this() {
 
 Json individual_to_json(immutable(Individual)individual)
 {
-//    writeln ("\nINDIVIDUAL->:", individual);
+    //writeln ("\nimmutable:INDIVIDUAL->:", individual);
     Json json = Json.emptyObject;
 
     json[ "@" ] = individual.uri;
@@ -85,6 +85,8 @@ Individual json_to_individual(const Json individual_json)
 
 Json resource_to_json(Resource resource)
 {
+	//writeln ("resource=", resource);
+	
     Json   resource_json = Json.emptyObject;
 
     string data = resource.data;
