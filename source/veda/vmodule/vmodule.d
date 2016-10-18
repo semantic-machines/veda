@@ -151,7 +151,7 @@ class VedaModule // : WSLink
             //listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
             if (already_notify_chanel)
             {
-                while (true)
+                while (f_listen_exit != true)
                 {
                     ev_LWS_CALLBACK_GET_THREAD_ID();
                     thread_id();
