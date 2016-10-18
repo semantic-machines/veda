@@ -1716,7 +1716,21 @@ class PThreadContext : Context
         {
             JSONValue res;
 
-            JSONValue jsn = parseJSON(in_msg);
+			JSONValue jsn;
+			
+			try
+			{
+	            jsn = parseJSON(in_msg);
+			}
+			catch (Throwable tr)
+			{
+	            log.trace("ERR! fail parse msg=%s, err=%s", in_msg, tr.msg);
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.Internal_Server_Error;
+                res[ "op_id" ]  = -1;		
+                
+                return res.toString();		
+			}			
 
             //log.trace("get msg=%s", jsn);
 
@@ -1813,12 +1827,10 @@ class PThreadContext : Context
                 bool rc        = this.backup(to_binlog, 0);
 
                 res[ "type" ] = "OpResult";
-
                 if (rc == true)
                     res[ "result" ] = ResultCode.OK;
                 else
                     res[ "result" ] = ResultCode.Internal_Server_Error;
-
                 res[ "op_id" ] = -1;
             }
 
