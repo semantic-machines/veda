@@ -1,6 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format;
 import veda.common.type, veda.core.common.define, veda.util.tools;
 
 // ////// Logger ///////////////////////////////////////////
@@ -485,7 +485,7 @@ class Queue
         ff_info_push_w.seek(0);
 
         auto writer = appender!string();
-        std.format.formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
+        formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
 
         hash.start();
         hash.put(cast(ubyte[])writer.data);

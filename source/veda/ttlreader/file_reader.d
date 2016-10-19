@@ -7,7 +7,7 @@ module veda.file_reader;
 import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
-       std.digest.md, std.utf, std.path, std.stdio : writeln, writefln, File;
+       std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.util.cbor, veda.core.util.utils, util.logger, veda.util.cbor8individual, veda.util.raptor2individual;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
        veda.core.common.know_predicates,
@@ -49,7 +49,7 @@ void main(char[][] args)
 {
     string parent_url = "tcp://127.0.0.1:9112\0";
 
-    core.thread.Thread.sleep(dur!("seconds")(2));
+    Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
 
 //    core.thread.Thread tr = core.thread.Thread.getThis();
@@ -331,7 +331,7 @@ void processed(string[] changes, Context context)
         }
     }
 
-    core.memory.GC.collect();
+    GC.collect();
 
     if (trace_msg[ 29 ] == 1)
         log.trace("file_reader::processed end");

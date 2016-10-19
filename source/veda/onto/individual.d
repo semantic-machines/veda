@@ -5,7 +5,7 @@ module veda.onto.individual;
 
 private
 {
-    import std.stdio, std.typecons, std.conv, std.exception : assumeUnique;
+    import std.stdio, std.typecons, std.conv, std.algorithm, std.exception : assumeUnique;
     import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils, veda.util.container,
            veda.util.cbor8individual;
 }
@@ -308,7 +308,7 @@ public struct Individual
 
             Resources  new_rss = Resources.init;
 
-            auto       uniq_rdf_type = std.algorithm.uniq(rdf_type);
+            auto       uniq_rdf_type = uniq(rdf_type);
 
             Resource   rc;
             while (uniq_rdf_type.empty == false)

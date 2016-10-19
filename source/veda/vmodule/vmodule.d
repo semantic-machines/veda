@@ -3,7 +3,7 @@ module veda.vmodule.vmodule;
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
-    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
@@ -119,7 +119,7 @@ class VedaModule // : WSLink
         while (!queue.isReady)
         {
             log.trace("queue [%s] not ready, sleep and repeate...", queue_name);
-            core.thread.Thread.sleep(dur!("seconds")(10));
+            Thread.sleep(dur!("seconds")(10));
             queue.open();
         }
 
@@ -254,7 +254,7 @@ class VedaModule // : WSLink
                          res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
                 {
                     log.trace("WARN: message fail prepared, sleep and repeate...");
-                    core.thread.Thread.sleep(dur!("seconds")(10));
+                    Thread.sleep(dur!("seconds")(10));
                 }
                 else
                 {
@@ -293,7 +293,7 @@ class VedaModule // : WSLink
                 context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
 
                 writeln("@@ child_process is_superadmin=", is_superadmin);
-                core.thread.Thread.sleep(dur!("seconds")(1));
+                Thread.sleep(dur!("seconds")(1));
             }
         }
 

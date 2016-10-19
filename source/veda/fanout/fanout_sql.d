@@ -3,7 +3,7 @@
  */
 module veda.fanout_sql;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
@@ -15,7 +15,7 @@ void main(char[][] args)
 {
     process_name = "fanout-sql";
 
-    core.thread.Thread.sleep(dur!("seconds")(1));
+    Thread.sleep(dur!("seconds")(1));
 
     FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout_sql, "127.0.0.1", 8091, new Logger("veda-core-fanout-sql", "log", ""));
 

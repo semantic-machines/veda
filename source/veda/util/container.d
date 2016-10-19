@@ -13,7 +13,7 @@
 
 module veda.util.container;
 
-import std.stdio;
+import std.stdio, std.conv;
 
 /// Unordered array with O(1) insertion and removal
 struct Set (T, uint INITSIZE = 64)
@@ -124,7 +124,7 @@ class Cache(T, K)
         {
             if (MRU_e !is null)
             {
-                ss ~= "[" ~ std.conv.text(MRU_e.key) ~ ":" ~ std.conv.text(MRU_e.use_count) ~ ":" ~ std.conv.text(MRU_e.MRU_pos) ~ "]";
+                ss ~= "[" ~ text(MRU_e.key) ~ ":" ~ text(MRU_e.use_count) ~ ":" ~ text(MRU_e.MRU_pos) ~ "]";
             }
         }
         writeln("\n\n@MRU=", ss);

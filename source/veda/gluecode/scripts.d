@@ -3,7 +3,7 @@
  */
 module veda.gluecode.scripts;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
@@ -14,7 +14,7 @@ void main(char[][] args)
 {
     process_name = "scripts";
 
-    core.thread.Thread.sleep(dur!("seconds")(1));
+    Thread.sleep(dur!("seconds")(1));
 
     ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091, new Logger("veda-core-scripts", "log", ""));
 

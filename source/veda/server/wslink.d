@@ -10,6 +10,7 @@ private
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
     import veda.bind.libwebsocketd;
     import veda.util.container;
+    alias core.thread.Thread core_thread;  
 }
 
 bool   f_listen_exit   = false;
@@ -147,7 +148,7 @@ class WSLink
                 log.trace("DISCONNECT");
                 lws_context_destroy(ws_context);
 
-                core.thread.Thread.sleep(dur!("seconds")(1));
+                core_thread.sleep(dur!("seconds")(1));
             }
         }
         catch (Throwable tr)
