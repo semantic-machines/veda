@@ -269,9 +269,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     //  Delete
     $delete.on("click", function (e) {
-      if ( confirm("Вы действительно хотите удалить документ?") ) template.trigger("delete");
+      if ( confirm("Вы действительно хотите удалить документ?") ) { template.trigger("delete"); }
     });
-    if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0]) $delete.hide();
+    if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
 
     // Apply mode class to template to show/hide elements in different modes
     function modeHandler (e) {
@@ -737,7 +737,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function isDraftHandler(property_uri) {
       if (property_uri === "v-s:isDraft") {
         // If individual is draft
-        if ( individual.hasValue("v-s:isDraft") && individual["v-s:isDraft"][0] == true ) {
+        if ( individual.hasValue("v-s:isDraft", true) ) {
           //Rename "Edit" -> "Continue edit"
           $edit.text(ContinueEdit);
           //Rename "Cancel" -> "Delete draft"
