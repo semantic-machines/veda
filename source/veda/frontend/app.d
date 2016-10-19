@@ -1,19 +1,18 @@
 import std.conv, std.stdio, std.file;
 import vibe.d;
 import properd;
-import veda.frontend.core_rest;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
-import veda.frontend.cbor8vjson, veda.frontend.individual8vjson;
+import veda.frontend.core_rest, veda.frontend.cbor8vjson, veda.frontend.individual8vjson;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+util.logger.Logger _log;
+util.logger.Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-webserver", "log", "frontend");
+        _log = new util.logger.Logger("veda-core-webserver", "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

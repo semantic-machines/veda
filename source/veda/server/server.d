@@ -15,18 +15,18 @@ private
     import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_chanel;
 }
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "server");
+        _log = new Logger("veda-core-" ~ process_name, "log", "server");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
 
-logger io_msg;
+Logger io_msg;
 
 enum CMD : byte
 {
@@ -36,7 +36,7 @@ enum CMD : byte
 
 static this()
 {
-    io_msg = new logger("pacahon", "io", "server");
+    io_msg = new Logger("pacahon", "io", "server");
     bsd_signal(SIGINT, &handleTermination2);
 }
 
@@ -122,7 +122,7 @@ class VedaServer : WSLink
 
         Backtrace.install(stderr);
 
-        io_msg = new logger("pacahon", "io", "server");
+        io_msg = new Logger("pacahon", "io", "server");
         Tid[ P_MODULE ] tids;
 
         try

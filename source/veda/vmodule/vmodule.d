@@ -13,9 +13,9 @@ private
 
 bool f_listen_exit = false;
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
+Logger _log;
 
 // ////// ////// ///////////////////////////////////////////
 
@@ -72,9 +72,9 @@ class VedaModule // : WSLink
     Ticket         sticket;
     P_MODULE       module_name;
 
-    logger log;
+    Logger log;
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger in_log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger in_log)
     {
         process_name = text(_module_name);
         module_name  = _module_name;

@@ -15,22 +15,11 @@ private
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, veda.core.search.vql;
     import veda.util.module_info;
+	import util.logger;
 
     version (isServer) alias veda.server.storage_manager storage_module;
     version (isServer) alias veda.server.acl_manager acl_module;
 }
-
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-//logger _log;
-//logger log()
-//{
-//   if (_log is null)
-//        _log = new logger("veda-core-" ~ process_name, "log", "API");
-//    return _log;
-//}
-// ////// ////// ///////////////////////////////////////////
-
 
 Tid dummy_tid;
 
@@ -111,16 +100,14 @@ class PThreadContext : Context
 
     private bool        API_ready = true;
     private string      main_module_url;
-    private logger      log;
+    private Logger      log;
 
     private long        last_ticket_manager_op_id = 0;
 
-//    logger log()
-//    {
-//        if (_log is null)
-//            _log = new logger("veda-core-" ~ text(id), "log", name);
-//        return _log;
-//    }
+	public Logger get_logger ()
+	{
+		return log;
+	}
 
     version (isModule)
     {
@@ -199,7 +186,7 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
-    this(string _node_id, string context_name, P_MODULE _id, logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
+    this(string _node_id, string context_name, P_MODULE _id, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
         log = _log;
 
@@ -211,10 +198,10 @@ class PThreadContext : Context
         main_module_url = _main_module_url;
 /*
         {
-            import std.experimental.logger;
-            import std.experimental.logger.core;
+            import std.experimental.Logger;
+            import std.experimental.Logger.core;
 
-            std.experimental.logger.core.globalLogLevel(LogLevel.info);
+            std.experimental.Logger.core.globalLogLevel(LogLevel.info);
         }
  */
         node_id = _node_id;

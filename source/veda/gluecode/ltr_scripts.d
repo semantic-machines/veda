@@ -15,13 +15,13 @@ private
     import veda.vmodule.vmodule;
     import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
+        _log = new Logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -328,7 +328,7 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger _log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger _log)
     {
         super(_module_name, _host, _port, _log);
     }

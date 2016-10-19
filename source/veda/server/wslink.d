@@ -17,7 +17,7 @@ int    connection_flag = 0;
 int    destroy_flag    = 0;
 int    writeable_flag  = 0;
 
-logger _log;
+Logger _log;
 
 long max_size_packet = 1024*64;
 extern (C) void handleTermination1(int _signal)
@@ -49,10 +49,10 @@ class WSLink
 
     //string                    parent_url = "http://127.0.0.1:8080";
 
-    logger log()
+    Logger log()
     {
         if (_log is null)
-            _log = new logger("veda-core-" ~ process_name, "log", process_name);
+            _log = new Logger("veda-core-" ~ process_name, "log", process_name);
         return _log;
     }
 
@@ -60,7 +60,7 @@ class WSLink
     {
         port = _port;
         host = _host;
-        _log = new logger("veda-core-" ~ process_name, "log", "PROCESS");
+        _log = new Logger("veda-core-" ~ process_name, "log", "PROCESS");
     }
 
     ~this()

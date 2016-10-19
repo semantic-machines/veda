@@ -13,15 +13,15 @@ import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.com
        veda.core.common.know_predicates,
        veda.core.common.log_msg;
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
     {
         process_name = "ttl_reader";
-        _log         = new logger("veda-core-" ~ process_name, "log", "FILE");
+        _log         = new Logger("veda-core-" ~ process_name, "log", "FILE");
     }
     return _log;
 }

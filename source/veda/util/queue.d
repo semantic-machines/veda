@@ -3,13 +3,13 @@ module veda.util.queue;
 import std.conv, std.stdio, std.file, std.array, std.digest.crc;
 import veda.common.type, veda.core.common.define, veda.util.tools;
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "QUEUE");
+        _log = new Logger("veda-core-" ~ process_name, "log", "QUEUE");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

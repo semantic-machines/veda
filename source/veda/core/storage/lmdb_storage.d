@@ -48,11 +48,11 @@ public class LmdbStorage : Storage
     string              parent_thread_name;
     long                last_op_id;
     long                committed_last_op_id;
-    logger				log; 
+    Logger				log; 
     bool				db_is_opened;
 
     /// конструктор
-    this(string _path_, DBMode _mode, string _parent_thread_name, logger _log)
+    this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
     {
     	log = _log;    	
         _path                = _path_;
