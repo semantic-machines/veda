@@ -21,7 +21,7 @@ private
 	{
 		alias veda.server.storage_manager storage_module;
 	    alias veda.server.acl_manager acl_module;
-	    import veda.server.load_info;
+	    alias veda.server.load_info load_info;
 	}    
 }
 
@@ -490,7 +490,7 @@ class PThreadContext : Context
     public void stat(byte command_type, ref StopWatch sw) nothrow
     {
         version (isServer)
-            veda.server.load_info.stat(command_type, sw);
+            load_info.stat(command_type, sw);
     }
 
     int _timeout = 10;
