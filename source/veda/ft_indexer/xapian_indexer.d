@@ -6,12 +6,13 @@ module veda.veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
-private import veda.type;
-private import bind.xapian_d_header;
+private import veda.common.type;
+private import veda.bind.xapian_d_header;
 private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, util.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.storage.lmdb_storage;
-private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.log_msg, veda.core.impl.thread_context;
-private import search.vel, veda.core.search.xapian_vql, search.indexer_property;
+private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg,
+               veda.core.impl.thread_context;
+private import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -291,6 +292,47 @@ public class IndexerContext
                                       predicate);
                     }
 
+                    void index_date(string predicate, Resource oo)
+                    {
+                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+
+                        prefix = "X" ~ text(slot_L1) ~ "X";
+
+                        long   l_data   = oo.get!long ();
+                        long   std_time = unixTimeToStdTime(l_data);
+                        string data     = SysTime(std_time).toISOString();
+                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+
+                        doc.add_value(slot_L1, l_data, &err);
+                        //   slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".Datetime", key2slot);
+                        prefix = "X" ~ text(slot_L1) ~ "D";
+                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
+
+                        if (trace_msg[ 220 ] == 1)
+                            log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix,
+                                      predicate);
+                    }
+
+                    void index_uri(string predicate, Resource oo)
+                    {
+                        if (oo.literal !is null)
+                        {
+                            int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+                            prefix = "X" ~ text(slot_L1) ~ "X";
+
+                            string data = to_lower_and_replace_delimeters(oo.literal);
+
+                            if (trace_msg[ 220 ] == 1)
+                                log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
+                            indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+
+                            doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+
+                            all_text.write(data);
+                            all_text.write('|');
+                        }
+                    }
+
                     void index_string(string predicate, Resource oo)
                     {
                         string data;
@@ -381,10 +423,13 @@ public class IndexerContext
                                     {
                                         foreach (value; values)
                                         {
-                                            //writeln (tab, "@@@5.0 value = ", value);
                                             // ссылка на наследуемый индекс, переходим вниз
                                             Individual inhr_idx = iproperty.get_index(value.uri);
-                                            //writeln (tab, "@@@5.1 inhr_idx = ", inhr_idx);
+
+                                            if (trace_msg[ 220 ] == 1)
+                                                log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value,
+                                                          inhr_idx);
+
                                             if (inhr_idx != Individual.init)
                                             {
                                                 Resources forProperties =
@@ -393,10 +438,12 @@ public class IndexerContext
                                                 {
                                                     foreach (forProperty; forProperties)
                                                     {
-                                                        //writeln (tab, "@@@5.2 forProperty = ", forProperty);
                                                         Resources links =
                                                             inner_indv.getResources(forProperty.uri);
-                                                        //writeln (tab, "@@@5.3 links = ", links);
+
+                                                        if (trace_msg[ 220 ] == 1)
+                                                            log.trace("forProperty=[%s], links=[%s]", forProperty, links);
+
                                                         foreach (link; links)
                                                         {
                                                             prepare_index(inhr_idx, link,
@@ -423,6 +470,10 @@ public class IndexerContext
                                                                     log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri,
                                                                               rc);
 
+                                                                if (rc.type == DataType.Uri)
+                                                                {
+                                                                    index_uri(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
                                                                 if (rc.type == DataType.String)
                                                                 {
                                                                     index_string(ln ~ "." ~ indexed_field.uri, rc);
@@ -503,59 +554,17 @@ public class IndexerContext
                         }
 
                         if (oo.type == DataType.Boolean)
-                        {
                             index_boolean(predicate, oo);
-                        }
                         else if (oo.type == DataType.Integer)
-                        {
                             index_integer(predicate, oo);
-                        }
                         else if (oo.type == DataType.Decimal)
-                        {
                             index_double(predicate, oo);
-                        }
                         else if (oo.type == DataType.String)
-                        {
                             index_string(predicate, oo);
-                        }
                         else if (oo.type == DataType.Uri)
-                        {
-                            if (oo.literal !is null)
-                            {
-                                int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-                                prefix = "X" ~ text(slot_L1) ~ "X";
-
-                                string data = to_lower_and_replace_delimeters(oo.literal);
-
-                                if (trace_msg[ 220 ] == 1)
-                                    log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
-                                indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-
-                                doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
-
-                                all_text.write(data);
-                                all_text.write('|');
-                            }
-                        }
+                            index_uri(predicate, oo);
                         else if (oo.type == DataType.Datetime)
-                        {
-                            int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-                            prefix = "X" ~ text(slot_L1) ~ "X";
-
-                            long   l_data   = oo.get!long ();
-                            long   std_time = unixTimeToStdTime(l_data);
-                            string data     = SysTime(std_time).toISOString();
-                            indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-
-                            doc.add_value(slot_L1, l_data, &err);
-                            //   slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".Datetime", key2slot);
-                            prefix = "X" ~ text(slot_L1) ~ "D";
-                            indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
-
-                            if (trace_msg[ 220 ] == 1)
-                                log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix,
-                                          predicate);
-                        }
+                            index_date(predicate, oo);
                     }
 
                     if (resources.length > 1)
@@ -755,7 +764,7 @@ public class IndexerContext
         if (err != 0)
             log.trace("EX! FT:commit:deleted fail=%d", counter);
 
-        set_count_indexed(counter);
+//        set_count_indexed(counter);
         //log.trace("@FT:commit=%d", counter);
     }
 

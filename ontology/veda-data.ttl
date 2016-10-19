@@ -17,43 +17,58 @@
 
 v-s:StatusDraft
   rdf:type v-s:Status ;
-  rdfs:label "Not send"@en ;
+  rdfs:label "Not sent"@en ;
   rdfs:label "Не отправлено"@ru ;
+.
+v-s:StatusImplementation
+  rdf:type v-s:Status ;
+  rdfs:label "Implementation"@en ;
+  rdfs:label "Реализация"@ru ;
+.
+v-s:StatusPreparation
+  rdf:type v-s:Status ;
+  rdfs:label "Preparation"@en ;
+  rdfs:label "Подготовка"@ru ;
 .
 v-s:StatusReview
   rdf:type v-s:Status ;
   rdfs:label "Review"@en ;
-  rdfs:label "Рассматривается"@ru ;
-.
-v-s:StatusAgreed
-  rdf:type v-s:Status ;
-  rdfs:label "Agreed"@en ;
-  rdfs:label "Утверждено"@ru ;
-.
-v-s:StatusRejected
-  rdf:type v-s:Status ;
-  rdfs:label "Rejected"@en ;
-  rdfs:label "Отклонено"@ru ;
-.
-v-s:StatusIntroduced
-  rdf:type v-s:Status ;
-  rdfs:label "Introduced"@en ;
-  rdfs:label "Внедрено"@ru ;
+  rdfs:label "Рассмотрение"@ru ;
 .
 v-s:StatusCalculationEffect
   rdf:type v-s:Status ;
   rdfs:label "Calculation effect"@en ;
   rdfs:label "Расчет эффекта"@ru ;
 .
-v-s:StatusPaymentPending
+v-s:StatusAgreed
   rdf:type v-s:Status ;
-  rdfs:label "Payment pending"@en ;
-  rdfs:label "Ожидает оплаты"@ru ;
+  rdfs:label "Agreed"@en ;
+  rdfs:label "Утверждено"@ru ;
+.
+v-s:StatusIntroduced
+  rdf:type v-s:Status ;
+  rdfs:label "Introduced"@en ;
+  rdfs:label "Введено"@ru ;
+.
+v-s:StatusImplemented
+  rdf:type v-s:Status ;
+  rdfs:label "Implemented"@en ;
+  rdfs:label "Реализовано"@ru ;
+.
+v-s:StatusImplementedPartially
+  rdf:type v-s:Status ;
+  rdfs:label "Implemented partially"@en ;
+  rdfs:label "Реализовано частично"@ru ;
 .
 v-s:StatusCheckedEffect
   rdf:type v-s:Status ;
   rdfs:label "Checked effect"@en ;
   rdfs:label "Подтверждение эффекта"@ru ;
+.
+v-s:StatusPaymentPending
+  rdf:type v-s:Status ;
+  rdfs:label "Payment pending"@en ;
+  rdfs:label "Ожидает оплаты"@ru ;
 .
 v-s:StatusPaid
   rdf:type v-s:Status ;
@@ -70,20 +85,24 @@ v-s:StatusPostponed
   rdfs:label "Postponed"@en ;
   rdfs:label "Отложено"@ru ;
 .
-v-s:StatusImplementing
+v-s:StatusRejected
   rdf:type v-s:Status ;
-  rdfs:label "Implementing"@en ;
-  rdfs:label "В проработке"@ru ;
+  rdfs:label "Rejected"@en ;
+  rdfs:label "Отклонено"@ru ;
 .
-
+v-s:StatusRejectedRiskAccepted
+  rdf:type v-s:Status ;
+  rdfs:label "Rejected. Risk accepted"@en ;
+  rdfs:label "Отклонено. Риски приняты"@ru ;
+.
 
 # -- вид обслуживания (останова обрудования) --
 
-d:d8f4df97c49fd99ff23fe6bd9d491ca2e
+d:8f4df97c49fd99ff23fe6bd9d491ca2e
   rdf:type v-s:MaintenanceKind ;
   rdfs:label "Ежемесячный"@ru ;
 .
-d:d9eb9e3ee7b06641bbe895d94093f09d3
+d:9eb9e3ee7b06641bbe895d94093f09d3
   rdf:type v-s:MaintenanceKind ;
   rdfs:label "Ежегодный"@ru ;
 .

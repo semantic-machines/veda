@@ -1,8 +1,11 @@
 import std.conv, std.stdio, std.file;
 import vibe.d;
 import properd;
-import veda.frontend.core_driver, veda.frontend.core_rest;
-import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define;
+import veda.frontend.core_rest;
+import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
+import veda.frontend.cbor8vjson, veda.frontend.individual8vjson;
+import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
+
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -10,7 +13,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "frontend");
+        _log = new logger("veda-core-webserver", "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -20,7 +23,7 @@ extern (C) void handleTermination(int _signal)
     log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
     writefln("!SYS: veda.app: caught signal: %s", text(_signal));
 
-    veda.core.threads.dcs_manager.close();
+    //veda.core.threads.dcs_manager.close();
 
     foreach (port, listener; listener_2_port)
     {
@@ -116,7 +119,7 @@ shared static this()
         registerMemoryErrorHandler();
 
     import vibe.core.args;
-    string sys_ticket_id;
+    Ticket sys_ticket;
 
     string[ string ] properties;
 
@@ -131,14 +134,19 @@ shared static this()
     string node_id;
     node_id = properties.as!(string)("node_id");
 
-    veda.core.common.context.Context core_context;
+//    veda.core.common.context.Context core_context;
 
-    core_context = veda.core.srv.server.init_core(node_id);
-    if (core_context is null)
-    {
-        log.trace("ERR! Veda core has not been initialized");
-        return;
-    }
+//    core_context = veda.core.srv.server.init_core(node_id);
+//    if (core_context is null)
+//    {
+//        log.trace("ERR! Veda core has not been initialized");
+//        return;
+//    }
+    veda.core.common.context.Context context;
+
+    context = new PThreadContext(node_id, "frontend", P_MODULE.webserver, log, "127.0.0.1:8088/ws");
+
+    sys_ticket = context.sys_ticket(false);
 
     Individual *[ string ] onto_config;
 
@@ -154,45 +162,46 @@ shared static this()
             return Individual.init;
     }
 
-    long count_individuals = core_context.count_individuals();
+    long count_individuals = context.count_individuals();
     if (count_individuals < 2)
     {
-        core_context.sys_ticket(true);
+        context.sys_ticket(true);
         onto_config = load_config_onto();
 
         get_individual = &get_individual_from_local;
     }
     else
     {
-        get_individual = &core_context.get_individual;
+        get_individual = &context.get_individual;
     }
 
-    Ticket sticket;
-    if (sys_ticket_id !is null)
-    {
-        sticket = *core_context.get_ticket(sys_ticket_id);
-        set_global_systicket(sticket);
-    }
-    else
-    {
-        sticket = core_context.sys_ticket();
-    }
+    Ticket sticket = *context.get_systicket_from_storage();
 
-    ushort                count_thread = 4;
+//    if (sys_ticket_id !is null)
+//    {
+//       sticket = *context.get_ticket(sys_ticket_id);
+    //set_global_systicket(sticket);
+//    }
+//    else
+//    {
+//        sticket = core_context.sys_ticket();
+//    }
 
-    std.concurrency.Tid[] pool;
-    for (int i = 0; i < count_thread; i++)
-    {
-        pool ~= std.concurrency.spawnLinked(&core_thread, node_id);
-        core.thread.Thread.sleep(dur!("msecs")(10));
-    }
+//    ushort                count_thread = 4;
+
+//    std.concurrency.Tid[] pool;
+//    for (int i = 0; i < count_thread; i++)
+//    {
+//        pool ~= std.concurrency.spawnLinked(&core_thread, node_id);
+//        core.thread.Thread.sleep(dur!("msecs")(10));
+//    }
 
     bool is_exist_listener = false;
 
 
     Individual node = get_individual(&sticket, node_id);
 
-    count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
+    //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
     Resources listeners = node.resources.get("v-s:listener", Resources.init);
     foreach (listener_uri; listeners)
@@ -205,17 +214,17 @@ shared static this()
             if (transport.data() == "http")
             {
                 ushort http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                is_exist_listener = start_http_listener(core_context, pool, http_port);
+                is_exist_listener = start_http_listener(context, http_port);
             }
         }
     }
 }
 
-bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, ushort http_port)
+bool start_http_listener(Context context, ushort http_port)
 {
     try
     {
-        VedaStorageRest vsr = new VedaStorageRest(pool, core_context, &shutdown);
+        VedaStorageRest vsr = new VedaStorageRest(context, &shutdown);
 
         auto            settings = new HTTPServerSettings;
 
@@ -271,6 +280,21 @@ bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, u
 
         log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 
+        router.get("/ws", handleWebSockets(&handleWebSocketConnection));
+        settings               = new HTTPServerSettings;
+        settings.port          = 8091;
+        settings.bindAddresses = [ "127.0.0.1" ];
+        listenHTTP(settings, router);
+        log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
+
+
+	    router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
+	    settings      = new HTTPServerSettings;
+	    settings.port = 8088;
+	    //settings.bindAddresses = [ "127.0.0.1" ];
+	    listenHTTP(settings, router);
+	    log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
+
         return true;
     }
     catch (Exception ex)
@@ -280,7 +304,7 @@ bool start_http_listener(Context core_context, ref std.concurrency.Tid[] pool, u
     return false;
 }
 
-import veda.core.util.raptor2individual;
+import veda.util.raptor2individual;
 
 Individual *[ string ] load_config_onto()
 {
@@ -293,3 +317,4 @@ Individual *[ string ] load_config_onto()
 
     return l_individuals;
 }
+

@@ -14,29 +14,153 @@
   v-s:loadPriority 11 ;
 .
 #-- Классы --
-
+#---------------------------------------------------------
 v-s:Letter
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
 .
-
+#---------------------------------------------------------
 v-s:IncomingLetter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Letter ;
   rdfs:label "Incoming letter"@en ;
   rdfs:label "Входящее письмо"@ru ;
 .
+#---------------------------------------------------------
 v-s:OutcomingLetter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Letter ;
   rdfs:label "Outcoming letter"@en ;
   rdfs:label "Исходящее письмо"@ru ;
 .
-#-- Аттрибуты --
+#---------------------------------------------------------
+v-s:NormativeDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Normative document"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+.
+v-s:hasRequiremen
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Requirement"@en ;
+  rdfs:label "Требование"@ru ;
+  rdfs:range v-s:NormativeDocumentRequirement ;
+  rdfs:domain v-s:NormativeDocument ;
+.
+#---------------------------------------------------------
+v-s:NormativeDocumentRequirement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Normative document requirement"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+.
+v-s:checkQuestion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Check question"@en ;
+  rdfs:label "Контрольный вопрос"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:NormativeDocumentRequirement ;
+.
+#---------------------------------------------------------
+v-s:Comment
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:label "Comment"@en ;
+  rdfs:label "Комментарий"@ru ;
+.
+#---------------------------------------------------------
+v-s:Risk
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:label "Risk"@en ;
+  rdfs:label "Риск"@ru ;
+.
+v-s:consequence
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Consequence"@en ;
+  rdfs:label "Последствия"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Risk ;
+.
+v-s:possibleLossAmount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Possible loss amoun"@en ;
+  rdfs:label "Величина возможного ущерба"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Risk ;
+.
 
-v-s:attachment
-  rdfs:domain v-s:Letter ;
+#---------------------------------------------------------
+v-s:Observation
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Observation"@en ;
+  rdfs:label "Наблюдение"@ru ;
+.
+v-s:observationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Observation"@en ;
+  rdfs:label "Наблюдение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:deviationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Deviation"@en ;
+  rdfs:label "Отклонение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:recommendationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Recommendation"@en ;
+  rdfs:label "Рекомендация"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:isPositiveObservation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Positive observation"@en ;
+  rdfs:label "Положительное наблюдение"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Observation ;
+.
+
+#---------------------------------------------------------
+v-s:WorkReport
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:label "Work Report"@en ;
+  rdfs:label "Отчет о работе"@ru ;
+.
+# ------------------------------------------------------------
+v-s:Request
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:label "Work Report"@en ;
+  rdfs:label "Отчет о работе"@ru ;
 .

@@ -30,3 +30,8 @@ veda.properties
 /tmp/
 /veda-ltr-scripts
 .idea
+veda-ft-indexer
+veda-bootstrap
+*.out
+/veda-ttlreader
+/backup-binlogs/

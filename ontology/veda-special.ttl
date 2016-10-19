@@ -1,0 +1,114 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-special>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology"@en ;
+  rdfs:label "Онтология системы Veda"@ru ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+### ------------------------------------------------------
+v-s:BackwardLink
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Reverse Link"@en ;
+  rdfs:label "Обратная связь"@ru ;
+.
+v-s:backwardTarget
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BackwardLink ;
+  rdfs:label "backward target"@en ;
+  rdfs:label "целевой объект"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+v-s:backwardProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BackwardLink ;
+  rdfs:label "backward property"@en ;
+  rdfs:label "целевое свойство"@ru ;
+  rdfs:range owl:ObjectProperty ;
+.
+### ------------------------------------------------------
+v-s:Exportable
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Exportable thing"@en ;
+  rdfs:label "Выгружаемая сущность"@ru ;
+.
+### ------------------------------------------------------
+v-s:Deliverable
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Сущность подлежащая доставке"@ru ;
+  rdfs:label "Deliverable thing"@en ;
+.
+v-s:Email
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Deliverable ;
+  rdfs:label "E-mail"@en ;
+  rdfs:label "Электронное письмо"@ru ;
+.
+### ------------------------------------------------------
+v-s:ClassAuthorized
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Class authorized resource"@en ;
+  rdfs:label "Ресурс авторизуемый по классу"@ru ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
+  rdfs:comment "Superclass for classes whose individuals should be authorized by class"@ru ;
+.
+### ------------------------------------------------------
+v-s:Embedded
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Embedded"@en ;
+  rdfs:label "Вложенный"@ru ;
+.
+v-s:parent
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Embedded ;
+  rdfs:label "Parent"@en ;
+  rdfs:label "Родитель"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+### ------------------------------------------------------
+v-s:Versioned
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Versioned thing"@en ;
+  rdfs:label "Версионная сущность"@ru ;
+.
+v-s:actualVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Versioned ;
+  rdfs:label "Actual version"@en ;
+  rdfs:label "Актуальная версия"@ru ;
+  rdfs:range v-s:Versioned ;
+.
+### ------------------------------------------------------
+v-s:ManuallyVersioned
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Versioned thing, versions are created manually"@en ;
+  rdfs:label "Версионная сущность, версии создаются вручную"@ru ;
+.
+
+v-s:triggerVersionCreation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:ManuallyVersioned ;
+  rdfs:label "Initiate version creation"@en ;
+  rdfs:label "Инициировать создание версии"@ru ;
+  rdfs:range xsd:boolean ;
+.
+### ------------------------------------------------------
+v-s:AutomaticallyVersioned
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Versioned ;
+  rdfs:label "Versioned thing, versions are created automatically"@en ;
+  rdfs:label "Версионная сущность, версии создаются автоматически"@ru ;
+.

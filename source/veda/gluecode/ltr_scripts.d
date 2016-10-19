@@ -9,11 +9,11 @@ private
 {
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
-    import veda.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.core.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+    import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule;
-    import search.vel, search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -48,10 +48,10 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091);
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
-    tid_ltr_scripts = spawn(&ltrs_thread, p_script.parent_url);
+    tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
 
     p_script.run();
 
@@ -103,7 +103,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, parent_url);
+    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, log, parent_url);
 
 
     vars_for_codelet_script =
@@ -240,18 +240,18 @@ private void ltrs_thread(string parent_url)
     }
 }
 
-bool execute_script(string user_uri, string msg, string script_uri, string executed_script_cbor)
+ResultCode execute_script(string user_uri, string msg, string script_uri, string executed_script_cbor)
 {
     if (msg is null || msg.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         executed_script_cbor is null || executed_script_cbor.length <= 3)
-        return true;
+        return ResultCode.OK;
 
     Individual indv;
     if (cbor2individual(&indv, msg) < 0)
     {
         writeln("ERR msg=", msg);
-        return true;
+        return ResultCode.OK;
     }
 
     if (onto is null)
@@ -297,7 +297,7 @@ bool execute_script(string user_uri, string msg, string script_uri, string execu
     if (script.compiled_script !is null)
     {
         if (script.filters.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
-            return true;
+            return ResultCode.OK;
 
         try
         {
@@ -305,11 +305,11 @@ bool execute_script(string user_uri, string msg, string script_uri, string execu
             log.trace("start exec ltr-script : %s %s", script.id, indv.uri);
 
             script.compiled_script.run();
-            bool res = commit();
-            if (res == false)
+            ResultCode res = commit();
+            if (res != ResultCode.OK)
             {
                 log.trace("fail exec event script : %s", script.id);
-                return false;
+                return res;
             }
 
             //if (trace_msg[ 300 ] == 1)
@@ -321,36 +321,42 @@ bool execute_script(string user_uri, string msg, string script_uri, string execu
         }
     }
 
-    return true;
+    return ResultCode.OK;
 }
 
 class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port)
+    this(P_MODULE _module_name, string _host, ushort _port, logger _log)
     {
-        super(_module_name, _host, _port);
+        super(_module_name, _host, _port, _log);
     }
 
     override void thread_id()
     {
     }
 
-	override Context create_context ()
-	{
-		return null; 
-	}
-
-    override bool prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                          string event_id,
-                          long op_id)
+    override void receive_msg(string msg)
     {
+    }
+
+    override Context create_context()
+    {
+        return null;
+    }
+
+    override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+                                string event_id,
+                                long op_id)
+    {
+        committed_op_id = op_id;
+
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
-            return true;
+            return ResultCode.OK;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
-            return true;
+            return ResultCode.OK;
 
         string queue_id = randomUUID().toString();
 
@@ -358,7 +364,7 @@ class ScriptProcess : VedaModule
 
         start_script(new_bin, queue_id);
 
-        return true;
+        return ResultCode.OK;
     }
 
     override bool configure()

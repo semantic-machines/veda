@@ -4,7 +4,7 @@
 module veda.util.cbor8json;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime, std.json;
-private import veda.type, veda.onto.resource, veda.onto.individual, veda.util.cbor, veda.onto.lang;
+private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.util.cbor, veda.onto.lang;
 
 string dummy;
 
@@ -222,7 +222,7 @@ private static int read_element(JSONValue *individual, ubyte[] src, out string _
             pos += read_type_value(src[ pos..$ ], &exponent);
 
             resource_json[ "type" ] = text(DataType.Decimal);
-            resource_json[ "data" ] = decimal(mantissa.v_long, exponent.v_long).toDouble_wjp();
+            resource_json[ "data" ] = decimal(mantissa.v_long, cast(byte)exponent.v_long).asString();
 
             resources ~= resource_json;
             (*individual)[ predicate_uri ] = resources;

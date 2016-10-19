@@ -15,7 +15,7 @@
 .
 v-fe:FunctionExample
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Example function"@en ;
   rdfs:label "Функция-пример"@ru ;
 .
@@ -39,10 +39,11 @@ v-fe:FunctionExampleModel
   rdfs:label "Модель Функции-примера"@ru ;
   v-ui:forClass v-fe:FunctionExample ;
   v-s:script """
-	var self = this;
+  var self = this;
     self.press = function () {
       alert("model extention works! self['v-fe:exampleProperty']:" + self["v-fe:exampleProperty"].join(", "));
     }
+  //# sourceURL=v-fe:FunctionExampleModel
   """
 .
 v-fe:FunctionExampleTemplate
@@ -57,10 +58,11 @@ v-fe:FunctionExampleTemplate
       <div property="v-fe:exampleProperty"></div>
       <button id="press-me" class="btn btn-success">Press me</button>
     </div>
-    <script type="text/javascript">
+    <script>
       $("#press-me", template).click(function () {
         individual.press();
       });
+      //# sourceURL=v-fe:FunctionExampleTemplate
     </script>
   """
 .

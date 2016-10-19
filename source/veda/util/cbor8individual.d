@@ -9,7 +9,7 @@
 module veda.util.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
-private import veda.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
+private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 
@@ -175,7 +175,7 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
             ElementHeader exponent;
             pos += read_type_value(src[ pos..$ ], &exponent);
 
-            resources ~= Resource(decimal(mantissa.v_long, exponent.v_long));
+            resources ~= Resource(decimal(mantissa.v_long, cast(byte)exponent.v_long));
             individual.resources[ predicate_uri ] = resources;
         }
         else

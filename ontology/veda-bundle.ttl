@@ -23,6 +23,11 @@ v-s:MainProperties
   rdfs:label "Основные свойства"@ru ;
   rdfs:label "Main properties"@en ;
 .
+v-s:Versions
+  rdf:type v-s:Bundle ;
+  rdfs:label "Версии"@ru ;
+  rdfs:label "Versions"@en ;
+.
 v-s:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
@@ -49,6 +54,13 @@ v-s:ViewDetails
   rdfs:label "Подробнее"@ru ;
   rdfs:label "View details"@en ;
 .
+
+v-s:Clone
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сделать копию"@ru ;
+  rdfs:label "Make a copy"@en ;
+.
+
 v-s:NewTasks
   rdf:type v-s:Bundle ;
   rdfs:label "Новые задачи"@ru ;
@@ -222,6 +234,11 @@ v-s:SendInstruction
   rdfs:label "Выдать поручение"@ru ;
   rdfs:label "Send instruction"@en ;
 .
+v-s:SendComplex
+  rdf:type v-s:Bundle ;
+  rdfs:label "Отправить по комплексному маршруту"@ru ;
+  rdfs:label "Complex workflow route"@en ;
+.
 v-s:Total
   rdf:type v-s:Bundle ;
   rdfs:label "Всего"@ru ;
@@ -257,14 +274,18 @@ v-s:WillBeProcessed
   rdfs:label "Спасибо. Ваше действие будет обработано."@ru ;
   rdfs:label "Thank you. Your action will be processed."@en ;
 .
-v-b:AreYouSure
+v-s:AreYouSure
   rdf:type v-s:Bundle ;
   rdfs:label "Вы уверены?"@ru ;
   rdfs:label "Are you sure?"@en ;
 .
-v-b:Status
+v-s:NoRightsForOperation
   rdf:type v-s:Bundle ;
-  rdfs:label "Статус"@ru ;
-  rdfs:label "Status"@en ;
+  rdfs:label "У вас нет прав для выполнения этой операции"@ru ;
+  rdfs:label "You have no rights to perform this opertion"@en ;
 .
-
+v-s:Attention
+  rdf:type v-s:Bundle ;
+  rdfs:label "Внимание!"@ru ;
+  rdfs:label "Attention!"@en ;
+.

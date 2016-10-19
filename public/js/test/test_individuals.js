@@ -49,6 +49,7 @@ function generate_test_document1(ticket)
         'v-s:test_decimal4': newDecimal(90.8),
         'v-s:test_decimal5': newDecimal(7.6),
         'v-s:test_decimal6': newDecimal(0.07),
+        'v-s:test_decimal6_1': newDecimal(-0.07),
         'v-s:test_decimal7': newDecimal(0.007),
         'v-s:created': newDate(new Date()),
         'v-s:test_datetime0': newDate(new Date("2014-01-02")),
@@ -288,6 +289,17 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
 
             test_fail_read(ticket_user2, new_test_doc1_uri, new_test_doc1);
+
+	    	try
+	    	{
+        		// test UPDATE rights	
+        		res = put_individual(ticket_user2.id, new_test_doc1);
+				ok (false);
+	    	}
+	    	catch (e)
+	    	{
+				ok (true);
+	    	}	    
         });
 
     test(
@@ -378,6 +390,7 @@ for (i = 0; i < 1; i++)
 
             var res = put_individual(ticket.id, new_test_doc1);
             wait_module(subject_manager, res.op_id);
+            wait_module(acl_manager, res.op_id);
 
             var read_individual = get_individual(ticket.id, new_test_doc1_uri);
             ok(compare(new_test_doc1, read_individual));
@@ -388,6 +401,7 @@ for (i = 0; i < 1; i++)
             new_test_doc2['v-s:canRead'] = newBool(false);
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(subject_manager, res.op_id);
+            wait_module(acl_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc2_uri);
             ok(compare(new_test_doc2, read_individual));
@@ -398,6 +412,7 @@ for (i = 0; i < 1; i++)
             new_test_doc3['v-s:canRead'] = newBool(true);
             var res = put_individual(ticket.id, new_test_doc3);
             wait_module(subject_manager, res.op_id);
+            wait_module(acl_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);
@@ -452,6 +467,7 @@ for (i = 0; i < 1; i++)
             };
 
             var res = put_individual(ticket.id, new_test_doc1);
+            wait_module(acl_manager, res.op_id);
             wait_module(subject_manager, res.op_id);
 
             var read_individual = get_individual(ticket.id, new_test_doc1_uri);
@@ -462,6 +478,7 @@ for (i = 0; i < 1; i++)
             new_test_doc2['@'] = new_test_doc2_uri;
             new_test_doc2['v-s:memberOf'] = newUri(guid());
             var res = put_individual(ticket.id, new_test_doc2);
+            wait_module(acl_manager, res.op_id);
             wait_module(subject_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc2_uri);
@@ -473,6 +490,7 @@ for (i = 0; i < 1; i++)
             new_test_doc3['v-s:memberOf'] = newUri(memberOf);
             var res = put_individual(ticket.id, new_test_doc3);
             wait_module(subject_manager, res.op_id);
+            wait_module(acl_manager, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);
@@ -534,6 +552,8 @@ for (i = 0; i < 1; i++)
             var res = put_individual(ticket_user1.id, new_test_doc2, false);
             var res = put_individual(ticket_user1.id, new_test_doc3, false);
             var res = put_individual(ticket_user1.id, new_test_doc4, false);
+
+	    	flush (fulltext_indexer, res.op_id);
 
             wait_module(fulltext_indexer, res.op_id);
             wait_module(subject_manager, res.op_id);

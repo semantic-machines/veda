@@ -11,19 +11,19 @@ module veda.core.common.context;
 private import std.concurrency, std.datetime;
 //private import bind.v8d_header;
 //private import search.vel;
-private import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
 
 /// Имена процессов
 public enum P_MODULE : byte
 {
     /// Выдача и проверка тикетов
-    ticket_manager             = 0,
+    ticket_manager  = 0,
 
     /// Чтение и сохранение индивидуалов
-    subject_manager            = 1,
+    subject_manager = 1,
 
-    /// Индексирование прав, проверка прав
-    acl_manager                = 2,
+    /// Индексирование прав
+    acl_preparer    = 2,
 
     /// Полнотекстовое индексирование
     //xapian_thread_context      = 3,
@@ -48,12 +48,16 @@ public enum P_MODULE : byte
 
     zmq_listener               = 11,
 
-    fanout                     = 12,
+    fanout_email               = 12,
 
     //// data change signal
-    dcs                        = 13,
+    fanout_sql                 = 13,
 
     ltr_scripts                = 14,
+
+    webserver                  = 15,
+
+    n_chanel                   = 16,
 
     nop                        = 99
 }
@@ -130,11 +134,11 @@ public enum ResultCode
 
     /// 1022
     Duplicate_Key         = 1022,
-    
-    /// 1118
-    Size_too_large 		  = 1118,
 
-	/// 4000
+    /// 1118
+    Size_too_large        = 1118,
+
+    /// 4000
     Connect_Error         = 4000
 }
 
@@ -187,7 +191,7 @@ public struct Ticket
 
 interface Storage
 {
-    public ResultCode put(string in_key, string in_value);
+    public ResultCode put(string in_key, string in_value, long op_id);
     public string find(string uri, bool return_value = true);
     public int get_of_cursor(bool delegate(string key, string value) prepare);
 }
@@ -211,7 +215,7 @@ interface Context
 
     int[ string ] get_key2slot();
 
-    public bool ft_check_for_reload(void delegate() load);
+//    public bool ft_check_for_reload(void delegate() load);
     public bool acl_check_for_reload(void delegate() load);
 
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
@@ -224,7 +228,7 @@ interface Context
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
 
-    public long get_operation_state(P_MODULE thread_id);
+    public long get_operation_state(P_MODULE thread_id, long wait_op_id);
 
     @property
     public Ticket sys_ticket(bool is_new = false);
@@ -236,6 +240,12 @@ interface Context
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
+
+    version (isServer)
+    {
+        public string execute(string in_msg);
+    }
+
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
 
 
@@ -385,12 +395,13 @@ interface Context
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 
     /**
-       Ожидать, пока освободится процесс
+       Ожидать, пока завершится выполнение операции
        Params:
-                 thread_id = id процесса из перечисления P_MODULE
-                 op_id - id операции изменения данных, если не указанно то ожидание организуется через внутреннюю очередь модуля
+                 module_id = id процесса из перечисления P_MODULE
+                 op_id - id операции изменения данных, если 0, то ожидание организуется через внутреннюю очередь модуля
      */
-    public long wait_thread(P_MODULE module_id, long op_id = 0);
+
+    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000);
 
     /**
        Перезагрузить модуль
@@ -462,18 +473,18 @@ public long get_subject_manager_op_id()
 
 ///
 /*
-private shared long indexer_op_id = 0;
+   private shared long indexer_op_id = 0;
 
-public void set_indexer_op_id(long data)
-{
+   public void set_indexer_op_id(long data)
+   {
     atomicStore(indexer_op_id, data);
-}
+   }
 
-public long get_indexer_op_id()
-{
+   public long get_indexer_op_id()
+   {
     return atomicLoad(indexer_op_id);
-}
-*/
+   }
+ */
 ////
 
 private shared long acl_manager_op_id = 0;
@@ -490,17 +501,17 @@ public long get_acl_manager_op_id()
 
 ////
 
-private shared long count_indexed = 0;
+//private shared long count_indexed = 0;
 
-public void set_count_indexed(long data)
-{
-    atomicStore(count_indexed, data);
-}
+//public void set_count_indexed(long data)
+//{
+//    atomicStore(count_indexed, data);
+//}
 
-public long get_count_indexed()
-{
-    return atomicLoad(count_indexed);
-}
+//public long get_count_indexed()
+//{
+//    return atomicLoad(count_indexed);
+//}
 
 /////////////////////////////// global_systicket //////////////////////////
 

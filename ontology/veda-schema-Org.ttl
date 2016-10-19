@@ -1,0 +1,564 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-schema-Org>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology"@en ;
+  rdfs:label "Онтология системы Veda"@ru ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+v-s:OrganizationUnit
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Spatial ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
+  rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
+  rdfs:label "Organization unit"@en ;
+  rdfs:label "Организационная единица"@ru ;
+.
+v-s:childUnit
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:label "Child unit"@en ;
+  rdfs:label "Дочерняя единица"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  owl:inverseOf v-s:parentUnit ;
+.
+v-s:parentUnit
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:label "Parent unit"@en ;
+  rdfs:label "Родительская единица"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  owl:inverseOf v-s:childUnit ;
+.
+v-s:hasChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:label "Chief"@en ;
+  rdfs:label "Непосредственный руководитель"@ru ;
+  rdfs:range v-s:Appointment ;
+.
+v-s:hasFunctionalChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Functional chief"@en ;
+  rdfs:label "Функциональный руководитель"@ru ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+.
+
+# ------------------------------------------------------------
+v-s:Organization
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:label "Organization"@en ;
+  rdfs:label "Организация"@ru ;
+.
+v-s:taxId
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "VAT"@en ;
+  rdfs:label "ИНН"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:taxRegistrationCause
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Tax registration cause classifier"@en ;
+  rdfs:label "КПП"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:taxRegistrationNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Tax registration number"@en ;
+  rdfs:label "ОГРН"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:hasContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contractor"@en ;
+  rdfs:label "Контрагент"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:hasSubsidiary
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Subsidiary"@en ;
+  rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:hasContractorProfile
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contractor profile"@en ;
+  rdfs:label "Досье контрагента"@ru ;
+  rdfs:range v-s:ContractorProfile ;
+  rdfs:domain v-s:Organization ;
+.
+# ------------------------------------------------------------
+v-s:Department
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:label "Department"@en ;
+  rdfs:label "Подразделение"@ru ;
+.
+v-s:parentOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Parent organization"@en ;
+  rdfs:label "Основная организация"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Department ;
+.
+# ------------------------------------------------------------
+v-s:Subsidiary
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Organization ;
+  rdfs:subClassOf v-s:Department ;
+  rdfs:label "Subsidiary"@en ;
+  rdfs:label "Филиал"@ru ;
+.
+# ------------------------------------------------------------
+v-s:OrgGroup
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Organizational group"@en ;
+  rdfs:label "Oрганизационная группа"@ru ;
+.
+
+# ------------------------------------------------------------
+v-s:Position
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:label "Position"@en ;
+  rdfs:label "Должность"@ru ;
+.
+
+# ------------------------------------------------------------
+v-s:HRRecord
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "HR record"@en ;
+  rdfs:label "Кадровая запись"@ru ;
+.
+v-s:employee
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:HRRecord ;
+  rdfs:label "Employee"@en ;
+  rdfs:label "Работник"@ru ;
+  rdfs:range v-s:Person ;
+.
+v-s:occupation
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Occupation"@en ;
+  rdfs:label "Занимает должность"@ru ;
+  rdfs:range v-s:Position ;
+  rdfs:domain v-s:HRRecord ;
+.
+# ------------------------------------------------------------
+v-s:Appointment
+  rdf:type owl:Class ;
+  rdfs:label "Appointment"@en ;
+  rdfs:label "Назначение"@ru ;
+  rdfs:subClassOf v-s:HRRecord ;
+  rdfs:subClassOf v-s:OrganizationUnit ;
+.
+v-s:official
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Appointment ;
+  rdfs:label "Official"@en ;
+  rdfs:label "Официально"@ru ;
+  rdfs:range xsd:boolean ;
+.
+v-s:valid
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Appointment ;
+  rdfs:label "Valid"@en ;
+  rdfs:label "Действительно"@ru ;
+  rdfs:range xsd:boolean ;
+.
+# ------------------------------------------------------------
+v-s:Absence
+  rdf:type owl:Class ;
+  rdfs:label "Absence"@en ;
+  rdfs:label "Отсутствие"@ru ;
+  rdfs:subClassOf v-s:HRRecord ;
+.
+# ------------------------------------------------------------
+v-s:Person
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:ManuallyVersioned ;
+  rdfs:comment "A person." ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Person"@en ;
+  rdfs:label "Персона"@ru ;
+.
+v-s:birthday
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "The birthday of this Person."@en ;
+  rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Birthday"@en ;
+  rdfs:label "День рождения"@ru ;
+  rdfs:range xsd:dateTime ;
+.
+v-s:firstName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The first name of a person."@en ;
+  rdfs:comment "Имя персоны."@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "First name"@en ;
+  rdfs:label "Имя"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:lastName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The last name of a person."@en ;
+  rdfs:comment "Фамилия персоны"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Last name"@en ;
+  rdfs:label "Фамилия"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:middleName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "Middle name"@en ;
+  rdfs:label "Отчество"@ru ;
+  rdfs:range xsd:string ;
+.
+v-s:hasAccount
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:domain v-s:Person ;
+  rdfs:label "Account"@en ;
+  rdfs:label "Учетная запись"@ru ;
+  rdfs:range v-s:Account ;
+.
+v-s:hasAppointment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Appointment"@en ;
+  rdfs:label "Назначение"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Person ;
+.
+v-s:defaultAppointment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Default appointment"@en ;
+  rdfs:label "Назначение по-умолчанию"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Person ;
+.
+
+
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+
+v-s:PsHasSubsidiaryForOrganization
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:hasSubsidiary ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:rangeRestriction v-s:Subsidiary ;
+.
+
+v-s:PsTaxIdForOrganization
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:taxId ;
+  v-ui:forProperty v-s:taxRegistrationCause ;
+  v-ui:forProperty v-s:taxRegistrationNumber ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:regexp "^[0-9a-zA-Z]{5,}$" ;
+  v-ui:tooltip "Цифро-буквенное значение. Минимум 5 символов."@ru ;
+  v-ui:tooltip "Alphanumeric value. 5 characters minimum."@en ;
+.
+
+# ------------------------------------------------------------ ШАБЛОНЫ --
+
+v-s:OrganizationTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Organization ;
+  rdfs:label "Template for v-s:Organization class"@en ;
+  rdfs:label "Шаблон для класса v-s:Organization"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Organization" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-4">
+        <em about="v-s:taxId" property="rdfs:label"></em>
+        <div property="v-s:taxId" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-4">
+        <em about="v-s:taxRegistrationCause" property="rdfs:label"></em>
+        <div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxRegistrationCause" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-4">
+        <em about="v-s:taxRegistrationNumber" property="rdfs:label"></em>
+        <div property="v-s:taxRegistrationNumber" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxRegistrationNumber" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:legalAddress" property="rdfs:label"></em>
+        <div property="v-s:legalAddress" class="view -edit -search"></div>
+        <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:postalAddress" property="rdfs:label"></em>
+        <div property="v-s:postalAddress" class="view -edit -search"></div>
+        <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="v-s:shortLabel" property="rdfs:label"></th>
+          <th about="v-s:taxRegistrationCause" property="rdfs:label"></th>
+          <th about="v-s:postalAddress" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="v-s:hasSubsidiary" data-embedded="true">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div property="v-s:shortLabel" class="view -edit -search"></div>
+            <veda-control property="v-s:shortLabel" data-type="string" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+            <veda-control property="v-s:taxRegistrationCause" data-type="string" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:postalAddress" class="view -edit -search"></div>
+            <veda-control property="v-s:postalAddress" data-type="string" class="-view edit search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <veda-control data-type="link" rel="v-s:hasSubsidiary" class="-view edit search create create-modal"></veda-control>
+
+    <em about="v-s:hasContractor" property="rdfs:label"></em>
+    <div rel="v-s:hasContractor" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:hasContractorProfile" property="rdfs:label"></em>
+    <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:hasContractorProfile" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:SubsidiaryTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Subsidiary ;
+  rdfs:label "Template for v-s:Subsidiary class"@en ;
+  rdfs:label "Шаблон для класса v-s:Subsidiary"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Subsidiary" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:parentOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-4">
+        <em about="v-s:taxRegistrationCause" property="rdfs:label"></em>
+        <div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:taxRegistrationCause" class="-view edit search"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:postalAddress" property="rdfs:label"></em>
+    <div property="v-s:postalAddress" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:comment" property="rdfs:label"></em>
+    <div property="rdfs:comment" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="rdfs:comment" class="-view edit search"></veda-control>
+
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:DepartmentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Department ;
+  rdfs:label "Template for v-s:Department class"@en ;
+  rdfs:label "Шаблон для класса v-s:Department"@ru ;
+  v-ui:template """
+<div class="container">
+  <h2>
+    <span about="v-s:Department" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:parentOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext dropdown"></veda-control>
+
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+    <em about="v-s:shortLabel" property="rdfs:label"></em>
+    <div property="v-s:shortLabel" class="view -edit -search"></div>
+    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+    <hr class="view -edit -search">
+
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasChief" property="rdfs:label"></em>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
+
+    <hr class="view -edit -search">
+
+    <em about="v-s:postalAddress" property="rdfs:label"></em>
+    <div property="v-s:postalAddress" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+
+  </div>
+  <hr>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <div class="well well-sm">
+    <!-- BUTTONS -->
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.

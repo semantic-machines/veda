@@ -1,0 +1,97 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/veda-schema-Asset/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology. Asset"@en ;
+  rdfs:label "Онтология системы Veda. Основное средство"@ru ;
+  v-s:loadPriority 11 ;
+.
+#--------------------------------------------------
+v-s:Asset
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Asset"@en ;
+  rdfs:label "Основное средство"@ru ;
+.
+v-s:disposalPercent
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Disposal percent"@en ;
+  rdfs:label "Процент выбытия"@ru ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:assetNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Fixed asset ID"@en ;
+  rdfs:label "Номер ОС"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v-s:Description ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:msfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Msfo"@en ;
+  rdfs:label "МСФО"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:rsbu
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Rsbu"@en ;
+  rdfs:label "РСБУ"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:nu
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Nu"@en ;
+  rdfs:label "НУ"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:assetDateTo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "to date"@en ;
+  rdfs:label "на дату"@ru ;
+  rdfs:range xsd:dateTime ;
+  rdfs:subPropertyOf v-s:dateTo ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:isIncludingToReserv
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "is including to reserv"@en ;
+  rdfs:label "Включено в резерв на обесценение"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Asset ;
+.
+v-s:PsSomeDecimalInAsset
+  rdf:type v-ui:DecimalPropertySpecification ;
+  v-ui:forClass v-s:Asset ;
+  v-ui:forProperty v-s:msfo ;
+  v-ui:forProperty v-s:rsbu ;
+  v-ui:forProperty v-s:nu ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "non-required, single decimal value."@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
+  rdfs:label "Some decimal property specification for Asset class"@en ;
+  rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
+.
+v-s:PsAssetNumber
+  rdf:type v-ui:DecimalPropertySpecification ;
+  v-ui:forClass v-s:Asset ;
+  v-ui:forProperty v-s:assetNumber ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "non-required, single decimal value."@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
+  rdfs:label "Some decimal property specification for Asset class"@en ;
+  rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
+.

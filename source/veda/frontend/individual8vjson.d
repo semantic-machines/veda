@@ -2,14 +2,34 @@ module veda.frontend.individual8vjson;
 
 import std.conv, std.stdio;
 import vibe.d;
-import veda.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
+import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
 static DataType[ string ] Resource_type;
 
+static this() {
+    Lang =
+    [
+        "NONE":LANG.NONE, "none":LANG.NONE,
+        "RU":LANG.RU, "ru":LANG.RU,
+        "EN":LANG.EN, "en":LANG.EN
+    ];
+
+    Resource_type =
+    [
+        "Uri":DataType.Uri,
+        "String":DataType.String,
+        "Integer":DataType.Integer,
+        "Datetime":DataType.Datetime,
+        "Decimal":DataType.Decimal,
+        "Boolean":DataType.Boolean,
+    ];
+}
+
+
 Json individual_to_json(immutable(Individual)individual)
 {
-//    writeln ("\nINDIVIDUAL->:", individual);
+    //writeln ("\nimmutable:INDIVIDUAL->:", individual);
     Json json = Json.emptyObject;
 
     json[ "@" ] = individual.uri;
@@ -65,6 +85,8 @@ Individual json_to_individual(const Json individual_json)
 
 Json resource_to_json(Resource resource)
 {
+	//writeln ("resource=", resource);
+	
     Json   resource_json = Json.emptyObject;
 
     string data = resource.data;
@@ -156,6 +178,10 @@ Resource json_to_resource(const Json resource_json)
         {
             resource = resource_json[ "data" ].get!long;
         }
+        else if (data_type is Json.Type.String)
+        {
+            resource = decimal(resource_json[ "data" ].get!string);
+        }
     }
     else if (type == DataType.Integer)
     {
@@ -166,8 +192,14 @@ Resource json_to_resource(const Json resource_json)
         try
         {
             string val = resource_json[ "data" ].get!string;
+            long   tm;
 //	    writeln ("@v j->r #0 ", val);
-            long   tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+
+            if (val.indexOf('-') >= 1)
+                tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            else
+                tm = to!long (val);
+
             resource = tm;
 //	    writeln ("@v j->r #1 ", tm);
         }

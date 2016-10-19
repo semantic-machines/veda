@@ -12,92 +12,94 @@
 
 @prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
 <http://semantic-machines.com/veda/veda-layout>
-	rdf:type owl:Ontology ;
-	rdfs:label "Veda system layout ontology"@en ;
-	rdfs:label "Онтология разметки системы Веда"@ru ;
-	#owl:versionInfo "0.2" ;
-	v-s:loadPriority 9 ;
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system layout ontology"@en ;
+  rdfs:label "Онтология разметки системы Веда"@ru ;
+  #owl:versionInfo "0.2" ;
+  v-s:loadPriority 9 ;
 .
 
 ### MAIN PAGE ###
 
 v-l:MainPage
-	rdf:type owl:Class ;
-	rdfs:subClassOf owl:Thing ;
-	rdfs:label "Page"@en ;
-	rdfs:label "Страница"@ru ;
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Page"@en ;
+  rdfs:label "Страница"@ru ;
 .
 v-l:MainPageTemplate
-	rdf:type v-ui:ClassTemplate ;
-	rdfs:label "Шаблон для класса Страница"@ru ;
-	rdfs:label "Template for Page class"@en ;
-	v-ui:forClass v-l:MainPage ;
-	v-ui:template """
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Страница"@ru ;
+  rdfs:label "Template for Page class"@en ;
+  v-ui:forClass v-l:MainPage ;
+  v-ui:template """
 <div class="page">
-	<nav role="navigation" class="navbar navbar-veda">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
-					<span class="glyphicon glyphicon-menu-hamburger"></span>
-				</button>
-				<a class="navbar-brand" href="#/v-l:Welcome"><img src="/img/veda-logo.png"></a>
-			</div>
-			<div class="collapse navbar-collapse" id="navbar-collapse">
-				<div id="user-menu"></div>
-				<ul class="nav navbar-nav navbar-right">
-					<li class="btn-group" id="preferred-language" about="v-ui:AvailableLanguage" rel="rdf:value">
-						<button about="@" property="rdfs:label" class="btn btn-xs btn-success navbar-btn"></button>
-						<script>
-							handler("v-ui:preferredLanguage");
-							veda.user.preferences.on("individual:propertyModified", handler);
-							template.on("remove", function () {
-								veda.user.preferences.off("individual:propertyModified", handler);
-							});
-							template.on("click", function() {
-								veda.user.toggleLanguage(individual["rdf:value"][0].toString());
-							});
-							function handler(property_uri) {
-								if (property_uri === "v-ui:preferredLanguage") {
-									var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
-									if (preferredLanguage.indexOf(individual.id) >= 0) {
-										template.addClass("active");
-									} else {
-										template.removeClass("active");
-									}
-								}
-							}
-						</script>
-					</li>
-					<li id="user-info"></li>
-					<li id="menu" class="dropdown" about="v-l:MainMenu" template="v-l:MenuTemplate"></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+  <nav role="navigation" class="navbar navbar-veda">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+          <span class="glyphicon glyphicon-menu-hamburger"></span>
+        </button>
+        <a class="navbar-brand" href="#/v-l:Welcome"><img src="/img/veda-logo.png"></a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <div id="user-menu"></div>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="btn-group" id="preferred-language" about="v-ui:AvailableLanguage" rel="rdf:value">
+            <button about="@" property="rdfs:label" class="btn btn-xs btn-success navbar-btn"></button>
+            <script>
+              handler("v-ui:preferredLanguage");
+              veda.user.preferences.on("individual:propertyModified", handler);
+              template.on("remove", function () {
+                veda.user.preferences.off("individual:propertyModified", handler);
+              });
+              template.on("click", function() {
+                veda.user.toggleLanguage(individual["rdf:value"][0].toString());
+              });
+              function handler(property_uri) {
+                if (property_uri === "v-ui:preferredLanguage") {
+                  var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
+                  if (preferredLanguage.indexOf(individual.id) >= 0) {
+                    template.addClass("active");
+                  } else {
+                    template.removeClass("active");
+                  }
+                }
+              }
+              //# sourceURL=v-l:MainPageTemplate_inline_template_for_language_switch
+            </script>
+          </li>
+          <li id="user-info"></li>
+          <li id="menu" class="dropdown" about="v-l:MainMenu" data-template="v-l:MenuTemplate"></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-	<div id="main"></div>
+  <div id="main"></div>
 
-	<nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
-		<footer>
-			<div class="container-fluid clearfix" style="background-color: white; border-top: 1px solid lightgray">
-				<div class="pull-left">
-					<a href="http://www.semantic-machines.com">© <span about="v-l:SemanticMachines" property="rdfs:label"></span>.</a>
-					<span about="v-l:License" property="rdfs:label"></span>
-					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
-				</div>
-				<div class="pull-right text-muted" about="v-s:vedaInfo">
-					<span><span property="v-s:appBuildVersion"></span>/ <span property="v-s:appBuildDate"></span></span>
-				</div>
-			</div>
-		</footer>
-	</nav>
+  <nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
+    <footer>
+      <div class="container-fluid clearfix" style="background-color: white; border-top: 1px solid lightgray">
+        <div class="pull-left">
+          <a href="http://www.semantic-machines.com">© <span about="v-l:SemanticMachines" property="rdfs:label"></span>.</a>
+          <span about="v-l:License" property="rdfs:label"></span>
+          <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
+        </div>
+        <div class="pull-right text-muted" about="v-s:vedaInfo">
+          <span><span property="v-s:appBuildVersion"></span>/ <span property="v-s:appBuildDate"></span></span>
+        </div>
+      </div>
+    </footer>
+  </nav>
 </div>
 <script>
-	// Render user
-	var userInfo = $("#user-info", template);
-	var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
-	userInfo.empty();
-	veda.user.present(userInfo, userInfoTmpl);
+  // Render user
+  var userInfo = $("#user-info", template);
+  var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
+  userInfo.empty();
+  veda.user.present(userInfo, userInfoTmpl);
+  //# sourceURL=v-l:MainPageTemplate
 </script>
   """ ;
 .
@@ -105,144 +107,145 @@ v-l:MainPageTemplate
 ### MENU ###
 
 v-l:Menu
-	rdf:type owl:Class ;
-	rdfs:subClassOf owl:Thing ;
-	rdfs:label "Menu"@en ;
-	rdfs:label "Меню"@ru ;
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Menu"@en ;
+  rdfs:label "Меню"@ru ;
 .
 v-l:menuItem
-	rdf:type owl:ObjectProperty ;
-	rdfs:label "Menu item"@en ;
-	rdfs:label "Пункт меню"@ru ;
-	rdfs:domain v-l:Menu ;
-	rdfs:range v-l:Menu ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Menu item"@en ;
+  rdfs:label "Пункт меню"@ru ;
+  rdfs:domain v-l:Menu ;
+  rdfs:range v-l:Menu ;
 .
 v-l:action
-	rdf:type owl:DatatypeProperty ;
-	rdfs:label "Action"@en ;
-	rdfs:label "Действие"@ru ;
-	rdfs:domain v-l:Menu ;
-	rdfs:range xsd:string ;
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Action"@en ;
+  rdfs:label "Действие"@ru ;
+  rdfs:domain v-l:Menu ;
+  rdfs:range xsd:string ;
 .
 v-l:staticLink
-	rdf:type owl:DatatypeProperty ;
-	rdfs:label "Static link"@en ;
-	rdfs:label "Статическая ссылка"@ru ;
-	rdfs:domain v-l:Menu ;
-	rdfs:range xsd:string ;
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Static link"@en ;
+  rdfs:label "Статическая ссылка"@ru ;
+  rdfs:domain v-l:Menu ;
+  rdfs:range xsd:string ;
 .
 v-l:objectLink
-	rdf:type owl:ObjectProperty ;
-	rdfs:label "Link to individual"@en ;
-	rdfs:label "Ссылка на индивид"@ru ;
-	rdfs:domain v-l:Menu ;
-	rdfs:range rdfs:Resource ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Link to individual"@en ;
+  rdfs:label "Ссылка на индивид"@ru ;
+  rdfs:domain v-l:Menu ;
+  rdfs:range rdfs:Resource ;
 .
 v-l:MenuItemViewTemplate
-	rdf:type v-ui:ClassTemplate ;
-	rdfs:label "Menu item template"@en ;
-	rdfs:label "Шаблон пункта Меню"@ru ;
-	v-ui:template """
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Menu item template"@en ;
+  rdfs:label "Шаблон пункта Меню"@ru ;
+  v-ui:template """
 <li class="hidden">
-	<a id="lnk">
-		<span property="rdfs:label"></span>
-	</a>
+  <a id="lnk">
+    <span property="rdfs:label"></span>
+  </a>
 </li>
 <li rel="v-l:objectLink" class="hidden">
-	<a href="#/@">
-		<span property="rdfs:label"></span>
-	</a>
+  <a href="#/@">
+    <span property="rdfs:label"></span>
+  </a>
 </li>
 <li role="presentation" class="dropdown hidden">
-	<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-		<span property="rdfs:label"></span> <span class="caret"></span>
-	</a>
-	<ul class="dropdown-menu" role="menu" rel="v-l:menuItem" template="v-l:MenuItemViewTemplate"></ul>
+  <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+    <span property="rdfs:label"></span> <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu" rel="v-l:menuItem" data-template="v-l:MenuItemViewTemplate"></ul>
 </li>
 <li class="divider"></li>
 <script>
-	var stcTmpl = template.eq(0), objTmpl = template.eq(1), subTmpl = template.eq(2), divTmpl = template.eq(3);
-	if (individual.id === "v-l:Divider") {
-		stcTmpl.remove();
-		objTmpl.remove();
-		subTmpl.remove();
-		return;
-	} else {
-		divTmpl.remove();
-	}
-	if (individual.hasValue("v-l:menuItem")) {
-		stcTmpl.remove();
-		objTmpl.remove();
-	} else {
-		subTmpl.remove();
-		if (individual.hasValue("v-l:staticLink")) {
-			objTmpl.remove();
-			var lnk = $("#lnk", stcTmpl);
-			lnk.attr("href", individual["v-l:staticLink"][0])
-			   .click(function (e) {
-					if (individual.hasValue("v-l:action")) {
-						e.preventDefault();
-						var action = new Function("veda", individual["v-l:action"][0]);
-						action(veda);
-					}
-			   });
-		} else {
-			stcTmpl.remove();
-		}
-	}
-	template.toggleClass("hidden show");
+  var stcTmpl = template.eq(0), objTmpl = template.eq(1), subTmpl = template.eq(2), divTmpl = template.eq(3);
+  if (individual.id === "v-l:Divider") {
+    stcTmpl.remove();
+    objTmpl.remove();
+    subTmpl.remove();
+    return;
+  } else {
+    divTmpl.remove();
+  }
+  if (individual.hasValue("v-l:menuItem")) {
+    stcTmpl.remove();
+    objTmpl.remove();
+  } else {
+    subTmpl.remove();
+    if (individual.hasValue("v-l:staticLink")) {
+      objTmpl.remove();
+      var lnk = $("#lnk", stcTmpl);
+      lnk.attr("href", individual["v-l:staticLink"][0])
+         .click(function (e) {
+          if (individual.hasValue("v-l:action")) {
+            e.preventDefault();
+            var action = new Function("veda", individual["v-l:action"][0]);
+            action(veda);
+          }
+         });
+    } else {
+      stcTmpl.remove();
+    }
+  }
+  template.toggleClass("hidden show");
+  //# sourceURL=v-l:MenuItemViewTemplate
 </script>
-	"""
+  """
 .
 v-l:MenuTemplate
-	rdf:type v-ui:ClassTemplate ;
-	rdfs:label "Menu class template"@en ;
-	rdfs:label "Шаблон класса Меню"@ru ;
-	v-ui:template """
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Menu class template"@en ;
+  rdfs:label "Шаблон класса Меню"@ru ;
+  v-ui:template """
 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-cog fa-lg"></span> <span class="caret"></span></a>
-<ul class="dropdown-menu" role="menu" about="@" rel="v-l:menuItem" template="v-l:MenuItemViewTemplate"></ul>
-	"""
+<ul class="dropdown-menu" role="menu" about="@" rel="v-l:menuItem" data-template="v-l:MenuItemViewTemplate"></ul>
+  """
 .
 v-l:PsStrings
-	rdf:type v-ui:StringPropertySpecification ;
-	v-ui:forProperty rdfs:label, v-l:staticLink ;
-	v-ui:forClass v-l:Menu ;
-	rdfs:label "Rdfs:label, v-l:staticLink specification for Menu class"@en ;
-	rdfs:label "Спецификация rdfs:label, v-l:staticLink для класса Меню"@ru ;
-	v-ui:maxCardinality "1"^^xsd:integer ;
+  rdf:type v-ui:StringPropertySpecification ;
+  v-ui:forProperty rdfs:label, v-l:staticLink ;
+  v-ui:forClass v-l:Menu ;
+  rdfs:label "Rdfs:label, v-l:staticLink specification for Menu class"@en ;
+  rdfs:label "Спецификация rdfs:label, v-l:staticLink для класса Меню"@ru ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-l:PsMenuItem
-	rdf:type v-ui:ObjectPropertySpecification ;
-	v-ui:forProperty v-l:menuItem ;
-	v-ui:forClass v-l:Menu ;
-	rdfs:label "V-l:menuItem specification for v-l:Menu class"@en ;
-	rdfs:label "Спецификация v-l:menuItem для класса v-l:Menu"@ru ;
-	v-ui:queryPrefix "('rdf:type' == 'v-l:Menu')"^^xsd:string ;
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forProperty v-l:menuItem ;
+  v-ui:forClass v-l:Menu ;
+  rdfs:label "V-l:menuItem specification for v-l:Menu class"@en ;
+  rdfs:label "Спецификация v-l:menuItem для класса v-l:Menu"@ru ;
+  v-ui:queryPrefix "('rdf:type' == 'v-l:Menu')"^^xsd:string ;
 .
 
 ### WELCOME ###
 
 v-l:WelcomeAspect
-	rdf:type owl:Class ;
-	rdfs:subClassOf v-s:Aspect ;
-	rdfs:label "Welcome aspect"@en ;
-	rdfs:label "Приветственный аспект"@ru ;
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Aspect ;
+  rdfs:label "Welcome aspect"@en ;
+  rdfs:label "Приветственный аспект"@ru ;
 .
 v-l:WelcomeAspectTemplate
-	rdf:type v-ui:ClassTemplate ;
-	rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
-	rdfs:label "Template for Welcome aspect class"@en ;
-	v-ui:forClass v-l:WelcomeAspect ;
-	v-ui:template """
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
+  rdfs:label "Template for Welcome aspect class"@en ;
+  v-ui:forClass v-l:WelcomeAspect ;
+  v-ui:template """
 <div class="container-fluid">
-	<div class="jumbotron">
-		<div class="row">
-			<div class="col-md-7">
-				<h1 about="v-l:WelcomeToVeda" property="rdfs:label"></h1>
-				<p style="white-space: pre-wrap;" about="v-l:VedaDescription" property="rdfs:label"></p>
-			</div>
-		</div>
-	</div>
+  <div class="jumbotron">
+    <div class="row">
+      <div class="col-md-7">
+        <h1 about="v-l:WelcomeToVeda" property="rdfs:label"></h1>
+        <p style="white-space: pre-wrap;" about="v-l:VedaDescription" property="rdfs:label"></p>
+      </div>
+    </div>
+  </div>
 </div>
   """ ;
 .
@@ -250,141 +253,141 @@ v-l:WelcomeAspectTemplate
 ### STRINGS ###
 
 v-l:SemanticMachines
-	rdf:type v-s:Bundle ;
-	rdfs:label "Semantic machines"@en ;
-	rdfs:label "Смысловые машины"@ru ;
+  rdf:type v-s:Bundle ;
+  rdfs:label "Semantic machines"@en ;
+  rdfs:label "Смысловые машины"@ru ;
 .
 v-l:License
-	rdf:type v-s:Bundle ;
-	rdfs:label "License"@en ;
-	rdfs:label "Лицензия"@ru ;
+  rdf:type v-s:Bundle ;
+  rdfs:label "License"@en ;
+  rdfs:label "Лицензия"@ru ;
 .
 v-l:WelcomeToVeda
-	rdf:type v-s:Bundle ;
-	rdfs:label "Добро пожаловать в Veda!"@ru ;
-	rdfs:label "Welcome to Veda!"@en ;
+  rdf:type v-s:Bundle ;
+  rdfs:label "Добро пожаловать в Veda!"@ru ;
+  rdfs:label "Welcome to Veda!"@en ;
 .
 v-l:VedaDescription
-	rdf:type v-s:Bundle ;
-	rdfs:label """Veda - это платформа для разработки web-приложений уровня предприятий."""@ru ;
-	rdfs:label """Veda - enterprise application development platform."""@en ;
+  rdf:type v-s:Bundle ;
+  rdfs:label """Veda - это платформа для разработки web-приложений уровня предприятий."""@ru ;
+  rdfs:label """Veda - enterprise application development platform."""@en ;
 .
 
 ### INDIVIDUALS ###
 
 v-l:Main
-	rdf:type v-l:MainPage ;
-	rdfs:label "Main page"@en ;
-	rdfs:label "Главная страница"@ru ;
+  rdf:type v-l:MainPage ;
+  rdfs:label "Main page"@en ;
+  rdfs:label "Главная страница"@ru ;
 .
 v-l:Welcome
-	rdf:type v-l:WelcomeAspect ;
-	rdfs:label "Welcome"@en ;
-	rdfs:label "Добро пожаловать"@ru ;
+  rdf:type v-l:WelcomeAspect ;
+  rdfs:label "Welcome"@en ;
+  rdfs:label "Добро пожаловать"@ru ;
 .
 v-l:MainMenu
-	rdf:type v-l:Menu ;
-	rdfs:label "Main menu"@en ;
-	rdfs:label "Главное меню"@ru ;
-	v-l:menuItem v-l:Inbox ;
-	v-l:menuItem v-l:Outbox ;
-	v-l:menuItem v-l:Completed ;
-	v-l:menuItem v-l:Divider ;
-	v-l:menuItem v-l:Create ;
-	v-l:menuItem v-l:Find ;
-	v-l:menuItem v-l:Drafts ;
-	v-l:menuItem v-l:Divider ;
-	v-l:menuItem v-l:Search ;
-	v-l:menuItem v-l:Divider ;
-	v-l:menuItem v-l:Graph ;
-	v-l:menuItem v-l:Console ;
-	v-l:menuItem v-l:Tests ;
-	v-l:menuItem v-l:Divider ;
-	v-l:menuItem v-l:Clear ;
-	v-l:menuItem v-l:Divider ;
-	v-l:menuItem v-l:Exit ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Main menu"@en ;
+  rdfs:label "Главное меню"@ru ;
+  v-l:menuItem v-l:Inbox ;
+  v-l:menuItem v-l:Outbox ;
+  v-l:menuItem v-l:Completed ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Create ;
+  v-l:menuItem v-l:Find ;
+  v-l:menuItem v-l:Drafts ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Search ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Graph ;
+  v-l:menuItem v-l:Console ;
+  v-l:menuItem v-l:Tests ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Clear ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Exit ;
 .
 v-l:Divider
-	rdf:type v-l:Menu ;
-	rdfs:label "Divider"@en ;
-	rdfs:label "Разделитель"@ru ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Divider"@en ;
+  rdfs:label "Разделитель"@ru ;
 .
 v-l:Inbox
-	rdf:type v-l:Menu ;
-	rdfs:label "Inbox"@en ;
-	rdfs:label "Входящие"@ru ;
-	v-l:objectLink v-ft:Inbox ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Inbox"@en ;
+  rdfs:label "Входящие"@ru ;
+  v-l:objectLink v-ft:Inbox ;
 .
 v-l:Outbox
-	rdf:type v-l:Menu ;
-	rdfs:label "Outbox"@en ;
-	rdfs:label "Исходящие"@ru ;
-	v-l:objectLink v-ft:Outbox ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Outbox"@en ;
+  rdfs:label "Исходящие"@ru ;
+  v-l:objectLink v-ft:Outbox ;
 .
 v-l:Completed
-	rdf:type v-l:Menu ;
-	rdfs:label "Completed"@en ;
-	rdfs:label "Выполненные"@ru ;
-	v-l:objectLink v-ft:Completed ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Completed"@en ;
+  rdfs:label "Выполненные"@ru ;
+  v-l:objectLink v-ft:Completed ;
 .
 v-l:Create
-	rdf:type v-l:Menu ;
-	rdfs:label "Create"@en ;
-	rdfs:label "Создать"@ru ;
-	v-l:objectLink v-fc:Create ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Create"@en ;
+  rdfs:label "Создать"@ru ;
+  v-l:objectLink v-fc:Create ;
 .
 v-l:Find
-	rdf:type v-l:Menu ;
-	rdfs:label "Find"@en ;
-	rdfs:label "Найти"@ru ;
-	v-l:objectLink v-fs:Search ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Find"@en ;
+  rdfs:label "Найти"@ru ;
+  v-l:objectLink v-fs:Search ;
 .
 v-l:Drafts
-	rdf:type v-l:Menu ;
-	rdfs:label "Drafts"@en ;
-	rdfs:label "Черновики"@ru ;
-	v-l:staticLink "#/drafts"^^xsd:string ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Drafts"@en ;
+  rdfs:label "Черновики"@ru ;
+  v-l:staticLink "#/drafts"^^xsd:string ;
 .
 v-l:Search
-	rdf:type v-l:Menu ;
-	rdfs:label "Search"@en ;
-	rdfs:label "Поиск"@ru ;
-	v-l:staticLink "#/search"^^xsd:string ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Search"@en ;
+  rdfs:label "Поиск"@ru ;
+  v-l:staticLink "#/search"^^xsd:string ;
 .
 v-l:Graph
-	rdf:type v-l:Menu ;
-	rdfs:label "Graph"@en ;
-	rdfs:label "Граф"@ru ;
-	v-l:staticLink "#/graph"^^xsd:string ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Graph"@en ;
+  rdfs:label "Граф"@ru ;
+  v-l:staticLink "#/graph"^^xsd:string ;
 .
 v-l:Console
-	rdf:type v-l:Menu ;
-	rdfs:label "Console"@en ;
-	rdfs:label "Консоль"@ru ;
-	v-l:staticLink "#/console"^^xsd:string ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Console"@en ;
+  rdfs:label "Консоль"@ru ;
+  v-l:staticLink "#/console"^^xsd:string ;
 .
 v-l:Tests
-	rdf:type v-l:Menu ;
-	rdfs:label "Tests"@en ;
-	rdfs:label "Тесты"@ru ;
-	v-l:staticLink "/tests"^^xsd:string ;
+  rdf:type v-l:Menu ;
+  rdfs:label "Tests"@en ;
+  rdfs:label "Тесты"@ru ;
+  v-l:staticLink "/tests"^^xsd:string ;
 .
 v-l:Clear
-	rdf:type v-l:Menu ;
-	rdfs:label "Clear data"@en ;
-	rdfs:label "Очистить данные"@ru ;
-	v-l:staticLink "#"^^xsd:string ;
-	v-l:action """
+  rdf:type v-l:Menu ;
+  rdfs:label "Clear data"@en ;
+  rdfs:label "Очистить данные"@ru ;
+  v-l:staticLink "#"^^xsd:string ;
+  v-l:action """
 localStorage.clear();
 location.reload();
-	"""
+  """
 .
 v-l:Exit
-	rdf:type v-l:Menu ;
-	rdfs:label "Exit"@en ;
-	rdfs:label "Выйти"@ru ;
-	v-l:staticLink "#"^^xsd:string ;
-	v-l:action """
+  rdf:type v-l:Menu ;
+  rdfs:label "Exit"@en ;
+  rdfs:label "Выйти"@ru ;
+  v-l:staticLink "#"^^xsd:string ;
+  v-l:action """
 veda.logout();
-	"""
+  """
 .

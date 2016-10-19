@@ -4,14 +4,13 @@
 	"dependencies": {
 		"pacahon_third_party": "1.0.13", 
 		"backtrace-d": "0.1.0", 
-		"requests": "0.2.0"
+		"d-nanomsg": "~>0.1.2"
 	},
-        "versions": ["libV8", "libRequests", "isModule"],
+        "versions": ["libV8", "isModule"],
         "license": "LGPL v3",
 	"sourcePaths":[
 	    "../../veda/common", 
 	    "../../veda/onto",  
-	    "../../veda/util", 
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/az", 
@@ -20,17 +19,24 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
+	"../../veda/bind/xapian_d_header.d",
+        "../../veda/bind/lmdb_header.d",
+        "../../veda/bind/nano.d",
         "../../veda/gluecode/script.d",
         "../../veda/gluecode/ltr_scripts.d",
         "../../veda/gluecode/v8d_header.d",
         "../../lib64/libv8d.a", 
 	"../../lib64/libxapiand.a",
-	"../../veda/core/bind/xapian_d_header.d",
-        "../../veda/core/bind/lmdb_header.d",
 	"../../veda/core/util/utils.d",
-	"../../veda/core/bind/libwebsockets.d"
+        "../../veda/util/individual8json.d",
+        "../../veda/util/tools.d",
+        "../../veda/util/queue.d",
+        "../../veda/util/container.d",
+        "../../veda/util/cbor.d",
+        "../../veda/util/cbor8individual.d",
+        "../../veda/util/module_info.d"
 	],
-	"libs":["websockets"],
+	"libs":["nanomsg"],
 	"configurations": [
 	{
 	    "name": "app",

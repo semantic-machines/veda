@@ -15,7 +15,7 @@
 .
 vdi:ClassIndex
   rdf:type owl:Class ;
-  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf v-s:Thing ;
   rdfs:label "Class index"@en ;
   rdfs:label "Индекс класса"@ru ;
 .

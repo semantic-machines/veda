@@ -206,15 +206,16 @@ cfg:Permission_6
   rdfs:label "Permission to read dictionaries for all users"@en ;
   rdfs:label "Разрешение на чтение справочников для всех пользователей"@ru ;
 .
-cfg:Permission_7
-  rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-  v-s:permissionObject v-s:Group_group ;
-  v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "Permission to read groups for all users"@en ;
-  rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
-.
+#cfg:Permission_7
+#  rdf:type v-s:PermissionStatement ;
+#  v-s:author cfg:VedaSystem ;
+#  v-s:permissionSubject cfg:AllUsersGroup ;
+#  v-s:permissionObject v-s:Group_group ;
+#  v-s:canRead "true"^^xsd:boolean ;
+#  rdfs:label "Permission to read groups for all users "@en ;
+#  rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
+#  v-s:deleted "true"^^xsd:boolean ;
+#.
 
 ##################### EVENT HANDLERS #####################
 
@@ -234,17 +235,17 @@ cfg:Event_1
  * parent_document_id = id of the document that triggered this event.
  */
 var doc_uri = document['@'],
-	isDefinedBy = document['rdfs:isDefinedBy'],
-	isGroup = getUri(document['rdf:type']) === "v-s:Group";
+  isDefinedBy = document['rdfs:isDefinedBy'],
+  isGroup = getUri(document['rdf:type']) === "v-s:Group";
 if ( !isDefinedBy || isGroup) return;
 var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourcesGroup',
-	membership = {
-		'@' : uri,
-		'rdf:type'     : newUri('v-s:Membership'),
-		'v-s:memberOf' : newUri('cfg:TTLResourcesGroup'),
-		'v-s:resource' : newUri(doc_uri),
-		'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_1')
-	};
+  membership = {
+    '@' : uri,
+    'rdf:type'     : newUri('v-s:Membership'),
+    'v-s:memberOf' : newUri('cfg:TTLResourcesGroup'),
+    'v-s:resource' : newUri(doc_uri),
+    'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_1')
+  };
 put_individual(ticket, membership, _event_id);
 
 //print('cfg:Event_1', uri);
@@ -255,8 +256,8 @@ put_individual(ticket, membership, _event_id);
 cfg:Event_2
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner) и издателям (v-s:publisher)";
-  rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner) и издателям (v-s:publisher)";
+  rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
+  rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -269,48 +270,48 @@ cfg:Event_2
  */
 
 /*var doc_uri = document['@'],
-	is_new = !prev_state,
-	is_ontology = !!document['rdfs:isDefinedBy'];
+  is_new = !prev_state,
+  is_ontology = !!document['rdfs:isDefinedBy'];
 
 if (is_new && !is_ontology) {
-	document["v-s:author"] = newUri(user_uri);
-	document["v-s:owner"] = newUri(user_uri);
-	put_individual(ticket, document, _event_id);
-	addRight(ticket, [can_read, can_update, can_delete], user_uri, doc_uri);
-	//print("Event 2: uri", doc_uri, getUri(document['rdf:type']), "prev", toJson(prev_state) );
+  document["v-s:author"] = newUri(user_uri);
+  document["v-s:owner"] = newUri(user_uri);
+  put_individual(ticket, document, _event_id);
+  addRight(ticket, [can_read, can_update, can_delete], user_uri, doc_uri);
+  //print("Event 2: uri", doc_uri, getUri(document['rdf:type']), "prev", toJson(prev_state) );
 }
 */
 
 var doc_uri = document['@'],
-	owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher"];
+  owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
 
 owner_properties.map(function (property_uri) {
-	var owner_uri = getUri( document[property_uri] );
-	if (owner_uri) {
-		var owner = get_individual(ticket, owner_uri);
-		if (owner) {
-			var owner_type = getUri(owner['rdf:type']);
-			if (owner_type == 'v-s:Person') {
-				var new_right_uri = doc_uri + "_" + owner_uri;
-				addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, new_right_uri);
-				//print("Event 2: rights for person", owner_uri, "to doc", doc_uri);
-			} else {
-				var ff = get_property_chain (ticket, document, property_uri, 'v-s:occupation');
-				if (ff) {
-					var position_uri = getUri (ff['field']);
-					var first_doc = ff['first'];
-					if (first_doc) {
-						doc_uri = first_doc['@'];
-						if (position_uri) {
-							new_right_uri = doc_uri + "_" + position_uri;
-							addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
-							//print("Event 2: rights for position", position_uri, "to doc", doc_uri);
-						}
-					}
-				}
-			}
-		}
-	}
+  var owner_uri = getUri( document[property_uri] );
+  if (owner_uri) {
+    var owner = get_individual(ticket, owner_uri);
+    if (owner) {
+      var owner_type = getUri(owner['rdf:type']);
+      if (owner_type == 'v-s:Person') {
+        var new_right_uri = doc_uri + "_" + owner_uri;
+        addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, new_right_uri);
+        //print("Event 2: rights for person", owner_uri, "to doc", doc_uri);
+      } else {
+        var ff = get_property_chain (ticket, document, property_uri, 'v-s:occupation');
+        if (ff) {
+          var position_uri = getUri (ff['field']);
+          var first_doc = ff['first'];
+          if (first_doc) {
+            doc_uri = first_doc['@'];
+            if (position_uri) {
+              new_right_uri = doc_uri + "_" + position_uri;
+              addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
+              //print("Event 2: rights for position", position_uri, "to doc", doc_uri);
+            }
+          }
+        }
+      }
+    }
+  }
 });
   """ ;
 .
@@ -336,25 +337,25 @@ cfg:Event_3
 
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
 {
-//	print('+V');
-	create_version(ticket, document, prev_state, _event_id);
+//  print('+V');
+  create_version(ticket, document, prev_state, user_uri, _event_id);
 }
 
 if (super_classes.indexOf('v-s:Journaling')>=0)
 {
-//	print('+J');
+//  print('+J');
 
-    var publisher_uri = getUri(document['v-s:publisher']);
-//	print('+J1 '+document['@']);
-//	print('+J1 '+toJson(document));
+    var publisher_uri = getUri(document['v-s:creator']);
+//  print('+J1 '+document['@']);
+//  print('+J1 '+toJson(document));
     if (!publisher_uri) { return; }
 
     var publisher = get_individual(ticket, publisher_uri);
-//	print('+J2');
+//  print('+J2');
     if (!publisher) { return; }
 
     var employee_uri;
-//	print('+J3');
+//  print('+J3');
     if (isExists(publisher['rdf:type'], newUri('v-s:Appointment')))
     {
         employee_uri = publisher['v-s:employee'];
@@ -365,15 +366,15 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
         employee_uri = publisher_uri;
     }
 
-//	print('+J4');
+//  print('+J4');
     if (!employee_uri) { return; }
 
     var journal_uri = getJournalUri(document['@']);
     var exist_journal = get_individual(ticket, journal_uri);
-//	print('+J5');
+//  print('+J5');
     if (exist_journal)
     {
-//		print('+J6');
+//    print('+J6');
         // UPDATE DOCUMENT
         var journal_record = newJournalRecord(journal_uri);
         if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
@@ -430,7 +431,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
             }]
         };
         put_individual(ticket, new_journal, _event_id);
-//	    print('+J'+journal_uri);
+//      print('+J'+journal_uri);
 
         addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_uri);
 
@@ -477,49 +478,49 @@ cfg:Event_4
  */
 
 var doc_uri = document['@'],
-	deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+  deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
 
 if ( hasValue(document, "v-s:parentUnit") ) {
-	var parents = getUris( document["v-s:parentUnit"] );
-	parents.map(function (parent_uri) {
-		var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_"),
-			membership = {
-				'@' : uri,
-				'rdf:type'     : newUri("v-s:Membership"),
-				'v-s:resource' : newUri(doc_uri),
-				'v-s:memberOf' : newUri(parent_uri),
-				'rdfs:comment' : newStr("выдан cfg:Event_4")
-			};
-		if (deleted) {
-			membership['v-s:deleted'] = newBool(true);
-		}
-		put_individual (ticket, membership, _event_id);
+  var parents = getUris( document["v-s:parentUnit"] );
+  parents.map(function (parent_uri) {
+    var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_"),
+      membership = {
+        '@' : uri,
+        'rdf:type'     : newUri("v-s:Membership"),
+        'v-s:resource' : newUri(doc_uri),
+        'v-s:memberOf' : newUri(parent_uri),
+        'rdfs:comment' : newStr("выдан cfg:Event_4")
+      };
+    if (deleted) {
+      membership['v-s:deleted'] = newBool(true);
+    }
+    put_individual (ticket, membership, _event_id);
 
-		//print('cfg:Event_4 (unit to parent)', uri);
+    //print('cfg:Event_4 (unit to parent)', uri);
 
-	});
+  });
 }
 
 if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: _Uri }) ) {
-	var person_uri = getUri(document['v-s:employee']),
-		position_uri = getUri(document['v-s:occupation']);
+  var person_uri = getUri(document['v-s:employee']),
+    position_uri = getUri(document['v-s:occupation']);
 
-	if (!person_uri || !position_uri) return;
+  if (!person_uri || !position_uri) return;
 
-	var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_'),
-		membership = {
-			'@' : uri,
-			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(position_uri),
-			'v-s:resource' : newUri(person_uri),
-			'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_4')
-		};
-	if (deleted) {
-		membership['v-s:deleted'] = newBool(true);
-	}
-	put_individual (ticket, membership, _event_id);
+  var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_'),
+    membership = {
+      '@' : uri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(position_uri),
+      'v-s:resource' : newUri(person_uri),
+      'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_4')
+    };
+  if (deleted) {
+    membership['v-s:deleted'] = newBool(true);
+  }
+  put_individual (ticket, membership, _event_id);
 
-	//print('cfg:Event_4 (unit to position)', uri);
+  //print('cfg:Event_4 (unit to position)', uri);
 
 }
   """ ;
@@ -543,20 +544,20 @@ cfg:Event_5
  */
 
 var doc_uri = document['@'],
-	deleted = hasValue(document, 'v-s:deleted', { data: true, type: _Boolean}),
-	uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_AllUsersGroup';
+  deleted = hasValue(document, 'v-s:deleted', { data: true, type: _Boolean}),
+  uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_AllUsersGroup';
 
 if (doc_uri === 'cfg:Guest') { return; }
 
 var membership = {
-	'@' : uri,
-	'rdf:type'     : newUri('v-s:Membership'),
-	'v-s:resource' : newUri(doc_uri),
-	'v-s:memberOf' : newUri('cfg:AllUsersGroup'),
-	'rdfs:comment' : newStr('выдан cfg:Event_5')
+  '@' : uri,
+  'rdf:type'     : newUri('v-s:Membership'),
+  'v-s:resource' : newUri(doc_uri),
+  'v-s:memberOf' : newUri('cfg:AllUsersGroup'),
+  'rdfs:comment' : newStr('выдан cfg:Event_5')
 };
 if (deleted) {
-	membership['v-s:deleted'] = newBool(true);
+  membership['v-s:deleted'] = newBool(true);
 }
 put_individual (ticket, membership, _event_id);
 
@@ -601,25 +602,25 @@ cfg:Event_6
 
 // Update ontology vsn
 var vsn = {
-	"@" : "cfg:OntoVsn",
-	"rdf:type"  : newUri("rdfs:Resource"),
-	"rdf:value" : newStr( guid() )
+  "@" : "cfg:OntoVsn",
+  "rdf:type"  : newUri("rdfs:Resource"),
+  "rdf:value" : newStr( guid() )
 };
 put_individual (ticket, vsn, _event_id);
 
 // Add to cfg:OntologyGroup
 var doc_uri = document['@'],
-	uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + "cfg_OntologyGroup",
-	membership = get_individual(ticket, uri);
+  uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + "cfg_OntologyGroup",
+  membership = get_individual(ticket, uri);
 
 if (membership) { return; }
 
 membership = {
-	'@' : uri,
-	'rdf:type'     : newUri('v-s:Membership'),
-	'v-s:memberOf' : newUri('cfg:OntologyGroup'),
-	'v-s:resource' : newUri(doc_uri),
-	'rdfs:comment' : newStr('выдан cfg:Event_6')
+  '@' : uri,
+  'rdf:type'     : newUri('v-s:Membership'),
+  'v-s:memberOf' : newUri('cfg:OntologyGroup'),
+  'v-s:resource' : newUri(doc_uri),
+  'rdfs:comment' : newStr('выдан cfg:Event_6')
 };
 put_individual (ticket, membership, _event_id);
 
@@ -632,7 +633,7 @@ cfg:Event_7
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
   rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
-  v-s:filter v-s:Authorized ;
+  v-s:filter v-s:ClassAuthorized ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -647,38 +648,38 @@ cfg:Event_7
 if (parent_document_id && parent_document_id === document['@']) return;
 
 var doc_uri = document["@"],
-	_classes = getUris( document["rdf:type"] ),
-	doc_deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
+  _classes = getUris( document["rdf:type"] ),
+  doc_deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
 
 _classes.map(function (class_uri) {
-	var class_group_uri = class_uri + '_group', // uri группы индивидов класса
-		uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_'),
-		membership = get_individual(ticket, uri);
+  var class_group_uri = class_uri + '_group', // uri группы индивидов класса
+    uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_'),
+    membership = get_individual(ticket, uri);
 
-	if (!membership) {
-		membership = {
-			'@' : uri,
-			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(class_group_uri),
-			'v-s:resource' : newUri(doc_uri),
-			'rdfs:comment' : newStr('создано cfg:Event_7')
-		};
-		if (doc_deleted) {
-			membership['v-s:deleted'] = newBool(true);
-		}
-	} else {
-		var mem_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
-		if ( doc_deleted && !mem_deleted ) {
-			membership["v-s:deleted"] = newBool(true);
-		} else if ( !doc_deleted && mem_deleted ) {
-			delete membership['v-s:deleted'];
-		} else {
-			return ;
-		}
-	}
-	put_individual (ticket, membership, _event_id);
+  if (!membership) {
+    membership = {
+      '@' : uri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(class_group_uri),
+      'v-s:resource' : newUri(doc_uri),
+      'rdfs:comment' : newStr('создано cfg:Event_7')
+    };
+    if (doc_deleted) {
+      membership['v-s:deleted'] = newBool(true);
+    }
+  } else {
+    var mem_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
+    if ( doc_deleted && !mem_deleted ) {
+      membership["v-s:deleted"] = newBool(true);
+    } else if ( !doc_deleted && mem_deleted ) {
+      delete membership['v-s:deleted'];
+    } else {
+      return ;
+    }
+  }
+  put_individual (ticket, membership, _event_id);
 
-	//print('cfg:Event_7', uri);
+  //print('cfg:Event_7', uri);
 });
   """ ;
 .
@@ -703,20 +704,20 @@ cfg:Event_8
 if (parent_document_id && parent_document_id === document['@']) return;
 
 var _class = document,
-	class_uri = _class["@"],
-	class_group_uri = class_uri + "_group",
-	class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: _Boolean } ),
-	class_group = get_individual(ticket, class_group_uri);
+  class_uri = _class["@"],
+  class_group_uri = class_uri + "_group",
+  class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: _Boolean } ),
+  class_group = get_individual(ticket, class_group_uri);
 
 if ( !class_group ) {
-	var class_group = {
-		'@' : class_group_uri,
-		'rdf:type'     : newUri('v-s:Group'),
-		'rdfs:label' : newStr("Группа индивидов класса " + class_uri),
-		'rdfs:comment' : newStr('создано cfg:Event_8')
-	};
-	put_individual (ticket, class_group, _event_id);
-	//print("cfg:Event_8 class group", class_group_uri);
+  var class_group = {
+    '@' : class_group_uri,
+    'rdf:type'     : newUri('v-s:Group'),
+    'rdfs:label' : newStr("Группа индивидов класса " + class_uri),
+    'rdfs:comment' : newStr('создано cfg:Event_8')
+  };
+  put_individual (ticket, class_group, _event_id);
+  //print("cfg:Event_8 class group", class_group_uri);
 }
 
 if ( !hasValue(_class, "rdfs:subClassOf") ) { return; }
@@ -724,54 +725,54 @@ if ( !hasValue(_class, "rdfs:subClassOf") ) { return; }
 var _super_classes = getUris( _class["rdfs:subClassOf"] );
 
 _super_classes.map(function (super_uri) {
-	if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
-		return;
-	}
+  if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
+    return;
+  }
 
-	// class memberOf superclass
-	var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
-		membership = get_individual(ticket, uri);
-	if (!membership) {
-		membership = {
-			'@' : uri,
-			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(super_uri),
-			'v-s:resource' : newUri(class_uri),
-			'rdfs:comment' : newStr('1. создано cfg:Event_8')
-		}
-		put_individual (ticket, membership, _event_id);
-		//print('cfg:Event_8 membership (class -> superclass)', uri);
-	}
+  // class memberOf superclass
+  var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
+    membership = get_individual(ticket, uri);
+  if (!membership) {
+    membership = {
+      '@' : uri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(super_uri),
+      'v-s:resource' : newUri(class_uri),
+      'rdfs:comment' : newStr('1. создано cfg:Event_8')
+    }
+    put_individual (ticket, membership, _event_id);
+    //print('cfg:Event_8 membership (class -> superclass)', uri);
+  }
 
-	// class_group memberOf superclass_group
-	var super_group_uri = super_uri + "_group",
-		uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
-		membership = get_individual(ticket, uri);
+  // class_group memberOf superclass_group
+  var super_group_uri = super_uri + "_group",
+    uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
+    membership = get_individual(ticket, uri);
 
-	if (!membership) {
-		membership = {
-			'@' : uri,
-			'rdf:type'     : newUri('v-s:Membership'),
-			'v-s:memberOf' : newUri(super_group_uri),
-			'v-s:resource' : newUri(class_group_uri),
-			'rdfs:comment' : newStr('2. создано cfg:Event_8')
-		};
-		if (class_deleted) {
-			membership['v-s:deleted'] = newBool(true);
-		}
-	} else {
-		var mem_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
+  if (!membership) {
+    membership = {
+      '@' : uri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(super_group_uri),
+      'v-s:resource' : newUri(class_group_uri),
+      'rdfs:comment' : newStr('2. создано cfg:Event_8')
+    };
+    if (class_deleted) {
+      membership['v-s:deleted'] = newBool(true);
+    }
+  } else {
+    var mem_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
 
-		if ( class_deleted && !mem_deleted ) {
-			membership["v-s:deleted"] = newBool(true);
-		} else if ( !class_deleted && mem_deleted ) {
-			delete membership['v-s:deleted'];
-		} else {
-			return;
-		}
-	}
-	put_individual (ticket, membership, _event_id);
-	//print('cfg:Event_8 membership', uri);
+    if ( class_deleted && !mem_deleted ) {
+      membership["v-s:deleted"] = newBool(true);
+    } else if ( !class_deleted && mem_deleted ) {
+      delete membership['v-s:deleted'];
+    } else {
+      return;
+    }
+  }
+  put_individual (ticket, membership, _event_id);
+  //print('cfg:Event_8 membership', uri);
 
 });
   """ ;
@@ -795,37 +796,37 @@ cfg:Event_9
  */
 
 var doc_uri = document["@"],
-	parent_uri = getUri( document["v-s:parent"] ),
-	doc_deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
+  parent_uri = getUri( document["v-s:parent"] ),
+  doc_deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
 
 //print('cfg:Event_9', 'start', 'parent_uri', parent_uri );
 
 if (!parent_uri) { return; }
 
 var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + parent_uri.split(':').join('_'),
-	membership = get_individual(ticket, uri);
+  membership = get_individual(ticket, uri);
 
 if (!membership) {
-	membership = {
-		'@' : uri,
-		'rdf:type'     : newUri('v-s:Membership'),
-		'v-s:memberOf' : newUri(parent_uri),
-		'v-s:resource' : newUri(doc_uri),
-		'rdfs:comment' : newStr('создано cfg:Event_9')
-	};
-	if (doc_deleted) {
-		membership['v-s:deleted'] = newBool(true);
-	}
+  membership = {
+    '@' : uri,
+    'rdf:type'     : newUri('v-s:Membership'),
+    'v-s:memberOf' : newUri(parent_uri),
+    'v-s:resource' : newUri(doc_uri),
+    'rdfs:comment' : newStr('создано cfg:Event_9')
+  };
+  if (doc_deleted) {
+    membership['v-s:deleted'] = newBool(true);
+  }
 } else {
-	var mem_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
-	if ( doc_deleted && !mem_deleted ) {
-		membership["v-s:deleted"] = newBool(true);
-	} else if ( !doc_deleted && mem_deleted ) {
-		delete membership['v-s:deleted'];
-	} else {
-		//print('cfg:Event_9', uri, 'nothing changed');
-		return ;
-	}
+  var mem_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
+  if ( doc_deleted && !mem_deleted ) {
+    membership["v-s:deleted"] = newBool(true);
+  } else if ( !doc_deleted && mem_deleted ) {
+    delete membership['v-s:deleted'];
+  } else {
+    //print('cfg:Event_9', uri, 'nothing changed');
+    return ;
+  }
 }
 put_individual (ticket, membership, _event_id);
 
@@ -855,7 +856,7 @@ cfg:Event_10
 if ( document['v-wf:isTrace'] || getUri(document['rdf:type']) === 'v-wf:TraceRecord' ) { return; }
 
 var this_uri = document['@'],
-	group_uri = getUri(document["v-s:onDocument"]) || getUri(document["v-s:parentJournal"]) || getUri(document["v-wf:onProcess"]);
+  group_uri = getUri(document["v-s:onDocument"]) || getUri(document["v-s:parentJournal"]) || getUri(document["v-wf:onProcess"]);
 
 if (!group_uri) { return; }
 
@@ -866,12 +867,12 @@ var membership = get_individual(ticket, uri);
 if (membership) { return; }
 
 membership = {
-	'@' : uri,
-	'rdf:type'     : newUri('v-s:Membership'),
-	'v-s:memberOf' : newUri(group_uri),
-	'v-s:resource' : newUri(this_uri),
-	'rdfs:comment' : newStr('создано cfg:Event_10'),
-	'v-s:canRead'  : newBool(true)
+  '@' : uri,
+  'rdf:type'     : newUri('v-s:Membership'),
+  'v-s:memberOf' : newUri(group_uri),
+  'v-s:resource' : newUri(this_uri),
+  'rdfs:comment' : newStr('создано cfg:Event_10'),
+  'v-s:canRead'  : newBool(true)
 };
 
 put_individual (ticket, membership, _event_id);
@@ -902,7 +903,7 @@ cfg:Event_11
  */
 
 var this_uri = document['@'],
-	group_uri = getUri(document["v-wf:forProcess"]) || getUri(document["v-wf:forWorkItem"]) || getUri(document["v-wf:onWorkOrder"]) || getUri(document["v-wf:parentWorkOrder"]);
+  group_uri = getUri(document["v-wf:forProcess"]) || getUri(document["v-wf:forWorkItem"]) || getUri(document["v-wf:onWorkOrder"]) || getUri(document["v-wf:parentWorkOrder"]);
 
 if (!group_uri) { return; }
 
@@ -913,12 +914,12 @@ var membership = get_individual(ticket, uri);
 if (membership) { return; }
 
 membership = {
-	'@' : uri,
-	'rdf:type'     : newUri('v-s:Membership'),
-	'v-s:memberOf' : newUri(group_uri),
-	'v-s:resource' : newUri(this_uri),
-	'rdfs:comment' : newStr('создано cfg:Event_11'),
-	'v-s:canRead'  : newBool(true)
+  '@' : uri,
+  'rdf:type'     : newUri('v-s:Membership'),
+  'v-s:memberOf' : newUri(group_uri),
+  'v-s:resource' : newUri(this_uri),
+  'rdfs:comment' : newStr('создано cfg:Event_11'),
+  'v-s:canRead'  : newBool(true)
 };
 
 put_individual (ticket, membership, _event_id);
@@ -946,7 +947,7 @@ cfg:Event_12
  */
 
 var process_uri = getUri(document['v-wf:onProcess']),
-	doc_journal_uri = getUri(document['v-s:onDocument']) + "j";
+  doc_journal_uri = getUri(document['v-s:onDocument']) + "j";
 
 var uri = 'd:membership_' + process_uri.split(':').join('_') + '_' + doc_journal_uri.split(':').join('_');
 
@@ -955,12 +956,12 @@ var membership = get_individual(ticket, uri);
 if (membership) { return; }
 
 membership = {
-	'@' : uri,
-	'rdf:type'     : newUri('v-s:Membership'),
-	'v-s:memberOf' : newUri(doc_journal_uri),
-	'v-s:resource' : newUri(process_uri),
-	'rdfs:comment' : newStr('создано cfg:Event_12'),
-	'v-s:canRead'  : newBool(true)
+  '@' : uri,
+  'rdf:type'     : newUri('v-s:Membership'),
+  'v-s:memberOf' : newUri(doc_journal_uri),
+  'v-s:resource' : newUri(process_uri),
+  'rdfs:comment' : newStr('создано cfg:Event_12'),
+  'v-s:canRead'  : newBool(true)
 };
 
 put_individual (ticket, membership, _event_id);
@@ -977,10 +978,10 @@ cfg:Event_13
   rdfs:comment "Пусто." ;
   v-s:filter v-s:ManuallyVersioned ;
   v-s:script """
-  if (document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
-  	&& document['v-s:triggerVersionCreation'][0].data == true) {
-  	delete document['v-s:triggerVersionCreation'];
-	create_version(ticket, document, prev_state, _event_id);
+  if ((document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
+    && document['v-s:triggerVersionCreation'][0].data == true) || !prev_state) {
+    delete document['v-s:triggerVersionCreation'];
+  create_version(ticket, document, prev_state, user_uri, _event_id);
   }
 
   """ ;
@@ -1002,19 +1003,96 @@ cfg:Event_15
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки связей документов" ;
   rdfs:comment "Скрипт обработки связей документов" ;
-  v-s:filter v-s:Bond ;
+  v-s:filter v-s:Link ;
   v-s:script """
-  var bondUri = document["@"],
-			bondToUri = getUri(document["v-s:to"]),
-			bondTo = get_individual(ticket, bondToUri);
-	if (bondTo) {
-		bondTo["v-s:hasBond"] = bondTo["v-s:hasBond"] || [];
-		var containsThisBond = bondTo["v-s:hasBond"].filter(function (item) {
-			return (item.data === bondUri ? true : false)
-		});
-		if (containsThisBond.length) return;
-		bondTo["v-s:hasBond"].push({type: _Uri, data: bondUri});
-		put_individual(ticket, bondTo, _event_id);
-	}
+  var linkUri = document["@"],
+      linkToUri = getUri(document["v-s:to"]),
+      linkFromUri = getUri(document["v-s:from"]),
+      linkTo = get_individual(ticket, linkToUri),
+      linkFrom = get_individual(ticket, linkFromUri),
+      containsThisLink,
+      membershipUri = "d:link_membership_" + linkUri.split(":").join("_") + "_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
+      membership = {
+        '@' : membershipUri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : [ newUri(linkToUri), newUri(linkFromUri) ],
+        'v-s:resource' : newUri(linkUri),
+        'rdfs:comment' : newStr('создано cfg:Event_15'),
+        'v-s:canRead'  : newBool(true)
+      };
+  if (linkTo) {
+    linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"] || [];
+    containsThisLink = !!linkTo["v-s:hasLink"].filter(function (item) {
+      return (item.data === linkUri);
+    }).length;
+    if (!containsThisLink) {
+      linkTo["v-s:hasLink"].push({type: _Uri, data: linkUri});
+      put_individual(ticket, linkTo, _event_id);
+    }
+  }
+  if (linkFrom) {
+    linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"] || [];
+    containsThisLink = !!linkFrom["v-s:hasLink"].filter(function (item) {
+      return (item.data === linkUri);
+    }).length;
+    if (!containsThisLink) {
+      linkFrom["v-s:hasLink"].push({type: _Uri, data: linkUri});
+      put_individual(ticket, linkFrom, _event_id);
+    }
+  }
+  if (linkTo && linkFrom) {
+    put_individual(ticket, membership, _event_id);
+    print("EVENT 15", JSON.stringify(membership, null, 2));
+  }
+  """ ;
+.
+
+cfg:Event_16
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки обратных ссылок" ;
+  rdfs:comment "Скрипт обработки обратных ссылок" ;
+  v-s:filter v-s:BackwardLink ;
+  v-s:script """
+  var backwardLinkUri = document["@"],
+      backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
+      backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
+      backwardTarget = get_individual(ticket, backwardTargetUri),
+      backwardTarget_original = JSON.stringify(backwardTarget);
+  if (!backwardTarget || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
+    return;
+  }
+  var membershipUri = 'd:backward_membership_' + backwardLinkUri.split(':').join('_') + '_' + backwardTargetUri.split(':').join('_'),
+      membership = get_individual(ticket, membershipUri);
+  if (!membership) {
+    membership = {
+      '@' : membershipUri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(backwardTargetUri),
+      'v-s:resource' : newUri(backwardLinkUri),
+      'rdfs:comment' : newStr('создано cfg:Event_16'),
+      'v-s:canRead'  : newBool(true)
+    };
+  }
+  if (isDeleted) {
+    for (var property_uri in backwardTarget) {
+      if (property_uri === "@") { continue; }
+      backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (item) {
+        return (item.data !== backwardLinkUri);
+      });
+    }
+    membership['v-s:deleted'] = newBool(true);
+  } else if (backwardPropertyUri) {
+    backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
+    backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri].filter(function (item) {
+      return (item.data !== backwardLinkUri);
+    });
+    backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+  }
+  if (JSON.stringify(backwardTarget).length !== backwardTarget_original.length) {
+    put_individual(ticket, backwardTarget, _event_id);
+    put_individual(ticket, membership, _event_id);
+  }
   """ ;
 .

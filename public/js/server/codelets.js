@@ -2,21 +2,36 @@
 
 function down_right_and_store(process, task)
 {
+    return change_rights(process, task, [{"data":"-r--"}]);
+}
+
+function change_rights(process, task, rightset)
+{
     try
     {
 print ("@JS down_right_and_store");
         var doc_id = process.getInputVariable('docId');
 print ("@JS doc_id=", toJson (doc_id));
+print ("@JS rightset=", toJson (rightset));
+        var rset = []; 
+        if (rightset[0].data.indexOf('r')>=0) {
+            rset.push(can_read);
+        }
+        if (rightset[0].data.indexOf('u')>=0) {
+            rset.push(can_update);
+        }
 
         if (doc_id)
         {
-	    var executor = process.getExecutor();
-
-	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
+            print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
+            print ("@JS2 executor=", toJson(process.getExecutor()));
+    	    var executor = (process.getLocalVariable ('actor'))? process.getLocalVariable ('actor') : process.getExecutor();
+    
+    	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
 print ("@JS executor=", toJson (executor));
-	    if (executor)
-        	addRight(ticket, [can_read], getUri (executor), getUri (doc_id));
+    	    if (executor)
+            	addRight(ticket, rset, getUri (executor), getUri (doc_id));
 
             var instanceOf = getUri(process['v-wf:instanceOf']);
 
@@ -49,9 +64,8 @@ function restore_right(task)
     }
 }
 
-function interrupt_process(process)
+function interrupt_process(process, _event_id)
 {
-	print("0*0 > "+toJson(process));
 	var vars = process['v-wf:inVars']
 	for (var i = 0; i < vars.length; i++)
     {
@@ -59,11 +73,9 @@ function interrupt_process(process)
 		if (variable
 			&& variable['v-wf:variableName'][0]
 			&& variable['v-wf:variableName'][0].data == 'docId') {
-			print("1*1 > "+variable['v-wf:variableName'][0].data);
             var doc = get_individual(process.ticket, variable['v-wf:variableValue'][0].data);
-        	print("2*2 > "+toJson(doc));
 			delete doc['v-wf:isProcess'];
-			print("3*3 > "+toJson(doc));
+			doc['v-wf:hasStatusWorkflow'] = newUri('v-wf:Interrupted');
 			put_individual(process.ticket, doc, _event_id);
 		}
     }
@@ -114,6 +126,10 @@ function get_type_of_docId(task)
 
 function is_in_docflow_and_set_if_true(task)
 {
+    
+    // remove next line 
+//    return [get_new_variable('result', newUri(false))];
+    
     try
     {
         var res = false;
@@ -124,15 +140,18 @@ function is_in_docflow_and_set_if_true(task)
             if (doc_id)
             {
                 var forProcess = getUri(task.src_data['v-wf:forProcess']);
+                //print("[Z1Z] := "+toJson(forProcess));
                 var process = get_individual(task.ticket, forProcess);
+                //print("[Z2Z] := "+toJson(process));
                 if (process)
                 {
-                    var instanceOf = getUri(_process['v-wf:instanceOf']);
+                    var instanceOf = getUri(process['v-wf:instanceOf']);
 
                     var net_doc_id = instanceOf + "_" + doc_id[0].data;
                     //print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
 
-                    var in_doc_flow = get_individual(process.ticket, net_doc_id);
+                    var in_doc_flow = get_individual(task.ticket, net_doc_id);
+                    //print("[Z3Z] := "+toJson(in_doc_flow));
 
                     if (in_doc_flow)
                     {
@@ -148,14 +167,14 @@ function is_in_docflow_and_set_if_true(task)
                                 type: _Uri
                             }]
                         };
-                        put_individual(process.ticket, new_doc, _event_id);
+                        put_individual(task.ticket, new_doc, _event_id);
                     }
                 }
             }
 
         }
 
-        return [get_new_variable('res', newUri(res))];
+        return [get_new_variable('result', newUri(res))];
     }
     catch (e)
     {
@@ -167,6 +186,82 @@ function is_in_docflow_and_set_if_true(task)
 function distribution(process, task)
 {}
 
+function add_value_to_document(process, task)
+{
+     try
+     {
+         var src;
+
+         if (task)
+         {
+             var src_uri = task.getInputVariable('src_uri');
+             var name_uri = task.getInputVariable('name_uri');
+             var value = task.getInputVariable('value');
+
+             var src;
+
+             if (name_uri && value)
+             {
+                 src = get_individual(task.ticket, getUri(src_uri));
+                 if (src)
+                 {
+                     name_uri = getUri(name_uri);
+                     var ch_value = src[name_uri];
+
+                     if (!ch_value)
+                         ch_value = [];
+
+                     for (var key in value)
+                         ch_value.push(value[key]);
+
+                     src[name_uri] = ch_value;
+                     put_individual(ticket, src, _event_id);
+                 }
+             }
+         }
+
+         return [get_new_variable('res', src_uri)];
+     }
+     catch (e)
+     {
+         print(e.stack);
+     }
+}
+ 
+function set_value_to_document(process, task)
+{
+     try
+     {
+         var src;
+
+         if (task)
+         {
+             var src_uri = task.getInputVariable('src_uri');
+             var name_uri = task.getInputVariable('name_uri');
+             var value = task.getInputVariable('value');
+
+             var src;
+
+             if (name_uri && value)
+             {
+                 src = get_individual(task.ticket, getUri(src_uri));
+                 if (src)
+                 {
+                     name_uri = getUri(name_uri);
+                     src[name_uri] = value;
+                     put_individual(ticket, src, _event_id);
+                 }
+             }
+         }
+
+         return [get_new_variable('res', src_uri)];
+     }
+     catch (e)
+     {
+         print(e.stack);
+     }
+} 
+ 
 function create_use_transformation(process, task)
 {
     try

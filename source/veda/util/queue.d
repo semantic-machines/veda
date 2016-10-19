@@ -1,7 +1,7 @@
 module veda.util.queue;
 
 import std.conv, std.stdio, std.file, std.array, std.digest.crc;
-import veda.type, veda.core.common.define, veda.util.tools;
+import veda.common.type, veda.core.common.define, veda.util.tools;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -173,7 +173,7 @@ class Consumer
         }
         catch (Throwable tr)
         {
-            log.trace("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, queue.chunk, name, first_element, count_popped, tr.msg);        	
+            log.trace("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, queue.chunk, name, first_element, count_popped, tr.msg);
             return false;
         }
         return true;
@@ -285,13 +285,13 @@ class Consumer
         {
             log.trace("ERR! queue:commit:!queue.isReady || !isReady");
             return false;
-        }    
+        }
 
         if (count_popped >= queue.count_pushed)
         {
-            log.trace("ERR! queue:commit:count_popped(%d) >= queue.count_pushed(%d)", count_popped,queue.count_pushed);
+            log.trace("ERR! queue:commit:count_popped(%d) >= queue.count_pushed(%d)", count_popped, queue.count_pushed);
             return false;
-        }    
+        }
 
         header_buff[ header_buff.length - 4 ] = 0;
         header_buff[ header_buff.length - 3 ] = 0;

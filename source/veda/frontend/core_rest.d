@@ -1,11 +1,12 @@
 module veda.frontend.core_rest;
 
-import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.atomic;
 import core.vararg, core.stdc.stdarg;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
-import veda.frontend.core_driver, veda.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.log_msg;
+import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
+import veda.frontend.cbor8vjson;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -13,7 +14,7 @@ logger _log;
 logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "REST");
+        _log = new logger("veda-core-webserver", "log", "REST");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -22,7 +23,6 @@ public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
 public const string veda_schema__fileSize      = "v-s:fileSize";
 public const string veda_schema__fileThumbnail = "v-s:fileThumbnail";
-public const string veda_schema__fileURI       = "v-s:fileURI";
 
 static this() {
     Lang =
@@ -82,7 +82,10 @@ interface VedaStorageRest_API {
     bool is_ticket_valid(string ticket);
 
     @path("get_operation_state") @method(HTTPMethod.GET)
-    long get_operation_state(int module_id);
+    long get_operation_state(int module_id, long wait_op_id);
+
+    @path("flush") @method(HTTPMethod.GET)
+    void flush(int module_id, long wait_op_id);
 
     @path("restart") @method(HTTPMethod.GET)
     OpResult restart(string ticket);
@@ -97,7 +100,8 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000, int limit = 10000);
+    immutable(string)[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
+                              int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -134,192 +138,17 @@ interface VedaStorageRest_API {
 }
 
 
-struct Worker
-{
-    std.concurrency.Tid tid;
-    int                 id;
-    bool                ready      = true;
-    bool                complete   = false;
-    int                 count_busy = 0;
-
-    // worker result data
-    ResultCode          rc;
-    union
-    {
-        string[] res_string_array;
-        Json[]   res_json_array;
-        long     res_long;
-    }
-}
-
-
 class VedaStorageRest : VedaStorageRest_API
 {
-    private Context    context;
-    private Worker *[] pool;
-    string[ string ] properties;
-    int                last_used_tid = 0;
+    private Context context;
+//    string[ string ] properties;
+    int             last_used_tid = 0;
     void function(int sig) shutdown;
-	int max_count_workers_on_thread = 100;
 
-    this(std.concurrency.Tid[] _pool, Context _local_context, void function(int sig) _shutdown)
+    this(Context _local_context, void function(int sig) _shutdown)
     {
         shutdown = _shutdown;
         context  = _local_context;
-        foreach (idx, tid; _pool)
-        {
-        	for (int i = 0; i < max_count_workers_on_thread; i++)
-        	{
-	            Worker *worker = new Worker(tid, cast(int)idx, true, false, 0, ResultCode.No_Content);
-	            pool ~= worker;
-        	}
-        }
-        log.trace ("create pool.size=%d", pool.length);
-    }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private std.concurrency.Tid getFreeTid()
-    {
-        writeln("#1 getFreeTid");
-        Worker *res;
-        last_used_tid++;
-
-        if (last_used_tid >= pool.length)
-            last_used_tid = 0;
-
-        res = pool[ last_used_tid ];
-
-        return res.tid;
-    }
-
-    private Worker *get_worker(int idx)
-    {
-        return pool[ idx ];
-    }
-
-    private Worker *allocate_worker()
-    {
-        Worker *worker = get_free_worker();
-
-//        while (worker is null)
-//        {
-//            vibe.core.core.yield();
-//            worker = get_free_worker();
-//        }
-        if (worker is null)
-            return null;
-
-        worker.ready    = false;
-        worker.complete = false;
-        return worker;
-    }
-
-    private Worker *get_free_worker()
-    {
-        Worker *res = null;
-
-        for (int idx = 0; idx < pool.length; idx++)
-        {
-            res = pool[ idx ];
-            if (res.ready == true)
-            {
-                res.count_busy = 0;
-                return res;
-            }
-            res.count_busy++;
-            if (res.count_busy > 1000)
-            {
-                //core.thread.Thread.sleep(dur!("msecs")(100));
-                //writeln ("@allocate worker, count = ", count);
-
-                //string ppp;
-                //foreach (p ; pool)
-                //ppp ~= "[" ~ text (p.count_busy) ~ "]";
-
-                //writeln ("@pool= ", ppp);
-            }
-        }
-        //writeln ("--- ALL WORKERS BUSY ----");
-        return null;
-    }
-
-    private string[] put_another_get_my(int another_worker_id, string[] another_res, ResultCode another_result_code, Worker *my_worker)
-    {
-        // сохраняем результат
-        Worker *another_worker = get_worker(another_worker_id);
-
-        another_worker.res_string_array = another_res;
-        another_worker.rc               = another_result_code;
-        another_worker.complete         = true;
-
-        // цикл по ожиданию своего результата
-        while (my_worker.complete == false)
-            vibe.core.core.yield();
-
-        string[] res = my_worker.res_string_array.dup;
-
-        my_worker.complete = false;
-        my_worker.ready    = true;
-
-        if (my_worker.rc != ResultCode.OK)
-            throw new HTTPStatusException(my_worker.rc);
-
-        //writeln ("free worker ", my_worker.id);
-
-        return res;
-    }
-
-    private Json[] put_another_get_my(int another_worker_id, Json[] another_res, ResultCode another_result_code,
-                                      Worker *my_worker)
-    {
-        // сохраняем результат
-        Worker *another_worker = get_worker(another_worker_id);
-
-        another_worker.res_json_array = another_res;
-        another_worker.rc             = another_result_code;
-        another_worker.complete       = true;
-
-        // цикл по ожиданию своего результата
-        while (my_worker.complete == false)
-            vibe.core.core.yield();
-
-        Json[] res = my_worker.res_json_array.dup;
-
-        my_worker.complete = false;
-        my_worker.ready    = true;
-
-        if (my_worker.rc != ResultCode.OK)
-            throw new HTTPStatusException(my_worker.rc);
-
-        //writeln ("free worker ", my_worker.id);
-
-        return res;
-    }
-
-    private long put_another_get_my(int another_worker_id, long another_res, ResultCode another_result_code,
-                                    Worker *my_worker)
-    {
-        // сохраняем результат
-        Worker *another_worker = get_worker(another_worker_id);
-
-        another_worker.res_long = another_res;
-        another_worker.rc       = another_result_code;
-        another_worker.complete = true;
-
-        // цикл по ожиданию своего результата
-        while (my_worker.complete == false)
-            vibe.core.core.yield();
-
-        long res = my_worker.res_long;
-
-        if (my_worker.rc != ResultCode.OK)
-            throw new HTTPStatusException(my_worker.rc);
-
-        my_worker.complete = false;
-        my_worker.ready    = true;
-
-        return res;
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,8 +172,13 @@ class VedaStorageRest : VedaStorageRest_API
         // найдем в хранилище указанного субьекта
 
         //writeln("@v uri=", uri);
+        auto   ticket_ff = "ticket" in req.query;
+        string _ticket;
 
-        string _ticket = req.cookies.get("ticket", "");
+        if (ticket_ff !is null)
+            _ticket = cast(string)*ticket_ff;
+        else
+            _ticket = req.cookies.get("ticket", "");
 
         //writeln("@v ticket=", _ticket);
 
@@ -401,11 +235,10 @@ class VedaStorageRest : VedaStorageRest_API
 
         Ticket     *ticket = context.get_ticket(_ticket);
 
-        rc = ticket.result;
-        if (rc == ResultCode.OK)
-        {
-            res = context.get_rights(ticket, uri);
-        }
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result);
+
+        res = context.get_rights(ticket, uri);
 
         Individual indv_res;
         indv_res.uri = "_";
@@ -429,20 +262,38 @@ class VedaStorageRest : VedaStorageRest_API
         return json;
     }
 
-    Json[] get_rights_origin(string ticket, string uri)
+    Json[] get_rights_origin(string _ticket, string uri)
     {
-        immutable(Individual)[] individuals;
-        //Tid                     my_task = Task.getThis();
+        immutable(Individual)[] res;
 
-        //if (my_task !is Tid.init)
+        Ticket                  *ticket = context.get_ticket(_ticket);
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result);
+
+
+        void trace(string resource_group, string subject_group, string right)
         {
-            std.concurrency.send(getFreeTid(), Command.Get, Function.RightsOrigin, uri, ticket, std.concurrency.thisTid);
-            //yield();
-            individuals = std.concurrency.receiveOnly!(immutable(Individual)[]);
+            Individual indv_res = Individual.init;
+
+            indv_res.uri = "_";
+            indv_res.addResource(rdf__type,
+                                 Resource(DataType.Uri, veda_schema__PermissionStatement));
+            indv_res.addResource(veda_schema__permissionObject,
+                                 Resource(DataType.Uri, resource_group));
+            indv_res.addResource(veda_schema__permissionSubject,
+                                 Resource(DataType.Uri, subject_group));
+            indv_res.addResource(right, Resource(true));
+
+            res ~= indv_res.idup;
         }
 
+        ResultCode rc;
+
+        context.get_rights_origin(ticket, uri, &trace);
+
+
         Json[] json = Json[].init;
-        foreach (individual; individuals)
+        foreach (individual; res)
             json ~= individual_to_json(individual);
 
         return json;
@@ -450,10 +301,46 @@ class VedaStorageRest : VedaStorageRest_API
 
     Ticket authenticate(string login, string password)
     {
-        Ticket ticket = context.authenticate(login, password);
+        Ticket ticket;
+
+        if (wsc_server_task !is Task.init)
+        {
+            Json json = Json.emptyObject;
+            json[ "function" ] = "authenticate";
+            json[ "login" ]    = login;
+            json[ "password" ] = password;
+
+            vibe.core.concurrency.send(wsc_server_task, json, Task.getThis());
+
+            string resp;
+            vibe.core.concurrency.receive((string res){ resp = res; });
+
+            if (resp is null)
+                throw new HTTPStatusException(ResultCode.Not_Authorized);
+
+            Json jres = parseJson(resp);
+            //log.trace("jres '%s'", jres);
+
+            string type_msg = jres[ "type" ].get!string;
+
+            //log.trace("type_msg '%s'", type_msg);
+
+            if (type_msg != "ticket")
+                throw new HTTPStatusException(ResultCode.Not_Authorized);
+
+            ticket.end_time = jres[ "end_time" ].get!long;
+            ticket.id       = jres[ "id" ].get!string;
+            ticket.user_uri = jres[ "user_uri" ].get!string;
+            ticket.result   = cast(ResultCode)jres[ "result" ].get!long;
+
+            //log.trace("new ticket= '%s'", ticket);
+        }
+
+//        Ticket ticket = context.authenticate(login, password, &create_new_ticket);
 
         if (ticket.result != ResultCode.OK)
             throw new HTTPStatusException(ticket.result);
+
         return ticket;
     }
 
@@ -462,13 +349,47 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket new_ticket = context.get_ticket_trusted(ticket, login);
 
         if (new_ticket.result != ResultCode.OK)
-            throw new HTTPStatusException(new_ticket.result);
+            throw new HTTPStatusException(new_ticket.result, text(new_ticket.result));
         return new_ticket;
     }
 
-    long get_operation_state(int module_id)
+    long get_operation_state(int module_id, long wait_op_id)
     {
-        return context.get_operation_state(cast(P_MODULE)module_id);
+        //log.trace ("REST:get_operation_state #1");
+        long res = -1;
+
+        try
+        {
+            res = context.get_operation_state(cast(P_MODULE)module_id, wait_op_id);
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR! REST:get_operation_state, %s \n%s ", tr.msg, tr.info);
+        }
+
+        //log.trace ("REST:get_operation_state #e");
+        return res;
+    }
+
+    void flush(int module_id, long wait_op_id)
+    {
+        //log.trace("send:flush #1 %s %d", text(cast(P_MODULE)module_id), wait_op_id);
+        long     res = -1;
+
+        OpResult op_res;
+
+        Json     jreq = Json.emptyObject;
+
+        jreq[ "function" ]   = "flush";
+        jreq[ "module_id" ]  = module_id;
+        jreq[ "wait_op_id" ] = wait_op_id;
+
+        vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
+        vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
+
+        //log.trace("send:flush #e");
+        if (op_res.result != ResultCode.OK)
+            throw new HTTPStatusException(op_res.result, text (op_res.result));
     }
 
     OpResult restart(string _ticket)
@@ -477,8 +398,8 @@ class VedaStorageRest : VedaStorageRest_API
 
         Ticket   *ticket = context.get_ticket(_ticket);
 
-        if (ticket is null)
-            return res;
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result);
 
         ResultCode rc = ticket.result;
 
@@ -501,64 +422,28 @@ class VedaStorageRest : VedaStorageRest_API
 
     void backup(bool to_binlog)
     {
-        ResultCode rc = ResultCode.OK;
-        int        recv_worker_id;
+        long     res = -1;
 
-        long       res = -1;
+        OpResult op_res;
 
-        Worker     *worker = allocate_worker();
+        Json     jreq = Json.emptyObject;
 
-        if (worker is null)
-            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
+        jreq[ "function" ]   = "backup";
+        jreq[ "to_binlog" ]  = to_binlog;
 
-        std.concurrency.send(getFreeTid(), Command.Execute, Function.Backup, to_binlog, worker.id, std.concurrency.thisTid);
-        vibe.core.core.yield();
-        std.concurrency.receive((bool _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
+        vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
+        vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
 
-        if (recv_worker_id == worker.id)
-        {
-            worker.complete = false;
-            worker.ready    = true;
+        //log.trace("send:flush #e");
+        if (op_res.result != ResultCode.OK)
+            throw new HTTPStatusException(op_res.result, text (op_res.result));
 
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-        }
-        else
-        {
-            res = put_another_get_my(recv_worker_id, res, rc, worker);
-        }
         return;
     }
 
     long count_individuals()
     {
-        ResultCode rc = ResultCode.OK;
-        int        recv_worker_id;
-
-        long       res = -1;
-
-        Worker     *worker = allocate_worker();
-
-        if (worker is null)
-            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-
-        std.concurrency.send(worker.tid, Command.Execute, Function.CountIndividuals, worker.id, std.concurrency.thisTid);
-        vibe.core.core.yield();
-        std.concurrency.receive((long _res, int _recv_worker_id) { res = _res; recv_worker_id = _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
-        {
-            worker.complete = false;
-            worker.ready    = true;
-
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-        }
-        else
-        {
-            res = put_another_get_my(recv_worker_id, res, rc, worker);
-        }
-        return res;
+        return context.count_individuals();
     }
 
     bool is_ticket_valid(string ticket)
@@ -568,81 +453,39 @@ class VedaStorageRest : VedaStorageRest_API
         return res;
     }
 
-    string[] query(string ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000, int limit = 10000)
+    immutable(string)[] query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
+                              int limit = 10000)
     {
-        StopWatch sw; sw.start;
+        Ticket *ticket = context.get_ticket(_ticket);
+
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result);
+
+        immutable(string)[] individuals_ids;
+        individuals_ids = context.get_individuals_ids_via_query(ticket, _query, sort, databases, top, limit);
+        return individuals_ids;
+    }
+
+    Json[] get_individuals(string _ticket, string[] uris)
+    {
+        Json[]     res;
+        ResultCode rc;
+
+        Ticket     *ticket = context.get_ticket(_ticket);
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result);
 
         try
         {
-            ResultCode rc;
-            int        recv_worker_id;
-
-            string[]   individuals_ids;
-
-            Worker     *worker = allocate_worker();
-            if (worker is null)
-                throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-
-            std.concurrency.send(worker.tid, Command.Get, Function.IndividualsIdsToQuery, _query, sort, databases, ticket, reopen,
-                                 top, limit, worker.id, std.concurrency.thisTid);
-
-            vibe.core.core.yield();
-
-            std.concurrency.receive((immutable(
-                                               string)[] _individuals_ids, ResultCode _rc, int _recv_worker_id)
-                                    { individuals_ids = cast(string[])_individuals_ids;
-                                      rc = _rc; recv_worker_id =
-                                          _recv_worker_id; });
-
-            if (recv_worker_id == worker.id)
+            foreach (indv; context.get_individuals(ticket, uris))
             {
-                worker.complete = false;
-                worker.ready    = true;
-
-                if (rc != ResultCode.OK)
-                    throw new HTTPStatusException(rc);
+                Json jj = individual_to_json(indv);
+                res ~= jj;
             }
-            else
-            {
-                individuals_ids = put_another_get_my(recv_worker_id, individuals_ids, rc, worker);
-            }
-            return individuals_ids;
         }
-        finally
+        catch (Throwable ex)
         {
-            //context.stat(CMD.GET, sw);
-        }
-    }
-
-    Json[] get_individuals(string ticket, string[] uris)
-    {
-        ResultCode rc;
-        int        recv_worker_id;
-
-        Json[]     res;
-
-        Worker     *worker = allocate_worker();
-        if (worker is null)
-            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-
-        std.concurrency.send(worker.tid, Command.Get, Function.Individuals, uris.idup, ticket, worker.id, std.concurrency.thisTid);
-        vibe.core.core.yield();
-        std.concurrency.receive((immutable(
-                                           Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
-                                                                                                recv_worker_id =
-                                                                                                    _recv_worker_id; });
-
-        if (recv_worker_id == worker.id)
-        {
-            worker.complete = false;
-            worker.ready    = true;
-
-            if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc);
-        }
-        else
-        {
-            res = put_another_get_my(recv_worker_id, res, rc, worker);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error);
         }
 
         return res;
@@ -650,194 +493,110 @@ class VedaStorageRest : VedaStorageRest_API
 
     Json get_individual(string _ticket, string uri, bool reopen = false)
     {
-        StopWatch sw; sw.start;
+        Json   res;
+
+        Ticket *ticket = context.get_ticket(_ticket);
+
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result, text(ticket.result));
+
+        ResultCode rc = ResultCode.Internal_Server_Error;
 
         try
         {
-            if (trace_msg[ 500 ] == 1)
-                log.trace("get_individual #start : %s ", uri);
+            Individual[ string ] onto_individuals =
+                context.get_onto_as_map_individuals();
 
-            ResultCode rc;
-            int        recv_worker_id;
+            Individual individual = onto_individuals.get(uri, Individual.init);
 
-            Json[]     res;
-
-            Worker     *worker = allocate_worker();
-            if (worker is null)
-                throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-
-            std.concurrency.send(worker.tid, Command.Get, Function.Individual, uri, "", _ticket, reopen, worker.id, std.concurrency.thisTid);
-            vibe.core.core.yield();
-            std.concurrency.receive((immutable(
-                                               Json)[] _res, ResultCode _rc, int _recv_worker_id) { res = cast(Json[])_res; rc = _rc;
-                                                                                                    recv_worker_id = _recv_worker_id; });
-
-            if (recv_worker_id == worker.id)
+            if (individual != Individual.init)
             {
-                //writeln ("free worker ", worker.id);
-                worker.complete = false;
-                worker.ready    = true;
-
-                if (rc != ResultCode.OK)
+                res = individual_to_json(individual);
+                rc = ResultCode.OK;
+            }
+            else
+            {
+                if (reopen)
                 {
-                    if (trace_msg[ 500 ] == 1)
-                        log.trace("ERR! get_individual : %s ", text(rc));
-
-                    throw new HTTPStatusException(rc);
+                    context.reopen_ro_acl_storage_db();
+                    context.reopen_ro_subject_storage_db();
                 }
-            }
-            else
-            {
-                res = put_another_get_my(recv_worker_id, res, rc, worker);
-            }
 
-            if (trace_msg[ 500 ] == 1)
-                log.trace("get_individual #end : %s, res.length=%d", text(rc), res.length);
+                string cb = context.get_individual_as_cbor(ticket, uri, rc);
 
-            if (res.length > 0)
-                return res[ 0 ];
-            else
-                return Json.init;
+                if (rc == ResultCode.OK)
+                {
+                    res = Json.emptyObject;
+                    cbor2json(&res, cb);
+                }
+                //if (ii.getStatus() == ResultCode.OK)
+                //    res ~= cast(immutable)individual_to_json(ii);
+                //else
+                //    rc = ii.getStatus();
+            }
         }
-        finally
+        catch (Throwable ex)
         {
-            //context.stat(CMD.GET, sw);
-            //if (trace_msg[ 25 ] == 1)
-            //    log.trace("get_individual: end, uri=%s", uri);
+            throw new HTTPStatusException(rc, text(rc));
         }
+
+        if (rc != ResultCode.OK)
+            throw new HTTPStatusException(rc, text(rc));
+
+        return res;
     }
 
     OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult res;
+        OpResult op_res;
 
-        if (trace_msg[ 500 ] == 1)
-            log.trace("remove_individual #start : uri=%s", uri);
+        Ticket   *ticket = context.get_ticket(_ticket);
 
-//        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
-//        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result);
 
-//        if (fts_count_recv_put - fts_count_prep_put > 200)
-//        {
-//            log.trace("remove_individual: uri=%s, res=%s, fts_count_prep_put=%d fts_count_recv_put=%d", uri, text(ResultCode.Too_Many_Requests), fts_count_prep_put, fts_count_recv_put);
-//            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-//        }
+        if (wsc_server_task is Task.init)
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error);
 
-        Ticket     *ticket = context.get_ticket(_ticket);
+        Json jreq = Json.emptyObject;
+        jreq[ "function" ]       = "remove";
+        jreq[ "ticket" ]         = _ticket;
+        jreq[ "uri" ]            = uri;
+        jreq[ "prepare_events" ] = prepare_events;
+        jreq[ "event_id" ]       = event_id;
+        jreq[ "transaction_id" ] = transaction_id;
 
-        ResultCode rc = ticket.result;
+        vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
 
-        if (rc == ResultCode.OK)
-        {
-            res = context.remove_individual(ticket, uri, prepare_events, event_id == "" ? null : event_id);
+        vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
 
-            if (trace_msg[ 500 ] == 1)
-                log.trace("remove_individual #end : uri=%s, res=%s", uri, text(res));
-        }
+        //if (trace_msg[ 500 ] == 1)
+        //    log.trace("remove_individual #end : uri=%s, res=%s", indv.uri, text(res));
 
-        if (res.result != ResultCode.OK)
-            throw new HTTPStatusException(res.result);
+        if (op_res.result != ResultCode.OK)
+            throw new HTTPStatusException(op_res.result);
 
-        return res;
+        return op_res;
     }
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult res;
-
-        if (trace_msg[ 500 ] == 1)
-            log.trace("put_individual #start : %s", text(individual_json));
-
-//        long fts_count_prep_put = veda.core.threads.xapian_indexer.get_count_prep_put();
-//        long fts_count_recv_put = veda.core.threads.xapian_indexer.get_count_recv_put();
-
-//        if (fts_count_recv_put - fts_count_prep_put > 500)
-//        {
-//            log.trace("put_individual: uri=%s, res=%s, fts_count_prep_put=%d fts_count_recv_put=%d", "?", text(ResultCode.Too_Many_Requests), fts_count_prep_put, fts_count_recv_put);
-//            throw new HTTPStatusException(ResultCode.Too_Many_Requests);
-//        }
-
-        Ticket     *ticket = context.get_ticket(_ticket);
-//log.trace("put_individual #1");
-        ResultCode rc = ticket.result;
-
-        if (ticket.result == ResultCode.OK)
-        {
-            Individual indv = json_to_individual(individual_json);
-            res = context.put_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
-
-            if (trace_msg[ 500 ] == 1)
-                log.trace("put_individual #end : uri=%s, res=%s", indv.uri, text(res));
-        }
-        else
-        {
-            res.result = ticket.result;
-        }
-
-        if (res.result != ResultCode.OK)
-        {
-            throw new HTTPStatusException(res.result);
-        }
-//log.trace("put_individual #8");
-
-        return res;
+        return modify_individual(context, "put", _ticket, individual_json, prepare_events, event_id, transaction_id);
     }
 
     OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        Ticket     *ticket = context.get_ticket(_ticket);
-
-        OpResult   res;
-        ResultCode rc = ticket.result;
-
-        if (rc == ResultCode.OK)
-        {
-            Individual indv = json_to_individual(individual_json);
-            res = context.add_to_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
-        }
-
-        if (res.result != ResultCode.OK)
-            throw new HTTPStatusException(rc);
-
-        return res;
+        return modify_individual(context, "add_to", _ticket, individual_json, prepare_events, event_id, transaction_id);
     }
 
     OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        Ticket     *ticket = context.get_ticket(_ticket);
-
-        OpResult   res;
-        ResultCode rc = ticket.result;
-
-        if (rc == ResultCode.OK)
-        {
-            Individual indv = json_to_individual(individual_json);
-            res = context.set_in_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
-        }
-
-        if (res.result != ResultCode.OK)
-            throw new HTTPStatusException(rc);
-
-        return res;
+        return modify_individual(context, "set_in", _ticket, individual_json, prepare_events, event_id, transaction_id);
     }
 
     OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        Ticket     *ticket = context.get_ticket(_ticket);
-
-        OpResult   res;
-        ResultCode rc = ticket.result;
-
-        if (rc == ResultCode.OK)
-        {
-            Individual indv = json_to_individual(individual_json);
-            res = context.remove_from_individual(ticket, indv.uri, indv, prepare_events, event_id == "" ? null : event_id);
-        }
-
-        if (res.result != ResultCode.OK)
-            throw new HTTPStatusException(rc);
-
-        return res;
+        return modify_individual(context, "remove_from", _ticket, individual_json, prepare_events, event_id, transaction_id);
     }
 
     string begin_transaction()
@@ -858,5 +617,393 @@ class VedaStorageRest : VedaStorageRest_API
     long unload_to_queue(string queue_id)
     {
         return context.unload_subject_storage(queue_id);
+    }
+}
+
+//////////////////////////////////////////////////////////////////// ws-server-transport
+private OpResult modify_individual(Context context, string cmd, string _ticket, Json individual_json, bool prepare_events, string event_id,
+                                   string transaction_id)
+{
+    OpResult op_res;
+
+    Ticket   *ticket = context.get_ticket(_ticket);
+
+    if (ticket.result != ResultCode.OK)
+        throw new HTTPStatusException(ticket.result, text(ticket.result));
+
+    if (wsc_server_task is Task.init)
+        throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
+    Json juri = individual_json[ "@" ];
+
+    if (juri.type == Json.Type.undefined)
+        throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
+
+    Json jreq = Json.emptyObject;
+    jreq[ "function" ]       = cmd;
+    jreq[ "ticket" ]         = _ticket;
+    jreq[ "individual" ]     = individual_json;
+    jreq[ "prepare_events" ] = prepare_events;
+    jreq[ "event_id" ]       = event_id;
+    jreq[ "transaction_id" ] = transaction_id;
+
+    vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
+    vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
+
+    //if (trace_msg[ 500 ] == 1)
+//    log.trace("put_individual #end : indv=%s, res=%s", individual_json, text(op_res));
+
+    if (op_res.result != ResultCode.OK)
+        throw new HTTPStatusException(op_res.result, text(op_res.result));
+    Json juc = individual_json[ "v-s:updateCounter" ];
+
+    long update_counter = 0;
+    if (juc.type != Json.Type.undefined && juc.length > 0)
+        update_counter = juc[ 0 ][ "data" ].get!long;
+    set_updated_uid(juri.get!string, op_res.op_id, update_counter + 1);
+
+    return op_res;
+}
+
+
+private OpResult parseOpResult(string str)
+{
+    OpResult res;
+
+    res.result = ResultCode.Internal_Server_Error;
+
+    if (str is null || str.length < 3)
+        return res;
+
+    try
+    {
+        Json jresp = parseJsonString(str);
+
+        auto jtype = jresp[ "type" ];
+        if (jtype.get!string == "OpResult")
+        {
+            res.op_id  = jresp[ "op_id" ].to!long;
+            res.result = cast(ResultCode)jresp[ "result" ].to!int;
+        }
+    }
+    catch (Throwable tr)
+    {
+        log.trace("ERR! parseOpResult: %s", tr.info);
+    }
+
+    return res;
+}
+
+private Task wsc_server_task;
+
+//////////////////////////////////////  WS
+
+void handleWebSocketConnection(scope WebSocket socket)
+{
+    string module_name;
+
+    try
+    {
+        while (true)
+        {
+            if (!socket.connected)
+                break;
+
+            string   inital_message = socket.receiveText();
+            string[] kv             = inital_message.split('=');
+
+            if (kv.length == 2)
+            {
+                if (kv[ 0 ] == "module-name")
+                {
+                    module_name = kv[ 1 ];
+
+                    log.trace("@module_name=%s", module_name);
+
+                    if (module_name == "server")
+                    {
+                        wsc_server_task = Task.getThis();
+                    }
+                }
+            }
+
+            if (module_name !is null)
+            {
+                log.trace("create chanel [%s]", module_name);
+
+                while (true)
+                {
+                    Json msg;
+                    Task result_task_to;
+
+                    vibe.core.concurrency.receive(
+                                                  (Json _msg, Task _to)
+                                                  {
+                                                      msg = _msg;
+                                                      result_task_to = _to;
+                                                  }
+                                                  );
+
+                    //log.trace("sending '%s'", msg);
+                    socket.send(msg.toString());
+                    //log.trace("Ok");
+                    string resp = socket.receiveText();
+                    //log.trace("recv '%s'", resp);
+                    vibe.core.concurrency.send(result_task_to, resp);
+                    //log.trace("send to task ok");
+                }
+            }
+        }
+    }
+    catch (Throwable tr)
+    {
+        log.trace("ERR! on ws chanel [%s] ex=%s", module_name, tr.msg);
+    }
+
+    log.trace("ws chanel [%s] is closed", module_name);
+}
+
+/////////////////////////// CCUS WS
+private shared        UidInfo[ string ] _info_2_uid;
+private shared long   _last_opid;
+private shared Object _mutex = new Object();
+
+struct UidInfo
+{
+    long update_counter;
+    long opid;
+}
+
+public void set_updated_uid(string uid, long opid, long update_counter)
+{
+    synchronized (_mutex)
+    {
+        //log.trace("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
+        if ((uid in _info_2_uid) !is null)
+            _info_2_uid[ uid ] = UidInfo(update_counter, opid);
+
+        atomicStore(_last_opid, opid);
+    }
+}
+
+public long get_counter_4_uid(string uid)
+{
+    long res;
+
+    synchronized (_mutex)
+    {
+        if ((uid in _info_2_uid) !is null)
+            res = _info_2_uid[ uid ].update_counter;
+        else
+            _info_2_uid[ uid ] = UidInfo(0, 0);
+
+        //log.trace ("get_counter_4_uid(uid=%s)=%d", uid, res);
+    }
+    return res;
+}
+
+public long get_last_opid()
+{
+    synchronized (_mutex)
+    {
+        //log.trace ("@ get_last_opid()=[%d]", _last_opid);
+        return _last_opid;
+    }
+}
+
+void handleWebSocketConnection_CCUS(scope WebSocket socket)
+{
+    const(HTTPServerRequest)hsr = socket.request();
+
+    log.trace("spawn socket connection [%s]", text(hsr.clientAddress));
+
+    // Client Cache Update Subscription
+    string chid;
+    long[ string ] count_2_uid;
+
+    string get_list_of_changes()
+    {
+        string res;
+
+        string[] keys = count_2_uid.keys;
+        foreach (i_uid; keys)
+        {
+            long i_count = count_2_uid[ i_uid ];
+            long g_count = get_counter_4_uid(i_uid);
+            if (g_count > i_count)
+            {
+                i_count = g_count;
+
+                if (res is null)
+                    res ~= i_uid ~ "=" ~ text(i_count);
+                else
+                    res ~= "," ~ i_uid ~ "=" ~ text(i_count);
+
+                count_2_uid[ i_uid ] = i_count;
+            }
+        }
+        //log.trace("get_list_of_changes, res = (%s)", res);
+        return res;
+    }
+
+    string get_list_of_subscribe()
+    {
+        string   res;
+
+        string[] keys = count_2_uid.keys;
+        foreach (i_uid; keys)
+        {
+            long i_count = count_2_uid[ i_uid ];
+            long g_count = get_counter_4_uid(i_uid);
+            if (g_count > i_count)
+            {
+                i_count              = g_count;
+                count_2_uid[ i_uid ] = i_count;
+            }
+            if (res is null)
+                res ~= i_uid ~ "=" ~ text(i_count);
+            else
+                res ~= "," ~ i_uid ~ "=" ~ text(i_count);
+        }
+        // log.trace("get_list_of_subscribe = (%s)", res);
+        return res;
+    }
+
+    try
+    {
+        while (true)
+        {
+            if (!socket.connected)
+                break;
+
+            string   inital_message = socket.receiveText();
+            string[] kv             = inital_message.split('=');
+
+            if (kv.length == 2)
+            {
+                if (kv[ 0 ] == "ccus")
+                {
+                    chid = kv[ 1 ];
+
+                    log.trace("init chanel [%s]", chid);
+                    //task_2_client[hsr.clientAddress] = Task.getThis();
+                    //task_2_client ~= Task.getThis();
+                }
+            }
+
+            if (chid !is null)
+            {
+                long last_check_opid = 0;
+
+                long timeout = 1;
+
+                while (true)
+                {
+                    if (!socket.connected)
+                        break;
+
+                    string msg_from_sock = null;
+
+                    if (socket.waitForData(dur!("msecs")(1000)) == true)
+                        msg_from_sock = socket.receiveText();
+
+                    if (msg_from_sock !is null && msg_from_sock.length > 0)
+                    {
+                        if (msg_from_sock[ 0 ] == '=')
+                        {
+                            string res = get_list_of_subscribe();
+
+                            if (res !is null)
+                                socket.send("=" ~ res);
+                            else
+                                socket.send("=");
+                        }
+                        else if (msg_from_sock.length == 2 && msg_from_sock[ 0 ] == '-' && msg_from_sock[ 1 ] == '*')
+                        {
+                            count_2_uid = count_2_uid.init;
+                        }
+                        else if (msg_from_sock.length > 3)
+                        {
+                            foreach (data; msg_from_sock.split(','))
+                            {
+                                try
+                                {
+                                    string[] expr = data.split('=');
+
+                                    string   uid_info;
+                                    if (expr.length > 0)
+                                        uid_info = expr[ 0 ];
+
+                                    if (expr.length == 2)
+                                    {
+                                        if (uid_info.length > 2)
+                                        {
+                                            string uid = uid_info[ 1..$ ];
+
+                                            if (uid_info[ 0 ] == '+')
+                                            {
+                                                uid = uid_info[ 1..$ ];
+                                                long uid_counter = to!long (expr[ 1 ]);
+                                                count_2_uid[ uid ] = uid_counter;
+                                                long g_count = get_counter_4_uid(uid);
+                                                if (uid_counter < g_count)
+                                                {
+                                                    string res = get_list_of_changes();
+                                                    if (res !is null)
+                                                    {
+                                                        socket.send(res);
+                                                    }
+                                                    last_check_opid = get_last_opid();
+                                                }
+
+                                                //log.trace("subscribe uid=%s, counter=%d", uid, uid_counter);
+                                            }
+                                        }
+                                    }
+                                    else if (expr.length == 1)
+                                    {
+                                        if (uid_info.length > 2)
+                                        {
+                                            string uid = uid_info[ 1..$ ];
+                                            if (uid_info[ 0 ] == '-')
+                                            {
+                                                uid = uid_info[ 1..$ ];
+                                                count_2_uid.remove(uid);
+                                                //log.trace("unsubscribe uid=%s", uid);
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Throwable tr)
+                                {
+                                    log.trace("Client Cache Update Subscription: recv msg:[%s], %s", data, tr.msg);
+                                }
+                            }
+                        }
+                    }
+
+                    //writefln ("@ last_check_opid=%d", last_check_opid);
+                    long last_opid = get_last_opid();
+                    if (last_check_opid < last_opid)
+                    {
+                        string res = get_list_of_changes();
+                        if (res !is null)
+                        {
+                        	//log.trace ("send list of change, res=%s", res);
+                            socket.send(res);
+                        }
+                        last_check_opid = last_opid;
+                    }
+                }
+            }
+        }
+    }
+    catch (Throwable tr)
+    {
+        log.trace("err on chanel [%s] ex=%s", chid, tr.msg);
+    }
+
+    scope (exit)
+    {
+        log.trace("chanel [%s] closed", chid);
     }
 }

@@ -11,7 +11,7 @@ private
     import std.ascii, std.csv, std.typecons, std.outbuffer;
     import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates,
            veda.core.common.context;
-    import veda.type;
+    import veda.common.type;
 }
 
 // ////// logger ///////////////////////////////////////////

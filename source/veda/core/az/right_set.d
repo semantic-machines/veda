@@ -1,7 +1,8 @@
 module veda.core.az.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-private import veda.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.log_msg, veda.core.common.know_predicates;
+private import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.log_msg,
+               veda.core.common.know_predicates;
 private import veda.core.util.utils, veda.util.cbor, util.logger;
 
 public static string membership_prefix = "M";
@@ -133,12 +134,14 @@ public string rights_as_string(RightSet new_rights)
     return outbuff.toString();
 }
 
-void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, string prefix, ubyte default_access, Storage storage)
+void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p_resource, string p_in_set, string prefix, ubyte default_access,
+                       long op_id,
+                       Storage storage)
 {
-    bool     is_deleted = ind.isExists("v-s:deleted", true);
+    bool     is_deleted = new_ind.isExists("v-s:deleted", true);
 
     ubyte    access;
-    Resource canCreate = ind.getFirstResource("v-s:canCreate");
+    Resource canCreate = new_ind.getFirstResource("v-s:canCreate");
 
     if (canCreate !is Resource.init)
     {
@@ -148,7 +151,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
             access = access | Access.cant_create;
     }
 
-    Resource canRead = ind.getFirstResource("v-s:canRead");
+    Resource canRead = new_ind.getFirstResource("v-s:canRead");
     if (canRead !is Resource.init)
     {
         if (canRead == true)
@@ -157,7 +160,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
             access = access | Access.cant_read;
     }
 
-    Resource canUpdate = ind.getFirstResource("v-s:canUpdate");
+    Resource canUpdate = new_ind.getFirstResource("v-s:canUpdate");
     if (canUpdate !is Resource.init)
     {
         if (canUpdate == true)
@@ -166,7 +169,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
             access = access | Access.cant_update;
     }
 
-    Resource canDelete = ind.getFirstResource("v-s:canDelete");
+    Resource canDelete = new_ind.getFirstResource("v-s:canDelete");
     if (canDelete !is Resource.init)
     {
         if (canDelete == true)
@@ -178,11 +181,28 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
     if (access == 0)
         access = default_access;
 
-    Resource  useFilter = ind.getFirstResource(veda_schema__useFilter);
+    Resource  useFilter = new_ind.getFirstResource(veda_schema__useFilter);
 
-    Resources resource = ind.getResources(p_resource);
-    Resources in_set   = ind.getResources(p_in_set);
+    Resources resource = new_ind.getResources(p_resource);
+    Resources in_set   = new_ind.getResources(p_in_set);
 
+    Resources prev_resource = prev_ind.getResources(p_resource);
+    Resources prev_in_set   = prev_ind.getResources(p_in_set);
+
+    Resources delta_resource = get_disappeared(prev_resource, resource);
+    Resources delta_in_set   = get_disappeared(prev_in_set, in_set);
+
+    //writeln ("delta_resource=", delta_resource);
+    //writeln ("delta_in_set=", delta_in_set);
+
+    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
+    update_right_set(delta_resource, delta_in_set, true, useFilter, prefix, access, op_id, storage);
+}
+
+private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
+                              long op_id,
+                              Storage storage)
+{
     // для каждого из ресурсов выполним операцию добавления/удаления
     foreach (rs; resource)
     {
@@ -205,7 +225,7 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
             }
             else
             {
-                Right *nrr = new Right(mb.uri, access, false);
+                Right *nrr = new Right(mb.uri, access, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
             }
         }
@@ -222,41 +242,41 @@ void prepare_right_set(ref Individual ind, string p_resource, string p_in_set, s
         else
             key = prefix ~ rs.uri;
 
-        ResultCode res = storage.put(key, new_record);
+        ResultCode res = storage.put(key, new_record, op_id);
 
         if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
     }
 }
 
-void prepare_membership(ref Individual ind, long op_id, Storage storage)
+void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
 {
     if (trace_msg[ 114 ] == 1)
-        log.trace("store Membership: [%s] op_id=%d", ind, op_id);
+        log.trace("store Membership: [%s] op_id=%d", new_ind, op_id);
 
-    prepare_right_set(ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,
-                      Access.can_create | Access.can_read | Access.can_update | Access.can_delete, storage);
+    prepare_right_set(prev_ind, new_ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,
+                      Access.can_create | Access.can_read | Access.can_update | Access.can_delete, op_id, storage);
 }
 
-void prepare_permission_filter(ref Individual ind, long op_id, Storage storage)
+void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
 {
     if (trace_msg[ 114 ] == 1)
-        log.trace("store PermissionFilter: [%s] op_id=%d", ind, op_id);
+        log.trace("store PermissionFilter: [%s] op_id=%d", new_ind, op_id);
 
-    Resource   permissionObject = ind.getFirstResource(veda_schema__permissionObject);
+    Resource   permissionObject = new_ind.getFirstResource(veda_schema__permissionObject);
 
-    ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, ind.uri);
+    ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
 
     if (trace_msg[ 101 ] == 1)
-        log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, ind.uri);
+        log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);
 }
 
-void prepare_permission_statement(ref Individual ind, long op_id, Storage storage)
+void prepare_permission_statement(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
 {
     if (trace_msg[ 114 ] == 1)
-        log.trace("store PermissionStatement: [%s] op_id=%d", ind, op_id);
+        log.trace("store PermissionStatement: [%s] op_id=%d", new_ind, op_id);
 
-    prepare_right_set(ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, storage);
+    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
 }
 
 Access[] getAccessListFromByte(ubyte permission)

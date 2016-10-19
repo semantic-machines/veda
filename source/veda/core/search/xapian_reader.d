@@ -2,12 +2,13 @@
  *     XAPIAN READER
  */
 
-module search.xapian_reader;
+module veda.core.search.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
-import bind.xapian_d_header;
-import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.log_msg;
-import search.vel, veda.core.search.xapian_vql, search.indexer_property;
+import veda.bind.xapian_d_header;
+import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context,
+       veda.core.common.log_msg;
+import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
 
 // ////// logger ///////////////////////////////////////////
 import util.logger;
@@ -50,6 +51,17 @@ class XapianReader : SearchReader
 
     private Context         context;
     private IndexerProperty iproperty;
+	ModuleInfoFile mdif;
+
+    private MInfo get_info()
+    {
+        if (mdif is null)
+        {
+            mdif = new ModuleInfoFile(text(P_MODULE.fulltext_indexer), log, OPEN_MODE.READER);
+        }
+        MInfo info = mdif.get_info();
+        return info;
+    }
 
     this(Context _context)
     {
@@ -138,15 +150,22 @@ class XapianReader : SearchReader
         if (db_names.length == 0)
             db_names = [ "base" ];
 
-
         if (trace_msg[ 321 ] == 1)
             log.trace("[%s][Q:%X] query [%s]", context.get_name(), cast(void *)str_query, str_query);
 
         if (trace_msg[ 322 ] == 1)
             log.trace("[%s][Q:%X] TTA [%s]", context.get_name(), cast(void *)str_query, tta.toString());
 
-        //log.trace("@xapian_reader:get #1 [%s]", str_query);
-        context.ft_check_for_reload(&reopen_db);
+        long cur_committed_op_id = get_info().committed_op_id;
+        if (cur_committed_op_id > committed_op_id)
+        {
+            log.trace("reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
+            reopen_db();
+        }
+        else
+        {
+   	        //log.trace ("cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
+        }
 
         Database_QueryParser db_qp = get_dbqp(db_names);
 
@@ -248,13 +267,14 @@ class XapianReader : SearchReader
         }
         else
         {
-            //log.trace("[%s]invalid query [%s]", context.get_name(), str_query);
+            log.trace("[%s]invalid query [%s]", context.get_name(), str_query);
         }
 
         return 0;
     }
 
 ////////////////////////////////////////////////////////
+    long committed_op_id;
 
     Database_QueryParser get_dbqp(string[] db_names)
     {
@@ -294,6 +314,8 @@ class XapianReader : SearchReader
             using_dbqp[ db_names.idup ] = dbqp;
         }
 
+        committed_op_id = get_info().committed_op_id;
+
         return dbqp;
     }
 
@@ -328,9 +350,11 @@ class XapianReader : SearchReader
     }
 
     public void reopen_db()
-    {
-        //log.trace("@FTR:reopen_db");
-
+    {    	
+    	long cur_committed_op_id = get_info().committed_op_id;
+    
+        //log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
+    	    	                
         foreach (el; using_dbqp.values)
         {
             el.db.reopen(&err);
@@ -347,6 +371,8 @@ class XapianReader : SearchReader
 //            if (err != 0)
 //                writeln("xapian_reader:reopen_db:err", err);
 //        }
+
+        committed_op_id = cur_committed_op_id;
     }
 
     private void close_db()
