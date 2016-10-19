@@ -1,0 +1,55 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+<http://semantic-machines.com/veda/veda-complex-label>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system individuals' complex labels ontology"@en ;
+  rdfs:label "Онтология комплексного наименования индивидов системы Veda"@ru ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 7 ;
+.
+
+v-s:labelExpression
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain owl:Class ;
+  rdfs:domain rdfs:Class ;
+  rdfs:label "label expression"@en ;
+  rdfs:label "выражение наименования"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:Labeled
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Labeled thing"@en ;
+  rdfs:label "Маркированная сущность"@ru ;
+.
+
+v-s:LabelEvent
+  rdf:type v-s:Event ;
+  v-s:filter v-s:Labeled ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+/*print("parent_script_id", parent_script_id);
+var _class = get_individual( getUri(document["rdf:type"]) );
+if (!_class) { return }
+var label_expression = _class["v-s:labelExpression"][0];
+if (!labelExpression) { return }
+var label = eval(label_expression);
+document["rdfs:label"] = [ label ];
+put_individual(ticket, document, _event_id);
+print("v-s:LabelEvent", JSON.stringify(document));*/
+"""
+.
