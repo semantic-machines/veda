@@ -9,9 +9,7 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
-//private import bind.v8d_header;
-//private import search.vel;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, util.logger;
 
 /// Имена процессов
 public enum P_MODULE : byte
@@ -240,6 +238,8 @@ interface Context
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
+
+	public Logger get_logger ();
 
     version (isServer)
     {

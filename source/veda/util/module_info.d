@@ -25,13 +25,13 @@ class ModuleInfoFile
     private File      *ff_module_info_w = null;
     private File      *ff_module_info_r = null;
     private string    module_name;
-    private logger    log;
+    private Logger    log;
     private bool      is_writer_open = false;
     private bool      is_reader_open = false;
     private ubyte[]   buff;
     private OPEN_MODE mode;
 
-    this(string _module_name, logger _log, OPEN_MODE _mode)
+    this(string _module_name, Logger _log, OPEN_MODE _mode)
     {
         module_name    = _module_name;
         fn_module_info = module_info_path ~ "/" ~ module_name ~ "_info";

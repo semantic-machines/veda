@@ -16,13 +16,12 @@ private
 // ////////////// ACLManager
 protected byte err;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-server", "log", "ACL-MANAGER");
+        _log = new Logger("veda-core-server", "log", "ACL-MANAGER");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

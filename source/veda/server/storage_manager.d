@@ -14,13 +14,13 @@ private
     import kaleidic.nanomsg.nano;
 }
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-server", "log", "STORAGE-MANAGER");
+        _log = new Logger("veda-core-server", "log", "STORAGE-MANAGER");
     return _log;
 }
 

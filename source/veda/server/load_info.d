@@ -22,11 +22,11 @@ private string set_text_color_blue        = "\x1B[34m";
 private string set_all_attribute_off      = "\x1B[0m";
 private string set_cursor_in_begin_string = "\x1B[0E";
 
-logger         log;
+Logger         log;
 
 static this()
 {
-    log = new logger("server-statistics", "log", "");
+    log = new Logger("server-statistics", "log", "");
 }
 
 enum CMD : byte

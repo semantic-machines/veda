@@ -7,17 +7,7 @@ module veda.core.search.indexer_property;
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.common.log_msg;
 private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define;
-
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
-{
-    if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "SEARCH");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
+private import util.logger;
 
 class IndexerProperty
 {
@@ -27,10 +17,12 @@ class IndexerProperty
     private         string[ string ] class__2__database;
     private         Individual[ string ] uri__2__indiviual;
     private         bool[ string ]  database__2__true;
+	private 		Logger log;
 
     this(Context _context)
     {
         context = _context;
+        log = context.get_logger();
     }
 
     bool[ string ] get_dbnames()

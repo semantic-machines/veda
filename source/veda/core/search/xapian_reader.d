@@ -10,13 +10,13 @@ import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.
        veda.core.common.log_msg;
 import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "SEARCH");
+        _log = new Logger("veda-core-" ~ process_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

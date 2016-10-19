@@ -1,5 +1,5 @@
 /**
- * logger
+ * Logger
  */
 module util.logger;
 
@@ -58,22 +58,22 @@ private void logger_process()
     }
 }
 
-/** класс logger
+/** класс Logger
 
    Sample:
 
    ...
 
-   logger log;
+   Logger log;
 
    static this()
    {
-    log = new logger("pacahon", "log", "API");
+    log = new Logger("pacahon", "log", "API");
    }
 
    ...
  */
-public class logger
+public class Logger
 {
     private string log_name = "app";
     private string ext      = "log";
@@ -84,12 +84,12 @@ public class logger
     {
         if (tid_logger == Tid.init)
         {
-            tid_logger = locate("logger");
+            tid_logger = locate("Logger");
 
             if (tid_logger == Tid.init)
             {
                 tid_logger = spawn(&logger_process);
-                register("logger", tid_logger);
+                register("Logger", tid_logger);
             }
         }
     }

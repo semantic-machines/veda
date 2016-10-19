@@ -14,13 +14,13 @@ private
     import veda.common.type;
 }
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "UTIL");
+        _log = new Logger("veda-core-" ~ process_name, "log", "UTIL");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

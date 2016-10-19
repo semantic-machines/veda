@@ -8,7 +8,6 @@ private
     import veda.core.util.utils, veda.util.cbor, util.logger;
     import veda.core.storage.lmdb_storage, veda.core.az.right_set;
     import veda.util.container;
-    import util.logger;
 }
 
 int max_count_in_cache = 200;
@@ -16,11 +15,11 @@ int max_count_in_cache = 200;
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
 {
-    logger log;
+    Logger log;
     Cache!(Right *[], string) cache_of_group;
     Cache!(RightSet, string) cache_of_permission;
 
-    this(string _path, DBMode mode, string _parent_thread_name, logger _log)
+    this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
     {
     	log = _log;
         super(_path, mode, _parent_thread_name, log);

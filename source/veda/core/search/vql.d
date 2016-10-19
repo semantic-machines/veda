@@ -13,17 +13,6 @@ private
     import veda.onto.individual, veda.core.az.acl;
 }
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
-{
-    if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "VQL");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
-
 static const int RETURN    = 0;
 static const int FILTER    = 1;
 static const int SORT      = 2;
@@ -42,6 +31,7 @@ class VQL
 
     private Context      context;
     private XapianReader xr;
+    private Logger 		 log;
 
     this(Context _context)
     {
@@ -50,6 +40,7 @@ class VQL
         section_is_found = new bool[ sections.length ];
 
         context = _context;
+    	log = context.get_logger();
         xr      = new XapianReader(_context);
     }
 

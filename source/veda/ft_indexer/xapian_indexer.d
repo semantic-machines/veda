@@ -14,13 +14,13 @@ private import veda.core.common.define, veda.core.common.know_predicates, veda.c
                veda.core.impl.thread_context;
 private import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property;
 
-// ////// logger ///////////////////////////////////////////
+// ////// Logger ///////////////////////////////////////////
 import util.logger;
-logger _log;
-logger log()
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "SEARCH");
+        _log = new Logger("veda-core-" ~ process_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
