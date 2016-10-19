@@ -74,9 +74,9 @@ veda.Module(function (veda) { "use strict";
       this.on("individual:afterLoad", function (individual) {
         this.present.call(individual, container, template, mode);
       });
-      this.on("individual:typeChanged", function () {
+      /*this.on("individual:typeChanged", function () {
         this.present(container, template, mode);
-      });
+      });*/
     }
 
     return self.load(uri);
@@ -311,7 +311,7 @@ veda.Module(function (veda) { "use strict";
       if (e.status !== 472) {
         this.draft(parent);
       } else {
-        console.log("Нет прав на создание или изменение объекта / No rights to create or modify object\n\n" + this.toString());
+        veda.trigger("danger", e);
       }
     }
     this._.isNew = false;
