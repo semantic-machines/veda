@@ -41,7 +41,21 @@ enum CMD : byte
     BACKUP    = 41,
 
     /// Пустая комманда
-    NOP       = 64
+    NOP       = 64,
+    
+    EXIT         = 49
+}
+
+public void exit()
+{
+	P_MODULE module_id = P_MODULE.acl_preparer;
+    Tid tid_module = getTid(module_id);
+
+    if (tid_module != Tid.init)
+    {
+	    writeln("send command EXIT to thread_" ~ text (module_id));
+        send(tid_module, CMD.EXIT);
+    }
 }
 
 public string backup(string backup_id)
@@ -77,6 +91,7 @@ public ResultCode flush(bool is_wait)
     return rc;
 }
 
+
 void acl_manager(string thread_name, string db_path)
 {
     int                          size_bin_log     = 0;
@@ -97,7 +112,9 @@ void acl_manager(string thread_name, string db_path)
 
 	ModuleInfoFile module_info = new ModuleInfoFile(thread_name, _log, OPEN_MODE.WRITER);
 
-    while (true)
+	bool is_exit = false;
+
+    while (is_exit == false)
     {
         try
         {
@@ -113,6 +130,10 @@ void acl_manager(string thread_name, string db_path)
 	                            committed_op_id = l_op_id;
 	                            module_info.put_info(l_op_id, committed_op_id);
                         	}
+                        }
+                        else if (cmd == CMD.EXIT)
+                        {
+                        	is_exit = true;
                         }
                     },
                     (CMD cmd, EVENT type, string prev_state, string new_state, long op_id)

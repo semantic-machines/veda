@@ -125,6 +125,17 @@ void abort_transaction(P_MODULE storage_id, string transaction_id)
 {
 }
 
+public void exit(P_MODULE module_id)
+{
+    Tid tid_module = getTid(module_id);
+
+    if (tid_module != Tid.init)
+    {
+	    writeln("send command EXIT to thread_" ~ text (module_id));
+        send(tid_module, CMD.EXIT);
+    }
+}
+
 
 public void freeze(P_MODULE storage_id)
 {
@@ -323,9 +334,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
         string last_backup_id = "---";
 
         bool   is_freeze = false;
+        bool   is_exit = false;
 		ModuleInfoFile module_info = new ModuleInfoFile(text (storage_id), _log, OPEN_MODE.WRITER);
 
-        while (true)
+        while (is_exit == false)
         {
             try
             {
@@ -351,6 +363,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             else if (cmd == CMD.UNFREEZE)
                             {
                                 is_freeze = false;
+                            }
+                            else if (cmd == CMD.EXIT)
+                            {
+                            	is_exit = true;
                             }
                         },
                         (CMD cmd, Tid tid_response_reciever)

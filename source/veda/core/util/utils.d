@@ -55,7 +55,6 @@ public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual
     return prev_indv;
 }
 
-
 private Tid[ P_MODULE ] name_2_tids;
 
 public Tid getTid(P_MODULE tid_id)

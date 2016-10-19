@@ -5,6 +5,7 @@ module veda.core.srv.server;
 
 private
 {
+    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;	
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.server.wslink;
@@ -33,10 +34,23 @@ enum CMD : byte
     SET = 50,
 }
 
-
 static this()
 {
     io_msg = new logger("pacahon", "io", "server");
+    bsd_signal(SIGINT, &handleTermination2);
+}
+
+extern (C) void handleTermination2(int _signal)
+{
+    writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    
+    if (_log !is null)
+	    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    //_log.close();
+
+    writeln("!SYS: ", process_name, ": preparation for the exit.");
+
+    f_listen_exit = true;
 }
 
 Context g_context;
@@ -51,8 +65,13 @@ void main(char[][] args)
 
     veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
 
-    while (true)
+    while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
+        
+    veda.server.load_info.exit();    
+    veda.server.acl_manager.exit();    
+    veda.server.storage_manager.exit(P_MODULE.subject_manager);    
+    veda.server.storage_manager.exit(P_MODULE.ticket_manager);    
 }
 
 void ev_LWS_CALLBACK_GET_THREAD_ID()
@@ -205,7 +224,7 @@ void commiter(string thread_name)
                 send(tid_response_reciever, true);
             });
 
-    while (true)
+    while (f_listen_exit)
     {
         core.thread.Thread.sleep(dur!("seconds")(1));
         veda.server.storage_manager.flush_int_module(P_MODULE.subject_manager, false);

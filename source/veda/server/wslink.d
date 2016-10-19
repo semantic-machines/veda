@@ -20,7 +20,23 @@ int    writeable_flag  = 0;
 logger _log;
 
 long max_size_packet = 1024*64;
+extern (C) void handleTermination1(int _signal)
+{
+    writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    
+    if (_log !is null)
+	    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    //_log.close();
 
+    writeln("!SYS: ", process_name, ": preparation for the exit.");
+
+    f_listen_exit = true;
+}
+
+shared static this()
+{
+    bsd_signal(SIGINT, &handleTermination1);
+}
 class WSLink
 {
     lws_context               *ws_context;

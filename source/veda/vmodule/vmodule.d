@@ -160,7 +160,9 @@ class VedaModule // : WSLink
                 }
             }
         }
-        _log.close();
+        
+        if (_log !is null)
+	        _log.close();
     }
 
 ///////////////////////////////////////////////////

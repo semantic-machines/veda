@@ -535,4 +535,3 @@ public void set_global_systicket(Ticket new_data)
     atomicStore(systicket_user_uri, new_data.user_uri);
     atomicStore(systicket_end_time, new_data.end_time);
 }
-
