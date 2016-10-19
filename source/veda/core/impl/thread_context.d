@@ -17,8 +17,12 @@ private
     import veda.util.module_info;
 	import util.logger;
 
-    version (isServer) alias veda.server.storage_manager storage_module;
-    version (isServer) alias veda.server.acl_manager acl_module;
+    version (isServer) 
+	{
+		alias veda.server.storage_manager storage_module;
+	    alias veda.server.acl_manager acl_module;
+	    import veda.server.load_info;
+	}    
 }
 
 Tid dummy_tid;
@@ -237,7 +241,7 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            res = veda.server.storage_manager.begin_transaction(P_MODULE.subject_manager);
+            res = storage_module.begin_transaction(P_MODULE.subject_manager);
         }
 
         return res;
@@ -247,7 +251,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.commit_transaction(P_MODULE.subject_manager, transaction_id);
+            storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
         }
     }
 
@@ -255,7 +259,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.abort_transaction(P_MODULE.subject_manager, transaction_id);
+            storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
         }
     }
 
@@ -1540,7 +1544,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.freeze(P_MODULE.subject_manager);
+            storage_module.freeze(P_MODULE.subject_manager);
         }
     }
 
@@ -1548,7 +1552,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.unfreeze(P_MODULE.subject_manager);
+            storage_module.unfreeze(P_MODULE.subject_manager);
         }
     }
 
@@ -1558,7 +1562,7 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            res = veda.server.storage_manager.find(P_MODULE.subject_manager, uri);
+            res = storage_module.find(P_MODULE.subject_manager, uri);
         }
         return res;
     }
