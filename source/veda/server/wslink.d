@@ -19,6 +19,8 @@ int    writeable_flag  = 0;
 
 logger _log;
 
+long max_size_packet = 1024*64;
+
 class WSLink
 {
     lws_context               *ws_context;
@@ -54,7 +56,7 @@ class WSLink
         protocol[ 0 ].name                  = "veda-module-protocol\0";
         protocol[ 0 ].callback              = &ws_service_callback;
         protocol[ 0 ].per_session_data_size = 16;
-        protocol[ 0 ].rx_buffer_size        = 0;
+        protocol[ 0 ].rx_buffer_size        = max_size_packet;
         protocol[ 0 ].id                    = 0;
 
         info.port      = CONTEXT_PORT_NO_LISTEN;
@@ -95,7 +97,7 @@ class WSLink
         log.trace("init_chanel: %s, is Ok", process_name);
     }
 
-    void listen(void function() _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws * wsi, char[] msg) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+    void listen(void function() _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws * wsi, char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
         ev_LWS_CALLBACK_GET_THREAD_ID  = _ev_LWS_CALLBACK_GET_THREAD_ID;
         ev_LWS_CALLBACK_CLIENT_RECEIVE = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
@@ -142,7 +144,7 @@ class WSLink
 }
 
 void function() ev_LWS_CALLBACK_GET_THREAD_ID;
-void function(lws *wsi, char[] msg) ev_LWS_CALLBACK_CLIENT_RECEIVE;
+void function(lws *wsi, char[] msg, ResultCode rc) ev_LWS_CALLBACK_CLIENT_RECEIVE;
 
 public int websocket_write_back(lws *wsi_in, string str)
 {
@@ -177,9 +179,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
     switch (reason)
     {
     case lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID:
-
         ev_LWS_CALLBACK_GET_THREAD_ID();
-
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
@@ -200,10 +200,23 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_RECEIVE:
-
-        char[] msg = fromStringz(cast(char *)_in);
-        ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, msg);
-
+    
+		ResultCode rc;
+		
+		if (len >= max_size_packet)
+		{
+			rc = ResultCode.Size_too_large;
+	        ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, null, rc);
+		}	
+		else
+		{
+	        byte[] bmsg = (cast(byte*)_in)[0..len];        
+	        char[] msg = cast(char[])bmsg;
+	        //writefln ("msg[%d]=%s", len, msg);
+	        rc = ResultCode.OK;
+	        ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, msg, rc);
+		}
+		
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:

@@ -60,11 +60,24 @@ void ev_LWS_CALLBACK_GET_THREAD_ID()
     //writeln ("server: ev_LWS_CALLBACK_GET_THREAD_ID");
 }
 
-void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg)
+void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 {
     //writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
-    string res = g_context.execute(cast(string)msg);
-
+    string res;
+    if (rc == ResultCode.OK)
+    {
+	    res = g_context.execute(cast(string)msg);
+    }
+    else
+    {
+		JSONValue jres;
+        jres[ "type" ]   = "OpResult";
+        jres[ "result" ] = rc;
+        jres[ "op_id" ]  = -1;		
+                
+        res = jres.toString();		
+    }
+    
     websocket_write_back(wsi, res);
 }
 
