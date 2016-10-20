@@ -145,18 +145,16 @@ veda.Module(function UpdateService(veda) { "use strict";
       //uris.map(self.subscribe);
       uris.map(function (uri) {
         var i = new veda.IndividualModel(uri);
-        if ( !i.isSync() && !i.isNew() ) {
+        if ( !i.isSync() && !i.isNew() && !i.hasValue("v-s:isDraft", true) ) {
           i.reset();
         }
         self.subscribe(uri);
       });
-      self.trigger("on");
     }
 
     function closedHandler(event) {
       //veda.trigger("danger", {status: "Соединение прервано"});
       //console.log("client: socket closed", event);
-      self.trigger("off");
       if (!connectInterval) {
         connectInterval = setInterval(function () {
           socket = initSocket();
@@ -191,7 +189,7 @@ veda.Module(function UpdateService(veda) { "use strict";
             subscribeCounter: 1,
             updateCounter: updateCounter
           };
-          if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
+          if ( !individual.hasValue("v-s:updateCounter", updateCounter) && !individual.hasValue("v-s:isDraft", true) ) {
             individual.reset();
           }
         } catch (e) {
