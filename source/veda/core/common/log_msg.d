@@ -3,7 +3,7 @@
  */
 module veda.core.common.log_msg;
 
-private import util.logger;
+private import veda.common.logger;
 
 byte[ 1000 ] trace_msg;
 

@@ -6,7 +6,7 @@ module veda.server.storage_manager;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
-    import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
+    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
     import veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
            veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
@@ -15,7 +15,7 @@ private
 }
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {
@@ -24,77 +24,16 @@ Logger log()
     return _log;
 }
 
-/// Команды используемые процессами
-enum CMD : byte
-{
-    /// Найти
-    FIND         = 2,
-    /// Проверить
-    EXAMINE      = 4,
-
-    /// Авторизовать
-    AUTHORIZE    = 8,
-
-    /// Коммит
-    COMMIT       = 16,
-
-    /// Конец данных
-    END_DATA     = 32,
-
-    /// Включить/выключить отладочные сообщения
-    SET_TRACE    = 33,
-
-    /// Выгрузить
-    UNLOAD       = 34,
-
-    /// Перезагрузить
-    RELOAD       = 40,
-
-    /// Backup
-    BACKUP       = 41,
-
-    /// Остановить прием команд на изменение
-    FREEZE       = 42,
-
-    /// Возобновить прием команд на изменение
-    UNFREEZE     = 43,
-
-    /// Сохранить соответствие ключ - слот (xapian)
-    PUT_KEY2SLOT = 44,
-
-    /// Удалить
-    DELETE       = 46,
-
-    EXIT         = 49,
-
-    /// Установить
-    SET          = 50,
-
-    START        = 52,
-
-    STOP         = 53,
-
-    RESUME       = 54,
-
-    PAUSE        = 55,
-
-    WAIT         = 56,
-
-    /// Пустая комманда
-    NOP          = 64
-}
-// ////// ////// ///////////////////////////////////////////
-
 struct TransactionItem
 {
-    CMD        cmd;
+    byte       cmd;
     string     indv_serl;
     string     ticket_id;
     string     event_id;
 
     Individual indv;
 
-    this(CMD _cmd, string _indv_serl, string _ticket_id, string _event_id)
+    this(byte _cmd, string _indv_serl, string _ticket_id, string _event_id)
     {
         cmd       = _cmd;
         indv_serl = _indv_serl;
@@ -125,18 +64,6 @@ void abort_transaction(P_MODULE storage_id, string transaction_id)
 {
 }
 
-public void exit(P_MODULE module_id)
-{
-    Tid tid_module = getTid(module_id);
-
-    if (tid_module != Tid.init)
-    {
-	    writeln("send command EXIT to thread_" ~ text (module_id));
-        send(tid_module, CMD.EXIT);
-    }
-}
-
-
 public void freeze(P_MODULE storage_id)
 {
     writeln("FREEZE");
@@ -144,7 +71,7 @@ public void freeze(P_MODULE storage_id)
 
     if (tid_subject_manager != Tid.init)
     {
-        send(tid_subject_manager, CMD.FREEZE, thisTid);
+        send(tid_subject_manager, CMD_FREEZE, thisTid);
         receive((bool _res) {});
     }
 }
@@ -156,7 +83,7 @@ public void unfreeze(P_MODULE storage_id)
 
     if (tid_subject_manager != Tid.init)
     {
-        send(tid_subject_manager, CMD.UNFREEZE);
+        send(tid_subject_manager, CMD_UNFREEZE);
     }
 }
 
@@ -167,7 +94,7 @@ public string find(P_MODULE storage_id, string uri)
 
     if (tid_subject_manager !is Tid.init)
     {
-        send(tid_subject_manager, CMD.FIND, uri, thisTid);
+        send(tid_subject_manager, CMD_FIND, uri, thisTid);
         receive((string key, string data, Tid tid)
                 {
                     res = data;
@@ -185,7 +112,7 @@ public string backup(P_MODULE storage_id)
 
     Tid    tid_subject_manager = getTid(storage_id);
 
-    send(tid_subject_manager, CMD.BACKUP, "", thisTid);
+    send(tid_subject_manager, CMD_BACKUP, "", thisTid);
     receive((string res) { backup_id = res; });
 
     return backup_id;
@@ -200,11 +127,11 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
     {
         if (is_wait == false)
         {
-            send(tid, CMD.COMMIT);
+            send(tid, CMD_COMMIT);
         }
         else
         {
-            send(tid, CMD.COMMIT, thisTid);
+            send(tid, CMD_COMMIT, thisTid);
             receive((bool isReady) {});
         }
         rc = ResultCode.OK;
@@ -218,7 +145,7 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
 
     if (tid != Tid.init)
     {
-        send(tid, CMD.COMMIT, f_module, wait_op_id);
+        send(tid, CMD_COMMIT, f_module, wait_op_id);
     }
 }
 
@@ -229,13 +156,14 @@ public long unload(P_MODULE storage_id, string queue_name)
 
     if (tid != Tid.init)
     {
-        send(tid, CMD.UNLOAD, queue_name, thisTid);
+        send(tid, CMD_UNLOAD, queue_name, thisTid);
         receive((long _count) { count = _count; });
     }
     return count;
 }
 
-public ResultCode put(P_MODULE storage_id, string user_uri, string indv_uri, string prev_state, string new_state, string event_id, bool ignore_freeze,
+public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, string event_id,
+                      bool ignore_freeze,
                       out long op_id)
 {
     ResultCode rc;
@@ -276,17 +204,6 @@ public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, ou
     return rc;
 }
 
-Queue queue;
-
-shared static ~this()
-{
-    if (queue !is null)
-    {
-        queue.close();
-        queue = null;
-    }
-}
-
 public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
 {
     Queue                        individual_queue;
@@ -294,25 +211,27 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     P_MODULE                     storage_id  = _storage_id;
     string                       thread_name = text(storage_id);
 
-    core.thread.Thread.getThis().name             = thread_name;
+    core.thread.Thread.getThis().name = thread_name;
+
     LmdbStorage                  storage          = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
     int                          size_bin_log     = 0;
     int                          max_size_bin_log = 10_000_000;
     string                       bin_log_name     = get_new_binlog_name(db_path);
 
-    long                         op_id          = storage.last_op_id;
+    long                         op_id           = storage.last_op_id;
     long                         committed_op_id = 0;
 
     string                       notify_chanel_url = "tcp://127.0.0.1:9111\0";
     int                          sock;
     bool                         already_notify_chanel = false;
+    ModuleInfoFile               module_info;
 
     try
     {
         if (storage_id == P_MODULE.subject_manager)
         {
-            individual_queue = new Queue("individuals-flow", Mode.RW);
-            individual_queue.remove_lock();
+            individual_queue = new Queue("individuals-flow", Mode.RW, log);
+//            individual_queue.remove_lock();
             individual_queue.open();
 
             sock = nn_socket(AF_SP, NN_PUB);
@@ -334,81 +253,90 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
         string last_backup_id = "---";
 
         bool   is_freeze = false;
-        bool   is_exit = false;
-		ModuleInfoFile module_info = new ModuleInfoFile(text (storage_id), _log, OPEN_MODE.WRITER);
+        bool   is_exit   = false;
+        module_info = new ModuleInfoFile(text(storage_id), _log, OPEN_MODE.WRITER);
+
+		if (!module_info.is_ready)
+		{
+			log.trace ("thread [%s] terminated", process_name);
+			return;
+		}		
 
         while (is_exit == false)
         {
             try
             {
                 receive(
-                        (CMD cmd, P_MODULE f_module, long wait_op_id)
+                        (byte cmd, P_MODULE f_module, long wait_op_id)
                         {
-                            if (cmd == CMD.COMMIT)
+                            if (cmd == CMD_COMMIT)
                             {
                                 string msg = "COMMIT:" ~ text(f_module);
                                 int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
                                 log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_chanel_url, wait_op_id);
                             }
                         },
-                        (CMD cmd)
+                        (byte cmd)
                         {
-                            if (cmd == CMD.COMMIT)
+                            if (cmd == CMD_COMMIT)
                             {
                                 storage.flush(1);
                                 committed_op_id = op_id;
                                 module_info.put_info(op_id, committed_op_id);
                                 //log.trace ("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
-                            else if (cmd == CMD.UNFREEZE)
+                            else if (cmd == CMD_UNFREEZE)
                             {
                                 is_freeze = false;
                             }
-                            else if (cmd == CMD.EXIT)
-                            {
-                            	is_exit = true;
-                            }
                         },
-                        (CMD cmd, Tid tid_response_reciever)
+                        (byte cmd, Tid tid_response_reciever)
                         {
-                            if (cmd == CMD.COMMIT)
+                            if (cmd == CMD_COMMIT)
                             {
                                 committed_op_id = op_id;
                                 storage.flush(1);
                                 send(tid_response_reciever, true);
                                 module_info.put_info(op_id, committed_op_id);
-                                log.trace ("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
+                                log.trace("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
-                            else if (cmd == CMD.FREEZE)
+                            else if (cmd == CMD_FREEZE)
                             {
                                 is_freeze = true;
                                 send(tid_response_reciever, true);
                             }
-                            else if (cmd == CMD.NOP)
+                            else if (cmd == CMD_EXIT)
+                            {
+                                is_exit = true;
+                                writefln("[%s] recieve signal EXIT", text(storage_id));
+                                send(tid_response_reciever, true);
+                            }
+
+                            else if (cmd == CMD_NOP)
                                 send(tid_response_reciever, true);
                             else
                                 send(tid_response_reciever, false);
                         },
-                        (CMD cmd, string key, string msg)
+                        (byte cmd, string key, string msg)
                         {
-                            if (cmd == CMD.PUT_KEY2SLOT)
+                            if (cmd == CMD_PUT_KEY2SLOT)
                             {
                                 storage.put(key, msg, -1);
                             }
                         },
-                        (CMD cmd, string arg, Tid tid_response_reciever)
+                        (byte cmd, string arg, Tid tid_response_reciever)
                         {
-                            if (cmd == CMD.FIND)
+                            if (cmd == CMD_FIND)
                             {
                                 string res = storage.find(arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
                             }
-                            else if (cmd == CMD.UNLOAD)
+                            else if (cmd == CMD_UNLOAD)
                             {
                                 long count;
-                                Queue queue = new Queue(arg, Mode.RW);
+                                Queue queue = new Queue(arg, Mode.RW, log);
 
                                 if (queue.open(Mode.RW))
                                 {
@@ -423,7 +351,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                     queue.close();
                                 }
                                 else
-                                    writeln("store_thread:CMD.UNLOAD: not open queue");
+                                    writeln("store_thread:CMD_UNLOAD: not open queue");
 
                                 send(tid_response_reciever, count);
                             }
@@ -468,7 +396,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 if (cmd == INDV_OP.PUT)
                                 {
                                     string new_hash;
-									//log.trace ("storage_manager:PUT %s", indv_uri);
+                                    //log.trace ("storage_manager:PUT %s", indv_uri);
                                     if (storage.update_or_create(indv_uri, new_state, op_id, new_hash) == 0)
                                     {
                                         rc = ResultCode.OK;
@@ -484,8 +412,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                     if (rc == ResultCode.OK)
                                     {
-										module_info.put_info(op_id, committed_op_id);                                	
-                                    	
+                                        module_info.put_info(op_id, committed_op_id);
+
                                         bin_log_name = write_in_binlog(new_state, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
 
                                         if (storage_id == P_MODULE.subject_manager)
@@ -513,8 +441,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             //writeln("*cbor.length=", cbor.length);
 
                                             individual_queue.push(cbor);
-                                            string msg = text(op_id) ~ "\0";
-                                            int bytes = nn_send(sock, cast(char *)msg, msg.length, 0);
+                                            string msg_to_modules = indv_uri ~ ";" ~ text(op_id) ~ "\0";
+                                            int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);
 //                                            log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_chanel_url);
                                         }
                                     }
@@ -529,7 +457,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             }
 
 /*
-                        if (cmd == CMD.BACKUP)
+                        if (cmd == CMD_BACKUP)
                         {
                             try
                             {
@@ -570,9 +498,9 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         }
  */
                         },
-                        (CMD cmd, int arg, bool arg2)
+                        (byte cmd, int arg, bool arg2)
                         {
-                            if (cmd == CMD.SET_TRACE)
+                            if (cmd == CMD_SET_TRACE)
                                 set_trace(arg, arg2);
                         },
                         (Variant v) { writeln(thread_name, "::storage_manager::Received some other type.", v); });
@@ -584,10 +512,16 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
         }
     } finally
     {
-        if (queue !is null)
+        if (module_info !is null)
         {
-            queue.close();
-            queue = null;
+            module_info.close();
+            module_info = null;
+        }
+
+        if (individual_queue !is null)
+        {
+            individual_queue.close();
+            individual_queue = null;
         }
     }
 }

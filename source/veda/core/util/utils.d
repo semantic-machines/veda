@@ -15,7 +15,7 @@ private
 }
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {

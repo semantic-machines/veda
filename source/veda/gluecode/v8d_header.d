@@ -9,7 +9,7 @@ import veda.core.common.context, veda.core.common.define, veda.util.cbor8individ
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {

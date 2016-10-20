@@ -10,13 +10,13 @@ private
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule;
     import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {
@@ -69,13 +69,6 @@ private struct Task
 private struct Tasks
 {
     Task *[ string ] list;
-}
-
-/// Команды используемые процессами
-enum CMD : byte
-{
-    EXIT  = 49,
-    START = 52
 }
 
 Onto    onto;
@@ -132,18 +125,18 @@ private void ltrs_thread(string parent_url)
             }
 
             receiveTimeout(msecs(recv_wait_dur),
-                           (CMD cmd)
+                           (byte cmd)
                            {
-                               if (cmd == CMD.EXIT)
+                               if (cmd == CMD_EXIT)
                                {
                                    thread_term();
                                }
                            },
-                           (CMD cmd, string inst_of_codelet, string queue_id)
+                           (byte cmd, string inst_of_codelet, string queue_id)
                            {
                                //Thread.sleep(dur!("seconds")(15));
 //                               check_context();
-                               if (cmd == CMD.START)
+                               if (cmd == CMD_START)
                                {
                                    Individual indv;
                                    if (cbor2individual(&indv, inst_of_codelet) < 0)
@@ -152,10 +145,10 @@ private void ltrs_thread(string parent_url)
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
                                        return;
 
-                                   Queue queue = new Queue(queue_id, Mode.R);
+                                   Queue queue = new Queue(queue_id, Mode.R, log);
                                    if (queue.open())
                                    {
-                                       Consumer cs = new Consumer(queue, "consumer1");
+                                       Consumer cs = new Consumer(queue, "consumer1", log);
 
                                        if (cs.open())
                                        {
@@ -376,12 +369,12 @@ class ScriptProcess : VedaModule
 private void start_script(string execute_script_srz, string queue_id)
 {
     if (tid_ltr_scripts != Tid.init)
-        send(tid_ltr_scripts, CMD.START, execute_script_srz, queue_id);
+        send(tid_ltr_scripts, CMD_START, execute_script_srz, queue_id);
 }
 
 private void shutdown_ltr_scripts()
 {
     if (tid_ltr_scripts != Tid.init)
-        send(tid_ltr_scripts, CMD.EXIT);
+        send(tid_ltr_scripts, CMD_EXIT);
 }
 

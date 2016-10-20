@@ -1,7 +1,7 @@
 /**
  * Logger
  */
-module util.logger;
+module veda.common.logger;
 
 // TODO: ++ module core.sys.posix.syslog;
 

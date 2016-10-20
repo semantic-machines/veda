@@ -4,7 +4,15 @@
 	"dependencies": {
 	},
         "license": "LGPL v3",
-	"sourcePaths":["../../veda/bootstrap"],
+	"sourcePaths":[
+	    "../../veda/bootstrap"
+	],
+        "sourceFiles":[
+    	    "../../veda/common/logger.d",
+    	    "../../veda/util/module_info.d",
+	    "../../veda/core/common/define.d",
+	    "../../veda/util/container.d"
+	],
 	"configurations": [
 	{
 	    "name": "app",

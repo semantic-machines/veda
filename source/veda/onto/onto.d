@@ -10,12 +10,12 @@ private
 {
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
     import veda.onto.resource, veda.onto.individual;
-    import veda.core.util.utils, veda.util.container, util.logger;
+    import veda.core.util.utils, veda.util.container, veda.common.logger;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {

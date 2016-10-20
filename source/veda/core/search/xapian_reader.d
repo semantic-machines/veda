@@ -11,7 +11,7 @@ import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.
 import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {

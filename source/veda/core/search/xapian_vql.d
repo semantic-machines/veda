@@ -11,7 +11,7 @@ import veda.core.search.vel;
 import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.core.storage.lmdb_storage;
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {

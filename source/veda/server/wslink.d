@@ -6,11 +6,11 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
     import veda.bind.libwebsocketd;
     import veda.util.container;
-    alias core.thread.Thread core_thread;  
+    alias core.thread.Thread core_thread;
 }
 
 bool   f_listen_exit   = false;
@@ -20,13 +20,13 @@ int    writeable_flag  = 0;
 
 Logger _log;
 
-long max_size_packet = 1024*64;
+long   max_size_packet = 1024 * 64;
 extern (C) void handleTermination1(int _signal)
 {
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
-    
+
     if (_log !is null)
-	    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+        _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     //_log.close();
 
     writeln("!SYS: ", process_name, ": preparation for the exit.");
@@ -217,23 +217,23 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_RECEIVE:
-    
-		ResultCode rc;
-		
-		if (len >= max_size_packet)
-		{
-			rc = ResultCode.Size_too_large;
-	        ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, null, rc);
-		}	
-		else
-		{
-	        byte[] bmsg = (cast(byte*)_in)[0..len];        
-	        char[] msg = cast(char[])bmsg;
-	        //writefln ("msg[%d]=%s", len, msg);
-	        rc = ResultCode.OK;
-	        ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, msg, rc);
-		}
-		
+
+        ResultCode rc;
+
+        if (len >= max_size_packet)
+        {
+            rc = ResultCode.Size_too_large;
+            ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, null, rc);
+        }
+        else
+        {
+            byte[] bmsg = (cast(byte *)_in)[ 0..len ];
+            char[] msg  = cast(char[])bmsg;
+            //writefln ("msg[%d]=%s", len, msg);
+            rc = ResultCode.OK;
+            ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, msg, rc);
+        }
+
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:

@@ -9,12 +9,12 @@ import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang,
 import veda.frontend.cbor8vjson;
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
-util.logger.Logger _log;
-util.logger.Logger log()
+import veda.common.logger;
+veda.common.logger.Logger _log;
+veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new util.logger.Logger("veda-core-webserver", "log", "REST");
+        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "REST");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

@@ -7,12 +7,12 @@ import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets :
 
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
-util.logger.Logger _log;
-util.logger.Logger log()
+import veda.common.logger;
+veda.common.logger.Logger _log;
+veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new util.logger.Logger("veda-core-webserver", "log", "frontend");
+        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

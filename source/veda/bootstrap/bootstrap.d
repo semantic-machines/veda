@@ -73,15 +73,34 @@ private int[][ string ] get_processes_info(string[] command_patterns, ref Proces
     return command_2_pid;
 }
 
+import veda.util.module_info;
+
 void main(char[][] args)
 {
     string[ string ] env;
     int      exit_code;
 
+
     string[] modules = [ "veda", "veda-webserver", "veda-server", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts", "veda-ft-indexer", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
 
     bool is_found_modules = false;
+
+	string[] wr_components = ["acl_preparer", "fanout_email", "fanout_sql", "fulltext_indexer", "ltr_scripts", "scripts", "subject_manager", "ticket_manager", "acl_preparer"];
+	
+	bool is_exist_lock = false;
+	
+        foreach (ml; wr_components)
+        {
+            if (ModuleInfoFile.is_lock (ml) == true)
+            {
+	            writefln("Modile_info [%s] already open, or not deleted lock file", ml);
+	            is_exist_lock = true;	
+            }	            
+        }
+        
+    if (is_exist_lock)
+	    return;    
 
     for (int attempt = 0; attempt < 10; attempt++)
     {
@@ -106,6 +125,7 @@ void main(char[][] args)
                     }
                 }
             }
+            
         }
 
         if (is_found_modules == false)

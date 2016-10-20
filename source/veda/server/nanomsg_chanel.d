@@ -5,7 +5,7 @@ import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.ont
 import kaleidic.nanomsg.nano;
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 Logger log()
 {

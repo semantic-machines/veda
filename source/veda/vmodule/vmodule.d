@@ -6,7 +6,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
-    import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info;
     import kaleidic.nanomsg.nano;
 }
@@ -14,7 +14,7 @@ private
 bool f_listen_exit = false;
 
 // ////// Logger ///////////////////////////////////////////
-import util.logger;
+import veda.common.logger;
 Logger _log;
 
 // ////// ////// ///////////////////////////////////////////
@@ -82,8 +82,6 @@ class VedaModule // : WSLink
         host         = _host;
         _log         = in_log;
         log 		 = _log;		
-
-        module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
     }
 
     ~this()
@@ -93,6 +91,13 @@ class VedaModule // : WSLink
 
     void run()
     {
+        module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
+		if (!module_info.is_ready)
+		{
+			log.trace ("%s terminated", process_name);
+			return;
+		}
+    	
         context = create_context();
 
         if (context is null)
@@ -113,7 +118,7 @@ class VedaModule // : WSLink
 
         ubyte[] buffer = new ubyte[ 1024 ];
 
-        queue = new Queue(queue_name, Mode.R);
+        queue = new Queue(queue_name, Mode.R, log);
         queue.open();
 
         while (!queue.isReady)
@@ -123,7 +128,7 @@ class VedaModule // : WSLink
             queue.open();
         }
 
-        cs = new Consumer(queue, process_name);
+        cs = new Consumer(queue, process_name, log);
         cs.open();
 
         //if (count_signal == 0)
@@ -163,6 +168,8 @@ class VedaModule // : WSLink
         
         if (_log !is null)
 	        _log.close();
+	        
+	    module_info.close();    
     }
 
 ///////////////////////////////////////////////////
