@@ -101,9 +101,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
 
       template = renderTemplate (individual, container, template, specs, mode);
-      template
-        .attr("resource", individual.id)
-        .attr("typeof", individual["rdf:type"].map(function (item) { return item.id; }).join(" ") );
       container.append(template);
       individual.trigger("individual:templateReady", template);
 
@@ -120,6 +117,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   });
 
   function renderTemplate (individual, container, template, specs, mode) {
+
+    template.attr({
+      "resource": individual.id,
+      "typeof": individual["rdf:type"].map(function (item) { return item.id; }).join(" ")
+    });
 
     // Unwrapped templates support
     var wrapper = $("<div>").append(template);
@@ -160,14 +162,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     // Define handlers
     function saveHandler (e, parent) {
-      individual.save(parent);
+      if (parent !== individual.id) {
+        individual.save(parent);
+      }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
 
     function draftHandler (e, parent) {
-      individual.draft(parent);
+      if (parent !== individual.id) {
+        individual.draft(parent);
+      }
       template.trigger("view");
       e.stopPropagation();
     }
@@ -179,8 +185,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("showRights", showRightsHandler);
 
-    function cancelHandler (e) {
-      individual.reset();
+    function cancelHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.reset();
+      }
       template.trigger("view");
       e.stopPropagation();
     }
@@ -213,13 +221,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
 
     function deleteHandler (e, parent) {
-      individual.delete(parent);
+      if (parent !== individual.id) {
+        individual.delete(parent);
+      }
       e.stopPropagation();
     }
     template.on("delete", deleteHandler);
 
     function recoverHandler (e, parent) {
-      individual.recover(parent);
+      if (parent !== individual.id) {
+        individual.recover(parent);
+      }
       e.stopPropagation();
     }
     template.on("recover", recoverHandler);
@@ -269,9 +281,54 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     //  Delete
     $delete.on("click", function (e) {
-      if ( confirm("Вы действительно хотите удалить документ?") ) template.trigger("delete");
+      if ( confirm("Вы действительно хотите удалить документ?") ) { template.trigger("delete"); }
     });
-    if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0]) $delete.hide();
+    if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
+
+    // Standart buttons labels change for drafts
+    var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
+    var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
+    var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
+    var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
+
+    individual.on("individual:propertyModified", isDraftHandler);
+    template.on("remove", function () {
+      individual.off("individual:propertyModified", isDraftHandler);
+    });
+
+    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:label"].join(" ");
+    var draftLabel = $("<div class='label label-danger label-draft'></div>").text(Draft);
+    template.one("remove", function () {
+      draftLabel.remove();
+    });
+    function isDraftHandler(property_uri) {
+      if (property_uri === "v-s:isDraft") {
+        // If individual is draft
+        if ( individual.hasValue("v-s:isDraft", true) && !template.parent().closest("[resource='" + individual.id + "']").length ) {
+          if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
+            var cell = template.children().last();
+            cell.css("position", "relative").append(draftLabel);
+          } else {
+            template.css("position", "relative");
+            // It is important to append buttons skipping script element in template!
+            template.not("script").append(draftLabel);
+          }
+          //Rename "Edit" -> "Continue edit"
+          $edit.text(ContinueEdit);
+          //Rename "Cancel" -> "Delete draft"
+          $cancel.text(DeleteDraft);
+        } else {
+          draftLabel.remove();
+          //Rename "Continue edit" -> Edit"
+          $edit.text(Edit);
+          //Rename "Delete draft" -> "Cancel"
+          $cancel.text(Cancel);
+        }
+      }
+    }
+    setTimeout( function () {
+      isDraftHandler("v-s:isDraft");
+    }, 100);
 
     // Apply mode class to template to show/hide elements in different modes
     function modeHandler (e) {
@@ -344,6 +401,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
     });
 
+    // standard tasks
+    $('#standard-tasks', template).each(function() {
+      var stask = $(this);
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
+      }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
+      }));
+    });
 
     // Process RDFa compliant template
 
@@ -724,49 +795,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     });
 
-    // Standart buttons labels change for drafts
-    var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
-    var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
-    var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
-    var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
-
-    individual.on("individual:propertyModified", isDraftHandler);
-    template.on("remove", function () {
-      individual.off("individual:propertyModified", isDraftHandler);
-    });
-    function isDraftHandler(property_uri) {
-      if (property_uri === "v-s:isDraft") {
-        // If individual is draft
-        if ( individual.hasValue("v-s:isDraft") && individual["v-s:isDraft"][0] == true ) {
-          //Rename "Edit" -> "Continue edit"
-          $edit.text(ContinueEdit);
-          //Rename "Cancel" -> "Delete draft"
-          $cancel.text(DeleteDraft);
-        } else {
-          //Rename "Continue edit" -> Edit"
-          $edit.text(Edit);
-          //Rename "Delete draft" -> "Cancel"
-          $cancel.text(Cancel);
-        }
-      }
-    }
-    isDraftHandler("v-s:isDraft");
-
-    // standard tasks
-    $('#standard-tasks', template).each(function() {
-      var stask = $(this);
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'][0])+'</a>'
-      }));
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
-      }));
-    });
-
     return template;
   }
 
@@ -880,7 +908,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (valTemplate.css("display") !== "inline") {
         wrapper.addClass("block");
       }
-      if (valTemplate.css("display") === "table-row") {
+      if (valTemplate.css("display") === "table-row" || valTemplate.prop("tagName") === "TR") {
         var cell = valTemplate.children().last();
         cell.css("position", "relative").append(wrapper);
       } else {

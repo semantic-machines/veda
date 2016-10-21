@@ -5,27 +5,28 @@ module veda.core.srv.server;
 
 private
 {
+    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.server.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context;
-    import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.util.individual8json, util.logger,
+    import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.util.individual8json, veda.common.logger,
            veda.core.util.utils;
     import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_chanel;
 }
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "server");
+        _log = new Logger("veda-core-server", "log", "server");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
 
-logger io_msg;
+Logger io_msg;
 
 enum CMD : byte
 {
@@ -33,10 +34,23 @@ enum CMD : byte
     SET = 50,
 }
 
-
 static this()
 {
-    io_msg = new logger("pacahon", "io", "server");
+    io_msg = new Logger("pacahon", "io", "server");
+    bsd_signal(SIGINT, &handleTermination2);
+}
+
+extern (C) void handleTermination2(int _signal)
+{
+    writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
+
+    if (_log !is null)
+        _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+    //_log.close();
+
+    writeln("!SYS: ", process_name, ": preparation for the exit.");
+
+    f_listen_exit = true;
 }
 
 Context g_context;
@@ -49,10 +63,23 @@ void main(char[][] args)
     veda_server.init_core(null);
     g_context = veda_server.core_context;
 
+    log.trace("start ws listener");
     veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
+    writefln("stop ws listener");
 
-    while (true)
+    while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
+
+    writefln("send signals EXIT to threads");
+
+    exit(P_MODULE.commiter);
+    exit(P_MODULE.acl_preparer);
+    exit(P_MODULE.subject_manager);
+    exit(P_MODULE.ticket_manager);
+
+    thread_term();
+
+//    exit(P_MODULE.statistic_data_accumulator);
 }
 
 void ev_LWS_CALLBACK_GET_THREAD_ID()
@@ -64,20 +91,21 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 {
     //writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
     string res;
+
     if (rc == ResultCode.OK)
     {
-	    res = g_context.execute(cast(string)msg);
+        res = g_context.execute(cast(string)msg);
     }
     else
     {
-		JSONValue jres;
+        JSONValue jres;
         jres[ "type" ]   = "OpResult";
         jres[ "result" ] = rc;
-        jres[ "op_id" ]  = -1;		
-                
-        res = jres.toString();		
+        jres[ "op_id" ]  = -1;
+
+        res = jres.toString();
     }
-    
+
     websocket_write_back(wsi, res);
 }
 
@@ -103,7 +131,7 @@ class VedaServer : WSLink
 
         Backtrace.install(stderr);
 
-        io_msg = new logger("pacahon", "io", "server");
+        io_msg = new Logger("pacahon", "io", "server");
         Tid[ P_MODULE ] tids;
 
         try
@@ -196,6 +224,18 @@ class VedaServer : WSLink
     }
 }
 
+public void exit(P_MODULE module_id)
+{
+    Tid tid_module = getTid(module_id);
+
+    if (tid_module != Tid.init)
+    {
+        writefln("send command EXIT to thread_%s", text(module_id));
+        send(tid_module, CMD_EXIT, thisTid);
+        receive((bool _res) {});
+    }
+}
+
 void commiter(string thread_name)
 {
     core.thread.Thread.getThis().name = thread_name;
@@ -205,11 +245,24 @@ void commiter(string thread_name)
                 send(tid_response_reciever, true);
             });
 
-    while (true)
+    bool is_exit = false;
+
+    while (is_exit == false)
     {
-        core.thread.Thread.sleep(dur!("seconds")(1));
+        receiveTimeout(dur!("seconds")(1),
+                       (byte cmd, Tid tid_response_reciever)
+                       {
+                           if (cmd == CMD_EXIT)
+                           {
+                               is_exit = true;
+                               writefln("[%s] recieve signal EXIT", "commiter");
+                               send(tid_response_reciever, true);
+                           }
+                       },
+
+                       (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
+
         veda.server.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-        core.thread.Thread.sleep(dur!("seconds")(1));
         veda.server.acl_manager.flush(false);
         veda.server.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }

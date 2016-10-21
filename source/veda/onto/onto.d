@@ -10,17 +10,17 @@ private
 {
     import std.stdio, std.datetime, std.conv, std.concurrency, std.exception : assumeUnique;
     import veda.onto.resource, veda.onto.individual;
-    import veda.core.util.utils, veda.util.container, util.logger;
+    import veda.core.util.utils, veda.util.container, veda.common.logger;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "ONTO");
+        _log = new Logger("veda-core-" ~ process_name, "log", "ONTO");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

@@ -5,13 +5,11 @@ module veda.server.load_info;
 
 private
 {
-    import core.thread, std.format, std.stdio, std.datetime, std.concurrency, std.datetime, std.array : appender;
+    import core.thread, std.format, std.stdio, std.datetime, std.concurrency, std.datetime, std.conv, std.array : appender;
     import veda.core.util.utils;
-    import util.logger;
+    import veda.common.logger;
     import veda.common.type, veda.core.common.context, veda.core.common.define;
 }
-
-public bool    cinfo_exit = false;
 
 private string set_bar_color_1 = "\x1B[41m";
 private string set_bar_color_2 = "\x1B[43m";
@@ -24,21 +22,24 @@ private string set_text_color_blue        = "\x1B[34m";
 private string set_all_attribute_off      = "\x1B[0m";
 private string set_cursor_in_begin_string = "\x1B[0E";
 
-logger         log;
+Logger         log;
 
 static this()
 {
-    log = new logger("server-statistics", "log", "");
+    log = new Logger("server-statistics", "log", "");
 }
 
 enum CMD : byte
 {
     /// Сохранить
-    PUT = 1,
+    PUT  = 1,
 
     /// Получить
-    GET = 2,
+    GET  = 2,
+
+    EXIT = 49
 }
+
 
 public void stat(byte command_type, ref StopWatch sw) nothrow
 {
@@ -51,12 +52,12 @@ public void stat(byte command_type, ref StopWatch sw) nothrow
 
         if (statistic_data_accumulator_tid !is Tid.init)
         {
-            send(statistic_data_accumulator_tid, CMD.PUT, CNAME.WORKED_TIME, t);
+            send(statistic_data_accumulator_tid, CMD_PUT, CNAME.WORKED_TIME, t);
 
-            if (command_type == CMD.GET)
-                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_GET, 1);
+            if (command_type == CMD_GET)
+                send(statistic_data_accumulator_tid, CMD_PUT, CNAME.COUNT_GET, 1);
             else
-                send(statistic_data_accumulator_tid, CMD.PUT, CNAME.COUNT_PUT, 1);
+                send(statistic_data_accumulator_tid, CMD_PUT, CNAME.COUNT_PUT, 1);
 
             //if (trace_msg[ T_API_40 ] == 1)
             //   log.trace(func[ (func.lastIndexOf(".") + 1)..$ ] ~ ": t=%d µs", t);
@@ -66,7 +67,6 @@ public void stat(byte command_type, ref StopWatch sw) nothrow
     {
     }
 }
-
 
 void statistic_data_accumulator(string thread_name)
 {
@@ -80,23 +80,49 @@ void statistic_data_accumulator(string thread_name)
             {
                 send(tid_response_reciever, true);
             });
-    while (true)
+
+    bool is_exit1 = false;
+    bool is_exit;
+
+    while (is_exit == false)
     {
-        receive(
-                (CMD cmd, CNAME idx, int delta)
-                {
-                    if (cmd == CMD.PUT)
+        try
+        {
+            receive(
+                    (byte cmd, CNAME idx, int delta)
                     {
-                        stat[ idx ] += delta;
-                    }
-                },
-                (CMD cmd, Tid tid_sender)
-                {
-                    if (cmd == CMD.GET)
+                        if (cmd == CMD_PUT)
+                        {
+                            stat[ idx ] += delta;
+                        }
+                    },
+                    (byte cmd, Tid tid_sender)
                     {
-                        send(tid_sender, cast(immutable)stat.dup);
-                    }
-                }, (Variant v) { writeln(thread_name, "::statistic_data_accumulator::Received some other type.", v); });
+                        if (cmd == CMD_GET)
+                        {
+                            if (is_exit1 == true)
+                            {
+                                stat[ CNAME.COUNT_PUT ] = -1;
+                                is_exit = true;
+                            }
+
+                            send(tid_sender, cast(immutable)stat.dup);
+                        }
+                        else if (cmd == CMD_EXIT)
+                        {
+                            is_exit1 = true;
+                            writefln("[%s] recieve signal EXIT", "statistic_data_accumulator");
+                            send(tid_sender, true);
+                            thread_term();
+                        }
+                    },
+                    (Variant v) { writeln(thread_name, "::Received some other type.", v); });
+            //               (Variant v) { writeln(thread_name, "::Received some other type.", v); });
+        }
+        catch (Throwable tr)
+        {
+            writefln("ERR! msg=%s tr=%s", tr.msg, tr.info);
+        }
     }
 }
 
@@ -116,19 +142,28 @@ void print_statistic(string thread_name, Tid _statistic_data_accumulator)
             {
                 send(tid_response_reciever, true);
             });
-    while (!cinfo_exit)
+
+    bool is_exit = false;
+
+    while (is_exit == false)
     {
         sleep_time = 1;
 
-        send(_statistic_data_accumulator, CMD.GET, thisTid);
+        send(_statistic_data_accumulator, CMD_GET, thisTid);
         const_long_array stat = receiveOnly!(const_long_array);
 
-        long             read_count  = stat[ CNAME.COUNT_GET ];
-        long             write_count = stat[ CNAME.COUNT_PUT ];
-        long             worked_time = stat[ CNAME.WORKED_TIME ];
+        if (stat[ CNAME.COUNT_PUT ] == -1)
+        {
+            is_exit = true;
+            break;
+        }
 
-        long             delta_count_read  = read_count - prev_read_count;
-        long             delta_count_write = write_count - prev_write_count;
+        long read_count  = stat[ CNAME.COUNT_GET ];
+        long write_count = stat[ CNAME.COUNT_PUT ];
+        long worked_time = stat[ CNAME.WORKED_TIME ];
+
+        long delta_count_read  = read_count - prev_read_count;
+        long delta_count_write = write_count - prev_write_count;
 
         prev_read_count  = read_count;
         prev_write_count = write_count;

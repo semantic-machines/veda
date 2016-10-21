@@ -5,10 +5,12 @@ module veda.core.storage.lmdb_storage;
 
 private
 {
-    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string;
+    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid;
     import veda.bind.lmdb_header, veda.onto.individual;
-    import util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define,
+    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define,
            veda.core.storage.binlog_tools;
+           
+    alias core.thread.Thread core_thread;       
 }
 
 /// Режим работы хранилища
@@ -48,11 +50,11 @@ public class LmdbStorage : Storage
     string              parent_thread_name;
     long                last_op_id;
     long                committed_last_op_id;
-    logger				log; 
+    Logger				log; 
     bool				db_is_opened;
 
     /// конструктор
-    this(string _path_, DBMode _mode, string _parent_thread_name, logger _log)
+    this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
     {
     	log = _log;    	
         _path                = _path_;
@@ -61,10 +63,10 @@ public class LmdbStorage : Storage
         mode                 = _mode;
         parent_thread_name   = _parent_thread_name;
 
-        string thread_name = core.thread.Thread.getThis().name;
+        string thread_name = core_thread.getThis().name;
         if (thread_name is null || thread_name.length == 0)
         {
-            core.thread.Thread.getThis().name = "core" ~ text(std.uuid.randomUUID().toHash())[ 0..5 ];
+            core_thread.getThis().name = "core" ~ text(randomUUID().toHash())[ 0..5 ];
         }
 
         create_folder_struct();
@@ -140,7 +142,7 @@ public class LmdbStorage : Storage
         {
             close_db();
             open_db();
-	      	log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core.thread.Thread.getThis().name, last_op_id);
+	      	log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core_thread.getThis().name, last_op_id);
         }
     }
 
@@ -224,10 +226,10 @@ public class LmdbStorage : Storage
             if (rc != 0)
             {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                core.thread.Thread.sleep(dur!("msecs")(100));
+                core_thread.sleep(dur!("msecs")(100));
                 return growth_db(env, txn);
             }
-            core.thread.Thread.sleep(dur!("msecs")(10));
+            core_thread.sleep(dur!("msecs")(10));
         }
         return rc;
     }
@@ -586,7 +588,7 @@ public class LmdbStorage : Storage
             mdb_txn_abort(txn_r);
 
             // TODO: sleep ?
-            core.thread.Thread.sleep(dur!("msecs")(1));
+            core_thread.sleep(dur!("msecs")(1));
 
             rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         }
@@ -665,7 +667,7 @@ public class LmdbStorage : Storage
 
                 // TODO: sleep ?
                 if (i > 3)
-                    core.thread.Thread.sleep(dur!("msecs")(10));
+                    core_thread.sleep(dur!("msecs")(10));
 
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
@@ -780,7 +782,7 @@ public class LmdbStorage : Storage
 
                 // TODO: sleep ?
                 if (i > 3)
-                    core.thread.Thread.sleep(dur!("msecs")(10));
+                    core_thread.sleep(dur!("msecs")(10));
 
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
@@ -894,7 +896,7 @@ public class LmdbStorage : Storage
 
                     // TODO: sleep ?
                     if (i > 3)
-                        core.thread.Thread.sleep(dur!("msecs")(10));
+                        core_thread.sleep(dur!("msecs")(10));
 
                     rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
                 }

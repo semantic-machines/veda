@@ -3,31 +3,31 @@
  */
 module veda.ft_indexer.ft_indexer_module;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, core.sys.posix.signal, core.sys.posix.unistd;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, core.sys.posix.signal, core.sys.posix.unistd, core.thread;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.bind.xapian_d_header;
 private import veda.core.common.context, veda.util.tools, veda.veda.ft_indexer.xapian_indexer;
 private import veda.vmodule.vmodule;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-fulltext_indexer", "log", "FT-INDEXER");
+        _log = new Logger("veda-core-fulltext_indexer", "log", "FT-INDEXER");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
 
 void main(char[][] args)
 {
-    core.thread.Thread.sleep(dur!("seconds")(1));
+    Thread.sleep(dur!("seconds")(1));
     process_name = "fulltext_indexer";
 
-    auto p_module = new FTIndexerProcess(P_MODULE.fulltext_indexer, "127.0.0.1", 8091,  new logger("veda-core-fulltext_indexer", "log", ""));
+    auto p_module = new FTIndexerProcess(P_MODULE.fulltext_indexer, "127.0.0.1", 8091,  new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }
@@ -38,7 +38,7 @@ class FTIndexerProcess : VedaModule
 
     long           last_update_time = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
     {
         super(_module_name, _host, _port, log);
     }

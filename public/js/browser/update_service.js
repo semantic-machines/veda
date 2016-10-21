@@ -20,8 +20,10 @@ veda.Module(function UpdateService(veda) { "use strict";
         socket,
         msgInterval,
         msgDelay = 1000,
-        connectInterval,
-        connectDelay = 10000,
+        connectTimeout,
+        connectDelay = Math.round(5000 + 5000 * Math.random()),
+        maxConnectDelay = 30000,
+        connectTries = 0,
         list = {},
         delta = {};
 
@@ -123,45 +125,45 @@ veda.Module(function UpdateService(veda) { "use strict";
       var socket = new WebSocket(address);
       socket.onopen = openedHandler;
       socket.onclose = closedHandler;
-      socket.onerror = closedHandler;
+      socket.onerror = errorHandler;
       socket.onmessage = messageHandler;
       return socket;
     }
 
     function openedHandler(event) {
-      if (connectInterval) {
-        clearInterval(connectInterval);
-        connectInterval = undefined;
-        //veda.trigger("success", {status: "Соединение восстановлено"});
-      }
-      //console.log("client: socket opened", event);
+      if (connectTries) { veda.trigger("success", {status: "WS: Соединение восстановлено"}) }
+      //console.log("client: websocket opened");
+      connectTries = 0;
       var msg = "ccus=" + veda.ticket;
       if (socket && socket.readyState === 1) {
-        socket.send(msg); //Handshake
+        //Handshake
+        socket.send(msg);
         //console.log("client -> server:", msg);
       }
       var uris = Object.keys(list);
       self.synchronize();
-      //uris.map(self.subscribe);
-      uris.map(function (uri) {
+      uris.map(self.subscribe);
+      /*uris.map(function (uri) {
         var i = new veda.IndividualModel(uri);
-        if ( !i.isSync() && !i.isNew() ) {
+        if ( !i.isSync() && !i.isNew() && !i.hasValue("v-s:isDraft", true) ) {
           i.reset();
         }
         self.subscribe(uri);
-      });
-      self.trigger("on");
+      });*/
     }
 
     function closedHandler(event) {
-      //veda.trigger("danger", {status: "Соединение прервано"});
-      //console.log("client: socket closed", event);
-      self.trigger("off");
-      if (!connectInterval) {
-        connectInterval = setInterval(function () {
-          socket = initSocket();
-        }, connectDelay);
-      }
+      if (connectDelay * connectTries < maxConnectDelay) { connectTries++ }
+      veda.trigger("danger", {status: "WS: Соединение прервано"});
+      //console.log("client: websocket closed,", "re-connect in", Math.round(connectDelay * connectTries / 1000), "secs" );
+      connectTimeout = setTimeout(function () {
+        socket = initSocket();
+      }, connectDelay * connectTries);
+    }
+
+    function errorHandler(event) {
+      //veda.trigger("danger", {status: "WS: Ошибка соединения"});
+      //console.log("client: websocket error");
     }
 
     function messageHandler(event) {
@@ -191,7 +193,7 @@ veda.Module(function UpdateService(veda) { "use strict";
             subscribeCounter: 1,
             updateCounter: updateCounter
           };
-          if ( !individual.hasValue("v-s:updateCounter") || individual["v-s:updateCounter"][0] !== updateCounter ) {
+          if ( !individual.hasValue("v-s:updateCounter", updateCounter) && !individual.hasValue("v-s:isDraft", true) ) {
             individual.reset();
           }
         } catch (e) {

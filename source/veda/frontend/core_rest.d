@@ -1,20 +1,20 @@
 module veda.frontend.core_rest;
 
-import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.atomic;
-import core.vararg, core.stdc.stdarg;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
+import core.vararg, core.stdc.stdarg, core.atomic;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 import veda.frontend.cbor8vjson;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+veda.common.logger.Logger _log;
+veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-webserver", "log", "REST");
+        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "REST");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

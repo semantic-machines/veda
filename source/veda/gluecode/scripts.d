@@ -3,9 +3,9 @@
  */
 module veda.gluecode.scripts;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule;
 private import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
@@ -14,9 +14,9 @@ void main(char[][] args)
 {
     process_name = "scripts";
 
-    core.thread.Thread.sleep(dur!("seconds")(1));
+    Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091, new logger("veda-core-scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091, new Logger("veda-core-scripts", "log", ""));
 
     p_script.run();
 }
@@ -33,7 +33,7 @@ class ScriptProcess : VedaModule
 
     private ScriptVM script_vm;
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
     {
         super(_module_name, _host, _port, log);
 

@@ -188,7 +188,7 @@ veda.Module(function (veda) { "use strict";
   Object.defineProperty(proto, "rights", {
     get: function () {
       if (this._.rights) return this._.rights;
-      if (this._.isNew) {
+      if (this._.isNew || this.hasValue("v-s:isDraft", true)) {
         this._.rights = new veda.IndividualModel(undefined, undefined, undefined, undefined, false);
         this._.rights["v-s:canRead"] = [ true ];
         this._.rights["v-s:canUpdate"] = [ true ];
@@ -311,7 +311,7 @@ veda.Module(function (veda) { "use strict";
       if (e.status !== 472) {
         this.draft(parent);
       } else {
-        veda.trigger("danger", e);
+        console.log("Нет прав на создание или изменение объекта / No rights to create or modify object\n" + this.id + " (" + this.toString() + ")");
       }
     }
     this._.isNew = false;
@@ -339,10 +339,10 @@ veda.Module(function (veda) { "use strict";
   proto.reset = function () {
     var self = this;
     self.trigger("individual:beforeReset");
+    if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
+      veda.drafts.remove(this.id);
+    }
     if (!this._.isNew) {
-      if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
-        veda.drafts.remove(this.id);
-      }
       this._.filtered = {};
       var original;
       try {
@@ -403,7 +403,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.delete = function (parent) {
     this.trigger("individual:beforeDelete");
-    if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
+    if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [ true ];
@@ -418,7 +418,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.recover = function (parent) {
     this.trigger("individual:beforeRecover");
-    if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
+    if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];

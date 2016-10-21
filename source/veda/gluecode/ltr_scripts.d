@@ -10,18 +10,18 @@ private
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule;
     import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
+        _log = new Logger("veda-core-ltr_scripts", "log", "LTR-SCRIPTS");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -69,13 +69,6 @@ private struct Task
 private struct Tasks
 {
     Task *[ string ] list;
-}
-
-/// Команды используемые процессами
-enum CMD : byte
-{
-    EXIT  = 49,
-    START = 52
 }
 
 Onto    onto;
@@ -132,18 +125,18 @@ private void ltrs_thread(string parent_url)
             }
 
             receiveTimeout(msecs(recv_wait_dur),
-                           (CMD cmd)
+                           (byte cmd)
                            {
-                               if (cmd == CMD.EXIT)
+                               if (cmd == CMD_EXIT)
                                {
                                    thread_term();
                                }
                            },
-                           (CMD cmd, string inst_of_codelet, string queue_id)
+                           (byte cmd, string inst_of_codelet, string queue_id)
                            {
                                //Thread.sleep(dur!("seconds")(15));
 //                               check_context();
-                               if (cmd == CMD.START)
+                               if (cmd == CMD_START)
                                {
                                    Individual indv;
                                    if (cbor2individual(&indv, inst_of_codelet) < 0)
@@ -152,10 +145,10 @@ private void ltrs_thread(string parent_url)
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
                                        return;
 
-                                   Queue queue = new Queue(queue_id, Mode.R);
+                                   Queue queue = new Queue(queue_id, Mode.R, log);
                                    if (queue.open())
                                    {
-                                       Consumer cs = new Consumer(queue, "consumer1");
+                                       Consumer cs = new Consumer(queue, "consumer1", log);
 
                                        if (cs.open())
                                        {
@@ -328,7 +321,7 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger _log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger _log)
     {
         super(_module_name, _host, _port, _log);
     }
@@ -376,12 +369,12 @@ class ScriptProcess : VedaModule
 private void start_script(string execute_script_srz, string queue_id)
 {
     if (tid_ltr_scripts != Tid.init)
-        send(tid_ltr_scripts, CMD.START, execute_script_srz, queue_id);
+        send(tid_ltr_scripts, CMD_START, execute_script_srz, queue_id);
 }
 
 private void shutdown_ltr_scripts()
 {
     if (tid_ltr_scripts != Tid.init)
-        send(tid_ltr_scripts, CMD.EXIT);
+        send(tid_ltr_scripts, CMD_EXIT);
 }
 

@@ -93,87 +93,84 @@ public enum INDV_OP : byte
     REMOVE      = 51
 }
 
-/*
+
    /// Команды используемые процессами
-   enum CMD : byte
-   {
     /// Сохранить
-    PUT          = 1,
+byte CMD_PUT          = 1;
 
     /// Найти
-    FIND         = 2,
+byte CMD_FIND         = 2;
 
     /// Получить
-    GET          = 2,
+byte CMD_GET          = 2;
 
     /// Проверить
-    EXAMINE      = 4,
+byte CMD_EXAMINE      = 4;
 
     /// Авторизовать
-    AUTHORIZE    = 8,
+byte CMD_AUTHORIZE    = 8;
 
     /// Коммит
-    COMMIT       = 16,
+byte CMD_COMMIT       = 16;
 
     /// Конец данных
-    END_DATA     = 32,
+byte CMD_END_DATA     = 32;
 
     /// Включить/выключить отладочные сообщения
-    SET_TRACE    = 33,
+byte CMD_SET_TRACE    = 33;
 
     /// Выгрузить
-    UNLOAD       = 34,
+byte CMD_UNLOAD       = 34;
 
     /// Перезагрузить
-    RELOAD       = 40,
+byte CMD_RELOAD       = 40;
 
     /// Backup
-    BACKUP       = 41,
+byte CMD_BACKUP       = 41;
 
     /// Остановить прием команд на изменение
-    FREEZE       = 42,
+byte CMD_FREEZE       = 42;
 
     /// Возобновить прием команд на изменение
-    UNFREEZE     = 43,
+byte CMD_UNFREEZE     = 43;
 
     /// Сохранить соответствие ключ - слот (xapian)
-    PUT_KEY2SLOT = 44,
+byte CMD_PUT_KEY2SLOT = 44;
 
     /// Установить в
-    SET_IN       = 45,
+byte CMD_SET_IN       = 45;
 
     /// Удалить
-    DELETE       = 46,
+byte CMD_DELETE       = 46;
 
     /// Добавить в
-    ADD_IN       = 47,
+byte CMD_ADD_IN       = 47;
 
     /// Убрать из
-    REMOVE_FROM  = 48,
+byte CMD_REMOVE_FROM  = 48;
 
 
-    EXIT         = 49,
+byte CMD_EXIT         = 49;
 
     /// Установить
-    SET          = 50,
+byte CMD_SET          = 50;
 
     /// Убрать
-    REMOVE       = 51,
+byte CMD_REMOVE       = 51;
 
-    START        = 52,
+byte CMD_START        = 52;
 
-    STOP         = 53,
+byte CMD_STOP         = 53;
 
-    RESUME       = 54,
+byte CMD_RESUME       = 54;
 
-    PAUSE        = 55,
+byte CMD_PAUSE        = 55;
 
-    WAIT        = 56,
+byte CMD_WAIT        = 56;
 
     /// Пустая комманда
-    NOP          = 64
-   }
- */
+byte CMD_NOP          = 64;
+
 string nullz = "00000000000000000000000000000000";
 
 /// Десятичное число

@@ -14,13 +14,13 @@ private
     import veda.common.type;
 }
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "UTIL");
+        _log = new Logger("veda-core-" ~ process_name, "log", "UTIL");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -54,7 +54,6 @@ public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual
     }
     return prev_indv;
 }
-
 
 private Tid[ P_MODULE ] name_2_tids;
 

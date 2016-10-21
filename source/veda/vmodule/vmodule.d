@@ -3,19 +3,19 @@ module veda.vmodule.vmodule;
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
-    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
-    import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info;
     import kaleidic.nanomsg.nano;
 }
 
 bool f_listen_exit = false;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
 
 // ////// ////// ///////////////////////////////////////////
 
@@ -72,9 +72,9 @@ class VedaModule // : WSLink
     Ticket         sticket;
     P_MODULE       module_name;
 
-    logger log;
+    Logger log;
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger in_log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger in_log)
     {
         process_name = text(_module_name);
         module_name  = _module_name;
@@ -82,8 +82,6 @@ class VedaModule // : WSLink
         host         = _host;
         _log         = in_log;
         log 		 = _log;		
-
-        module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
     }
 
     ~this()
@@ -93,6 +91,13 @@ class VedaModule // : WSLink
 
     void run()
     {
+        module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
+		if (!module_info.is_ready)
+		{
+			log.trace ("%s terminated", process_name);
+			return;
+		}
+    	
         context = create_context();
 
         if (context is null)
@@ -113,17 +118,17 @@ class VedaModule // : WSLink
 
         ubyte[] buffer = new ubyte[ 1024 ];
 
-        queue = new Queue(queue_name, Mode.R);
+        queue = new Queue(queue_name, Mode.R, log);
         queue.open();
 
         while (!queue.isReady)
         {
             log.trace("queue [%s] not ready, sleep and repeate...", queue_name);
-            core.thread.Thread.sleep(dur!("seconds")(10));
+            Thread.sleep(dur!("seconds")(10));
             queue.open();
         }
 
-        cs = new Consumer(queue, process_name);
+        cs = new Consumer(queue, process_name, log);
         cs.open();
 
         //if (count_signal == 0)
@@ -160,7 +165,11 @@ class VedaModule // : WSLink
                 }
             }
         }
-        _log.close();
+        
+        if (_log !is null)
+	        _log.close();
+	        
+	    module_info.close();    
     }
 
 ///////////////////////////////////////////////////
@@ -252,7 +261,7 @@ class VedaModule // : WSLink
                          res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
                 {
                     log.trace("WARN: message fail prepared, sleep and repeate...");
-                    core.thread.Thread.sleep(dur!("seconds")(10));
+                    Thread.sleep(dur!("seconds")(10));
                 }
                 else
                 {
@@ -291,7 +300,7 @@ class VedaModule // : WSLink
                 context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
 
                 writeln("@@ child_process is_superadmin=", is_superadmin);
-                core.thread.Thread.sleep(dur!("seconds")(1));
+                Thread.sleep(dur!("seconds")(1));
             }
         }
 

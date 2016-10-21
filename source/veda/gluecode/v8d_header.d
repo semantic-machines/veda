@@ -8,13 +8,13 @@ import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lan
 import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
 import veda.util.container;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "V8D");
+        _log = new Logger("veda-core-" ~ process_name, "log", "V8D");
     return _log;
 }
 

@@ -21,13 +21,13 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 
     var tree = {};
     var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelLinkTemplate");
-    var labelTmpl = new veda.IndividualModel("v-ui:LabelTemplate");
+    var labelTmpl = new veda.IndividualModel("v-ui:ClassNameLabelTemplate");
 
     if (veda.drafts.length) {
       Object.keys(veda.drafts).map(function (uri) {
         var draft = veda.drafts[uri],
           parent = draft.parent;
-        if ( parent ) {
+        if ( parent && veda.drafts[parent] ) {
           tree[parent] ? tree[parent].push(uri) : tree[parent] = [uri];
         } else {
           tree["root"] ? tree["root"].push(uri) : tree["root"] = [uri];
@@ -53,5 +53,17 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
   veda.on("update:drafts", function (drafts) {
     $("#drafts-counter").text(drafts.length);
   });
+
+  // Включим позже
+  // Clear orphan drafts
+  /*$(window).unload(function() {
+    Object.keys(veda.drafts).map(function (uri) {
+      var draft = veda.drafts[uri],
+          parent = draft.parent;
+      if ( parent && !veda.drafts[parent] ) {
+        veda.drafts.remove(uri);
+      }
+    });
+  });*/
 
 });

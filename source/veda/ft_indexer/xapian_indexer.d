@@ -8,19 +8,19 @@ private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typec
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import veda.common.type;
 private import veda.bind.xapian_d_header;
-private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, util.logger;
+private import veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.common.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.storage.lmdb_storage;
 private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg,
                veda.core.impl.thread_context;
 private import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "SEARCH");
+        _log = new Logger("veda-core-" ~ process_name, "log", "SEARCH");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -786,7 +786,7 @@ public class IndexerContext
         }
 
 
-//    send(tid_subject_manager, CMD.PUT_KEY2SLOT, xapian_metadata_doc_id, data);
+//    send(tid_subject_manager, CMD_PUT_KEY2SLOT, xapian_metadata_doc_id, data);
     }
 
     private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)

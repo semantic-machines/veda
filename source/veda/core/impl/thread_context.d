@@ -9,50 +9,23 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json, std.regex;
     import veda.bind.xapian_d_header;
-    import veda.util.container, util.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.common.log_msg, veda.util.module_info;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, veda.core.search.vql;
     import veda.util.module_info;
+	import veda.common.logger;
 
-    version (isServer) alias veda.server.storage_manager storage_module;
-    version (isServer) alias veda.server.acl_manager acl_module;
+    version (isServer) 
+	{
+		alias veda.server.storage_manager storage_module;
+	    alias veda.server.acl_manager acl_module;
+	    alias veda.server.load_info load_info;
+	}    
 }
-
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-//logger _log;
-//logger log()
-//{
-//   if (_log is null)
-//        _log = new logger("veda-core-" ~ process_name, "log", "API");
-//    return _log;
-//}
-// ////// ////// ///////////////////////////////////////////
-
 
 Tid dummy_tid;
-
-private enum CMD : byte
-{
-    /// Сохранить
-    PUT    = 1,
-
-    GET    = 2,
-
-    /// Удалить
-    DELETE = 46,
-
-    /// Установить
-    SET    = 50,
-
-    /// Backup
-    BACKUP = 41,
-
-    /// Пустая комманда
-    NOP    = 64
-}
 
 File *ff_key2slot_r = null;
 public int[ string ] read_key2slot()
@@ -111,16 +84,14 @@ class PThreadContext : Context
 
     private bool        API_ready = true;
     private string      main_module_url;
-    private logger      log;
+    private Logger      log;
 
     private long        last_ticket_manager_op_id = 0;
 
-//    logger log()
-//    {
-//        if (_log is null)
-//            _log = new logger("veda-core-" ~ text(id), "log", name);
-//        return _log;
-//    }
+	public Logger get_logger ()
+	{
+		return log;
+	}
 
     version (isModule)
     {
@@ -199,7 +170,7 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
-    this(string _node_id, string context_name, P_MODULE _id, logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
+    this(string _node_id, string context_name, P_MODULE _id, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
         log = _log;
 
@@ -211,10 +182,10 @@ class PThreadContext : Context
         main_module_url = _main_module_url;
 /*
         {
-            import std.experimental.logger;
-            import std.experimental.logger.core;
+            import std.experimental.Logger;
+            import std.experimental.Logger.core;
 
-            std.experimental.logger.core.globalLogLevel(LogLevel.info);
+            std.experimental.Logger.core.globalLogLevel(LogLevel.info);
         }
  */
         node_id = _node_id;
@@ -250,7 +221,7 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            res = veda.server.storage_manager.begin_transaction(P_MODULE.subject_manager);
+            res = storage_module.begin_transaction(P_MODULE.subject_manager);
         }
 
         return res;
@@ -260,7 +231,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.commit_transaction(P_MODULE.subject_manager, transaction_id);
+            storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
         }
     }
 
@@ -268,7 +239,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.abort_transaction(P_MODULE.subject_manager, transaction_id);
+            storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
         }
     }
 
@@ -309,7 +280,7 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "400000");
 
                     long op_id;
-                    storage_module.put(P_MODULE.ticket_manager, null, "systicket", null, ticket.id, null, false, op_id);
+                    storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, null, false, op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -499,7 +470,7 @@ class PThreadContext : Context
     public void stat(byte command_type, ref StopWatch sw) nothrow
     {
         version (isServer)
-            veda.server.load_info.stat(command_type, sw);
+            load_info.stat(command_type, sw);
     }
 
     int _timeout = 10;
@@ -578,7 +549,7 @@ class PThreadContext : Context
         }
         finally
         {
-//            stat(CMD.GET, sw);
+//            stat(CMD_GET, sw);
         }
     }
 
@@ -592,7 +563,9 @@ class PThreadContext : Context
 
         ticket.result = ResultCode.Fail_Store;
 
-        new_ticket.resources[ rdf__type ] ~= Resource(ticket__Ticket);
+		Resources type = [Resource(ticket__Ticket)];
+
+        new_ticket.resources[ rdf__type ] = type;
 
         if (ticket_id !is null && ticket_id.length > 0)
             new_ticket.uri = ticket_id;
@@ -612,7 +585,7 @@ class PThreadContext : Context
         version (isServer)
         {
             long       op_id;
-            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, new_ticket.uri, null, ss_as_cbor, null, false, op_id);
+            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_cbor, null, false, op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -728,7 +701,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.PUT, sw);
+            stat(CMD_PUT, sw);
         }
     }
 
@@ -838,7 +811,7 @@ class PThreadContext : Context
         }
         finally
         {
-            //stat(CMD.GET, sw);
+            //stat(CMD_GET, sw);
         }
     }
 
@@ -873,7 +846,7 @@ class PThreadContext : Context
         }
         finally
         {
-//            stat(CMD.GET, sw);
+//            stat(CMD_GET, sw);
 //
             if (trace_msg[ T_API_140 ] == 1)
                 log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
@@ -959,7 +932,7 @@ class PThreadContext : Context
         }
         finally
         {
-//            stat(CMD.GET, sw);
+//            stat(CMD_GET, sw);
         }
     }
 
@@ -1010,7 +983,7 @@ class PThreadContext : Context
         }
         finally
         {
-//            stat(CMD.GET, sw);
+//            stat(CMD_GET, sw);
             if (trace_msg[ T_API_170 ] == 1)
                 log.trace("get_individual: end, uri=%s", uri);
         }
@@ -1050,7 +1023,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
+            stat(CMD_GET, sw);
         }
     }
 
@@ -1097,7 +1070,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD.GET, sw);
+            stat(CMD_GET, sw);
             if (trace_msg[ T_API_200 ] == 1)
                 log.trace("get_individual as cbor: end, uri=%s", uri);
         }
@@ -1164,7 +1137,7 @@ class PThreadContext : Context
             if (trace_msg[ T_API_210 ] == 1)
                 log.trace("[%s] remove_individual [%s] uri = %s", name, uri, res);
 
-//            stat(CMD.PUT, sw);
+//            stat(CMD_PUT, sw);
         }
     }
 
@@ -1331,7 +1304,6 @@ class PThreadContext : Context
                     }
                 }
 
-
                 if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
                 {
                     //log.trace("[%s] ++ store_individual, prev_indv: %s", name, prev_indv);
@@ -1351,7 +1323,7 @@ class PThreadContext : Context
                     return res;
                 }
 
-                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, indv.uri, prev_state, new_state, event_id, ignore_freeze,
+                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, event_id, ignore_freeze,
                                                 res.op_id);
                 //log.trace("res.result=%s", res.result);
 
@@ -1371,7 +1343,7 @@ class PThreadContext : Context
                         tid_acl = getTid(P_MODULE.acl_preparer);
                         if (tid_acl != Tid.init)
                         {
-                            send(tid_acl, CMD.PUT, ev, prev_state, new_state, res.op_id);
+                            send(tid_acl, CMD_PUT, ev, prev_state, new_state, res.op_id);
                         }
                     }
 
@@ -1413,7 +1385,7 @@ class PThreadContext : Context
             if (trace_msg[ T_API_240 ] == 1)
                 log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
 
-            stat(CMD.PUT, sw);
+            stat(CMD_PUT, sw);
         }
     }
 
@@ -1457,7 +1429,7 @@ class PThreadContext : Context
 //        {
 //            Tid tid = getTid(mid);
 //            if (tid != Tid.init)
-//                send(tid, CMD.SET_TRACE, idx, state);
+//                send(tid, CMD_SET_TRACE, idx, state);
 //        }
 
 //        veda.core.log_msg.set_trace(idx, state);
@@ -1499,7 +1471,7 @@ class PThreadContext : Context
                         else
                         {
                             Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                            send(tid_ticket_manager, CMD.BACKUP, backup_id, thisTid);
+                            send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
                             receive((string _res) { res = _res; });
                             if (res == "")
                                 result = false;
@@ -1553,7 +1525,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.freeze(P_MODULE.subject_manager);
+            storage_module.freeze(P_MODULE.subject_manager);
         }
     }
 
@@ -1561,7 +1533,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            veda.server.storage_manager.unfreeze(P_MODULE.subject_manager);
+            storage_module.unfreeze(P_MODULE.subject_manager);
         }
     }
 
@@ -1571,7 +1543,7 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            res = veda.server.storage_manager.find(P_MODULE.subject_manager, uri);
+            res = storage_module.find(P_MODULE.subject_manager, uri);
         }
         return res;
     }
@@ -1671,7 +1643,7 @@ class PThreadContext : Context
                 Tid tid = getTid(module_id);
                 if (tid != Tid.init)
                 {
-                    send(tid, CMD.NOP, thisTid);
+                    send(tid, CMD_NOP, thisTid);
                     //                receiveTimeout(1000.msecs, (bool res) {});
                     receive((bool res) {});
                 }

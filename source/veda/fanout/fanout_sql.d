@@ -3,11 +3,11 @@
  */
 module veda.fanout_sql;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import util.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools;
 private import veda.vmodule.vmodule;
 
@@ -15,9 +15,9 @@ void main(char[][] args)
 {
     process_name = "fanout-sql";
 
-    core.thread.Thread.sleep(dur!("seconds")(1));
+    Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout_sql, "127.0.0.1", 8091, new logger("veda-core-fanout-sql", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout_sql, "127.0.0.1", 8091, new Logger("veda-core-fanout-sql", "log", ""));
 
     p_fanout.run();
 }
@@ -27,7 +27,7 @@ class FanoutProcess : VedaModule
     Mysql      mysql_conn;
     string     database_name;	
 
-    this(P_MODULE _module_name, string _host, ushort _port, logger log)
+    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
     {
         super(_module_name, _host, _port, log);
     }

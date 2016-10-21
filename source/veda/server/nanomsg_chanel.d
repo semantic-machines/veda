@@ -4,13 +4,13 @@ import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.co
 import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.onto.onto, veda.core.impl.thread_context;
 import kaleidic.nanomsg.nano;
 
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
+// ////// Logger ///////////////////////////////////////////
+import veda.common.logger;
+Logger _log;
+Logger log()
 {
     if (_log is null)
-        _log = new logger("veda-core-server", "log", "N-CHANEL");
+        _log = new Logger("veda-core-server", "log", "N-CHANEL");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

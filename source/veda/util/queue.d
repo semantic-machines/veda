@@ -1,18 +1,8 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format;
 import veda.common.type, veda.core.common.define, veda.util.tools;
-
-// ////// logger ///////////////////////////////////////////
-import util.logger;
-logger _log;
-logger log()
-{
-    if (_log is null)
-        _log = new logger("veda-core-" ~ process_name, "log", "QUEUE");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
+import veda.common.logger;
 
 enum QMessageType
 {
@@ -103,6 +93,7 @@ ubyte[ 4 ] crc;
 
 class Consumer
 {
+    Logger  log;
     bool    isReady;
     Queue   queue;
     string  name;
@@ -119,10 +110,11 @@ class Consumer
     Header header;
     CRC32  hash;
 
-    this(Queue _queue, string _name)
+    this(Queue _queue, string _name, Logger _log)
     {
         queue = _queue;
         name  = _name;
+        log   = _log;
     }
 
     public bool open()
@@ -328,6 +320,7 @@ class Consumer
 
 class Queue
 {
+    Logger log;
     bool   isReady;
     string name;
     int    chunk;
@@ -348,8 +341,9 @@ class Queue
     Header header;
     CRC32  hash;
 
-    this(string _name, Mode _mode)
+    this(string _name, Mode _mode, Logger _log)
     {
+        log         = _log;
         mode        = _mode;
         name        = _name;
         isReady     = false;
@@ -415,7 +409,6 @@ class Queue
                 ff_info_push_r = new File(file_name_info_push, "r");
                 ff_queue_r     = new File(file_name_queue, "r");
 
-
                 if (mode == Mode.RW && ff_info_push_w !is null && ff_info_push_r !is null && ff_queue_w !is null && ff_queue_r !is null ||
                     mode == Mode.R && ff_info_push_r !is null && ff_queue_r !is null
                     )
@@ -443,7 +436,7 @@ class Queue
         return isReady;
     }
 
-    public void remove_lock()
+    private void remove_lock()
     {
         if (mode == Mode.R)
             return;
@@ -451,6 +444,7 @@ class Queue
         try
         {
             std.file.remove(file_name_queue ~ ".lock");
+            log.trace("queue:remove lock file %s", file_name_queue ~ ".lock");
         }
         catch (Throwable tr)
         {
@@ -471,7 +465,7 @@ class Queue
                 flush();
                 ff_info_push_w.close();
                 ff_queue_w.close();
-                std.file.remove(file_name_queue ~ ".lock");
+                remove_lock();
             }
             isReady = false;
         }
@@ -485,7 +479,7 @@ class Queue
         ff_info_push_w.seek(0);
 
         auto writer = appender!string();
-        std.format.formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
+        formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
 
         hash.start();
         hash.put(cast(ubyte[])writer.data);
@@ -590,9 +584,9 @@ class Queue
 
 unittest
 {
-    veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1");
+    veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1", new Logger("test", "log", "QUEUE"));
     queue.open(Mode.RW);
-    veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1");
+    veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1", new Logger("test", "log", "QUEUE"));
     cs.open();
 
     if (level == 0)

@@ -1,7 +1,7 @@
 module veda.util.module_info;
 
 import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
-import veda.core.common.define, util.logger;
+import veda.core.common.define, veda.common.logger;
 
 public struct MInfo
 {
@@ -25,42 +25,97 @@ class ModuleInfoFile
     private File      *ff_module_info_w = null;
     private File      *ff_module_info_r = null;
     private string    module_name;
-    private logger    log;
+    private Logger    log;
     private bool      is_writer_open = false;
     private bool      is_reader_open = false;
     private ubyte[]   buff;
     private OPEN_MODE mode;
+    private bool      _is_ready;
 
-    this(string _module_name, logger _log, OPEN_MODE _mode)
+    this(string _module_name, Logger _log, OPEN_MODE _mode)
     {
         module_name    = _module_name;
         fn_module_info = module_info_path ~ "/" ~ module_name ~ "_info";
         log            = _log;
         mode           = _mode;
+
+        _is_ready = true;
+
+        if (mode == OPEN_MODE.WRITER || mode == OPEN_MODE.READER_WRITER)
+        {
+            if (exists(fn_module_info ~ ".lock"))
+            {
+                log.trace("Veda not started: component [%s] already open, or not deleted lock file", fn_module_info);
+                _is_ready = false;
+            }
+        }
     }
 
     ~this()
     {
-        ff_module_info_w.flush();
-        ff_module_info_w.close();
+        close();
     }
 
-    private void open_writer()
+	public static bool is_lock (string _module_name)
+	{
+	    return (exists(module_info_path ~ "/" ~ _module_name ~ "_info.lock"));		
+	}
+
+    bool is_ready()
+    {
+        return _is_ready;
+    }
+
+    private bool open_writer()
+    {
+        if (mode != OPEN_MODE.WRITER && mode != OPEN_MODE.READER_WRITER)
+            return false;
+
+        try
+        {
+            std.file.write(fn_module_info ~ ".lock", "0");
+
+            if (exists(fn_module_info) == false)
+                ff_module_info_w = new File(fn_module_info, "w");
+            else
+                ff_module_info_w = new File(fn_module_info, "r+");
+            is_writer_open = true;
+
+            return true;
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR! ModuleInfoFile:open_reader, %s", tr.msg);
+        }
+
+        return false;
+    }
+
+    private void remove_lock()
     {
         if (mode != OPEN_MODE.WRITER && mode != OPEN_MODE.READER_WRITER)
             return;
 
         try
         {
-            if (exists(fn_module_info) == false)
-                ff_module_info_w = new File(fn_module_info, "w");
-            else
-                ff_module_info_w = new File(fn_module_info, "r+");
-            is_writer_open = true;
+            std.file.remove(fn_module_info ~ ".lock");
+            log.trace("module_info:remove lock file %s", fn_module_info ~ ".lock");
         }
         catch (Throwable tr)
         {
-            log.trace("ERR! ModuleInfoFile:open_reader, %s", tr.msg);
+            log.trace("module_info:fail remove %s", tr.msg);
+        }
+    }
+
+    public void close()
+    {
+        if (mode == OPEN_MODE.READER)
+            ff_module_info_r.close();
+
+        if (mode == OPEN_MODE.READER_WRITER || mode == OPEN_MODE.WRITER)
+        {
+            ff_module_info_w.close();
+            remove_lock();
         }
     }
 
@@ -82,6 +137,9 @@ class ModuleInfoFile
 
     bool put_info(long op_id, long committed_op_id)
     {
+        if (!_is_ready)
+            return false;
+
         if (is_writer_open == false)
         {
             open_writer();
