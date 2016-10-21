@@ -256,31 +256,37 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // Buttons handlers
     // Edit
     $edit.on("click", function (e) {
+      e.preventDefault();
       template.trigger("edit");
     });
 
     // Save
     $save.on("click", function (e) {
+      e.preventDefault();
       template.trigger("save");
     });
 
     // Draft
     $draft.on("click", function (e) {
+      e.preventDefault();
       template.trigger("draft");
     });
 
     // Show rights
     $showRights.on("click", function (e) {
+      e.preventDefault();
       template.trigger("showRights");
     });
 
     //  Cancel
     $cancel.on("click", function (e) {
+      e.preventDefault();
       template.trigger("cancel");
     });
 
     //  Delete
     $delete.on("click", function (e) {
+      e.preventDefault();
       if ( confirm("Вы действительно хотите удалить документ?") ) { template.trigger("delete"); }
     });
     if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
