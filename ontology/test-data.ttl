@@ -220,19 +220,33 @@ td:Membership_4
   rdfs:label "Членство_4"@ru ;
 .
 
-td:Membership_5_su
+td:Membership_50_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource td:RomanKarpov ;
-  rdfs:label "Membership_5"@en ;
-  rdfs:label "Членство_5"@ru ;
+  rdfs:label "Membership_50"@en ;
+  rdfs:label "Членство_50"@ru ;
 .
-td:Membership_55_su
+td:Membership_51_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource td:AleksandraKhvostikova ;
-  rdfs:label "Membership_55"@en ;
-  rdfs:label "Членство_55"@ru ;
+  rdfs:label "Membership_51"@en ;
+  rdfs:label "Членство_51"@ru ;
+.
+td:Membership_52_su
+  rdf:type v-s:Membership ;
+  v-s:memberOf cfg:SuperUser ;
+  v-s:resource d:mondi_employee_00056698 ;
+  rdfs:label "Membership_52"@en ;
+  rdfs:label "Членство_52"@ru ;
+.
+td:Membership_53_su
+  rdf:type v-s:Membership ;
+  v-s:memberOf cfg:SuperUser ;
+  v-s:resource d:mondi_employee_00068722 ;
+  rdfs:label "Membership_53"@en ;
+  rdfs:label "Членство_53"@ru ;
 .
 td:Membership_6
   rdf:type v-s:Membership ;
