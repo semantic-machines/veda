@@ -248,6 +248,13 @@ td:Membership_53_su
   rdfs:label "Membership_53"@en ;
   rdfs:label "Членство_53"@ru ;
 .
+td:Membership_54_su
+  rdf:type v-s:Membership ;
+  v-s:memberOf cfg:SuperUser ;
+  v-s:resource d:mondi_employee_00061407 ;
+  rdfs:label "Membership_54"@en ;
+  rdfs:label "Членство_54"@ru ;
+.
 td:Membership_6
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
