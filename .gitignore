@@ -35,3 +35,6 @@ veda-bootstrap
 *.out
 /veda-ttlreader
 /backup-binlogs/
+/veda-fanout-email
+/veda-fanout-sql
+/veda-webserver
