@@ -400,11 +400,11 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
             }];
         }
 
-        journal_record['v-s:actor'] = [
-        {
-            data: user_uri,
-            type: _Uri
-        }];
+		var user = get_individual(ticket, user_uri);
+		
+		if (user['v-s:hasAppointment']) {
+	        journal_record['v-s:actor'] = user['v-s:hasAppointment']
+        }
 
         logToJournal(ticket, journal_uri, journal_record);
         addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
