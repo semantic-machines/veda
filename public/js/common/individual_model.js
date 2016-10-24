@@ -294,7 +294,7 @@ veda.Module(function (veda) { "use strict";
     self.trigger("individual:beforeSave");
     // Do not save individual to server if nothing changed
     if (self._.isSync) return;
-    if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
+    if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     Object.keys(self.properties).reduce(function (acc, property_uri) {
@@ -339,7 +339,7 @@ veda.Module(function (veda) { "use strict";
   proto.reset = function () {
     var self = this;
     self.trigger("individual:beforeReset");
-    if ( this.hasValue("v-s:isDraft") && this["v-s:isDraft"][0] == true ) {
+    if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     if (!this._.isNew) {
