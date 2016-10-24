@@ -47,25 +47,19 @@ class WSLink
 
     ushort                    port;
     string                    host;
+    Logger 					  log;
 
-    //string                    parent_url = "http://127.0.0.1:8080";
-
-    Logger log()
-    {
-        if (_log is null)
-            _log = new Logger("veda-core-" ~ process_name, "log", process_name);
-        return _log;
-    }
-
-    this(string _host, ushort _port)
+    this(string _host, ushort _port, Logger in_log)
     {
         port = _port;
         host = _host;
-        _log = new Logger("veda-core-" ~ process_name, "log", "PROCESS");
+        _log = in_log;
+        log  = in_log;
     }
 
     ~this()
     {
+    	//wsi
     }
 
     private void init_chanel()

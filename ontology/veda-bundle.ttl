@@ -89,6 +89,16 @@ v-s:Blanks
   rdfs:label "Бланки"@ru ;
   rdfs:label "Blanks"@en ;
 .
+v-s:Comments
+  rdf:type v-s:Bundle ;
+  rdfs:label "Комментарии"@ru ;
+  rdfs:label "Comments"@en ;
+.
+v-s:Reply
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ответить"@ru ;
+  rdfs:label "Reply"@en ;
+.
 v-s:Drafts
   rdf:type v-s:Bundle ;
   rdfs:label "Черновики"@ru ;

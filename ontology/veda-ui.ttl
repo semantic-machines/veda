@@ -628,24 +628,20 @@ v-ui:ImageAppointmentTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<div class="media" style="display:inline-block; max-width:250px; min-width:250px; height:60px; margin:0 20px 20px 0; padding:5px; border:1px solid #ddd; border-radius: 5px">
-  <div class="media-left">
-    <a href="#/@" about="@" rel="v-s:employee">
-        <div>
-          <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder" style="width:50px"></div>
-          <div class="no-image" style="width:50px">
-            <span class="glyphicon glyphicon-user" style="font-size:3em"></span>
-          </div>
-        </div>
-        <script>
-          individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-          //# sourceURL=v-ui:ImageAppointmentTemplate
-        </script>
-    </a>
-  </div>
-  <div class="media-body">
+<div class="panel panel-default" style="word-wrap:break-word;display:inline-block;margin:7px 7px 0 0;overflow:hidden; max-width:200px; height:125px">
+  <div class="panel-body" style="padding:7px;">
+    <div about="@" rel="v-s:employee">
+      <script>
+        individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
+        //# sourceURL=v-ui:ImageAppointmentTemplate_pre
+      </script>
+      <div style="width:50px">
+        <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+        <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
+      </div>
+    </div>
     <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong><br>
-    <span rel="v-s:occupation" data-template="v-ui:LabelTemplate"></span>
+    <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
   </div>
 </div>
 """ ;
@@ -797,7 +793,7 @@ v-ui:LabelTemplate
     }
     template.css({
       "display": "inline-block",
-      "margin": "0 7px 7px 0"
+      "margin-right": "7px"
     });
     //# sourceURL=v-ui:LabelTemplate
   </script>
@@ -1193,8 +1189,13 @@ v-ui:FileTemplate
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div style="word-wrap: break-word;" class="margin-sm">
-  <span id="icon" class="label label-primary"></span> <a href="/files/@"><span about="@" property="v-s:fileName"></span></a>
+<div class="panel panel-default" style="word-wrap:break-word; display: inline-block; margin:5px 5px 0 0; overflow: hidden"">
+  <div class="panel-body" style="padding:7px;">
+    <span id="icon" class="label label-primary"></span>
+    <a href="/files/@">
+      <span about="@" property="v-s:fileName"></span>
+    </a>
+  </div>
 </div>
 <script>
   var fn = individual["v-s:fileName"][0],

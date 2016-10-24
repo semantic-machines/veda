@@ -508,14 +508,7 @@ v-s:ProjectPhaseCost
   rdfs:label "Project phase costs"@en ;
   rdfs:label "Затраты на фазу проекта"@ru ;
 .
-# -- Может валюту назвать по другому и вообще сделать класс Деньги-сумма и валюта
-v-s:hasCurrencyKind
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Currency kind"@en ;
-  rdfs:label "Валюта"@ru ;
-  rdfs:range v-s:CurrencyKind ;
-  rdfs:domain v-s:ProjectPhaseCost ;
-.
+
 #--------------------------------------------------
 v-s:ProjectPhaseRisk
   rdf:type owl:Class ;

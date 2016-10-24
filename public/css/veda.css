@@ -34,6 +34,13 @@ body {
   border-bottom-color: #333333;
 }
 
+.media:first-child {
+  margin-top: 15px;
+}
+.media-heading {
+  margin-bottom: 0px;
+}
+
 em {
   margin: 20px 0px 10px 0px;
   font-weight: bold;

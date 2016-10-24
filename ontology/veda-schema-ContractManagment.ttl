@@ -62,6 +62,25 @@ v-s:PsAttachmentForInternalAccountingDocument
 .
 
 # ------------------------------------------------------------
+v-s:Price
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:label "Price"@en ;
+  rdfs:label "Стоимость"@ru ;
+.
+# v-s:cost
+# v-s:hasCurrencyKind
+
+# ------------------------------------------------------------
+v-s:ClassifierOKVED
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Classifier OKVED"@en ;
+  rdfs:label "Классификатор ОКВЭД"@ru ;
+.
+
+# ------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;

@@ -635,6 +635,13 @@ v-s:cost
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
+v-s:hasCurrencyKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Currency kind"@en ;
+  rdfs:label "Валюта"@ru ;
+  rdfs:range v-s:CurrencyKind ;
+  rdfs:domain v-s:Measurable ;
+.
 ### ------------------------------------------------------
 v-s:ClassifiedRus
   rdf:type owl:Class ;
