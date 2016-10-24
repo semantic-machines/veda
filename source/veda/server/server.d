@@ -59,7 +59,7 @@ void main(char[][] args)
 {
     process_name = "server";
 
-    VedaServer veda_server = new VedaServer("127.0.0.1", 8091);
+    VedaServer veda_server = new VedaServer("127.0.0.1", 8091, log);
     veda_server.init_core(null);
     g_context = veda_server.core_context;
 
@@ -115,11 +115,11 @@ class VedaServer : WSLink
     string  host;
     Context core_context;
 
-    this(string _host, ushort _port)
+    this(string _host, ushort _port, Logger log)
     {
         host = _host;
         port = _port;
-        super(host, port);
+        super(host, port, log);
     }
 
     Context init_core(string node_id)
