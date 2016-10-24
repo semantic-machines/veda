@@ -9,8 +9,11 @@
 	],
         "sourceFiles":[
     	    "../../veda/common/logger.d",
-    	    "../../veda/util/module_info.d",
+	    "../../veda/common/type.d",
 	    "../../veda/core/common/define.d",
+    	    "../../veda/util/module_info.d",
+    	    "../../veda/util/queue.d",
+    	    "../../veda/util/tools.d",
 	    "../../veda/util/container.d"
 	],
 	"configurations": [

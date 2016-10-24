@@ -74,6 +74,7 @@ private int[][ string ] get_processes_info(string[] command_patterns, ref Proces
 }
 
 import veda.util.module_info;
+import veda.util.queue;
 
 void main(char[][] args)
 {
@@ -90,14 +91,20 @@ void main(char[][] args)
 	
 	bool is_exist_lock = false;
 	
-        foreach (ml; wr_components)
-        {
+    foreach (ml; wr_components)
+    {
             if (ModuleInfoFile.is_lock (ml) == true)
             {
 	            writefln("Modile_info [%s] already open, or not deleted lock file", ml);
 	            is_exist_lock = true;	
             }	            
-        }
+    }
+    
+    if (Queue.is_lock ("individuals-flow"))
+    {
+	    writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
+	    is_exist_lock = true;
+    }    
         
     if (is_exist_lock)
 	    return;    
