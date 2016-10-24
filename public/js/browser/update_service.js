@@ -131,8 +131,8 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function openedHandler(event) {
-      if (connectTries >= 0) { veda.trigger("success", {status: "WS: Соединение восстановлено"}) }
-      //console.log("client: websocket opened");
+      //if (connectTries >= 0) { veda.trigger("success", {status: "WS: Соединение восстановлено"}) }
+      console.log("client: websocket opened");
       connectTries = -1;
       var msg = "ccus=" + veda.ticket;
       if (socket && socket.readyState === 1) {
@@ -154,8 +154,8 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     function closedHandler(event) {
       if (connectDelay * connectTries < maxConnectDelay) { connectTries++ }
-      veda.trigger("danger", {status: "WS: Соединение прервано"});
-      //console.log("client: websocket closed,", "re-connect in", Math.round(connectDelay * connectTries / 1000), "secs" );
+      //veda.trigger("danger", {status: "WS: Соединение прервано"});
+      console.log("client: websocket closed,", "re-connect in", Math.round(connectDelay * connectTries / 1000), "secs" );
       connectTimeout = setTimeout(function () {
         socket = initSocket();
       }, connectDelay * connectTries);
