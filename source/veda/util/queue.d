@@ -336,6 +336,7 @@ class Queue
 
     string file_name_info_push;
     string file_name_queue;
+    string file_name_lock;
 
     // tmp
     Header header;
@@ -352,6 +353,7 @@ class Queue
 
         file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
         file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+		file_name_lock 		= queue_db_path ~ "/" ~ name ~ "_queue.lock";
     }
 
     ~this()
@@ -367,6 +369,11 @@ class Queue
         sink(", count_pushed=" ~ text(count_pushed));
 //      sink (", count_popped=" ~ text(count_popped));
     }
+
+	public static bool is_lock (string _queue_name)
+	{
+	    return (exists(queue_db_path ~ "/" ~ _queue_name ~ "_queue.lock"));		
+	}
 
     public void remove()
     {
@@ -388,12 +395,12 @@ class Queue
 
                 if (mode == Mode.RW)
                 {
-                    if (exists(file_name_queue ~ ".lock"))
+                    if (exists(file_name_lock))
                     {
                         log.trace("Queue [%s] already open, or not deleted lock file", name);
                         return false;
                     }
-                    std.file.write(file_name_queue ~ ".lock", "0");
+                    std.file.write(file_name_lock, "0");
 
                     if (exists(file_name_info_push) == false)
                         ff_info_push_w = new File(file_name_info_push, "w");
@@ -443,8 +450,8 @@ class Queue
 
         try
         {
-            std.file.remove(file_name_queue ~ ".lock");
-            log.trace("queue:remove lock file %s", file_name_queue ~ ".lock");
+            std.file.remove(file_name_lock);
+            log.trace("queue:remove lock file %s", file_name_lock);
         }
         catch (Throwable tr)
         {
@@ -572,7 +579,10 @@ class Queue
     public void push(string msg, QMessageType type = QMessageType.STRING)
     {
         if (!isReady || mode == Mode.R)
+        {	
+        	log.trace ("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text (isReady), text (mode));
             return;
+        }    
 
         count_pushed++;
         put_msg(msg, type);

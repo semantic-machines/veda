@@ -1203,7 +1203,6 @@ function prepare_start_form(ticket, document)
     var journalRecord = {
         '@': jrId,
         'rdf:type': newUri('v-s:ProcessStarted'),
-        'v-s:actor': newUri(author_uri),
         'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
         'v-wf:onProcess': newUri(new_process_uri),
         'v-s:onDocument': processedDocument,
@@ -1213,6 +1212,12 @@ function prepare_start_form(ticket, document)
             type: _Datetime
         }]
     };
+    
+    var user = get_individual(ticket, author_uri);    
+    if (user['v-s:hasAppointment']) {
+        journalRecord['v-s:actor'] = user['v-s:hasAppointment']
+    }
+
     put_individual(ticket, journalRecord, _event_id);
 
     var membership = {

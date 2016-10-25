@@ -1615,7 +1615,7 @@ class PThreadContext : Context
                 this.reopen_ro_fulltext_indexer_db();
         }
 
-//        log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);
+        log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);
 
         return res;
     }

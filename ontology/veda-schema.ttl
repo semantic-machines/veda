@@ -314,8 +314,9 @@ v-s:actor
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted ;
   rdfs:label "Действующее лицо"@ru ;
-  rdfs:range v-s:Person ;
+  rdfs:range v-s:Appointment  ;
 .
+
 v-s:documentVersion
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted ;
