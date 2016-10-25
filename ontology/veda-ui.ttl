@@ -618,12 +618,6 @@ v-ui:LinkTemplate
 
 #--------------------- Comments template ---------------------
 
-v-ui:LeaveComment
-  rdf:type v-s:Bundle ;
-  rdfs:label "Commment"@en ;
-  rdfs:label "Комментировать"@ru ;
-.
-
 v-ui:CommentsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Template for comments rendering"@en ;
@@ -635,7 +629,7 @@ v-ui:CommentsTemplate
   <div about="@" rel="v-s:hasComment" data-template="v-ui:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
   <br>
-  <button class="btn btn-info" id="add-comment" about="v-ui:LeaveComment" property="rdfs:label"></button>
+  <button class="btn btn-info" id="add-comment" about="v-s:LeaveComment" property="rdfs:label"></button>
 </div>
 <script>
   var cntr = $("#new-comment", template);
