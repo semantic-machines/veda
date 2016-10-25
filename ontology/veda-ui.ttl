@@ -741,7 +741,6 @@ v-ui:RecursiveCommentTemplate
     <div about="@" rel="v-s:employee">
       <script>
         individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-        //# sourceURL=v-ui:ImageAppointmentTemplate_pre
       </script>
       <div style="width:50px;">
         <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
