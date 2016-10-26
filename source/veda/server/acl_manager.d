@@ -98,13 +98,13 @@ void acl_manager(string thread_name, string db_path)
             });
 
     ModuleInfoFile module_info = new ModuleInfoFile(thread_name, _log, OPEN_MODE.WRITER);
-	if (!module_info.is_ready)
-	{
-		log.trace ("thread [%s] terminated", process_name);
-		return;
-	}
-		
-    bool           is_exit = false;
+    if (!module_info.is_ready)
+    {
+        log.trace("thread [%s] terminated", process_name);
+        return;
+    }
+
+    bool is_exit = false;
 
     while (is_exit == false)
     {
@@ -227,6 +227,6 @@ void acl_manager(string thread_name, string db_path)
             log.trace("acl manager# ERR! LINE:[%s], FILE:[%s], MSG:[%s]", ex.line, ex.file, ex.msg);
         }
     }
-    
+
     module_info.close();
 }

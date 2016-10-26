@@ -12,6 +12,8 @@ private
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
+    import veda.bind.libwebsocketd;
+    import veda.server.wslink;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -204,6 +206,7 @@ public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, ou
     return rc;
 }
 
+
 public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
 {
     Queue                        individual_queue;
@@ -256,11 +259,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
         bool   is_exit   = false;
         module_info = new ModuleInfoFile(text(storage_id), _log, OPEN_MODE.WRITER);
 
-		if (!module_info.is_ready)
-		{
-			log.trace ("thread [%s] terminated", process_name);
-			return;
-		}		
+        if (!module_info.is_ready)
+        {
+            log.trace("thread [%s] terminated", process_name);
+            return;
+        }
 
         while (is_exit == false)
         {
@@ -396,28 +399,38 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 if (cmd == INDV_OP.PUT)
                                 {
                                     string new_hash;
-                                    //log.trace ("storage_manager:PUT %s", indv_uri);
+                                    log.trace ("storage_manager:PUT %s", indv_uri);
+                                    writeln ("@1");
                                     if (storage.update_or_create(indv_uri, new_state, op_id, new_hash) == 0)
                                     {
+                                    writeln ("@2");
                                         rc = ResultCode.OK;
                                         op_id++;
                                         set_subject_manager_op_id(op_id);
                                     }
                                     else
                                     {
+                                    writeln ("@3");
                                         rc = ResultCode.Fail_Store;
                                     }
 
+                                    writeln ("@4");
                                     send(tid_response_reciever, rc, thisTid);
 
+                                    writeln ("@5");
                                     if (rc == ResultCode.OK)
                                     {
+                                    writeln ("@6");
+                                    	
                                         module_info.put_info(op_id, committed_op_id);
+                                    writeln ("@6.1");
 
                                         bin_log_name = write_in_binlog(new_state, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
+                                    writeln ("@6.2 storage_id=", storage_id);
 
                                         if (storage_id == P_MODULE.subject_manager)
                                         {
+                                    writeln ("@6.3");
                                             Individual imm;
                                             imm.uri = text(op_id);
                                             imm.addResource("cmd", Resource(cmd));
@@ -435,16 +448,23 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             imm.addResource("op_id", Resource(op_id));
 
-                                            //writeln ("*imm=[", imm, "]");
+                                            writeln ("*imm=[", imm, "]");
 
+                                    writeln ("@6.4");
                                             string cbor = individual2cbor(&imm);
                                             //writeln("*cbor.length=", cbor.length);
 
+                                    writeln ("@6.5");
                                             individual_queue.push(cbor);
                                             string msg_to_modules = indv_uri ~ ";" ~ text(op_id) ~ "\0";
                                             int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);
 //                                            log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_chanel_url);
+
+                                            Tid tid_ccus_chanel = getTid(P_MODULE.ccus_chanel);
+                                            if (tid_ccus_chanel !is Tid.init)
+                                                send(tid_ccus_chanel, msg_to_modules);
                                         }
+                                    writeln ("@e");
                                     }
 
                                     return;

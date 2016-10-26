@@ -699,6 +699,9 @@ private Task wsc_server_task;
 
 void handleWebSocketConnection(scope WebSocket socket)
 {
+    const(HTTPServerRequest)hsr = socket.request();
+    log.trace("WS spawn socket connection [%s]", text(hsr.clientAddress));
+
     string module_name;
 
     try
@@ -777,7 +780,7 @@ public void set_updated_uid(string uid, long opid, long update_counter)
 {
     synchronized (_mutex)
     {
-        //log.trace("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
+        log.trace("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
         if ((uid in _info_2_uid) !is null)
             _info_2_uid[ uid ] = UidInfo(update_counter, opid);
 
@@ -813,8 +816,7 @@ public long get_last_opid()
 void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
-
-    log.trace("spawn socket connection [%s]", text(hsr.clientAddress));
+    log.trace("CCUS spawn socket connection [%s]", text(hsr.clientAddress));
 
     // Client Cache Update Subscription
     string chid;
@@ -876,13 +878,19 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 break;
 
             string   inital_message = socket.receiveText();
+            writefln ("WEBSERVER:CCUS:inital_message[%s]", inital_message);
+            socket.send("Ok");
+            
             string[] kv             = inital_message.split('=');
 
+            writeln ("WEBSERVER:CCUS:kv=", kv);
             if (kv.length == 2)
             {
                 if (kv[ 0 ] == "ccus")
                 {
                     chid = kv[ 1 ];
+                    
+            writeln ("WEBSERVER:CCUS:chid=", chid);
 
                     log.trace("init chanel [%s]", chid);
                     //task_2_client[hsr.clientAddress] = Task.getThis();
@@ -903,12 +911,20 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                     string msg_from_sock = null;
 
+					//writeln ("WEBSERVER:CCUS:waitForData chid=", chid);
                     if (socket.waitForData(dur!("msecs")(1000)) == true)
                         msg_from_sock = socket.receiveText();
 
                     if (msg_from_sock !is null && msg_from_sock.length > 0)
                     {
-                        if (msg_from_sock[ 0 ] == '=')
+                    	writefln ("WEBSERVER CCUS:msg[%s]", msg_from_sock);                    	
+                        if (msg_from_sock[ 0 ] == '#' && msg_from_sock.length > 3) // server уведомляет об изменении индивида
+                        {
+                        	string update_indv_uri = msg_from_sock[1..$];
+                        	writefln ("server уведомляет об изменении индивида %s", update_indv_uri);
+                        	socket.send("Ok");
+                        }
+                        else if (msg_from_sock[ 0 ] == '=')
                         {
                             string res = get_list_of_subscribe();
 

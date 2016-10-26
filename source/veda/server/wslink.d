@@ -38,23 +38,28 @@ shared static this()
 {
     bsd_signal(SIGINT, &handleTermination1);
 }
-class WSLink
+
+class WSClient
 {
     lws_context               *ws_context;
     lws_context_creation_info info;
     lws                       *wsi;
     lws_protocols[]           protocol = new lws_protocols[ 2 ];
+    string 					  ws_path;			
 
     ushort                    port;
     string                    host;
     Logger 					  log;
+    string					  handshake;
 
-    this(string _host, ushort _port, Logger in_log)
+    this(string _host, ushort _port, string _ws_path, string _handshake, Logger in_log)
     {
+    	handshake = _handshake;
         port = _port;
         host = _host;
         _log = in_log;
         log  = in_log;
+        ws_path = _ws_path;
     }
 
     ~this()
@@ -79,8 +84,6 @@ class WSLink
 
         ws_context = lws_create_context(&info);
 
-        //writeln("[Main] context created.");
-
         if (ws_context is null)
         {
             log.trace("init_chanel: ws_context is NULL");
@@ -94,7 +97,7 @@ class WSLink
         i.address = i.host;
         i.port    = port;
         i.context = ws_context;
-        i.path    = "/ws\0";
+        i.path    = cast(char*)(ws_path ~ "\0");//"/ws\0";
 
         wsi = lws_client_connect_via_info(&i);
 
@@ -105,13 +108,14 @@ class WSLink
         }
 
         destroy_flag = 0;
-        log.trace("init_chanel: %s, is Ok", process_name);
+        log.trace("init_chanel: %s:%d%s, is Ok", host, port, ws_path);
     }
 
-    void listen(void function() _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws * wsi, char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+    void listen(void function(lws *wsi) _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws *wsi) _ev_LWS_CALLBACK_CLIENT_WRITEABLE, void function(lws * wsi, char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
         ev_LWS_CALLBACK_GET_THREAD_ID  = _ev_LWS_CALLBACK_GET_THREAD_ID;
         ev_LWS_CALLBACK_CLIENT_RECEIVE = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
+        ev_LWS_CALLBACK_CLIENT_WRITEABLE = _ev_LWS_CALLBACK_CLIENT_WRITEABLE;
 
         try
         {
@@ -133,10 +137,11 @@ class WSLink
                     // send module name
                     if (connection_flag && f1 == false)
                     {
-                        websocket_write_back(wsi, "module-name=" ~ process_name);
+                        websocket_write(wsi, handshake);
                         lws_callback_on_writable(wsi);
                         f1 = true;
                     }
+                    ev_LWS_CALLBACK_GET_THREAD_ID (wsi);
                 }
 
                 log.trace("DISCONNECT");
@@ -154,10 +159,11 @@ class WSLink
     }
 }
 
-void function() ev_LWS_CALLBACK_GET_THREAD_ID;
+void function(lws *wsi) ev_LWS_CALLBACK_GET_THREAD_ID;
+void function(lws *wsi) ev_LWS_CALLBACK_CLIENT_WRITEABLE;
 void function(lws *wsi, char[] msg, ResultCode rc) ev_LWS_CALLBACK_CLIENT_RECEIVE;
 
-public int websocket_write_back(lws *wsi_in, string str)
+public int websocket_write(lws *wsi_in, string str)
 {
     if (str is null)
         return -1;
@@ -174,7 +180,7 @@ public int websocket_write_back(lws *wsi_in, string str)
     //* write out*/
     n = lws_write(wsi_in, cast(ubyte *)frame, len, lws_write_protocol.LWS_WRITE_TEXT);
 
-    //writeln("[websocket_write_back]", str, ", n=", n);
+    //writeln("[websocket_write]", str, ", n=", n);
 
     return n;
 }
@@ -190,7 +196,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
     switch (reason)
     {
     case lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID:
-        ev_LWS_CALLBACK_GET_THREAD_ID();
+        //ev_LWS_CALLBACK_GET_THREAD_ID(wsi);
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
@@ -205,7 +211,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLOSED:
-        //writeln("[CP] LWS_CALLBACK_CLOSED");
+        writeln("[CP] LWS_CALLBACK_CLOSED");
         destroy_flag    = 1;
         connection_flag = 0;
         break;
@@ -231,9 +237,11 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:
-        //writeln("[CP] On writeable is called.");
-        //websocket_write_back(wsi, "test msg-count=" ~ text(msg_count));
-        //msg_count++;
+        //writefln("[%s:%d%s] On writeable is called.", host, port, ws_path);
+        //websocket_write(wsi, "test msg-count=" ~ text(msg_count));
+        //msg_count++;               
+         ev_LWS_CALLBACK_CLIENT_WRITEABLE(wsi);
+        
         writeable_flag = 1;
         break;
 

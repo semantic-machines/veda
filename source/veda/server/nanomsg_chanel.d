@@ -48,7 +48,7 @@ void nanomsg_chanel(string thread_name)
                     send(tid_response_reciever, true);
                 });
 
-        while (1)
+        while (true)
         {
             try
             {

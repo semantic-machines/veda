@@ -56,6 +56,8 @@ public enum P_MODULE : byte
     webserver                  = 15,
 
     n_chanel                   = 16,
+    
+    ccus_chanel				   = 17,	
 
     nop                        = 99
 }
