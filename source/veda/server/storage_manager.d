@@ -274,7 +274,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         {
                             if (cmd == CMD_COMMIT)
                             {
-                                string msg = "COMMIT:" ~ text(f_module);
+                                string msg = "CMD:COMMIT:" ~ text(f_module);
                                 int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
                                 log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_channel_url, wait_op_id);
                             }

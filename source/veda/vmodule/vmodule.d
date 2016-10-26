@@ -160,7 +160,7 @@ class VedaModule // : WSLink
             {
                 while (f_listen_exit != true)
                 {
-                    ev_LWS_CALLBACK_GET_THREAD_ID();
+                    ev_CALLBACK_GET_THREAD_ID();
                     thread_id();
                 }
             }
@@ -307,8 +307,7 @@ class VedaModule // : WSLink
         set_global_systicket(sticket);
     }
 
-
-    void ev_LWS_CALLBACK_GET_THREAD_ID()
+    void ev_CALLBACK_GET_THREAD_ID()
     {
         //g_child_process.thread_id();
         if (last_committed_op_id < committed_op_id)
@@ -337,9 +336,9 @@ class VedaModule // : WSLink
 
                 //log.trace("CLIENT (%s): RECEIVED %s", process_name, msg);
 
-                if (msg.indexOf("COMMIT:") >= 0)
+                if (msg.length > 4 && msg.indexOf("CMD:") >= 0)
                 {
-                    receive_msg(msg);
+                    receive_msg(msg[4..$]);
                 }
                 else
                 {
