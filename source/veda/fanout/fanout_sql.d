@@ -56,6 +56,7 @@ class FanoutProcess : VedaModule
 
     override void receive_msg(string msg)
     {
+    	log.trace ("recieve msg:  [%s]", msg);
     }
 
     override Context create_context()

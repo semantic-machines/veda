@@ -71,6 +71,7 @@ class VedaModule // : WSLink
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
     P_MODULE       module_name;
+    string		   message_header;	
 
     Logger log;
 
@@ -78,6 +79,7 @@ class VedaModule // : WSLink
     {
         process_name = text(_module_name);
         module_name  = _module_name;
+        message_header = "MSG:" ~ text (module_name) ~ ":"; 
         port         = _port;
         host         = _host;
         _log         = in_log;
@@ -336,9 +338,9 @@ class VedaModule // : WSLink
 
                 //log.trace("CLIENT (%s): RECEIVED %s", process_name, msg);
 
-                if (msg.length > 4 && msg.indexOf("CMD:") >= 0)
+                if (msg.length > message_header.length + 1 && msg.indexOf(message_header) >= 0)
                 {
-                    receive_msg(msg[4..$]);
+                    receive_msg(msg[(message_header.length + 1)..$]);
                 }
                 else
                 {
