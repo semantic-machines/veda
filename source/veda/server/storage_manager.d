@@ -399,7 +399,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 if (cmd == INDV_OP.PUT)
                                 {
                                     string new_hash;
-                                    log.trace ("storage_manager:PUT %s", indv_uri);
+                                    //log.trace ("storage_manager:PUT %s", indv_uri);
                                     if (storage.update_or_create(indv_uri, new_state, op_id, new_hash) == 0)
                                     {
                                         rc = ResultCode.OK;

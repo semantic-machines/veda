@@ -780,7 +780,7 @@ public void set_updated_uid(string uid, long opid, long update_counter)
 {
     synchronized (_mutex)
     {
-        log.trace("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
+        //log.trace("set_updated_uid (uid=%s, opid=%d, update_counter=%d)", uid, opid, update_counter);
         if ((uid in _info_2_uid) !is null)
             _info_2_uid[ uid ] = UidInfo(update_counter, opid);
 
@@ -919,7 +919,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         		long update_counter = to!long(msg_parts[1]);
                         		long opid = to!long(msg_parts[2]);
                         		set_updated_uid(uid, opid, update_counter);
-	                        	writefln ("server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", uid, opid, update_counter);
+	                        	//log.trace ("server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", uid, opid, update_counter);
 	                        	socket.send("Ok");
                         	}
                         	else
@@ -1003,11 +1003,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
-	                    log.trace ("last_check_opid(%d) < last_opid(%d)", last_check_opid, last_opid);
+	                    //log.trace ("last_check_opid(%d) < last_opid(%d)", last_check_opid, last_opid);
                         string res = get_list_of_changes();
                         if (res !is null)
                         {
-                        	log.trace ("send list of change, res=%s", res);
+                        	//log.trace ("send list of change, res=%s", res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
