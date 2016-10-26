@@ -120,6 +120,27 @@ public string backup(P_MODULE storage_id)
     return backup_id;
 }
 
+public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
+{
+    ResultCode rc;
+    Tid        tid = getTid(f_module);
+
+    if (tid != Tid.init)
+    {
+        if (is_wait == false)
+        {
+            send(tid, CMD_MSG, msg);
+        }
+        else
+        {
+            send(tid, CMD_MSG, msg, thisTid);
+            receive((bool isReady) {});
+        }
+        rc = ResultCode.OK;
+    }
+    return rc;
+}
+
 public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
 {
     ResultCode rc;
@@ -270,6 +291,15 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             try
             {
                 receive(
+                        (byte cmd, P_MODULE f_module, string _msg, long wait_op_id)
+                        {
+                            if (cmd == CMD_COMMIT)
+                            {
+                                string msg = "MSG:" ~ text(f_module) ~ ":" ~ _msg;
+                                int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
+                                log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_channel_url, wait_op_id);
+                            }
+                        },
                         (byte cmd, P_MODULE f_module, long wait_op_id)
                         {
                             if (cmd == CMD_COMMIT)

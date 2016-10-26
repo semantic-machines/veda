@@ -113,6 +113,8 @@ byte CMD_AUTHORIZE    = 8;
     /// Коммит
 byte CMD_COMMIT       = 16;
 
+byte CMD_MSG      	  = 17;
+
     /// Конец данных
 byte CMD_END_DATA     = 32;
 

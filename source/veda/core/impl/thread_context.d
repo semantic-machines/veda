@@ -1793,6 +1793,19 @@ class PThreadContext : Context
                 res[ "result" ] = ResultCode.OK;
                 res[ "op_id" ]  = -1;
             }
+            else if (sfn == "send_to_module")
+            {
+                P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
+                string       msg  = jsn[ "msg" ].str;
+
+                ResultCode rc;
+
+                storage_module.msg_to_module(f_module_id, msg, false);
+
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.OK;
+                res[ "op_id" ]  = -1;
+            }
             else if (sfn == "backup")
             {
                 bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;

@@ -84,6 +84,9 @@ interface VedaStorageRest_API {
     @path("get_operation_state") @method(HTTPMethod.GET)
     long get_operation_state(int module_id, long wait_op_id);
 
+    @path("send_to_module") @method(HTTPMethod.GET)
+    void send_to_module(int module_id, string msg);
+
     @path("flush") @method(HTTPMethod.GET)
     void flush(int module_id, long wait_op_id);
 
@@ -369,6 +372,26 @@ class VedaStorageRest : VedaStorageRest_API
 
         //log.trace ("REST:get_operation_state #e");
         return res;
+    }
+
+    void send_to_module(int module_id, string msg)
+    {
+        long     res = -1;
+
+        OpResult op_res;
+
+        Json     jreq = Json.emptyObject;
+
+        jreq[ "function" ]   = "sent_to_module";
+        jreq[ "module_id" ]  = module_id;
+        jreq[ "msg" ] = msg;
+
+        vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
+        vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
+
+        //log.trace("send:flush #e");
+        if (op_res.result != ResultCode.OK)
+            throw new HTTPStatusException(op_res.result, text (op_res.result));    	
     }
 
     void flush(int module_id, long wait_op_id)
