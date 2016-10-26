@@ -16,7 +16,7 @@ Logger log()
 // ////// ////// ///////////////////////////////////////////
 
 long     recv_wait_dur = 100_000_000;
-WSClient ccus_chanel;
+WSClient ccus_channel;
 
 void ev_LWS_CALLBACK_CLIENT_WRITEABLE(lws *wsi)
 {
@@ -27,9 +27,8 @@ void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
     receiveTimeout(msecs(recv_wait_dur),
                    (string signal)
                    {
-//                              writefln ("signal_to_ccus: recv:%s", signal);
-                       string send_signal = "#" ~ signal;
-                       int n = websocket_write(wsi, send_signal);
+                       //writefln ("signal_to_ccus: recv:%s", signal);
+                       int n = websocket_write(wsi, signal);
 
                        //writefln ("signal_to_ccus: send:%s, n=%d", send_signal, n);
                        //lws_callback_on_writable(wsi);
@@ -41,9 +40,9 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 {
 }
 
-void signal_to_ccus_chanel(string thread_name)
+void signal_to_ccus_channel(string thread_name)
 {
-    ccus_chanel = new WSClient("127.0.0.1", 8088, "/ccus", "ccus=server2ccus", log);
+    ccus_channel = new WSClient("127.0.0.1", 8088, "/ccus", "ccus=server2ccus", log);
 
     // SEND ready
     receive((Tid tid_response_reciever)
@@ -51,5 +50,5 @@ void signal_to_ccus_chanel(string thread_name)
                 send(tid_response_reciever, true);
             });
 
-    ccus_chanel.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
+    ccus_channel.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
 }

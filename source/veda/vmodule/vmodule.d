@@ -44,8 +44,8 @@ class VedaModule // : WSLink
     long   last_check_time;
 
     int    sock;
-    string notify_chanel_url     = "tcp://127.0.0.1:9111\0";
-    bool   already_notify_chanel = false;
+    string notify_channel_url     = "tcp://127.0.0.1:9111\0";
+    bool   already_notify_channel = false;
 
     Cache!(string, string) cache_of_indv;
 
@@ -146,17 +146,17 @@ class VedaModule // : WSLink
             if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, "".toStringz, 0) < 0)
                 log.trace("ERR! cannot set scoket options NN_SUB_SUBSCRIBE");
 
-            if (nn_connect(sock, cast(char *)notify_chanel_url) >= 0)
+            if (nn_connect(sock, cast(char *)notify_channel_url) >= 0)
             {
-                already_notify_chanel = true;
-                log.trace("success connect %s", notify_chanel_url);
+                already_notify_channel = true;
+                log.trace("success connect %s", notify_channel_url);
             }
             else
-                log.trace("ERR! cannot connect socket to %s", notify_chanel_url);
+                log.trace("ERR! cannot connect socket to %s", notify_channel_url);
 
 
             //listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
-            if (already_notify_chanel)
+            if (already_notify_channel)
             {
                 while (f_listen_exit != true)
                 {
@@ -325,7 +325,7 @@ class VedaModule // : WSLink
             prepare_queue();
         }
 
-        if (already_notify_chanel)
+        if (already_notify_channel)
         {
             char *buf  = cast(char *)0;
             int  bytes = nn_recv(sock, &buf, NN_MSG, 0, /*NN_DONTWAIT*/);

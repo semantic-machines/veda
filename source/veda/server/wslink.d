@@ -67,7 +67,7 @@ class WSClient
     	//wsi
     }
 
-    private void init_chanel()
+    private void init_channel()
     {
         protocol[ 0 ].name                  = "veda-module-protocol\0";
         protocol[ 0 ].callback              = &ws_service_callback;
@@ -86,7 +86,7 @@ class WSClient
 
         if (ws_context is null)
         {
-            log.trace("init_chanel: ws_context is NULL");
+            log.trace("init_channel: ws_context is NULL");
             return;
         }
 
@@ -103,12 +103,12 @@ class WSClient
 
         if (wsi is null)
         {
-            log.trace("init_chanel: wsi create error.");
+            log.trace("init_channel: wsi create error.");
             return;
         }
 
         destroy_flag = 0;
-        log.trace("init_chanel: %s:%d%s, is Ok", host, port, ws_path);
+        log.trace("init_channel: %s:%d%s, is Ok", host, port, ws_path);
     }
 
     void listen(void function(lws *wsi) _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws *wsi) _ev_LWS_CALLBACK_CLIENT_WRITEABLE, void function(lws * wsi, char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
@@ -127,7 +127,7 @@ class WSClient
                     break;
                 }
 
-                init_chanel();
+                init_channel();
 
                 bool f1 = false;
                 while (!destroy_flag)

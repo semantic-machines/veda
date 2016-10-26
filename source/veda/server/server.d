@@ -12,7 +12,7 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.util.individual8json, veda.common.logger,
            veda.core.util.utils;
-    import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_chanel, veda.server.signal_to_ccus;
+    import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_channel, veda.server.signal_to_ccus;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -168,11 +168,11 @@ class VedaServer : WSClient
             tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
             wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
 
-            tids[ P_MODULE.n_chanel ] = spawn(&nanomsg_chanel, text(P_MODULE.n_chanel));
-            wait_starting_thread(P_MODULE.n_chanel, tids);
+            tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
+            wait_starting_thread(P_MODULE.n_channel, tids);
 
-            tids[ P_MODULE.ccus_chanel ] = spawn(&signal_to_ccus_chanel, text(P_MODULE.ccus_chanel));
-            wait_starting_thread(P_MODULE.ccus_chanel, tids);
+            tids[ P_MODULE.ccus_channel ] = spawn(&signal_to_ccus_channel, text(P_MODULE.ccus_channel));
+            wait_starting_thread(P_MODULE.ccus_channel, tids);
 
             tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
                                                      tids[ P_MODULE.statistic_data_accumulator ]);

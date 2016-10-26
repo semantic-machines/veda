@@ -135,12 +135,12 @@ class PThreadContext : Context
                 int  bytes;
 
                 bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                //log.trace("N_CHANEL send (%s)", req);
+                //log.trace("N_CHANNEL send (%s)", req);
                 bytes = nn_recv(sock, &buf, NN_MSG, 0);
                 if (bytes > 0)
                 {
                     string rep = to!string(buf);
-                    //log.trace("N_CHANEL recv (%s)", rep);
+                    //log.trace("N_CHANNEL recv (%s)", rep);
 
                     JSONValue jres = parseJSON(rep);
 
@@ -155,7 +155,7 @@ class PThreadContext : Context
             }
             else
             {
-                log.trace("ERR! N_CHANEL: invalid socket");
+                log.trace("ERR! N_CHANNEL: invalid socket");
             }
 
             return res;
@@ -280,7 +280,7 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "400000");
 
                     long op_id;
-                    storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, null, false, op_id);
+                    storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -585,7 +585,7 @@ class PThreadContext : Context
         version (isServer)
         {
             long       op_id;
-            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_cbor, null, false, op_id);
+            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_cbor, -1, null, false, op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -1323,7 +1323,7 @@ class PThreadContext : Context
                     return res;
                 }
 
-                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, event_id, ignore_freeze,
+                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id, ignore_freeze,
                                                 res.op_id);
                 //log.trace("res.result=%s", res.result);
 

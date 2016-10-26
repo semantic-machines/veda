@@ -731,7 +731,7 @@ void handleWebSocketConnection(scope WebSocket socket)
 
             if (module_name !is null)
             {
-                log.trace("create chanel [%s]", module_name);
+                log.trace("create channel [%s]", module_name);
 
                 while (true)
                 {
@@ -759,10 +759,10 @@ void handleWebSocketConnection(scope WebSocket socket)
     }
     catch (Throwable tr)
     {
-        log.trace("ERR! on ws chanel [%s] ex=%s", module_name, tr.msg);
+        log.trace("ERR! on ws channel [%s] ex=%s", module_name, tr.msg);
     }
 
-    log.trace("ws chanel [%s] is closed", module_name);
+    log.trace("ws channel [%s] is closed", module_name);
 }
 
 /////////////////////////// CCUS WS
@@ -878,23 +878,15 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 break;
 
             string   inital_message = socket.receiveText();
-            writefln ("WEBSERVER:CCUS:inital_message[%s]", inital_message);
             socket.send("Ok");
             
             string[] kv             = inital_message.split('=');
-
-            writeln ("WEBSERVER:CCUS:kv=", kv);
             if (kv.length == 2)
             {
                 if (kv[ 0 ] == "ccus")
                 {
-                    chid = kv[ 1 ];
-                    
-            writeln ("WEBSERVER:CCUS:chid=", chid);
-
-                    log.trace("init chanel [%s]", chid);
-                    //task_2_client[hsr.clientAddress] = Task.getThis();
-                    //task_2_client ~= Task.getThis();
+                    chid = kv[ 1 ];                    
+                    log.trace("init channel [%s]", chid);
                 }
             }
 
@@ -917,12 +909,22 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                     if (msg_from_sock !is null && msg_from_sock.length > 0)
                     {
-                    	writefln ("WEBSERVER CCUS:msg[%s]", msg_from_sock);                    	
                         if (msg_from_sock[ 0 ] == '#' && msg_from_sock.length > 3) // server уведомляет об изменении индивида
                         {
-                        	string update_indv_uri = msg_from_sock[1..$];
-                        	writefln ("server уведомляет об изменении индивида %s", update_indv_uri);
-                        	socket.send("Ok");
+                        	string update_indv_msg = msg_from_sock[1..$];                        	
+                        	string[] msg_parts = update_indv_msg.split (';');
+                        	if (msg_parts.length == 3)
+                        	{ 
+                        		string uid = msg_parts[0];
+                        		long update_counter = to!long(msg_parts[1]);
+                        		long opid = to!long(msg_parts[2]);
+                        		set_updated_uid(uid, opid, update_counter);
+	                        	writefln ("server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", uid, opid, update_counter);
+	                        	socket.send("Ok");
+                        	}
+                        	else
+	                        	socket.send("Err:invalid message");
+	                        continue;	
                         }
                         else if (msg_from_sock[ 0 ] == '=')
                         {
@@ -997,14 +999,15 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         }
                     }
 
-                    //writefln ("@ last_check_opid=%d", last_check_opid);
+                    //log.trace ("last_check_opid=%d", last_check_opid);
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
+	                    log.trace ("last_check_opid(%d) < last_opid(%d)", last_check_opid, last_opid);
                         string res = get_list_of_changes();
                         if (res !is null)
                         {
-                        	//log.trace ("send list of change, res=%s", res);
+                        	log.trace ("send list of change, res=%s", res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
@@ -1015,11 +1018,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
     }
     catch (Throwable tr)
     {
-        log.trace("err on chanel [%s] ex=%s", chid, tr.msg);
+        log.trace("err on channel [%s] ex=%s", chid, tr.msg);
     }
 
     scope (exit)
     {
-        log.trace("chanel [%s] closed", chid);
+        log.trace("channel [%s] closed", chid);
     }
 }
