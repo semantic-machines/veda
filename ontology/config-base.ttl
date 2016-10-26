@@ -79,6 +79,7 @@ cfg:VedaSystemAccount
   v-s:owner cfg:VedaSystem ;
   rdfs:label "Veda System account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;
+  v-s:mailbox "DocFlow.Syktyvkar@mondigroup.com" ;
 .
 
 cfg:Administrator
@@ -400,10 +401,10 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
             }];
         }
 
-		var user = get_individual(ticket, user_uri);
-		
-		if (user['v-s:hasAppointment']) {
-	        journal_record['v-s:actor'] = user['v-s:hasAppointment']
+    var user = get_individual(ticket, user_uri);
+
+    if (user['v-s:hasAppointment']) {
+          journal_record['v-s:actor'] = user['v-s:hasAppointment']
         }
 
         logToJournal(ticket, journal_uri, journal_record);

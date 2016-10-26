@@ -1447,6 +1447,13 @@ s-wf:var_journal_initiator
   rdfs:label "Инициатор"@ru ;
 .
 
+s-wf:var_journal_comment
+  rdf:type v-wf:VarDefine ;
+  rdfs:isDefinedBy s-wf: ;
+  v-wf:varDefineName "rdfs:comment" ;
+  rdfs:label "Комментарий"@ru ;
+.
+
 s-wf:var_journal_msg
   rdf:type v-wf:VarDefine ;
   rdfs:isDefinedBy s-wf: ;
@@ -1836,6 +1843,13 @@ s-wf:map_jrn_msg_nc_t2_b_ev
   v-wf:mappingExpression "newUri ('v-wf:TaskGiven')" ;
 .
 
+s-wf:map_jrn_msg_nc_t2_comment
+  rdf:type v-wf:Mapping ;
+  rdfs:isDefinedBy s-wf: ;
+  v-wf:mapToVariable s-wf:var_journal_comment ;
+  v-wf:mappingExpression "process.getLocalVariable ('actor_task_comment')" ;
+.
+
 s-wf:map_jrn_msg_nce_t2_b
   rdf:type v-wf:Mapping ;
   rdfs:isDefinedBy s-wf: ;
@@ -2016,7 +2030,7 @@ s-wf:nc_t2
   v-wf:executor s-wf:def_exec_actor;
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_t2_sm5;
   rdfs:isDefinedBy s-wf: ;
-  v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
+  v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_msg_nc_t2_comment ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
 
