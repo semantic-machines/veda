@@ -30,7 +30,7 @@ void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
                        //writefln ("signal_to_ccus: recv:%s", signal);
                        int n = websocket_write(wsi, signal);
 
-                       //writefln ("signal_to_ccus: send:%s, n=%d", send_signal, n);
+                       log.trace ("signal_to_ccus: send:%s, n=%d", signal, n);
                        //lws_callback_on_writable(wsi);
                    },
                    (Variant v) { log.trace("signal_to_ccus::Received some other type.", v); });
@@ -51,4 +51,6 @@ void signal_to_ccus_channel(string thread_name)
             });
 
     ccus_channel.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
+    
+    log.trace ("signal_to_ccus_channel: exit");    
 }

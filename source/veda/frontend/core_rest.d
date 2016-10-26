@@ -816,7 +816,10 @@ public long get_last_opid()
 void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
-    log.trace("CCUS spawn socket connection [%s]", text(hsr.clientAddress));
+    
+    string ch_uid =  text(hsr.clientAddress);
+    
+    log.trace("CCUS spawn socket connection [%s]", ch_uid);
 
     // Client Cache Update Subscription
     string chid;
@@ -886,7 +889,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 if (kv[ 0 ] == "ccus")
                 {
                     chid = kv[ 1 ];                    
-                    log.trace("init channel [%s]", chid);
+                    log.trace("[%s] init channel [%s]", ch_uid, chid);
                 }
             }
 
@@ -903,12 +906,13 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                     string msg_from_sock = null;
 
-					//writeln ("WEBSERVER:CCUS:waitForData chid=", chid);
                     if (socket.waitForData(dur!("msecs")(1000)) == true)
                         msg_from_sock = socket.receiveText();
 
                     if (msg_from_sock !is null && msg_from_sock.length > 0)
                     {
+                    	log.trace ("[%s] recv msg [%s]", ch_uid, msg_from_sock);
+                    	
                         if (msg_from_sock[ 0 ] == '#' && msg_from_sock.length > 3) // server уведомляет об изменении индивида
                         {
                         	string update_indv_msg = msg_from_sock[1..$];                        	
@@ -919,8 +923,8 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         		long update_counter = to!long(msg_parts[1]);
                         		long opid = to!long(msg_parts[2]);
                         		set_updated_uid(uid, opid, update_counter);
-	                        	//log.trace ("server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", uid, opid, update_counter);
-	                        	socket.send("Ok");
+	                        	log.trace ("[%s] server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", ch_uid, uid, opid, update_counter);
+	                        	socket.send("Ok1");
                         	}
                         	else
 	                        	socket.send("Err:invalid message");
@@ -993,7 +997,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                 }
                                 catch (Throwable tr)
                                 {
-                                    log.trace("Client Cache Update Subscription: recv msg:[%s], %s", data, tr.msg);
+                                    log.trace("[%s] Client Cache Update Subscription: recv msg:[%s], %s", ch_uid, data, tr.msg);
                                 }
                             }
                         }
@@ -1003,11 +1007,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
-	                    //log.trace ("last_check_opid(%d) < last_opid(%d)", last_check_opid, last_opid);
+	                    log.trace ("[%s] last_check_opid(%d) < last_opid(%d)", ch_uid, last_check_opid, last_opid);
                         string res = get_list_of_changes();
                         if (res !is null)
                         {
-                        	//log.trace ("send list of change, res=%s", res);
+                        	log.trace ("[%s] send list of change, res=%s", ch_uid, res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
@@ -1018,11 +1022,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
     }
     catch (Throwable tr)
     {
-        log.trace("err on channel [%s] ex=%s", chid, tr.msg);
+        log.trace("[%s] err on channel, ex=%s", ch_uid, tr.msg);
     }
 
     scope (exit)
     {
-        log.trace("channel [%s] closed", chid);
+        log.trace("[%s] channel closed", ch_uid);
     }
 }
