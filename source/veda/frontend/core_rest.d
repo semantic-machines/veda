@@ -881,7 +881,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 break;
 
             string   inital_message = socket.receiveText();
-            socket.send("Ok");
+            //socket.send("Ok");
             
             string[] kv             = inital_message.split('=');
             if (kv.length == 2)
@@ -911,7 +911,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                     if (msg_from_sock !is null && msg_from_sock.length > 0)
                     {
-                    	log.trace ("[%s] recv msg [%s]", ch_uid, msg_from_sock);
+                    	//log.trace ("[%s] recv msg [%s]", ch_uid, msg_from_sock);
                     	
                         if (msg_from_sock[ 0 ] == '#' && msg_from_sock.length > 3) // server уведомляет об изменении индивида
                         {
@@ -923,8 +923,8 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                         		long update_counter = to!long(msg_parts[1]);
                         		long opid = to!long(msg_parts[2]);
                         		set_updated_uid(uid, opid, update_counter);
-	                        	log.trace ("[%s] server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", ch_uid, uid, opid, update_counter);
-	                        	socket.send("Ok1");
+	                        	//log.trace ("[%s] server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", ch_uid, uid, opid, update_counter);
+	                        	//socket.send("Ok");
                         	}
                         	else
 	                        	socket.send("Err:invalid message");
@@ -1007,11 +1007,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
-	                    log.trace ("[%s] last_check_opid(%d) < last_opid(%d)", ch_uid, last_check_opid, last_opid);
+	                    //log.trace ("[%s] last_check_opid(%d) < last_opid(%d)", ch_uid, last_check_opid, last_opid);
                         string res = get_list_of_changes();
                         if (res !is null)
                         {
-                        	log.trace ("[%s] send list of change, res=%s", ch_uid, res);
+                        	//log.trace ("[%s] send list of change, res=%s", ch_uid, res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
