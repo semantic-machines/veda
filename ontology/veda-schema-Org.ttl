@@ -294,12 +294,24 @@ v-s:PsTaxIdForOrganization
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
+v-s:AddProfile
+  rdf:type v-s:Bundle ;
+  rdfs:label "Add profile"@en ;
+  rdfs:label "Создать досье"@ru ;
+.
+
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Organization ;
   rdfs:label "Template for v-s:Organization class"@en ;
   rdfs:label "Шаблон для класса v-s:Organization"@ru ;
   v-ui:template """
+<script>
+  var _class = new veda.IndividualModel("v-s:ContractorProfile");
+  if (!_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
+    $("#add-profile", template).remove();
+  }
+</script>
 <div class="container">
   <h2>
     <span about="v-s:Organization" property="rdfs:label"></span>:
@@ -386,9 +398,11 @@ v-s:OrganizationTemplate
     <div rel="v-s:hasContractor" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
     <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
 
-    <em about="v-s:hasContractorProfile" property="rdfs:label"></em>
+    <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
     <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
-    <veda-control data-type="link" rel="v-s:hasContractorProfile" class="-view edit search fulltext dropdown"></veda-control>
+    <div class="view -edit -search clearfix">
+      <button class="btn btn-success pull-right" id="add-profile" about="v-s:AddProfile" property="rdfs:label"></button>
+    </div>
 
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
@@ -409,6 +423,28 @@ v-s:OrganizationTemplate
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
   </div>
 </div>
+<script>
+  $("#add-profile", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal();
+    modal.appendTo(template);
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:ContractorProfile"),
+        action = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("mnd-s:ContractorProfileTemplate");
+    action["rdf:type"] = [_class];
+    action["v-s:backwardTarget"] = [individual];
+    action["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
+    action.present(cntr, tmpl, "edit");
+    action.one("individual:beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    action.one("individual:afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+</script>
   """ ;
 .
 
