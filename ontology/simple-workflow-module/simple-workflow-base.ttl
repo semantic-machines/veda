@@ -1129,7 +1129,7 @@ s-wf:codelet_interrupt_process
   rdf:type v-s:Codelet ;
   rdfs:label "Вывести из документооборота" ;
   v-s:script """
-  interrupt_process (process, "")
+  interrupt_process (process.ticket, process, "")
 """ ;
   rdfs:isDefinedBy s-wf: ;
 .

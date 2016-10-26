@@ -1121,8 +1121,7 @@ v-wf:ProcessStopEvent
       journal_record['rdfs:comment'] = pb['rdfs:label'];
 
       logToJournal(ticket, document['@']+'j', journal_record, true);
-      document.ticket = ticket;
-      interrupt_process(document, _event_id);
+      interrupt_process(ticket, document, _event_id);
   }
 """ ;
 .

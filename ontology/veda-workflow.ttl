@@ -2515,6 +2515,12 @@ v-wf:Interrupted
   rdfs:label "Прервано"@ru ;
 .
 
+v-wf:Completed
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "Was completed"@en ;
+  rdfs:label "Выполнено"@ru ;
+.
+
 v-wf:DoNotSend
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Do Not Send"@en ;

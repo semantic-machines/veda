@@ -906,7 +906,6 @@ function prepare_work_item(ticket, document)
                         parent_work_order['v-wf:outVars'] = task_output_vars;
                         put_individual(ticket, parent_work_order, _event_id);
                     }
-
                 }
             }
 
@@ -921,11 +920,14 @@ function prepare_work_item(ticket, document)
 
             var completeProcess = {
                 '@': forProcess,
-              'v-wf:isCompleted': [{
+                'v-wf:isCompleted': [{
                      data: true,
                      type: _Bool
                  }]
             };
+            
+            complete_process(ticket, _process, _event_id);
+            
             add_to_individual(ticket, completeProcess, _event_id);
 
         } // end [OutputCondition]
