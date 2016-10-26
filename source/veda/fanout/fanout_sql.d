@@ -24,8 +24,8 @@ void main(char[][] args)
 
 class FanoutProcess : VedaModule
 {
-    Mysql      mysql_conn;
-    string     database_name;	
+    Mysql  mysql_conn;
+    string database_name;
 
     this(P_MODULE _module_name, string _host, ushort _port, Logger log)
     {
@@ -144,28 +144,37 @@ class FanoutProcess : VedaModule
 
                                 foreach (rs; rss)
                                 {
-                                    mysql_conn.query("SET NAMES 'utf8'");
-
-                                    if (rs.type == DataType.Boolean)
+                                    foreach (type; types)
                                     {
-                                        if (rs.get!bool == true)
-                                            mysql_conn.query("INSERT INTO `?` (doc_id, created, value) VALUES (?, ?, ?)", predicate, new_indv.uri,
-                                                             created.asString(), 1);
+                                        mysql_conn.query("SET NAMES 'utf8'");
+
+                                        if (rs.type == DataType.Boolean)
+                                        {
+                                            if (rs.get!bool == true)
+                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?)", predicate,
+                                                                 new_indv.uri,
+                                                                 type,
+                                                                 created.asString(), 1);
+                                            else
+                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?)", predicate,
+                                                                 new_indv.uri,
+                                                                 type,
+                                                                 created.asString(), 0);
+                                        }
                                         else
-                                            mysql_conn.query("INSERT INTO `?` (doc_id, created, value) VALUES (?, ?, ?)", predicate, new_indv.uri,
-                                                             created.asString(), 0);
-                                    }
-                                    else
-                                    {
-                                        mysql_conn.query("INSERT INTO `?` (doc_id, created, value, lang) VALUES (?, ?, ?, ?)", predicate,
-                                                         new_indv.uri,
-                                                         created.asString(),
-                                                         rs.asString().toUTF8(), text(rs.lang));
-                                    }
+                                        {
+                                            mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang) VALUES (?, ?, ?, ?)",
+                                                             predicate,
+                                                             new_indv.uri, type,
+                                                             created.asString(), rs.asString().toUTF8(), text(rs.lang));
+                                        }
 
-                                    log.trace("push_to_mysql: INSERT INTO `%s` (doc_id, created, value, lang) VALUES (%s, %s, %s, %s)", predicate,
-                                              new_indv.uri,
-                                              created.asString(), rs.asString().toUTF8(), text(rs.lang));
+                                        log.trace(
+                                                  "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value, lang) VALUES (%s, %s, %s, %s, %s)",
+                                                  predicate,
+                                                  new_indv.uri, type,
+                                                  created.asString(), rs.asString().toUTF8(), text(rs.lang));
+                                    }
                                 }
                             }
                         }
@@ -233,6 +242,7 @@ class FanoutProcess : VedaModule
                                  "CREATE TABLE `veda_db`.`" ~ predicate ~ "` ("
                                  "`ID` BIGINT NOT NULL AUTO_INCREMENT, "
                                  "`doc_id` CHAR(128) NOT NULL, "
+                                 "`doc_type` CHAR(128) NOT NULL, "
                                  "`created` DATETIME NULL, "
                                  "`value` " ~ sql_type ~ " NULL, "
                                  "`lang` CHAR(2) NULL, "
