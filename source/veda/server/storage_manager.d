@@ -123,17 +123,18 @@ public string backup(P_MODULE storage_id)
 public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
 {
     ResultCode rc;
-    Tid        tid = getTid(f_module);
+
+    Tid tid = getTid(P_MODULE.subject_manager);
 
     if (tid != Tid.init)
     {
         if (is_wait == false)
         {
-            send(tid, CMD_MSG, msg);
+            send(tid, CMD_MSG, f_module, msg);
         }
         else
         {
-            send(tid, CMD_MSG, msg, thisTid);
+            send(tid, CMD_MSG, msg, f_module, thisTid);
             receive((bool isReady) {});
         }
         rc = ResultCode.OK;
@@ -291,13 +292,13 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             try
             {
                 receive(
-                        (byte cmd, P_MODULE f_module, string _msg, long wait_op_id)
+                        (byte cmd, P_MODULE f_module, string _msg)
                         {
-                            if (cmd == CMD_COMMIT)
+                            if (cmd == CMD_MSG)
                             {
                                 string msg = "MSG:" ~ text(f_module) ~ ":" ~ _msg;
                                 int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
-                                log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_channel_url, wait_op_id);
+                                log.trace("SEND %d bytes [%s] TO %s", bytes, msg, notify_channel_url);
                             }
                         },
                         (byte cmd, P_MODULE f_module, long wait_op_id)

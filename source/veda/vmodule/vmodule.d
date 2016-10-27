@@ -340,7 +340,7 @@ class VedaModule // : WSLink
 
                 if (msg.length > message_header.length + 1 && msg.indexOf(message_header) >= 0)
                 {
-                    receive_msg(msg[(message_header.length + 1)..$]);
+                    receive_msg(msg[(message_header.length)..$]);
                 }
                 else
                 {

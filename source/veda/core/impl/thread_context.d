@@ -1703,7 +1703,6 @@ class PThreadContext : Context
                 
                 return res.toString();		
 			}			
-
             //log.trace("get msg=%s", jsn);
 
             JSONValue fn = jsn[ "function" ];
@@ -1817,6 +1816,12 @@ class PThreadContext : Context
                 else
                     res[ "result" ] = ResultCode.Internal_Server_Error;
                 res[ "op_id" ] = -1;
+            }
+            else
+            {
+                res[ "type" ] = "OpResult";
+                res[ "result" ] = ResultCode.Bad_Request;
+                res[ "op_id" ] = -1;            	
             }
 
             return res.toString();

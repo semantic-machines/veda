@@ -382,7 +382,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         Json     jreq = Json.emptyObject;
 
-        jreq[ "function" ]   = "sent_to_module";
+        jreq[ "function" ]   = "send_to_module";
         jreq[ "module_id" ]  = module_id;
         jreq[ "msg" ] = msg;
 
