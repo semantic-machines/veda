@@ -161,6 +161,6 @@ v-s:Request
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:label "Work Report"@en ;
-  rdfs:label "Отчет о работе"@ru ;
+  rdfs:label "Request"@en ;
+  rdfs:label "Запрос"@ru ;
 .
