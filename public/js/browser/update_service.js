@@ -194,7 +194,7 @@ veda.Module(function UpdateService(veda) { "use strict";
             updateCounter: updateCounter
           };
           if ( !individual.hasValue("v-s:updateCounter", updateCounter) && !individual.hasValue("v-s:isDraft", true) ) {
-            individual.reset();
+            individual.update();
           }
         } catch (e) {
           //console.log("error: individual update service failed for id =", uri, e);
