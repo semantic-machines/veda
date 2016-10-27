@@ -76,8 +76,8 @@ v-s:Price
 v-s:ContractRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Request ;
-  rdfs:label "Price"@en ;
-  rdfs:label "Стоимость"@ru ;
+  rdfs:label "ContractRequest"@en ;
+  rdfs:label "Заявка на контракт"@ru ;
 .
 # ------------------------------------------------------------
 v-s:ClassifierOKVED
