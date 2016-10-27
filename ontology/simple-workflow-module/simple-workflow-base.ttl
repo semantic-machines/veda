@@ -1970,11 +1970,12 @@ s-wf:nc_t3
   v-wf:join v-wf:None;
   v-wf:locationY "516"^^xsd:integer;
   a v-wf:Task;
+  v-wf:executor s-wf:codelet_get_type_of_docId;
   v-wf:split v-wf:XOR;
   rdfs:label "Установить: actor = [исполнитель текущего процесса], actor_task_date_to, actor_task_action, actor_task_comment"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:completedMapping s-wf:map_set_actor_from_executor_or_PI_actor, s-wf:map_set_actor_from_executor_or_PI_controller, s-wf:map_PI_actor_task_date_to_4_actor_task_date_to, s-wf:map_PI_actor_task_action_4_actor_task_action;
-  v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment, s-wf:map_initiator;
+  v-wf:completedMapping s-wf:map_PI_actor_task_comment_4_actor_task_comment, s-wf:map_initiator, s-wf:map_documentType;
   v-wf:locationX "248"^^xsd:integer.
 
 d:aec10d9da-789d-fd65-a094-bd4ed7b14822 a v-wf:Flow;
@@ -2025,7 +2026,7 @@ s-wf:nc_t2
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
   v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
-  v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
+  v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_actor;
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_t2_sm5;
@@ -2281,8 +2282,22 @@ s-wf:map_document_4_TIV_docId
 
 s-wf:map_comment_4_TIV_actor_task_action
   rdf:type v-wf:Mapping ;
-  v-wf:mapToVariable s-wf:var_comment ;
+  v-wf:mapToVariable s-wf:var_task ;
   v-wf:mappingExpression  "task.getInputVariable ('actor_task_action')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_comment_4_TIV_actor_task_comment
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_comment ;
+  v-wf:mappingExpression  "task.getInputVariable ('actor_task_comment')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_rdf_type_4_TIV_documentType
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_rdf_type ;
+  v-wf:mappingExpression  "task.getInputVariable ('documentType')";
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -2407,6 +2422,13 @@ s-wf:var_task_url
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "task_url" ;
   rdfs:label "Var task_url" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_task
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "task" ;
+  rdfs:label "Var task" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
