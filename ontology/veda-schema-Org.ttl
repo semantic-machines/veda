@@ -308,7 +308,7 @@ v-s:OrganizationTemplate
   v-ui:template """
 <script>
   var _class = new veda.IndividualModel("v-s:ContractorProfile");
-  if (!_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
+  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true) || individual.hasValue("v-s:hasContractorProfile") ) {
     $("#add-profile", template).remove();
   }
 </script>
@@ -399,9 +399,9 @@ v-s:OrganizationTemplate
     <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
 
     <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
-    <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
-    <div class="view -edit -search clearfix">
-      <button class="btn btn-success pull-right" id="add-profile" about="v-s:AddProfile" property="rdfs:label"></button>
+    <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    <div class="view -edit -search">
+      <button class="btn btn-success" id="add-profile" about="v-s:AddProfile" property="rdfs:label"></button>
     </div>
 
     <em about="v-s:parentUnit" property="rdfs:label"></em>
