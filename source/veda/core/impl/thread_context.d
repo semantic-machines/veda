@@ -1527,6 +1527,12 @@ class PThreadContext : Context
         {
             storage_module.freeze(P_MODULE.subject_manager);
         }
+        version (isModule)
+        {
+                JSONValue req_body;
+                req_body[ "function" ]       = "freeze";
+                OpResult res = reqrep_2_main_module(req_body);        	
+        }
     }
 
     public void unfreeze()
@@ -1534,6 +1540,12 @@ class PThreadContext : Context
         version (isServer)
         {
             storage_module.unfreeze(P_MODULE.subject_manager);
+        }
+        version (isModule)
+        {
+                JSONValue req_body;
+                req_body[ "function" ]       = "unfreeze";
+                OpResult res = reqrep_2_main_module(req_body);        	        	
         }
     }
 
@@ -1816,6 +1828,20 @@ class PThreadContext : Context
                 else
                     res[ "result" ] = ResultCode.Internal_Server_Error;
                 res[ "op_id" ] = -1;
+            }
+            else if (sfn == "freeze")
+            {
+            	this.freeze();
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.OK;
+                res[ "op_id" ]  = -1;
+            }
+            else if (sfn == "unfreeze")
+            {
+            	this.unfreeze();            	
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.OK;
+                res[ "op_id" ]  = -1;
             }
             else
             {

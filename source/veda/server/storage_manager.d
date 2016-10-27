@@ -321,6 +321,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             }
                             else if (cmd == CMD_UNFREEZE)
                             {
+                            	log.trace ("UNFREEZE");
                                 is_freeze = false;
                             }
                         },
@@ -336,6 +337,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             }
                             else if (cmd == CMD_FREEZE)
                             {
+                            	log.trace ("FREEZE");
                                 is_freeze = true;
                                 send(tid_response_reciever, true);
                             }

@@ -60,7 +60,7 @@ class FanoutProcess : VedaModule
         //log.trace("receive_msg [%s]", msg);
         if (msg == "unload_all")
         {
-            long total_count  = context.get_subject_storage_db().count_entries();
+            long total_count    = context.get_subject_storage_db().count_entries();
             long count_prepared = 0;
 
             bool pp(string key, string value)
@@ -92,9 +92,11 @@ class FanoutProcess : VedaModule
                 return true;
             }
 
+            context.freeze();
             log.trace_console("start unload_all");
             context.get_subject_storage_db().get_of_cursor(&pp);
             log.trace_console("end unload_all");
+            context.unfreeze();
         }
     }
 
@@ -155,31 +157,31 @@ class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
-            	// создаем таблицы если их не было
+                // создаем таблицы если их не было
                 foreach (predicate, rss; new_indv.resources)
                 {
                     if (rss.length > 0)
                         create_table_if_not_exists(predicate, rss[ 0 ]);
                 }
-                
-				// удаляем из всех таблиц по предикатам используя doc_id
-				Resources[string] use_predicates = new_indv.resources.dup;
+
+                // удаляем из всех таблиц по предикатам используя doc_id
+                Resources[ string ] use_predicates = new_indv.resources.dup;
                 foreach (predicate, rss; prev_indv.resources)
                 {
-                	use_predicates[predicate] = rss;
+                    use_predicates[ predicate ] = rss;
                 }
-				
+
                 foreach (predicate, rss; use_predicates)
                 {
-                            try
-                            {
-                                mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, new_indv.uri);
-                                log.trace("push_to_mysql: DELETE FROM `%s` WHERE doc_id = %s", predicate, new_indv.uri);                                
-                            }
-                            catch (Throwable ex)
-                            {
-                                log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
-                            }
+                    try
+                    {
+                        mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, new_indv.uri);
+                        log.trace("push_to_mysql: DELETE FROM `%s` WHERE doc_id = %s", predicate, new_indv.uri);
+                    }
+                    catch (Throwable ex)
+                    {
+                        log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                    }
                 }
 
                 if (is_deleted == false)
