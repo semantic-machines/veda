@@ -34,7 +34,7 @@ function prepare_decision_form(ticket, document)
         var work_item = get_individual(ticket, getUri(f_forWorkItem));
         if (!work_item) return;
 
-    var forProcess = work_item['v-wf:forProcess'];
+        var forProcess = work_item['v-wf:forProcess'];
         var forProcess_uri = getUri(forProcess);
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
@@ -101,7 +101,7 @@ function prepare_work_order(ticket, document)
         var work_item = get_individual(ticket, f_forWorkItem);
         if (!work_item) return;
 
-    var forProcess = work_item['v-wf:forProcess'];
+        var forProcess = work_item['v-wf:forProcess'];
         var forProcess_uri = getUri(forProcess);
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process) return;
@@ -172,9 +172,9 @@ function prepare_work_order(ticket, document)
             }
             else
             {
-        var is_appointment = is_exist(executor, 'rdf:type', 'v-s:Appointment');
-        var is_position = is_exist(executor, 'rdf:type', 'v-s:Position');
-        var is_codelet = is_exist(executor, 'rdf:type', 'v-s:Codelet');
+                var is_appointment = is_exist(executor, 'rdf:type', 'v-s:Appointment');
+                var is_position = is_exist(executor, 'rdf:type', 'v-s:Position');
+                var is_codelet = is_exist(executor, 'rdf:type', 'v-s:Codelet');
 
                 if (is_codelet)
                 {
@@ -334,18 +334,18 @@ function prepare_work_order(ticket, document)
                             // выдадим права отвечающему на эту форму
                             if (is_appointment)
                             {
-                var employee = executor['v-s:employee'];
-                if (employee)
-                {
-                  //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
+                                var employee = executor['v-s:employee'];
+                                if (employee)
+                                {
+                                    //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
 
-                  addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
-                }
-              }
+                                    addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+                                }
+                            }
                             if (is_position)
                             {
-                addRight(ticket, [can_read, can_update], executor['@'], transform_result[i]['@']);
-              }
+                                addRight(ticket, [can_read, can_update], executor['@'], transform_result[i]['@']);
+                            }
                         }
                     }
 
@@ -422,7 +422,7 @@ function prepare_work_order(ticket, document)
                                 if (varValue)
                                     val = varValue;
 
-                                if (/*val !== undefined &&*/ key !== undefined)
+                                if ( /*val !== undefined &&*/ key !== undefined)
                                 {
                                     el[key] = val;
                                     f_set = true;
@@ -920,14 +920,15 @@ function prepare_work_item(ticket, document)
 
             var completeProcess = {
                 '@': forProcess,
-                'v-wf:isCompleted': [{
-                     data: true,
-                     type: _Bool
-                 }]
+                'v-wf:isCompleted': [
+                {
+                    data: true,
+                    type: _Bool
+                }]
             };
-            
+
             complete_process(ticket, _process, _event_id);
-            
+
             add_to_individual(ticket, completeProcess, _event_id);
 
         } // end [OutputCondition]
@@ -1082,7 +1083,7 @@ function prepare_process(ticket, document)
     if (workItemList.length > 0)
         document['v-wf:workItemList'] = workItemList;
 
-  document['v-wf:isCompleted'] = newBool (false);
+    document['v-wf:isCompleted'] = newBool(false);
 
     if (inVars.length > 0 || workItemList.length > 0)
         put_individual(ticket, document, _event_id);
@@ -1141,7 +1142,7 @@ function prepare_start_form(ticket, document)
     var new_vars = [];
     var transform_link = getUri(document['v-wf:useTransformation']);
 
-    print ('@js transform_link=', transform_link);
+    print('@js transform_link=', transform_link);
 
     if (transform_link)
     {
@@ -1182,8 +1183,12 @@ function prepare_start_form(ticket, document)
 
     var trace_journal_uri;
 
-    var processedDocumentId = document['v-wf:processedDocument']?document['v-wf:processedDocument'][0].data:document['@'];
-    var processedDocument = document['v-wf:processedDocument']?document['v-wf:processedDocument']:[{data:document['@'], type: _Uri}];
+    var processedDocumentId = document['v-wf:processedDocument'] ? document['v-wf:processedDocument'][0].data : document['@'];
+    var processedDocument = document['v-wf:processedDocument'] ? document['v-wf:processedDocument'] : [
+    {
+        data: document['@'],
+        type: _Uri
+    }];
     if (isTrace)
     {
         trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label'], true);
@@ -1196,7 +1201,7 @@ function prepare_start_form(ticket, document)
     }
 
     put_individual(ticket, new_process, _event_id);
-    
+
     document['v-wf:hasStatusWorkflow'] = newUri('v-wf:IsSent');
 
     create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
@@ -1214,9 +1219,10 @@ function prepare_start_form(ticket, document)
             type: _Datetime
         }]
     };
-    
-    var user = get_individual(ticket, author_uri);    
-    if (user['v-s:hasAppointment']) {
+
+    var user = get_individual(ticket, author_uri);
+    if (user['v-s:hasAppointment'])
+    {
         journalRecord['v-s:actor'] = user['v-s:hasAppointment']
     }
 
