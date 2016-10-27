@@ -194,6 +194,7 @@ interface Storage
     public ResultCode put(string in_key, string in_value, long op_id);
     public string find(string uri, bool return_value = true);
     public int get_of_cursor(bool delegate(string key, string value) prepare);
+    public long count_entries();
 }
 
 interface ScriptVM

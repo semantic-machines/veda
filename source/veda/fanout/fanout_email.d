@@ -24,7 +24,7 @@ void main(char[][] args)
 
 class FanoutProcess : VedaModule
 {
-    string     database_name;	
+    string     database_name;
 
     MailSender smtp_conn;
 
@@ -37,29 +37,29 @@ class FanoutProcess : VedaModule
                                 string event_id,
                                 long op_id)
     {
-    	bool res;
-    	
+        bool res;
+
         try
         {
             if (smtp_conn !is null)
             {
                 res = push_to_smtp(prev_indv, new_indv);
-                if (res == false)                
-	                connect_to_smtp(context);
-            }    
+                if (res == false)
+                    connect_to_smtp(context);
+            }
         }
         catch (Throwable ex)
         {
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
-		if (res == true)
-		{
-	        committed_op_id = op_id;
-	        return ResultCode.OK;
-		}
-		else
-	        return ResultCode.Fail_Commit;		    
+        if (res == true)
+        {
+            committed_op_id = op_id;
+            return ResultCode.OK;
+        }
+        else
+            return ResultCode.Fail_Commit;
     }
 
     override void thread_id()
@@ -289,7 +289,7 @@ class FanoutProcess : VedaModule
                             log.trace("send email: %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
                             if (!res.success || res.code == 451)
                             {
-                            	is_send = false;
+                                is_send = false;
                             }
                             else
                             {
@@ -320,12 +320,12 @@ class FanoutProcess : VedaModule
         catch (Throwable ex)
         {
             log.trace("#EX! fail send e-mail[%s]=%s", ex.msg, message.toString());
-			return false;
+            return false;
         }
 
         //writeln("@@fanout indv.uri=", indv.uri);
-		// sender.quit();
-		return true;
+        // sender.quit();
+        return true;
     }
 
     private void connect_to_smtp(Context context)
@@ -408,7 +408,6 @@ class FanoutProcess : VedaModule
             log.trace("ERR! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], %s", ex.line, ex.file, ex.msg, ex.toString);
         }
     }
-
 }
 
 

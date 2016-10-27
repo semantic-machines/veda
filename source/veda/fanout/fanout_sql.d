@@ -36,10 +36,11 @@ class FanoutProcess : VedaModule
                                 string event_id,
                                 long op_id)
     {
+        ResultCode rc;
+
         try
         {
-            if (mysql_conn !is null)
-                push_to_mysql(prev_indv, new_indv);
+            rc = push_to_mysql(prev_indv, new_indv);
         }
         catch (Throwable ex)
         {
@@ -56,7 +57,11 @@ class FanoutProcess : VedaModule
 
     override void receive_msg(string msg)
     {
-    	log.trace ("recieve msg:  [%s]", msg);
+        //log.trace("receive_msg [%s]", msg);
+        if (msg == "unload_all")
+        {
+            prepare_all();
+        }
     }
 
     override Context create_context()
@@ -76,14 +81,16 @@ class FanoutProcess : VedaModule
 
     bool[ string ] isExistsTable;
 
-    private void push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
+    private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
+        if (mysql_conn is null)
+            return ResultCode.Connect_Error;
+
         try
         {
             isExistsTable = isExistsTable.init;
-            //log.trace ("push_to_mysql: prev_indv=%s", prev_indv);
-            //log.trace ("push_to_mysql: new_indv=%s", new_indv);
-
+            //log.trace("push_to_mysql: prev_indv=%s", prev_indv);
+            //log.trace("push_to_mysql: new_indv=%s", new_indv);
             bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
             string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
@@ -92,11 +99,11 @@ class FanoutProcess : VedaModule
             string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
             if (isDraftOf !is null)
-                return;
+                return ResultCode.OK;
 
             if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
                                         (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
-                return;
+                return ResultCode.OK;
 
             Resource  created = new_indv.getFirstResource("v-s:created");
 
@@ -112,24 +119,32 @@ class FanoutProcess : VedaModule
                 }
             }
 
-
             if (need_prepare)
             {
-                foreach (predicate, rss; prev_indv.resources)
+                // создаем таблицы если их не было
+                foreach (predicate, rss; new_indv.resources)
                 {
                     if (rss.length > 0)
+                        create_table_if_not_exists(predicate, rss[ 0 ]);
+                }
+
+                // удаляем из всех таблиц по предикатам используя doc_id
+                Resources[ string ] use_predicates = new_indv.resources.dup;
+                foreach (predicate, rss; prev_indv.resources)
+                {
+                    use_predicates[ predicate ] = rss;
+                }
+
+                foreach (predicate, rss; use_predicates)
+                {
+                    try
                     {
-                        if (create_table_if_not_exists(predicate, rss[ 0 ]) == true)
-                        {
-                            try
-                            {
-                                mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, prev_indv.uri);
-                            }
-                            catch (Throwable ex)
-                            {
-                                log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
-                            }
-                        }
+                        mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, new_indv.uri);
+                        log.trace("push_to_mysql: DELETE FROM `%s` WHERE doc_id = %s", predicate, new_indv.uri);
+                    }
+                    catch (Throwable ex)
+                    {
+                        log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                     }
                 }
 
@@ -145,26 +160,28 @@ class FanoutProcess : VedaModule
 
                                 foreach (rs; rss)
                                 {
-                                    foreach (type; types)
+                                    foreach (rtype; types)
                                     {
+                                        string type = rtype.data;
+
                                         mysql_conn.query("SET NAMES 'utf8'");
 
                                         if (rs.type == DataType.Boolean)
                                         {
                                             if (rs.get!bool == true)
-                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?)", predicate,
+                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?)", predicate,
                                                                  new_indv.uri,
                                                                  type,
                                                                  created.asString(), 1);
                                             else
-                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?)", predicate,
+                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?)", predicate,
                                                                  new_indv.uri,
                                                                  type,
                                                                  created.asString(), 0);
                                         }
                                         else
                                         {
-                                            mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang) VALUES (?, ?, ?, ?)",
+                                            mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang) VALUES (?, ?, ?, ?, ?)",
                                                              predicate,
                                                              new_indv.uri, type,
                                                              created.asString(), rs.asString().toUTF8(), text(rs.lang));
@@ -194,11 +211,15 @@ class FanoutProcess : VedaModule
             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
+        return ResultCode.OK;
         //writeln("@@fanout indv.uri=", indv.uri);
     }
 
     private bool create_table_if_not_exists(string predicate, Resource rs)
     {
+        if (mysql_conn is null)
+            return false;
+
         if (isExistsTable.get(predicate, false) == true)
             return true;
 
@@ -248,7 +269,7 @@ class FanoutProcess : VedaModule
                                  "`value` " ~ sql_type ~ " NULL, "
                                  "`lang` CHAR(2) NULL, "
                                  " PRIMARY KEY (`ID`), "
-                                 " INDEX c1(`doc_id`), INDEX c3 (`created`), INDEX c2(`lang`) " ~ sql_value_index ~
+                                 " INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) " ~ sql_value_index ~
                                  ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
                 isExistsTable[ predicate ] = true;
                 log.trace("create table [%s]", predicate);
