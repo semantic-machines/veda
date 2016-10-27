@@ -684,6 +684,11 @@ function prepare_work_item(ticket, document)
 
             // нужно обойти все дерево и найти незавершенные WorkItem соответсвующие текущей net_element
             var fne = find_in_work_item_tree(ticket, _process, 'v-wf:forNetElement', getUri(forNetElement));
+			if (fne.length > in_flows.length)
+			{
+				print ('ERR! AND join: check v-wf:consistsOf in net['+instanceOf+'] for net element ['+getUri(forNetElement)+']');					
+			}	
+			
             if (fne.length != in_flows.length)
                 return;
 
