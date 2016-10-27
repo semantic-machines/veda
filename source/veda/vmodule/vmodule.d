@@ -22,9 +22,9 @@ Logger _log;
 extern (C) void handleTermination(int _signal)
 {
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
-    
+
     if (_log !is null)
-	    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+        _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     //_log.close();
 
     writeln("!SYS: ", process_name, ": preparation for the exit.");
@@ -71,19 +71,19 @@ class VedaModule // : WSLink
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
     P_MODULE       module_name;
-    string		   message_header;	
+    string         message_header;
 
-    Logger log;
+    Logger         log;
 
     this(P_MODULE _module_name, string _host, ushort _port, Logger in_log)
     {
-        process_name = text(_module_name);
-        module_name  = _module_name;
-        message_header = "MSG:" ~ text (module_name) ~ ":"; 
-        port         = _port;
-        host         = _host;
-        _log         = in_log;
-        log 		 = _log;		
+        process_name   = text(_module_name);
+        module_name    = _module_name;
+        message_header = "MSG:" ~ text(module_name) ~ ":";
+        port           = _port;
+        host           = _host;
+        _log           = in_log;
+        log            = _log;
     }
 
     ~this()
@@ -94,12 +94,12 @@ class VedaModule // : WSLink
     void run()
     {
         module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
-		if (!module_info.is_ready)
-		{
-			log.trace ("%s terminated", process_name);
-			return;
-		}
-    	
+        if (!module_info.is_ready)
+        {
+            log.trace("%s terminated", process_name);
+            return;
+        }
+
         context = create_context();
 
         if (context is null)
@@ -167,11 +167,11 @@ class VedaModule // : WSLink
                 }
             }
         }
-        
+
         if (_log !is null)
-	        _log.close();
-	        
-	    module_info.close();    
+            _log.close();
+
+        module_info.close();
     }
 
 ///////////////////////////////////////////////////
@@ -188,6 +188,48 @@ class VedaModule // : WSLink
     abstract void thread_id();
 
     abstract void receive_msg(string msg);
+
+    public void prepare_all()
+    {
+        long total_count    = context.get_subject_storage_db().count_entries();
+        long count_prepared = 0;
+
+        bool pp(string key, string value)
+        {
+            ResultCode rc;
+            Individual indv;
+
+            int        res = cbor2individual(&indv, value);
+
+            if (res >= 0 && indv !is Individual.init)
+            {
+                Individual prev_indv;
+
+                rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, value, indv, "", -1);
+            }
+
+            if (rc == ResultCode.OK)
+            {
+                count_prepared++;
+            }
+            else
+            {
+                log.trace("break command unload_all, err=%s", text(rc));
+                return false;
+            }
+
+            if (count_prepared % 1000 == 0)
+                log.trace_console("unload_all (%d/%d)", total_count, count_prepared);
+
+            return true;
+        }
+
+        context.freeze();
+        log.trace_console("start unload_all");
+        context.get_subject_storage_db().get_of_cursor(&pp);
+        log.trace_console("end unload_all");
+        context.unfreeze();
+    }
 
     private void prepare_queue()
     {
@@ -340,7 +382,7 @@ class VedaModule // : WSLink
 
                 if (msg.length > message_header.length + 1 && msg.indexOf(message_header) >= 0)
                 {
-                    receive_msg(msg[(message_header.length)..$]);
+                    receive_msg(msg[ (message_header.length)..$ ]);
                 }
                 else
                 {

@@ -60,43 +60,7 @@ class FanoutProcess : VedaModule
         //log.trace("receive_msg [%s]", msg);
         if (msg == "unload_all")
         {
-            long total_count    = context.get_subject_storage_db().count_entries();
-            long count_prepared = 0;
-
-            bool pp(string key, string value)
-            {
-                ResultCode rc;
-                Individual indv;
-
-                int        res = cbor2individual(&indv, value);
-
-                if (res >= 0 && indv !is Individual.init)
-                {
-                    Individual prev_indv;
-                    rc = push_to_mysql(prev_indv, indv);
-                }
-
-                if (rc == ResultCode.OK)
-                {
-                    count_prepared++;
-                }
-                else
-                {
-                    log.trace("break command unload_all, err=%s", text(rc));
-                    return false;
-                }
-
-                if (count_prepared % 1000 == 0)
-                    log.trace_console("unload_all (%d/%d)", total_count, count_prepared);
-
-                return true;
-            }
-
-            context.freeze();
-            log.trace_console("start unload_all");
-            context.get_subject_storage_db().get_of_cursor(&pp);
-            log.trace_console("end unload_all");
-            context.unfreeze();
+            prepare_all();
         }
     }
 
