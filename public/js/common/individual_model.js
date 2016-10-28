@@ -79,6 +79,10 @@ veda.Module(function (veda) { "use strict";
       });*/
     }
 
+    veda.on("language:changed", function () {
+      self._.filtered = {};
+    });
+
     return self.load(uri);
   };
 
