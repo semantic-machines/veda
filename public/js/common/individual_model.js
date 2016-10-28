@@ -360,21 +360,12 @@ veda.Module(function (veda) { "use strict";
       } catch (e) {
         original = {};
       }
-      Object.keys(self.properties).map(function (property_uri) {
-        if (property_uri === "@") {
-          delete original[property_uri];
-          return;
-        }
-        if (original[property_uri] && original[property_uri].length) {
-          self[property_uri] = original[property_uri].map( parser );
-        } else {
-          self[property_uri] = [];
-        }
-        delete original[property_uri];
-      });
+      this.properties = {};
       Object.keys(original).map(function (property_uri) {
+        if (property_uri === "@") { return }
         self[property_uri] = original[property_uri].map( parser );
       });
+
       self._.isNew = false;
       self._.isSync = true;
     }
