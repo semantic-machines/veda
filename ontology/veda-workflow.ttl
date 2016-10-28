@@ -1960,10 +1960,10 @@ v-wf:event_df1
   v-s:filter v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
   v-s:script """
-  
-  if (!parent_script_id 
-  		&& document['v-wf:hasStatusWorkflow'] 
-  		&& document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent') {
+
+  if (!parent_script_id
+      && document['v-wf:hasStatusWorkflow']
+      && document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent') {
     prepare_start_form (ticket, document);
   }
 
@@ -2157,11 +2157,6 @@ v-wf:ProcessStopped
   rdfs:label "Process was stopped"@en ;
 .
 
-v-s:actor
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-wf:ProcessStopped ;
-.
-
 v-wf:SubProcessStarted
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
@@ -2308,13 +2303,13 @@ v-ui:TaskCompletedTemplate
         <div id="decision">
           <span about="v-wf:takenDecision" property="rdfs:label"></span>:
           <span rel="v-wf:takenDecision">
-	        <span>
-	          <strong property="rdfs:label"></strong>
-	          <span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
-	          <div id="comment">
-		        <span about="rdfs:comment" property="rdfs:label"></span>:
-		        <b property="rdfs:comment"></b>
-		      </div>
+          <span>
+            <strong property="rdfs:label"></strong>
+            <span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
+            <div id="comment">
+            <span about="rdfs:comment" property="rdfs:label"></span>:
+            <b property="rdfs:comment"></b>
+          </div>
             </span>
           </span>
         </div>
@@ -2540,11 +2535,11 @@ v-wf:TaskTemplateAsModal
       <strong><span about="@" property="@"></span></strong>
     </div>
   </div>
-<!-- LABEL & POSITION -->   
+<!-- LABEL & POSITION -->
   <hr class="margin-sm">
-  <div class="row">  
+  <div class="row">
     <div class="col-md-8">
-      <h4 about="rdfs:label" property="rdfs:label"></h4> 
+      <h4 about="rdfs:label" property="rdfs:label"></h4>
       <veda-control data-type="string" property="rdfs:label"></veda-control>
     </div>
     <div class="col-md-2">
@@ -2552,149 +2547,149 @@ v-wf:TaskTemplateAsModal
       <veda-control property="v-wf:locationX" data-type="integer"></veda-control>
     </div>
     <div class="col-md-2">
-      <strong><span about="v-wf:locationY" property="rdfs:label"></span></strong> : 
+      <strong><span about="v-wf:locationY" property="rdfs:label"></span></strong> :
       <veda-control property="v-wf:locationY" data-type="integer"></veda-control>
     </div>
   </div>
-<!-- SUBNET -->  
+<!-- SUBNET -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3">
-	    <h4 about="v-wf:subNet" property="rdfs:label"></h4>
+      <h4 about="v-wf:subNet" property="rdfs:label"></h4>
     </div>
     <div class="col-md-9">
-	    <veda-control data-type="link" rel="v-wf:subNet" class="fulltext dropdown"></veda-control>
+      <veda-control data-type="link" rel="v-wf:subNet" class="fulltext dropdown"></veda-control>
     </div>
   </div>
-<!-- FLOWS & SPLIT/JOIN -->    
+<!-- FLOWS & SPLIT/JOIN -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-10">
-	    <h4 about="v-wf:hasFlow" property="rdfs:label"></h4>
-    	<div rel="v-wf:hasFlow" data-template="v-wf:FlowTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:hasFlow" class="-view edit search -create"></veda-control>
+      <h4 about="v-wf:hasFlow" property="rdfs:label"></h4>
+      <div rel="v-wf:hasFlow" data-template="v-wf:FlowTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:hasFlow" class="-view edit search -create"></veda-control>
     </div>
     <div class="col-md-2">
-    	<div>
-    		<h4 about="v-wf:join" property="rdfs:label"></h4>
-        	<veda-control rel="v-wf:join" data-type="objectSelect" class="fulltext dropdown"></veda-control>
-    	</div>
-    	<div>
-    		<h4 about="v-wf:split" property="rdfs:label"></h4>
-        	<veda-control rel="v-wf:split" data-type="objectSelect" class="fulltext dropdown"></veda-control>
-    	</div>
+      <div>
+        <h4 about="v-wf:join" property="rdfs:label"></h4>
+          <veda-control rel="v-wf:join" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+      </div>
+      <div>
+        <h4 about="v-wf:split" property="rdfs:label"></h4>
+          <veda-control rel="v-wf:split" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+      </div>
     </div>
   </div>
-<!-- EXECUTOR -->  
+<!-- EXECUTOR -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:executor" property="rdfs:label"></h4>
-    	<div about="@" rel="v-wf:executor" data-template="v-wf:ExecutorTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:executor" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:executor" property="rdfs:label"></h4>
+      <div about="@" rel="v-wf:executor" data-template="v-wf:ExecutorTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:executor" class="-view edit search create"></veda-control>
     </div>
   </div>
-<!-- DECISIONS MAPPING -->  
+<!-- DECISIONS MAPPING -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:startDecisionTransform" property="rdfs:label"></h4>
-    	<div rel="v-wf:startDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:startDecisionTransform" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:startDecisionTransform" property="rdfs:label"></h4>
+      <div rel="v-wf:startDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:startDecisionTransform" class="-view edit search create"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:completeDecisionTransform" property="rdfs:label"></h4>
-    	<div rel="v-wf:completeDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:completeDecisionTransform" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:completeDecisionTransform" property="rdfs:label"></h4>
+      <div rel="v-wf:completeDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:completeDecisionTransform" class="-view edit search create"></veda-control>
     </div>
-  </div>  
+  </div>
 <!-- VARIABLES MAPPING -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:startingMapping" property="rdfs:label"></h4>
-    	<div rel="v-wf:startingMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:startingMapping" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:startingMapping" property="rdfs:label"></h4>
+      <div rel="v-wf:startingMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:startingMapping" class="-view edit search create"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:completedMapping" property="rdfs:label"></h4>
-    	<div rel="v-wf:completedMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:completedMapping" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:completedMapping" property="rdfs:label"></h4>
+      <div rel="v-wf:completedMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:completedMapping" class="-view edit search create"></veda-control>
     </div>
   </div>
 <!-- EXECUTOR JOURNAL MAPPING -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:startingExecutorJournalMap" property="rdfs:label"></h4>
-    	<div rel="v-wf:startingExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:startingExecutorJournalMap" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:startingExecutorJournalMap" property="rdfs:label"></h4>
+      <div rel="v-wf:startingExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:startingExecutorJournalMap" class="-view edit search create"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:completedExecutorJournalMap" property="rdfs:label"></h4>
-    	<div rel="v-wf:completedExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:completedExecutorJournalMap" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:completedExecutorJournalMap" property="rdfs:label"></h4>
+      <div rel="v-wf:completedExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:completedExecutorJournalMap" class="-view edit search create"></veda-control>
     </div>
   </div>
 <!-- JOURNAL MAPPING -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:startingJournalMap" property="rdfs:label"></h4>
-    	<div rel="v-wf:startingJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:startingJournalMap" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:startingJournalMap" property="rdfs:label"></h4>
+      <div rel="v-wf:startingJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:startingJournalMap" class="-view edit search create"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:completedJournalMap" property="rdfs:label"></h4>
-    	<div rel="v-wf:completedJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:completedJournalMap" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:completedJournalMap" property="rdfs:label"></h4>
+      <div rel="v-wf:completedJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:completedJournalMap" class="-view edit search create"></veda-control>
     </div>
-  </div>  
-<!-- EXPECTED RESULT TYPE & MAPPING -->  
+  </div>
+<!-- EXPECTED RESULT TYPE & MAPPING -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
+      <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
         <veda-control about="@" rel="v-wf:expectedResultType" data-type="link" class="fulltext dropdown"></veda-control>
-<!--      	
-      	<veda-control rel="v-wf:expectedResultType" data-type="objectSelect" class="fulltext dropdown"></veda-control>
-    	<div about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
--->	    
+<!--
+        <veda-control rel="v-wf:expectedResultType" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+      <div about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
+-->
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="v-wf:wosResultsMapping" property="rdfs:label"></h4>
-    	<div about="@" rel="v-wf:wosResultsMapping" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:wosResultsMapping" class="-view edit search create"></veda-control>
+      <h4 about="v-wf:wosResultsMapping" property="rdfs:label"></h4>
+      <div about="@" rel="v-wf:wosResultsMapping" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:wosResultsMapping" class="-view edit search create"></veda-control>
     </div>
   </div>
-<!-- COMMENT -->  
+<!-- COMMENT -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12">
-	    <h4 about="rdfs:comment" property="rdfs:label"></h4>
-	    <veda-control data-type="string" property="rdfs:comment"></veda-control>
+      <h4 about="rdfs:comment" property="rdfs:label"></h4>
+      <veda-control data-type="string" property="rdfs:comment"></veda-control>
     </div>
   </div>
-<!-- BUTTONS -->    
+<!-- BUTTONS -->
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-12 well well-sm">
-	  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-	  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-	</div>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
-</div>  
+  </div>
+</div>
 <script>
   $("#cancel, #save", template).click(function () {
     var modal = template.closest(".modal");
@@ -2716,18 +2711,18 @@ v-wf:ExecutorTemplateEmbedded
   v-ui:template """
 <div>
   <div class="row">
-    <div class="col-md-4">    
-   		<input id="executordefinition" name="dzen" type="radio" value="executordefinition"> <span about="v-wf:ExecutorDefinition" property="rdfs:label"></span>
-   	</div>	
-    <div class="col-md-4">    
-   		<input id="codelet" name="dzen" type="radio" value="codelet"> <span about="v-s:Codelet" property="rdfs:label"></span>
-   	</div>	
-    <div class="col-md-4">    
-   		<input id="appointment" name="dzen" type="radio" value="appointment"> <span about="v-s:Appointment" property="rdfs:label"></span>
-   	</div>	
-  </div>	
+    <div class="col-md-4">
+      <input id="executordefinition" name="dzen" type="radio" value="executordefinition"> <span about="v-wf:ExecutorDefinition" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-4">
+      <input id="codelet" name="dzen" type="radio" value="codelet"> <span about="v-s:Codelet" property="rdfs:label"></span>
+    </div>
+    <div class="col-md-4">
+      <input id="appointment" name="dzen" type="radio" value="appointment"> <span about="v-s:Appointment" property="rdfs:label"></span>
+    </div>
+  </div>
   <div class="row executordefinition">
-    <div class="col-md-3">    
+    <div class="col-md-3">
       <span about="v-wf:executorExpression" property="rdfs:label"> :
     </div>
     <div class="col-md-9">
@@ -2735,7 +2730,7 @@ v-wf:ExecutorTemplateEmbedded
     </div>
   </div>
   <div class="row codelet">
-    <div class="col-md-3">    
+    <div class="col-md-3">
       <span about="v-s:script" property="rdfs:label"> :
     </div>
     <div class="col-md-9">
@@ -2743,41 +2738,41 @@ v-wf:ExecutorTemplateEmbedded
     </div>
   </div>
   <div class="row appointment">
-    <div class="col-md-3">    
+    <div class="col-md-3">
       <span about="v-s:Appointment" property="rdfs:label"> :
     </div>
     <div class="col-md-9">
         <veda-control rel="@" data-type="link" class="fulltext dropdown"></veda-control>
     </div>
   </div>
-  
+
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
-	$(this).height(40);
+  $(this).height(40);
   });
   $('#executordefinition', template).on('click', function() {
-  	$('.executordefinition', template).show();
-  	$('.codelet', template).hide();
-  	$('.appointment', template).hide();
+    $('.executordefinition', template).show();
+    $('.codelet', template).hide();
+    $('.appointment', template).hide();
   });
   $('#codelet', template).on('click', function() {
-  	$('.executordefinition', template).hide();
-  	$('.codelet', template).show();
-  	$('.appointment', template).hide();
+    $('.executordefinition', template).hide();
+    $('.codelet', template).show();
+    $('.appointment', template).hide();
   });
   $('#appointment', template).on('click', function() {
-  	$('.executordefinition', template).hide();
-  	$('.codelet', template).hide();
-  	$('.appointment', template).show();
+    $('.executordefinition', template).hide();
+    $('.codelet', template).hide();
+    $('.appointment', template).show();
   });
   console.log(individual['rdf:type'][0].id);
   if (individual.hasValue('rdf:type')) {
-	  if (individual['rdf:type'][0].id == 'v-wf:ExecutorDefinition') $('#executordefinition', template).trigger('click');
-	  if (individual['rdf:type'][0].id == 'v-s:Codelet') $('#codelet', template).trigger('click');
-	  if (individual['rdf:type'][0].id == 'v-s:Appointment') $('#appointment', template).trigger('click');
+    if (individual['rdf:type'][0].id == 'v-wf:ExecutorDefinition') $('#executordefinition', template).trigger('click');
+    if (individual['rdf:type'][0].id == 'v-s:Codelet') $('#codelet', template).trigger('click');
+    if (individual['rdf:type'][0].id == 'v-s:Appointment') $('#appointment', template).trigger('click');
   } else {
-  	  $('#codelet', template).trigger('click');
+      $('#codelet', template).trigger('click');
   }
 </script>
 """.
@@ -2801,8 +2796,8 @@ v-wf:MappingTemplateEmbedded
 <div>
   <div class="row">
     <div class="col-md-3">
-		<div about="@" rel="v-wf:mapToVariable" data-template="v-wf:VariableTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:mapToVariable" class="view edit search -create"></veda-control>
+    <div about="@" rel="v-wf:mapToVariable" data-template="v-wf:VariableTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:mapToVariable" class="view edit search -create"></veda-control>
     </div>
     <div class="col-md-9">
       <veda-control data-type="source" mode="javascript" property="v-wf:mappingExpression" style="width:95%"></veda-control>
@@ -2811,7 +2806,7 @@ v-wf:MappingTemplateEmbedded
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
-	$(this).height(40);
+  $(this).height(40);
   });
 </script>
 """.
@@ -2825,11 +2820,11 @@ v-wf:VariableTemplateEmbedded
 <div>
   <div class="row">
     <div class="col-md-12">
-	    <veda-control data-type="string" property="v-wf:varDefineName"></veda-control>
+      <veda-control data-type="string" property="v-wf:varDefineName"></veda-control>
     </div>
   </div>
 <!-- v-wf:varDefineScope -->
-</div>""". 
+</div>""".
 
 v-wf:TransformTemplateEmbedded
   rdf:type v-ui:ClassTemplate ;
@@ -2840,8 +2835,8 @@ v-wf:TransformTemplateEmbedded
 <div>
   <div class="row">
     <div class="col-md-12">
-		<div rel="v-wf:transformRule" data-template="v-wf:RuleTemplateEmbedded" data-embedded="true"></div>
-	    <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
+    <div rel="v-wf:transformRule" data-template="v-wf:RuleTemplateEmbedded" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
     </div>
   </div>
 </div>
@@ -2875,43 +2870,43 @@ v-wf:RuleTemplateEmbedded
 <div>
   <div class="row">
     <div class="col-md-1">
-  		<strong>Segregate Object</strong>
+      <strong>Segregate Object</strong>
     </div>
     <div class="col-md-5">
-		<div property="v-wf:segregateObject"></div>
-	    <veda-control data-type="string" property="v-wf:segregateObject" class="view edit search -create"></veda-control>
+    <div property="v-wf:segregateObject"></div>
+      <veda-control data-type="string" property="v-wf:segregateObject" class="view edit search -create"></veda-control>
     </div>
     <div class="col-md-1">
-  		<strong>Segregate Element</strong>
+      <strong>Segregate Element</strong>
     </div>
     <div class="col-md-5">
-		<div property="v-wf:segregateElement"></div>
-	    <veda-control data-type="string" property="v-wf:segregateElement" class="view edit search -create"></veda-control>
+    <div property="v-wf:segregateElement"></div>
+      <veda-control data-type="string" property="v-wf:segregateElement" class="view edit search -create"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-1">
-  		<strong>Create</strong>
+      <strong>Create</strong>
     </div>
     <div class="col-md-5">
-		<div property="v-wf:create"></div>
-	    <veda-control data-type="string" property="v-wf:create" class="view edit search -create"></veda-control>
+    <div property="v-wf:create"></div>
+      <veda-control data-type="string" property="v-wf:create" class="view edit search -create"></veda-control>
     </div>
     <div class="col-md-1">
-  		<strong>Conversion</strong>
+      <strong>Conversion</strong>
     </div>
     <div class="col-md-5">
-		<div property="v-wf:conversion"></div>
-	    <veda-control data-type="string" property="v-wf:conversion" class="view edit search -create"></veda-control>
+    <div property="v-wf:conversion"></div>
+      <veda-control data-type="string" property="v-wf:conversion" class="view edit search -create"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-1">
-  		<strong>Aggregate</strong>
+      <strong>Aggregate</strong>
     </div>
     <div class="col-md-11">
-		<div property="v-wf:aggregate"></div>
-	    <veda-control data-type="string" property="v-wf:aggregate" class="view edit search -create"></veda-control>
+    <div property="v-wf:aggregate"></div>
+      <veda-control data-type="string" property="v-wf:aggregate" class="view edit search -create"></veda-control>
     </div>
   </div>
 </div>
@@ -2926,32 +2921,32 @@ v-wf:FlowTemplateEmbedded
 <div>
   <div class="panel panel-default">
     <div class="panel-heading">
-	  <div class="row">
-	    <div class="col-md-3">    
-	      <span about="v-wf:flowsInto" property="rdfs:label"> :
-	    </div>
-	    <div class="col-md-9">
-	      <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
-	    </div>
-	  </div>
+    <div class="row">
+      <div class="col-md-3">
+        <span about="v-wf:flowsInto" property="rdfs:label"> :
+      </div>
+      <div class="col-md-9">
+        <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
+      </div>
+    </div>
     </div>
     <div class="panel-body">
-	  <div class="row">
-	    <div class="col-md-4">
-	      <span about="rdfs:label" property="rdfs:label"></span> : 
-	      <veda-control data-type="string" property="rdfs:label"></veda-control>
-	    </div>
-	    <div class="col-md-8">
-	      <span about="v-wf:predicate" property="rdfs:label"></span> : 
-	      <veda-control data-type="source" mode="javascript" property="v-wf:predicate"></veda-control>
-	    </div>
-	  </div>	  
+    <div class="row">
+      <div class="col-md-4">
+        <span about="rdfs:label" property="rdfs:label"></span> :
+        <veda-control data-type="string" property="rdfs:label"></veda-control>
+      </div>
+      <div class="col-md-8">
+        <span about="v-wf:predicate" property="rdfs:label"></span> :
+        <veda-control data-type="source" mode="javascript" property="v-wf:predicate"></veda-control>
+      </div>
+    </div>
     </div>
   </div>
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
-	$(this).height(40);
+  $(this).height(40);
   });
 </script>
 """.
@@ -3029,4 +3024,4 @@ v-wf:FlowTemplateAsModal
 </script>
   """ ;
 .
-  
+
