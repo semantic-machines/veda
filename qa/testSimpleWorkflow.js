@@ -7,11 +7,11 @@ function clickButton(driver, button) {
 	driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
 	driver.wait
 	(
-		webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
+		webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="v-wf:Rule"] button[id="'+ button +'"]'})),
 		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
 	driver.sleep(basic.SLOW_OPERATION);
-	driver.findElement({css:'button[id="'+ button +'"]'}).click()
+	driver.findElement({css:'[typeof="v-wf:Rule"] button[id="'+ button +'"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
 }
 
