@@ -1610,7 +1610,7 @@ v-ui:DocumentEventTemplate
       <div property="rdfs:label"></div>
       <span class="actor">
         <span about="v-s:actor" property="rdfs:label"></span>:
-        <em rel="v-s:actor" data-template="v-ui:LabelTemplate"></em>
+        <strong rel="v-s:actor" data-template="v-ui:LabelTemplate"></strong>
       </span>
     </div>
     <div class="col-md-4 col-sm-6 event-desc">
