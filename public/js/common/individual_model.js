@@ -360,12 +360,11 @@ veda.Module(function (veda) { "use strict";
       } catch (e) {
         original = {};
       }
-      this.properties = {};
+      this.properties = { "@": this.id };
       Object.keys(original).map(function (property_uri) {
         if (property_uri === "@") { return }
         self[property_uri] = original[property_uri].map( parser );
       });
-
       self._.isNew = false;
       self._.isSync = true;
     }
