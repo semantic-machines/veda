@@ -10,7 +10,7 @@
       input = $(".form-control", control),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : input.attr("placeholder"),
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true),
       property_uri = opts.property_uri,
       individual = opts.individual;
 
@@ -134,7 +134,8 @@
     template: $("#string-control-template").html(),
     parser: function (input) {
       return (input || null);
-    }
+    },
+    isSingle: true
   };
 
   // Text input
@@ -157,7 +158,8 @@
     template: $("#text-control-template").html(),
     parser: function (input) {
       return (input || null);
-    }
+    },
+    isSingle: true
   };
 
   // Boolean text control
@@ -427,6 +429,8 @@
     Object.keys(veda.user.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
       var value = individual[property_uri].filter(function (item) {
+        // Set string language to 'RU' if undefined
+        if ( !item.language ) { item.language = "RU"; }
         return item.language === language_name;
       })[0];
       localedInput.find(".language-tag").text(language_name);
@@ -439,6 +443,7 @@
 
     var change = function (value) {
       var filtered = individual[property_uri].filter(function (item) {
+        if ( !item.language ) { item.language = "RU"; }
         return item.language !== value.language ;
       });
       individual[property_uri] = value.length ? filtered.concat(value) : filtered;
@@ -454,6 +459,8 @@
         input.each(function () {
           var lang = this.lang;
           var value = values.filter(function (item) {
+            // Set string language to 'RU' if undefined
+            if ( !item.language ) { item.language = "RU"; }
             return item.language === lang;
           })[0];
           this.value = value || "";
