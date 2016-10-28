@@ -423,8 +423,7 @@
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
-      control;
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "";
 
     Object.keys(veda.user.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
@@ -482,11 +481,11 @@
       }
     });
 
-    this.on("veda_focus", function (e, val) {
+    this.on("veda_focus", function (e, value) {
       input.each(function () {
         // Set string language to default if undefined
-        if ( !val.language ) { val.language = veda.user.defaultLanguage; }
-        if ( val.language === this.lang ) { $(this).trigger("focus"); }
+        if ( !value.language ) { value.language = veda.user.defaultLanguage; }
+        if ( value.language === this.lang ) { $(this).trigger("focus"); }
       });
       e.stopPropagation();
     });
@@ -503,7 +502,7 @@
       if ( !value.language ) { value.language = veda.user.defaultLanguage; }
       input.each(function () {
         if (value.language === this.lang) {
-          this.value = value;
+          this.value = value.toString();
         }
       });
     }

@@ -1047,7 +1047,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               );
             } else {
               $(".value", result).append (
-                "<div property='" + property_uri + "' />" +
+                "<div property='" + property_uri + "' class='view -edit -search'/>" +
                 "<veda-control property='" + property_uri + "' data-type='multilingualText' class='-view edit search'></veda-control>"
               );
             }
