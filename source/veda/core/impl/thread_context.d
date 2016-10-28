@@ -135,12 +135,12 @@ class PThreadContext : Context
                 int  bytes;
 
                 bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                //log.trace("N_CHANEL send (%s)", req);
+                //log.trace("N_CHANNEL send (%s)", req);
                 bytes = nn_recv(sock, &buf, NN_MSG, 0);
                 if (bytes > 0)
                 {
                     string rep = to!string(buf);
-                    //log.trace("N_CHANEL recv (%s)", rep);
+                    //log.trace("N_CHANNEL recv (%s)", rep);
 
                     JSONValue jres = parseJSON(rep);
 
@@ -155,7 +155,7 @@ class PThreadContext : Context
             }
             else
             {
-                log.trace("ERR! N_CHANEL: invalid socket");
+                log.trace("ERR! N_CHANNEL: invalid socket");
             }
 
             return res;
@@ -280,7 +280,7 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "400000");
 
                     long op_id;
-                    storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, null, false, op_id);
+                    storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -585,7 +585,7 @@ class PThreadContext : Context
         version (isServer)
         {
             long       op_id;
-            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_cbor, null, false, op_id);
+            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_cbor, -1, null, false, op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -1323,7 +1323,7 @@ class PThreadContext : Context
                     return res;
                 }
 
-                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, event_id, ignore_freeze,
+                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id, ignore_freeze,
                                                 res.op_id);
                 //log.trace("res.result=%s", res.result);
 
@@ -1527,6 +1527,12 @@ class PThreadContext : Context
         {
             storage_module.freeze(P_MODULE.subject_manager);
         }
+        version (isModule)
+        {
+                JSONValue req_body;
+                req_body[ "function" ]       = "freeze";
+                OpResult res = reqrep_2_main_module(req_body);        	
+        }
     }
 
     public void unfreeze()
@@ -1534,6 +1540,12 @@ class PThreadContext : Context
         version (isServer)
         {
             storage_module.unfreeze(P_MODULE.subject_manager);
+        }
+        version (isModule)
+        {
+                JSONValue req_body;
+                req_body[ "function" ]       = "unfreeze";
+                OpResult res = reqrep_2_main_module(req_body);        	        	
         }
     }
 
@@ -1703,7 +1715,6 @@ class PThreadContext : Context
                 
                 return res.toString();		
 			}			
-
             //log.trace("get msg=%s", jsn);
 
             JSONValue fn = jsn[ "function" ];
@@ -1793,6 +1804,19 @@ class PThreadContext : Context
                 res[ "result" ] = ResultCode.OK;
                 res[ "op_id" ]  = -1;
             }
+            else if (sfn == "send_to_module")
+            {
+                P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
+                string       msg  = jsn[ "msg" ].str;
+
+                ResultCode rc;
+
+                storage_module.msg_to_module(f_module_id, msg, false);
+
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.OK;
+                res[ "op_id" ]  = -1;
+            }
             else if (sfn == "backup")
             {
                 bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
@@ -1804,6 +1828,26 @@ class PThreadContext : Context
                 else
                     res[ "result" ] = ResultCode.Internal_Server_Error;
                 res[ "op_id" ] = -1;
+            }
+            else if (sfn == "freeze")
+            {
+            	this.freeze();
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.OK;
+                res[ "op_id" ]  = -1;
+            }
+            else if (sfn == "unfreeze")
+            {
+            	this.unfreeze();            	
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.OK;
+                res[ "op_id" ]  = -1;
+            }
+            else
+            {
+                res[ "type" ] = "OpResult";
+                res[ "result" ] = ResultCode.Bad_Request;
+                res[ "op_id" ] = -1;            	
             }
 
             return res.toString();

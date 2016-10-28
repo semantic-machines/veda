@@ -46,7 +46,7 @@ veda.Module(function DisplayedServices(veda) { "use strict";
         if (property_uri === "@" || property_uri === "rdf:type") { continue; }
         var property = new veda.IndividualModel(property_uri),
             range = property.hasValue("rdfs:range") ?  property["rdfs:range"][0].id : undefined;
-        if (range === "xsd:string" || range === "rdfs:Literal") {
+        if (range === "xsd:string" || range === "rdfs:Literal" || range === "rdfs:Resource") {
           self.trigger("individual:propertyModified", property_uri, self[property_uri]);
         }
       }

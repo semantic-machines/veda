@@ -12,7 +12,7 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.util.individual8json, veda.common.logger,
            veda.core.util.utils;
-    import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_chanel;
+    import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_channel, veda.server.signal_to_ccus;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -64,7 +64,7 @@ void main(char[][] args)
     g_context = veda_server.core_context;
 
     log.trace("start ws listener");
-    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
+    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
     writefln("stop ws listener");
 
     while (f_listen_exit == false)
@@ -82,9 +82,13 @@ void main(char[][] args)
 //    exit(P_MODULE.statistic_data_accumulator);
 }
 
-void ev_LWS_CALLBACK_GET_THREAD_ID()
+void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
 {
     //writeln ("server: ev_LWS_CALLBACK_GET_THREAD_ID");
+}
+
+void ev_LWS_CALLBACK_CLIENT_WRITEABLE(lws *wsi)
+{
 }
 
 void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
@@ -106,10 +110,10 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
         res = jres.toString();
     }
 
-    websocket_write_back(wsi, res);
+    websocket_write(wsi, res);
 }
 
-class VedaServer : WSLink
+class VedaServer : WSClient
 {
     ushort  port;
     string  host;
@@ -119,7 +123,7 @@ class VedaServer : WSLink
     {
         host = _host;
         port = _port;
-        super(host, port, log);
+        super(host, port, "/ws", "module-name=server", log);
     }
 
     Context init_core(string node_id)
@@ -164,8 +168,11 @@ class VedaServer : WSLink
             tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
             wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
 
-            tids[ P_MODULE.n_chanel ] = spawn(&nanomsg_chanel, text(P_MODULE.n_chanel));
-            wait_starting_thread(P_MODULE.n_chanel, tids);
+            tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
+            wait_starting_thread(P_MODULE.n_channel, tids);
+
+            tids[ P_MODULE.ccus_channel ] = spawn(&signal_to_ccus_channel, text(P_MODULE.ccus_channel));
+            wait_starting_thread(P_MODULE.ccus_channel, tids);
 
             tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
                                                      tids[ P_MODULE.statistic_data_accumulator ]);

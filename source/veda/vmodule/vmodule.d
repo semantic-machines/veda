@@ -22,9 +22,9 @@ Logger _log;
 extern (C) void handleTermination(int _signal)
 {
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
-    
+
     if (_log !is null)
-	    _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
+        _log.trace("!SYS: %s: caught signal: %s", process_name, text(_signal));
     //_log.close();
 
     writeln("!SYS: ", process_name, ": preparation for the exit.");
@@ -44,8 +44,8 @@ class VedaModule // : WSLink
     long   last_check_time;
 
     int    sock;
-    string notify_chanel_url     = "tcp://127.0.0.1:9111\0";
-    bool   already_notify_chanel = false;
+    string notify_channel_url     = "tcp://127.0.0.1:9111\0";
+    bool   already_notify_channel = false;
 
     Cache!(string, string) cache_of_indv;
 
@@ -71,17 +71,19 @@ class VedaModule // : WSLink
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
     P_MODULE       module_name;
+    string         message_header;
 
-    Logger log;
+    Logger         log;
 
     this(P_MODULE _module_name, string _host, ushort _port, Logger in_log)
     {
-        process_name = text(_module_name);
-        module_name  = _module_name;
-        port         = _port;
-        host         = _host;
-        _log         = in_log;
-        log 		 = _log;		
+        process_name   = text(_module_name);
+        module_name    = _module_name;
+        message_header = "MSG:" ~ text(module_name) ~ ":";
+        port           = _port;
+        host           = _host;
+        _log           = in_log;
+        log            = _log;
     }
 
     ~this()
@@ -92,12 +94,12 @@ class VedaModule // : WSLink
     void run()
     {
         module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
-		if (!module_info.is_ready)
-		{
-			log.trace ("%s terminated", process_name);
-			return;
-		}
-    	
+        if (!module_info.is_ready)
+        {
+            log.trace("%s terminated", process_name);
+            return;
+        }
+
         context = create_context();
 
         if (context is null)
@@ -146,30 +148,30 @@ class VedaModule // : WSLink
             if (nn_setsockopt(sock, NN_SUB, NN_SUB_SUBSCRIBE, "".toStringz, 0) < 0)
                 log.trace("ERR! cannot set scoket options NN_SUB_SUBSCRIBE");
 
-            if (nn_connect(sock, cast(char *)notify_chanel_url) >= 0)
+            if (nn_connect(sock, cast(char *)notify_channel_url) >= 0)
             {
-                already_notify_chanel = true;
-                log.trace("success connect %s", notify_chanel_url);
+                already_notify_channel = true;
+                log.trace("success connect %s", notify_channel_url);
             }
             else
-                log.trace("ERR! cannot connect socket to %s", notify_chanel_url);
+                log.trace("ERR! cannot connect socket to %s", notify_channel_url);
 
 
             //listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
-            if (already_notify_chanel)
+            if (already_notify_channel)
             {
                 while (f_listen_exit != true)
                 {
-                    ev_LWS_CALLBACK_GET_THREAD_ID();
+                    ev_CALLBACK_GET_THREAD_ID();
                     thread_id();
                 }
             }
         }
-        
+
         if (_log !is null)
-	        _log.close();
-	        
-	    module_info.close();    
+            _log.close();
+
+        module_info.close();
     }
 
 ///////////////////////////////////////////////////
@@ -186,6 +188,48 @@ class VedaModule // : WSLink
     abstract void thread_id();
 
     abstract void receive_msg(string msg);
+
+    public void prepare_all()
+    {
+        long total_count    = context.get_subject_storage_db().count_entries();
+        long count_prepared = 0;
+
+        bool pp(string key, string value)
+        {
+            ResultCode rc;
+            Individual indv;
+
+            int        res = cbor2individual(&indv, value);
+
+            if (res >= 0 && indv !is Individual.init)
+            {
+                Individual prev_indv;
+
+                rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, value, indv, "", -1);
+            }
+
+            if (rc == ResultCode.OK)
+            {
+                count_prepared++;
+            }
+            else
+            {
+                log.trace("break command unload_all, err=%s", text(rc));
+                return false;
+            }
+
+            if (count_prepared % 1000 == 0)
+                log.trace_console("unload_all (%d/%d)", total_count, count_prepared);
+
+            return true;
+        }
+
+        context.freeze();
+        log.trace_console("start unload_all");
+        context.get_subject_storage_db().get_of_cursor(&pp);
+        log.trace_console("end unload_all");
+        context.unfreeze();
+    }
 
     private void prepare_queue()
     {
@@ -307,8 +351,7 @@ class VedaModule // : WSLink
         set_global_systicket(sticket);
     }
 
-
-    void ev_LWS_CALLBACK_GET_THREAD_ID()
+    void ev_CALLBACK_GET_THREAD_ID()
     {
         //g_child_process.thread_id();
         if (last_committed_op_id < committed_op_id)
@@ -325,7 +368,7 @@ class VedaModule // : WSLink
             prepare_queue();
         }
 
-        if (already_notify_chanel)
+        if (already_notify_channel)
         {
             char *buf  = cast(char *)0;
             int  bytes = nn_recv(sock, &buf, NN_MSG, 0, /*NN_DONTWAIT*/);
@@ -337,9 +380,9 @@ class VedaModule // : WSLink
 
                 //log.trace("CLIENT (%s): RECEIVED %s", process_name, msg);
 
-                if (msg.indexOf("COMMIT:") >= 0)
+                if (msg.length > message_header.length + 1 && msg.indexOf(message_header) >= 0)
                 {
-                    receive_msg(msg);
+                    receive_msg(msg[ (message_header.length)..$ ]);
                 }
                 else
                 {

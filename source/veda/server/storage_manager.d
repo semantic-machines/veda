@@ -12,6 +12,8 @@ private
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
+    import veda.bind.libwebsocketd;
+    import veda.server.wslink;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -118,6 +120,28 @@ public string backup(P_MODULE storage_id)
     return backup_id;
 }
 
+public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
+{
+    ResultCode rc;
+
+    Tid tid = getTid(P_MODULE.subject_manager);
+
+    if (tid != Tid.init)
+    {
+        if (is_wait == false)
+        {
+            send(tid, CMD_MSG, f_module, msg);
+        }
+        else
+        {
+            send(tid, CMD_MSG, msg, f_module, thisTid);
+            receive((bool isReady) {});
+        }
+        rc = ResultCode.OK;
+    }
+    return rc;
+}
+
 public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
 {
     ResultCode rc;
@@ -162,7 +186,7 @@ public long unload(P_MODULE storage_id, string queue_name)
     return count;
 }
 
-public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, string event_id,
+public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter, string event_id,
                       bool ignore_freeze,
                       out long op_id)
 {
@@ -171,7 +195,7 @@ public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, stri
 
     if (tid != Tid.init)
     {
-        send(tid, INDV_OP.PUT, user_uri, indv_uri, prev_state, new_state, event_id, ignore_freeze, thisTid);
+        send(tid, INDV_OP.PUT, user_uri, indv_uri, prev_state, new_state, update_counter, event_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -204,6 +228,7 @@ public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, ou
     return rc;
 }
 
+
 public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
 {
     Queue                        individual_queue;
@@ -221,9 +246,9 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     long                         op_id           = storage.last_op_id;
     long                         committed_op_id = 0;
 
-    string                       notify_chanel_url = "tcp://127.0.0.1:9111\0";
+    string                       notify_channel_url = "tcp://127.0.0.1:9111\0";
     int                          sock;
-    bool                         already_notify_chanel = false;
+    bool                         already_notify_channel = false;
     ModuleInfoFile               module_info;
 
     try
@@ -237,9 +262,9 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             sock = nn_socket(AF_SP, NN_PUB);
             if (sock >= 0)
             {
-                if (nn_bind(sock, cast(char *)notify_chanel_url) >= 0)
+                if (nn_bind(sock, cast(char *)notify_channel_url) >= 0)
                 {
-                    already_notify_chanel = true;
+                    already_notify_channel = true;
                 }
             }
         }
@@ -256,24 +281,33 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
         bool   is_exit   = false;
         module_info = new ModuleInfoFile(text(storage_id), _log, OPEN_MODE.WRITER);
 
-		if (!module_info.is_ready)
-		{
-			log.trace ("thread [%s] terminated", process_name);
-			return;
-		}		
+        if (!module_info.is_ready)
+        {
+            log.trace("thread [%s] terminated", process_name);
+            return;
+        }
 
         while (is_exit == false)
         {
             try
             {
                 receive(
+                        (byte cmd, P_MODULE f_module, string _msg)
+                        {
+                            if (cmd == CMD_MSG)
+                            {
+                                string msg = "MSG:" ~ text(f_module) ~ ":" ~ _msg;
+                                int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
+                                log.trace("SEND %d bytes [%s] TO %s", bytes, msg, notify_channel_url);
+                            }
+                        },
                         (byte cmd, P_MODULE f_module, long wait_op_id)
                         {
                             if (cmd == CMD_COMMIT)
                             {
-                                string msg = "COMMIT:" ~ text(f_module);
+                                string msg = "MSG:" ~ text(f_module) ~ ":COMMIT";
                                 int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
-                                log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_chanel_url, wait_op_id);
+                                log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_channel_url, wait_op_id);
                             }
                         },
                         (byte cmd)
@@ -287,6 +321,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             }
                             else if (cmd == CMD_UNFREEZE)
                             {
+                            	log.trace ("UNFREEZE");
                                 is_freeze = false;
                             }
                         },
@@ -302,6 +337,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             }
                             else if (cmd == CMD_FREEZE)
                             {
+                            	log.trace ("FREEZE");
                                 is_freeze = true;
                                 send(tid_response_reciever, true);
                             }
@@ -383,7 +419,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (INDV_OP cmd, string user_uri, string indv_uri, string prev_state, string new_state, string event_id, bool ignore_freeze,
+                        (INDV_OP cmd, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter, string event_id, bool ignore_freeze,
                          Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.Not_Ready;
@@ -441,9 +477,15 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             //writeln("*cbor.length=", cbor.length);
 
                                             individual_queue.push(cbor);
-                                            string msg_to_modules = indv_uri ~ ";" ~ text(op_id) ~ "\0";
+//                                          string msg_to_modules = indv_uri ~ ";" ~ text(update_counter) ~ ";" ~ text (op_id) ~ "\0";
+                                            string msg_to_modules = format ("#%s;%d;%d", indv_uri, update_counter, op_id);
+                                            
                                             int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);
-//                                            log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_chanel_url);
+//                                          log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_channel_url);
+
+                                            Tid tid_ccus_channel = getTid(P_MODULE.ccus_channel);
+                                            if (tid_ccus_channel !is Tid.init)
+                                                send(tid_ccus_channel, msg_to_modules);
                                         }
                                     }
 

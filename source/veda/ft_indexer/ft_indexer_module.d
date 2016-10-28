@@ -76,7 +76,7 @@ class FTIndexerProcess : VedaModule
     override void receive_msg(string msg)
     {
         //log.trace("@1 msg=[%s]", msg);
-        if (msg == "COMMIT:fulltext_indexer")
+        if (msg == "COMMIT")
         {
             //log.trace("@2");
             long now = Clock.currTime().stdTime();
@@ -85,6 +85,11 @@ class FTIndexerProcess : VedaModule
             committed_op_id  = op_id;
             //log.trace("commit, op_id=%d", committed_op_id);
         }
+        if (msg == "reindex_all")
+        {
+            prepare_all();
+        }
+        
         //log.trace("@3");
     }
 

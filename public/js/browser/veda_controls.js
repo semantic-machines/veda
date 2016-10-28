@@ -10,7 +10,7 @@
       input = $(".form-control", control),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : input.attr("placeholder"),
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true),
       property_uri = opts.property_uri,
       individual = opts.individual;
 
@@ -134,7 +134,8 @@
     template: $("#string-control-template").html(),
     parser: function (input) {
       return (input || null);
-    }
+    },
+    isSingle: true
   };
 
   // Text input
@@ -157,7 +158,8 @@
     template: $("#text-control-template").html(),
     parser: function (input) {
       return (input || null);
-    }
+    },
+    isSingle: true
   };
 
   // Boolean text control
@@ -416,91 +418,126 @@
   // Generic multilingual input behaviour
   var veda_multilingual = function( options ) {
     var opts = $.extend( {}, veda_multilingual.defaults, options ),
-      control = veda_literal_input.call(this, opts),
+      control = $(opts.template),
+      inputTemplate = control.children().remove(),
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"][0] : "",
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
-      undef = $("li", control),
-      langTag = $(".language-tag", control),
-      input = $(".form-control", control),
-      language;
+      control;
 
-    input.attr("placeholder", placeholder);
-
-    if (isSingle && individual.hasValue(property_uri)) {
-      language = individual[property_uri][0].language;
-      input.data("language", language);
-      langTag.text(language);
-      language ? undef.removeClass("active") : undef.addClass("active");
-    }
-
-    $(".language-list", control).append(
-      Object.keys(veda.user.language).map(function (language_name) {
-        var li = undef.clone();
-        $(".language", li).data("language", language_name).text(language_name).appendTo(li);
-        language == language_name ? li.addClass("active") : li.removeClass("active");
-        return li;
-      })
-    );
-
-    $(".language", control).click(function ( e ) {
-      e.preventDefault();
-      langTag.text( $(this).data("language") || "" );
-      input.data("language", $(this).data("language") || null);
-      if (input.val()) input.trigger("change");
+    Object.keys(veda.user.language).map(function (language_name) {
+      var localedInput = inputTemplate.clone();
+      var value = individual[property_uri].filter(function (item) {
+        // Set value language to default if undefined
+        if ( !item.language ) { item.language = veda.user.defaultLanguage; }
+        return item.language === language_name;
+      })[0];
+      localedInput.find(".language-tag").text(language_name);
+      localedInput.find(".form-control").attr("lang", language_name).val(value);
+      control.append( localedInput );
     });
 
-    function handler(doc_property_uri) {
+    var input = control.find(".form-control");
+    input.attr("placeholder", placeholder);
+
+    var change = function (value) {
+      var filtered = individual[property_uri].filter(function (item) {
+        if ( !item.language ) { item.language = veda.user.defaultLanguage; }
+        return item.language !== value.language ;
+      });
+      individual[property_uri] = value.length ? filtered.concat(value) : filtered;
+    }
+
+    input.on("change focusout", function () {
+      var value = opts.parser( this.value, this );
+      change(value);
+    });
+
+    function handler (doc_property_uri, values) {
       if (doc_property_uri === property_uri) {
-        if ( isSingle && individual.hasValue(property_uri)) {
-          language = individual[property_uri][0].language;
-        }
-        $(".language", control).map( function () {
-          var $this = $(this);
-          if ($this.data("language") == language) {
-            $this.parent().addClass("active");
-            langTag.text(language || "");
-          } else {
-            $this.parent().removeClass("active");
-          }
+        input.each(function () {
+          var lang = this.lang;
+          var value = values.filter(function (item) {
+            // Set string language to default if undefined
+            if ( !item.language ) { item.language = veda.user.defaultLanguage; }
+            return item.language === lang;
+          })[0];
+          this.value = value || "";
         });
       }
     }
-    if (isSingle) {
-      individual.on("individual:propertyModified", handler);
-      this.one("remove", function () {
-        individual.off("individual:propertyModified", handler);
+
+    individual.on("individual:propertyModified", handler);
+    control.one("remove", function () {
+      individual.off("individual:propertyModified", handler);
+    });
+
+    input.keyup( function (e) {
+      if (e.which !== 188 && e.which !== 190 && e.which !== 110 ) {
+        if (this.value !== this.previousValue) {
+          this.previousValue = this.value;
+          $(this).change();
+        }
+      }
+    });
+
+    this.on("veda_focus", function (e, val) {
+      input.each(function () {
+        if ( !val.language ) { val.language = veda.user.defaultLanguage; }
+        if ( val.language === this.lang ) { $(this).trigger("focus"); }
       });
-    }
+      e.stopPropagation();
+    });
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
 
     this.val = function (value) {
       if (!value) {
         return parser( input.val() );
       }
-      var language = value.language;
-      if (language) {
-        langTag.text(language);
-        input.data("language", language)
-      }
-      return input.val(value);
+      if ( !value.language ) { value.language = veda.user.defaultLanguage; }
+      input.each(function () {
+        if (value.language === this.lang) {
+          this.value = value;
+        }
+      });
     }
+
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "focus"
+      });
+    }
+
     return control;
   };
   veda_multilingual.defaults = {
     parser: function (input, el) {
       var value = new String(input);
-      value.language = $(el).data("language") || undefined;
-      return value != "" ? value : null;
+      value.language = $(el).attr("lang") || undefined;
+      return value;
     }
   };
 
   // Multilingual string control
   $.fn.veda_multilingualString = function (options) {
     var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
-      control = veda_multilingual.call(this, opts);
-    this.append(control);
+        $this = $(this);
+    init();
+    veda.on("language:changed", init);
+    $this.one("remove", function () {
+      veda.off("language:changed", init);
+    });
+    function init() {
+      $this.empty();
+      $this.append( veda_multilingual.call($this, opts) );
+    }
     return this;
   };
   $.fn.veda_multilingualString.defaults = {
@@ -510,17 +547,26 @@
   // Multilingual text control
   $.fn.veda_multilingualText = function (options) {
     var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
-      control = veda_multilingual.call(this, opts);
-    var ta = $("textarea", control);
-    ta.attr("rows", this.attr("rows"));
-    autosize(ta);
-    setTimeout (function () {
-      autosize.update(ta);
-    }, 100);
-    this.on("remove", function () {
-      autosize.destroy(ta);
+      $this = $(this);
+    init();
+    veda.on("language:changed", init);
+    $this.one("remove", function () {
+      veda.off("language:changed", init);
     });
-    this.append(control);
+    function init() {
+      $this.empty();
+      var control = veda_multilingual.call($this, opts);
+      var ta = $("textarea", control);
+      ta.attr("rows", $this.attr("rows"));
+      autosize(ta);
+      setTimeout (function () {
+        autosize.update(ta);
+      }, 100);
+      $this.on("remove", function () {
+        autosize.destroy(ta);
+      });
+      $this.append(control);
+    }
     return this;
   };
   $.fn.veda_multilingualText.defaults = {

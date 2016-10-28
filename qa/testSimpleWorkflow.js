@@ -7,11 +7,11 @@ function clickButton(driver, button) {
 	driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
 	driver.wait
 	(
-		webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
+		webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="v-wf:Rule"] button[id="'+ button +'"]'})),
 		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
 	driver.sleep(basic.SLOW_OPERATION);
-	driver.findElement({css:'button[id="'+ button +'"]'}).click()
+	driver.findElement({css:'[typeof="v-wf:Rule"] button[id="'+ button +'"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
 }
 
@@ -75,10 +75,6 @@ basic.getDrivers().forEach (function (drv) {
 	put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to');");
 	put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');");
 	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');");
-	driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
-	driver.findElement({css:'button[id="save"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");})
-	driver.sleep(basic.SLOW_OPERATION);
 	clickButton(driver, "save");
 
 

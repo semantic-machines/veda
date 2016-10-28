@@ -55,7 +55,9 @@ public enum P_MODULE : byte
 
     webserver                  = 15,
 
-    n_chanel                   = 16,
+    n_channel                   = 16,
+    
+    ccus_channel	   = 17,	
 
     nop                        = 99
 }
@@ -192,6 +194,7 @@ interface Storage
     public ResultCode put(string in_key, string in_value, long op_id);
     public string find(string uri, bool return_value = true);
     public int get_of_cursor(bool delegate(string key, string value) prepare);
+    public long count_entries();
 }
 
 interface ScriptVM

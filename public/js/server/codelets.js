@@ -64,20 +64,34 @@ function restore_right(task)
     }
 }
 
-function interrupt_process(process, _event_id)
+function complete_process(ticket, process, _event_id)
 {
-	var vars = process['v-wf:inVars']
-	for (var i = 0; i < vars.length; i++)
+    change_process_status(ticket, process, 'v-wf:Completed', _event_id);
+}
+
+function interrupt_process(ticket, process, _event_id)
+{
+    change_process_status(ticket, process, 'v-wf:Interrupted', _event_id);    
+}
+
+function change_process_status(ticket, process, status, _event_id)
+{
+    print('>>> '+toJson(process));
+    var vars = process['v-wf:inVars'];
+    if (!vars) return;
+    for (var i = 0; i < vars.length; i++)
     {
         var variable = get_individual(process.ticket, vars[i].data);
-		if (variable
-			&& variable['v-wf:variableName'][0]
-			&& variable['v-wf:variableName'][0].data == 'docId') {
-            var doc = get_individual(process.ticket, variable['v-wf:variableValue'][0].data);
-			delete doc['v-wf:isProcess'];
-			doc['v-wf:hasStatusWorkflow'] = newUri('v-wf:Interrupted');
-			put_individual(process.ticket, doc, _event_id);
-		}
+        if (variable
+            && variable['v-wf:variableName'][0]
+            && variable['v-wf:variableName'][0].data == 'docId') {
+            var doc = get_individual(ticket, variable['v-wf:variableValue'][0].data);
+            if (doc['v-wf:isProcess'] && doc['v-wf:isProcess'][0].data == process['@']) {
+                delete doc['v-wf:isProcess'];
+                doc['v-wf:hasStatusWorkflow'] = newUri(status);
+                put_individual(ticket, doc, _event_id);
+            }
+        }
     }
 }
 

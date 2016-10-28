@@ -21,6 +21,12 @@ v-ui:AvailableLanguage
   rdfs:label "Available language"@en ;
   rdfs:label "Доступный язык"@ru ;
 .
+v-ui:DefaultLanguage
+  rdf:type rdfs:Resource ;
+  rdf:value v-ui:RU ;
+  rdfs:label "Default language"@en ;
+  rdfs:label "Язык по-умолчанию"@ru ;
+.
 v-ui:EN
   rdf:type v-ui:Language ;
   rdfs:label "Eng"^^xsd:string ;
@@ -632,51 +638,51 @@ v-ui:CommentsTemplate
   <button class="btn btn-info" id="add-comment" about="v-s:LeaveComment" property="rdfs:label"></button>
 </div>
 <script>
-  var cntr = $("#new-comment", template);
   $("#add-comment", template).click(function () {
     var _class = new veda.IndividualModel("v-s:Comment"),
         comment = new veda.IndividualModel(),
+        cntr = $("<div>").appendTo( $("#new-comment", template) ),
         tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate");
     comment["rdf:type"] = [_class];
     comment["v-s:backwardTarget"] = [individual];
     comment["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
     comment.present(cntr, tmpl, "edit");
     comment.one("individual:beforeReset", function () {
-      cntr.empty();
+      cntr.hide();
     });
     comment.one("individual:afterSave", function () {
-      cntr.empty();
+      cntr.hide();
     });
   });
 
   template.on("click", "#reply.action", function (e) {
     e.preventDefault();
-    var commentTemplate = $(this).closest("[resource]");
-    var targetComment = new veda.IndividualModel( commentTemplate.attr("resource") );
-    var cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() );
-    var _class = new veda.IndividualModel("v-s:Comment");
-    var tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate");
-    var reply = new veda.IndividualModel();
+    var commentTemplate = $(this).closest("[resource]"),
+        targetComment = new veda.IndividualModel( commentTemplate.attr("resource") ),
+        cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
+        _class = new veda.IndividualModel("v-s:Comment"),
+        tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate"),
+        reply = new veda.IndividualModel();
     reply["rdf:type"] = [_class];
     reply["v-s:backwardTarget"] = [targetComment];
     reply["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
     reply.present(cntr, tmpl, "edit");
 
     reply.one("individual:beforeReset", function () {
-      cntr.remove();
+      cntr.hide();
     });
     reply.one("individual:afterSave", function () {
-      cntr.remove();
+      cntr.hide();
     });
   });
 
   template.on("click", "#edit-comment.action", function (e) {
     e.preventDefault();
-    var tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate");
-    var commentTemplate = $(this).closest("[resource]");
-    var comment = new veda.IndividualModel( commentTemplate.attr("resource") );
-    var cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() );
-    var commentContent = $("#comment-content", commentTemplate).hide();
+    var tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate"),
+        commentTemplate = $(this).closest("[resource]"),
+        comment = new veda.IndividualModel( commentTemplate.attr("resource") ),
+        cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
+        commentContent = $("#comment-content", commentTemplate).hide();
     comment.present(cntr, tmpl, "edit");
     comment.one("individual:beforeReset", function () {
       commentContent.show();
@@ -1610,7 +1616,7 @@ v-ui:DocumentEventTemplate
       <div property="rdfs:label"></div>
       <span class="actor">
         <span about="v-s:actor" property="rdfs:label"></span>:
-        <em rel="v-s:actor" data-template="v-ui:LabelTemplate"></em>
+        <strong rel="v-s:actor" data-template="v-ui:LabelTemplate"></strong>
       </span>
     </div>
     <div class="col-md-4 col-sm-6 event-desc">

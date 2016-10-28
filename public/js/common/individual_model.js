@@ -337,8 +337,18 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
+    this.trigger("individual:beforeReset");
+    this.update();
+    this.trigger("individual:afterReset");
+    return this;
+  };
+
+  /**
+   * @method
+   * Update current individual with values from database & merge with local changes
+   */
+  proto.update = function () {
     var self = this;
-    self.trigger("individual:beforeReset");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -350,51 +360,15 @@ veda.Module(function (veda) { "use strict";
       } catch (e) {
         original = {};
       }
-      Object.keys(self.properties).map(function (property_uri) {
-        if (property_uri === "@") {
-          delete original[property_uri];
-          return;
-        }
-        if (original[property_uri] && original[property_uri].length) {
-          self[property_uri] = original[property_uri].map( parser );
-        } else {
-          self[property_uri] = [];
-        }
-        delete original[property_uri];
-      });
+      this.properties = {};
       Object.keys(original).map(function (property_uri) {
+        if (property_uri === "@") { return }
         self[property_uri] = original[property_uri].map( parser );
       });
+
       self._.isNew = false;
       self._.isSync = true;
     }
-    self.trigger("individual:afterReset");
-    return this;
-  };
-
-  /**
-   * @method
-   * Update current individual with values from database & merge with local changes
-   */
-  proto.update = function () {
-    var self = this;
-    self.trigger("individual:beforeUpdate");
-    var original;
-    try {
-      original = get_individual(veda.ticket, this.id);
-    } catch (e) {
-      original = {};
-    }
-    Object.getOwnPropertyNames(self.properties).map(function (property_uri) {
-      if (property_uri === "@" || property_uri === "rdf:type") { return; }
-      if (original[property_uri] && original[property_uri].length) {
-        self[property_uri] = original[property_uri].map( parser );
-      }
-    });
-    self._.isNew = false;
-    self._.isSync = true;
-    self.trigger("individual:afterUpdate");
-    return this;
   };
 
   /**

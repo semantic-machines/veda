@@ -84,6 +84,9 @@ interface VedaStorageRest_API {
     @path("get_operation_state") @method(HTTPMethod.GET)
     long get_operation_state(int module_id, long wait_op_id);
 
+    @path("send_to_module") @method(HTTPMethod.GET)
+    void send_to_module(int module_id, string msg);
+
     @path("flush") @method(HTTPMethod.GET)
     void flush(int module_id, long wait_op_id);
 
@@ -369,6 +372,26 @@ class VedaStorageRest : VedaStorageRest_API
 
         //log.trace ("REST:get_operation_state #e");
         return res;
+    }
+
+    void send_to_module(int module_id, string msg)
+    {
+        long     res = -1;
+
+        OpResult op_res;
+
+        Json     jreq = Json.emptyObject;
+
+        jreq[ "function" ]   = "send_to_module";
+        jreq[ "module_id" ]  = module_id;
+        jreq[ "msg" ] = msg;
+
+        vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
+        vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
+
+        //log.trace("send:flush #e");
+        if (op_res.result != ResultCode.OK)
+            throw new HTTPStatusException(op_res.result, text (op_res.result));    	
     }
 
     void flush(int module_id, long wait_op_id)
@@ -699,6 +722,9 @@ private Task wsc_server_task;
 
 void handleWebSocketConnection(scope WebSocket socket)
 {
+    const(HTTPServerRequest)hsr = socket.request();
+    log.trace("WS spawn socket connection [%s]", text(hsr.clientAddress));
+
     string module_name;
 
     try
@@ -728,7 +754,7 @@ void handleWebSocketConnection(scope WebSocket socket)
 
             if (module_name !is null)
             {
-                log.trace("create chanel [%s]", module_name);
+                log.trace("create channel [%s]", module_name);
 
                 while (true)
                 {
@@ -756,10 +782,10 @@ void handleWebSocketConnection(scope WebSocket socket)
     }
     catch (Throwable tr)
     {
-        log.trace("ERR! on ws chanel [%s] ex=%s", module_name, tr.msg);
+        log.trace("ERR! on ws channel [%s] ex=%s", module_name, tr.msg);
     }
 
-    log.trace("ws chanel [%s] is closed", module_name);
+    log.trace("ws channel [%s] is closed", module_name);
 }
 
 /////////////////////////// CCUS WS
@@ -813,8 +839,10 @@ public long get_last_opid()
 void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
-
-    log.trace("spawn socket connection [%s]", text(hsr.clientAddress));
+    
+    string ch_uid =  text(hsr.clientAddress);
+    
+    log.trace("CCUS spawn socket connection [%s]", ch_uid);
 
     // Client Cache Update Subscription
     string chid;
@@ -876,17 +904,15 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                 break;
 
             string   inital_message = socket.receiveText();
+            //socket.send("Ok");
+            
             string[] kv             = inital_message.split('=');
-
             if (kv.length == 2)
             {
                 if (kv[ 0 ] == "ccus")
                 {
-                    chid = kv[ 1 ];
-
-                    log.trace("init chanel [%s]", chid);
-                    //task_2_client[hsr.clientAddress] = Task.getThis();
-                    //task_2_client ~= Task.getThis();
+                    chid = kv[ 1 ];                    
+                    log.trace("[%s] init channel [%s]", ch_uid, chid);
                 }
             }
 
@@ -908,7 +934,26 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                     if (msg_from_sock !is null && msg_from_sock.length > 0)
                     {
-                        if (msg_from_sock[ 0 ] == '=')
+                    	//log.trace ("[%s] recv msg [%s]", ch_uid, msg_from_sock);
+                    	
+                        if (msg_from_sock[ 0 ] == '#' && msg_from_sock.length > 3) // server уведомляет об изменении индивида
+                        {
+                        	string update_indv_msg = msg_from_sock[1..$];                        	
+                        	string[] msg_parts = update_indv_msg.split (';');
+                        	if (msg_parts.length == 3)
+                        	{ 
+                        		string uid = msg_parts[0];
+                        		long update_counter = to!long(msg_parts[1]);
+                        		long opid = to!long(msg_parts[2]);
+                        		set_updated_uid(uid, opid, update_counter);
+	                        	//log.trace ("[%s] server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", ch_uid, uid, opid, update_counter);
+	                        	//socket.send("Ok");
+                        	}
+                        	else
+	                        	socket.send("Err:invalid message");
+	                        continue;	
+                        }
+                        else if (msg_from_sock[ 0 ] == '=')
                         {
                             string res = get_list_of_subscribe();
 
@@ -975,20 +1020,21 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                                 }
                                 catch (Throwable tr)
                                 {
-                                    log.trace("Client Cache Update Subscription: recv msg:[%s], %s", data, tr.msg);
+                                    log.trace("[%s] Client Cache Update Subscription: recv msg:[%s], %s", ch_uid, data, tr.msg);
                                 }
                             }
                         }
                     }
 
-                    //writefln ("@ last_check_opid=%d", last_check_opid);
+                    //log.trace ("last_check_opid=%d", last_check_opid);
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
+	                    //log.trace ("[%s] last_check_opid(%d) < last_opid(%d)", ch_uid, last_check_opid, last_opid);
                         string res = get_list_of_changes();
                         if (res !is null)
                         {
-                        	//log.trace ("send list of change, res=%s", res);
+                        	//log.trace ("[%s] send list of change, res=%s", ch_uid, res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;
@@ -999,11 +1045,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
     }
     catch (Throwable tr)
     {
-        log.trace("err on chanel [%s] ex=%s", chid, tr.msg);
+        log.trace("[%s] err on channel, ex=%s", ch_uid, tr.msg);
     }
 
     scope (exit)
     {
-        log.trace("chanel [%s] closed", chid);
+        log.trace("[%s] channel closed", ch_uid);
     }
 }

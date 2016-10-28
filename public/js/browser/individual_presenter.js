@@ -408,7 +408,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
 
     // standard tasks
-    $('#standard-tasks', template).each(function() {
+    $('ul#standard-tasks', template).each(function() {
       var stask = $(this);
       stask.append($('<li/>', {
         style:'cursor:pointer',
@@ -838,7 +838,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         if ( props_ctrls[property_uri] ) {
           props_ctrls[property_uri].map(function (item, i) {
             item.val(val);
-            if (i === 0) item.trigger("veda_focus");
+            if (i === 0) item.trigger("veda_focus", [val]);
           });
         }
       }).mouseenter(function () {

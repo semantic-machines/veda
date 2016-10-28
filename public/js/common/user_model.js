@@ -17,6 +17,7 @@ veda.Module(function (veda) { "use strict";
         acc[name] = language;
         return acc;
       }, {});
+    self.defaultLanguage = (new veda.IndividualModel("v-ui:DefaultLanguage"))["rdf:value"][0]["rdf:value"][0].toString();
 
     if (self.hasValue("v-s:defaultAppointment")) {
       veda.appointment = self["v-s:defaultAppointment"][0];
@@ -39,7 +40,7 @@ veda.Module(function (veda) { "use strict";
     if ( self.hasValue("v-ui:hasPreferences") ) {
       self.preferences = self["v-ui:hasPreferences"][0];
       if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
-        self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
+        self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages[self.defaultLanguage] ];
         self.preferences["v-ui:displayedElements"] = [ 10 ];
         self.preferences.save();
       }
