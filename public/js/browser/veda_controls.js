@@ -484,6 +484,7 @@
 
     this.on("veda_focus", function (e, val) {
       input.each(function () {
+        // Set string language to default if undefined
         if ( !val.language ) { val.language = veda.user.defaultLanguage; }
         if ( val.language === this.lang ) { $(this).trigger("focus"); }
       });
@@ -498,6 +499,7 @@
       if (!value) {
         return parser( input.val() );
       }
+      // Set string language to default if undefined
       if ( !value.language ) { value.language = veda.user.defaultLanguage; }
       input.each(function () {
         if (value.language === this.lang) {
