@@ -754,6 +754,13 @@ s-wf:ComplexRouteStartForm_Template
       });
     }
   $('#save_and_start_process', template).on('click', function () {
+     stages.forEach(function(stage) {
+        var routeid = complex+stage;
+        var sub = individual[routeid][0];
+        if (!sub || !sub.hasValue(simple+'participant')) {
+        	delete individual.properties[routeid];
+        }
+     });
      veda.Util.send(individual, template);
   });
     //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
@@ -2514,7 +2521,7 @@ s-wf:complexRouteRule
   v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
   v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_complex_route')" ;
   v-wf:aggregate "putUri ('rdf:type', 's-wf:ComplexRouteStartForm')" ;
-  v-wf:aggregate "putUri ('v-wf:useTransformation', 's-wf:complexRouteTransform')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 's-wf:complexRouteStartFormToNet')" ;
   rdfs:isDefinedBy s-wf: ;
   v-wf:grouping "1";
 .

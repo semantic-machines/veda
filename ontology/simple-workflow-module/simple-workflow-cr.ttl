@@ -175,12 +175,12 @@ s-wf:cr_c1 a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
   v-wf:hasFlow s-wf:crf_c1_to_c2, s-wf:crf_c1_to_jp;
-  v-wf:executor s-wf:ComplexRouteStartForm_coordination1 ;
+  v-wf:executor s-wf:executor_coordination1 ;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startingJournalMap s-wf:map_jrn_msg_t3_b, s-wf:map_jrn_msg_t3_b_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
   v-wf:completedJournalMap s-wf:map_jrn_msg_t3_e, s-wf:map_jrn_msg_t3_e_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
-  rdfs:label "Согласование 1"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator1, s-wf:map_coordinator1_1.
+  rdfs:label "Согласование 1"^^xsd:string.
 
 s-wf:crf_c1_to_jp a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
@@ -204,7 +204,7 @@ s-wf:cr_c2 a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
   v-wf:hasFlow s-wf:crf_c2_to_c3, s-wf:crf_c2_to_jp;
-  v-wf:executor s-wf:ComplexRouteStartForm_coordination2 ;
+  v-wf:executor s-wf:executor_coordination2 ;
   rdfs:label "Согласование 2"^^xsd:string;
   v-wf:completedMapping s-wf:m_result_f_out_var;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator2, s-wf:map_coordinator2_1.
@@ -231,7 +231,7 @@ s-wf:cr_c3 a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
   v-wf:hasFlow s-wf:crf_c3_to_c4, s-wf:crf_c3_to_jp;
-  v-wf:executor s-wf:ComplexRouteStartForm_coordination3 ;
+  v-wf:executor s-wf:executor_coordination3 ;
   rdfs:label "Согласование 3"^^xsd:string;
   v-wf:completedMapping s-wf:m_result_f_out_var;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
@@ -258,7 +258,7 @@ s-wf:cr_c4 a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
   v-wf:hasFlow s-wf:crf_c4_to_c5, s-wf:crf_c4_to_jp;
-  v-wf:executor s-wf:ComplexRouteStartForm_coordination4 ;
+  v-wf:executor s-wf:executor_coordination4 ;
   rdfs:label "Согласование 4"^^xsd:string;
   v-wf:completedMapping s-wf:m_result_f_out_var;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
@@ -285,7 +285,7 @@ s-wf:cr_c5 a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
   v-wf:hasFlow s-wf:crf_c5_to_c6, s-wf:crf_c5_to_jp;
-  v-wf:executor s-wf:ComplexRouteStartForm_coordination5 ;
+  v-wf:executor s-wf:executor_coordination5 ;
   rdfs:label "Согласование 5"^^xsd:string;
   v-wf:completedMapping s-wf:m_result_f_out_var;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
@@ -312,7 +312,7 @@ s-wf:cr_c6 a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:net_coordination;
   v-wf:hasFlow s-wf:crf_c6_to_jp, s-wf:crf_c6_to_s;
-  v-wf:executor s-wf:executor_def_3;
+  v-wf:executor s-wf:executor_coordination6 ;
   rdfs:label "Согласование 6"^^xsd:string;
   v-wf:completedMapping s-wf:m_result_f_out_var;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator3, s-wf:map_coordinator3_1.
@@ -353,7 +353,7 @@ s-wf:cr_sign a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:hasFlow s-wf:crf_s_to_a, s-wf:crf_s_to_jp;
-  v-wf:executor s-wf:ComplexRouteStartForm_sign;
+  v-wf:executor s-wf:executor_sign ;
   rdfs:label "Подписание"^^xsd:string;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_t6_b, s-wf:map_jrn_msg_t3_b_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_t6_e, s-wf:map_jrn_msg_t3_e_ev, s-wf:map_journal_to, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b;
@@ -381,7 +381,7 @@ s-wf:cr_approval a v-wf:Task;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:hasFlow s-wf:crf_a_to_jp, s-wf:crf_a_to_e, s-wf:crf_a_to_r, s-wf:crf_a_to_i, s-wf:crf_a_to_ai;
   rdfs:label "Утверждение"^^xsd:string;
-  v-wf:executor s-wf:ComplexRouteStartForm_approval;
+  v-wf:executor s-wf:executor_approval;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_approv_form;
@@ -522,7 +522,7 @@ s-wf:cr_examination a v-wf:Task;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "350"^^xsd:integer;
   v-wf:hasFlow s-wf:crf_e_to_d;
-  v-wf:executor s-wf:ComplexRouteStartForm_examination;
+  v-wf:executor s-wf:executor_examination;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_examin_form;
@@ -549,7 +549,7 @@ s-wf:cr_review a v-wf:Task;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "50"^^xsd:integer;
   v-wf:hasFlow s-wf:crf_r_to_d;
-  v-wf:executor s-wf:ComplexRouteStartForm_review;
+  v-wf:executor s-wf:executor_review;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_review_form;
@@ -568,7 +568,7 @@ s-wf:cr_distribution a v-wf:Task;
   v-wf:join v-wf:AND;
   v-wf:hasFlow s-wf:crf_d_to_rr;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:executor s-wf:ComplexRouteStartForm_distribution;
+  v-wf:executor s-wf:executor_distribution;
   rdfs:label "Рассылка"^^xsd:string.
 
 s-wf:crf_d_to_rr a v-wf:Flow;
