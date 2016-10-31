@@ -3,15 +3,15 @@ var webdriver = require('selenium-webdriver'),
     timeStamp = ''+Math.round(+new Date()/1000),
 	startForm = require('./startForm.js');
 
-function clickButton(driver, button) {
+function clickButton(driver, button, doctype) {
 	driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
 	driver.wait
 	(
-		webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="v-wf:Rule"] button[id="'+ button +'"]'})),
+		webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="'+doctype+'"] button[id="'+ button +'"]'})),
 		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
 	driver.sleep(basic.SLOW_OPERATION);
-	driver.findElement({css:'[typeof="v-wf:Rule"] button[id="'+ button +'"]'}).click()
+	driver.findElement({css:'[typeof="'+doctype+'"] button[id="'+ button +'"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
 }
 
@@ -75,7 +75,7 @@ basic.getDrivers().forEach (function (drv) {
 	put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to');");
 	put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');");
 	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');");
-	clickButton(driver, "save");
+	clickButton(driver, "save", "v-wf:Rule");
 
 
     driver.sleep(basic.SLOW_OPERATION);    
@@ -85,8 +85,9 @@ basic.getDrivers().forEach (function (drv) {
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
 	driver.executeScript("document.querySelector('strong[about=\"v-wf:transformRule\"]').scrollIntoView(true);");
 	basic.chooseFromDropdown(driver, 'v-wf:transformRule', timeStamp, timeStamp);
-	clickButton(driver, "save");
+	clickButton(driver, "save", "v-wf:Transform");
 
+    driver.sleep(basic.SLOW_OPERATION);    
 	basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
 	driver.sleep(basic.SLOW_OPERATION);
 	driver.findElement({css:'.workflow-canvas-wrapper'}).click()
