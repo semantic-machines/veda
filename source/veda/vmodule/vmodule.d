@@ -3,7 +3,7 @@ module veda.vmodule.vmodule;
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
-    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.algorithm : remove;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
@@ -191,21 +191,70 @@ class VedaModule // : WSLink
 
     public void prepare_all()
     {
-        long total_count    = context.get_subject_storage_db().count_entries();
-        long count_prepared = 0;
+        long   total_count    = context.get_subject_storage_db().count_entries();
+        long   count_prepared = 0;
 
-        bool pp(string key, string value)
+        string queue_id = randomUUID().toString();
+
+        long   count;
+        Queue  queue = new Queue(queue_id, Mode.RW, log);
+
+        if (queue.open(Mode.RW) != true)
         {
+            log.trace("fail on create queue [%s]", queue_id);
+            return;
+        }
+
+        bool add_to_queue(string key, string value)
+        {
+            queue.push(value);
+            count++;
+            return true;
+        }
+
+        log.trace_console("start prepare_all");
+        context.freeze();
+        log.trace_console("start create queue");
+        context.get_subject_storage_db().get_of_cursor(&add_to_queue);
+        log.trace_console("end create queue, count: %d", queue.count_pushed);
+        queue.close();
+        context.unfreeze();
+
+        Queue queue_prepare_all = new Queue(queue_id, Mode.R, log);
+        if (queue_prepare_all.open() == false)
+        {
+            log.trace("Queue not open :%s", queue);
+            return;
+        }
+
+        Consumer cs = new Consumer(queue_prepare_all, "consumer1", log);
+
+        if (cs.open() == false)
+        {
+            log.trace("Consumer not open :%s", cs);
+            return;
+        }
+
+        bool f_next = true;
+        while (f_next)
+        {
+            string data = cs.pop();
+            if (data is null)
+            {
+                log.trace("queue, pop is null");
+                continue;
+            }
+
             ResultCode rc;
             Individual indv;
 
-            int        res = cbor2individual(&indv, value);
+            int        res = cbor2individual(&indv, data);
 
             if (res >= 0 && indv !is Individual.init)
             {
                 Individual prev_indv;
 
-                rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, value, indv, "", -1);
+                rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
             }
 
             if (rc == ResultCode.OK)
@@ -215,20 +264,17 @@ class VedaModule // : WSLink
             else
             {
                 log.trace("break command prepare_all, err=%s", text(rc));
-                return false;
+                return;
             }
 
             if (count_prepared % 1000 == 0)
                 log.trace_console("prepare_all (%d/%d)", total_count, count_prepared);
-
-            return true;
         }
 
-        context.freeze();
-        log.trace_console("start prepare_all");
-        context.get_subject_storage_db().get_of_cursor(&pp);
+
         log.trace_console("end prepare_all");
-        context.unfreeze();
+        //cs.remove();
+        //queue_prepare_all.remove();
     }
 
     private void prepare_queue()

@@ -132,7 +132,7 @@ class ScriptProcess : VedaModule
             if (script.compiled_script !is null)
             {
                 //log.trace("look script:%s", script_id);
-                if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
+                if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
                 {
                     //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                     continue;
@@ -148,16 +148,16 @@ class ScriptProcess : VedaModule
                 try
                 {
 /*
-    if (count_sckip == 0)
-    {
-   long now_sckip;
-    writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
-    readf(" %d", &now_sckip);
-    count_sckip = now_sckip;
-    }
+				    if (count_sckip == 0)
+				    {
+					    long now_sckip;
+					    writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+					    readf(" %d", &now_sckip);
+					    count_sckip = now_sckip;
+				    }
 
-    if (count_sckip > 0)
-        count_sckip--;
+				    if (count_sckip > 0)
+				        count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
                     log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
@@ -184,10 +184,11 @@ class ScriptProcess : VedaModule
                 }
             }
         }
-//                                writeln("count:", count);
 
-        //clear_script_data_cache ();
-        // writeln("scripts B #e *", process_name);
+		//log.trace("count:", count);
+
+        // clear_script_data_cache ();
+        // log.trace("scripts B #e *", process_name);
         committed_op_id = op_id;
 
         return ResultCode.OK;
