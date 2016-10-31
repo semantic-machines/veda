@@ -200,15 +200,31 @@ struct decimal
     /// конструктор
     this(string num)
     {
-        string[] ff = split(num, ".");
+    	if (num is null)
+	    	return;
+    	
+    	if (num.indexOf (',') > 0)
+    	{    		
+	        string[] ff = split(num, ",");
+	        writeln ("ff=", ff);
+    		if (ff.length == 2)
+    		{
+		        mantissa = to!long (ff[0]);
+		        exponent = to!byte (ff[1]);    			
+    		}
+    	}
+    	else
+    	{
+	        string[] ff = split(num, ".");
 
-        if (ff.length == 2)
-        {
-            byte sfp = cast(byte)ff[ 1 ].length;
+	        if (ff.length == 2)
+	        {
+	            byte sfp = cast(byte)ff[ 1 ].length;
 
-            mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
-            exponent = -sfp;
-        }
+	            mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
+	            exponent = -sfp;
+	        }
+    	}
     }
 
     /// конструктор

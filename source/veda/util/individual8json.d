@@ -1,6 +1,6 @@
 module veda.util.individual8json;
 
-import std.conv, std.stdio, std.json, std.datetime;
+import std.conv, std.stdio, std.json, std.datetime, std.string;
 import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
@@ -250,7 +250,14 @@ Resource json_to_resource(JSONValue resource_json)
         else if (type == DataType.Datetime)
         {
             string val = resource_json.getString("data");
-            long   tm  = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            
+            long   tm;
+            
+            if (val.indexOf('-') >= 1)
+                tm  = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            else
+                tm = to!long (val);
+            
             resource = tm;
         }
 

@@ -214,20 +214,20 @@ class VedaModule // : WSLink
             }
             else
             {
-                log.trace("break command unload_all, err=%s", text(rc));
+                log.trace("break command prepare_all, err=%s", text(rc));
                 return false;
             }
 
             if (count_prepared % 1000 == 0)
-                log.trace_console("unload_all (%d/%d)", total_count, count_prepared);
+                log.trace_console("prepare_all (%d/%d)", total_count, count_prepared);
 
             return true;
         }
 
         context.freeze();
-        log.trace_console("start unload_all");
+        log.trace_console("start prepare_all");
         context.get_subject_storage_db().get_of_cursor(&pp);
-        log.trace_console("end unload_all");
+        log.trace_console("end prepare_all");
         context.unfreeze();
     }
 
