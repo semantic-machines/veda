@@ -375,7 +375,7 @@ class VedaModule // : WSLink
 
         if (sticket is Ticket.init || sticket.result != ResultCode.OK)
         {
-            writeln("SYS TICKET, systicket=", sticket);
+            log.trace("load_systicket: fail systicket=%s", text (sticket));
 
             bool is_superadmin = false;
 
@@ -389,12 +389,13 @@ class VedaModule // : WSLink
             {
                 context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
 
-                writeln("@@ child_process is_superadmin=", is_superadmin);
+                log.trace("child_process is_superadmin=%s", text (is_superadmin));
                 Thread.sleep(dur!("seconds")(1));
             }
         }
 
-        set_global_systicket(sticket);
+       set_global_systicket(sticket);
+       log.trace("load_systicket: systicket=%s", text (sticket));
     }
 
     void ev_CALLBACK_GET_THREAD_ID()

@@ -52,8 +52,9 @@ public class IndexerContext
 
     Ticket *ticket;
 
-    bool init()
+    bool init(Ticket *_ticket)
     {
+    	ticket = _ticket;
         string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
         if (exists(file_name_key2slot) == false)

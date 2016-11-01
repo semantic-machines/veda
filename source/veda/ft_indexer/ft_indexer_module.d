@@ -97,7 +97,7 @@ class FTIndexerProcess : VedaModule
     {
         //writeln("@ configure B");
         ictx.thread_name = process_name;
-        ictx.init();
+        ictx.init(&sticket);
 
         //writeln("@ configure E");
         return true;
