@@ -244,7 +244,7 @@ class FanoutProcess : VedaModule
                 }
                 else if (rs.type == DataType.Decimal)
                 {
-                    sql_type = "DECIMAL (10,2)";
+                    sql_type = "DECIMAL (10,4)";
                 }
                 else if (rs.type == DataType.String)
                 {
