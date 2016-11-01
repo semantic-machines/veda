@@ -65,14 +65,7 @@ v-s:checkQuestion
   rdfs:range xsd:string ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
-#---------------------------------------------------------
-v-s:Comment
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Comment"@en ;
-  rdfs:label "Комментарий"@ru ;
-.
+
 #---------------------------------------------------------
 v-s:Risk
   rdf:type owl:Class ;

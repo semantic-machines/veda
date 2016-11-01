@@ -1,0 +1,213 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/mondi-schema-Documentation/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology. Documentation"@en ;
+  rdfs:label "Онтология системы Veda. Документация"@ru ;
+  v-s:loadPriority 11 ;
+.
+#-- Классы --
+
+v-s:Comment
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:label "Comment"@en ;
+  rdfs:label "Комментарий"@ru ;
+.
+
+# ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
+mnd-s:Comment_BaseUser
+  rdf:type v-s:Group ;
+  rdfs:label "Основные пользователи Comment" ;
+.
+
+mnd-s:Comment_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject mnd-s:Comment_group ;
+  v-s:permissionSubject mnd-s:Comment_BaseUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "R. Все пользователи. Индивиды Comment" ;
+.
+
+mnd-s:Comment_permission2
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject mnd-s:Comment ;
+  v-s:permissionSubject mnd-s:Comment_BaseUser ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс Comment" ;
+.
+
+mnd-s:AllUsersGroup_CommentBaseUser_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf mnd-s:Comment_BaseUser ;
+  v-s:resource cfg:AllUsersGroup ;
+  rdfs:label "Все пользователи входят в группу Основные пользователи Comment" ;
+.
+#--------------------- Comments template ---------------------
+
+v-ui:CommentsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Template for comments rendering"@en ;
+  rdfs:label "Шаблон для отображения комментариев"@ru ;
+  v-ui:template """
+<div>
+  <h3 about="v-s:Comments" property="rdfs:label"></h3>
+  <hr class="margin-sm">
+  <div about="@" rel="v-s:hasComment" data-template="v-ui:RecursiveCommentTemplate"></div>
+  <div id="new-comment"></div>
+  <br>
+  <button class="btn btn-info" id="add-comment" about="v-s:LeaveComment" property="rdfs:label"></button>
+</div>
+<script>
+  $("#add-comment", template).click(function () {
+    var _class = new veda.IndividualModel("v-s:Comment"),
+        comment = new veda.IndividualModel(),
+        cntr = $("<div>").appendTo( $("#new-comment", template) ),
+        tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate");
+    comment["rdf:type"] = [_class];
+    comment["v-s:backwardTarget"] = [individual];
+    comment["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
+    comment.present(cntr, tmpl, "edit");
+    comment.one("individual:beforeReset", function () {
+      cntr.hide();
+    });
+    comment.one("individual:afterSave", function () {
+      cntr.hide();
+    });
+  });
+
+  template.on("click", "#reply.action", function (e) {
+    e.preventDefault();
+    var commentTemplate = $(this).closest("[resource]"),
+        targetComment = new veda.IndividualModel( commentTemplate.attr("resource") ),
+        cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
+        _class = new veda.IndividualModel("v-s:Comment"),
+        tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate"),
+        reply = new veda.IndividualModel();
+    reply["rdf:type"] = [_class];
+    reply["v-s:backwardTarget"] = [targetComment];
+    reply["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
+    reply.present(cntr, tmpl, "edit");
+
+    reply.one("individual:beforeReset", function () {
+      cntr.hide();
+    });
+    reply.one("individual:afterSave", function () {
+      cntr.hide();
+    });
+  });
+
+  template.on("click", "#edit-comment.action", function (e) {
+    e.preventDefault();
+    var tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate"),
+        commentTemplate = $(this).closest("[resource]"),
+        comment = new veda.IndividualModel( commentTemplate.attr("resource") ),
+        cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
+        commentContent = $("#comment-content", commentTemplate).hide();
+    comment.present(cntr, tmpl, "edit");
+    comment.one("individual:beforeReset", function () {
+      commentContent.show();
+      cntr.remove();
+    });
+    comment.one("individual:afterSave", function () {
+      commentContent.show();
+      cntr.remove();
+    });
+  });
+
+  //# sourceURL=v-s:CommentTreeTemplate
+</script>
+    """;
+.
+
+v-ui:SingleCommentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Comment ;
+  rdfs:label "Template for v-s:Comment class"@en ;
+  rdfs:label "Шаблон для класса v-s:Comment"@ru ;
+  v-ui:template """
+<div>
+  <br>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <em about="rdfs:comment" property="rdfs:label"></em>
+      <div property="rdfs:label" class="view -edit -search"></div>
+      <veda-control data-type="text" rows="3" property="rdfs:label" class="-view edit -search"></veda-control>
+      <em about="v-s:attachment" property="rdfs:label">Вложение</em>
+      <div rel="v-s:attachment" data-template="v-ui:FileTemplate" data-embedded="true"></div>
+      <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search"></veda-control>
+      <br>
+      <button class="btn btn-primary action view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+      <button class="btn btn-success action -view edit -search" id="save">Ok</button>
+      <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+      <button class="btn btn-link action view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+
+v-ui:RecursiveCommentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Template for v-s:Comment class"@en ;
+  rdfs:label "Шаблон для класса v-s:Comment"@ru ;
+  v-ui:template """
+<script>
+  if ( individual.hasValue("v-s:hasComment") ) {
+    $("#edit-comment, #delete", template).remove();
+  }
+</script>
+<div class="media">
+  <div class="media-left" rel="v-s:creator">
+    <div about="@" rel="v-s:employee">
+      <script>
+        individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
+      </script>
+      <div style="width:50px;">
+        <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+        <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="media-body">
+    <div id="comment-content">
+      <div>
+        <span rel="v-s:creator">
+          <span>
+            <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
+            <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
+          </span>
+        </span>
+        <small>
+          <span>&bullet;&nbsp;&nbsp;</span>
+          <span property="v-s:created" data-template="v-ui:LabelTemplate"></span>
+        </small>
+        <br>
+        <span property="rdfs:label"></span>
+      </div>
+      <div rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
+      <small>
+        <a href="#" id="reply" class="action" about="v-s:Reply" property="rdfs:label"></a>
+        &nbsp;
+        <a href="#" id="edit-comment" class="action" about="v-s:Edit" property="rdfs:label"></a>
+        &nbsp;
+        <a href="#" id="delete" class="action" about="v-s:Delete" property="rdfs:label"></a>
+      </small>
+    </div>
+    <div id="new-reply"></div>
+    <hr class="margin-sm">
+    <div about="@" rel="v-s:hasComment" data-template="v-ui:RecursiveCommentTemplate"></div>
+  </div>
+</div>
+  """ ;
+.
+
+# ------------  / Comments template ---------------
