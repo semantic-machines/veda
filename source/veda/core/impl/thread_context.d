@@ -605,8 +605,23 @@ class PThreadContext : Context
     {
         Ticket ticket;
 
+        version (isServer)
+        {
+        	log.trace ("is server");
+        }
+
+        version (isModule)
+        {
+        	log.trace ("is module");
+        }
+
+        version (WebServer)
+        {
+        	log.trace ("is webserver");
+        }
+
         //if (trace_msg[ T_API_60 ] == 1)
-        log.trace("trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
+        log.trace("trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
         ticket.result = ResultCode.Authentication_Failed;
 
@@ -643,6 +658,7 @@ class PThreadContext : Context
 
                     ticket = create_new_ticket(user_id);
 
+			        log.trace("trusted authenticate, result ticket=[%s]", ticket);
                     return ticket;
                 }
             }
