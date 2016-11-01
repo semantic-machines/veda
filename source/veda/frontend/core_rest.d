@@ -347,13 +347,47 @@ class VedaStorageRest : VedaStorageRest_API
         return ticket;
     }
 
-    Ticket get_ticket_trusted(string ticket, string login)
+    Ticket get_ticket_trusted(string ticket_id, string login)
     {
-        Ticket new_ticket = context.get_ticket_trusted(ticket, login);
+        Ticket ticket;
 
-        if (new_ticket.result != ResultCode.OK)
-            throw new HTTPStatusException(new_ticket.result, text(new_ticket.result));
-        return new_ticket;
+        if (wsc_server_task !is Task.init)
+        {
+            Json json = Json.emptyObject;
+            json[ "function" ] = "get_ticket_trusted";
+            json[ "ticket" ]   = ticket_id;
+            json[ "login" ]    = login;
+
+            vibe.core.concurrency.send(wsc_server_task, json, Task.getThis());
+
+            string resp;
+            vibe.core.concurrency.receive((string res){ resp = res; });
+
+            if (resp is null)
+                throw new HTTPStatusException(ResultCode.Not_Authorized);
+
+            Json jres = parseJson(resp);
+            //log.trace("jres '%s'", jres);
+
+            string type_msg = jres[ "type" ].get!string;
+
+            //log.trace("type_msg '%s'", type_msg);
+
+            if (type_msg != "ticket")
+                throw new HTTPStatusException(ResultCode.Not_Authorized);
+
+            ticket.end_time = jres[ "end_time" ].get!long;
+            ticket.id       = jres[ "id" ].get!string;
+            ticket.user_uri = jres[ "user_uri" ].get!string;
+            ticket.result   = cast(ResultCode)jres[ "result" ].get!long;
+
+            //log.trace("new ticket= '%s'", ticket);
+        }
+
+        if (ticket.result != ResultCode.OK)
+            throw new HTTPStatusException(ticket.result, text(ticket.result));
+
+        return ticket;
     }
 
     long get_operation_state(int module_id, long wait_op_id)
@@ -382,16 +416,16 @@ class VedaStorageRest : VedaStorageRest_API
 
         Json     jreq = Json.emptyObject;
 
-        jreq[ "function" ]   = "send_to_module";
-        jreq[ "module_id" ]  = module_id;
-        jreq[ "msg" ] = msg;
+        jreq[ "function" ]  = "send_to_module";
+        jreq[ "module_id" ] = module_id;
+        jreq[ "msg" ]       = msg;
 
         vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
         vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
 
         //log.trace("send:flush #e");
         if (op_res.result != ResultCode.OK)
-            throw new HTTPStatusException(op_res.result, text (op_res.result));    	
+            throw new HTTPStatusException(op_res.result, text(op_res.result));
     }
 
     void flush(int module_id, long wait_op_id)
@@ -412,7 +446,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         //log.trace("send:flush #e");
         if (op_res.result != ResultCode.OK)
-            throw new HTTPStatusException(op_res.result, text (op_res.result));
+            throw new HTTPStatusException(op_res.result, text(op_res.result));
     }
 
     OpResult restart(string _ticket)
@@ -451,15 +485,15 @@ class VedaStorageRest : VedaStorageRest_API
 
         Json     jreq = Json.emptyObject;
 
-        jreq[ "function" ]   = "backup";
-        jreq[ "to_binlog" ]  = to_binlog;
+        jreq[ "function" ]  = "backup";
+        jreq[ "to_binlog" ] = to_binlog;
 
         vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
         vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
 
         //log.trace("send:flush #e");
         if (op_res.result != ResultCode.OK)
-            throw new HTTPStatusException(op_res.result, text (op_res.result));
+            throw new HTTPStatusException(op_res.result, text(op_res.result));
 
         return;
     }
@@ -535,7 +569,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (individual != Individual.init)
             {
                 res = individual_to_json(individual);
-                rc = ResultCode.OK;
+                rc  = ResultCode.OK;
             }
             else
             {
@@ -839,9 +873,9 @@ public long get_last_opid()
 void handleWebSocketConnection_CCUS(scope WebSocket socket)
 {
     const(HTTPServerRequest)hsr = socket.request();
-    
-    string ch_uid =  text(hsr.clientAddress);
-    
+
+    string ch_uid = text(hsr.clientAddress);
+
     log.trace("CCUS spawn socket connection [%s]", ch_uid);
 
     // Client Cache Update Subscription
@@ -850,7 +884,7 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
     string get_list_of_changes()
     {
-        string res;
+        string   res;
 
         string[] keys = count_2_uid.keys;
         foreach (i_uid; keys)
@@ -903,15 +937,15 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
             if (!socket.connected)
                 break;
 
-            string   inital_message = socket.receiveText();
+            string inital_message = socket.receiveText();
             //socket.send("Ok");
-            
-            string[] kv             = inital_message.split('=');
+
+            string[] kv = inital_message.split('=');
             if (kv.length == 2)
             {
                 if (kv[ 0 ] == "ccus")
                 {
-                    chid = kv[ 1 ];                    
+                    chid = kv[ 1 ];
                     log.trace("[%s] init channel [%s]", ch_uid, chid);
                 }
             }
@@ -934,24 +968,24 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
 
                     if (msg_from_sock !is null && msg_from_sock.length > 0)
                     {
-                    	//log.trace ("[%s] recv msg [%s]", ch_uid, msg_from_sock);
-                    	
+                        //log.trace ("[%s] recv msg [%s]", ch_uid, msg_from_sock);
+
                         if (msg_from_sock[ 0 ] == '#' && msg_from_sock.length > 3) // server уведомляет об изменении индивида
                         {
-                        	string update_indv_msg = msg_from_sock[1..$];                        	
-                        	string[] msg_parts = update_indv_msg.split (';');
-                        	if (msg_parts.length == 3)
-                        	{ 
-                        		string uid = msg_parts[0];
-                        		long update_counter = to!long(msg_parts[1]);
-                        		long opid = to!long(msg_parts[2]);
-                        		set_updated_uid(uid, opid, update_counter);
-	                        	//log.trace ("[%s] server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", ch_uid, uid, opid, update_counter);
-	                        	//socket.send("Ok");
-                        	}
-                        	else
-	                        	socket.send("Err:invalid message");
-	                        continue;	
+                            string   update_indv_msg = msg_from_sock[ 1..$ ];
+                            string[] msg_parts       = update_indv_msg.split(';');
+                            if (msg_parts.length == 3)
+                            {
+                                string uid            = msg_parts[ 0 ];
+                                long   update_counter = to!long (msg_parts[ 1 ]);
+                                long   opid           = to!long (msg_parts[ 2 ]);
+                                set_updated_uid(uid, opid, update_counter);
+                                //log.trace ("[%s] server уведомляет об изменении индивида uid=%s opid=%d update_counter=%d", ch_uid, uid, opid, update_counter);
+                                //socket.send("Ok");
+                            }
+                            else
+                                socket.send("Err:invalid message");
+                            continue;
                         }
                         else if (msg_from_sock[ 0 ] == '=')
                         {
@@ -1030,11 +1064,11 @@ void handleWebSocketConnection_CCUS(scope WebSocket socket)
                     long last_opid = get_last_opid();
                     if (last_check_opid < last_opid)
                     {
-	                    //log.trace ("[%s] last_check_opid(%d) < last_opid(%d)", ch_uid, last_check_opid, last_opid);
+                        //log.trace ("[%s] last_check_opid(%d) < last_opid(%d)", ch_uid, last_check_opid, last_opid);
                         string res = get_list_of_changes();
                         if (res !is null)
                         {
-                        	//log.trace ("[%s] send list of change, res=%s", ch_uid, res);
+                            //log.trace ("[%s] send list of change, res=%s", ch_uid, res);
                             socket.send(res);
                         }
                         last_check_opid = last_opid;

@@ -15,17 +15,17 @@ private
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, veda.core.search.vql;
     import veda.util.module_info;
-	import veda.common.logger;
+    import veda.common.logger;
 
-    version (isServer) 
-	{
-		alias veda.server.storage_manager storage_module;
-	    alias veda.server.acl_manager acl_module;
-	    alias veda.server.load_info load_info;
-	}    
+    version (isServer)
+    {
+        alias veda.server.storage_manager storage_module;
+        alias veda.server.acl_manager     acl_module;
+        alias veda.server.load_info       load_info;
+    }
 }
 
-Tid dummy_tid;
+Tid  dummy_tid;
 
 File *ff_key2slot_r = null;
 public int[ string ] read_key2slot()
@@ -88,10 +88,10 @@ class PThreadContext : Context
 
     private long        last_ticket_manager_op_id = 0;
 
-	public Logger get_logger ()
-	{
-		return log;
-	}
+    public Logger get_logger()
+    {
+        return log;
+    }
 
     version (isModule)
     {
@@ -563,7 +563,7 @@ class PThreadContext : Context
 
         ticket.result = ResultCode.Fail_Store;
 
-		Resources type = [Resource(ticket__Ticket)];
+        Resources type = [ Resource(ticket__Ticket) ];
 
         new_ticket.resources[ rdf__type ] = type;
 
@@ -605,8 +605,8 @@ class PThreadContext : Context
     {
         Ticket ticket;
 
-        if (trace_msg[ T_API_60 ] == 1)
-            log.trace("trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
+        //if (trace_msg[ T_API_60 ] == 1)
+        log.trace("trusted authenticate, ticket=[%s] login=[%s]", ticket, login);
 
         ticket.result = ResultCode.Authentication_Failed;
 
@@ -617,7 +617,6 @@ class PThreadContext : Context
         }
 
         Ticket *tr_ticket = get_ticket(tr_ticket_id);
-
         if (tr_ticket.result == ResultCode.OK)
         {
             bool is_superadmin = false;
@@ -629,7 +628,6 @@ class PThreadContext : Context
             }
 
             get_rights_origin(tr_ticket, "cfg:SuperUser", &trace);
-
 
             if (is_superadmin)
             {
@@ -651,7 +649,6 @@ class PThreadContext : Context
         }
         else
             log.trace("WARN: trusted authenticate: problem ticket [%s]", ticket);
-
 
         log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
@@ -1323,8 +1320,10 @@ class PThreadContext : Context
                     return res;
                 }
 
-                res.result = storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id, ignore_freeze,
-                                                res.op_id);
+                res.result =
+                    storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id,
+                                       ignore_freeze,
+                                       res.op_id);
                 //log.trace("res.result=%s", res.result);
 
                 if (res.result != ResultCode.OK)
@@ -1529,9 +1528,9 @@ class PThreadContext : Context
         }
         version (isModule)
         {
-                JSONValue req_body;
-                req_body[ "function" ]       = "freeze";
-                OpResult res = reqrep_2_main_module(req_body);        	
+            JSONValue req_body;
+            req_body[ "function" ] = "freeze";
+            OpResult  res = reqrep_2_main_module(req_body);
         }
     }
 
@@ -1543,9 +1542,9 @@ class PThreadContext : Context
         }
         version (isModule)
         {
-                JSONValue req_body;
-                req_body[ "function" ]       = "unfreeze";
-                OpResult res = reqrep_2_main_module(req_body);        	        	
+            JSONValue req_body;
+            req_body[ "function" ] = "unfreeze";
+            OpResult  res = reqrep_2_main_module(req_body);
         }
     }
 
@@ -1645,8 +1644,8 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email || 
-            	module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
+            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||
+                module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
             {
                 return wait_module(module_id, op_id, timeout);
             }
@@ -1700,21 +1699,21 @@ class PThreadContext : Context
         {
             JSONValue res;
 
-			JSONValue jsn;
-			
-			try
-			{
-	            jsn = parseJSON(in_msg);
-			}
-			catch (Throwable tr)
-			{
-	            log.trace("ERR! fail parse msg=%s, err=%s", in_msg, tr.msg);
+            JSONValue jsn;
+
+            try
+            {
+                jsn = parseJSON(in_msg);
+            }
+            catch (Throwable tr)
+            {
+                log.trace("ERR! fail parse msg=%s, err=%s", in_msg, tr.msg);
                 res[ "type" ]   = "OpResult";
                 res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ]  = -1;		
-                
-                return res.toString();		
-			}			
+                res[ "op_id" ]  = -1;
+
+                return res.toString();
+            }
             //log.trace("get msg=%s", jsn);
 
             JSONValue fn = jsn[ "function" ];
@@ -1735,6 +1734,19 @@ class PThreadContext : Context
                 res[ "end_time" ] = ticket.end_time;
 
                 //log.trace("authenticate: res=%s", res);
+            }
+            else if (sfn == "get_ticket_trusted")
+            {
+                JSONValue ticket_id = jsn[ "ticket" ];
+                JSONValue login     = jsn[ "login" ];
+
+                Ticket    ticket = this.get_ticket_trusted(ticket_id.str, login.str);
+
+                res[ "type" ]     = "ticket";
+                res[ "id" ]       = ticket.id;
+                res[ "user_uri" ] = ticket.user_uri;
+                res[ "result" ]   = ticket.result;
+                res[ "end_time" ] = ticket.end_time;
             }
             else if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
             {
@@ -1807,7 +1819,7 @@ class PThreadContext : Context
             else if (sfn == "send_to_module")
             {
                 P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                string       msg  = jsn[ "msg" ].str;
+                string     msg         = jsn[ "msg" ].str;
 
                 ResultCode rc;
 
@@ -1831,23 +1843,23 @@ class PThreadContext : Context
             }
             else if (sfn == "freeze")
             {
-            	this.freeze();
+                this.freeze();
                 res[ "type" ]   = "OpResult";
                 res[ "result" ] = ResultCode.OK;
                 res[ "op_id" ]  = -1;
             }
             else if (sfn == "unfreeze")
             {
-            	this.unfreeze();            	
+                this.unfreeze();
                 res[ "type" ]   = "OpResult";
                 res[ "result" ] = ResultCode.OK;
                 res[ "op_id" ]  = -1;
             }
             else
             {
-                res[ "type" ] = "OpResult";
+                res[ "type" ]   = "OpResult";
                 res[ "result" ] = ResultCode.Bad_Request;
-                res[ "op_id" ] = -1;            	
+                res[ "op_id" ]  = -1;
             }
 
             return res.toString();
