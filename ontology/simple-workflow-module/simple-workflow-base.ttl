@@ -226,6 +226,14 @@ s-wf:map_decision_of_set_responsible
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_result_decision_from_task_result
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_result_decision ;
+  v-wf:mappingExpression  "task_result.getValue ('result_decision')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+
 s-wf:map_last_actor_4_TR_last_actor
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_last_actor ;
@@ -389,6 +397,15 @@ s-wf:SimpleRouteStartForm_participant
   rdf:type rdf:Property ;
   rdfs:label "Кому"@ru ;
   rdfs:label "To"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range v-s:Appointment ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:SimpleRouteStartForm_possible_decisions
+  rdf:type rdf:Property ;
+  rdfs:label "Варианты ответа"@ru ;
+  rdfs:label "Possible decisions"@en ;
   rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
   rdfs:isDefinedBy s-wf: ;
@@ -715,7 +732,8 @@ s-wf:ComplexRouteStartForm_Template
       'review',
       'instruction',
       'examination',
-      'distribution'
+      'distribution',
+      'auto_instruction'
     ];
     var complex = 's-wf:ComplexRouteStartForm_';
     var simple = 's-wf:SimpleRouteStartForm_';
@@ -730,6 +748,17 @@ s-wf:ComplexRouteStartForm_Template
         routes[stage]['rdf:type'] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
       });
 
+    // DEFAULT
+    for (i = 1; i <= 6; i++) { 
+ 	  routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  	}
+ 	routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    
+    // CUSTOM
     if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill
       routes['coordination1'][simple+'participant'] = doc['v-s:creator'];
       routes['coordination1'][simple+'visible'] = [true];
@@ -757,7 +786,7 @@ s-wf:ComplexRouteStartForm_Template
      stages.forEach(function(stage) {
         var routeid = complex+stage;
         var sub = individual[routeid][0];
-        if (!sub || !sub.hasValue(simple+'participant')) {
+        if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
         	delete individual.properties[routeid];
         }
      });
