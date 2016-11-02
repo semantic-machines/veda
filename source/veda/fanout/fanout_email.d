@@ -37,15 +37,18 @@ class FanoutProcess : VedaModule
                                 string event_id,
                                 long op_id)
     {
-        bool res;
+        ResultCode res;
 
         try
         {
             if (smtp_conn !is null)
             {
                 res = push_to_smtp(prev_indv, new_indv);
-                if (res == false)
+                if (res == ResultCode.Connect_Error)
+                {
                     connect_to_smtp(context);
+                    return ResultCode.Connect_Error;
+                }    
             }
         }
         catch (Throwable ex)
@@ -53,7 +56,7 @@ class FanoutProcess : VedaModule
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
-        if (res == true)
+        if (res == ResultCode.OK)
         {
             committed_op_id = op_id;
             return ResultCode.OK;
@@ -186,7 +189,7 @@ class FanoutProcess : VedaModule
         return cast(string)src;
     }
 
-    private bool push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
+    private ResultCode push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     {
         SmtpMessage message;
 
@@ -202,11 +205,11 @@ class FanoutProcess : VedaModule
             string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
             if (isDraftOf !is null)
-                return true;
+                return ResultCode.OK;
 
             if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
                                         (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
-                return true;
+                return ResultCode.OK;
 
             Resources types        = new_indv.getResources("rdf:type");
             bool      need_prepare = false;
@@ -222,8 +225,9 @@ class FanoutProcess : VedaModule
 
 
             if (!need_prepare)
-                return true;
+                return ResultCode.OK;
 
+			ResultCode res;
             bool is_send = false;
 
             log.trace("push_to_smtp[%s]: start prepare", new_indv.uri);
@@ -294,9 +298,11 @@ class FanoutProcess : VedaModule
                         if (!res.success || res.code == 451)
                         {
                             is_send = false;
+                            res = ResultCode.Connect_Error;
                         }
                         else
                         {
+                        	res = ResultCode.OK;
                             is_send = true;
                             new_indv.addResource("v-s:isSuccess", Resource(true));
                         }
@@ -320,12 +326,12 @@ class FanoutProcess : VedaModule
             if (is_send == false)
                 log.trace("WARN: push_to_smtp[%s]: not send", new_indv.uri);
 
-            return is_send;
+            return res;
         }
         catch (Throwable ex)
         {
             log.trace("ERR! push_to_smtp[%s], \n%s", new_indv.uri, ex.info);
-            return false;
+            return ResultCode.Internal_Server_Error;
         }
     }
 
