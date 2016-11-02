@@ -118,7 +118,7 @@ void acl_manager(string thread_name, string db_path)
                             if (committed_op_id != l_op_id)
                             {
                                 storage.flush(1);
-                                log.trace("acl commit op_id=%d", l_op_id);
+                                //log.trace("acl commit op_id=%d", l_op_id);
                                 committed_op_id = l_op_id;
                                 module_info.put_info(l_op_id, committed_op_id);
                             }
