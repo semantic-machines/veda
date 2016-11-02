@@ -1,6 +1,6 @@
 module veda.bootstrap;
 
-import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal;
+import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal, std.file;
 
 struct ProcessInfo
 {
@@ -148,11 +148,22 @@ void main(char[][] args)
 
     Pid server_pid;
 
+	string path = "./logs";
+    try
+    {
+            mkdir(path);
+            writeln("create folder: ", path);
+    }
+    catch (Exception ex)
+    {
+    }
+
+
     foreach (ml; modules)
     {
         if (ml != "veda")
         {
-            auto _logFile = File(ml ~ "-errors.log", "w");
+            auto _logFile = File("logs/" ~ ml ~ "-errors.log", "w");
             writeln("start " ~ ml);
             auto _pid = spawnProcess("./" ~ ml,
                                      std.stdio.stdin,

@@ -203,7 +203,7 @@ private class LoggerQueue
 
         auto       writer = appender!string();
 
-        formattedWrite(writer, "%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, dt.year, dt.month, dt.day, dt.hour, dt.minute,
+        formattedWrite(writer, "logs/%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, dt.year, dt.month, dt.day, dt.hour, dt.minute,
                        dt.second,
                        fsec,
                        ext);
