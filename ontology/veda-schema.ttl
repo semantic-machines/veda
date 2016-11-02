@@ -225,10 +225,7 @@ v-s:ReportsForClass
 v-ui:forClass
   rdfs:domain v-s:ReportsForClass ;
 .
-v-s:filePath
-  rdfs:domain v-s:ReportsForClass ;
-  rdfs:domain v-s:Report ;
-.
+
 v-s:fileFormat
   rdf:type owl:DatatypeProperty ;
   rdfs:label "File format"@en ;

@@ -12,7 +12,7 @@
   v-s:loadPriority 6 ;
 .
 
-### ------------------------------------------------------
+# ------------------------------------------------------------
 v-s:BackwardLink
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
@@ -33,26 +33,52 @@ v-s:backwardProperty
   rdfs:label "целевое свойство"@ru ;
   rdfs:range owl:ObjectProperty ;
 .
-### ------------------------------------------------------
+# ------------------------------------------------------------
 v-s:Exportable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Exportable thing"@en ;
   rdfs:label "Выгружаемая сущность"@ru ;
 .
-### ------------------------------------------------------
+# ------------------------------------------------------------
 v-s:Deliverable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Сущность подлежащая доставке"@ru ;
   rdfs:label "Deliverable thing"@en ;
 .
+v-s:infoOfExecuting
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:label "Информация о выполнении" ;
+  rdfs:range xsd:string ;
+.
+v-s:isSuccess
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:label "Завершено успешно" ;
+  rdfs:range xsd:boolean ;
+.
+v-s:subject
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Subject" ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:range xsd:string ;
+.
+v-s:messageBody
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Message body" ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:range xsd:string ;
+.
+# ------------------------------------------------------------
 v-s:Email
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Deliverable ;
   rdfs:label "E-mail"@en ;
   rdfs:label "Электронное письмо"@ru ;
 .
+
 ### ------------------------------------------------------
 v-s:ClassAuthorized
   rdf:type owl:Class ;
@@ -88,6 +114,20 @@ v-s:actualVersion
   rdfs:domain v-s:Versioned ;
   rdfs:label "Actual version"@en ;
   rdfs:label "Актуальная версия"@ru ;
+  rdfs:range v-s:Versioned ;
+.
+v-s:previousVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Versioned ;
+  rdfs:label "Previous version"@en ;
+  rdfs:label "Предыдущая версия"@ru ;
+  rdfs:range v-s:Versioned ;
+.
+v-s:nextVersion
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Versioned ;
+  rdfs:label "Next version"@en ;
+  rdfs:label "Следующая версия"@ru ;
   rdfs:range v-s:Versioned ;
 .
 ### ------------------------------------------------------

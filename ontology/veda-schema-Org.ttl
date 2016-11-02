@@ -153,6 +153,9 @@ v-s:HRRecord
   rdfs:label "HR record"@en ;
   rdfs:label "Кадровая запись"@ru ;
 .
+
+# Тут не хватает полей, которые описаны в v-s:PermissionStatement  v-s:startTime   v-s:endTime
+
 v-s:employee
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:HRRecord ;
