@@ -227,7 +227,7 @@ class FanoutProcess : VedaModule
             if (!need_prepare)
                 return ResultCode.OK;
 
-			ResultCode res;
+			ResultCode rc;
             bool is_send = false;
 
             log.trace("push_to_smtp[%s]: start prepare", new_indv.uri);
@@ -298,11 +298,11 @@ class FanoutProcess : VedaModule
                         if (!res.success || res.code == 451)
                         {
                             is_send = false;
-                            res = ResultCode.Connect_Error;
+                            rc = ResultCode.Connect_Error;
                         }
                         else
                         {
-                        	res = ResultCode.OK;
+                        	rc = ResultCode.OK;
                             is_send = true;
                             new_indv.addResource("v-s:isSuccess", Resource(true));
                         }
@@ -326,7 +326,7 @@ class FanoutProcess : VedaModule
             if (is_send == false)
                 log.trace("WARN: push_to_smtp[%s]: not send", new_indv.uri);
 
-            return res;
+            return rc;
         }
         catch (Throwable ex)
         {

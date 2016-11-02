@@ -31,7 +31,7 @@ class VQL
 
     private Context      context;
     private XapianReader xr;
-    private Logger 		 log;
+    private Logger       log;
 
     this(Context _context)
     {
@@ -40,7 +40,7 @@ class VQL
         section_is_found = new bool[ sections.length ];
 
         context = _context;
-    	log = context.get_logger();
+        log     = context.get_logger();
         xr      = new XapianReader(_context);
     }
 

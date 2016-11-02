@@ -357,7 +357,7 @@ class VedaModule // : WSLink
                 {
                     cs.commit();
                     module_info.put_info(op_id, committed_op_id);
-                    log.trace("ERR! message fail prepared, skip.");
+                    log.trace("ERR! message fail prepared (res=%s), skip.", text (res));
                 }
             }
             catch (Throwable ex)

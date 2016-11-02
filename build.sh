@@ -2,7 +2,7 @@
 
 #!/bin/sh
 rm *.log
-rm ./log
+rm ./logs/*.log
 if [ ! -f ./ontology/config.ttl ]
 then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl

@@ -17,12 +17,12 @@ class IndexerProperty
     private         string[ string ] class__2__database;
     private         Individual[ string ] uri__2__indiviual;
     private         bool[ string ]  database__2__true;
-	private 		Logger log;
+    private Logger  log;
 
     this(Context _context)
     {
         context = _context;
-        log = context.get_logger();
+        log     = context.get_logger();
     }
 
     bool[ string ] get_dbnames()

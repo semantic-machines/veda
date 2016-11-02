@@ -14,22 +14,12 @@ private
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
-// ////// Logger ///////////////////////////////////////////
-import veda.common.logger;
-Logger _log;
-Logger log()
-{
-    if (_log is null)
-        _log = new Logger("veda-core-" ~ process_name, "log", "ONTO");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
-
 alias bool[ string ] Classes;
 
 class Onto
 {
     private Context context;
+    Logger log;
     public int      reload_count = 0;
 
     private         Individual[ string ] individuals;
@@ -40,6 +30,7 @@ class Onto
     public this(Context _context)
     {
         context = _context;
+        log = context.get_logger();
     }
 
     Individual[ string ] get_individuals()
