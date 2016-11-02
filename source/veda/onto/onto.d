@@ -72,9 +72,6 @@ class Onto
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto..", context.get_name);
 
-//        if (context.getTid(P_MODULE.acl_manager) != Tid.init)
-//            context.wait_thread(P_MODULE.acl_manager);
-
         context.reopen_ro_subject_storage_db();
         context.reopen_ro_fulltext_indexer_db();
 
