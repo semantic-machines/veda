@@ -188,6 +188,7 @@ class FanoutProcess : VedaModule
 
     private bool push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     {
+        bool is_send = false;
         SmtpMessage message;
 
         try
@@ -223,8 +224,7 @@ class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
-                log.trace("send email: prepare %s", new_indv.uri);
-                bool is_send = false;
+                log.trace("push_to_smtp[%s]: start prepare", new_indv.uri);
 
                 if (is_deleted == false)
                 {
@@ -286,7 +286,7 @@ class FanoutProcess : VedaModule
                             }
 
                             SmtpReply res = smtp_conn.send(message);
-                            log.trace("send email: %s, %s, %s, result %s", new_indv.uri, message.sender, message.recipients, res);
+                            log.trace("push_to_smtp: %s, %s, %s, result.msg=%s result.code=%d", new_indv.uri, message.sender, message.recipients, res.message, res.code);
                             if (!res.success || res.code == 451)
                             {
                                 is_send = false;
@@ -304,28 +304,28 @@ class FanoutProcess : VedaModule
                         }
                         else
                         {
-                            log.trace("WARN: send email[%s]: fail extract_email from field from[%s] or to[%s]", new_indv.uri, from, to);
+                            log.trace("WARN: push_to_smtp[%s]: fail extract_email from field from[%s] or to[%s]", new_indv.uri, from, to);
                         }
                     }
                     else
                     {
-                        log.trace("WARN: send email[%s]: invalid field from[%s] or to[%s]", new_indv.uri, from, to);
+                        log.trace("WARN: push_to_smtp[%s]: invalid field from[%s] or to[%s]", new_indv.uri, from, to);
                     }
                 }
 
                 if (is_send == false)
-                    log.trace("WARN: send email: email not prepared, %s", new_indv);
+                    log.trace("WARN: push_to_smtp[%s]: not send", new_indv.uri);
             }
         }
         catch (Throwable ex)
         {
-            log.trace("#EX! fail send e-mail[%s]=%s", ex.msg, message.toString());
+            log.trace("ERR! push_to_smtp[%s], \n%s", new_indv.uri, ex.info);
             return false;
         }
 
         //writeln("@@fanout indv.uri=", indv.uri);
         // sender.quit();
-        return true;
+        return is_send;
     }
 
     private void connect_to_smtp(Context context)
@@ -391,7 +391,7 @@ class FanoutProcess : VedaModule
                         catch (Throwable ex)
                         {
                             smtp_conn = null;
-                            log.trace("EX! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg,
+                            log.trace("ERR! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], connection=[%s]", ex.line, ex.file, ex.msg,
                                       connection);
                         }
                     }
