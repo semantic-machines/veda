@@ -430,16 +430,13 @@ v-s:OrganizationTemplate
         <tr>
           <td about="@" data-template="v-ui:IconModalTemplate"></td>
           <td>
-            <div property="v-s:shortLabel" class="view -edit -search"></div>
-            <veda-control property="v-s:shortLabel" data-type="string" class="-view edit search"></div>
+            <div about="@" property="v-s:shortLabel" class="view edit -search"></div>
           </td>
           <td>
-            <div property="v-s:taxId" class="view -edit -search"></div>
-            <veda-control property="v-s:taxId" data-type="string" class="-view edit search"></div>
+            <div about="@" property="v-s:taxId" class="view edit -search"></div>
           </td>
           <td>
-            <div property="v-s:legalAddress" class="view -edit -search"></div>
-            <veda-control property="v-s:legalAddress" data-type="string" class="-view edit search"></div>
+            <div about="@"  property="v-s:legalAddress" class="view edit -search"></div>
           </td>
         </tr>
       </tbody>
