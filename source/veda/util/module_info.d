@@ -1,6 +1,7 @@
 module veda.util.module_info;
 
-import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
+import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.digest.crc, std.algorithm : remove;
+import std.format, std.array                                                                                     : appender;
 import veda.core.common.define, veda.common.logger;
 
 public struct MInfo
@@ -31,6 +32,8 @@ class ModuleInfoFile
     private ubyte[]   buff;
     private OPEN_MODE mode;
     private bool      _is_ready;
+    private ubyte[ 4 ] crc;
+    CRC32             hash;
 
     this(string _module_name, Logger _log, OPEN_MODE _mode)
     {
@@ -56,10 +59,10 @@ class ModuleInfoFile
         close();
     }
 
-	public static bool is_lock (string _module_name)
-	{
-	    return (exists(module_info_path ~ "/" ~ _module_name ~ "_info.lock"));		
-	}
+    public static bool is_lock(string _module_name)
+    {
+        return(exists(module_info_path ~ "/" ~ _module_name ~ "_info.lock"));
+    }
 
     bool is_ready()
     {
@@ -149,9 +152,18 @@ class ModuleInfoFile
 
         try
         {
+            auto writer = appender!string();
+            formattedWrite(writer, "%s;%d;%d;", module_name, op_id, committed_op_id);
+
+            hash.start();
+            hash.put(cast(ubyte[])writer.data);
+            string hash_hex = crcHexString(hash.finish());
+
             ff_module_info_w.seek(0);
-            ff_module_info_w.writefln("%s;%d;%d", module_name, op_id, committed_op_id);
+            ff_module_info_w.write(writer.data);
+            ff_module_info_w.writeln(hash_hex);
             ff_module_info_w.flush();
+            //ff_module_info_w.sync();
             return true;
         }
         catch (Throwable tr)
@@ -176,6 +188,9 @@ class ModuleInfoFile
 
         res.is_Ok = false;
 
+        string[] ch;
+        string   str;
+
         try
         {
             ff_module_info_r.seek(0);
@@ -184,29 +199,33 @@ class ModuleInfoFile
                 buff = new ubyte[ 4096 ];
 
             ubyte[] newbuff = ff_module_info_r.rawRead(buff);
-            string  str     = cast(string)newbuff[ 0..$ ];
+            str = cast(string)newbuff[ 0..$ ];
+
             if (str !is null)
             {
                 if (str.length > 2)
                 {
-                    string[] ch = str[ 0..$ - 1 ].split(';');
-                    //writeln("@ queue.get_info ch=", ch);
-                    if (ch.length != 3)
+                    long end_pos = str.indexOf('\n');
+                    str = str[ 0..end_pos ];
+
+                    if (str.length > 10)
                     {
-                        return res;
+                        ch = str.split(';');
+                        //writeln("@ queue.get_info ch=", ch);
+                        if (ch.length != 4)
+                            return res;
+
+                        res.name            = ch[ 0 ];
+                        res.op_id           = to!long (ch[ 1 ]);
+                        res.committed_op_id = to!long (ch[ 2 ]);
+                        res.is_Ok           = true;
                     }
-                    res.name            = ch[ 0 ];
-                    res.op_id           = to!long (ch[ 1 ]);
-                    res.committed_op_id = to!long (ch[ 2 ]);
-                    res.is_Ok           = true;
                 }
-                else
-                    res.is_Ok = false;
             }
         }
         catch (Throwable tr)
         {
-            log.trace("ERR! get_info[%s] fail, msg=%s", module_name, tr.msg);
+            log.trace("ERR! get_info[%s] fail, msg=[%s]->[%s], ex=[%s]", module_name, str, ch, tr.msg);
         }
 
 //        log.trace("get_info #e [%s], res(%s): name=%s, op_id=%d, committed_op_id=%d",
