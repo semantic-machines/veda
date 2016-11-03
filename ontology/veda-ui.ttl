@@ -2008,7 +2008,7 @@ td:PreferencesTemplate1
     </div>
     <div class="panel-body">
     <div>
-      <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>:
+      <strong about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
       <ul>
       <li rel="v-ui:preferredLanguage" data-template="v-ui:LabelTemplate"></li>
       <!--li rel="v-ui:preferredLanguage">
@@ -2019,7 +2019,7 @@ td:PreferencesTemplate1
       </li-->
       </ul>
       <veda-control rel="v-ui:preferredLanguage" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-      <em about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</em>:
+      <strong about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>:
       <span property="v-ui:displayedElements"></span>
       <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
     </div>
