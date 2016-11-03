@@ -1352,19 +1352,6 @@
       create.remove();
     }
 
-    // Dropdown feature
-    if ( (this.hasClass("dropdown") || this.hasClass("full")) && queryPrefix ) {
-      dropdown.click(function () {
-        var minLength = typeAhead.data().ttTypeahead.minLength;
-        typeAhead.data().ttTypeahead.minLength = 0;
-        typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
-        typeAhead.focus();
-        typeAhead.data().ttTypeahead.minLength = minLength;
-      });
-    } else {
-      dropdown.remove();
-    }
-
     // Tree feature
     if (
       (this.hasClass("tree") || this.hasClass("full"))
@@ -1492,6 +1479,19 @@
 
     } else {
       fulltext.remove();
+    }
+
+    // Dropdown feature
+    if ( (this.hasClass("dropdown") || this.hasClass("full")) && queryPrefix ) {
+      dropdown.click(function () {
+        var minLength = typeAhead.data().ttTypeahead.minLength;
+        typeAhead.data().ttTypeahead.minLength = 0;
+        typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
+        typeAhead.focus();
+        typeAhead.data().ttTypeahead.minLength = minLength;
+      });
+    } else {
+      dropdown.remove();
     }
 
     // Search modal feature
