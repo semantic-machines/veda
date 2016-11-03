@@ -281,7 +281,7 @@ class Consumer
 
         if (count_popped >= queue.count_pushed)
         {
-            log.trace("ERR! queue:commit:count_popped(%d) >= queue.count_pushed(%d)", count_popped, queue.count_pushed);
+            log.trace("ERR! queue[%s]:commit:count_popped(%d) >= queue.count_pushed(%d)", queue.name, count_popped, queue.count_pushed);
             return false;
         }
 
