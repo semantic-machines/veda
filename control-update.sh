@@ -12,19 +12,13 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.x
     echo "=== Stop daemon ==="
     ./control-stop.sh
 
-    echo "=== Remove old files ==="
-    rm *.log
-    rm veda
-    rm dub.selections.json
-    rm -r ~/.dub/cache
-
     echo "=== Generate JSduck documentation ==="
     ./jsduck.sh
 
     echo "=== Build dependencies ==="
-    dub -v fetch vibe-d --version=0.7.26
+    dub -v fetch vibe-d --version=0.7.30
     echo "=== Build project ==="
-    dub -v build --build=debug
+    ./build.sh
 
     echo "=== Start daemon =="
     ./control-start.sh

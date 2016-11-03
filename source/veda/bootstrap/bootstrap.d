@@ -163,7 +163,7 @@ void main(char[][] args)
     {
         if (ml != "veda")
         {
-            auto _logFile = File("logs/" ~ ml ~ "-errors.log", "w");
+            auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
             writeln("start " ~ ml);
             auto _pid = spawnProcess("./" ~ ml,
                                      std.stdio.stdin,
