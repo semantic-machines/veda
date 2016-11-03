@@ -250,7 +250,7 @@ v-s:PersonalAspectTemplate
     <div class="col-md-4">
       <div class="panel panel-warning">
         <div class="panel-heading">
-          <h4 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-s:Aspects" property="rdfs:label"></strong></h4>
+          <h3 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-s:Aspects" property="rdfs:label"></strong></h3>
         </div>
         <div class="panel-body">
           <div rel="v-s:hasBusinessAspect">
@@ -266,7 +266,7 @@ v-s:PersonalAspectTemplate
     <div class="col-md-4">
       <div class="panel panel-success">
         <div class="panel-heading">
-          <h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Blanks" property="rdfs:label"></strong></h4>
+          <h3 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Blanks" property="rdfs:label"></strong></h3>
         </div>
         <div class="panel-body">
           <div rel="v-s:hasBlank">
@@ -282,7 +282,7 @@ v-s:PersonalAspectTemplate
     <div class="col-md-4">
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h4 class="no-margin"><i class="fa fa-table"></i> <strong about="v-s:Registries" property="rdfs:label"></strong></h4>
+          <h3 class="no-margin"><i class="fa fa-table"></i> <strong about="v-s:Registries" property="rdfs:label"></strong></h3>
         </div>
         <div class="panel-body">
           <div rel="v-s:hasRegistry">
@@ -300,7 +300,7 @@ v-s:PersonalAspectTemplate
     <div class="col-md-4">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h4 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Drafts" property="rdfs:label"></strong></h4>
+          <h3 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Drafts" property="rdfs:label"></strong></h3>
         </div>
         <div class="panel-body">
           <ol rel="v-s:hasDocumentDraft">
