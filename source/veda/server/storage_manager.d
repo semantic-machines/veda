@@ -544,8 +544,13 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         {
                             if (cmd == CMD_SET_TRACE)
                                 set_trace(arg, arg2);
-                        },
-                        (Variant v) { writeln(thread_name, "::storage_manager::Received some other type.", v); });
+                        },                        
+                        (OwnerTerminated ot) 
+                        {
+                        	//log.trace("%s::storage_manager::OWNER TERMINATED", thread_name); 
+                        	return;
+                        }, 
+                        (Variant v) { log.trace("%s::storage_manager::Received some other type. %s", thread_name, v); });
             }
             catch (Throwable ex)
             {

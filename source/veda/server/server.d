@@ -5,7 +5,7 @@ module veda.core.srv.server;
 
 private
 {
-    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
+    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.server.wslink;
@@ -51,6 +51,9 @@ extern (C) void handleTermination2(int _signal)
     writeln("!SYS: ", process_name, ": preparation for the exit.");
 
     f_listen_exit = true;
+    
+    thread_term(); 
+    Runtime.terminate();
 }
 
 Context g_context;
@@ -266,7 +269,10 @@ void commiter(string thread_name)
                                send(tid_response_reciever, true);
                            }
                        },
-
+                        (OwnerTerminated ot) 
+                        {
+                        	return;
+                        }, 
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
         veda.server.storage_manager.flush_int_module(P_MODULE.subject_manager, false);

@@ -1,6 +1,6 @@
 module veda.frontend.core_rest;
 
-import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal;
 import core.vararg, core.stdc.stdarg, core.atomic;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd;
@@ -18,6 +18,7 @@ veda.common.logger.Logger log()
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
+
 
 public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
@@ -140,6 +141,21 @@ interface VedaStorageRest_API {
     long unload_to_queue(string queue_id);
 }
 
+extern (C) void handleTerminationR(int _signal)
+{
+//    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
+    writefln("!SYS: veda.app.rest: caught signal: %s", text(_signal));
+
+    vibe.core.core.exitEventLoop();
+
+    writeln("!SYS: veda.app: exit");
+
+    thread_term(); 
+    Runtime.terminate();
+//    kill(getpid(), SIGKILL);
+//    exit(_signal);
+}
+
 
 class VedaStorageRest : VedaStorageRest_API
 {
@@ -150,6 +166,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     this(Context _local_context, void function(int sig) _shutdown)
     {
+	    bsd_signal(SIGINT, &handleTerminationR);    	
         shutdown = _shutdown;
         context  = _local_context;
     }

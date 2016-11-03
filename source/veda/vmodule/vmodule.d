@@ -2,7 +2,7 @@ module veda.vmodule.vmodule;
 
 private
 {
-    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
+    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
@@ -30,6 +30,9 @@ extern (C) void handleTermination(int _signal)
     writeln("!SYS: ", process_name, ": preparation for the exit.");
 
     f_listen_exit = true;
+    
+    thread_term(); 
+    Runtime.terminate();    
 }
 
 shared static this()

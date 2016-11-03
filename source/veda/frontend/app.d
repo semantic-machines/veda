@@ -1,4 +1,4 @@
-import std.conv, std.stdio, std.file;
+import std.conv, std.stdio, std.file, core.runtime, core.thread;
 import vibe.d;
 import properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
@@ -17,9 +17,9 @@ veda.common.logger.Logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-extern (C) void handleTermination(int _signal)
+extern (C) void handleTerminationW(int _signal)
 {
-    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
+//    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
     writefln("!SYS: veda.app: caught signal: %s", text(_signal));
 
     //veda.core.threads.dcs_manager.close();
@@ -32,8 +32,11 @@ extern (C) void handleTermination(int _signal)
     vibe.core.core.exitEventLoop();
 
     writeln("!SYS: veda.app: exit");
-    kill(getpid(), SIGKILL);
-    exit(_signal);
+
+    thread_term(); 
+    Runtime.terminate();
+//    kill(getpid(), SIGKILL);
+//    exit(_signal);
 }
 
 void shutdown(int _signal)
@@ -111,8 +114,6 @@ HTTPListener[ ushort ] listener_2_port;
 
 shared static this()
 {
-    bsd_signal(SIGINT, &handleTermination);
-
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
         registerMemoryErrorHandler();

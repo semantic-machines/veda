@@ -173,6 +173,10 @@ private void ltrs_thread(string parent_url)
                                        writeln("ltrs:Queue not open :", queue);
                                }
                            },
+						   (OwnerTerminated ot) 
+		                   {
+	                        return;
+		                   },                                 
                            (Variant v) { writeln("ltrs_thread::Received some other type.", v); });
             // обработка элементов очередей согласно приоритетам
             yield();
