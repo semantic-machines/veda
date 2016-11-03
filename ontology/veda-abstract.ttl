@@ -656,3 +656,18 @@ v-s:hasClassifierOKVED
   rdfs:range v-s:ClassifierOKVED ;
   rdfs:domain v-s:ClassifiedRus ;
 .
+v-s:hasClassifierCountry
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Country"@en ;
+  rdfs:label "Страна"@ru ;
+  rdfs:range v-s:ClassifierCountry ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
+v-s:hasClassifierLegalForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "ClassifierLegalForm"@en ;
+  rdfs:label "Организационно правовая форма"@ru ;
+  rdfs:range v-s:ClassifierLegalForm ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
+# ------------------------------------------------------------

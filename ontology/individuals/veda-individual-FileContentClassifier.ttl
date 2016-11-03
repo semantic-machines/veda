@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/veda-individual-FileContentClassifier>
   rdf:type owl:Ontology ;
-  rdfs:label "Mondi ontology. Dictionary - File content classifier"@en ;
-  rdfs:label "Онтология Монди. Справочник содержимого файлов"@ru ;
+  rdfs:label "Veda ontology. Dictionary - File content classifier"@en ;
+  rdfs:label "Онтология Veda. Справочник содержимого файлов"@ru ;
   v-s:loadPriority 10 ;
 .
 

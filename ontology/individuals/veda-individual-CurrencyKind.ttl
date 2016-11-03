@@ -9,7 +9,7 @@
 <http://semantic-machines.com/veda/veda-individual-CurrencyKind>
   rdf:type owl:Ontology ;
   rdfs:label "Veda ontology. individual - CurrencyKind"@en ;
-  rdfs:label "Онтология Веды. Записи справочника Вид валюты"@ru ;
+  rdfs:label "Онтология Veda. Записи справочника Вид валюты"@ru ;
   v-s:loadPriority 10 ;
 .
 

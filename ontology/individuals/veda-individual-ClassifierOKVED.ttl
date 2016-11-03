@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/veda-individual-ClassifierOKVED>
   rdf:type owl:Ontology ;
-  rdfs:label "Mondi ontology. Dictionary - ClassifierOKVED"@en ;
-  rdfs:label "Онтология Монди. Справочник Классификатор ОКВЭД"@ru ;
+  rdfs:label "Veda ontology. Dictionary - ClassifierOKVED"@en ;
+  rdfs:label "Онтология Veda. Справочник Классификатор ОКВЭД"@ru ;
   v-s:loadPriority 10 ;
 .
 

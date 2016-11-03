@@ -9,7 +9,7 @@
 <http://semantic-machines.com/veda/veda-individual-Level>
   rdf:type owl:Ontology ;
   rdfs:label "Veda ontology. individual - Level"@en ;
-  rdfs:label "Онтология Веды. Записи справочника Уровень"@ru ;
+  rdfs:label "Онтология Veda. Записи справочника Уровень"@ru ;
   v-s:loadPriority 10 ;
 .
 
