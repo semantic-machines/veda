@@ -126,6 +126,7 @@ v-s:Subsidiary
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Organization ;
   rdfs:subClassOf v-s:Department ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Subsidiary"@en ;
   rdfs:label "Филиал"@ru ;
 .
@@ -286,8 +287,6 @@ v-s:PsTaxIdForOrganization
   rdf:type v-ui:StringPropertySpecification ;
   v-ui:forClass v-s:Organization ;
   v-ui:forProperty v-s:taxId ;
-  v-ui:forProperty v-s:taxRegistrationCause ;
-  v-ui:forProperty v-s:taxRegistrationNumber ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
   v-ui:regexp "^[0-9a-zA-Z]{5,}$" ;
@@ -295,12 +294,29 @@ v-s:PsTaxIdForOrganization
   v-ui:tooltip "Alphanumeric value. 5 characters minimum."@en ;
 .
 
+v-s:PsHasContractorOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization;
+  v-ui:forProperty v-s:hasContractor ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:rangeRestriction v-s:Contractor;
+  rdfs:label "v-s:hasContractor property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойства v-s:hasContractor для класса v-s:Organization"@ru ;
+.
+
+
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:AddProfile
   rdf:type v-s:Bundle ;
   rdfs:label "Add profile"@en ;
   rdfs:label "Создать досье"@ru ;
+.
+v-s:AddSubsidiary
+  rdf:type v-s:Bundle ;
+  rdfs:label "Add subsidiary"@en ;
+  rdfs:label "Добавить филиал"@ru ;
 .
 
 v-s:OrganizationTemplate
@@ -324,7 +340,7 @@ v-s:OrganizationTemplate
   <div id="mainProperties">
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
-    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+    <veda-control id="krot" data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
 
     <em about="v-s:shortLabel" property="rdfs:label"></em>
     <div property="v-s:shortLabel" class="view -edit -search"></div>
@@ -370,7 +386,7 @@ v-s:OrganizationTemplate
     <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
     <table class="table table-condensed table-bordered">
       <thead>
-        <tr class="active">
+        <tr class="view -edit -search active">
           <th width="1%"><span class="glyphicon glyphicon-search"></th>
           <th about="v-s:shortLabel" property="rdfs:label"></th>
           <th about="v-s:taxRegistrationCause" property="rdfs:label"></th>
@@ -395,11 +411,44 @@ v-s:OrganizationTemplate
         </tr>
       </tbody>
     </table>
-    <veda-control data-type="link" rel="v-s:hasSubsidiary" class="-view edit search create create-modal"></veda-control>
+    <div class="view -edit -search">
+      <button class="btn btn-success" id="add-subsidiary" about="v-s:AddSubsidiary" property="rdfs:label"></button>
+    </div>
+
 
     <em about="v-s:hasContractor" property="rdfs:label"></em>
-    <div rel="v-s:hasContractor" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
-    <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
+     <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="v-s:shortLabel" property="rdfs:label"></th>
+          <th about="v-s:taxId" property="rdfs:label"></th>
+          <th about="v-s:legalAddress" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="v-s:hasContractor" data-embedded="true">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div property="v-s:shortLabel" class="view -edit -search"></div>
+            <veda-control property="v-s:shortLabel" data-type="string" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:taxId" class="view -edit -search"></div>
+            <veda-control property="v-s:taxId" data-type="string" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:legalAddress" class="view -edit -search"></div>
+            <veda-control property="v-s:legalAddress" data-type="string" class="-view edit search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div >
+
+         <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
+    </div>
+
 
     <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
     <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
@@ -447,6 +496,31 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
   });
+
+    $("#add-subsidiary", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal();
+    modal.appendTo(template);
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:Subsidiary"),
+        action = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:SubsidiaryTemplate");
+    action["rdf:type"] = [_class];
+    action["v-s:backwardTarget"] = [individual];
+    action["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasSubsidiary")];
+    action.present(cntr, tmpl, "edit");
+    action.one("individual:beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    action.one("individual:afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+
+
+
 </script>
   """ ;
 .
@@ -465,12 +539,8 @@ v-s:SubsidiaryTemplate
   <hr>
   <div id="mainProperties">
     <em about="v-s:parentOrganization" property="rdfs:label"></em>
-    <div rel="v-s:parentOrganization" class="view -edit -search">
-      <a href="#/@">
-        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
-      </a>
-    </div>
-    <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext dropdown"></veda-control>
+    <span about="@" rel="v-s:backwardTarget" data-template="v-ui:LabelLinkTemplate"></span>
+
 
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
@@ -584,6 +654,8 @@ v-s:DepartmentTemplate
     <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
 
   </div>
+
+
   <hr>
   <div id="systemProperties">
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
