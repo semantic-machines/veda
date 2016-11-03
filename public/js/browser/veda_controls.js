@@ -1330,6 +1330,24 @@
           select(newVal);
         }
       });
+
+      // Hide create button for single value relations if value exists
+      if (isSingle) {
+        var singleValueHandler = function (modified_rel_uri, values) {
+          if (modified_rel_uri === rel_uri) {
+            if (values.length) {
+              create.hide();
+            } else {
+              create.show();
+            }
+          }
+        };
+        individual.on("individual:propertyModified", singleValueHandler);
+        create.one("remove", function () {
+          individual.off("individual:propertyModified", singleValueHandler);
+        });
+      }
+
     } else {
       create.remove();
     }
