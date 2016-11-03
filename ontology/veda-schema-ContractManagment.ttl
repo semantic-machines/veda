@@ -83,10 +83,26 @@ v-s:ContractRequest
 v-s:ClassifierOKVED
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Registered ;
   rdfs:label "Classifier OKVED"@en ;
   rdfs:label "Классификатор ОКВЭД"@ru ;
 .
-
+# ------------------------------------------------------------
+v-s:ClassifierCountry
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Country"@en ;
+  rdfs:label "Страна"@ru ;
+.
+# ------------------------------------------------------------
+v-s:ClassifierLegalForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "ClassifierLegalForm"@en ;
+  rdfs:label "Организационно правовая форма"@ru ;
+.
 # ------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
