@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/veda-individual-Sector>
   rdf:type owl:Ontology ;
-  rdfs:label "Mondi ontology. Dictionary - Sector"@en ;
-  rdfs:label "Онтология Монди. Справочник Отрасль экономики"@ru ;
+  rdfs:label "Veda ontology. Dictionary - Sector"@en ;
+  rdfs:label "Онтология Veda. Справочник Отрасль экономики"@ru ;
   v-s:loadPriority 10 ;
 .
 

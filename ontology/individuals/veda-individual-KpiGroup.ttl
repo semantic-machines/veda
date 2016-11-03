@@ -9,7 +9,7 @@
 <http://semantic-machines.com/veda/veda-individual-KpiGroup>
   rdf:type owl:Ontology ;
   rdfs:label "Veda ontology. individual - KpiGroup"@en ;
-  rdfs:label "Онтология Веды. Записи справочника Группа показателей"@ru ;
+  rdfs:label "Онтология Veda. Записи справочника Группа показателей"@ru ;
   v-s:loadPriority 10 ;
 .
 
