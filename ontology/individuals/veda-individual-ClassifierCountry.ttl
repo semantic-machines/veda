@@ -1,0 +1,28 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-ClassifierCountry/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-ClassifierCountry>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. Dictionary - Country"@en ;
+  rdfs:label "Онтология Veda. Справочник Страна"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+d:Country_RUS
+  a v-s:ClassifierCountry;
+  rdfs:label "RUS" ;
+  v-s:shortLabel "RU" ;
+  v-s:title "Russia"@en ;
+  v-s:title "Россия"@ru ;
+  v-s:description "Russian Fedaration"@en ;
+  v-s:description "Российская Федерация"@ru ;
+  v-s:registrationNumber "643" ;
+.
+
+
+
