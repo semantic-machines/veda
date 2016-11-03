@@ -57,8 +57,14 @@ class VedaModule // : WSLink
     long           count_signal           = 0;
     long           count_readed           = 0;
     long           count_success_prepared = 0;
-    Queue          queue;
-    Consumer       cs;
+
+    string         main_queue_name = "individuals-flow";
+    Queue          main_queue;
+    Consumer       main_cs;
+
+    string         prepareall_queue_name;
+    Queue          prepareall_queue;
+    Consumer       prepareall_cs;
 
     Context        context;
     Onto           onto;
@@ -67,7 +73,6 @@ class VedaModule // : WSLink
 
     ushort         port;
     string         host;
-    string         queue_name      = "individuals-flow";
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
     P_MODULE       module_name;
@@ -77,19 +82,33 @@ class VedaModule // : WSLink
 
     this(P_MODULE _module_name, string _host, ushort _port, Logger in_log)
     {
-        process_name   = text(_module_name);
-        module_name    = _module_name;
-        message_header = "MSG:" ~ text(module_name) ~ ":";
-        port           = _port;
-        host           = _host;
-        _log           = in_log;
-        log            = _log;
+        process_name          = text(_module_name);
+        module_name           = _module_name;
+        prepareall_queue_name = process_name ~ "_prepare_all";
+        message_header        = "MSG:" ~ text(module_name) ~ ":";
+        port                  = _port;
+        host                  = _host;
+        _log                  = in_log;
+        log                   = _log;
     }
 
     ~this()
     {
         delete module_info;
     }
+
+	private void open_perapareall_queue ()
+	{
+        // attempt open [prepareall] queue
+        prepareall_queue = new Queue(prepareall_queue_name, Mode.R, log);
+        prepareall_queue.open();
+
+        if (prepareall_queue.isReady)
+        {
+            prepareall_cs = new Consumer(prepareall_queue, process_name, log);
+            prepareall_cs.open();
+        }		
+	}
 
     void run()
     {
@@ -120,18 +139,21 @@ class VedaModule // : WSLink
 
         ubyte[] buffer = new ubyte[ 1024 ];
 
-        queue = new Queue(queue_name, Mode.R, log);
-        queue.open();
+        main_queue = new Queue(main_queue_name, Mode.R, log);
+        main_queue.open();
 
-        while (!queue.isReady)
+        while (!main_queue.isReady)
         {
-            log.trace("queue [%s] not ready, sleep and repeate...", queue_name);
+            log.trace("queue [%s] not ready, sleep and repeate...", main_queue_name);
             Thread.sleep(dur!("seconds")(10));
-            queue.open();
+            main_queue.open();
         }
 
-        cs = new Consumer(queue, process_name, log);
-        cs.open();
+        main_cs = new Consumer(main_queue, process_name, log);
+        main_cs.open();
+
+        // attempt open [prepareall] queue
+		open_perapareall_queue ();
 
         //if (count_signal == 0)
         //    prepare_queue();
@@ -191,23 +213,21 @@ class VedaModule // : WSLink
 
     public void prepare_all()
     {
-        long   total_count    = context.get_subject_storage_db().count_entries();
-        long   count_prepared = 0;
+        long  total_count    = context.get_subject_storage_db().count_entries();
+        long  count_prepared = 0;
 
-        string queue_id = randomUUID().toString();
-
-        long   count;
-        Queue  queue = new Queue(queue_id, Mode.RW, log);
+        long  count;
+        Queue queue = new Queue(prepareall_queue_name, Mode.RW, log);
 
         if (queue.open(Mode.RW) != true)
         {
-            log.trace("fail on create queue [%s]", queue_id);
+            log.trace("fail on create queue [%s]", prepareall_queue_name);
             return;
         }
 
         bool add_to_queue(string key, string value)
         {
-            queue.push(value);
+            queue.push(key);
             count++;
             return true;
         }
@@ -219,78 +239,58 @@ class VedaModule // : WSLink
         log.trace_console("end create queue, count: %d", queue.count_pushed);
         queue.close();
         context.unfreeze();
-
-        Queue queue_prepare_all = new Queue(queue_id, Mode.R, log);
-        if (queue_prepare_all.open() == false)
-        {
-            log.trace("Queue not open :%s", queue);
-            return;
-        }
-
-        Consumer cs = new Consumer(queue_prepare_all, "consumer1", log);
-
-        if (cs.open() == false)
-        {
-            log.trace("Consumer not open :%s", cs);
-            return;
-        }
-
-        bool f_next = true;
-        while (f_next)
-        {
-            string data = cs.pop();
-            if (data is null)
-            {
-                log.trace("queue, pop is null");
-                continue;
-            }
-
-            ResultCode rc;
-            Individual indv;
-
-            int        res = cbor2individual(&indv, data);
-
-            if (res >= 0 && indv !is Individual.init)
-            {
-                Individual prev_indv;
-
-                rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
-            }
-
-            if (rc == ResultCode.OK)
-            {
-                count_prepared++;
-            }
-            else
-            {
-                log.trace("break command prepare_all, err=%s", text(rc));
-                return;
-            }
-
-            if (count_prepared % 1000 == 0)
-                log.trace_console("prepare_all (%d/%d)", total_count, count_prepared);
-        }
-
-
-        log.trace_console("end prepare_all");
-        //cs.remove();
-        //queue_prepare_all.remove();
+        
+        open_perapareall_queue ();
     }
 
     private void prepare_queue()
     {
-        queue.close();
-        queue.open();
+        main_queue.close();
+        main_queue.open();
+
         while (true)
         {
             if (f_listen_exit == true)
                 break;
 
-            string data = cs.pop();
+            string data = main_cs.pop();
 
             if (data is null)
             {
-                break;
+                if (prepareall_cs !is null)
+                {
+                    data = prepareall_cs.pop();
+                    if (data is null)
+                    {
+                        log.trace("[%s] queue is empty, remove it.", prepareall_queue_name);
+                        prepareall_cs.remove();
+                        prepareall_queue.remove();
+                        prepareall_cs = null;
+                        break;
+                    }
+
+                    Individual indv = context.get_individual(&sticket, data);
+
+                    ResultCode rc;
+
+                    if (indv !is Individual.init)
+                    {
+                        Individual prev_indv;
+
+                        rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
+                    }
+
+                    if (rc != ResultCode.Connect_Error)
+                    {
+                        prepareall_cs.commit();
+                    }
+
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
             }
 
             count_readed++;
@@ -344,7 +344,7 @@ class VedaModule // : WSLink
 
                 if (res == ResultCode.OK)
                 {
-                    cs.commit();
+                    main_cs.commit();
                     module_info.put_info(op_id, committed_op_id);
                 }
                 else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
@@ -355,9 +355,9 @@ class VedaModule // : WSLink
                 }
                 else
                 {
-                    cs.commit();
+                    main_cs.commit();
                     module_info.put_info(op_id, committed_op_id);
-                    log.trace("ERR! message fail prepared (res=%s), skip.", text (res));
+                    log.trace("ERR! message fail prepared (res=%s), skip.", text(res));
                 }
             }
             catch (Throwable ex)
@@ -375,7 +375,7 @@ class VedaModule // : WSLink
 
         if (sticket is Ticket.init || sticket.result != ResultCode.OK)
         {
-            log.trace("load_systicket: fail systicket=%s", text (sticket));
+            log.trace("load_systicket: fail systicket=%s", text(sticket));
 
             bool is_superadmin = false;
 
@@ -389,13 +389,13 @@ class VedaModule // : WSLink
             {
                 context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
 
-                log.trace("child_process is_superadmin=%s", text (is_superadmin));
+                log.trace("child_process is_superadmin=%s", text(is_superadmin));
                 Thread.sleep(dur!("seconds")(1));
             }
         }
 
-       set_global_systicket(sticket);
-       log.trace("load_systicket: systicket=%s", text (sticket));
+        set_global_systicket(sticket);
+        log.trace("load_systicket: systicket=%s", text(sticket));
     }
 
     void ev_CALLBACK_GET_THREAD_ID()
