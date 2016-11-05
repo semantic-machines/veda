@@ -4,7 +4,7 @@
 var webdriver = require('selenium-webdriver'),
     FAST_OPERATION = 1000, 			// ms time limit for fast operations 
 	SLOW_OPERATION = 2001,			// ms time limit for fast operations
-	EXTRA_SLOW_OPERATION = 10000,	//  time limit for extra slow operations
+	EXTRA_SLOW_OPERATION = 5000,	//  time limit for extra slow operations
 	SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://localhost:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
