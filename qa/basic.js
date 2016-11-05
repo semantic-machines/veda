@@ -2,8 +2,8 @@
  * You can specify OS/browsers in `drivers` method
  */
 var webdriver = require('selenium-webdriver'),
-    FAST_OPERATION = 2000, 			// 2000ms  = 2sec  - time limit for fast operations 
-	SLOW_OPERATION = 5000,			// 10000ms = 10sec - time limit for fast operations
+    FAST_OPERATION = 1000, 			// ms time limit for fast operations 
+	SLOW_OPERATION = 5000,			// ms time limit for fast operations
 	EXTRA_SLOW_OPERATION = 10000,	//  time limit for extra slow operations
 	SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://localhost:8080/';
 
