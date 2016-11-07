@@ -1,45 +1,45 @@
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
-@prefix : <http://semantic-machines.com/veda/veda-individual-CurrencyKind/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-Currency/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://semantic-machines.com/veda/veda-individual-CurrencyKind>
+<http://semantic-machines.com/veda/veda-individual-Currency>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda ontology. individual - CurrencyKind"@en ;
-  rdfs:label "Онтология Veda. Записи справочника Вид валюты"@ru ;
+  rdfs:label "Veda ontology. individual - Currency"@en ;
+  rdfs:label "Онтология Veda. Записи справочника Валюта"@ru ;
   v-s:loadPriority 10 ;
 .
 
 
 d:currency_usd
-    a v-s:CurrencyKind;
+    a v-s:Currency;
     v-s:shortLabel "USD"^^xsd:string;
     rdfs:label "Доллар США"^^xsd:string.
 
 d:currency_eur
-    a v-s:CurrencyKind;
+    a v-s:Currency;
     v-s:shortLabel "EUR"^^xsd:string;
     rdfs:label "Евро"^^xsd:string.
 
 d:currency_rub
-    a v-s:CurrencyKind;
+    a v-s:Currency;
     v-s:shortLabel "RUB"^^xsd:string;
     rdfs:label "Российский рубль RUR"^^xsd:string.
 
 d:currency_gbp
-    a v-s:CurrencyKind;
+    a v-s:Currency;
     v-s:shortLabel "GBP"^^xsd:string;
     rdfs:label "Британский фунт"^^xsd:string.
 
 d:currency_rureur
-    a v-s:CurrencyKind;
+    a v-s:Currency;
     v-s:shortLabel "RUEUR"^^xsd:string;
     rdfs:label "Условная единица EUR"^^xsd:string.
 
 d:currency_ruusd
-    a v-s:CurrencyKind;
+    a v-s:Currency;
     v-s:shortLabel "RUUSD"^^xsd:string;
     rdfs:label "Условная единица USD"^^xsd:string.

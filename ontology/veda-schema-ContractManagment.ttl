@@ -70,7 +70,7 @@ v-s:Price
   rdfs:label "Стоимость"@ru ;
 .
 # v-s:cost
-# v-s:hasCurrencyKind
+# v-s:hasCurrency
 
 # ------------------------------------------------------------
 v-s:ContractRequest
