@@ -14,19 +14,19 @@
 .
 
 d:OKOPF_70000
-  a v-s:ClassifierCountry;
+  a v-s:ClassifierLegalForm;
   rdfs:label "Некоммерческие унитарные организации" ;
   v-s:title "Организационно-правовые формы юридических лиц, являющихся некоммерческими унитарными организациями" ;
   v-s:registrationNumber "70000" ;
 .
 d:OKOPF_10000
-  a v-s:ClassifierCountry;
+  a v-s:ClassifierLegalForm;
   rdfs:label "Коммерческие корпоративные организации" ;
   v-s:title "Организационно-правовые формы юридических лиц, являющихся коммерческими корпоративными организациями" ;
   v-s:registrationNumber "10000" ;
 .
 d:OKOPF_12000
-  a v-s:ClassifierCountry;
+  a v-s:ClassifierLegalForm;
   rdfs:label "Хозяйственные общества" ;
   v-s:title "Хозяйственные общества" ;
   v-s:registrationNumber "12000" ;
