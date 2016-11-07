@@ -1306,18 +1306,12 @@
           $modal.modal();
           container.append($modal);
           var cntr = $(".modal-body", $modal);
-          newVal.on("individual:templateReady", modalHandler);
-          var modalHandler = function (template) {
-            template.on("valid", function () {
-              ok.removeAttr("disabled");
-            });
-            template.on("invalid", function () {
-              ok.attr("disabled", "disabled");
-            });
-            template.on("remove", function () {
-              newVal.off("individual:templateReady", modalHandler);
-            });
-          }
+          cntr.on("valid", function () {
+            ok.removeAttr("disabled");
+          });
+          cntr.on("invalid", function () {
+            ok.attr("disabled", "disabled");
+          });
           newVal.one("individual:beforeReset", function () {
             $modal.modal("hide");
           });

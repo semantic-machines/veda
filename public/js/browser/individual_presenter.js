@@ -382,14 +382,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       $sendButtons.removeAttr("disabled");
       $createReport.removeAttr("disabled");
       $createReportButtons.removeAttr("disabled");
-      e.stopPropagation();
+      //e.stopPropagation();
     }
     function inValidHandler(e) {
       $send.attr("disabled", "disabled");
       $sendButtons.attr("disabled", "disabled");
       $createReport.attr("disabled", "disabled");
       $createReportButtons.attr("disabled", "disabled");
-      e.stopPropagation();
+      //e.stopPropagation();
     }
     template.on("valid", validHandler);
     template.on("invalid", inValidHandler);
