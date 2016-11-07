@@ -858,6 +858,13 @@ v-ui:IconModalTemplate
     var $modal = $(modal).modal();
     $("body").append($modal);
     var cntr = $(".modal-body", $modal);
+    var ok = $("#ok", $modal);
+    cntr.on("valid", function () {
+      ok.removeAttr("disabled");
+    });
+    cntr.on("invalid", function () {
+      ok.attr("disabled", "disabled");
+    });
     var newMode = "view";
     var parentTmpl = template.parent().closest("[resource]");
     if (parentTmpl.attr("resource") === individual.id) {
