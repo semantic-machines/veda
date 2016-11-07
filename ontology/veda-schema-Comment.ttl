@@ -1,4 +1,3 @@
-@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -21,40 +20,40 @@ v-s:Comment
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Comment"@en ;
-  rdfs:label "Комментарий"@ru ;
+  rdfs:label "Комментарий "@ru ;
 .
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
-mnd-s:Comment_BaseUser
+v-s:Comment_BaseUser
   rdf:type v-s:Group ;
   rdfs:label "Основные пользователи Comment" ;
 .
 
-mnd-s:Comment_permission1
+v-s:Comment_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject mnd-s:Comment_group ;
-  v-s:permissionSubject mnd-s:Comment_BaseUser ;
+  v-s:permissionObject v-s:Comment_group ;
+  v-s:permissionSubject v-s:Comment_BaseUser ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "R. Все пользователи. Индивиды Comment" ;
 .
 
-mnd-s:Comment_permission2
+v-s:Comment_permission2
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject mnd-s:Comment ;
-  v-s:permissionSubject mnd-s:Comment_BaseUser ;
+  v-s:permissionObject v-s:Comment ;
+  v-s:permissionSubject v-s:Comment_BaseUser ;
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс Comment" ;
 .
 
-mnd-s:AllUsersGroup_CommentBaseUser_membership
+v-s:AllUsersGroup_CommentBaseUser_membership
   rdf:type v-s:Membership ;
-  v-s:memberOf mnd-s:Comment_BaseUser ;
+  v-s:memberOf v-s:Comment_BaseUser ;
   v-s:resource cfg:AllUsersGroup ;
   rdfs:label "Все пользователи входят в группу Основные пользователи Comment" ;
 .
 #--------------------- Comments template ---------------------
 
-v-ui:CommentsTemplate
+v-s:CommentsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Template for comments rendering"@en ;
   rdfs:label "Шаблон для отображения комментариев"@ru ;
@@ -62,7 +61,7 @@ v-ui:CommentsTemplate
 <div>
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
   <hr class="margin-sm">
-  <div about="@" rel="v-s:hasComment" data-template="v-ui:RecursiveCommentTemplate"></div>
+  <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
   <br>
   <button class="btn btn-info" id="add-comment" about="v-s:LeaveComment" property="rdfs:label"></button>
@@ -72,7 +71,7 @@ v-ui:CommentsTemplate
     var _class = new veda.IndividualModel("v-s:Comment"),
         comment = new veda.IndividualModel(),
         cntr = $("<div>").appendTo( $("#new-comment", template) ),
-        tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate");
+        tmpl = new veda.IndividualModel("v-s:SingleCommentTemplate");
     comment["rdf:type"] = [_class];
     comment["v-s:backwardTarget"] = [individual];
     comment["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
@@ -91,7 +90,7 @@ v-ui:CommentsTemplate
         targetComment = new veda.IndividualModel( commentTemplate.attr("resource") ),
         cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
         _class = new veda.IndividualModel("v-s:Comment"),
-        tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate"),
+        tmpl = new veda.IndividualModel("v-s:SingleCommentTemplate"),
         reply = new veda.IndividualModel();
     reply["rdf:type"] = [_class];
     reply["v-s:backwardTarget"] = [targetComment];
@@ -108,7 +107,7 @@ v-ui:CommentsTemplate
 
   template.on("click", "#edit-comment.action", function (e) {
     e.preventDefault();
-    var tmpl = new veda.IndividualModel("v-ui:SingleCommentTemplate"),
+    var tmpl = new veda.IndividualModel("v-s:SingleCommentTemplate"),
         commentTemplate = $(this).closest("[resource]"),
         comment = new veda.IndividualModel( commentTemplate.attr("resource") ),
         cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
@@ -124,12 +123,12 @@ v-ui:CommentsTemplate
     });
   });
 
-  //# sourceURL=v-s:CommentTreeTemplate
+  //# sourceURL=v-s:CommentsTemplate
 </script>
     """;
 .
 
-v-ui:SingleCommentTemplate
+v-s:SingleCommentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Comment ;
   rdfs:label "Template for v-s:Comment class"@en ;
@@ -156,15 +155,24 @@ v-ui:SingleCommentTemplate
   """ ;
 .
 
-v-ui:RecursiveCommentTemplate
+v-s:RecursiveCommentTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Template for v-s:Comment class"@en ;
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
 <script>
-  if ( individual.hasValue("v-s:hasComment") ) {
-    $("#edit-comment, #delete", template).remove();
+  var buttons = $("#edit-comment, #delete", template);
+  individual.on("individual:propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("individual:propertyModified", handler);
+  });
+  handler("v-s:hasComment", individual["v-s:hasComment"]);
+  function handler (property_uri, values) {
+    if (property_uri === "v-s:hasComment" && values.length) {
+      buttons.remove();
+    }
   }
+  //# sourceURL=v-s:RecursiveCommentTemplate
 </script>
 <div class="media">
   <div class="media-left" rel="v-s:creator">
@@ -205,7 +213,7 @@ v-ui:RecursiveCommentTemplate
     </div>
     <div id="new-reply"></div>
     <hr class="margin-sm">
-    <div about="@" rel="v-s:hasComment" data-template="v-ui:RecursiveCommentTemplate"></div>
+    <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   </div>
 </div>
   """ ;

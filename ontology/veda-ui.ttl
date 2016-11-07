@@ -1858,7 +1858,7 @@ td:PersonTemplate1
   </div>
   <div about="@" data-template="v-ui:LinkTemplate" data-embedded="true"></div>
   <br>
-  <div class="view -edit -search" about="@" data-template="v-ui:CommentsTemplate"></div>
+  <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
 """ ;
 .
