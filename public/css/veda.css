@@ -627,17 +627,16 @@ td > #rel-actions {
   z-index: 99;
 }
 .sortable-placeholder {
-  height: 50px;
   outline: 3px dashed #aaa!important;
   outline-offset: -3px!important;
   background-color: #eee!important;
-  margin: 20px 0px;
+  display: inline-block;
 }
 .sortable-overflow {
   overflow: auto;
 }
 tbody .sortable-placeholder {
-  height: 50px;
+  display: table-row;
   outline: 3px dashed #aaa!important;
   outline-offset: -3px!important;
 }

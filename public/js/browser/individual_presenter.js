@@ -475,6 +475,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var sortableOptions = {
         delay: 150,
         placeholder: "sortable-placeholder",
+        forcePlaceholderSize: true,
         handle: ".button-drag",
         cancel: "",
         update: function () {
