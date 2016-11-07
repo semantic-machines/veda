@@ -56,21 +56,21 @@ v-ft:Inbox
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
   v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$2')"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
   v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$2')"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
   v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
   rdf:type v-s:Bundle ;

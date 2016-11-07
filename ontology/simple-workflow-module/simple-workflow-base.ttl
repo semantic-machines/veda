@@ -749,15 +749,15 @@ s-wf:ComplexRouteStartForm_Template
       });
 
     // DEFAULT
-    for (i = 1; i <= 6; i++) { 
- 	  routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  	}
- 	routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
- 	routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
- 	routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
- 	routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
- 	routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    
+    for (i = 1; i <= 6; i++) {
+      routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    }
+    routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+
     // CUSTOM
     if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill
       routes['coordination1'][simple+'visible'] = [true];
@@ -786,7 +786,7 @@ s-wf:ComplexRouteStartForm_Template
         var routeid = complex+stage;
         var sub = individual[routeid][0];
         if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
-        	delete individual.properties[routeid];
+          delete individual.properties[routeid];
         }
      });
      veda.Util.send(individual, template);
@@ -1399,6 +1399,7 @@ s-wf:tr_actor_form
   v-wf:transformRule s-wf:rul_tr_form_6 ;
   v-wf:transformRule s-wf:rul_tr_form_8 ;
   v-wf:transformRule s-wf:rul_tr_form_9 ;
+  v-wf:transformRule s-wf:rul_tr_form_10 ;
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "Трансформация создания пользовательской формы ответа на задачу"@ru ;
 .
@@ -1507,6 +1508,16 @@ s-wf:rul_tr_form_9
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "Установить v-s:description из переменной s-wf:var_actor_task_action"@ru ;
 .
+
+s-wf:rul_tr_form_10
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "setDatetime ('v-s:created', new Date())" ;
+  v-wf:grouping "1";
+  rdfs:isDefinedBy s-wf: ;
+  rdfs:label "Установить дату выдачи задачи"@ru ;
+.
+
 
 # ------------- journal ------------------------
 
