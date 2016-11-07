@@ -105,6 +105,19 @@ function WorkItemResult(_work_item_result)
         return false;
     };
 
+    this.is_exists_result = function()
+    {
+        if (!this.work_item_result || this.work_item_result.length < 1)
+            return false;
+        
+        for (var i = 0; i < this.work_item_result.length; i++)
+        {
+            if (this.work_item_result[i].result)
+                return true;
+        }
+
+        return false;
+    }
 
     this.is_all_executors_taken_decision = function(var_name, value)
     {
@@ -601,17 +614,6 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         return [];
     }
 
-}
-//////////////////////////////////////////////////////////////////////////
-function is_exists_result(data)
-{
-    for (var i = 0; i < data.length; i++)
-    {
-        if (data[i].result)
-            return true;
-    }
-
-    return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
