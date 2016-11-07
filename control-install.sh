@@ -92,3 +92,31 @@ if ! ldconfig -p | grep libnanomsg; then
     cd ..
 
 fi
+
+if ! ldconfig -p | grep libtraildb; then
+
+    sudo apt-get install libarchive-dev pkg-config
+    sudo apt-get remove libjudydebian1
+    sudo apt-get remove libjudy-dev
+
+    mkdir tmp
+    cd tmp
+
+    wget https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudy-dev_1.0.5-5_amd64.deb \
+     https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudydebian1_1.0.5-5_amd64.deb
+    sudo dpkg -i libjudy-dev_1.0.5-5_amd64.deb libjudydebian1_1.0.5-5_amd64.deb
+
+
+    wget https://github.com/traildb/traildb/archive/0.5.tar.gz -P tmp
+    cd tmp
+    tar -xvzf 0.5.tar.gz
+
+    cd traildb-0.5
+    ./waf configure
+    ./waf build
+    sudo ./waf install
+    sudo ldconfig
+    cd ..
+    cd ..
+    cd ..
+fi
