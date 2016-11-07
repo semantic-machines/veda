@@ -1505,7 +1505,7 @@
         });
         $modal.modal();
         $("body").append($modal);
-        var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix);
+        var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix, sort);
         // Add found values
         $("#ok", $modal).on("click", function (e) {
           $(this).off("click");
