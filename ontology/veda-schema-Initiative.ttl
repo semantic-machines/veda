@@ -874,6 +874,7 @@ v-s:occupationForMemberOfWorkGroup
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация должности для класса Член рабочей группы"@ru ;
   rdfs:label "Employee property specification for Member of WorkGroup"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='d:mondi_orggroup_ProjectOffice')"^^xsd:string ;
   v-ui:forClass v-s:MemberOfWorkGroup ;
   v-ui:forProperty v-s:occupation ;
   v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
