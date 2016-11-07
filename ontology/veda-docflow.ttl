@@ -698,11 +698,20 @@ v-wf:permission_c_on_decision
   v-s:permissionObject v-wf:DecisionApprove ;
   v-s:permissionObject v-wf:DecisionReview ;
   v-s:permissionObject v-wf:DecisionRejected ;
+  v-s:permissionObject v-wf:DecisionDeclined ;
   v-s:permissionObject v-wf:DecisionPostponed ;
   v-s:permissionObject v-wf:DecisionRemake ;
   v-s:permissionObject v-wf:DecisionRemaked ;
   v-s:permissionObject v-wf:DecisionNotForMe ;
   v-s:permissionObject v-wf:DecisionBreak ;
+  v-s:permissionObject v-wf:DecisionGoCoordination1;
+  v-s:permissionObject v-wf:DecisionGoCoordination2;
+  v-s:permissionObject v-wf:DecisionGoCoordination3;
+  v-s:permissionObject v-wf:DecisionGoCoordination4;
+  v-s:permissionObject v-wf:DecisionGoCoordination5;
+  v-s:permissionObject v-wf:DecisionGoCoordination6;
+  v-s:permissionObject v-wf:DecisionGoSign;
+  v-s:permissionObject v-wf:DecisionGoApproval;
   v-s:permissionObject v-wf:DecisionExamined ;
   v-s:permissionObject v-wf:DecisionAchieved ;
   v-s:permissionObject v-wf:DecisionNotPerformed ;
@@ -793,6 +802,14 @@ v-wf:DecisionReview
 .
 
 v-wf:DecisionRejected
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Отклонено"@ru ;
+  rdfs:label "Declined"@en ;
+.
+
+v-wf:DecisionDeclined
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Decision ;
   rdfs:isDefinedBy v-wf: ;
@@ -929,6 +946,15 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionReturnedToReview ;
   v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionRejected ;
+  v-ui:forClass v-wf:DecisionGoCoordination1;
+  v-ui:forClass v-wf:DecisionGoCoordination2;
+  v-ui:forClass v-wf:DecisionGoCoordination3;
+  v-ui:forClass v-wf:DecisionGoCoordination4;
+  v-ui:forClass v-wf:DecisionGoCoordination5;
+  v-ui:forClass v-wf:DecisionGoCoordination6;
+  v-ui:forClass v-wf:DecisionGoSign;
+  v-ui:forClass v-wf:DecisionGoApproval;  
+  v-ui:forClass v-wf:DecisionDeclined ;
   v-ui:forClass v-wf:DecisionPostponed ;
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionRemaked ;
@@ -956,6 +982,7 @@ v-wf:DecisionRedirectTemplateSpec1
   v-ui:forProperty rdfs:comment ;
   v-ui:forClass v-wf:DecisionNotForMe ;
   v-ui:forClass v-wf:DecisionRejected ;
+  v-ui:forClass v-wf:DecisionDeclined ;
   v-ui:forClass v-wf:DecisionPostponed ;
   v-ui:forClass v-wf:DecisionRemake ;
   v-ui:forClass v-wf:DecisionNotPerformed ;

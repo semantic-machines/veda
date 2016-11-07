@@ -750,24 +750,23 @@ s-wf:ComplexRouteStartForm_Template
 
     // DEFAULT
     for (i = 1; i <= 6; i++) { 
- 	  routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	  routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   	}
- 	routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
- 	routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+ 	routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
  	routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
  	routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
  	routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     
     // CUSTOM
     if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill
-      routes['coordination1'][simple+'participant'] = doc['v-s:creator'];
       routes['coordination1'][simple+'visible'] = [true];
-      routes['coordination1'][simple+'comment'] = [new String('Согласуй плиз')];
+      routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
-      routes['sign'][simple+'participant'] = doc['v-s:author'];
-      routes['sign'][simple+'editable'] = [true];
-      routes['sign'][simple+'visible'] = [true];
-      routes['sign'][simple+'comment'] = [new String('Подпиши цуко')];
+      routes['approval'][simple+'participant'] = doc['v-s:creator'];
+      routes['approval'][simple+'editable'] = [true];
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'comment'] = [new String('Подтвердить')];
     }
 
       stages.forEach(function(stage) {
@@ -1305,10 +1304,52 @@ v-wf:DecisionGoSign
   rdfs:isDefinedBy s-wf: ;
 .
 
-v-wf:DecisionGoReview
+v-wf:DecisionGoApproval
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Decision ;
-  rdfs:label "Перейти к этапу рассмотрения"@ru ;
+  rdfs:label "Перейти к этапу утверждения"@ru ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+v-wf:DecisionGoCoordination1
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:label "Перейти к 1 этапу согласования"@ru ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+v-wf:DecisionGoCoordination2
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:label "Перейти к 2 этапу согласования"@ru ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+v-wf:DecisionGoCoordination3
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:label "Перейти к 3 этапу согласования"@ru ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+v-wf:DecisionGoCoordination4
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:label "Перейти к 4 этапу согласования"@ru ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+v-wf:DecisionGoCoordination5
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:label "Перейти к 5 этапу согласования"@ru ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+v-wf:DecisionGoCoordination6
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:label "Перейти к 6 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
 .
 
