@@ -612,7 +612,7 @@ function prepare_work_item(ticket, document)
     var work_item = document;
 
     try
-    {
+    {		
         var forProcess = getUri(work_item['v-wf:forProcess']);
         var _process = get_individual(ticket, forProcess);
         if (!_process) return;
@@ -694,16 +694,21 @@ function prepare_work_item(ticket, document)
 
             // проверим соответствие найденных WorkItem со схемой
             var and_join_count_complete = 0;
+			var pos_work_item = 0;
 
             for (var idx = 0; idx < in_flows.length; idx++)
             {
                 var shema_out_task = task2flow[in_flows[idx]['@']];
                 for (var idx1 = 0; idx1 < fne.length; idx1++)
                 {
+					//print ("fne[idx1]=", fne[idx1].work_item['@']);
+					
                     var found_out_task = getUri(fne[idx1].parent['v-wf:forNetElement']);
                     if (shema_out_task == found_out_task)
                     {
                         and_join_count_complete++;
+                        if (work_item['@'] == fne[idx1].work_item['@'])
+							pos_work_item = idx + 1;
                         break;
                     }
                 }
@@ -712,8 +717,13 @@ function prepare_work_item(ticket, document)
             if (and_join_count_complete != in_flows.length)
                 return;
 
-            //? остальные пути следует как то следует пометить?
-            //print("[WORKFLOW][PW00.3] and join is complete");
+			// отрабатываем только по первому work_item, остальные отбрасываем	
+			if (pos_work_item != 1)
+				return;
+                                    
+		    //print ("prepare_work_item uri=", document['@']);
+		    //print ("pos_work_item=", pos_work_item);
+            //print("[WORKFLOW][PW00.3] and join is complete and_join_count_complete=", and_join_count_complete);
         }
 
         var is_completed = false;

@@ -76,7 +76,7 @@ function interrupt_process(ticket, process, _event_id)
 
 function change_process_status(ticket, process, status, _event_id)
 {
-    print('>>> '+toJson(process));
+//    print('>>> '+toJson(process));
     var vars = process['v-wf:inVars'];
     if (!vars) return;
     for (var i = 0; i < vars.length; i++)
