@@ -31,8 +31,7 @@ d:Country_AFG
   v-s:shortLabel "AF" ;
   v-s:title "Afghanistan"@en ;
   v-s:title "АФГАНИСТАН"@ru ;
-  v-s:description "Transitional Islamic State of Afghanistan
-"@en ;
+  v-s:description "Transitional Islamic State of Afghanistan"@en ;
   v-s:description "Переходное Исламское Государство Афганистан"@ru ;
   v-s:registrationNumber "004" ;
 .

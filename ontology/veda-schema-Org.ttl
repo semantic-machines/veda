@@ -62,6 +62,7 @@ v-s:hasFunctionalChief
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
 .
@@ -421,6 +422,7 @@ v-s:OrganizationTemplate
       <thead>
         <tr class="active">
           <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="v-s:registrationNumber" property="rdfs:label"></th>
           <th about="v-s:shortLabel" property="rdfs:label"></th>
           <th about="v-s:taxId" property="rdfs:label"></th>
           <th about="v-s:legalAddress" property="rdfs:label"></th>
@@ -429,6 +431,9 @@ v-s:OrganizationTemplate
       <tbody rel="v-s:hasContractor" data-embedded="true">
         <tr>
           <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div about="@" property="v-s:registrationNumber" class="view edit -search"></div>
+          </td>
           <td>
             <div about="@" property="v-s:shortLabel" class="view edit -search"></div>
           </td>
