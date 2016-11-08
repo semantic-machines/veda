@@ -17,6 +17,7 @@
   - Integrated V8 javascript engine library. Used for workflow execution engine and other server-side logic (https://code.google.com/p/v8).
   - Vibe - high-level declarative REST and web application framework (http://vibed.org).
   - nanomsg
+  - websockets    
 
 **4. Client components**
   - Bootstrap HTML, CSS, and JS framework for developing responsive, mobile first web applications (http://getbootstrap.com).
@@ -37,7 +38,7 @@ $ sudo control-install.sh
 ```
 **2. Build & start veda**
 ```sh
-$ dub
+$ build.sh
 ```
 **3. Start/stop veda as daemon once built**
 ```sh

@@ -626,7 +626,7 @@ function prepare_work_item(ticket, document)
         if (!netElement) return;
 
         var trace_journal_uri;
-
+		
         var isCompleted = document['v-wf:isCompleted'];
         if (isCompleted)
         {
@@ -694,36 +694,36 @@ function prepare_work_item(ticket, document)
 
             // проверим соответствие найденных WorkItem со схемой
             var and_join_count_complete = 0;
-			var pos_work_item = 0;
 
             for (var idx = 0; idx < in_flows.length; idx++)
             {
                 var shema_out_task = task2flow[in_flows[idx]['@']];
                 for (var idx1 = 0; idx1 < fne.length; idx1++)
                 {
-					//print ("fne[idx1]=", fne[idx1].work_item['@']);
-					
                     var found_out_task = getUri(fne[idx1].parent['v-wf:forNetElement']);
                     if (shema_out_task == found_out_task)
                     {
                         and_join_count_complete++;
-                        if (work_item['@'] == fne[idx1].work_item['@'])
-							pos_work_item = idx + 1;
                         break;
                     }
                 }
             }
 
+//			print ("[WORKFLOW] and_join_count_complete=", and_join_count_complete, ", in_flows.length=", in_flows.length);
+
             if (and_join_count_complete != in_flows.length)
                 return;
 
-			// отрабатываем только по первому work_item, остальные отбрасываем	
-			if (pos_work_item != 1)
+			// отрабатываем только по неисполняемым	
+			var isExecuted = document['v-s:isExecuted'];
+			if (isExecuted)
+			{
 				return;
+			}
                                     
-		    //print ("prepare_work_item uri=", document['@']);
-		    //print ("pos_work_item=", pos_work_item);
-            //print("[WORKFLOW][PW00.3] and join is complete and_join_count_complete=", and_join_count_complete);
+//		    print ("[WORKFLOW] prepare_work_item uri=", document['@']);
+//		    print ("[WORKFLOW] pos_work_item=", pos_work_item);
+//            print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
         }
 
         var is_completed = false;
@@ -973,11 +973,10 @@ function prepare_work_item(ticket, document)
                         data: work_item_uri,
                         type: _Uri
                     });
-                    document['v-wf:isCompleted'] = [
-                    {
-                        data: true,
-                        type: _Bool
-                    }];
+                    document['v-wf:isCompleted'] = newBool (true);
+					document['v-s:isExecuted'] = new Bool (false);			
+                    document['v-s:created'] = newDate (new Date ());
+                    
                     is_completed = true;
 
                     ////print("[WO12] document=", toJson(document));
@@ -992,6 +991,11 @@ function prepare_work_item(ticket, document)
         {
             put_individual(ticket, document, _event_id);
         }
+        else
+        {
+			document['v-s:isExecuted'] = newBool (true);			
+            put_individual(ticket, document, _event_id);
+		}
 
     }
     catch (e)
