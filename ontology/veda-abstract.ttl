@@ -231,6 +231,13 @@ v-s:origin
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
 .
+v-s:isDefinedBy
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Is defined by"@en ;
+  rdfs:label "Определено"@ru ;
+  rdfs:range v-s:RegulatoryDocument ;
+  rdfs:domain v-s:Thing ;
+.
 ### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
