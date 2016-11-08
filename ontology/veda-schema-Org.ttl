@@ -431,6 +431,9 @@ v-s:OrganizationTemplate
         <tr>
           <td about="@" data-template="v-ui:IconModalTemplate"></td>
           <td>
+            <div about="@" property="v-s:registrationNumber" class="view edit -search"></div>
+          </td>
+          <td>
             <div about="@" property="v-s:shortLabel" class="view edit -search"></div>
           </td>
           <td>
