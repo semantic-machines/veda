@@ -62,6 +62,7 @@ v-s:hasFunctionalChief
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
 .
