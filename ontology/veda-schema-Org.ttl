@@ -347,6 +347,10 @@ v-s:OrganizationTemplate
     <div property="v-s:shortLabel" class="view -edit -search"></div>
     <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
 
+    <em about="v-s:hasClassifierCountry" property="rdfs:label"></em>
+    <div rel="v-s:hasClassifierCountry" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+    <veda-control data-type="link" rel="v-s:hasClassifierCountry" class="-view edit search fulltext dropdown"></veda-control>
+
     <hr class="view -edit -search">
 
     <div class="row">
@@ -675,3 +679,6 @@ v-s:DepartmentTemplate
 </div>
   """ ;
 .
+
+
+

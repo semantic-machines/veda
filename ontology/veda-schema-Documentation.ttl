@@ -156,7 +156,7 @@ v-s:observationCircumstances
 .
 
 
-CurrencyKi
+
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
