@@ -2,7 +2,7 @@
 
 # берет новые исходники из github, но не собирает
 
-DMD_VER=2.071.2
+DMD_VER=2.072.0
 DUB_VER=1.0.0
 
 # Get right version of DMD

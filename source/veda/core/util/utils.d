@@ -221,7 +221,7 @@ public JSONValue read_props(string file_name)
         JSONValue listeners = JSONValue([ transport, transport1 ]);
         res = JSONValue([ "listeners" : listeners ]);
 
-        string buff = toJSON(&res);
+        string buff = toJSON(res);
 
         std.file.write(file_name, buff);
     }

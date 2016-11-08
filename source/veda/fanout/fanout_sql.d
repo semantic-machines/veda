@@ -261,14 +261,14 @@ class FanoutProcess : VedaModule
                 }
 
                 mysql_conn.query(
-                                 "CREATE TABLE `veda_db`.`" ~ predicate ~ "` ("
-                                 "`ID` BIGINT NOT NULL AUTO_INCREMENT, "
-                                 "`doc_id` CHAR(128) NOT NULL, "
-                                 "`doc_type` CHAR(128) NOT NULL, "
-                                 "`created` DATETIME NULL, "
-                                 "`value` " ~ sql_type ~ " NULL, "
-                                 "`lang` CHAR(2) NULL, "
-                                 " PRIMARY KEY (`ID`), "
+                                 "CREATE TABLE `veda_db`.`" ~ predicate ~ "` (" ~
+                                 "`ID` BIGINT NOT NULL AUTO_INCREMENT, " ~
+                                 "`doc_id` CHAR(128) NOT NULL, " ~
+                                 "`doc_type` CHAR(128) NOT NULL, " ~
+                                 "`created` DATETIME NULL, " ~
+                                 "`value` " ~ sql_type ~ " NULL, " ~
+                                 "`lang` CHAR(2) NULL, " ~
+                                 " PRIMARY KEY (`ID`), " ~
                                  " INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) " ~ sql_value_index ~
                                  ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
                 isExistsTable[ predicate ] = true;
