@@ -421,6 +421,7 @@ v-s:OrganizationTemplate
       <thead>
         <tr class="active">
           <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="v-s:registrationNumber" property="rdfs:label"></th>
           <th about="v-s:shortLabel" property="rdfs:label"></th>
           <th about="v-s:taxId" property="rdfs:label"></th>
           <th about="v-s:legalAddress" property="rdfs:label"></th>
