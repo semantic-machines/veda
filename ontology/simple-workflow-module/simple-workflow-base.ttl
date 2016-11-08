@@ -411,6 +411,15 @@ s-wf:SimpleRouteStartForm_possible_decisions
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:SimpleRouteStartForm_task_label
+  rdf:type rdf:Property ;
+  rdfs:label "Название задачи"@ru ;
+  rdfs:label "Task label"@en ;
+  rdfs:domain s-wf:SimpleRouteStartForm ;
+  rdfs:range xsd:string ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:SimpleRouteStartForm_comment
   rdf:type rdf:Property ;
   rdfs:label "Комментарий"@ru ;
@@ -753,31 +762,48 @@ s-wf:ComplexRouteStartForm_Template
     // DEFAULT
     for (i = 1; i <= 6; i++) {
       routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+      routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
     }
+    
     routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
     routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
     routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
     routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
     routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
     routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
     routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
 
     // CUSTOM
-       
+/*       
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
+      // #INFORMING-------------------------------------------------------------------------------------------------------------------------------------------
+      routes['informing'][simple+'participant'] = doc['v-s:creator'];
+      routes['informing'][simple+'visible'] = [true];
+      routes['informing'][simple+'editable'] = [true];
+      routes['informing'][simple+'deadlineDays'] = [10];
       // #COORDINATION1---------------------------------------------------------------------------------------------------------------------------------------
       routes['coordination1'][simple+'participant'] = doc['v-s:creator'];
       routes['coordination1'][simple+'visible'] = [true];
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
-      // #COORDINATION2--------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['coordination2'][simple+'participant'] = [
+    } else
+*/     
+    if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
+      // #COORDINATION1--------------------------------------------------------------------------------------------------------------------------------------- 
+      routes['coordination1'][simple+'participant'] = [
       	new veda.IndividualModel("d:mondi_appointment_00046884_71015702"), // Дмитрий Злобин : Начальник управления
       	new veda.IndividualModel("d:mondi_appointment_00058098_71024364") // Дмитрий Очеретенко : Главный эколог
   	  ];
-      routes['coordination2'][simple+'visible'] = [true];
-      routes['coordination2'][simple+'editable'] = [false];
-      routes['coordination2'][simple+'deadlineDays'] = [10];
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [false];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
       // #EXAMINATION----------------------------------------------------------------------------------------------------------------------------------------- 
       routes['examination'][simple+'participant'] = [
       	new veda.IndividualModel("d:mondi_appointment_00049652_71000049"), // Вячеслав Луппов : Начальник
@@ -814,7 +840,7 @@ s-wf:ComplexRouteStartForm_Template
       routes['instruction3'][simple+'visible'] = [true];
       routes['instruction3'][simple+'editable'] = [false];
       routes['instruction3'][simple+'deadlineDays'] = [10];
-      routes['instruction3'][simple+'comment'] = [new String('Заполнить отчёт')];
+      routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
     }
 
       stages.forEach(function(stage) {
@@ -2437,6 +2463,13 @@ s-wf:map_msg_template_4_SV_default_template
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_msg_template_4_SV_default_template_notification
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "process.getInputVariable('$template')?process.getInputVariable('$template'):newUri ('m-l:msg-template-universal_notification')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_from_4_TIV_initiator
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_from ;
@@ -2498,6 +2531,13 @@ s-wf:map_doc_url_4_vedaInfo_appUrl
   """
   newStr (getFirstValue (get_properties_chain (newUri ('v-s:vedaInfo'), [{$get:'v-s:appUrl'}])) + "/" + getFirstValue(task.getInputVariable ('docId')))
   """;
+.
+
+s-wf:map_msg_executor_informing
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_wf_to ;
+  v-wf:mappingExpression  "order.getExecutor ()";
+  rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:map_vf_to_4_O_executor

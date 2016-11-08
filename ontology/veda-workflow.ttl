@@ -1108,6 +1108,50 @@ v-wf:TaskTemplateAsProperties
       </div>
     </td>
   </tr>
+  <tr onclick="javascript: $('.button-delete', $('.VCstartingMessageMap').show()).show();">
+    <td>
+      <span about="v-wf:startingMessageMap" property="rdfs:label"></span>
+    </td>
+      <td>
+        <veda-control rel="v-wf:startingMessageMap" data-type="link" class="VCstartingMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+        <div rel="v-wf:startingMessageMap">
+          <div deleteButton="hide" class="VCstartingMessageMap">
+            <p>
+            #<a href="#/@">
+              <span about="@" rel="v-wf:mapToVariable">
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+            </a>
+          </p>
+        <div>
+      </div>
+    </td>
+  </tr>
+  <tr onclick="javascript: $('.button-delete', $('.VCcompletedMessageMap').show()).show();">
+    <td>
+      <span about="v-wf:completedMessageMap" property="rdfs:label"></span>
+    </td>
+      <td>
+        <veda-control rel="v-wf:completedMessageMap" data-type="link" class="VCcompletedMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+        <div rel="v-wf:completedMessageMap">
+          <div deleteButton="hide" class="VCcompletedMap">
+            <p>
+            #<a href="#/@">
+              <span about="@" rel="v-wf:mapToVariable">
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+            </a>
+          </p>
+        <div>
+      </div>
+    </td>
+  </tr>  
   <tr onclick="javascript: $('.button-delete', $('.VCwosResultsMapping').show()).show();">
     <td>
       <span about="v-wf:wosResultsMapping" property="rdfs:label"></span>
