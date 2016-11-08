@@ -274,13 +274,20 @@ class VedaModule // : WSLink
 
                     Individual indv = context.get_individual(&sticket, data);
 
-                    ResultCode rc;
+                    ResultCode rc = ResultCode.Internal_Server_Error;
 
                     if (indv !is Individual.init)
                     {
                         Individual prev_indv;
 
-                        rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
+						try
+						{
+	                        rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
+						}
+						catch (Throwable tr)
+						{
+							log.trace ("ERR! indv.uri=%s, err=%s", indv.uri, tr.msg);
+						}
                     }
 
                     if (rc != ResultCode.Connect_Error)
