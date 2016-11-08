@@ -133,6 +133,30 @@ v-s:isPositiveObservation
   rdfs:domain v-s:Observation ;
 .
 
+v-s:effectsDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Effects description"@en ;
+  rdfs:label "Опсиание последствий"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:observationInitiator
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оbservation initiator"@en ;
+  rdfs:label "Кто обнаружил"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:observationCircumstances
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Observation circumstances"@en ;
+  rdfs:label "Как было обнаружено?"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+
+
+CurrencyKi
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
@@ -159,4 +183,12 @@ v-s:Request
   rdfs:subClassOf v-s:Controlled ;
   rdfs:label "Request"@en ;
   rdfs:label "Запрос"@ru ;
+.
+
+#---------------------------------------------------------
+v-s:RegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Regulatory document"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
 .
