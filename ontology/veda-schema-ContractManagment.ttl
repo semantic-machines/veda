@@ -73,6 +73,23 @@ v-s:Price
 # v-s:hasCurrency
 
 # ------------------------------------------------------------
+v-s:Cost
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "Cost"@en ;
+  rdfs:label "Закупка"@ru ;
+.
+v-s:hasPrice
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Price"@en ;
+  rdfs:label "Стоимость"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Cost ;
+.
+# v-s:description
+
+# ------------------------------------------------------------
+
 v-s:ContractRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Request ;

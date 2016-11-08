@@ -238,6 +238,13 @@ v-s:isDefinedBy
   rdfs:range v-s:RegulatoryDocument ;
   rdfs:domain v-s:Thing ;
 .
+v-s:specialOpinion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Special opinion"@en ;
+  rdfs:label "Особое мнение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
 ### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
@@ -409,7 +416,7 @@ v-s:Controlled
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Controlled thing"@en ;
-  rdfs:label "Контрактная сущность"@ru ;
+  rdfs:label "Контролируемая сущность"@ru ;
 .
 v-s:controller
   rdf:type owl:ObjectProperty ;
