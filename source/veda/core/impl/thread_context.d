@@ -1114,12 +1114,18 @@ class PThreadContext : Context
                     res.result = ResultCode.Unprocessable_Entity;
                     return res;
                 }
+                
+                prev_indv.addResource("v-s:deleted", Resource (true));
             }
 
             version (isServer)
             {
-                res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
-                //veda.core.threads.xapian_indexer.send_delete(null, prev_state, res.op_id);
+                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
+                
+                if (oprc.result == ResultCode.OK)                
+	                res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
+	            else
+		            res.result = oprc.result;
             }
             if (main_module_url !is null)
             {
