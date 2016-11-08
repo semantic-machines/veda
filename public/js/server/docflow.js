@@ -723,7 +723,7 @@ function prepare_work_item(ticket, document)
                                     
 //		    print ("[WORKFLOW] prepare_work_item uri=", document['@']);
 //		    print ("[WORKFLOW] pos_work_item=", pos_work_item);
-//            print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
+//          print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
         }
 
         var is_completed = false;
@@ -974,7 +974,7 @@ function prepare_work_item(ticket, document)
                         type: _Uri
                     });
                     document['v-wf:isCompleted'] = newBool (true);
-					document['v-s:isExecuted'] = new Bool (false);			
+					document['v-s:isExecuted'] = newBool (false);			
                     document['v-s:created'] = newDate (new Date ());
                     
                     is_completed = true;
