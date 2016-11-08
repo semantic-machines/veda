@@ -483,6 +483,10 @@ public class IndexerContext
                                                                 {
                                                                     index_integer(ln ~ "." ~ indexed_field.uri, rc);
                                                                 }
+                                                                else if (rc.type == DataType.Datetime)
+                                                                {
+                                                                    index_date(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
                                                                 else if (rc.type == DataType.Boolean)
                                                                 {
                                                                     index_boolean(ln ~ "." ~ indexed_field.uri, rc);
