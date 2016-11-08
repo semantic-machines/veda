@@ -38,3 +38,4 @@ veda-bootstrap
 /veda-fanout-email
 /veda-fanout-sql
 /veda-webserver
+.veda-pid

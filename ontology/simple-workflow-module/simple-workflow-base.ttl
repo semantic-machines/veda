@@ -731,6 +731,8 @@ s-wf:ComplexRouteStartForm_Template
       'approval',
       'review',
       'instruction',
+      'instruction2',
+      'instruction3',
       'examination',
       'distribution',
       'auto_instruction'
@@ -756,29 +758,78 @@ s-wf:ComplexRouteStartForm_Template
     routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
 
     // CUSTOM
-    if (doc['rdf:type'][0].id === "v-s:ContractorProfile") { // Custom values fill
+       
+    if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
+      // #COORDINATION1---------------------------------------------------------------------------------------------------------------------------------------
+      routes['coordination1'][simple+'participant'] = doc['v-s:creator'];
       routes['coordination1'][simple+'visible'] = [true];
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
-      routes['approval'][simple+'participant'] = doc['v-s:creator'];
-      routes['approval'][simple+'editable'] = [true];
-      routes['approval'][simple+'visible'] = [true];
-      routes['approval'][simple+'comment'] = [new String('Подтвердить')];
+      // #COORDINATION2--------------------------------------------------------------------------------------------------------------------------------------- 
+      routes['coordination2'][simple+'participant'] = [
+      	new veda.IndividualModel("d:mondi_appointment_00046884_71015702"), // Дмитрий Злобин : Начальник управления
+      	new veda.IndividualModel("d:mondi_appointment_00058098_71024364") // Дмитрий Очеретенко : Главный эколог
+  	  ];
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [false];
+      routes['coordination2'][simple+'deadlineDays'] = [10];
+      // #EXAMINATION----------------------------------------------------------------------------------------------------------------------------------------- 
+      routes['examination'][simple+'participant'] = [
+      	new veda.IndividualModel("d:mondi_appointment_00049652_71000049"), // Вячеслав Луппов : Начальник
+      	new veda.IndividualModel("d:mondi_appointment_00027183_71015712"), // Александр Разумов : Начальник цеха
+      	new veda.IndividualModel("d:mondi_appointment_00066961_71024365"), // Дмитрий Караваев : Заместитель главного эколога
+      	new veda.IndividualModel("d:mondi_appointment_00016254_71019236"), // Сергей Щербаков : Заместитель начальника участка  	
+      	new veda.IndividualModel("d:mondi_appointment_00008542_71020127"), // Елена Ивашова : Инженер-технолог 1 категории
+      	new veda.IndividualModel("d:mondi_appointment_00056698_71019099"), // Елена Астраханова : Ведущий инженер
+      	new veda.IndividualModel("d:mondi_appointment_00057709_71011432"), // Наталья Пронько : Ведущий инженер	
+      	new veda.IndividualModel("d:SYK-SMEN-WATR_appointment"), // Сотрудник. Мастер УВКХ
+      	new veda.IndividualModel("d:SYK-MASTERS-OPDH_appointment"), // Мастерам УПХ ВОЦ (SYK-Masters-OPDH)
+      	new veda.IndividualModel("d:GLAV_DISP_appointment")
+      ];
+      routes['examination'][simple+'visible'] = [true];
+      routes['examination'][simple+'editable'] = [false];
+      routes['examination'][simple+'deadlineDays'] = [10];
+      
+      // #INSTRUCTION----------------------------------------------------------------------------------------------------------------------------------------- 
+      routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-MASTERS-OPDH_position")]);
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [false];
+      routes['instruction'][simple+'deadlineDays'] = [10];
+      routes['instruction'][simple+'comment'] = [new String('Заполнить отчёт')];
+      
+      // #INSTRUCTION2---------------------------------------------------------------------------------------------------------------------------------------- 
+      routes['instruction2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00056698_71019099")]; // Елена Астраханова : Ведущий инженер
+      routes['instruction2'][simple+'visible'] = [true];
+      routes['instruction2'][simple+'editable'] = [false];
+      routes['instruction2'][simple+'deadlineDays'] = [10];
+      routes['instruction2'][simple+'comment'] = [new String('Проверить результаты')];
+            
+      // #INSTRUCTION3---------------------------------------------------------------------------------------------------------------------------------------- 
+      routes['instruction3'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00058098_71024364")]; // Дмитрий Очеретенко : Главный эколог
+      routes['instruction3'][simple+'visible'] = [true];
+      routes['instruction3'][simple+'editable'] = [false];
+      routes['instruction3'][simple+'deadlineDays'] = [10];
+      routes['instruction3'][simple+'comment'] = [new String('Заполнить отчёт')];
     }
 
       stages.forEach(function(stage) {
         var routeid = complex+stage;
-          individual[routeid] = [routes[stage]];
+        individual[routeid] = [routes[stage]];
         var sub = individual[routeid][0];
         if (!sub.hasValue(simple+'visible') || sub[simple+'visible'][0] == false) {
-        $('.'+stage, template).hide();
+          $('.'+stage, template).hide();
         }
-      if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-        $('.'+stage+' > div', template).attr('about', '@');
-      }
+        if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
+          $('.'+stage+' > div', template).attr('about', '@');
+          $('.'+stage+' > div', template).removeAttr('data-embedded');
+          $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]', template).remove();
+          sub.save();
+        }
       });
     }
   $('#save_and_start_process', template).on('click', function () {
@@ -880,15 +931,25 @@ s-wf:ComplexRouteStartForm_Template
                <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
                <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_review" class="-view edit search create"></veda-control>
             </div>
+            <div class="col-md-4 examination">
+               <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
+            </div>
             <div class="col-md-4 instruction">
                <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
                <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
                <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
             </div>
-            <div class="col-md-4 examination">
-               <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
+            <div class="col-md-4 instruction2">
+               <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
+            </div>
+            <div class="col-md-4 instruction3">
+               <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
+               <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
             </div>
             <div class="col-md-4 distribution">
                <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
@@ -904,7 +965,36 @@ s-wf:ComplexRouteStartForm_Template
     </div>
   </div>
 <script>
-//# sourceURL=s-wf:ComplexRouteStartForm_Template
+/*
+	var stages = [ // Default values fill
+	  'informing',
+	  'coordination1',
+	  'coordination2',
+	  'coordination3',
+	  'coordination4',
+	  'coordination5',
+	  'coordination6',
+	  'sign',
+	  'approval',
+	  'review',
+	  'instruction',
+	  'instruction2',
+	  'instruction3',
+	  'examination',
+	  'distribution',
+	  'auto_instruction'
+	]; sourceURL=s-wf:ComplexRouteStartForm_Template
+    var complex = 's-wf:ComplexRouteStartForm_';
+    var simple = 's-wf:SimpleRouteStartForm_';
+    stages.forEach(function(stage) {
+      var routeid = complex+stage;
+      individual[routeid] = [routes[stage]];
+      var sub = individual[routeid][0];
+      if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
+        $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]').hide();
+      }
+    });
+*/    
 </script>
   """ ;
 .

@@ -315,7 +315,11 @@ veda.Module(function Util(veda) { "use strict";
             oneProp = values
               .filter(function(item){return !!item && !!item.valueOf();})
               .map( function (value) {
-                return "'" + property_uri + "'=='" + value.data + "'";
+                if (property_uri === "rdf:type") {
+                  return "'" + property_uri + "'==='" + value.data + "'";
+                } else {
+                  return "'" + property_uri + "'=='" + value.data + "'";
+                }
               })
               .join("||");
             break;

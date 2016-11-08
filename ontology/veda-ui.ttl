@@ -581,7 +581,7 @@ v-ui:LinkTemplate
   rdfs:label "Template with link"@en ;
   v-ui:template """
 <div>
-  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
+  <!--h3 about="v-s:hasLink" property="rdfs:label"></h3>
   <div class="row" rel="v-s:hasLink" data-embedded="true">
     <div class="col-md-6">
       <div class="panel panel-default">
@@ -603,7 +603,7 @@ v-ui:LinkTemplate
       </div>
     </div>
   </div>
-  <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
+  <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control-->
 </div>
 <script>
   individual.on("individual:propertyModified", handler);

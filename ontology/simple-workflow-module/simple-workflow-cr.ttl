@@ -70,12 +70,16 @@ s-wf:net_complex_route a v-wf:Net;
     s-wf:crf_a_to_r,
     s-wf:crf_a_to_ai,
     s-wf:cr_instruction,
-    s-wf:crf_i_to_d,
+    s-wf:crf_i_to_i2,
     s-wf:cr_examination,
-    s-wf:crf_e_to_d,
+    s-wf:crf_e_to_i2,
     s-wf:cr_auto_instruction,
     s-wf:cr_review,
-    s-wf:crf_r_to_d,
+    s-wf:crf_r_to_i2,
+    s-wf:cr_instruction2,
+    s-wf:crf_i2_to_i3,
+    s-wf:cr_instruction3,
+    s-wf:crf_i3_to_d,
     s-wf:cr_distribution,
     s-wf:crf_d_to_rr,
     s-wf:cr_restore_rights,
@@ -484,7 +488,7 @@ s-wf:crf_rework_to_rr a v-wf:Flow;
 
 s-wf:cr_restore_rights a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "1800"^^xsd:integer;
+  v-wf:locationX "2050"^^xsd:integer;
   v-wf:locationY "-250"^^xsd:integer;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:hasFlow s-wf:crf_rr_to_finish;
@@ -500,7 +504,7 @@ s-wf:crf_rr_to_finish a v-wf:Flow;
 
 s-wf:cr_finish a v-wf:OutputCondition;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "1900"^^xsd:integer;
+  v-wf:locationX "2200"^^xsd:integer;
   v-wf:locationY "500"^^xsd:integer;
   rdfs:label "Финиш"^^xsd:string;
   v-wf:belongsTo s-wf:net_complex_route.
@@ -509,15 +513,53 @@ s-wf:cr_instruction a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
-  v-wf:hasFlow s-wf:crf_i_to_d;
+  v-wf:hasFlow s-wf:crf_i_to_i2;
   v-wf:executor s-wf:executor_instruction;
   v-wf:subNet s-wf:InterlayerNet;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_instruct_form;
   rdfs:label "Поручение"^^xsd:string.
+  
+s-wf:cr_instruction2 a v-wf:Task;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:join v-wf:AND;
+  v-wf:locationX "1650"^^xsd:integer;
+  v-wf:locationY "200"^^xsd:integer;
+  v-wf:hasFlow s-wf:crf_i2_to_i3;
+  v-wf:executor s-wf:executor_instruction2;
+  v-wf:subNet s-wf:InterlayerNet;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
+  v-wf:completeDecisionTransform s-wf:tr_taken_decision;
+  v-wf:startDecisionTransform s-wf:tr_instruct_form;
+  rdfs:label "Поручение"^^xsd:string.
 
-s-wf:crf_i_to_d a v-wf:Flow;
+s-wf:cr_instruction3 a v-wf:Task;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:locationX "1800"^^xsd:integer;
+  v-wf:locationY "200"^^xsd:integer;
+  v-wf:hasFlow s-wf:crf_i3_to_d;
+  v-wf:executor s-wf:executor_instruction3;
+  v-wf:subNet s-wf:InterlayerNet;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
+  v-wf:completeDecisionTransform s-wf:tr_taken_decision;
+  v-wf:startDecisionTransform s-wf:tr_instruct_form;
+  rdfs:label "Поручение"^^xsd:string.
+  
+
+s-wf:crf_i_to_i2 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  rdfs:label ""^^xsd:string;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_instruction2.
+  
+s-wf:crf_i2_to_i3 a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  rdfs:label ""^^xsd:string;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:cr_instruction3.
+
+s-wf:crf_i3_to_d a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:predicate "true"^^xsd:string;
@@ -527,7 +569,7 @@ s-wf:cr_examination a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "350"^^xsd:integer;
-  v-wf:hasFlow s-wf:crf_e_to_d;
+  v-wf:hasFlow s-wf:crf_e_to_i2;
   v-wf:executor s-wf:executor_examination;
   v-wf:subNet s-wf:InterlayerNet;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
@@ -535,11 +577,11 @@ s-wf:cr_examination a v-wf:Task;
   v-wf:startDecisionTransform s-wf:tr_examin_form;
   rdfs:label "Ознакомление"^^xsd:string.
 
-s-wf:crf_e_to_d a v-wf:Flow;
+s-wf:crf_e_to_i2 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:predicate "true"^^xsd:string;
-  v-wf:flowsInto s-wf:cr_distribution.
+  v-wf:flowsInto s-wf:cr_instruction2.
 
 s-wf:cr_auto_instruction a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
@@ -556,7 +598,7 @@ s-wf:cr_review a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "50"^^xsd:integer;
-  v-wf:hasFlow s-wf:crf_r_to_d;
+  v-wf:hasFlow s-wf:crf_r_to_i2;
   v-wf:executor s-wf:executor_review;
   v-wf:subNet s-wf:InterlayerNet;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
@@ -564,17 +606,16 @@ s-wf:cr_review a v-wf:Task;
   v-wf:startDecisionTransform s-wf:tr_review_form;
   rdfs:label "Рассмотрение"^^xsd:string.
 
-s-wf:crf_r_to_d a v-wf:Flow;
+s-wf:crf_r_to_i2 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:predicate "true"^^xsd:string;
-  v-wf:flowsInto s-wf:cr_distribution.
+  v-wf:flowsInto s-wf:cr_instruction2.
 
 s-wf:cr_distribution a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "1650"^^xsd:integer;
+  v-wf:locationX "1950"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
-  v-wf:join v-wf:AND;
   v-wf:hasFlow s-wf:crf_d_to_rr;
   v-wf:subNet s-wf:InterlayerNet;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
@@ -717,6 +758,18 @@ s-wf:executor_instruction
   rdf:type v-wf:ExecutorDefinition ;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_instruction'}])" ;
+.
+
+s-wf:executor_instruction2
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_instruction2'}])" ;
+.
+
+s-wf:executor_instruction3
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_instruction3'}])" ;
 .
 
 s-wf:executor_review
