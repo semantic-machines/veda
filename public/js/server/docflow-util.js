@@ -863,8 +863,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                     put_individual(ticket, new_message, _event_id);
                 }
 
-
-                print("@@@ mapToMessage=" + toJson(new_message));
+                print("[DOCFLOW] mapToMessage=" + new_message['@']);
             }
         }
     }
