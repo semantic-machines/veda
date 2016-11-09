@@ -601,6 +601,8 @@ function prepare_work_order(ticket, document)
 
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /*
  *   обработка элемента сети
  *      1. слияние
@@ -694,6 +696,7 @@ function prepare_work_item(ticket, document)
 
             // проверим соответствие найденных WorkItem со схемой
             var and_join_count_complete = 0;
+			var isExecuted;
 
             for (var idx = 0; idx < in_flows.length; idx++)
             {
@@ -701,6 +704,14 @@ function prepare_work_item(ticket, document)
                 for (var idx1 = 0; idx1 < fne.length; idx1++)
                 {
                     var found_out_task = getUri(fne[idx1].parent['v-wf:forNetElement']);
+                    isExecuted = fne[idx1].work_item['v-s:isExecuted']
+           		    print ("[WORKFLOW] found_out_task=", toJson (fne[idx1].work_item));
+					if (isExecuted)
+					{
+						// встретился уже выполняемый work_item, по этой задаче, остальные отбрасываем
+						return;
+					}	
+
                     if (shema_out_task == found_out_task)
                     {
                         and_join_count_complete++;
@@ -709,22 +720,18 @@ function prepare_work_item(ticket, document)
                 }
             }
 
-//			print ("[WORKFLOW] and_join_count_complete=", and_join_count_complete, ", in_flows.length=", in_flows.length);
+			//print ("[WORKFLOW] and_join_count_complete=", and_join_count_complete, ", in_flows.length=", in_flows.length);
 
             if (and_join_count_complete != in_flows.length)
                 return;
-
-			// отрабатываем только по неисполняемым	
-			var isExecuted = document['v-s:isExecuted'];
-			if (isExecuted)
-			{
-				return;
-			}
                                     
-//		    print ("[WORKFLOW] prepare_work_item uri=", document['@']);
-//		    print ("[WORKFLOW] pos_work_item=", pos_work_item);
-//          print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
+		    //print ("[WORKFLOW] prepare_work_item uri=", document['@']);
+			//print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
         }
+
+		document['v-s:isExecuted'] = newBool (true);			
+        put_individual(ticket, document, _event_id);
+		//print ("[WORKFLOW] UPDATE document=", toJson (document));
 
         var is_completed = false;
         var workItemList = [];
@@ -991,12 +998,6 @@ function prepare_work_item(ticket, document)
         {
             put_individual(ticket, document, _event_id);
         }
-        else
-        {
-			document['v-s:isExecuted'] = newBool (true);			
-            put_individual(ticket, document, _event_id);
-		}
-
     }
     catch (e)
     {
@@ -1004,6 +1005,8 @@ function prepare_work_item(ticket, document)
     }
 
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
  *  обработка процесса

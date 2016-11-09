@@ -23,6 +23,16 @@ veda.Module(function Util(veda) { "use strict";
   veda.Util.genUri = function () {
       return 'd:a' + veda.Util.guid();
   };
+  
+  veda.Util.mlstring = function (ru, en) {
+      var str_ru = new String(ru); 
+      str_ru.language = "RU";
+
+      var str_en = new String(en); 
+      str_en.language = "EN";
+
+      return [str_ru, str_en];
+  };
 
   veda.Util.construct = function (constr, args) {
     function F() {

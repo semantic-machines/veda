@@ -19,7 +19,7 @@
 
 v-s:ExecuteScript
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Deliverable ;
   rdfs:label "Выполнить скрипт" ;
 .
@@ -97,7 +97,7 @@ v-s:fileUri
 # ------------------------------------------------------------
 v-s:Variable
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Variable"@en ;
   rdfs:label "Переменная"@ru ;
 .
@@ -119,7 +119,7 @@ v-s:variableValue
 # ------------------------------------------------------------
 v-s:Bundle
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Bundle"@en ;
   rdfs:label "Текстовая константа"@ru ;
 .
@@ -127,7 +127,7 @@ v-s:Bundle
 # ------------------------------------------------------------
 v-s:Account
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
 .
@@ -158,7 +158,7 @@ v-s:password
 # ------------------------------------------------------------
 v-s:Codelet
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Codelet"@en ;
   rdfs:label "Исполняемый Код"@ru ;
 .
@@ -166,14 +166,14 @@ v-s:Codelet
 # ------------------------------------------------------------
 v-s:Container
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Контейнер"@ru ;
 .
 
 # ------------------------------------------------------------
 v-s:TemplateForText
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Шаблон для текста"@ru ;
 .
 v-s:templateBody
@@ -202,7 +202,7 @@ v-s:templateLanguage
 # ------------------------------------------------------------
 v-s:Event
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
 .
@@ -230,7 +230,7 @@ v-s:disabled
 # ------------------------------------------------------------
 v-s:Group
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:comment "Group of resources"@en ;
   rdfs:comment "Группа ресурсов"@ru ;
   rdfs:label "Group"@en ;
@@ -240,7 +240,7 @@ v-s:Group
 # ------------------------------------------------------------
 v-s:Membership
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Membership"@en ;
   rdfs:label "Принадлежность"@ru ;
 .
@@ -297,7 +297,7 @@ v-s:resource
 # ------------------------------------------------------------
 v-s:PermissionFilter
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:comment "Запись о соответствии объекта и значения фильтра прав."@ru ;
   rdfs:label "Object's permissions filter record"@en ;
   rdfs:label "Фильтр прав"@ru ;
@@ -306,7 +306,7 @@ v-s:PermissionFilter
 # ------------------------------------------------------------
 v-s:PermissionStatement
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
   rdfs:label "Permissions record"@en ;
@@ -362,7 +362,7 @@ v-s:endTime
 # ------------------------------------------------------------
 v-s:Transform
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Для переливки из старой системы"@ru ;
 .
 v-s:destClass
@@ -392,7 +392,7 @@ v-s:srcPropertyName
 # ------------------------------------------------------------
 v-s:Version
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Version"@en ;
   rdfs:label "Версия"@ru ;
 .
@@ -400,7 +400,7 @@ v-s:Version
 # ------------------------------------------------------------
 v-s:ClassModel
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Class model"@en ;
   rdfs:label "Модель класса"@ru ;
 .

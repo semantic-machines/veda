@@ -121,7 +121,7 @@ public class IndexerContext
                                                           xapian_db_type, &err);
             if (err != 0)
             {
-                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg (err));
                 return false;
             }
 
@@ -129,9 +129,14 @@ public class IndexerContext
                                                            xapian_db_type, &err);
             if (err != 0)
             {
-                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg (err));
                 return false;
             }
+        }
+        else
+        {
+	        log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg (err));
+		    return false;        	
         }
 
         this.indexer = new_TermGenerator(&err);

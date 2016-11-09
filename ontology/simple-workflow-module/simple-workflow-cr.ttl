@@ -162,12 +162,15 @@ s-wf:cr_informing_task a v-wf:Task;
   v-wf:locationY "200"^^xsd:integer;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:subNet s-wf:InterlayerNet;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
+  v-wf:subNet s-wf:NotificationNet;
   v-wf:hasFlow s-wf:crf_i_to_c1;
   v-wf:executor s-wf:executor_informing ;
+  rdfs:label "Рассылка"^^xsd:string;
+.
+  
 #  v-wf:startingJournalMap s-wf:map_jrn_msg_t3_b, s-wf:map_jrn_msg_t3_b_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
 #  v-wf:completedJournalMap s-wf:map_jrn_msg_t3_e, s-wf:map_jrn_msg_t3_e_ev, s-wf:map_journal_doc_id, s-wf:map_journal_process_id;
-  rdfs:label "Рассылка"^^xsd:string.
 #  v-wf:completedMapping s-wf:map_set_result_from_process;
 #  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_coordinator1, s-wf:map_coordinator1_1.
 
@@ -703,7 +706,7 @@ s-wf:var_distribution_recipient
 s-wf:executor_informing
   rdf:type v-wf:ExecutorDefinition ;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_informing'}])" ;
+  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_informing'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
 .
 
 s-wf:executor_coordination1
@@ -1463,7 +1466,10 @@ s-wf:InterlayerNet_executor
 s-wf:InterlayerNet_task_action
     rdf:type v-wf:Mapping ;
     v-wf:mapToVariable s-wf:var_actor_task_action ;
-    v-wf:mappingExpression  "newStr ('Исполнить поручение')" ;
+    v-wf:mappingExpression  
+    """
+    get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_task_label'}])
+    """;
 .
 
 s-wf:InterlayerNet_task_comment
@@ -1500,3 +1506,51 @@ s-wf:InterlayerNet_task_form_type
     v-wf:mapToVariable s-wf:var_decision_form_type ;
   v-wf:mappingExpression  "newUri ('s-wf:UserTaskForm')";
 .
+
+# Отправка почтовых уведомлений
+
+s-wf:NotificationNet
+    a v-wf:Net;
+    v-wf:inputVariable s-wf:var_doc_id, s-wf:var_journal_initiator;
+    v-wf:consistsOf s-wf:NotificationNet_ic, s-wf:NotificationNet_oc, s-wf:NotificationNet_t, s-wf:NotificationNet_ic_to_t, s-wf:NotificationNet_t_to_oc;
+#    v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local;
+    rdfs:label "Отправка почтовых уведомлений"^^xsd:string.
+
+s-wf:NotificationNet_ic
+    a v-wf:InputCondition;
+    v-wf:hasFlow s-wf:NotificationNet_ic_to_t;
+    v-wf:locationX "-294"^^xsd:integer;
+    v-wf:locationY "34"^^xsd:integer.
+
+s-wf:NotificationNet_oc
+    a v-wf:OutputCondition;
+    v-wf:locationX "429"^^xsd:integer;
+    v-wf:locationY "-7"^^xsd:integer.
+
+s-wf:NotificationNet_t
+    a v-wf:Task;
+#    v-wf:subNet s-wf:net_coordination;
+    v-wf:split v-wf:None;
+#    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:InterlayerNet_task_action, s-wf:InterlayerNet_task_form_type, s-wf:InterlayerNet_task_comment, s-wf:InterlayerNet_task_date_to, s-wf:InterlayerNet_task_controller, s-wf:InterlayerNet_task_possible_decisions; 
+    v-wf:join v-wf:None;
+#    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_result_decision_from_task_result;
+#    v-wf:executor s-wf:InterlayerNet_executor;
+    v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template_notification, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor, s-wf:map_to_4_O_executor;
+    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
+    v-wf:hasFlow s-wf:NotificationNet_t_to_oc;
+    v-wf:locationX "73"^^xsd:integer;
+    rdfs:label "Выдача уведомлений"^^xsd:string;
+    v-wf:locationY "-12"^^xsd:integer;
+    v-wf:completedJournalMap s-wf:map_journal_msg_4_task_label_complete, s-wf:map_jrn_ev_type_4_TaskCompleted, s-wf:map_journal_doc_id, s-wf:map_journal_process_id.
+
+s-wf:NotificationNet_ic_to_t
+    a v-wf:Flow;
+    v-wf:predicate "true"^^xsd:string;
+    v-wf:flowsInto s-wf:NotificationNet_t;
+    rdfs:label ""^^xsd:string.
+
+s-wf:NotificationNet_t_to_oc
+    a v-wf:Flow;
+    v-wf:predicate "true"^^xsd:string;
+    v-wf:flowsInto s-wf:NotificationNet_oc;
+    rdfs:label ""^^xsd:string.

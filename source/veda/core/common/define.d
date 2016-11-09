@@ -73,11 +73,12 @@ const string   queue_db_path       = "./data/queue";
 const string   onto_path           = "./ontology";
 const string   xapian_info_path    = "./data/xapian-info";
 const string   module_info_path    = "./data/module-info";
+const string   trails_path		   = "./data/trails";
 const string   logs_path   		   = "./logs";
 
 const string[] paths_list          =
 [ logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path,
-  xapian_info_path, module_info_path ];
+  xapian_info_path, module_info_path, trails_path ];
 
 private string[ string ] _xapian_search_db_path;
 public string get_xapiab_db_path(string db_name)

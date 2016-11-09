@@ -27,14 +27,14 @@ v-wf:appInboxUrl
 
 v-wf:Net
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net"@en ;
   rdfs:label "Сеть"@ru ;
 .
 v-wf:NetElement
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net element"@en ;
   rdfs:label "Элемент сети"@ru ;
@@ -69,21 +69,21 @@ v-wf:Task
 .
 v-wf:Flow
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Flow"@en ;
   rdfs:label "Поток"@ru ;
 .
 v-wf:ExecutorDefinition
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Executor definition"@en ;
   rdfs:label "Выбор исполнителя"@ru ;
 .
 v-wf:TransitionBehavior
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Transition behavior"@en ;
   rdfs:label "Тип перехода"@ru ;
@@ -319,7 +319,7 @@ v-wf:executorExpression
 #------------------------------------------------------
 v-wf:VarDefine
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Определение переменой"@ru ;
@@ -346,7 +346,7 @@ v-wf:varDefineScope
 
 v-wf:Variable
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Переменная"@ru ;
@@ -1108,6 +1108,50 @@ v-wf:TaskTemplateAsProperties
       </div>
     </td>
   </tr>
+  <tr onclick="javascript: $('.button-delete', $('.VCstartingMessageMap').show()).show();">
+    <td>
+      <span about="v-wf:startingMessageMap" property="rdfs:label"></span>
+    </td>
+      <td>
+        <veda-control rel="v-wf:startingMessageMap" data-type="link" class="VCstartingMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+        <div rel="v-wf:startingMessageMap">
+          <div deleteButton="hide" class="VCstartingMessageMap">
+            <p>
+            #<a href="#/@">
+              <span about="@" rel="v-wf:mapToVariable">
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+            </a>
+          </p>
+        <div>
+      </div>
+    </td>
+  </tr>
+  <tr onclick="javascript: $('.button-delete', $('.VCcompletedMessageMap').show()).show();">
+    <td>
+      <span about="v-wf:completedMessageMap" property="rdfs:label"></span>
+    </td>
+      <td>
+        <veda-control rel="v-wf:completedMessageMap" data-type="link" class="VCcompletedMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+        <div rel="v-wf:completedMessageMap">
+          <div deleteButton="hide" class="VCcompletedMap">
+            <p>
+            #<a href="#/@">
+              <span about="@" rel="v-wf:mapToVariable">
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+            </a>
+          </p>
+        <div>
+      </div>
+    </td>
+  </tr>
   <tr onclick="javascript: $('.button-delete', $('.VCwosResultsMapping').show()).show();">
     <td>
       <span about="v-wf:wosResultsMapping" property="rdfs:label"></span>
@@ -1575,6 +1619,7 @@ v-wf:DecisionFormTemplate
 v-wf:DecisionForm
   rdf:type rdfs:Class ;
   rdfs:isDefinedBy v-wf: ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Форма решения"@ru ;
   rdfs:label "Decision form"@en ;
 .
@@ -1668,7 +1713,7 @@ v-wf:StartForm
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Стартовая форма"@ru ;
   rdfs:label "Start form"@en ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
 .
 
 v-wf:processedDocument
@@ -1711,7 +1756,7 @@ v-wf:useTransformation
 
 v-wf:Mapping
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Mapping"@en ;
   rdfs:label "Преобразование"@ru ;
@@ -1930,7 +1975,7 @@ v-wf:isStopped
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Work order"@en ;
   rdfs:label "Рабочее задание"@ru ;
@@ -2057,7 +2102,7 @@ v-wf:event_df5
 
 v-wf:Decision
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision"@en ;
@@ -2494,7 +2539,7 @@ v-ui:TraceEventTemplate
 
 v-wf:StatusWorkflow
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
 .

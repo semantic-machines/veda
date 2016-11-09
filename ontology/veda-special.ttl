@@ -15,7 +15,7 @@
 # ------------------------------------------------------------
 v-s:BackwardLink
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Reverse Link"@en ;
   rdfs:label "Обратная связь"@ru ;
 .
