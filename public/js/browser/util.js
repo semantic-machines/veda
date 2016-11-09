@@ -423,9 +423,9 @@ veda.Module(function Util(veda) { "use strict";
           individual.trigger("individual:afterSend");
           if (individual.sendConfirmed != true) {
             veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000,
-              individual.redirectToIndividual?individual.redirectToIndividual.id:
-              individual.is('v-wf:StartForm')?individual.id:
-              individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:individual['v-wf:onDocument'][0].id, "view");
+              individual.redirectToIndividual?individual.redirectToIndividual.id:              
+              individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:
+              individual.is('v-wf:StartForm')?individual.id:individual['v-wf:onDocument'][0].id, "view");
           }
         }
       } else if (Object.getOwnPropertyNames(s.results).length == 1) {
