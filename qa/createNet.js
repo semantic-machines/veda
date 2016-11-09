@@ -40,7 +40,7 @@ module.exports = {
                     });
                 },
                 basic.FAST_OPERATION
-            ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'Андрей Бычин : Аналитик' from dropdown");});
+            ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'Администратор4 : Аналитик' from dropdown");});
 
             driver.findElements({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
                 webdriver.promise.filter(suggestions, function(suggestion) {
@@ -52,7 +52,7 @@ module.exports = {
                         }
                     });
                 }).then(function(x) { x[0].click();});
-            }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Андрей Бычин :  Аналитик' from dropdown");});
+            }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Администратор4 : Аналитик' from dropdown");});
         }
     },
 
