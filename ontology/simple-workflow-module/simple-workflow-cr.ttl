@@ -1536,7 +1536,7 @@ s-wf:NotificationNet_t
 #    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_result_decision_from_task_result;
 #    v-wf:executor s-wf:InterlayerNet_executor;
     v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template_notification, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor, s-wf:map_to_4_O_executor;
-    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
+    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
     v-wf:hasFlow s-wf:NotificationNet_t_to_oc;
     v-wf:locationX "73"^^xsd:integer;
     rdfs:label "Выдача уведомлений"^^xsd:string;
