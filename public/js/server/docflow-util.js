@@ -1071,7 +1071,7 @@ function get_properties_chain(var1, query, result_if_fail_search)
         return res;
 
     var doc;
-        print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
+    //    print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
     try
     {
     doc = get_individual(ticket, getUri(var1));
@@ -1079,12 +1079,12 @@ function get_properties_chain(var1, query, result_if_fail_search)
     if (doc)
         traversal(doc, query, 0, res);
 
-        print('@@@get_properties_chain #2 res=', toJson(res));
+        //print('@@@get_properties_chain #2 res=', toJson(res));
 
 	if (result_if_fail_search && (res == undefined || res.length == 0))
 		res = result_if_fail_search;
 
-        print('@@@get_properties_chain #3 res=', toJson(res));
+        //print('@@@get_properties_chain #3 res=', toJson(res));
     }
     catch (e)
     {
