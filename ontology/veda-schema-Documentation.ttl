@@ -192,3 +192,13 @@ v-s:RegulatoryDocument
   rdfs:label "Regulatory document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
 .
+
+#---------------------------------------------------------
+v-s:MaintainedObject
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Request ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:label "Maintained Object"@en ;
+  rdfs:label "Обслуживаемый объект"@ru ;
+.

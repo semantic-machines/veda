@@ -35,14 +35,6 @@ v-s:initiativeSnapshot
   rdfs:range v-s:Initiative ;
   rdfs:domain v-s:Initiative ;
 .
-#   --- Может заменить на Требуемый останов  required...
-v-s:hasMaintenanceKind
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Equipment shutdown needed"@en ;
-  rdfs:label "Нужен ли останов оборудования"@ru ;
-  rdfs:range v-s:MaintenanceKind ;
-  rdfs:domain v-s:Initiative ;
-.
 #   --- Название связано в Проектом а не с инициативой
 v-s:hasProjectPlan
   rdf:type owl:ObjectProperty ;
@@ -136,6 +128,7 @@ v-s:hasEffectList
 v-s:Idea
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Initiative ;
+  rdfs:subClassOf v-s:Maintained ;
   rdfs:label "Idea"@en ;
   rdfs:label "Идея"@ru ;
 .
@@ -144,6 +137,7 @@ v-s:Project
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Initiative ;
   rdfs:subClassOf v-s:WorkGroup ;
+  rdfs:subClassOf v-s:Maintained ;
   rdfs:label "Project"@en ;
   rdfs:label "Проект"@ru ;
 .
@@ -445,6 +439,9 @@ v-s:MemberOfWorkGroup
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
+# rdfs:label
+# v-s:employee
+# v-s:occupation
 v-s:timeEffort
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Work hours"@en ;
@@ -452,7 +449,6 @@ v-s:timeEffort
   rdfs:range xsd:integer ;
   rdfs:domain v-s:MemberOfWorkGroup ;
 .
-
 
 #--------------------------------------------------
 v-s:ProjectPlan

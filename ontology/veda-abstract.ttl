@@ -684,4 +684,38 @@ v-s:hasClassifierLegalForm
   rdfs:range v-s:ClassifierLegalForm ;
   rdfs:domain v-s:ClassifiedRus ;
 .
-# ------------------------------------------------------------
+### ------------------------------------------------------------
+v-s:Maintained
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Maintained thing"@en ;
+  rdfs:label "Обслуживаемая сущность"@ru ;
+.
+v-s:hasMaintainedObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Object TORO"@en ;
+  rdfs:label "Объект ТОРО"@ru ;
+  rdfs:range mnd-s:MaintainedObject ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:eliminatingTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Eliminating time"@en ;
+  rdfs:label "Время устранения"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:downtime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Downtime"@en ;
+  rdfs:label "Время простоя"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:hasMaintenanceKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Equipment shutdown needed"@en ;
+  rdfs:label "Нужен ли останов оборудования"@ru ;
+  rdfs:range v-s:MaintenanceKind ;
+  rdfs:domain v-s:Maintained ;
+.
