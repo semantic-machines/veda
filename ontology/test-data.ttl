@@ -291,35 +291,33 @@ td:Preferences_AndreyBychin
   rdf:type v-ui:Preferences ;
   v-s:owner td:AndreyBychin ;
   v-ui:preferredLanguage v-ui:RU ;
-  rdfs:label "Preferences (Andrey Bychin)"@en ;
-  rdfs:label "Предпочтения (Андрей Бычин)"@ru ;
+  rdfs:label "Предпочтения (Администратор4)"@ru ;
+  rdfs:label "Preferences (Administrator4)"@en ;
 .
-
 td:Preferences_RomanKarpov
   rdf:type v-ui:Preferences ;
   v-s:owner td:RomanKarpov ;
   v-ui:preferredLanguage v-ui:RU ;
   v-ui:displayedElements "10"^^xsd:nonNegativeInteger ;
-  rdfs:label "Preferences (Roman Karpov)"@en ;
-  rdfs:label "Предпочтения (Роман Карпов)"@ru ;
+  rdfs:label "Предпочтения (Администратор2)"@ru ;
+  rdfs:label "Preferences (Administrator2)"@en ;
 .
 td:Preferences_AleksandraKhvostikova
   rdf:type v-ui:Preferences ;
   v-s:owner td:AleksandraKhvostikova ;
   v-ui:preferredLanguage v-ui:RU ;
   v-ui:displayedElements "10"^^xsd:nonNegativeInteger ;
-  rdfs:label "Preferences (Aleksandra Khvostikova)"@en ;
-  rdfs:label "Предпочтения (Александра Хвостикова)"@ru ;
+  rdfs:label "Предпочтения (Администратор1)"@ru ;
+  rdfs:label "Preferences (Administrator1)"@en ;
 .
 td:Preferences_ValeriyBushenev
   rdf:type v-ui:Preferences ;
   v-s:author td:ValeriyBushenev-Programmer1 ;
   v-s:owner td:ValeriyBushenev ;
   v-ui:preferredLanguage v-ui:RU ;
-  rdfs:label "Preferences (Valeriy Bushenev)"@en ;
-  rdfs:label "Предпочтения (Валерий Бушенев)"@ru ;
+  rdfs:label "Предпочтения (Администратор3)"@ru ;
+  rdfs:label "Preferences (Administrator3)"@en ;
 .
-
 
 td:AndreyBychin
   rdf:type v-s:Person ;
@@ -328,12 +326,13 @@ td:AndreyBychin
   v-s:firstName "4"@en ;
   v-s:firstName "4"@ru ;
   v-s:hasAccount td:BychinAT ;
-  v-s:lastName "Administrator4"@en ;
   v-s:lastName "Администратор4"@ru ;
+  v-s:lastName "Administrator4"@en ;
   v-ui:hasPreferences td:Preferences_AndreyBychin ;
   v-s:hasAppointment td:AndreyBychin-Analyst2 ;
-  rdfs:label "Administrator4"@en ;
   rdfs:label "Администратор4"@ru ;
+  rdfs:label "Administrator4"@en ;
+  v-s:owner td:AndreyBychin ;
 .
 td:AndreyBychin-Analyst2
   rdf:type v-s:Appointment ;
@@ -343,9 +342,10 @@ td:AndreyBychin-Analyst2
   v-s:occupation td:Analyst2 ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Andrey Bychin : Analyst"@en ;
-  rdfs:label "Андрей Бычин : Аналитик"@ru ;
+  rdfs:label "Администратор4 : Аналитик"@ru ;
+  rdfs:label "Administrator4 : Analyst"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:official "true"^^xsd:boolean ;
 .
 
 td:RomanKarpov
@@ -355,13 +355,14 @@ td:RomanKarpov
   v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
   v-s:hasAccount td:KarpovRT ;
-  v-s:lastName "Administrator2"@en ;
   v-s:lastName "Администратор2"@ru ;
+  v-s:lastName "Administrator2"@en ;
   v-ui:hasPreferences td:Preferences_RomanKarpov ;
-  rdfs:label "Administrator2"@en ;
   rdfs:label "Администратор2"@ru ;
+  rdfs:label "Administrator2"@en ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
   v-s:hasAspect v-s:PersonalAspectKarpovr ;
+  v-s:owner td:RomanKarpov ;
 .
 
 td:RomanKarpov-Analyst1
@@ -373,7 +374,8 @@ td:RomanKarpov-Analyst1
   v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Роман Карпов : Аналитик"@ru ;
+  rdfs:label "Администратор2 : Аналитик"@ru ;
+  rdfs:label "Administrator2 : Аналитик"@en ;
   v-s:official "true"^^xsd:boolean ;
 .
 
@@ -386,7 +388,8 @@ td:RomanKarpov-CommercialDirector
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Роман Карпов : Коммерческий директор"@ru ;
+  rdfs:label "Администратор2 : Коммерческий директор"@ru ;
+  rdfs:label "Administrator2 : CommercialDirector"@en ;
   v-s:parentUnit d:org_RU1121001280 ;
 .
 
@@ -397,13 +400,14 @@ td:AleksandraKhvostikova
   v-s:firstName "1"@en ;
   v-s:firstName "1"@ru ;
   v-s:hasAccount td:KhvostiAT ;
-  v-s:lastName "Administrator1"@en ;
   v-s:lastName "Администратор1"@ru ;
+  v-s:lastName "Administrator1"@en ;
   v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
-  rdfs:label "Administrator1"@en ;
   rdfs:label "Администратор1"@ru ;
+  rdfs:label "Administrator1"@en ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
   v-s:hasImage td:khvostiaImage;
+  v-s:owner td:AleksandraKhvostikova ;
 .
 td:AleksandraKhvostikova-Analyst1
   rdf:type v-s:Appointment ;
@@ -414,8 +418,8 @@ td:AleksandraKhvostikova-Analyst1
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Александра Хвостикова : Аналитик"@ru ;
-  rdfs:label "Aleksandra Khvostikova : Analyst"@en ;
+  rdfs:label "Администратор1 : Аналитик"@ru ;
+  rdfs:label "Administrator1 : Analyst"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
@@ -426,12 +430,13 @@ td:ValeriyBushenev
   v-s:firstName "3"@en ;
   v-s:firstName "3"@ru ;
   v-s:hasAccount td:BushenevVT ;
-  v-s:lastName "Administrator3"@en ;
   v-s:lastName "Администратор3"@ru ;
+  v-s:lastName "Administrator3"@en ;
   v-s:hasAccount td:BushenevV ;
   v-ui:hasPreferences td:Preferences_ValeriyBushenev ;
-  rdfs:label "Administrator3"@en ;
   rdfs:label "Администратор3"@ru ;
+  rdfs:label "Administrator3"@en ;
+  v-s:owner td:ValeriyBushenev ;
 .
 
 td:ValeriyBushenev-Programmer1
@@ -442,8 +447,10 @@ td:ValeriyBushenev-Programmer1
   v-s:occupation td:Programmer1 ;
   v-s:published "2014-01-30T15:12:15"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:12:15"^^xsd:dateTime ;
-  rdfs:label "Валерий Бушенев : Программист"@ru ;
+  rdfs:label "Администратор3 : Программист"@ru ;
+  rdfs:label "Administrator3 : Programmer"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:official "true"^^xsd:boolean ;
 .
 
 td:ValeriyBushenev-TechnicalDirector
@@ -452,11 +459,12 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:created "2014-01-30T15:30:21"^^xsd:dateTime ;
   v-s:employee td:ValeriyBushenev ;
   v-s:occupation td:TechnicalDirector ;
-  v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:30:21"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
-  rdfs:label "Валерий Бушенев : Технический директор"@ru ;
+  rdfs:label "Администратор3 : Технический директор"@ru ;
+  rdfs:label "Administrator3 : Technical director"@en ;
   v-s:parentUnit d:org_RU1121001280 ;
+  v-s:official "true"^^xsd:boolean ;
 .
 
 # ---------------------------- Тестовые экземпляры маршрутов ------------------------------

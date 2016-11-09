@@ -152,6 +152,7 @@ v-s:Position
 v-s:HRRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:label "HR record"@en ;
   rdfs:label "Кадровая запись"@ru ;
 .
@@ -194,6 +195,7 @@ v-s:valid
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
 .
+
 # ------------------------------------------------------------
 v-s:Absence
   rdf:type owl:Class ;
@@ -272,7 +274,6 @@ v-s:defaultAppointment
   rdfs:domain v-s:Person ;
 .
 
-
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasSubsidiaryForOrganization
@@ -305,7 +306,6 @@ v-s:PsHasContractorOrganization
   rdfs:label "v-s:hasContractor property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойства v-s:hasContractor для класса v-s:Organization"@ru ;
 .
-
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 

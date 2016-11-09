@@ -345,7 +345,6 @@ v-s:permissionSubject
 # Нужен суперкласс
 v-s:startTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:HRRecord ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:label "Start time"@en ;
   rdfs:label "Время начала"@ru ;
@@ -353,7 +352,6 @@ v-s:startTime
 .
 v-s:endTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:HRRecord ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:label "End time"@en ;
   rdfs:label "Время окончания"@ru ;
