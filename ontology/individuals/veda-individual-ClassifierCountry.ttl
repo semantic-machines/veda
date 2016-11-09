@@ -17,470 +17,470 @@
 
 d:Country_RUS
   a v-s:ClassifierCountry;
-  rdfs:label "RUS" ;
+  v-s:title "RUS" ;
   v-s:shortLabel "RU" ;
-  v-s:title "Russia"@en ;
-  v-s:title "Россия"@ru ;
+  rdfs:label "Russia"@en ;
+  rdfs:label "Россия"@ru ;
   v-s:description "Russian Fedaration"@en ;
   v-s:description "Российская Федерация"@ru ;
   v-s:registrationNumber "643" ;
 .
 d:Country_AFG
   a v-s:ClassifierCountry;
-  rdfs:label "AFG" ;
+  v-s:title "AFG" ;
   v-s:shortLabel "AF" ;
-  v-s:title "Afghanistan"@en ;
-  v-s:title "АФГАНИСТАН"@ru ;
+  rdfs:label "Afghanistan"@en ;
+  rdfs:label "АФГАНИСТАН"@ru ;
   v-s:description "Transitional Islamic State of Afghanistan"@en ;
   v-s:description "Переходное Исламское Государство Афганистан"@ru ;
   v-s:registrationNumber "004" ;
 .
 d:Country_ALB
   a v-s:ClassifierCountry;
-  rdfs:label "ALB" ;
+  v-s:title "ALB" ;
   v-s:shortLabel "AL" ;
-  v-s:title "Albania"@en ;
-  v-s:title "АЛБАНИЯ"@ru ;
+  rdfs:label "Albania"@en ;
+  rdfs:label "АЛБАНИЯ"@ru ;
   v-s:description "The Republic of Albania"@en ;
   v-s:description "Республика Албания"@ru ;
   v-s:registrationNumber "008" ;
 .
 d:Country_DZA
   a v-s:ClassifierCountry;
-  rdfs:label "DZA" ;
+  v-s:title "DZA" ;
   v-s:shortLabel "DZ" ;
-  v-s:title "Algeria"@en ;
-  v-s:title "АЛЖИР"@ru ;
+  rdfs:label "Algeria"@en ;
+  rdfs:label "АЛЖИР"@ru ;
   v-s:description "Algerian People's Democratic Republic"@en ;
   v-s:description "Алжирская Народная Демократическая Республика"@ru ;
   v-s:registrationNumber "012" ;
 .
 d:Country_AND
   a v-s:ClassifierCountry;
-  rdfs:label "AND" ;
+  v-s:title "AND" ;
   v-s:shortLabel "AD" ;
-  v-s:title "Andorra"@en ;
-  v-s:title "АНДОРРА"@ru ;
+  rdfs:label "Andorra"@en ;
+  rdfs:label "АНДОРРА"@ru ;
   v-s:description "The Principality of Andorra"@en ;
   v-s:description "Княжество Андорра"@ru ;
   v-s:registrationNumber "020" ;
 .
 d:Country_AGO
   a v-s:ClassifierCountry;
-  rdfs:label "AGO" ;
+  v-s:title "AGO" ;
   v-s:shortLabel "AO" ;
-  v-s:title "Angola"@en ;
-  v-s:title "АНГОЛА"@ru ;
+  rdfs:label "Angola"@en ;
+  rdfs:label "АНГОЛА"@ru ;
   v-s:description "Republic of Angola"@en ;
   v-s:description "Республика Ангола"@ru ;
   v-s:registrationNumber "024" ;
 .
 d:Country_AZE
   a v-s:ClassifierCountry;
-  rdfs:label "AZE" ;
+  v-s:title "AZE" ;
   v-s:shortLabel "AZ" ;
-  v-s:title "Azerbaijan"@en ;
-  v-s:title "АЗЕРБАЙДЖАН"@ru ;
+  rdfs:label "Azerbaijan"@en ;
+  rdfs:label "АЗЕРБАЙДЖАН"@ru ;
   v-s:description "The Republic of Azerbaijan"@en ;
   v-s:description "Республика Азербайджан"@ru ;
   v-s:registrationNumber "031" ;
 .
 d:Country_ARG
   a v-s:ClassifierCountry;
-  rdfs:label "ARG" ;
+  v-s:title "ARG" ;
   v-s:shortLabel "AR" ;
-  v-s:title "Argentina"@en ;
-  v-s:title "АРГЕНТИНА"@ru ;
+  rdfs:label "Argentina"@en ;
+  rdfs:label "АРГЕНТИНА"@ru ;
   v-s:description "The Argentine Republic"@en ;
   v-s:description "Аргентинская Республика"@ru ;
   v-s:registrationNumber "032" ;
 .
 d:Country_AUS
   a v-s:ClassifierCountry;
-  rdfs:label "AUS" ;
+  v-s:title "AUS" ;
   v-s:shortLabel "AU" ;
-  v-s:title "Australia"@en ;
-  v-s:title "АВСТРАЛИЯ"@ru ;
+  rdfs:label "Australia"@en ;
+  rdfs:label "АВСТРАЛИЯ"@ru ;
   v-s:description "Australia"@en ;
   v-s:description "АВСТРАЛИЯ"@ru ;
   v-s:registrationNumber "036" ;
 .
 d:Country_AUT
   a v-s:ClassifierCountry;
-  rdfs:label "AUT" ;
+  v-s:title "AUT" ;
   v-s:shortLabel "AT" ;
-  v-s:title "Austria"@en ;
-  v-s:title "АВСТРИЯ"@ru ;
+  rdfs:label "Austria"@en ;
+  rdfs:label "АВСТРИЯ"@ru ;
   v-s:description "Republic of Austria"@en ;
   v-s:description "Австрийская Республика"@ru ;
   v-s:registrationNumber "040" ;
 .
 d:Country_BHS
   a v-s:ClassifierCountry;
-  rdfs:label "BHS" ;
+  v-s:title "BHS" ;
   v-s:shortLabel "BS" ;
-  v-s:title "Bahamas"@en ;
-  v-s:title "БАГАМЫ"@ru ;
+  rdfs:label "Bahamas"@en ;
+  rdfs:label "БАГАМЫ"@ru ;
   v-s:description "Commonwealth of the Bahamas"@en ;
   v-s:description "Содружество Багамы"@ru ;
   v-s:registrationNumber "044" ;
 .
 d:Country_ARM
   a v-s:ClassifierCountry;
-  rdfs:label "ARM" ;
+  v-s:title "ARM" ;
   v-s:shortLabel "AM" ;
-  v-s:title "Armenia"@en ;
-  v-s:title "АРМЕНИЯ"@ru ;
+  rdfs:label "Armenia"@en ;
+  rdfs:label "АРМЕНИЯ"@ru ;
   v-s:description "Republic of Armenia"@en ;
   v-s:description "Республика Армения"@ru ;
   v-s:registrationNumber "051" ;
 .
 d:Country_BGD
   a v-s:ClassifierCountry;
-  rdfs:label "BGD" ;
+  v-s:title "BGD" ;
   v-s:shortLabel "BD" ;
-  v-s:title "Bangladesh"@en ;
-  v-s:title "Бангладеш"@ru ;
+  rdfs:label "Bangladesh"@en ;
+  rdfs:label "Бангладеш"@ru ;
   v-s:description "People's Republic of Bangladesh"@en ;
   v-s:description "Народная Республика Бангладеш"@ru ;
   v-s:registrationNumber "050" ;
 .
 d:Country_BEL
   a v-s:ClassifierCountry;
-  rdfs:label "BEL" ;
+  v-s:title "BEL" ;
   v-s:shortLabel "BE" ;
-  v-s:title "Belgium"@en ;
-  v-s:title "Бельгия"@ru ;
+  rdfs:label "Belgium"@en ;
+  rdfs:label "Бельгия"@ru ;
   v-s:description "Kingdom of Belgium"@en ;
   v-s:description "Королевство Бельгии"@ru ;
   v-s:registrationNumber "056" ;
 .
 d:Country_BOL
   a v-s:ClassifierCountry;
-  rdfs:label "BOL" ;
+  v-s:title "BOL" ;
   v-s:shortLabel "BO" ;
-  v-s:title "Bolivia"@en ;
-  v-s:title "Боливия"@ru ;
+  rdfs:label "Bolivia"@en ;
+  rdfs:label "Боливия"@ru ;
   v-s:description "Plurinational State of Bolivia"@en ;
   v-s:description "Многонациональное Государство Боливия"@ru ;
   v-s:registrationNumber "068" ;
 .
 d:Country_BRA
   a v-s:ClassifierCountry;
-  rdfs:label "BRA" ;
+  v-s:title "BRA" ;
   v-s:shortLabel "BR" ;
-  v-s:title "Brazil"@en ;
-  v-s:title "БРАЗИЛИЯ"@ru ;
+  rdfs:label "Brazil"@en ;
+  rdfs:label "БРАЗИЛИЯ"@ru ;
   v-s:description "Federative Republic of Brazil"@en ;
   v-s:description "Федеративная Республика Бразилия"@ru ;
   v-s:registrationNumber "076" ;
 .
 d:Country_BGR
   a v-s:ClassifierCountry;
-  rdfs:label "BGR" ;
+  v-s:title "BGR" ;
   v-s:shortLabel "BG" ;
-  v-s:title "Bulgaria"@en ;
-  v-s:title "Болгария"@ru ;
+  rdfs:label "Bulgaria"@en ;
+  rdfs:label "Болгария"@ru ;
   v-s:description "Republic of Bulgaria"@en ;
   v-s:description "Республика Болгария"@ru ;
   v-s:registrationNumber "100" ;
 .
 d:Country_BLR
   a v-s:ClassifierCountry;
-  rdfs:label "BLR" ;
+  v-s:title "BLR" ;
   v-s:shortLabel "BY" ;
-  v-s:title "Belarus"@en ;
-  v-s:title "БЕЛАРУСЬ"@ru ;
+  rdfs:label "Belarus"@en ;
+  rdfs:label "БЕЛАРУСЬ"@ru ;
   v-s:description "Republic of Belarus"@en ;
   v-s:description "Республика Беларусь"@ru ;
   v-s:registrationNumber "112" ;
 .
 d:Country_KHM
   a v-s:ClassifierCountry;
-  rdfs:label "KHM" ;
+  v-s:title "KHM" ;
   v-s:shortLabel "KH" ;
-  v-s:title "Cambodia"@en ;
-  v-s:title "КАМБОДЖА"@ru ;
+  rdfs:label "Cambodia"@en ;
+  rdfs:label "КАМБОДЖА"@ru ;
   v-s:description "The Kingdom of Cambodia"@en ;
   v-s:description "Королевство Камбоджа"@ru ;
   v-s:registrationNumber "116" ;
 .
 d:Country_CMR
   a v-s:ClassifierCountry;
-  rdfs:label "CMR" ;
+  v-s:title "CMR" ;
   v-s:shortLabel "CM" ;
-  v-s:title "Cameroon"@en ;
-  v-s:title "КАМЕРУН"@ru ;
+  rdfs:label "Cameroon"@en ;
+  rdfs:label "КАМЕРУН"@ru ;
   v-s:description "Republic of Cameroon"@en ;
   v-s:description "Республика Камерун"@ru ;
   v-s:registrationNumber "120" ;
 .
 d:Country_CAN
   a v-s:ClassifierCountry;
-  rdfs:label "CAN" ;
+  v-s:title "CAN" ;
   v-s:shortLabel "CA" ;
-  v-s:title "Canada"@en ;
-  v-s:title "КАНАДА"@ru ;
+  rdfs:label "Canada"@en ;
+  rdfs:label "КАНАДА"@ru ;
   v-s:description "Canada"@en ;
   v-s:description "КАНАДА"@ru ;
   v-s:registrationNumber "124" ;
 .
 d:Country_LKA
   a v-s:ClassifierCountry;
-  rdfs:label "LKA" ;
+  v-s:title "LKA" ;
   v-s:shortLabel "LK" ;
-  v-s:title "Sri Lanka"@en ;
-  v-s:title "ШРИ-ЛАНКА"@ru ;
+  rdfs:label "Sri Lanka"@en ;
+  rdfs:label "ШРИ-ЛАНКА"@ru ;
   v-s:description "Democratic Socialist Republic of Sri Lanka"@en ;
   v-s:description "Демократическая Социалистическая Республика Шри-Ланка"@ru ;
   v-s:registrationNumber "144" ;
 .
 d:Country_TCD
   a v-s:ClassifierCountry;
-  rdfs:label "TCD" ;
+  v-s:title "TCD" ;
   v-s:shortLabel "TD" ;
-  v-s:title "Chad"@en ;
-  v-s:title "ЧАД"@ru ;
+  rdfs:label "Chad"@en ;
+  rdfs:label "ЧАД"@ru ;
   v-s:description "Republic of Chad"@en ;
   v-s:description "Республика Чад"@ru ;
   v-s:registrationNumber "148" ;
 .
 d:Country_CHL
   a v-s:ClassifierCountry;
-  rdfs:label "CHL" ;
+  v-s:title "CHL" ;
   v-s:shortLabel "CL" ;
-  v-s:title "Chile"@en ;
-  v-s:title "Чили"@ru ;
+  rdfs:label "Chile"@en ;
+  rdfs:label "Чили"@ru ;
   v-s:description "Republic of Chile"@en ;
   v-s:description "Республика Чили"@ru ;
   v-s:registrationNumber "152" ;
 .
 d:Country_CHN
   a v-s:ClassifierCountry;
-  rdfs:label "CHN" ;
+  v-s:title "CHN" ;
   v-s:shortLabel "CN" ;
-  v-s:title "China"@en ;
-  v-s:title "Китай"@ru ;
+  rdfs:label "China"@en ;
+  rdfs:label "Китай"@ru ;
   v-s:description "Chinese People's Republic"@en ;
   v-s:description "Китайская Народная Республика"@ru ;
   v-s:registrationNumber "156" ;
 .
 d:Country_TWN
   a v-s:ClassifierCountry;
-  rdfs:label "TWN" ;
+  v-s:title "TWN" ;
   v-s:shortLabel "TW" ;
-  v-s:title "TAIWAN (CHINA)"@en ;
-  v-s:title "ТАЙВАНЬ (КИТАЙ)"@ru ;
+  rdfs:label "TAIWAN (CHINA)"@en ;
+  rdfs:label "ТАЙВАНЬ (КИТАЙ)"@ru ;
   v-s:description "TAIWAN (CHINA)"@en ;
   v-s:description "ТАЙВАНЬ (КИТАЙ)"@ru ;
   v-s:registrationNumber "158" ;
 .
 d:Country_COL
   a v-s:ClassifierCountry;
-  rdfs:label "COL" ;
+  v-s:title "COL" ;
   v-s:shortLabel "CO" ;
-  v-s:title "Colombia"@en ;
-  v-s:title "Колумбия"@ru ;
+  rdfs:label "Colombia"@en ;
+  rdfs:label "Колумбия"@ru ;
   v-s:description "The Republic of Colombia"@en ;
   v-s:description "Республика Колумбия"@ru ;
   v-s:registrationNumber "170" ;
 .
 d:Country_COG
   a v-s:ClassifierCountry;
-  rdfs:label "COG" ;
+  v-s:title "COG" ;
   v-s:shortLabel "CG" ;
-  v-s:title "Congo"@en ;
-  v-s:title "Конго"@ru ;
+  rdfs:label "Congo"@en ;
+  rdfs:label "Конго"@ru ;
   v-s:description "Republic of the Congo"@en ;
   v-s:description "Республика Конго"@ru ;
   v-s:registrationNumber "178" ;
 .
 d:Country_COD
   a v-s:ClassifierCountry;
-  rdfs:label "COD" ;
+  v-s:title "COD" ;
   v-s:shortLabel "CD" ;
-  v-s:title "Congo,Democratic Republic"@en ;
-  v-s:title "Конго,Демократическая Республика"@ru ;
+  rdfs:label "Congo,Democratic Republic"@en ;
+  rdfs:label "Конго,Демократическая Республика"@ru ;
   v-s:description "Democratic Republic of the Congo"@en ;
   v-s:description "Демократическая Республика Конго"@ru ;
   v-s:registrationNumber "180" ;
 .
 d:Country_CRI
   a v-s:ClassifierCountry;
-  rdfs:label "CRI" ;
+  v-s:title "CRI" ;
   v-s:shortLabel "CR" ;
-  v-s:title "Costa Rica"@en ;
-  v-s:title "Коста-Рика"@ru ;
+  rdfs:label "Costa Rica"@en ;
+  rdfs:label "Коста-Рика"@ru ;
   v-s:description "The Republic of Costa Rica"@en ;
   v-s:description "Республика Коста-Рика"@ru ;
   v-s:registrationNumber "188" ;
 .
 d:Country_HRV
   a v-s:ClassifierCountry;
-  rdfs:label "HRV" ;
+  v-s:title "HRV" ;
   v-s:shortLabel "HR" ;
-  v-s:title "Croatia"@en ;
-  v-s:title "Хорватия"@ru ;
+  rdfs:label "Croatia"@en ;
+  rdfs:label "Хорватия"@ru ;
   v-s:description "The Republic of Croatia"@en ;
   v-s:description "Республика Хорватия"@ru ;
   v-s:registrationNumber "191" ;
 .
 d:Country_CUB
   a v-s:ClassifierCountry;
-  rdfs:label "CUB" ;
+  v-s:title "CUB" ;
   v-s:shortLabel "CU" ;
-  v-s:title "Cuba"@en ;
-  v-s:title "Куба"@ru ;
+  rdfs:label "Cuba"@en ;
+  rdfs:label "Куба"@ru ;
   v-s:description "The Republic of Cuba"@en ;
   v-s:description "Республика Куба"@ru ;
   v-s:registrationNumber "192" ;
 .
 d:Country_CYP
   a v-s:ClassifierCountry;
-  rdfs:label "CYP" ;
+  v-s:title "CYP" ;
   v-s:shortLabel "CY" ;
-  v-s:title "Cyprus"@en ;
-  v-s:title "Кипр"@ru ;
+  rdfs:label "Cyprus"@en ;
+  rdfs:label "Кипр"@ru ;
   v-s:description "Republic of Cyprus"@en ;
   v-s:description "Республика Кипр"@ru ;
   v-s:registrationNumber "196" ;
 .
 d:Country_CZE
   a v-s:ClassifierCountry;
-  rdfs:label "CZE" ;
+  v-s:title "CZE" ;
   v-s:shortLabel "CZ" ;
-  v-s:title "CZECH"@en ;
-  v-s:title "ЧЕХИЯ"@ru ;
+  rdfs:label "CZECH"@en ;
+  rdfs:label "ЧЕХИЯ"@ru ;
   v-s:description "CZECH REPUBLIC"@en ;
   v-s:description "ЧЕШСКАЯ РЕСПУБЛИКА"@ru ;
   v-s:registrationNumber "203" ;
 .
 d:Country_DNK
   a v-s:ClassifierCountry;
-  rdfs:label "DNK" ;
+  v-s:title "DNK" ;
   v-s:shortLabel "DK" ;
-  v-s:title "Denmark"@en ;
-  v-s:title "Дания"@ru ;
+  rdfs:label "Denmark"@en ;
+  rdfs:label "Дания"@ru ;
   v-s:description "Kingdom of Denmark"@en ;
   v-s:description "Королевство Дания"@ru ;
   v-s:registrationNumber "208" ;
 .
 d:Country_DOM
   a v-s:ClassifierCountry;
-  rdfs:label "DOM" ;
+  v-s:title "DOM" ;
   v-s:shortLabel "DO" ;
-  v-s:title "DOMINICAN REPUBLIC"@en ;
-  v-s:title "ДОМИНИКАНСКАЯ РЕСПУБЛИКА"@ru ;
+  rdfs:label "DOMINICAN REPUBLIC"@en ;
+  rdfs:label "ДОМИНИКАНСКАЯ РЕСПУБЛИКА"@ru ;
   v-s:description "DOMINICAN REPUBLIC"@en ;
   v-s:description "ДОМИНИКАНСКАЯ РЕСПУБЛИКА"@ru ;
   v-s:registrationNumber "214" ;
 .
 d:Country_ECU
   a v-s:ClassifierCountry;
-  rdfs:label "ECU" ;
+  v-s:title "ECU" ;
   v-s:shortLabel "EC" ;
-  v-s:title "Ecuador"@en ;
-  v-s:title "Эквадор"@ru ;
+  rdfs:label "Ecuador"@en ;
+  rdfs:label "Эквадор"@ru ;
   v-s:description "The Republic of Ecuador"@en ;
   v-s:description "Республика Эквадор"@ru ;
   v-s:registrationNumber "218" ;
 .
 d:Country_ETH
   a v-s:ClassifierCountry;
-  rdfs:label "ETH" ;
+  v-s:title "ETH" ;
   v-s:shortLabel "ET" ;
-  v-s:title "Ethiopia"@en ;
-  v-s:title "Эфиопия"@ru ;
+  rdfs:label "Ethiopia"@en ;
+  rdfs:label "Эфиопия"@ru ;
   v-s:description "Federal Democratic Republic of Ethiopia"@en ;
   v-s:description "Федеративная Демократическая Республика Эфиопия"@ru ;
   v-s:registrationNumber "231" ;
 .
 d:Country_EST
   a v-s:ClassifierCountry;
-  rdfs:label "EST" ;
+  v-s:title "EST" ;
   v-s:shortLabel "EЕ" ;
-  v-s:title "Estonia"@en ;
-  v-s:title "Эстония"@ru ;
+  rdfs:label "Estonia"@en ;
+  rdfs:label "Эстония"@ru ;
   v-s:description "The Republic of Estonia"@en ;
   v-s:description "Эстонская Республика"@ru ;
   v-s:registrationNumber "233" ;
 .
 d:Country_FJI
   a v-s:ClassifierCountry;
-  rdfs:label "FJI" ;
+  v-s:title "FJI" ;
   v-s:shortLabel "FJ" ;
-  v-s:title "Fiji"@en ;
-  v-s:title "Фиджи"@ru ;
+  rdfs:label "Fiji"@en ;
+  rdfs:label "Фиджи"@ru ;
   v-s:description "fj"@en ;
   v-s:description "Республика Фиджи"@ru ;
   v-s:registrationNumber "242" ;
 .
 d:Country_FIN
   a v-s:ClassifierCountry;
-  rdfs:label "FIN" ;
+  v-s:title "FIN" ;
   v-s:shortLabel "FI" ;
-  v-s:title "Finland"@en ;
-  v-s:title "Финляндия"@ru ;
+  rdfs:label "Finland"@en ;
+  rdfs:label "Финляндия"@ru ;
   v-s:description "Republic of Finland"@en ;
   v-s:description "Финляндская Республика"@ru ;
   v-s:registrationNumber "246" ;
 .
 d:Country_FRA
   a v-s:ClassifierCountry;
-  rdfs:label "FRA" ;
+  v-s:title "FRA" ;
   v-s:shortLabel "FR" ;
-  v-s:title "France"@en ;
-  v-s:title "Франция"@ru ;
+  rdfs:label "France"@en ;
+  rdfs:label "Франция"@ru ;
   v-s:description "French Republic"@en ;
   v-s:description "Французская Республика"@ru ;
   v-s:registrationNumber "250" ;
 .
 d:Country_GEO
   a v-s:ClassifierCountry;
-  rdfs:label "GEO" ;
+  v-s:title "GEO" ;
   v-s:shortLabel "GE" ;
-  v-s:title "Georgia"@en ;
-  v-s:title "Грузия"@ru ;
+  rdfs:label "Georgia"@en ;
+  rdfs:label "Грузия"@ru ;
   v-s:description "Georgia"@en ;
   v-s:description "Грузия"@ru ;
   v-s:registrationNumber "268" ;
 .
 d:Country_GMB
   a v-s:ClassifierCountry;
-  rdfs:label "GMB" ;
+  v-s:title "GMB" ;
   v-s:shortLabel "GM" ;
-  v-s:title "Gambia"@en ;
-  v-s:title "Гамбия"@ru ;
+  rdfs:label "Gambia"@en ;
+  rdfs:label "Гамбия"@ru ;
   v-s:description "The Republic of The Gambia"@en ;
   v-s:description "Республика Гамбия"@ru ;
   v-s:registrationNumber "270" ;
 .
 d:Country_PSE
   a v-s:ClassifierCountry;
-  rdfs:label "PSE" ;
+  v-s:title "PSE" ;
   v-s:shortLabel "PS" ;
-  v-s:title "Palestine"@en ;
-  v-s:title "Палестина"@ru ;
+  rdfs:label "Palestine"@en ;
+  rdfs:label "Палестина"@ru ;
   v-s:description "State of Palestine"@en ;
   v-s:description "Государство Палестина"@ru ;
   v-s:registrationNumber "275" ;
 .
 d:Country_DEU
   a v-s:ClassifierCountry;
-  rdfs:label "DEU" ;
+  v-s:title "DEU" ;
   v-s:shortLabel "DE" ;
-  v-s:title "Germany"@en ;
-  v-s:title "Германия"@ru ;
+  rdfs:label "Germany"@en ;
+  rdfs:label "Германия"@ru ;
   v-s:description "The Federal Republic of Germany"@en ;
   v-s:description "Федеративная Республика Германия"@ru ;
   v-s:registrationNumber "276" ;
 .
 d:Country_GRC
   a v-s:ClassifierCountry;
-  rdfs:label "GRC" ;
+  v-s:title "GRC" ;
   v-s:shortLabel "GR" ;
-  v-s:title "Greece"@en ;
-  v-s:title "Греция"@ru ;
+  rdfs:label "Greece"@en ;
+  rdfs:label "Греция"@ru ;
   v-s:description "Hellenic Republic"@en ;
   v-s:description "Греческая Республика"@ru ;
   v-s:registrationNumber "300" ;
@@ -488,360 +488,360 @@ d:Country_GRC
 
 d:Country_GRL
   a v-s:ClassifierCountry;
-  rdfs:label "GRL" ;
+  v-s:title "GRL" ;
   v-s:shortLabel "GL" ;
-  v-s:title "GREENLAND"@en ;
-  v-s:title "ГРЕНЛАНДИЯ"@ru ;
+  rdfs:label "GREENLAND"@en ;
+  rdfs:label "ГРЕНЛАНДИЯ"@ru ;
   v-s:description "GREENLAND"@en ;
   v-s:description "ГРЕНЛАНДИЯ"@ru ;
   v-s:registrationNumber "304" ;
 .
 d:Country_GRD
   a v-s:ClassifierCountry;
-  rdfs:label "GRD" ;
+  v-s:title "GRD" ;
   v-s:shortLabel "GD" ;
-  v-s:title "GRENADA"@en ;
-  v-s:title "ГРЕНАДА"@ru ;
+  rdfs:label "GRENADA"@en ;
+  rdfs:label "ГРЕНАДА"@ru ;
   v-s:description "GRENADA"@en ;
   v-s:description "ГРЕНАДА"@ru ;
   v-s:registrationNumber "308" ;
 .
 d:Country_HND
   a v-s:ClassifierCountry;
-  rdfs:label "HND" ;
+  v-s:title "HND" ;
   v-s:shortLabel "HN" ;
-  v-s:title "Honduras"@en ;
-  v-s:title "Гондурас"@ru ;
+  rdfs:label "Honduras"@en ;
+  rdfs:label "Гондурас"@ru ;
   v-s:description "Republic of Honduras"@en ;
   v-s:description "Республика Гондурас"@ru ;
   v-s:registrationNumber "340" ;
 .
 d:Country_HKG
   a v-s:ClassifierCountry;
-  rdfs:label "HKG" ;
+  v-s:title "HKG" ;
   v-s:shortLabel "HK" ;
-  v-s:title "Hong Kong"@en ;
-  v-s:title "Гонконг"@ru ;
+  rdfs:label "Hong Kong"@en ;
+  rdfs:label "Гонконг"@ru ;
   v-s:description "China Hong Kong Special Administrative Region"@en ;
   v-s:description "Специальный административный регион Китая Гонконг"@ru ;
   v-s:registrationNumber "344" ;
 .
 d:Country_HUN
   a v-s:ClassifierCountry;
-  rdfs:label "HUN" ;
+  v-s:title "HUN" ;
   v-s:shortLabel "HU" ;
-  v-s:title "Hungary"@en ;
-  v-s:title "Венгрия"@ru ;
+  rdfs:label "Hungary"@en ;
+  rdfs:label "Венгрия"@ru ;
   v-s:description "Hungary"@en ;
   v-s:description "Венгрия"@ru ;
   v-s:registrationNumber "348" ;
 .
 d:Country_ISL
   a v-s:ClassifierCountry;
-  rdfs:label "ISL" ;
+  v-s:title "ISL" ;
   v-s:shortLabel "IS" ;
-  v-s:title "Iceland"@en ;
-  v-s:title "Исландия"@ru ;
+  rdfs:label "Iceland"@en ;
+  rdfs:label "Исландия"@ru ;
   v-s:description "The Republic of Iceland"@en ;
   v-s:description "Республика Исландия"@ru ;
   v-s:registrationNumber "352" ;
 .
 d:Country_IND
   a v-s:ClassifierCountry;
-  rdfs:label "IND" ;
+  v-s:title "IND" ;
   v-s:shortLabel "IN" ;
-  v-s:title "India"@en ;
-  v-s:title "Индия"@ru ;
+  rdfs:label "India"@en ;
+  rdfs:label "Индия"@ru ;
   v-s:description "The Republic of India"@en ;
   v-s:description "Республика Индия"@ru ;
   v-s:registrationNumber "356" ;
 .
 d:Country_IDN
   a v-s:ClassifierCountry;
-  rdfs:label "IDN" ;
+  v-s:title "IDN" ;
   v-s:shortLabel "ID" ;
-  v-s:title "Indonesia"@en ;
-  v-s:title "Индонезия"@ru ;
+  rdfs:label "Indonesia"@en ;
+  rdfs:label "Индонезия"@ru ;
   v-s:description "The Republic of Indonesia"@en ;
   v-s:description "Республика Индонезия"@ru ;
   v-s:registrationNumber "360" ;
 .
 d:Country_IRN
   a v-s:ClassifierCountry;
-  rdfs:label "IRN" ;
+  v-s:title "IRN" ;
   v-s:shortLabel "IR" ;
-  v-s:title "Iran"@en ;
-  v-s:title "Иран"@ru ;
+  rdfs:label "Iran"@en ;
+  rdfs:label "Иран"@ru ;
   v-s:description "Islamic Republic of Iran"@en ;
   v-s:description "Исламская Республика Иран"@ru ;
   v-s:registrationNumber "364" ;
 .
 d:Country_IRQ
   a v-s:ClassifierCountry;
-  rdfs:label "IRQ" ;
+  v-s:title "IRQ" ;
   v-s:shortLabel "IQ" ;
-  v-s:title "Iraq"@en ;
-  v-s:title "Ирак"@ru ;
+  rdfs:label "Iraq"@en ;
+  rdfs:label "Ирак"@ru ;
   v-s:description "The Republic of Iraq"@en ;
   v-s:description "Республика Ирак"@ru ;
   v-s:registrationNumber "368" ;
 .
 d:Country_ISR
   a v-s:ClassifierCountry;
-  rdfs:label "ISR" ;
+  v-s:title "ISR" ;
   v-s:shortLabel "IL" ;
-  v-s:title "Israel"@en ;
-  v-s:title "Израиль"@ru ;
+  rdfs:label "Israel"@en ;
+  rdfs:label "Израиль"@ru ;
   v-s:description "The State of Israel"@en ;
   v-s:description "Государство Израиль"@ru ;
   v-s:registrationNumber "376" ;
 .
 d:Country_IRL
   a v-s:ClassifierCountry;
-  rdfs:label "IRL" ;
+  v-s:title "IRL" ;
   v-s:shortLabel "IE" ;
-  v-s:title "IRELAND"@en ;
-  v-s:title "ИРЛАНДИЯ"@ru ;
+  rdfs:label "IRELAND"@en ;
+  rdfs:label "ИРЛАНДИЯ"@ru ;
   v-s:description "IRELAND"@en ;
   v-s:description "ИРЛАНДИЯ"@ru ;
   v-s:registrationNumber "372" ;
 .
 d:Country_ITA
   a v-s:ClassifierCountry;
-  rdfs:label "ITA" ;
+  v-s:title "ITA" ;
   v-s:shortLabel "IT" ;
-  v-s:title "Italy"@en ;
-  v-s:title "Италия"@ru ;
+  rdfs:label "Italy"@en ;
+  rdfs:label "Италия"@ru ;
   v-s:description "Italian Republic"@en ;
   v-s:description "Итальянская Республика"@ru ;
   v-s:registrationNumber "380" ;
 .
 d:Country_JPN
   a v-s:ClassifierCountry;
-  rdfs:label "JPN" ;
+  v-s:title "JPN" ;
   v-s:shortLabel "JP" ;
-  v-s:title "JAPAN"@en ;
-  v-s:title "ЯПОНИЯ"@ru ;
+  rdfs:label "JAPAN"@en ;
+  rdfs:label "ЯПОНИЯ"@ru ;
   v-s:description "JAPAN"@en ;
   v-s:description "ЯПОНИЯ"@ru ;
   v-s:registrationNumber "392" ;
 .
 d:Country_KAZ
   a v-s:ClassifierCountry;
-  rdfs:label "KAZ" ;
+  v-s:title "KAZ" ;
   v-s:shortLabel "KZ" ;
-  v-s:title "Kazakhstan"@en ;
-  v-s:title "Казахстан"@ru ;
+  rdfs:label "Kazakhstan"@en ;
+  rdfs:label "Казахстан"@ru ;
   v-s:description "The Republic of Kazakhstan"@en ;
   v-s:description "Республика Казахстан"@ru ;
   v-s:registrationNumber "398" ;
 .
 d:Country_KEN
   a v-s:ClassifierCountry;
-  rdfs:label "KEN" ;
+  v-s:title "KEN" ;
   v-s:shortLabel "KE" ;
-  v-s:title "Kenya"@en ;
-  v-s:title "Кения"@ru ;
+  rdfs:label "Kenya"@en ;
+  rdfs:label "Кения"@ru ;
   v-s:description "The Republic of Kenya"@en ;
   v-s:description "Республика Кения"@ru ;
   v-s:registrationNumber "404" ;
 .
 d:Country_PRK
   a v-s:ClassifierCountry;
-  rdfs:label "PRK" ;
+  v-s:title "PRK" ;
   v-s:shortLabel "КР" ;
-  v-s:title "North Korea"@en ;
-  v-s:title "КНДР"@ru ;
+  rdfs:label "North Korea"@en ;
+  rdfs:label "КНДР"@ru ;
   v-s:description "Korea, Democratic People's Republic of"@en ;
   v-s:description "Корейская Народно-Демократическая Республика"@ru ;
   v-s:registrationNumber "408" ;
 .
 d:Country_IDN
   a v-s:ClassifierCountry;
-  rdfs:label "IDN" ;
+  v-s:title "IDN" ;
   v-s:shortLabel "ID" ;
-  v-s:title "SOUTH KOREA"@en ;
-  v-s:title "ЮЖНАЯ КОРЕЯ"@ru ;
+  rdfs:label "SOUTH KOREA"@en ;
+  rdfs:label "ЮЖНАЯ КОРЕЯ"@ru ;
   v-s:description "The Republic of Korea"@en ;
   v-s:description "Республика Корея"@ru ;
   v-s:registrationNumber "410" ;
 .
 d:Country_KWT
   a v-s:ClassifierCountry;
-  rdfs:label "KWT" ;
+  v-s:title "KWT" ;
   v-s:shortLabel "KW" ;
-  v-s:title "Kuwait"@en ;
-  v-s:title "Кувейт"@ru ;
+  rdfs:label "Kuwait"@en ;
+  rdfs:label "Кувейт"@ru ;
   v-s:description "State of Kuwait"@en ;
   v-s:description "Государство Кувейт"@ru ;
   v-s:registrationNumber "414" ;
 .
 d:Country_KGZ
   a v-s:ClassifierCountry;
-  rdfs:label "KGZ" ;
+  v-s:title "KGZ" ;
   v-s:shortLabel "KG" ;
-  v-s:title "Kyrgyzstan"@en ;
-  v-s:title "Киргизия"@ru ;
+  rdfs:label "Kyrgyzstan"@en ;
+  rdfs:label "Киргизия"@ru ;
   v-s:description "Kyrgyz Republic"@en ;
   v-s:description "Киргизская Республика"@ru ;
   v-s:registrationNumber "417" ;
 .
 d:Country_LAO
   a v-s:ClassifierCountry;
-  rdfs:label "LAO" ;
+  v-s:title "LAO" ;
   v-s:shortLabel "LA" ;
-  v-s:title "Laos"@en ;
-  v-s:title "Лаос"@ru ;
+  rdfs:label "Laos"@en ;
+  rdfs:label "Лаос"@ru ;
   v-s:description "Lao People's Democratic Republic"@en ;
   v-s:description "ЛАОССКАЯ НАРОДНО-ДЕМОКРАТИЧЕСКАЯ РЕСПУБЛИКА"@ru ;
   v-s:registrationNumber "418" ;
 .
 d:Country_LBN
   a v-s:ClassifierCountry;
-  rdfs:label "LBN" ;
+  v-s:title "LBN" ;
   v-s:shortLabel "LB" ;
-  v-s:title "Lebanon"@en ;
-  v-s:title "Ливан"@ru ;
+  rdfs:label "Lebanon"@en ;
+  rdfs:label "Ливан"@ru ;
   v-s:description "Lebanese Republic"@en ;
   v-s:description "Ливанская Республика"@ru ;
   v-s:registrationNumber "422" ;
 .
 d:Country_LVA
   a v-s:ClassifierCountry;
-  rdfs:label "LVA" ;
+  v-s:title "LVA" ;
   v-s:shortLabel "LV" ;
-  v-s:title "Latvia"@en ;
-  v-s:title "Латвия"@ru ;
+  rdfs:label "Latvia"@en ;
+  rdfs:label "Латвия"@ru ;
   v-s:description "Latvian republic"@en ;
   v-s:description "Латвийская Республика"@ru ;
   v-s:registrationNumber "428" ;
 .
 d:Country_LBR
   a v-s:ClassifierCountry;
-  rdfs:label "LBR" ;
+  v-s:title "LBR" ;
   v-s:shortLabel "LR" ;
-  v-s:title "Liberia"@en ;
-  v-s:title "Либерия"@ru ;
+  rdfs:label "Liberia"@en ;
+  rdfs:label "Либерия"@ru ;
   v-s:description "Republic of Liberia"@en ;
   v-s:description "Республика Либерия"@ru ;
   v-s:registrationNumber "430" ;
 .
 d:Country_LBY
   a v-s:ClassifierCountry;
-  rdfs:label "LBY" ;
+  v-s:title "LBY" ;
   v-s:shortLabel "LY" ;
-  v-s:title "Libya"@en ;
-  v-s:title "Ливия"@ru ;
+  rdfs:label "Libya"@en ;
+  rdfs:label "Ливия"@ru ;
   v-s:description "Libyan Arab Jamahiriya"@en ;
   v-s:description "Ливия"@ru ;
   v-s:registrationNumber "434" ;
 .
 d:Country_LTU
   a v-s:ClassifierCountry;
-  rdfs:label "LTU" ;
+  v-s:title "LTU" ;
   v-s:shortLabel "LT" ;
-  v-s:title "Lithuania"@en ;
-  v-s:title "Литва"@ru ;
+  rdfs:label "Lithuania"@en ;
+  rdfs:label "Литва"@ru ;
   v-s:description "Republic of Lithuania"@en ;
   v-s:description "Литовская Республика"@ru ;
   v-s:registrationNumber "440" ;
 .
 d:Country_LUX
   a v-s:ClassifierCountry;
-  rdfs:label "LUX" ;
+  v-s:title "LUX" ;
   v-s:shortLabel "LU" ;
-  v-s:title "Luxembourg"@en ;
-  v-s:title "Люксембург"@ru ;
+  rdfs:label "Luxembourg"@en ;
+  rdfs:label "Люксембург"@ru ;
   v-s:description "Grand Duchy of Luxembourg"@en ;
   v-s:description "Великое Герцогство Люксембург"@ru ;
   v-s:registrationNumber "442" ;
 .
 d:Country_MYS
   a v-s:ClassifierCountry;
-  rdfs:label "MYS" ;
+  v-s:title "MYS" ;
   v-s:shortLabel "MY" ;
-  v-s:title "Malaysia"@en ;
-  v-s:title "Малайзия"@ru ;
+  rdfs:label "Malaysia"@en ;
+  rdfs:label "Малайзия"@ru ;
   v-s:description "Malaysia"@en ;
   v-s:description "Малайзия"@ru ;
   v-s:registrationNumber "458" ;
 .
 d:Country_MDV
   a v-s:ClassifierCountry;
-  rdfs:label "MDV" ;
+  v-s:title "MDV" ;
   v-s:shortLabel "MV" ;
-  v-s:title "Maldives"@en ;
-  v-s:title "Мальдивские острова"@ru ;
+  rdfs:label "Maldives"@en ;
+  rdfs:label "Мальдивские острова"@ru ;
   v-s:description "Maldives"@en ;
   v-s:description "Мальдивская Республика"@ru ;
   v-s:registrationNumber "462" ;
 .
 d:Country_MLI
   a v-s:ClassifierCountry;
-  rdfs:label "MLI" ;
+  v-s:title "MLI" ;
   v-s:shortLabel "ML" ;
-  v-s:title "Mali"@en ;
-  v-s:title "Мали"@ru ;
+  rdfs:label "Mali"@en ;
+  rdfs:label "Мали"@ru ;
   v-s:description "The Republic of Mali"@en ;
   v-s:description "Республика Мали"@ru ;
   v-s:registrationNumber "466" ;
 .
 d:Country_MLT
   a v-s:ClassifierCountry;
-  rdfs:label "MLT" ;
+  v-s:title "MLT" ;
   v-s:shortLabel "MT" ;
-  v-s:title "Malta"@en ;
-  v-s:title "Мальта"@ru ;
+  rdfs:label "Malta"@en ;
+  rdfs:label "Мальта"@ru ;
   v-s:description "Republic of Malta"@en ;
   v-s:description "Республика Мальта"@ru ;
   v-s:registrationNumber "470" ;
 .
 d:Country_MEX
   a v-s:ClassifierCountry;
-  rdfs:label "MEX" ;
+  v-s:title "MEX" ;
   v-s:shortLabel "MX" ;
-  v-s:title "Mexico"@en ;
-  v-s:title "Мексика"@ru ;
+  rdfs:label "Mexico"@en ;
+  rdfs:label "Мексика"@ru ;
   v-s:description "United Mexican States"@en ;
   v-s:description "Мексиканские Соединенные Штаты"@ru ;
   v-s:registrationNumber "484" ;
 .
 d:Country_MCO
   a v-s:ClassifierCountry;
-  rdfs:label "MCO" ;
+  v-s:title "MCO" ;
   v-s:shortLabel "MC" ;
-  v-s:title "Monaco"@en ;
-  v-s:title "Монако"@ru ;
+  rdfs:label "Monaco"@en ;
+  rdfs:label "Монако"@ru ;
   v-s:description "The Principality of Monaco"@en ;
   v-s:description "Княжество Монако"@ru ;
   v-s:registrationNumber "492" ;
 .
 d:Country_MNG
   a v-s:ClassifierCountry;
-  rdfs:label "MNG" ;
+  v-s:title "MNG" ;
   v-s:shortLabel "MN" ;
-  v-s:title "Mongolia"@en ;
-  v-s:title "Монголия"@ru ;
+  rdfs:label "Mongolia"@en ;
+  rdfs:label "Монголия"@ru ;
   v-s:description "Mongolia"@en ;
   v-s:description "Монголия"@ru ;
   v-s:registrationNumber "496" ;
 .
 d:Country_MDA
   a v-s:ClassifierCountry;
-  rdfs:label "MDA" ;
+  v-s:title "MDA" ;
   v-s:shortLabel "MD" ;
-  v-s:title "Moldova, Republic of"@en ;
-  v-s:title "Молдова"@ru ;
+  rdfs:label "Moldova, Republic of"@en ;
+  rdfs:label "Молдова"@ru ;
   v-s:description "The Republic of Moldova"@en ;
   v-s:description "Республика Молдова"@ru ;
   v-s:registrationNumber "498" ;
 .
 d:Country_MNE
   a v-s:ClassifierCountry;
-  rdfs:label "MNE" ;
+  v-s:title "MNE" ;
   v-s:shortLabel "MN" ;
-  v-s:title "Montenegro"@en ;
-  v-s:title "Черногория"@ru ;
+  rdfs:label "Montenegro"@en ;
+  rdfs:label "Черногория"@ru ;
   v-s:description "Montenegro"@en ;
   v-s:description "Черногория"@ru ;
   v-s:registrationNumber "499" ;
@@ -849,410 +849,410 @@ d:Country_MNE
 
 d:Country_NZL
   a v-s:ClassifierCountry;
-  rdfs:label "NZL" ;
+  v-s:title "NZL" ;
   v-s:shortLabel "NZ" ;
-  v-s:title "New Zealand"@en ;
-  v-s:title "Новая Зеландия"@ru ;
+  rdfs:label "New Zealand"@en ;
+  rdfs:label "Новая Зеландия"@ru ;
   v-s:description "New Zealand"@en ;
   v-s:description "Новая Зеландия"@ru ;
   v-s:registrationNumber "554" ;
 .
 d:Country_NIC
   a v-s:ClassifierCountry;
-  rdfs:label "NIC" ;
+  v-s:title "NIC" ;
   v-s:shortLabel "NI" ;
-  v-s:title "Nicaragua"@en ;
-  v-s:title "Никарагуа"@ru ;
+  rdfs:label "Nicaragua"@en ;
+  rdfs:label "Никарагуа"@ru ;
   v-s:description "The Republic of Nicaragua"@en ;
   v-s:description "Республика Никарагуа"@ru ;
   v-s:registrationNumber "558" ;
 .
 d:Country_NGA
   a v-s:ClassifierCountry;
-  rdfs:label "NGA" ;
+  v-s:title "NGA" ;
   v-s:shortLabel "NG" ;
-  v-s:title "Nigeria"@en ;
-  v-s:title "Нигерия"@ru ;
+  rdfs:label "Nigeria"@en ;
+  rdfs:label "Нигерия"@ru ;
   v-s:description "Federal Republic of Nigeria"@en ;
   v-s:description "Федеративная Республика Нигерия"@ru ;
   v-s:registrationNumber "566" ;
 .
 d:Country_NOR
   a v-s:ClassifierCountry;
-  rdfs:label "NOR" ;
+  v-s:title "NOR" ;
   v-s:shortLabel "NOR" ;
-  v-s:title "Norway"@en ;
-  v-s:title "Норвегия"@ru ;
+  rdfs:label "Norway"@en ;
+  rdfs:label "Норвегия"@ru ;
   v-s:description "Kingdom of Norway"@en ;
   v-s:description "Королевство Норвегия"@ru ;
   v-s:registrationNumber "578" ;
 .
 d:Country_PAK
   a v-s:ClassifierCountry;
-  rdfs:label "PAK" ;
+  v-s:title "PAK" ;
   v-s:shortLabel "PK" ;
-  v-s:title "Pakistan"@en ;
-  v-s:title "Пакистан"@ru ;
+  rdfs:label "Pakistan"@en ;
+  rdfs:label "Пакистан"@ru ;
   v-s:description "Islamic Republic of Pakistan"@en ;
   v-s:description "Исламская Республика Пакистан"@ru ;
   v-s:registrationNumber "586" ;
 .
 d:Country_PAN
   a v-s:ClassifierCountry;
-  rdfs:label "PAN" ;
+  v-s:title "PAN" ;
   v-s:shortLabel "PA" ;
-  v-s:title "Panama"@en ;
-  v-s:title "Панама"@ru ;
+  rdfs:label "Panama"@en ;
+  rdfs:label "Панама"@ru ;
   v-s:description "The Republic of Panama"@en ;
   v-s:description "Республика Панама"@ru ;
   v-s:registrationNumber "591" ;
 .
 d:Country_PRY
   a v-s:ClassifierCountry;
-  rdfs:label "PRY" ;
+  v-s:title "PRY" ;
   v-s:shortLabel "PY" ;
-  v-s:title "Paraguay"@en ;
-  v-s:title "Парагвай"@ru ;
+  rdfs:label "Paraguay"@en ;
+  rdfs:label "Парагвай"@ru ;
   v-s:description "The Republic of Paraguay"@en ;
   v-s:description "Республика Парагвай"@ru ;
   v-s:registrationNumber "600" ;
 .
 d:Country_PER
   a v-s:ClassifierCountry;
-  rdfs:label "PER" ;
+  v-s:title "PER" ;
   v-s:shortLabel "PE" ;
-  v-s:title "Peru"@en ;
-  v-s:title "Перу"@ru ;
+  rdfs:label "Peru"@en ;
+  rdfs:label "Перу"@ru ;
   v-s:description "Republic of Peru"@en ;
   v-s:description "Республика Перу"@ru ;
   v-s:registrationNumber "604" ;
 .
 d:Country_PHL
   a v-s:ClassifierCountry;
-  rdfs:label "PHL" ;
+  v-s:title "PHL" ;
   v-s:shortLabel "PH" ;
-  v-s:title "Philippines"@en ;
-  v-s:title "Филиппины"@ru ;
+  rdfs:label "Philippines"@en ;
+  rdfs:label "Филиппины"@ru ;
   v-s:description "Republic of the Philippines"@en ;
   v-s:description "Республика Филиппины"@ru ;
   v-s:registrationNumber "608" ;
 .
 d:Country_POL
   a v-s:ClassifierCountry;
-  rdfs:label "POL" ;
+  v-s:title "POL" ;
   v-s:shortLabel "PL" ;
-  v-s:title "Poland"@en ;
-  v-s:title "Польша"@ru ;
+  rdfs:label "Poland"@en ;
+  rdfs:label "Польша"@ru ;
   v-s:description "The Republic of Poland"@en ;
   v-s:description "Республика Польша"@ru ;
   v-s:registrationNumber "616" ;
 .
 d:Country_PRT
   a v-s:ClassifierCountry;
-  rdfs:label "PRT" ;
+  v-s:title "PRT" ;
   v-s:shortLabel "PT" ;
-  v-s:title "Portugal"@en ;
-  v-s:title "Португалия"@ru ;
+  rdfs:label "Portugal"@en ;
+  rdfs:label "Португалия"@ru ;
   v-s:description "Portuguese Republic"@en ;
   v-s:description "Португальская Республика"@ru ;
   v-s:registrationNumber "620" ;
 .
 d:Country_GNB
   a v-s:ClassifierCountry;
-  rdfs:label "GNB" ;
+  v-s:title "GNB" ;
   v-s:shortLabel "GW" ;
-  v-s:title "Guinea-Bissau"@en ;
-  v-s:title "Гвинея-Бисау"@ru ;
+  rdfs:label "Guinea-Bissau"@en ;
+  rdfs:label "Гвинея-Бисау"@ru ;
   v-s:description "The Republic of Guinea-Bissau"@en ;
   v-s:description "Республика Гвинея-Бисау"@ru ;
   v-s:registrationNumber "624" ;
 .
 d:Country_QAT
   a v-s:ClassifierCountry;
-  rdfs:label "QAT" ;
+  v-s:title "QAT" ;
   v-s:shortLabel "QA" ;
-  v-s:title "Qatar"@en ;
-  v-s:title "Катар"@ru ;
+  rdfs:label "Qatar"@en ;
+  rdfs:label "Катар"@ru ;
   v-s:description "The State of Qatar"@en ;
   v-s:description "Государство Катар"@ru ;
   v-s:registrationNumber "634" ;
 .
 d:Country_ROM
   a v-s:ClassifierCountry;
-  rdfs:label "ROM" ;
+  v-s:title "ROM" ;
   v-s:shortLabel "RO" ;
-  v-s:title "Romania"@en ;
-  v-s:title "Румыния"@ru ;
+  rdfs:label "Romania"@en ;
+  rdfs:label "Румыния"@ru ;
   v-s:description "Romania"@en ;
   v-s:description "Румыния"@ru ;
   v-s:registrationNumber "642" ;
 .
 d:Country_RWA
   a v-s:ClassifierCountry;
-  rdfs:label "RWA" ;
+  v-s:title "RWA" ;
   v-s:shortLabel "RW" ;
-  v-s:title "Rwanda"@en ;
-  v-s:title "Руанда"@ru ;
+  rdfs:label "Rwanda"@en ;
+  rdfs:label "Руанда"@ru ;
   v-s:description "Rwandese Republic"@en ;
   v-s:description "Руандийская Республика"@ru ;
   v-s:registrationNumber "646" ;
 .
 d:Country_SAU
   a v-s:ClassifierCountry;
-  rdfs:label "SAU" ;
+  v-s:title "SAU" ;
   v-s:shortLabel "SA" ;
-  v-s:title "Saudi Arabia"@en ;
-  v-s:title "Саудовская Аравия"@ru ;
+  rdfs:label "Saudi Arabia"@en ;
+  rdfs:label "Саудовская Аравия"@ru ;
   v-s:description "Kingdom of Saudi Arabia"@en ;
   v-s:description "Королевство Саудовская Аравия"@ru ;
   v-s:registrationNumber "682" ;
 .
 d:Country_SEN
   a v-s:ClassifierCountry;
-  rdfs:label "SEN" ;
+  v-s:title "SEN" ;
   v-s:shortLabel "SN" ;
-  v-s:title "Senegal"@en ;
-  v-s:title "Сенегал"@ru ;
+  rdfs:label "Senegal"@en ;
+  rdfs:label "Сенегал"@ru ;
   v-s:description "The Republic of Senegal"@en ;
   v-s:description "Республика Сенегал"@ru ;
   v-s:registrationNumber "686" ;
 .
 d:Country_SRB
   a v-s:ClassifierCountry;
-  rdfs:label "SRB" ;
+  v-s:title "SRB" ;
   v-s:shortLabel "RS" ;
-  v-s:title "Serbia"@en ;
-  v-s:title "Сербия"@ru ;
+  rdfs:label "Serbia"@en ;
+  rdfs:label "Сербия"@ru ;
   v-s:description "The Republic of Serbia"@en ;
   v-s:description "Республика Сербия"@ru ;
   v-s:registrationNumber "688" ;
 .
 d:Country_SGP
   a v-s:ClassifierCountry;
-  rdfs:label "SGP" ;
+  v-s:title "SGP" ;
   v-s:shortLabel "SG" ;
-  v-s:title "Singapore"@en ;
-  v-s:title "Сингапур"@ru ;
+  rdfs:label "Singapore"@en ;
+  rdfs:label "Сингапур"@ru ;
   v-s:description "Republic of Singapore"@en ;
   v-s:description "Республика Сингапур"@ru ;
   v-s:registrationNumber "702" ;
 .
 d:Country_SVK
   a v-s:ClassifierCountry;
-  rdfs:label "SVK" ;
+  v-s:title "SVK" ;
   v-s:shortLabel "SK" ;
-  v-s:title "Slovakia"@en ;
-  v-s:title "Словакия"@ru ;
+  rdfs:label "Slovakia"@en ;
+  rdfs:label "Словакия"@ru ;
   v-s:description "The Slovak Republic"@en ;
   v-s:description "Словацкая Республика"@ru ;
   v-s:registrationNumber "703" ;
 .
 d:Country_VNM
   a v-s:ClassifierCountry;
-  rdfs:label "VNM" ;
+  v-s:title "VNM" ;
   v-s:shortLabel "VN" ;
-  v-s:title "Vietnam"@en ;
-  v-s:title "Вьетнам"@ru ;
+  rdfs:label "Vietnam"@en ;
+  rdfs:label "Вьетнам"@ru ;
   v-s:description "The Socialist Republic of Vietnam"@en ;
   v-s:description "Социалистическая Республика Вьетнам"@ru ;
   v-s:registrationNumber "704" ;
 .
 d:Country_SVN
   a v-s:ClassifierCountry;
-  rdfs:label "SVN" ;
+  v-s:title "SVN" ;
   v-s:shortLabel "SI" ;
-  v-s:title "Slovenia"@en ;
-  v-s:title "Словения"@ru ;
+  rdfs:label "Slovenia"@en ;
+  rdfs:label "Словения"@ru ;
   v-s:description "The Republic of Slovenia"@en ;
   v-s:description "Республика Словения"@ru ;
   v-s:registrationNumber "705" ;
 .
 d:Country_ZAF
   a v-s:ClassifierCountry;
-  rdfs:label "ZAF" ;
+  v-s:title "ZAF" ;
   v-s:shortLabel "ZA" ;
-  v-s:title "South Africa"@en ;
-  v-s:title "ЮАР"@ru ;
+  rdfs:label "South Africa"@en ;
+  rdfs:label "ЮАР"@ru ;
   v-s:description "South Africa"@en ;
   v-s:description "Южно-Африканская Республика"@ru ;
   v-s:registrationNumber "710" ;
 .
 d:Country_ESP
   a v-s:ClassifierCountry;
-  rdfs:label "ESP" ;
+  v-s:title "ESP" ;
   v-s:shortLabel "ES" ;
-  v-s:title "Senegal"@en ;
-  v-s:title "Сенегал"@ru ;
+  rdfs:label "Senegal"@en ;
+  rdfs:label "Сенегал"@ru ;
   v-s:description "The Kingdom of Spain"@en ;
   v-s:description "Королевство Испания"@ru ;
   v-s:registrationNumber "724" ;
 .
 d:Country_SDN
   a v-s:ClassifierCountry;
-  rdfs:label "SDN" ;
+  v-s:title "SDN" ;
   v-s:shortLabel "SD" ;
-  v-s:title "Sudan"@en ;
-  v-s:title "Судан"@ru ;
+  rdfs:label "Sudan"@en ;
+  rdfs:label "Судан"@ru ;
   v-s:description "Republic of the Sudan"@en ;
   v-s:description "Республика Судан"@ru ;
   v-s:registrationNumber "729" ;
 .
 d:Country_SWE
   a v-s:ClassifierCountry;
-  rdfs:label "SWE" ;
+  v-s:title "SWE" ;
   v-s:shortLabel "SE" ;
-  v-s:title "Sweden"@en ;
-  v-s:title "Швеция"@ru ;
+  rdfs:label "Sweden"@en ;
+  rdfs:label "Швеция"@ru ;
   v-s:description "Kingdom of Sweden"@en ;
   v-s:description "Королевство Швеция"@ru ;
   v-s:registrationNumber "752" ;
 .
 d:Country_CHE
   a v-s:ClassifierCountry;
-  rdfs:label "CHE" ;
+  v-s:title "CHE" ;
   v-s:shortLabel "CH" ;
-  v-s:title "Switzerland"@en ;
-  v-s:title "Швейцария"@ru ;
+  rdfs:label "Switzerland"@en ;
+  rdfs:label "Швейцария"@ru ;
   v-s:description "The Swiss Confederation"@en ;
   v-s:description "Швейцарская Конфедерация"@ru ;
   v-s:registrationNumber "756" ;
 .
 d:Country_SYR
   a v-s:ClassifierCountry;
-  rdfs:label "SYR" ;
+  v-s:title "SYR" ;
   v-s:shortLabel "SY" ;
-  v-s:title "Syria"@en ;
-  v-s:title "Сирия"@ru ;
+  rdfs:label "Syria"@en ;
+  rdfs:label "Сирия"@ru ;
   v-s:description "Syrian Arab Republic"@en ;
   v-s:description "СИРИЙСКАЯ АРАБСКАЯ РЕСПУБЛИКА"@ru ;
   v-s:registrationNumber "760" ;
 .
 d:Country_TJK
   a v-s:ClassifierCountry;
-  rdfs:label "TJK" ;
+  v-s:title "TJK" ;
   v-s:shortLabel "TJ" ;
-  v-s:title "Tajikistan"@en ;
-  v-s:title "Таджикистан"@ru ;
+  rdfs:label "Tajikistan"@en ;
+  rdfs:label "Таджикистан"@ru ;
   v-s:description "The Republic of Tajikistan"@en ;
   v-s:description "Республика Таджикистан"@ru ;
   v-s:registrationNumber "762" ;
 .
 d:Country_THA
   a v-s:ClassifierCountry;
-  rdfs:label "THA" ;
+  v-s:title "THA" ;
   v-s:shortLabel "TH" ;
-  v-s:title "Thailand"@en ;
-  v-s:title "Таиланд"@ru ;
+  rdfs:label "Thailand"@en ;
+  rdfs:label "Таиланд"@ru ;
   v-s:description "Kingdom of Thailand"@en ;
   v-s:description "Королевство Таиланд"@ru ;
   v-s:registrationNumber "764" ;
 .
 d:Country_ARE
   a v-s:ClassifierCountry;
-  rdfs:label "ARE" ;
+  v-s:title "ARE" ;
   v-s:shortLabel "AE" ;
-  v-s:title "United Arab Emirates"@en ;
-  v-s:title "ОАЕ"@ru ;
+  rdfs:label "United Arab Emirates"@en ;
+  rdfs:label "ОАЕ"@ru ;
   v-s:description "United Arab Emirates"@en ;
   v-s:description "ОБЪЕДИНЕННЫЕ АРАБСКИЕ ЭМИРАТЫ"@ru ;
   v-s:registrationNumber "784" ;
 .
 d:Country_TUN
   a v-s:ClassifierCountry;
-  rdfs:label "TUN" ;
+  v-s:title "TUN" ;
   v-s:shortLabel "TN" ;
-  v-s:title "Tunisia"@en ;
-  v-s:title "Тунис"@ru ;
+  rdfs:label "Tunisia"@en ;
+  rdfs:label "Тунис"@ru ;
   v-s:description "Republic of Tunisia"@en ;
   v-s:description "Тунисская Республика"@ru ;
   v-s:registrationNumber "788" ;
 .
 d:Country_TUR
   a v-s:ClassifierCountry;
-  rdfs:label "TUR" ;
+  v-s:title "TUR" ;
   v-s:shortLabel "TR" ;
-  v-s:title "Turkey"@en ;
-  v-s:title "Турция"@ru ;
+  rdfs:label "Turkey"@en ;
+  rdfs:label "Турция"@ru ;
   v-s:description "Turkish Republic"@en ;
   v-s:description "Турецкая Республика"@ru ;
   v-s:registrationNumber "792" ;
 .
 d:Country_TKM
   a v-s:ClassifierCountry;
-  rdfs:label "TKM" ;
+  v-s:title "TKM" ;
   v-s:shortLabel "TM" ;
-  v-s:title "Turkmenistan"@en ;
-  v-s:title "Туркмения"@ru ;
+  rdfs:label "Turkmenistan"@en ;
+  rdfs:label "Туркмения"@ru ;
   v-s:description "Turkmenistan"@en ;
   v-s:description "Туркменистан"@ru ;
   v-s:registrationNumber "795" ;
 .
 d:Country_UKR
   a v-s:ClassifierCountry;
-  rdfs:label "UKR" ;
+  v-s:title "UKR" ;
   v-s:shortLabel "UА" ;
-  v-s:title "Ukraine"@en ;
-  v-s:title "Украина"@ru ;
+  rdfs:label "Ukraine"@en ;
+  rdfs:label "Украина"@ru ;
   v-s:description "Ukraine"@en ;
   v-s:description "Украина"@ru ;
   v-s:registrationNumber "704" ;
 .
 d:Country_EGY
   a v-s:ClassifierCountry;
-  rdfs:label "EGY" ;
+  v-s:title "EGY" ;
   v-s:shortLabel "EG" ;
-  v-s:title "Egypt"@en ;
-  v-s:title "Египет"@ru ;
+  rdfs:label "Egypt"@en ;
+  rdfs:label "Египет"@ru ;
   v-s:description "Arab Republic of Egypt"@en ;
   v-s:description "Арабская Республика Египет"@ru ;
   v-s:registrationNumber "818" ;
 .
 d:Country_GBR
   a v-s:ClassifierCountry;
-  rdfs:label "GBR" ;
+  v-s:title "GBR" ;
   v-s:shortLabel "GB" ;
-  v-s:title "Great Britain"@en ;
-  v-s:title "Великобритания"@ru ;
+  rdfs:label "Great Britain"@en ;
+  rdfs:label "Великобритания"@ru ;
   v-s:description "United Kingdom"@en ;
   v-s:description "Соединенное Королевство Великобритании и Северной Ирландии"@ru ;
   v-s:registrationNumber "826" ;
 .
 d:Country_USA
   a v-s:ClassifierCountry;
-  rdfs:label "USA" ;
+  v-s:title "USA" ;
   v-s:shortLabel "US" ;
-  v-s:title "USA"@en ;
-  v-s:title "США"@ru ;
+  rdfs:label "USA"@en ;
+  rdfs:label "США"@ru ;
   v-s:description "United States of America"@en ;
   v-s:description "Соединенные Штаты Америки"@ru ;
   v-s:registrationNumber "840" ;
 .
 d:Country_UZB
   a v-s:ClassifierCountry;
-  rdfs:label "UZB" ;
+  v-s:title "UZB" ;
   v-s:shortLabel "UZ" ;
-  v-s:title "Uzbekistan"@en ;
-  v-s:title "Узбекистан"@ru ;
+  rdfs:label "Uzbekistan"@en ;
+  rdfs:label "Узбекистан"@ru ;
   v-s:description "The Republic of Uzbekistan"@en ;
   v-s:description "Республика Узбекистан"@ru ;
   v-s:registrationNumber "860" ;
 .
 d:Country_ABH
   a v-s:ClassifierCountry;
-  rdfs:label "ABH" ;
+  v-s:title "ABH" ;
   v-s:shortLabel "AB" ;
-  v-s:title "Abkhazia"@en ;
-  v-s:title "Абхазия"@ru ;
+  rdfs:label "Abkhazia"@en ;
+  rdfs:label "Абхазия"@ru ;
   v-s:description "The Republic of Abkhazia"@en ;
   v-s:description "Республика Абхазия"@ru ;
   v-s:registrationNumber "895" ;
 .
 d:Country_OST
   a v-s:ClassifierCountry;
-  rdfs:label "OST" ;
+  v-s:title "OST" ;
   v-s:shortLabel "OST" ;
-  v-s:title "South Ossetia"@en ;
-  v-s:title "Южная Осетия"@ru ;
+  rdfs:label "South Ossetia"@en ;
+  rdfs:label "Южная Осетия"@ru ;
   v-s:description "Republic of South Ossetia"@en ;
   v-s:description "Республика Южная Осетия"@ru ;
   v-s:registrationNumber "896" ;
