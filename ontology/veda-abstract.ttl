@@ -711,7 +711,7 @@ v-s:hasMaintainedObject
   rdf:type owl:ObjectProperty ;
   rdfs:label "Object TORO"@en ;
   rdfs:label "Объект ТОРО"@ru ;
-  rdfs:range mnd-s:MaintainedObject ;
+  rdfs:range v-s:MaintainedObject ;
   rdfs:domain v-s:Maintained ;
 .
 v-s:eliminatingTime
