@@ -49,8 +49,6 @@ td:script_onto_rename
 .
 
 
-
-
 td:khvostiaImage
   rdf:type v-s:File ;
   v-s:fileUri "Khvostia" ;
@@ -72,66 +70,6 @@ td:Analyst2
   rdfs:label "Аналитик"@ru ;
 .
 
-td:AndreyBychin
-  rdf:type v-s:Person ;
-  v-s:actualVersion td:AndreyBychin ;
-  v-s:birthday "1976-05-03"^^xsd:dateTime ;
-  v-s:firstName "4"@en ;
-  v-s:firstName "4"@ru ;
-  v-s:hasAccount td:BychinA ;
-  v-s:lastName "Administrator4"@en ;
-  v-s:lastName "Администратор4"@ru ;
-  v-ui:hasPreferences td:Preferences_AndreyBychin ;
-  v-s:hasAppointment td:AndreyBychin-Analyst2 ;
-  rdfs:label "Administrator4"@en ;
-  rdfs:label "Администратор4"@ru ;
-.
-td:AndreyBychin-Analyst2
-  rdf:type v-s:Appointment ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:employee td:AndreyBychin ;
-  v-s:occupation td:Analyst2 ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Andrey Bychin : Analyst"@en ;
-  rdfs:label "Андрей Бычин : Аналитик"@ru ;
-  v-s:parentUnit td:ApplicationDevelopmentGroup ;
-.
-td:BushenevV
-  rdf:type v-s:Account ;
-  v-s:login "BushenevV"^^xsd:string ;
-  v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
-  v-s:owner td:ValeriyBushenev ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BushenevV" ;
-.
-td:BushenevVT
-  rdf:type v-s:Account ;
-  v-s:login "BushenevVT"^^xsd:string ;
-  v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
-  v-s:owner td:ValeriyBushenev ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BushenevVT" ;
-.
-td:BychinA
-  rdf:type v-s:Account ;
-  v-s:login "BychinA"^^xsd:string ;
-  v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
-  v-s:owner td:AndreyBychin ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BychinA" ;
-.
-td:BychinAT
-  rdf:type v-s:Account ;
-  v-s:login "BychinAT"^^xsd:string ;
-  v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
-  v-s:owner td:AndreyBychin ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "BychinAT" ;
-.
-
-
 td:CommercialDirector
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
@@ -144,6 +82,55 @@ td:ExecutiveDirector
   v-s:parentUnit d:org_RU1121001280 ;
   rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
+.
+
+td:TechnicalDirector
+  rdf:type v-s:Position ;
+  v-s:parentUnit d:org_RU1121001280 ;
+  rdfs:label "Technical director"@en ;
+  rdfs:label "Технический директор"@ru ;
+.
+
+td:Programmer1
+  rdf:type v-s:Position ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  rdfs:label "Programmer"@en ;
+  rdfs:label "Программист"@ru ;
+.
+
+td:BushenevVT
+  rdf:type v-s:Account ;
+  v-s:login "BushenevVT"^^xsd:string ;
+  v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
+  v-s:owner td:ValeriyBushenev ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "BushenevVT" ;
+.
+
+td:BychinAT
+  rdf:type v-s:Account ;
+  v-s:login "BychinAT"^^xsd:string ;
+  v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
+  v-s:owner td:AndreyBychin ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "BychinAT" ;
+.
+td:KarpovRT
+  rdf:type v-s:Account ;
+  v-s:login "KarpovRT"^^xsd:string ;
+  v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
+  v-s:owner td:RomanKarpov ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "KarpovRT" ;
+.
+
+td:KhvostiAT
+  rdf:type v-s:Account ;
+  v-s:login "KhvostiAT"^^xsd:string ;
+  v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
+  v-s:owner td:AleksandraKhvostikova ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "KhvostiAT" ;
 .
 
 td:UserGroup_1
@@ -167,41 +154,6 @@ td:ResGroup_2
   rdf:type v-s:Group ;
   rdfs:label "Test resource group 2"@en ;
   rdfs:label "Тестовая группа для ресуров 2"@ru ;
-.
-
-td:KarpovR
-  rdf:type v-s:Account ;
-  v-s:login "KarpovR"^^xsd:string ;
-  v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
-  v-s:owner td:RomanKarpov ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "KarpovR" ;
-.
-
-td:KarpovRT
-  rdf:type v-s:Account ;
-  v-s:login "KarpovRT"^^xsd:string ;
-  v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
-  v-s:owner td:RomanKarpov ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "KarpovRT" ;
-.
-
-td:KhvostiA
-  rdf:type v-s:Account ;
-  v-s:login "KhvostiA"^^xsd:string ;
-  v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
-  v-s:owner td:AleksandraKhvostikova ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "KhvostiA" ;
-.
-td:KhvostiAT
-  rdf:type v-s:Account ;
-  v-s:login "KhvostiAT"^^xsd:string ;
-  v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
-  v-s:owner td:AleksandraKhvostikova ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "KhvostiAT" ;
 .
 
 td:Membership_1
@@ -368,11 +320,32 @@ td:Preferences_ValeriyBushenev
   rdfs:label "Предпочтения (Валерий Бушенев)"@ru ;
 .
 
-td:Programmer1
-  rdf:type v-s:Position ;
+
+td:AndreyBychin
+  rdf:type v-s:Person ;
+  v-s:actualVersion td:AndreyBychin ;
+  v-s:birthday "1976-05-03"^^xsd:dateTime ;
+  v-s:firstName "4"@en ;
+  v-s:firstName "4"@ru ;
+  v-s:hasAccount td:BychinAT ;
+  v-s:lastName "Administrator4"@en ;
+  v-s:lastName "Администратор4"@ru ;
+  v-ui:hasPreferences td:Preferences_AndreyBychin ;
+  v-s:hasAppointment td:AndreyBychin-Analyst2 ;
+  rdfs:label "Administrator4"@en ;
+  rdfs:label "Администратор4"@ru ;
+.
+td:AndreyBychin-Analyst2
+  rdf:type v-s:Appointment ;
+  v-s:author td:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee td:AndreyBychin ;
+  v-s:occupation td:Analyst2 ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+  rdfs:label "Andrey Bychin : Analyst"@en ;
+  rdfs:label "Андрей Бычин : Аналитик"@ru ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Programmer"@en ;
-  rdfs:label "Программист"@ru ;
 .
 
 td:RomanKarpov
@@ -381,7 +354,7 @@ td:RomanKarpov
   v-s:birthday "1981-01-09"^^xsd:dateTime ;
   v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
-  v-s:hasAccount td:KarpovR ;
+  v-s:hasAccount td:KarpovRT ;
   v-s:lastName "Administrator2"@en ;
   v-s:lastName "Администратор2"@ru ;
   v-ui:hasPreferences td:Preferences_RomanKarpov ;
@@ -389,34 +362,6 @@ td:RomanKarpov
   rdfs:label "Администратор2"@ru ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
   v-s:hasAspect v-s:PersonalAspectKarpovr ;
-.
-td:AleksandraKhvostikova
-  rdf:type v-s:Person ;
-  v-s:actualVersion td:AleksandraKhvostikova ;
-  v-s:birthday "1984-04-28"^^xsd:dateTime ;
-  v-s:firstName "1"@en ;
-  v-s:firstName "1"@ru ;
-  v-s:hasAccount td:KhvostiA ;
-  v-s:lastName "Administrator1"@en ;
-  v-s:lastName "Администратор1"@ru ;
-  v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
-  rdfs:label "Administrator1"@en ;
-  rdfs:label "Администратор1"@ru ;
-  v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
-  v-s:hasImage td:khvostiaImage;
-.
-td:AleksandraKhvostikova-Analyst1
-  rdf:type v-s:Appointment ;
-  v-s:author td:AleksandraKhvostikova-Analyst ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:employee td:AleksandraKhvostikova ;
-  v-s:occupation td:Analyst1 ;
-  v-s:official "true"^^xsd:boolean ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Александра Хвостикова : Аналитик"@ru ;
-  rdfs:label "Aleksandra Khvostikova : Analyst"@en ;
-  v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
 td:RomanKarpov-Analyst1
@@ -445,19 +390,33 @@ td:RomanKarpov-CommercialDirector
   v-s:parentUnit d:org_RU1121001280 ;
 .
 
-d:org_RU1121001280
-  rdf:type v-s:Organization ;
-  v-s:childUnit td:CommercialDirector ;
-  v-s:childUnit td:TechnicalDirector ;
-  rdfs:label "Semantic machines, LLC"@en ;
-  rdfs:label "ООО Смысловые машины"@ru ;
+td:AleksandraKhvostikova
+  rdf:type v-s:Person ;
+  v-s:actualVersion td:AleksandraKhvostikova ;
+  v-s:birthday "1984-04-28"^^xsd:dateTime ;
+  v-s:firstName "1"@en ;
+  v-s:firstName "1"@ru ;
+  v-s:hasAccount td:KhvostiAT ;
+  v-s:lastName "Administrator1"@en ;
+  v-s:lastName "Администратор1"@ru ;
+  v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
+  rdfs:label "Administrator1"@en ;
+  rdfs:label "Администратор1"@ru ;
+  v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
+  v-s:hasImage td:khvostiaImage;
 .
-
-td:TechnicalDirector
-  rdf:type v-s:Position ;
-  v-s:parentUnit d:org_RU1121001280 ;
-  rdfs:label "Technical director"@en ;
-  rdfs:label "Технический директор"@ru ;
+td:AleksandraKhvostikova-Analyst1
+  rdf:type v-s:Appointment ;
+  v-s:author td:AleksandraKhvostikova-Analyst ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee td:AleksandraKhvostikova ;
+  v-s:occupation td:Analyst1 ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+  rdfs:label "Александра Хвостикова : Аналитик"@ru ;
+  rdfs:label "Aleksandra Khvostikova : Analyst"@en ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
 td:ValeriyBushenev
@@ -466,7 +425,7 @@ td:ValeriyBushenev
   v-s:birthday "1973-05-09"^^xsd:dateTime ;
   v-s:firstName "3"@en ;
   v-s:firstName "3"@ru ;
-  v-s:hasAccount td:BushenevV ;
+  v-s:hasAccount td:BushenevVT ;
   v-s:lastName "Administrator3"@en ;
   v-s:lastName "Администратор3"@ru ;
   v-s:hasAccount td:BushenevV ;
@@ -487,11 +446,6 @@ td:ValeriyBushenev-Programmer1
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
 .
 
-td:ValeriyBushenev-Programmer1
-  rdf:type v-s:Appointment ;
-  rdfs:label " - test add - "@ru ;
-.
-
 td:ValeriyBushenev-TechnicalDirector
   rdf:type v-s:Appointment ;
   v-s:author td:RomanKarpov-Analyst1 ;
@@ -503,15 +457,6 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:startTime "2014-01-30T15:30:21"^^xsd:dateTime ;
   rdfs:label "Валерий Бушенев : Технический директор"@ru ;
   v-s:parentUnit d:org_RU1121001280 ;
-.
-
-td:SavedSearch1
-  rdf:type v-s:SavedSearch ;
-  v-s:author td:RomanKarpov-Analyst1 ;
-  v-s:created "2014-08-01T15:22:21"^^xsd:dateTime ;
-  v-s:query "owl" ;
-  rdfs:label "Сохраненный запрос 1"@ru ;
-  rdfs:label "Saved search 1"@en ;
 .
 
 # ---------------------------- Тестовые экземпляры маршрутов ------------------------------
