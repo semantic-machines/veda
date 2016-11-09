@@ -1411,6 +1411,13 @@ s-wf:map_msg_template_project
 
 # Прослойка комплексный - универсальный
 
+s-wf:adf43bae5-d0ce-62e4-5e11-e127df46ecc4
+    a v-wf:Mapping;
+    v-wf:mappingExpression "(task_result.is_exists_result (task_result) == false || task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')))?newUri('v-wf:DecisionAgreed'):newUri('v-wf:DecisionDeclined')";
+    v-wf:mapToVariable s-wf:var_result;
+    rdfs:label "map for s-wf:InterlayerNet_t";
+. 
+        
 s-wf:InterlayerNet
     a v-wf:Net;
     v-wf:inputVariable s-wf:var_doc_id, s-wf:var_journal_initiator;
@@ -1435,7 +1442,7 @@ s-wf:InterlayerNet_t
     v-wf:split v-wf:None;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:InterlayerNet_task_action, s-wf:InterlayerNet_task_form_type, s-wf:InterlayerNet_task_comment, s-wf:InterlayerNet_task_date_to, s-wf:InterlayerNet_task_controller, s-wf:InterlayerNet_task_possible_decisions; 
     v-wf:join v-wf:None;
-    v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_result_decision_from_task_result;
+    v-wf:completedMapping s-wf:adf43bae5-d0ce-62e4-5e11-e127df46ecc4;
     v-wf:executor s-wf:InterlayerNet_executor;
     v-wf:hasFlow s-wf:InterlayerNet_t_to_oc;
     v-wf:locationX "73"^^xsd:integer;

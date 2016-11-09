@@ -58,13 +58,10 @@ function WorkItemResult(_work_item_result)
     /////////////////////////// functions prepare work_item_result
     this.getValue = function(var_name)
     {
-        //print("%%%1");
         for (var i in this.work_item_result)
         {
-            //print("%%%2");
             return this.work_item_result[i][var_name];
         }
-        //print("%%%3");
     };
 
     this.compare = function(var_name, value)
