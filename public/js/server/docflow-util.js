@@ -121,6 +121,7 @@ function WorkItemResult(_work_item_result)
 
     this.is_all_executors_taken_decision = function(var_name, value)
     {
+        //print('BLABLABLA > '+toJson(this));
         if (!value || value.length < 1)
             return false;
 
@@ -863,7 +864,8 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                     put_individual(ticket, new_message, _event_id);
                 }
 
-                print("[DOCFLOW] mapToMessage=" + new_message['@']);
+
+                //print("@@@ mapToMessage=" + toJson(new_message));
             }
         }
     }
@@ -1070,7 +1072,7 @@ function get_properties_chain(var1, query, result_if_fail_search)
         return res;
 
     var doc;
-    //    print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
+        //print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
     try
     {
     doc = get_individual(ticket, getUri(var1));

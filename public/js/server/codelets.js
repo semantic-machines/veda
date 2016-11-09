@@ -9,10 +9,10 @@ function change_rights(process, task, rightset)
 {
     try
     {
-print ("@JS down_right_and_store");
+//print ("@JS down_right_and_store");
         var doc_id = process.getInputVariable('docId');
-print ("@JS doc_id=", toJson (doc_id));
-print ("@JS rightset=", toJson (rightset));
+//print ("@JS doc_id=", toJson (doc_id));
+//print ("@JS rightset=", toJson (rightset));
         var rset = []; 
         if (rightset[0].data.indexOf('r')>=0) {
             rset.push(can_read);
@@ -23,13 +23,13 @@ print ("@JS rightset=", toJson (rightset));
 
         if (doc_id)
         {
-            print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
-            print ("@JS2 executor=", toJson(process.getExecutor()));
+            //print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
+            //print ("@JS2 executor=", toJson(process.getExecutor()));
     	    var executor = (process.getLocalVariable ('actor'))? process.getLocalVariable ('actor') : process.getExecutor();
     
     	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
-print ("@JS executor=", toJson (executor));
+//print ("@JS executor=", toJson (executor));
     	    if (executor)
             	addRight(ticket, rset, getUri (executor), getUri (doc_id));
 
@@ -421,14 +421,14 @@ function onto_rename(ticket, document, execute_script)
         {
             remove_individual(ticket, prev_doc_uri, "");
             put_individual(ticket, document, "");
-            print('$ script_onto_rename:is_replace, ' + prev_doc['@'] + '->' + document['@']);
+            //print('$ script_onto_rename:is_replace, ' + prev_doc['@'] + '->' + document['@']);
         }
         else
         {
             if (is_update)
             {
                 put_individual(ticket, document, "");
-            	print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+            	//print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
             //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
             }
         }
