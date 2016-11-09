@@ -17,7 +17,7 @@
 #---------------------------------------------------------
 v-s:Letter
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
@@ -39,7 +39,7 @@ v-s:OutcomingLetter
 #---------------------------------------------------------
 v-s:NormativeDocument
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
 .
@@ -53,7 +53,7 @@ v-s:hasRequiremen
 #---------------------------------------------------------
 v-s:NormativeDocumentRequirement
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Normative document requirement"@en ;
   rdfs:label "Нормативный документ"@ru ;
@@ -69,7 +69,7 @@ v-s:checkQuestion
 #---------------------------------------------------------
 v-s:Risk
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
@@ -94,7 +94,7 @@ v-s:possibleLossAmount
 #---------------------------------------------------------
 v-s:Observation
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
@@ -160,7 +160,7 @@ v-s:observationCircumstances
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
@@ -172,7 +172,7 @@ v-s:WorkReport
 # ------------------------------------------------------------
 v-s:Request
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
@@ -188,7 +188,7 @@ v-s:Request
 #---------------------------------------------------------
 v-s:RegulatoryDocument
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Regulatory document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
 .

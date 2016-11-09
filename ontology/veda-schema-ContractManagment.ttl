@@ -17,7 +17,7 @@
 
 v-s:Contractor
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Organization ;
   rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;
@@ -25,7 +25,7 @@ v-s:Contractor
 # ------------------------------------------------------------
 v-s:ContractorProfile
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:subClassOf v-s:Journaling ;
@@ -44,7 +44,7 @@ v-s:ContractorProfileFile
 # ------------------------------------------------------------
 v-s:InternalAccountingDocument
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "InternalAccountingDocument"@en ;
   rdfs:label "Внутренний бухгалтерский документ"@ru ;
@@ -64,7 +64,7 @@ v-s:PsAttachmentForInternalAccountingDocument
 # ------------------------------------------------------------
 v-s:Price
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
@@ -99,7 +99,7 @@ v-s:ContractRequest
 # ------------------------------------------------------------
 v-s:ClassifierOKVED
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:label "Classifier OKVED"@en ;
   rdfs:label "Классификатор ОКВЭД"@ru ;
@@ -107,7 +107,7 @@ v-s:ClassifierOKVED
 # ------------------------------------------------------------
 v-s:ClassifierCountry
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:label "Country"@en ;
   rdfs:label "Страна"@ru ;
@@ -115,7 +115,7 @@ v-s:ClassifierCountry
 # ------------------------------------------------------------
 v-s:ClassifierLegalForm
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:label "ClassifierLegalForm"@en ;
   rdfs:label "Организационно правовая форма"@ru ;

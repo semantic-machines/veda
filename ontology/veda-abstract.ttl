@@ -246,6 +246,22 @@ v-s:specialOpinion
   rdfs:domain v-s:Thing ;
 .
 ### -------------------------------------------------------
+v-s:UserThing
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
+  rdfs:label "User thing"@en ;
+  rdfs:label "Любая пльзовательская сущность"@ru ;
+.
+### -------------------------------------------------------
+v-s:SystemThing
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "System thing"@en ;
+  rdfs:label "Любая системная сущность"@ru ;
+.
+### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource  ;

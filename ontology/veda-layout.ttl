@@ -23,7 +23,7 @@
 
 v-l:MainPage
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Page"@en ;
   rdfs:label "Страница"@ru ;
 .
@@ -108,7 +108,7 @@ v-l:MainPageTemplate
 
 v-l:Menu
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Menu"@en ;
   rdfs:label "Меню"@ru ;
 .

@@ -18,7 +18,7 @@
 ### veda-function-search
 v-s:SavedSearch
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Saved search"@en ;
   rdfs:label "Сохраненный запрос"@ru ;
@@ -69,7 +69,7 @@ v-s:NotEmpty
 ### veda-function-search
 v-s:SpecialSearchValues
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Logical operator"@en ;
   rdfs:label "Логический оператор"@ru ;
 .
@@ -121,7 +121,7 @@ v-s:Yesterday
 # ------------------------------------------------------------
 v-s:File
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "File"@en ;
@@ -159,14 +159,14 @@ v-s:ClassifiedFile
 ### ------------------------------------------------------
 v-s:Level
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
 .
 ### ------------------------------------------------------
 v-s:Link
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Link"@en ;
   rdfs:label "Связь"@ru ;
 .
@@ -188,14 +188,14 @@ v-s:to
 ### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
 .
 ### ------------------------------------------------------
 v-s:Sector
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:label "Sector"@en ;
   rdfs:label "Отрасль экономической деятельности"@ru ;
@@ -217,7 +217,7 @@ v-s:query
 
 v-s:ReportsForClass
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Reports list"@en ;
   rdfs:label "Список отчетов"@ru ;
@@ -237,7 +237,7 @@ v-s:fileFormat
 
 v-s:Report
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Report"@en ;
   rdfs:label "Отчет"@ru ;
@@ -245,7 +245,7 @@ v-s:Report
 
 v-s:ReportParametersForm
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Report parameters form"@en ;
   rdfs:label "Форма параметров отчета"@ru ;
@@ -257,7 +257,7 @@ v-s:ReportParametersForm
 ################################ JOURNAL ####################################################
 v-s:Journal
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "A journal"@en ;
@@ -275,7 +275,7 @@ v-s:childRecord
 .
 v-s:JournalRecord
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запись в журнале"@ru ;
@@ -362,7 +362,7 @@ v-s:ProcessStarted
 # veda-ui-clone (v-ui:)
 v-s:DocumentLinkRules
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Правило связи двух документов"@ru ;
   rdfs:label "Documents link rules"@en ;

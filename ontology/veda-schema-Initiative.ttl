@@ -19,7 +19,7 @@
 #--------------------------------------------------
 v-s:Initiative
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Contractual ;
@@ -195,7 +195,7 @@ v-s:involvedDepartment
 v-s:Effect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Effect"@en ;
@@ -342,7 +342,7 @@ v-s:hasKpiGroup
 #--------------------------------------------------
 v-s:EffectList
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Effect list"@en ;
@@ -387,7 +387,7 @@ v-s:hasEffect
 #--------------------------------------------------
 v-s:KpiGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Kpi group"@en ;
   rdfs:label "Группа целевого показателя"@ru ;
 .
@@ -395,7 +395,7 @@ v-s:KpiGroup
 # -- Проверить - используется ли
 v-s:ClassifiedAttachment
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Classified attachment"@en ;
   rdfs:label "Классифицированное вложение"@ru ;
 .
@@ -403,28 +403,28 @@ v-s:ClassifiedAttachment
 # -- Перенести в другой файл
 v-s:FileContentClassifier
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "File content classifier"@en ;
   rdfs:label "Содержимое файла"@ru ;
 .
 #--------------------------------------------------
 v-s:ProjectStage
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "ProjectStage"@en ;
   rdfs:label "Стадия проекта"@ru ;
 .
 #--------------------------------------------------
 v-s:ProjectKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Project category"@en ;
   rdfs:label "Вид проекта"@ru ;
 .
 #--------------------------------------------------
 v-s:WorkGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Work group"@en ;
   rdfs:label "Рабочая группа"@ru ;
@@ -439,7 +439,7 @@ v-s:hasMemberOfWorkGroup
 #--------------------------------------------------
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:label "Project team member"@en ;
@@ -457,7 +457,7 @@ v-s:timeEffort
 #--------------------------------------------------
 v-s:ProjectPlan
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Project plan"@en ;
@@ -480,7 +480,7 @@ v-s:hasProjectPhase
 #--------------------------------------------------
 v-s:ProjectPhase
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Project phase"@en ;
@@ -503,7 +503,7 @@ v-s:hasProjectPhaseCost
 #--------------------------------------------------
 v-s:ProjectMilestone
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Project milestone"@en ;
@@ -512,7 +512,7 @@ v-s:ProjectMilestone
 #--------------------------------------------------
 v-s:ProjectPhaseCost
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Project phase costs"@en ;
@@ -522,7 +522,7 @@ v-s:ProjectPhaseCost
 #--------------------------------------------------
 v-s:ProjectPhaseRisk
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project phase risks"@en ;
   rdfs:label "Риски фазы проекта"@ru ;
@@ -539,7 +539,7 @@ v-s:riskAttachment
 #--------------------------------------------------
 v-s:ProjectPhaseKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Project phase kind"@en ;
   rdfs:label "Вид фазы проекта"@ru ;
 .
@@ -547,7 +547,7 @@ v-s:ProjectPhaseKind
 # -- Подумать о другом названии и перенсти в другой файл
 v-s:Currency
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
 .
@@ -555,7 +555,7 @@ v-s:Currency
 # -- перенсти в другой файл
 v-s:MaintenanceKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Kind of maintenance"@en ;
   rdfs:label "Вид обуслуживания оборудования"@ru ;
 .

@@ -18,13 +18,13 @@
 
 v-fc:FunctionCreate
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
 .
