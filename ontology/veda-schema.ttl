@@ -258,7 +258,6 @@ v-s:ReportParametersForm
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "A journal"@en ;
   rdfs:comment "Журнал"@ru ;
@@ -276,7 +275,6 @@ v-s:childRecord
 v-s:JournalRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запись в журнале"@ru ;
 .
