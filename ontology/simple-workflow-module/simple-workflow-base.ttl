@@ -903,6 +903,7 @@ s-wf:ComplexRouteStartForm_Template
         </div>
       </div>
       <div class="panel-body">
+<!--      
         <div class="row">
             <div class="col-md-4">
                <em about="v-wf:processInitiator" property="rdfs:label"></em>
@@ -926,6 +927,7 @@ s-wf:ComplexRouteStartForm_Template
             </div>
         </div>
         <hr />
+-->        
         <div class="row">
             <div class="col-md-4 informing">
                <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
