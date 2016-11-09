@@ -122,6 +122,8 @@ function prepare_work_order(ticket, document)
         var net_element = get_individual(ticket, getUri(forNetElement));
         if (!net_element) return;
 
+//		print ("[WORKFLOW] #1 net_element.uri=", net_element['@'], ", work_order=", toJson (_work_order));
+
         var f_local_outVars = document['v-wf:outVars'];
         var task_output_vars = [];
 
@@ -129,7 +131,14 @@ function prepare_work_order(ticket, document)
 
         if (!f_local_outVars)
         {
-            journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], net_element['rdfs:label'], 'v-wf:WorkOrderStarted')
+//			print ("[WORKFLOW] #2 net_element.uri=", net_element['@']);
+            journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], net_element['rdfs:label'], 'v-wf:WorkOrderStarted');
+
+			if (!executor)
+			{
+				mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');			
+			}	
+
                 // берем только необработанные рабочие задания
             if (!executor)
             {
@@ -178,6 +187,8 @@ function prepare_work_order(ticket, document)
 
                 if (is_codelet)
                 {
+					mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
+
                     //print("[WORKFLOW][WO1.2] executor=" + getUri(f_executor) + ", is codelet");
 
                     var expression = getFirstValue(executor['v-s:script']);
@@ -357,8 +368,6 @@ function prepare_work_order(ticket, document)
                     _work_order['v-wf:decisionFormList'] = decisionFormList;
 
                     mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
-
-                    //print("[WORKFLOW][WO2.3] transform_result=" + toJson(transform_result));
                 }
 
                 if ((is_exist(executor, 'rdf:type', 'v-wf:Net') || f_useSubNet) && !is_codelet)
@@ -705,7 +714,7 @@ function prepare_work_item(ticket, document)
                 {
                     var found_out_task = getUri(fne[idx1].parent['v-wf:forNetElement']);
                     isExecuted = fne[idx1].work_item['v-s:isExecuted']
-           		    print ("[WORKFLOW] found_out_task=", toJson (fne[idx1].work_item));
+           		    //print ("[WORKFLOW] found_out_task=", toJson (fne[idx1].work_item));
 					if (isExecuted)
 					{
 						// встретился уже выполняемый work_item, по этой задаче, остальные отбрасываем
