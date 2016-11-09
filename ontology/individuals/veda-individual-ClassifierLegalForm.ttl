@@ -31,7 +31,7 @@ d:OKOPF_11051
   rdfs:label "Полные товарищества" ;
   v-s:title "Полные товарищества" ;
   v-s:registrationNumber "11051" ;
-  v-s:parent d:OKOPF_ 11000
+  v-s:parent d:OKOPF_11000 ;
 .
 d:OKOPF_11064
   a v-s:ClassifierLegalForm;
@@ -59,7 +59,7 @@ d:OKOPF_12247
   rdfs:label "ПАО" ;
   v-s:title "Публичные акционерные общества" ;
   v-s:registrationNumber "12247" ;
-  v-s:parent d:OKOPF_ 12200
+  v-s:parent d:OKOPF_12200
 .
 d:OKOPF_12267
   a v-s:ClassifierLegalForm;
@@ -73,7 +73,7 @@ d:OKOPF_12300
   rdfs:label "ООО" ;
   v-s:title "Общества с ограниченной ответственностью" ;
   v-s:registrationNumber "12300" ;
-  v-s:parent d:OKOPF_ 12000
+  v-s:parent d:OKOPF_12000
 .
 d:OKOPF_13000
   a v-s:ClassifierLegalForm;
@@ -159,7 +159,7 @@ d:OKOPF_20102
   v-s:registrationNumber "20102" ;
   v-s:parent d:OKOPF_20100
 .
-d:OKOPF_ 20103
+d:OKOPF_20103
   a v-s:ClassifierLegalForm;
   rdfs:label "ЖНК" ;
   v-s:title "Жилищные накопительные кооперативы" ;
