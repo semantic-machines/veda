@@ -120,7 +120,7 @@ if ! ldconfig -p | grep libtraildb; then
     cd ..
 fi
 
-if ! ldconfig -p | grep libraptor; then
+if ! ldconfig -p | grep libraptor2; then
 
     mkdir tmp
     cd tmp
