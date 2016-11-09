@@ -23,7 +23,6 @@ fi
 
 # Get other dependencies
 LIB_NAME[1]="libevent-pthreads-2.0-5"
-LIB_NAME[2]="libraptor2-dev"
 LIB_NAME[3]="libevent-dev"
 LIB_NAME[4]="libssl-dev"
 LIB_NAME[5]="libmysqlclient-dev"
@@ -119,4 +118,24 @@ if ! ldconfig -p | grep libtraildb; then
     cd ..
     cd ..
     cd ..
+fi
+
+if ! ldconfig -p | grep libraptor; then
+
+    mkdir tmp
+    cd tmp
+
+    wget http://download.librdf.org/source/raptor2-2.0.15.tar.gz -P tmp
+    cd tmp
+    tar -xvzf raptor2-2.0.15.tar.gz
+
+    cd raptor2-2.0.15
+    ./configure
+    ./make
+    sudo make install
+    sudo ldconfig
+    cd ..
+    cd ..
+    cd ..
+
 fi
