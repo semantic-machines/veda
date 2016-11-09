@@ -620,7 +620,7 @@ s-wf:cr_distribution a v-wf:Task;
   v-wf:locationX "1950"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
   v-wf:hasFlow s-wf:crf_d_to_rr;
-  v-wf:subNet s-wf:InterlayerNet;
+  v-wf:subNet s-wf:NotificationNet;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:executor s-wf:executor_distribution;
   rdfs:label "Рассылка"^^xsd:string.
@@ -796,7 +796,7 @@ s-wf:executor_auto_instruction
 s-wf:executor_distribution
   rdf:type v-wf:ExecutorDefinition ;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_distribution'}])" ;
+  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_distribution'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
 .
 s-wf:executor_4m_PLV_coordinator
   rdf:type v-wf:ExecutorDefinition ;
