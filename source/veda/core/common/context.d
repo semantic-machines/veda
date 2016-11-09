@@ -174,18 +174,11 @@ public struct Ticket
         end_time = tt.end_time;
     }
 
-    immutable this(string _id, string _user_uri, long _end_time)
+    this(string _id, string _user_uri, long _end_time)
     {
         id       = _id;
         user_uri = _user_uri;
         end_time = _end_time;
-    }
-
-    /// Создание $(D immutable) копии
-    immutable(Ticket) idup()
-    {
-        immutable(Ticket) result = immutable Ticket(id, user_uri, end_time);
-        return result;
     }
 }
 
@@ -296,7 +289,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit);
+    public string[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();

@@ -318,11 +318,6 @@ struct Resource
         return get!string();
     }
 
-    @property immutable string idata()
-    {
-        return get!string().idup;
-    }
-
     @property void data(string str)
     {
         this = str;

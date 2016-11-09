@@ -40,21 +40,6 @@ public struct Individual
         resources = _resources;
     }
 
-    immutable this(string _uri, immutable(Resources[ string ]) _resources)
-    {
-        uri       = _uri;
-        resources = _resources;
-    }
-
-    immutable(Individual) idup()
-    {
-        resources.rehash();
-        immutable Resources[ string ]    tmp1 = assumeUnique(resources);
-
-        immutable(Individual) result = immutable Individual(uri, tmp1);
-        return result;
-    }
-
     Individual dup()
     {
         resources.rehash();

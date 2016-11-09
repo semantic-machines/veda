@@ -50,47 +50,6 @@ class VQL
     }
 
     public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
-                   ref immutable(Individual)[] individuals, bool inner_get = false)
-    {
-        int                       res_count;
-
-        void delegate(string uri) dg;
-        void collect_subject(string uri)
-        {
-            if (uri is null)
-            {
-                individuals = individuals.init;
-                return;
-            }
-
-            Individual individual = Individual();
-
-            string     data = context.get_from_individual_storage(uri);
-
-            if (data is null)
-            {
-                log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
-            }
-            else
-            {
-                if (cbor2individual(&individual, data) > 0)
-                {
-                    individuals ~= individual.idup;
-                }
-                else
-                {
-                    log.trace("ERR! invalid individual=%s", uri);
-                }
-            }
-        }
-        dg = &collect_subject;
-
-        res_count = xr.get(ticket, filter, freturn, sort, top, limit, dg, inner_get);
-
-        return res_count;
-    }
-
-    public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
                    ref Individual[] individuals, bool inner_get = false)
     {
         int                       res_count;
@@ -132,7 +91,7 @@ class VQL
     }
 
     public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
-                   ref immutable (string)[] ids, bool inner_get = false)
+                   ref string[] ids, bool inner_get = false)
     {
         int                       res_count;
 

@@ -27,23 +27,6 @@ static this() {
 }
 
 
-Json individual_to_json(immutable(Individual)individual)
-{
-    //writeln ("\nimmutable:INDIVIDUAL->:", individual);
-    Json json = Json.emptyObject;
-
-    json[ "@" ] = individual.uri;
-    foreach (property_name, property_values; individual.resources)
-    {
-        Json resources_json = Json.emptyArray;
-        foreach (property_value; property_values)
-            resources_json ~= resource_to_json(cast(Resource)property_value);
-        json[ property_name ] = resources_json;
-    }
-//    writeln ("->JSON:", json);
-    return json;
-}
-
 Json individual_to_json(Individual individual)
 {
 //    writeln ("\nINDIVIDUAL->:", individual);

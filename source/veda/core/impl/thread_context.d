@@ -925,7 +925,7 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace);
     }
 
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
+    public string[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
     {
         //StopWatch sw; sw.start;
 
@@ -939,7 +939,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            immutable(string)[] res;
+            string[] res;
             _vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
             return res;
         }

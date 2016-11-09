@@ -65,28 +65,6 @@ public float getFloat(ref JSONValue src, string key)
     return 0;
 }
 
-JSONValue individual_to_json(immutable(Individual)individual)
-{
-//    writeln ("\nINDIVIDUAL->:", individual);
-    JSONValue json;
-
-    json[ "@" ] = individual.uri;
-    foreach (property_name, property_values; individual.resources)
-    {
-        JSONValue[] jsonVals;
-
-        foreach (property_value; property_values)
-            jsonVals ~= resource_to_json(cast(Resource)property_value);
-
-        JSONValue resources_json;
-        resources_json.array = jsonVals;
-
-        json[ property_name ] = resources_json;
-    }
-//    writeln ("->JSON:", json);
-    return json;
-}
-
 JSONValue individual_to_json(Individual individual)
 {
 //    writeln ("\nINDIVIDUAL->:", individual);

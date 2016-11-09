@@ -38,10 +38,7 @@ enum CNAME : byte
     LAST_UPDATE_TIME = 3
 }
 
-alias immutable(int)[]   const_int_array;
 alias immutable(long)[]  const_long_array;
-alias                    Tid[ string ] Tid2Name;
-alias immutable Tid2Name Tids;
 
 const byte               asObject = 0;
 const byte               asArray  = 1;
