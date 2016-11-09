@@ -1151,7 +1151,7 @@ v-wf:TaskTemplateAsProperties
         <div>
       </div>
     </td>
-  </tr>  
+  </tr>
   <tr onclick="javascript: $('.button-delete', $('.VCwosResultsMapping').show()).show();">
     <td>
       <span about="v-wf:wosResultsMapping" property="rdfs:label"></span>
@@ -1619,6 +1619,7 @@ v-wf:DecisionFormTemplate
 v-wf:DecisionForm
   rdf:type rdfs:Class ;
   rdfs:isDefinedBy v-wf: ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Форма решения"@ru ;
   rdfs:label "Decision form"@en ;
 .

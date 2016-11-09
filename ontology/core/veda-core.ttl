@@ -119,7 +119,7 @@ v-s:variableValue
 # ------------------------------------------------------------
 v-s:Bundle
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Bundle"@en ;
   rdfs:label "Текстовая константа"@ru ;
 .

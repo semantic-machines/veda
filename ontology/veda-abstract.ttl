@@ -696,7 +696,7 @@ v-s:hasClassifierCountry
 v-s:hasClassifierLegalForm
   rdf:type owl:ObjectProperty ;
   rdfs:label "ClassifierLegalForm"@en ;
-  rdfs:label "Организационно правовая форма"@ru ;
+  rdfs:label "Организационно-правовая форма"@ru ;
   rdfs:range v-s:ClassifierLegalForm ;
   rdfs:domain v-s:ClassifiedRus ;
 .
