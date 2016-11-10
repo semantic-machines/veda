@@ -820,6 +820,7 @@ s-wf:ComplexRouteStartForm_Template
 	     routes['coordination3'][simple+'deadlineDays'] = [10];                	                     
        }
     }    
+/*    
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
       routes['informing'][simple+'participant'] = doc['v-s:creator'];
       routes['informing'][simple+'visible'] = [true];
@@ -840,7 +841,8 @@ s-wf:ComplexRouteStartForm_Template
       routes['instruction3'][simple+'visible'] = [true];
       routes['instruction3'][simple+'editable'] = [true];
       routes['instruction3'][simple+'deadlineDays'] = [10];
-    } else    
+    } else
+*/        
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
       // #COORDINATION1--------------------------------------------------------------------------------------------------------------------------------------- 
       routes['coordination1'][simple+'participant'] = [
