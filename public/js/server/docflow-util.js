@@ -857,6 +857,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 
                     new_message['v-s:subject'] = newStr (output_subject, lang);
                     new_message['v-s:messageBody'] = newStr (output_body, lang);
+                    new_message['v-wf:onWorkOrder'] = newUri (_order['@']);
 
                     put_individual(ticket, new_message, _event_id);
                 }
