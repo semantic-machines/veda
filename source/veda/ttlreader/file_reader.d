@@ -213,8 +213,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
             auto l_individuals = ttl2individuals(filename, prefixes, prefixes, log);
 
-            if (context !is null)
-                context.add_prefix_map(prefixes);
+			bool f_onto = false;
 
             foreach (uri, indv; l_individuals)
             {
@@ -232,10 +231,23 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
                     if (loadPriority >= 0)
                         prefix_2_priority[ indv.uri ] = loadPriority;
+					
+					f_onto = true;
 
                     break;
                 }
             }
+            
+            if (!f_onto)
+            {
+		        log.trace ("WARN! file [%s] does not contain an instance of type owl:Ontology", filename);
+	            filename_2_prefix[ filename ] = filename;
+                prefix_2_priority[ filename ] = 90;        
+                prefixes[filename] = filename;                        
+            }
+
+            if (context !is null)
+                context.add_prefix_map(prefixes);
 
             individuals_2_filename[ filename ] = l_individuals;
         }
