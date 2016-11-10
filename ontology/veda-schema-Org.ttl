@@ -331,6 +331,10 @@ v-s:OrganizationTemplate
   if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true) || individual.hasValue("v-s:hasContractorProfile") ) {
     $("#add-profile", template).remove();
   }
+    var _class = new veda.IndividualModel("v-s:Subsidiary");
+  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
+    $("#add-subsidiary", template).remove();
+  }
 </script>
 <div class="container">
   <h2>
@@ -473,7 +477,6 @@ v-s:OrganizationTemplate
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
   </div>
