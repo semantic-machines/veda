@@ -600,6 +600,25 @@ s-wf:ComplexRouteStartForm_instruction
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:ComplexRouteStartForm_instruction2
+  rdf:type rdf:Property ;
+  rdfs:label "Поручение"@ru ;
+  rdfs:label "Instruction"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_instruction3
+  rdf:type rdf:Property ;
+  rdfs:label "Поручение"@ru ;
+  rdfs:label "Instruction"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+
 s-wf:ComplexRouteStartForm_distribution
   rdf:type rdf:Property ;
   rdfs:label "Рассылка уведомлений"@ru ;
@@ -800,21 +819,28 @@ s-wf:ComplexRouteStartForm_Template
 	     routes['coordination3'][simple+'editable'] = [true];
 	     routes['coordination3'][simple+'deadlineDays'] = [10];                	                     
        }
-    }
-/*    
+    }    
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
-      // #COORDINATION1---------------------------------------------------------------------------------------------------------------------------------------
-      routes['examination'][simple+'participant'] = doc['v-s:creator'];
-      routes['examination'][simple+'visible'] = [true];
-      routes['examination'][simple+'editable'] = [true];
-      routes['examination'][simple+'deadlineDays'] = [10];
-      // #INFORMING-------------------------------------------------------------------------------------------------------------------------------------------
-      routes['instruction'][simple+'participant'] = doc['v-s:creator'];
-      routes['instruction'][simple+'visible'] = [true];
-      routes['instruction'][simple+'editable'] = [true];
-      routes['instruction'][simple+'deadlineDays'] = [10];
-    } else
-*/    
+      routes['informing'][simple+'participant'] = doc['v-s:creator'];
+      routes['informing'][simple+'visible'] = [true];
+      routes['informing'][simple+'editable'] = [true];
+      routes['informing'][simple+'deadlineDays'] = [10];
+
+      routes['coordination2'][simple+'participant'] = doc['v-s:creator'];
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+      routes['coordination2'][simple+'deadlineDays'] = [10];
+
+      routes['instruction2'][simple+'participant'] = doc['v-s:creator'];
+      routes['instruction2'][simple+'visible'] = [true];
+      routes['instruction2'][simple+'editable'] = [true];
+      routes['instruction2'][simple+'deadlineDays'] = [10];
+      
+      routes['instruction3'][simple+'participant'] = doc['v-s:creator'];
+      routes['instruction3'][simple+'visible'] = [true];
+      routes['instruction3'][simple+'editable'] = [true];
+      routes['instruction3'][simple+'deadlineDays'] = [10];
+    } else    
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
       // #COORDINATION1--------------------------------------------------------------------------------------------------------------------------------------- 
       routes['coordination1'][simple+'participant'] = [

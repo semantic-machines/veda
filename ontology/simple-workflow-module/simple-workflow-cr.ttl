@@ -184,7 +184,7 @@ s-wf:cr_c1 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c1_to_c2, s-wf:crf_c1_to_jp;
   v-wf:executor s-wf:executor_coordination1 ;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_c1;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   rdfs:label "Согласование 1"^^xsd:string;
 .
 
@@ -212,7 +212,7 @@ s-wf:cr_c2 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c2_to_c3, s-wf:crf_c2_to_jp;
   v-wf:executor s-wf:executor_coordination2 ;
   rdfs:label "Согласование 2"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_c2;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -240,7 +240,7 @@ s-wf:cr_c3 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c3_to_c4, s-wf:crf_c3_to_jp;
   v-wf:executor s-wf:executor_coordination3 ;
   rdfs:label "Согласование 3"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_c3;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -268,7 +268,7 @@ s-wf:cr_c4 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c4_to_c5, s-wf:crf_c4_to_jp;
   v-wf:executor s-wf:executor_coordination4 ;
   rdfs:label "Согласование 4"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_c4;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -296,7 +296,7 @@ s-wf:cr_c5 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c5_to_c6, s-wf:crf_c5_to_jp;
   v-wf:executor s-wf:executor_coordination5 ;
   rdfs:label "Согласование 5"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_c5;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -324,7 +324,7 @@ s-wf:cr_c6 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c6_to_jp, s-wf:crf_c6_to_s;
   v-wf:executor s-wf:executor_coordination6 ;
   rdfs:label "Согласование 6"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_c6;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -370,7 +370,7 @@ s-wf:cr_sign a v-wf:Task;
   rdfs:label "Подписание"^^xsd:string;
   v-wf:executor s-wf:executor_sign ;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_s;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:startDecisionTransform s-wf:tr_sign_form;
 .
 
@@ -399,7 +399,7 @@ s-wf:cr_approval a v-wf:Task;
   rdfs:label "Утверждение"^^xsd:string;
   v-wf:executor s-wf:executor_approval;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible, s-wf:map_decision_after_decline_a;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_approv_form;
 .
@@ -1011,7 +1011,7 @@ s-wf:map_jrn_msg_t3_b
   rdf:type v-wf:Mapping ;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:mapToVariable s-wf:var_journal_msg ;
-  v-wf:mappingExpression  "newStr ('начато согласование 1 уровень')" ;
+  v-wf:mappingExpression  "get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_task_label'}])" ;
 .
 
 s-wf:map_jrn_msg_t6_b
