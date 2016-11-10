@@ -52,18 +52,9 @@ void main(char[][] args)
     Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
 
-//    core.thread.Thread tr = core.thread.Thread.getThis();
-//    tr.name = std.conv.text(id);
-
     try { mkdir("ontology"); } catch (Exception ex) {}
 
     ubyte[] out_data;
-
-//    // SEND ready
-//    receive((Tid tid_response_reciever)
-//            {
-//                send(tid_response_reciever, true);
-//            });
 
     Context context = new PThreadContext(process_name, "file_reader", P_MODULE.file_reader, log, parent_url);
 
@@ -157,6 +148,7 @@ void main(char[][] args)
 
 //SysTime[ string ] file_modification_time;
 long[ string ]    prefix_2_priority;
+string[ string ] filename_2_prefix;
 
 // Digests a file and prints the result.
 string digestFile(Hash) (string filename) if (isDigest!Hash)
@@ -172,7 +164,6 @@ string digestFile(Hash) (string filename) if (isDigest!Hash)
 Individual[ string ] check_and_read_changed(string[] changes, Context context)
 {
     Individual[ string ] individuals;
-    string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     string[] files_to_load;
     bool     is_reload = false;
@@ -227,8 +218,15 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
             foreach (uri, indv; l_individuals)
             {
-		        if (indv.isExists(rdf__type, owl__Ontology))
+                if (indv.isExists(rdf__type, owl__Ontology))
                 {
+                    string o_file = filename_2_prefix.get(indv.uri, null);
+                    if (o_file !is null)
+                    {
+                        log.trace("ERR! onto[%s] already define in file [%s], this file=%s", indv.uri, o_file, filename);
+                        continue;
+                    }
+
                     filename_2_prefix[ indv.uri ] = filename;
                     long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);
 
@@ -271,6 +269,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 void processed(string[] changes, Context context)
 {
     Ticket sticket = context.sys_ticket();
+
     log.trace("find systicket [%s]", sticket.id);
 
     Individual[ string ] individuals = check_and_read_changed(changes, context);
@@ -313,7 +312,7 @@ void processed(string[] changes, Context context)
 
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
                                 //if (trace_msg[ 33 ] == 1)
-                                    log.trace("file reader:store, uri=%s", indv.uri);
+                                log.trace("file reader:store, uri=%s", indv.uri);
 
                                 if (res != ResultCode.OK)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
@@ -378,7 +377,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         foreach (ss; ss_list)
         {
-	        log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
+            //log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
 
             if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
             {
