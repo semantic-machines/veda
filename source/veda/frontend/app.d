@@ -311,7 +311,7 @@ Individual *[ string ] load_config_onto()
     log.trace("load_config_onto");
     string[ string ] prefixes;
 
-    Individual *[ string ] l_individuals = ttl2individuals(onto_path ~ "/config.ttl", prefixes, prefixes);
+    Individual *[ string ] l_individuals = ttl2individuals(onto_path ~ "/config.ttl", prefixes, prefixes, log);
 
     log.trace("load_config_onto %s", l_individuals);
 
