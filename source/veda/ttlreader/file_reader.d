@@ -227,8 +227,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
             foreach (uri, indv; l_individuals)
             {
-		        log.trace ("found in ttl: uri=%s", uri);
-                if (indv.isExists(rdf__type, owl__Ontology))
+		        if (indv.isExists(rdf__type, owl__Ontology))
                 {
                     filename_2_prefix[ indv.uri ] = filename;
                     long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);

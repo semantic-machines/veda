@@ -178,8 +178,7 @@ extern (C) void prepare_triple(void *user_data, raptor_statement *triple)
     raptor_free_memory(_pp);
     raptor_free_memory(_oo);
 
-    log.trace ("%s %s %s", ss, pp, oo);
-    //writeln (*ii);
+    //log.trace ("%s %s %s", ss, pp, oo);
 }
 
 Logger log;
