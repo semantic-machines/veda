@@ -398,11 +398,8 @@ veda.Module(function Util(veda) { "use strict";
       modal = false;
     }
 
-    individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
-    //$('[resource="'+individual.id+'"]').find("#save").trigger("click");
-    template.trigger('save');
-
     if (transformId !== undefined) {
+      template.trigger('save');
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
       if (modal) {
         veda.Util.showModal(startForm, undefined, 'edit');
@@ -411,6 +408,9 @@ veda.Module(function Util(veda) { "use strict";
         startForm.present('#main', undefined, 'edit');
       }
     } else {
+      individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
+      //$('[resource="'+individual.id+'"]').find("#save").trigger("click");
+      template.trigger('save');        
       var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
       if (Object.getOwnPropertyNames(s.results).length == 0) {
         var individualNode = $('[resource="'+individual.id+'"]');
