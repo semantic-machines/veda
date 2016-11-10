@@ -220,13 +220,14 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
             if (context !is null)
                 prefixes = context.get_prefix_map();
 
-            auto l_individuals = ttl2individuals(filename, prefixes, prefixes);
+            auto l_individuals = ttl2individuals(filename, prefixes, prefixes, log);
 
             if (context !is null)
                 context.add_prefix_map(prefixes);
 
             foreach (uri, indv; l_individuals)
             {
+		        log.trace ("found in ttl: uri=%s", uri);
                 if (indv.isExists(rdf__type, owl__Ontology))
                 {
                     filename_2_prefix[ indv.uri ] = filename;
@@ -312,7 +313,7 @@ void processed(string[] changes, Context context)
                                               text(indv_in_storage));
 
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
-                                if (trace_msg[ 33 ] == 1)
+                                //if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
                                 if (res != ResultCode.OK)
@@ -378,6 +379,8 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         foreach (ss; ss_list)
         {
+	        log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
+
             if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);

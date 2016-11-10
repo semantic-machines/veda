@@ -3,6 +3,7 @@ module veda.util.raptor2individual;
 import std.string, std.stdio : writeln;
 import veda.bind.libraptor_header;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.onto.lang, veda.core.util.utils;
+import veda.common.logger;
 
 string[ string ] prefixes;
 Individual *[ string ] _individuals;
@@ -177,13 +178,15 @@ extern (C) void prepare_triple(void *user_data, raptor_statement *triple)
     raptor_free_memory(_pp);
     raptor_free_memory(_oo);
 
-    //writeln(ss, " ", pp, " ", oo);
+    log.trace ("%s %s %s", ss, pp, oo);
     //writeln (*ii);
 }
 
+Logger log;
 
-public Individual *[ string ] ttl2individuals(string file_name, ref string[ string ] in_prefixes, out string[ string ] out_prefixes)
+public Individual *[ string ] ttl2individuals(string file_name, ref string[ string ] in_prefixes, out string[ string ] out_prefixes, Logger _log)
 {
+    log = _log;
     Individual *[ string ] res;
 
     file_name ~= "\0";
