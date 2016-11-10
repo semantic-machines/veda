@@ -450,11 +450,8 @@ v-s:OrganizationTemplate
         </tr>
       </tbody>
     </table>
-    <div >
 
-         <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
-    </div>
-
+    <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
 
     <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
     <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
@@ -489,16 +486,17 @@ v-s:OrganizationTemplate
     modal.appendTo(template);
     var cntr = $(".modal-body", modal),
         _class = new veda.IndividualModel("v-s:ContractorProfile"),
-        action = new veda.IndividualModel(),
+        profile = new veda.IndividualModel(),
         tmpl = new veda.IndividualModel("mnd-s:ContractorProfileTemplate");
-    action["rdf:type"] = [_class];
-    action["v-s:backwardTarget"] = [individual];
-    action["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
-    action.present(cntr, tmpl, "edit");
-    action.one("individual:beforeReset", function () {
+    profile["rdf:type"] = [_class];
+    profile["v-s:backwardTarget"] = [individual];
+    profile["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
+    profile["rdfs:label"] = individual["rdfs:label"];
+    profile.present(cntr, tmpl, "edit");
+    profile.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
     });
-    action.one("individual:afterSave", function () {
+    profile.one("individual:afterSave", function () {
       modal.modal("hide").remove();
     });
   });
@@ -510,22 +508,19 @@ v-s:OrganizationTemplate
     modal.appendTo(template);
     var cntr = $(".modal-body", modal),
         _class = new veda.IndividualModel("v-s:Subsidiary"),
-        action = new veda.IndividualModel(),
+        subsidiary = new veda.IndividualModel(),
         tmpl = new veda.IndividualModel("v-s:SubsidiaryTemplate");
-    action["rdf:type"] = [_class];
-    action["v-s:backwardTarget"] = [individual];
-    action["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasSubsidiary")];
-    action.present(cntr, tmpl, "edit");
-    action.one("individual:beforeReset", function () {
+    subsidiary["rdf:type"] = [_class];
+    subsidiary["v-s:backwardTarget"] = [individual];
+    subsidiary["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasSubsidiary")];
+    subsidiary.present(cntr, tmpl, "edit");
+    subsidiary.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
     });
     action.one("individual:afterSave", function () {
       modal.modal("hide").remove();
     });
   });
-
-
-
 
 </script>
   """ ;
