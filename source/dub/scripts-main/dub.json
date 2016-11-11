@@ -1,11 +1,10 @@
 {
-	"name": "veda-scripts",
-	"description": "veda-scripts",
+	"name": "veda-scripts-main",
+	"description": "veda-scripts-main",
 	"dependencies": {
 		"pacahon_third_party": "1.0.13", 
 		"backtrace-d": "0.1.0", 
-		"d-nanomsg": "0.1.2",
-		"darg": "0.0.4"
+		"d-nanomsg": "0.1.2"
 	},
         "versions": ["libV8", "isModule"],
         "license": "LGPL v3",
@@ -22,6 +21,7 @@
         "sourceFiles":[
 	"../../veda/gluecode/script.d",
 	"../../veda/gluecode/scripts.d", 
+	"../../veda/gluecode/scripts_main.d", 
 	"../../veda/gluecode/v8d_header.d",
         "../../lib64/libv8d.a", 
 	"../../lib64/libxapiand.a",

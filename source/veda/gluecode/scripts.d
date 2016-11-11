@@ -8,59 +8,6 @@ private import veda.common.type, veda.core.common.define, veda.onto.resource, ve
 private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
-private import darg;
-
-// Generate the usage and help string at compile time.
-immutable usage = usageString!Options("");
-immutable help  = helpString!Options;
-
-struct Options
-{
-    @Option("help", "h")
-    @Help("Prints this help.")
-    OptionFlag help;
-
-    @Option("id", "id")
-    @Help("id of this V8 VM")
-    string id;
-}
-
-int main(string[] args)
-{
-    string vm_id = "main";
-    if (args.length > 1)
-    {
-        Options options;
-
-        try
-        {
-            options = parseArgs!Options(args[ 1 .. $ ]);
-        }
-        catch (ArgParseError e)
-        {
-            writeln(e.msg);
-            writeln(usage);
-            return 1;
-        }
-        catch (ArgParseHelp e)
-        {
-            // Help was requested
-            writeln(usage);
-            write(help);
-            return 0;
-        }
-
-        vm_id = options.id;
-    }
-    log.tracec("use VM id=%s", vm_id);
-    process_name = "scripts-" ~ vm_id;
-    Thread.sleep(dur!("seconds")(1));
-
-    ScriptProcess p_script = new ScriptProcess(vm_id, text (P_MODULE.scripts), "127.0.0.1", 8091, new Logger("veda-core-" ~ process_name, "log", ""));
-    p_script.run();
-
-    return 0;
-}
 
 class ScriptProcess : VedaModule
 {
@@ -170,7 +117,7 @@ class ScriptProcess : VedaModule
 
         foreach (script_id; event_scripts_order)
         {
-            auto script = event_scripts[ script_id ];
+            ScriptInfo script = event_scripts[ script_id ];
 
             if (script.compiled_script !is null)
             {
@@ -181,11 +128,18 @@ class ScriptProcess : VedaModule
                     continue;
                 }
 
+				if (script.run_at != vm_id)
+					continue;
+					
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
                 if (script.filters.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
+                {
+                    //log.trace("skip (filter) script:%s", script_id);
                     continue;
+                }    
 
+				
                 //log.trace("filter pass script:%s", script_id);
 
                 try
@@ -203,7 +157,7 @@ class ScriptProcess : VedaModule
                                         count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
-                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+	                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                     //count++;
                     script.compiled_script.run();

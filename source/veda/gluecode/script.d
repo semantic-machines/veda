@@ -11,6 +11,7 @@ struct ScriptInfo
     bool[ string ] filters;
     bool[ string ] dependency;
     Script compiled_script;
+    string run_at;
 }
 
 void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scripts_order, Individual ss, ScriptVM script_vm, string vars_env)
@@ -52,6 +53,11 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             ScriptInfo script = ScriptInfo.init;
             script.id         = ss.uri;
             script.str_script = str_script;
+            
+			script.run_at = ss.getFirstLiteral("v-s:runAt");
+			
+			if (script.run_at is null)
+				script.run_at = "main";
 
             script.compiled_script = script_vm.compile(script.str_script);
             if (trace_msg[ 310 ] == 1)

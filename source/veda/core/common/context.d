@@ -33,7 +33,7 @@ public enum P_MODULE : byte
     statistic_data_accumulator = 5,
 
     /// исполнение скриптов
-    scripts                    = 6,
+    scripts_main               = 6,
 
     /// Сохранение накопленных данных в полнотекстовом индексаторе
     commiter                   = 7,

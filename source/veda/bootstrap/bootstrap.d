@@ -82,12 +82,12 @@ void main(char[][] args)
     int      exit_code;
 
 
-    string[] modules = [ "veda", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts", "veda-ft-indexer", "veda-ltr-scripts" ];
+    string[] modules = [ "veda", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main", "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
 
     bool is_found_modules = false;
 
-	string[] wr_components = ["acl_preparer", "fanout_email", "fanout_sql", "fulltext_indexer", "ltr_scripts", "scripts", "subject_manager", "ticket_manager", "acl_preparer"];
+	string[] wr_components = ["acl_preparer", "fanout_email", "fanout_sql", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager", "ticket_manager", "acl_preparer"];
 	
 	bool is_exist_lock = false;
 	

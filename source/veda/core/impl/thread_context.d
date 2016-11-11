@@ -1616,7 +1616,7 @@ class PThreadContext : Context
 
         if (info.is_Ok)
         {
-            if (module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.scripts)
+            if (module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.scripts_main)
                 res = info.committed_op_id;
             else
                 res = info.op_id;
@@ -1661,7 +1661,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||
+            if (module_id == P_MODULE.scripts_main || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||
                 module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
             {
                 return wait_module(module_id, op_id, timeout);

@@ -323,7 +323,7 @@ cfg:Event_3
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт создает журнал документа" ;
   rdfs:comment "Скрипт создает журнал документа" ;
-  v-s:filter v-s:Journaling, v-s:AutomaticallyVersioned ;
+  v-s:filterOfType v-s:Journaling, v-s:AutomaticallyVersioned ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -464,10 +464,10 @@ cfg:Event_4
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
   rdfs:comment "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
-  v-s:filter v-s:Organization ;
-  v-s:filter v-s:Department ;
-  v-s:filter v-s:Position ;
-  v-s:filter v-s:Appointment ;
+  v-s:filterOfType v-s:Organization ;
+  v-s:filterOfType v-s:Department ;
+  v-s:filterOfType v-s:Position ;
+  v-s:filterOfType v-s:Appointment ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -533,7 +533,7 @@ cfg:Event_5
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
   rdfs:comment "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
-  v-s:filter v-s:Person ;
+  v-s:filterOfType v-s:Person ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -573,24 +573,24 @@ cfg:Event_6
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
   rdfs:comment "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
-  v-s:filter rdf:Property ;
-  v-s:filter rdfs:Class ;
-  v-s:filter rdfs:Datatype ;
-  v-s:filter owl:Class ;
-  v-s:filter owl:Ontology ;
-  v-s:filter owl:DatatypeProperty ;
-  v-s:filter owl:ObjectProperty ;
-  v-s:filter owl:Restriction ;
-  v-s:filter v-s:ClassModel ;
-  v-s:filter v-ui:ClassTemplate ;
-  v-s:filter v-ui:PropertySpecification ;
-  v-s:filter v-ui:IntegerPropertySpecification ;
-  v-s:filter v-ui:DecimalPropertySpecification ;
-  v-s:filter v-ui:DatetimePropertySpecification ;
-  v-s:filter v-ui:StringPropertySpecification ;
-  v-s:filter v-ui:BooleanPropertySpecification ;
-  v-s:filter v-ui:ObjectPropertySpecification ;
-  v-s:filter v-s:Bundle ;
+  v-s:filterOfType rdf:Property ;
+  v-s:filterOfType rdfs:Class ;
+  v-s:filterOfType rdfs:Datatype ;
+  v-s:filterOfType owl:Class ;
+  v-s:filterOfType owl:Ontology ;
+  v-s:filterOfType owl:DatatypeProperty ;
+  v-s:filterOfType owl:ObjectProperty ;
+  v-s:filterOfType owl:Restriction ;
+  v-s:filterOfType v-s:ClassModel ;
+  v-s:filterOfType v-ui:ClassTemplate ;
+  v-s:filterOfType v-ui:PropertySpecification ;
+  v-s:filterOfType v-ui:IntegerPropertySpecification ;
+  v-s:filterOfType v-ui:DecimalPropertySpecification ;
+  v-s:filterOfType v-ui:DatetimePropertySpecification ;
+  v-s:filterOfType v-ui:StringPropertySpecification ;
+  v-s:filterOfType v-ui:BooleanPropertySpecification ;
+  v-s:filterOfType v-ui:ObjectPropertySpecification ;
+  v-s:filterOfType v-s:Bundle ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -635,7 +635,7 @@ cfg:Event_7
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
   rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
-  v-s:filter v-s:ClassAuthorized ;
+  v-s:filterOfType v-s:ClassAuthorized ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -691,7 +691,7 @@ cfg:Event_8
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
   rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
-  v-s:filter rdfs:Class ;
+  v-s:filterOfType rdfs:Class ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -785,7 +785,7 @@ cfg:Event_9
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает вложенные индивиды в группу своего родителя." ;
   rdfs:comment "Скрипт включает вложенные индивиды в группу своего родителя." ;
-  v-s:filter v-s:Embedded ;
+  v-s:filterOfType v-s:Embedded ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -842,8 +842,8 @@ cfg:Event_10
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
   rdfs:comment "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
-  v-s:filter v-s:Journal ;
-  v-s:filter v-s:JournalRecord ;
+  v-s:filterOfType v-s:Journal ;
+  v-s:filterOfType v-s:JournalRecord ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -889,10 +889,10 @@ cfg:Event_11
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
   rdfs:comment "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
-  v-s:filter v-wf:Process ;
-  v-s:filter v-wf:WorkItem ;
-  v-s:filter v-wf:WorkOrder ;
-  v-s:filter v-wf:DecisionForm ;
+  v-s:filterOfType v-wf:Process ;
+  v-s:filterOfType v-wf:WorkItem ;
+  v-s:filterOfType v-wf:WorkOrder ;
+  v-s:filterOfType v-wf:DecisionForm ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -936,7 +936,7 @@ cfg:Event_12
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает процесс в группу журнала документа." ;
   rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
-  v-s:filter v-s:ProcessStarted ;
+  v-s:filterOfType v-s:ProcessStarted ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -978,7 +978,7 @@ cfg:Event_13
   v-s:author cfg:VedaSystem ;
   rdfs:label "Manually create version" ;
   rdfs:comment "Manually create version" ;
-  v-s:filter v-s:ManuallyVersioned ;
+  v-s:filterOfType v-s:ManuallyVersioned ;
   v-s:script """
   if ((document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
     && document['v-s:triggerVersionCreation'][0].data == true) || !prev_state) {
@@ -994,7 +994,7 @@ cfg:Event_14
   v-s:author cfg:VedaSystem ;
   rdfs:label "Пусто." ;
   rdfs:comment "Пусто." ;
-  v-s:filter v-s:Versioned ;
+  v-s:filterOfType v-s:Versioned ;
   v-s:disabled true ;
   v-s:script """
   """ ;
@@ -1005,7 +1005,7 @@ cfg:Event_15
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки связей документов" ;
   rdfs:comment "Скрипт обработки связей документов" ;
-  v-s:filter v-s:Link ;
+  v-s:filterOfType v-s:Link ;
   v-s:script """
   var linkUri = document["@"],
       linkToUri = getUri(document["v-s:to"]),
@@ -1054,7 +1054,7 @@ cfg:Event_16
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки обратных ссылок" ;
   rdfs:comment "Скрипт обработки обратных ссылок" ;
-  v-s:filter v-s:BackwardLink ;
+  v-s:filterOfType v-s:BackwardLink ;
   v-s:script """
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),

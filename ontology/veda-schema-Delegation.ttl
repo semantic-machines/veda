@@ -311,7 +311,7 @@ cfg:Event_Delegation
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
-  v-s:filter v-s:RequestDelegation ;
+  v-s:filterOfType v-s:RequestDelegation ;
   v-s:script """
 var request_uri = document["@"],
     dateFrom = document["v-s:dateFrom"],

@@ -7,7 +7,7 @@ public const string owl__Ontology = "owl:Ontology";
 
 public const string veda_schema__deleted             = "v-s:deleted";
 public const string veda_schema__script              = "v-s:script";
-public const string veda_schema__filter              = "v-s:filter";
+public const string veda_schema__filter              = "v-s:filterOfType";
 public const string veda_schema__login               = "v-s:login";
 public const string veda_schema__password            = "v-s:password";
 public const string veda_schema__PermissionStatement = "v-s:PermissionStatement";

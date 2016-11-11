@@ -16,7 +16,9 @@ rename "s/veda-bootstrap/veda/g" *
 ./build-component.sh veda-server server
 ./build-component.sh veda-fanout-email fanout-email
 ./build-component.sh veda-fanout-sql fanout-sql
-./build-component.sh veda-scripts scripts
+./build-component.sh veda-scripts-main scripts-main
+rm veda-scripts
+./build-component.sh veda-scripts-lp scripts-lp
 ./build-component.sh veda-ft-indexer ft-indexer
 ./build-component.sh veda-ltr-scripts ltr-scripts
 ./build-component.sh veda-ttlreader ttlreader
