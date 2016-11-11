@@ -624,15 +624,15 @@ v-df:PsHasAction
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Action."@ru ;
   rdfs:label "Project phases shedule property specification for Project class"@en ;
   rdfs:label "Спецификация ссылки на мероприятие для класса Согласовано в реализацию"@ru ;
-  v-ui:placeholder "добавьте мероприятие"@ru ;
-  v-ui:placeholder "add action"@en ;
+  v-ui:placeholder "Добавьте мероприятие"@ru ;
+  v-ui:placeholder "Add action"@en ;
 .
 
 v-df:DecisionTemplate2
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса -Решение-"@ru ;
-  rdfs:label "Template for -Decision- class"@en ;
+  rdfs:label "Шаблон для класса -Решение- "@ru ;
+  rdfs:label "Template for -Decision- class "@en ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:template """
 <div>
@@ -645,8 +645,8 @@ v-df:DecisionTemplate2
 v-df:ActionInDecisionTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу"@ru ;
-  rdfs:label "Action in decision Template"@en ;
+  rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу."@ru ;
+  rdfs:label "Action in decision Template."@en ;
   v-ui:forClass v-s:Activity ;
   v-ui:template """
 <div class="panel panel-default">
