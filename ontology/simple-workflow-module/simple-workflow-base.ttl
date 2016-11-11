@@ -799,12 +799,14 @@ s-wf:ComplexRouteStartForm_Template
     routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
 
+
     // CUSTOM
     if (doc['rdf:type'][0].id === "mnd-s:ContractorCategoryRequest") {
-       if (doc['mnd-s:hasContractorInteractionCategory']) {
-         if (doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb' ||
-             doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:05ca93a323534d1689d9005604a596e6' ||
-             doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:a687318c1b1f44468b6db49ad9a5d3f9') {
+         if ((doc['mnd-s:hasContractorInteractionCategory'] && doc['mnd-s:hasContractorInteractionCategory'][0]) && 
+             (doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb' ||
+              doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:05ca93a323534d1689d9005604a596e6' ||
+              doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:a687318c1b1f44468b6db49ad9a5d3f9'
+             )) {
 	       routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:ddc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
            routes['coordination1'][simple+'visible'] = [true];
 	       routes['coordination1'][simple+'editable'] = [false];
@@ -817,8 +819,13 @@ s-wf:ComplexRouteStartForm_Template
 	     
          routes['coordination3'][simple+'visible'] = [true];
 	     routes['coordination3'][simple+'editable'] = [true];
-	     routes['coordination3'][simple+'deadlineDays'] = [10];                	                     
-       }
+	     routes['coordination3'][simple+'deadlineDays'] = [10];
+	     
+	     routes['examination'][simple+'participant'] = [veda.user];
+         routes['examination'][simple+'visible'] = [true];
+         routes['examination'][simple+'editable'] = [false];
+         routes['examination'][simple+'deadlineDays'] = [10];                	                     
+         routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
     }    
 /*    
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
