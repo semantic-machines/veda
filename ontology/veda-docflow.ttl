@@ -610,9 +610,6 @@ v-df:rul_InstructionTransform7
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
 
-v-s:hasActivity
-  rdfs:domain v-wf:DecisionAgreedToExecute ;
-.
 v-df:PsHasAction
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
@@ -620,6 +617,7 @@ v-df:PsHasAction
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Action')"^^xsd:string ;
+  v-ui:rangeRestriction v-s:Action ;
   v-ui:tooltip "Non-required, multy value. Link to instance of Action class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Action."@ru ;
   rdfs:label "Project phases shedule property specification for Project class"@en ;
