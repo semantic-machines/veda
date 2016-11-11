@@ -46,18 +46,10 @@ module.exports = {
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
 
     // Документ становится возможно сохранить
-    driver.wait
-    (
-        webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'})),
-        basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find save button");});
-
+    basic.isEnabled(driver, '#save', basic.FAST_OPERATION);
     // Нажимаем сохранить
-    driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}).click()
+    driver.findElement({css:'#save'}).click()
       .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
-
-    // Проверяем что сохранение успешно
-    // Переходим на страницу просмотра документа
 /*
     driver.findElement({css:'div[id="object-container"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
       basic.openPage(driver, drv, '#/'+individualId);

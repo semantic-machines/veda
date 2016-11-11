@@ -6,6 +6,7 @@ var webdriver = require('selenium-webdriver'),
 	SLOW_OPERATION = 2001,			// ms time limit for fast operations
 	EXTRA_SLOW_OPERATION = 5000,	//  time limit for extra slow operations
 	SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://localhost:8080/';
+	//SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://live.semantic-machines.com:8080/':'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
 	console.trace(e);
@@ -51,12 +52,13 @@ module.exports = {
 		}
 	},
 	getDriver: function (driver) {
-		if (process.env.TRAVIS_BUILD_NUMBER === undefined) 
+		if (process.env.TRAVIS_BUILD_NUMBER === undefined)
 		{
 			// for remote tetsing via local selenium
-			if (process.env.LOCAL === undefined) 
+			if (process.env.LOCAL === undefined)
 			{
 				return new webdriver.Builder().usingServer('http://selenium-local:4444/wd/hub').withCapabilities({
+				//return new webdriver.Builder().usingServer('http://localhost:4444/wd/hub').withCapabilities({
 															platform: driver.os,
 															browserName : driver.browser,
 															version : driver.version,
@@ -66,7 +68,7 @@ module.exports = {
 														 }).build();
 			} else {
 				// for local testing in chrome
-				return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build(); 
+				return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build();
 			}
 		} else {
 			// for remote testing via Sauce Labs
@@ -86,13 +88,14 @@ module.exports = {
 		if (path === undefined) {
 			driver.get(SERVER_ADDRESS).then(function() {
 				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
-			}); 
+			});
 		} else {
 			driver.get(SERVER_ADDRESS+path).then(function() {
 				console.log('****** GET NEW PAGE. PLATFORM > '+driverAbout.os+' / '+driverAbout.browser+' / '+driverAbout.version);
 			});
 		}
 		driver.manage().window().setSize(1280, 960);
+		//driver.manage().window().maximize();
 	},
 	/**
 	 * Обработчик ошибок
@@ -107,12 +110,12 @@ module.exports = {
 	 * @param assertUserLastName - фамилия пользователя (для проверки коректности входа)
 	 */
 	login: function (driver, login, password, assertUserFirstName, assertUserLastName) {
-		// Вводим логин и пароль 
+		// Вводим логин и пароль
 		driver.findElement({css:'input[id="login"]'}).sendKeys(login).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot input login")});
 		driver.findElement({css:'input[id="password"]'}).sendKeys(password).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot input password")});
 		driver.findElement({css:'button[id="submit"]'}).click().thenCatch(function (e) {errrorHandlerFunction(e, "Cannot submit login/password")});
 		driver.findElement({css:'button[id="submit"]'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {}).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot press enter")});
-		
+
 		// Проверям что мы залогинены корректно
 		driver.wait
 		(
@@ -124,6 +127,40 @@ module.exports = {
 		  webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),
 		  FAST_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find user last name")});
+	},
+
+	logout: function(driver) {
+		driver.findElement({id:'menu'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
+		driver.wait
+		(
+			webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'})),
+			FAST_OPERATION
+		).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `exit` button inside menu");});
+		driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
+		FAST_OPERATION;
+		driver.findElement({css:'input[id="login"]'}).clear()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'login' field");});
+		driver.findElement({css:'input[id="password"]'}).clear()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'password' field");});
+	},
+
+	isVisible: function (driver, element, time) {
+
+		driver.wait
+		(
+			webdriver.until.elementIsVisible(driver.findElement({css:''+ element +''})),
+			time
+		).thenCatch(function (e) {basic.errorHandler(e, "Seems " + element +" is not visible");});
+	},
+
+	isEnabled: function (driver, element, time) {
+		driver.wait
+		(
+			webdriver.until.elementIsEnabled(driver.findElement({css:''+ element +''})),
+			time
+		).thenCatch(function (e) {basic.errorHandler(e, "Cannot find" + element + "button");});
 	},
 	/**
 	 * Заполнить ссылочный атрибут значением из выпадающего списка 
