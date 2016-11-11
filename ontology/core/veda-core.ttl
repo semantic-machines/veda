@@ -227,6 +227,14 @@ v-s:disabled
   rdfs:label "Выключен"@ru ;
   rdfs:range xsd:boolean ;
 .
+v-s:runAt
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "исполнять в"@en ;
+  rdfs:label "run at"@ru ;
+  rdfs:range xsd:string ;
+.
+
 # ------------------------------------------------------------
 v-s:Group
   rdf:type owl:Class ;
