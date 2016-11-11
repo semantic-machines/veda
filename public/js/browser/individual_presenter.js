@@ -518,9 +518,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
              && !individual.hasValue(rel_uri)
              && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
           ) {
+            var valueType = spec && spec.hasValue("v-ui:rangeRestriction") ?
+              spec["v-ui:rangeRestriction"] : property.hasValue("rdfs:range") ?
+              property["rdfs:range"]        : [];
             var emptyValue = new veda.IndividualModel();
-            if ( property.hasValue("rdfs:range") ) {
-              emptyValue["rdf:type"] = property["rdfs:range"].slice(0);
+            if ( valueType.length ) {
+              emptyValue["rdf:type"] = valueType;
             }
             individual[rel_uri] = [emptyValue];
           }
