@@ -290,7 +290,7 @@ v-s:RequestDelegation_permission1
   rdfs:label "R. Все пользователи. Индивиды v-s:RequestDelegation" ;
 .
 
-v-s:Comment_permission2
+v-s:RequestDelegation_permission2
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:RequestDelegation ;
   v-s:permissionSubject v-s:RequestDelegation_BaseUser ;
@@ -298,7 +298,7 @@ v-s:Comment_permission2
   rdfs:label "C. Все пользователи. Класс RequestDelegation" ;
 .
 
-v-s:AllUsersGroup_CommentBaseUser_membership
+v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
   rdf:type v-s:Membership ;
   v-s:memberOf v-s:RequestDelegation_BaseUser ;
   v-s:resource cfg:AllUsersGroup ;
@@ -322,6 +322,8 @@ var request_uri = document["@"],
     position_uris = getUris(document["v-s:delegatedPosition"]);
 print("[cfg:Event_Delegation] ************************** START **************************");
 print( "[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris) );
+
+//var request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean});
 
 var allDelegated = get_individual(ticket, "cfg:AllDelegatedAppointments");
 if (!allDelegated) {
