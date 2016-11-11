@@ -642,33 +642,33 @@ v-df:DecisionTemplate2
   """ ;
 .
 
-v-df:ActionInDecisionTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу."@ru ;
-  rdfs:label "Action in decision Template."@en ;
-  v-ui:forClass v-s:Activity ;
-  v-ui:template """
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <span about="v-s:hasActivity" property="rdfs:label"></span>
-  </div>
-  <div class="panel-body">
-    <em about="v-s:responsible" property="rdfs:label"></em>
-    <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-    <veda-control rel="v-s:responsible" data-type="link" class="fulltext dropdown -view edit search"></veda-control>
-    <br>
-    <em about="v-s:description" property="rdfs:label"></em>
-    <div property="v-s:description" class="view -edit -search"></div>
-    <veda-control property="v-s:description" data-type="text" class="-view edit search"></veda-control>
-    <br>
-    <em about="v-s:dateTo" property="rdfs:label"></em>
-    <div property="v-s:dateTo" class="view -edit -search"></div>
-    <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
-  </div>
-</div>
-  """ ;
-.
+#v-df:ActionInDecisionTemplate
+#  rdf:type v-ui:ClassTemplate ;
+#  rdfs:isDefinedBy v-wf: ;
+#  rdfs:label "Шаблон для класса Мероприятие внутри Ответа на задачу."@ru ;
+#  rdfs:label "Action in decision Template."@en ;
+#  v-ui:forClass v-s:Activity ;
+#  v-ui:template """
+#<div class="panel panel-default">
+#  <div class="panel-heading">
+#    <span about="v-s:hasActivity" property="rdfs:label"></span>
+#  </div>
+#  <div class="panel-body">
+#    <em about="v-s:responsible" property="rdfs:label"></em>
+#    <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+#    <veda-control rel="v-s:responsible" data-type="link" class="fulltext dropdown -view edit search"></veda-control>
+#    <br>
+#    <em about="v-s:description" property="rdfs:label"></em>
+#    <div property="v-s:description" class="view -edit -search"></div>
+#    <veda-control property="v-s:description" data-type="text" class="-view edit search"></veda-control>
+#    <br>
+#    <em about="v-s:dateTo" property="rdfs:label"></em>
+#    <div property="v-s:dateTo" class="view -edit -search"></div>
+#    <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+#  </div>
+#</div>
+#  """ ;
+#.
 v-df:PsresponsibleInDecision
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Activity ;
@@ -953,7 +953,7 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionGoCoordination5;
   v-ui:forClass v-wf:DecisionGoCoordination6;
   v-ui:forClass v-wf:DecisionGoSign;
-  v-ui:forClass v-wf:DecisionGoApproval;  
+  v-ui:forClass v-wf:DecisionGoApproval;
   v-ui:forClass v-wf:DecisionDeclined ;
   v-ui:forClass v-wf:DecisionPostponed ;
   v-ui:forClass v-wf:DecisionRemake ;
