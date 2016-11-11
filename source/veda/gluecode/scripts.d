@@ -7,18 +7,59 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.vmodule.vmodule;
-private import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.vmodule.vmodule, veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
+private import darg;
 
-void main(char[][] args)
+// Generate the usage and help string at compile time.
+immutable usage = usageString!Options("");
+immutable help  = helpString!Options;
+
+struct Options
 {
-    process_name = "scripts";
+    @Option("help", "h")
+    @Help("Prints this help.")
+    OptionFlag help;
 
+    @Option("id", "id")
+    @Help("id of this V8 VM")
+    string id;
+}
+
+int main(string[] args)
+{
+    string vm_id = "main";
+    if (args.length > 1)
+    {
+        Options options;
+
+        try
+        {
+            options = parseArgs!Options(args[ 1 .. $ ]);
+        }
+        catch (ArgParseError e)
+        {
+            writeln(e.msg);
+            writeln(usage);
+            return 1;
+        }
+        catch (ArgParseHelp e)
+        {
+            // Help was requested
+            writeln(usage);
+            write(help);
+            return 0;
+        }
+
+        vm_id = options.id;
+    }
+    log.tracec("use VM id=%s", vm_id);
+    process_name = "scripts-" ~ vm_id;
     Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091, new Logger("veda-core-scripts", "log", ""));
-
+    ScriptProcess p_script = new ScriptProcess(vm_id, text (P_MODULE.scripts), "127.0.0.1", 8091, new Logger("veda-core-" ~ process_name, "log", ""));
     p_script.run();
+
+    return 0;
 }
 
 class ScriptProcess : VedaModule
@@ -32,11 +73,13 @@ class ScriptProcess : VedaModule
     private string   vars_for_codelet_script;
 
     private ScriptVM script_vm;
+    private string vm_id;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
+    this(string _vm_id, string _module_name, string _host, ushort _port, Logger log)
     {
         super(_module_name, _host, _port, log);
 
+		vm_id = _vm_id;
         g_cache_of_indv = cache_of_indv;
     }
 
@@ -148,16 +191,16 @@ class ScriptProcess : VedaModule
                 try
                 {
 /*
-				    if (count_sckip == 0)
-				    {
-					    long now_sckip;
-					    writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
-					    readf(" %d", &now_sckip);
-					    count_sckip = now_sckip;
-				    }
+                                    if (count_sckip == 0)
+                                    {
+                                            long now_sckip;
+                                            writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                                            readf(" %d", &now_sckip);
+                                            count_sckip = now_sckip;
+                                    }
 
-				    if (count_sckip > 0)
-				        count_sckip--;
+                                    if (count_sckip > 0)
+                                        count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
                     log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
@@ -185,7 +228,7 @@ class ScriptProcess : VedaModule
             }
         }
 
-		//log.trace("count:", count);
+        //log.trace("count:", count);
 
         // clear_script_data_cache ();
         // log.trace("scripts B #e *", process_name);

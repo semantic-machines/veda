@@ -67,7 +67,6 @@ class PThreadContext : Context
     private Onto          onto;
 
     private string        name;
-    private P_MODULE      id;
 
     private string        old_msg_key2slot;
     private int[ string ] old_key2slot;
@@ -170,12 +169,12 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
-    this(string _node_id, string context_name, P_MODULE _id, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
+    this(string _node_id, string context_name, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
         log = _log;
 
         if (log is null)
-            writeln("P_MODULE _id=", text(_id), " log is null");
+            writefln("context_name [%s] log is null", context_name);
 
         _acl_indexes = in_acl_indexes;
 
@@ -194,7 +193,6 @@ class PThreadContext : Context
         tickets_storage_r    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", this.log);
 
         name = context_name;
-        id   = _id;
 
         is_traced_module[ P_MODULE.ticket_manager ]  = true;
         is_traced_module[ P_MODULE.subject_manager ] = true;
@@ -1661,9 +1659,6 @@ class PThreadContext : Context
 
     public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
     {
-        if (module_id == id)
-            return false;
-
         version (isServer)
         {
             if (module_id == P_MODULE.scripts || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||

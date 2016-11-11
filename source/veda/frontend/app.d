@@ -144,7 +144,7 @@ shared static this()
 //    }
     veda.core.common.context.Context context;
 
-    context = new PThreadContext(node_id, "frontend", P_MODULE.webserver, log, "127.0.0.1:8088/ws");
+    context = new PThreadContext(node_id, "frontend", log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 

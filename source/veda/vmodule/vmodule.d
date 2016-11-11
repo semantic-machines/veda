@@ -78,17 +78,17 @@ class VedaModule // : WSLink
     string         host;
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
-    P_MODULE       module_name;
     string         message_header;
+    string		   module_id;	
 
     Logger         log;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger in_log)
+    this(string _module_id, string _host, ushort _port, Logger in_log)
     {
-        process_name          = text(_module_name);
-        module_name           = _module_name;
+        module_id           = _module_id;
+        process_name          = text(module_id);
         prepareall_queue_name = process_name ~ "_prepare_all";
-        message_header        = "MSG:" ~ text(module_name) ~ ":";
+        message_header        = "MSG:" ~ module_id ~ ":";
         port                  = _port;
         host                  = _host;
         _log                  = in_log;
@@ -125,7 +125,7 @@ class VedaModule // : WSLink
         context = create_context();
 
         if (context is null)
-            context = new PThreadContext("cfg:standart_node", process_name, module_name, log, main_module_url);
+            context = new PThreadContext("cfg:standart_node", process_name, log, main_module_url);
 
         if (node == Individual.init)
         {

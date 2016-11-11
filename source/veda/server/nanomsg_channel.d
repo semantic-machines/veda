@@ -40,7 +40,7 @@ void nanomsg_channel(string thread_name)
         log.trace("success bind to %s", url);
 
         if (context is null)
-            context = new PThreadContext("cfg:standart_node", thread_name, P_MODULE.n_channel, log, null);
+            context = new PThreadContext("cfg:standart_node", thread_name, log, null);
 
         // SEND ready
         receive((Tid tid_response_reciever)

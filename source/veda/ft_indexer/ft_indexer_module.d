@@ -27,7 +27,7 @@ void main(char[][] args)
     Thread.sleep(dur!("seconds")(1));
     process_name = "fulltext_indexer";
 
-    auto p_module = new FTIndexerProcess(P_MODULE.fulltext_indexer, "127.0.0.1", 8091,  new Logger("veda-core-fulltext_indexer", "log", ""));
+    auto p_module = new FTIndexerProcess(text (P_MODULE.fulltext_indexer), "127.0.0.1", 8091,  new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }
@@ -38,7 +38,7 @@ class FTIndexerProcess : VedaModule
 
     long           last_update_time = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
+    this(string _module_name, string _host, ushort _port, Logger log)
     {
         super(_module_name, _host, _port, log);
     }

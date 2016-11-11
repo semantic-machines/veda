@@ -56,7 +56,7 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = new PThreadContext(process_name, "file_reader", P_MODULE.file_reader, log, parent_url);
+    Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
 
     auto    oFiles = dirEntries(onto_path, SpanMode.depth);
 

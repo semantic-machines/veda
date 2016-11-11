@@ -222,6 +222,7 @@ cfg:Permission_6
 
 cfg:Event_1
   rdf:type v-s:Event ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup";
   rdfs:comment "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup";
@@ -975,8 +976,8 @@ put_individual (ticket, membership, _event_id);
 cfg:Event_13
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Пусто." ;
-  rdfs:comment "Пусто." ;
+  rdfs:label "Manually create version" ;
+  rdfs:comment "Manually create version" ;
   v-s:filter v-s:ManuallyVersioned ;
   v-s:script """
   if ((document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]

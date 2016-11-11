@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(text (P_MODULE.ltr_scripts), "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -96,7 +96,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, log, parent_url);
+    context = new PThreadContext("cfg:standart_node", "ltr_scripts", log, parent_url);
 
 
     vars_for_codelet_script =
@@ -173,10 +173,10 @@ private void ltrs_thread(string parent_url)
                                        writeln("ltrs:Queue not open :", queue);
                                }
                            },
-						   (OwnerTerminated ot) 
-		                   {
-	                        return;
-		                   },                                 
+                           (OwnerTerminated ot)
+                           {
+                               return;
+                           },
                            (Variant v) { writeln("ltrs_thread::Received some other type.", v); });
             // обработка элементов очередей согласно приоритетам
             yield();
@@ -325,7 +325,7 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger _log)
+    this(string _module_name, string _host, ushort _port, Logger _log)
     {
         super(_module_name, _host, _port, _log);
     }

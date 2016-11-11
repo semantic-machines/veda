@@ -142,6 +142,20 @@ public class Logger
                 fmt = разметка сообщения
                 args = выводимые переменные
      */
+    public void tracec(Char, A ...) (in Char[] fmt, A args)
+    {
+        init_tid_logger();
+        auto writer = appender!string();
+        formattedWrite(writer, fmt, args);
+        send(tid_logger, 'C', log_name, ext, src, writer.data);
+    }
+
+    /**
+        Записать информацию в лог файл и на консоль.
+       Params:
+                fmt = разметка сообщения
+                args = выводимые переменные
+     */
     public void trace_console(Char, A ...) (in Char[] fmt, A args)
     {
         init_tid_logger();
