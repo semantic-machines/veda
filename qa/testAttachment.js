@@ -17,8 +17,8 @@ basic.getDrivers().forEach(function (drv) {
 
     //attach-save-check-delete-attach-save
     basic.openCreateDocumentForm(driver, 'Отчет', 'v-s:Report');
-    //var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
-    var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
+    var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
+    //var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this file");});
