@@ -323,6 +323,12 @@ var request_uri = document["@"],
 print("[cfg:Event_Delegation] ************************** START **************************");
 print( "[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris) );
 
+if (delegator_uri !== user_uri) {
+  print("[cfg:Event_Delegation] ACCESS VIOLATION: delegator_uri !== user_uri");
+  print("[cfg:Event_Delegation] ************************** END **************************");
+  return;
+}
+
 //var request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean});
 
 var allDelegated = get_individual(ticket, "cfg:AllDelegatedAppointments");
