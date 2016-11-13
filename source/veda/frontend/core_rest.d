@@ -105,7 +105,7 @@ interface VedaStorageRest_API {
 
     @path("query") @method(HTTPMethod.GET)
     string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
-                              int limit = 10000);
+                   int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -583,16 +583,16 @@ class VedaStorageRest : VedaStorageRest_API
     }
 
     string[] query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
-                              int limit = 10000)
+                   int limit = 10000)
     {
-        string[] res;
-        Ticket              *ticket;
+        string[]   res;
+        Ticket     *ticket;
         ResultCode rc;
 
         try
         {
             ticket = context.get_ticket(_ticket);
-        	rc = ticket.result; 
+            rc     = ticket.result;
 
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
@@ -603,7 +603,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail([ ticket.user_uri, "query", _query, text (res), text(rc), "0" ]);        	        	
+            trail([ ticket.user_uri, "query", _query, text(res), text(rc), "0" ]);
         }
     }
 
@@ -612,13 +612,13 @@ class VedaStorageRest : VedaStorageRest_API
         Json[]     res;
         ResultCode rc;
 
-        Ticket *ticket;
+        Ticket     *ticket;
         try
         {
-        	ticket = context.get_ticket(_ticket);
-        	rc = ticket.result; 
-        	 
-            if (rc != ResultCode.OK)            
+            ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
             try
@@ -638,7 +638,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail([ ticket.user_uri, "get_individuals", text (uris), text (res), text(rc), "0" ]);        	
+            trail([ ticket.user_uri, "get_individuals", text(uris), text(res), text(rc), "0" ]);
         }
     }
 
@@ -650,9 +650,9 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-        	ticket = context.get_ticket(_ticket);
-        	rc = ticket.result; 
-        	 
+            ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
+
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
@@ -705,19 +705,23 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult op_res;
-
-        Ticket   *ticket;
+        OpResult   op_res;
+        ResultCode rc = ResultCode.Internal_Server_Error;
+        Ticket     *ticket;
 
         try
         {
             ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
 
-            if (ticket.result != ResultCode.OK)
-                throw new HTTPStatusException(ticket.result);
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
 
             if (wsc_server_task is Task.init)
-                throw new HTTPStatusException(ResultCode.Internal_Server_Error);
+            {
+                rc = ResultCode.Internal_Server_Error;
+                throw new HTTPStatusException(rc, text(rc));
+            }
 
             Json jreq = Json.emptyObject;
             jreq[ "function" ]       = "remove";
@@ -728,48 +732,126 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "transaction_id" ] = transaction_id;
 
             vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
-
             vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
+            rc = op_res.result;
 
-            //if (trace_msg[ 500 ] == 1)
-            //    log.trace("remove_individual #end : uri=%s, res=%s", indv.uri, text(res));
-
-            if (op_res.result != ResultCode.OK)
-                throw new HTTPStatusException(op_res.result);
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
 
             return op_res;
         }
         finally
         {
+            trail([ ticket.user_uri, "remove_individual", uri, "", text(rc), "0" ]);
         }
     }
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult res = modify_individual(context, "put", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        Ticket     *ticket;
+        ResultCode rc = ResultCode.Internal_Server_Error;
 
-        return res;
+        try
+        {
+            ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            OpResult op_res = modify_individual(context, "put", _ticket, individual_json, prepare_events, event_id, transaction_id);
+            rc = op_res.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            return op_res;
+        }
+        finally
+        {
+            trail([ ticket.user_uri, "put", text(individual_json), "", text(rc), "0" ]);
+        }
     }
 
     OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult res = modify_individual(context, "add_to", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        Ticket     *ticket;
+        ResultCode rc = ResultCode.Internal_Server_Error;
 
-        return res;
+        try
+        {
+            ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            OpResult op_res = modify_individual(context, "add_to", _ticket, individual_json, prepare_events, event_id, transaction_id);
+            rc = op_res.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            return op_res;
+        }
+        finally
+        {
+            trail([ ticket.user_uri, "add_to_individual", text(individual_json), "", text(rc), "0" ]);
+        }
     }
 
     OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult res = modify_individual(context, "set_in", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        Ticket     *ticket;
+        ResultCode rc = ResultCode.Internal_Server_Error;
 
-        return res;
+        try
+        {
+            ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            OpResult op_res = modify_individual(context, "set_in", _ticket, individual_json, prepare_events, event_id, transaction_id);
+            rc = op_res.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            return op_res;
+        }
+        finally
+        {
+            trail([ ticket.user_uri, "set_in_individual", text(individual_json), "", text(rc), "0" ]);
+        }
     }
 
     OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
-        OpResult res = modify_individual(context, "remove_from", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        Ticket     *ticket;
+        ResultCode rc = ResultCode.Internal_Server_Error;
 
-        return res;
+        try
+        {
+            ticket = context.get_ticket(_ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            OpResult op_res = modify_individual(context, "remove_from", _ticket, individual_json, prepare_events, event_id, transaction_id);
+            rc = op_res.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            return op_res;
+        }
+        finally
+        {
+            trail([ ticket.user_uri, "remove_from_individual", text(individual_json), "", text(rc), "0" ]);
+        }
     }
 
     string begin_transaction()
@@ -788,14 +870,14 @@ class VedaStorageRest : VedaStorageRest_API
     }
 
 
-	bool is_trail = false;
+    bool is_trail     = false;
     long count_trails = 0;
-    
+
     void trail(string[] vals)
     {
-    	if (!is_trail)
-	    	return;
-	    	
+        if (!is_trail)
+            return;
+
         try
         {
             if (tdb_cons is null)

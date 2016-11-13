@@ -33,7 +33,7 @@ extern (C) void handleTerminationW(int _signal)
 
     writeln("!SYS: veda.app: exit");
 
-    thread_term(); 
+    thread_term();
     Runtime.terminate();
 //    kill(getpid(), SIGKILL);
 //    exit(_signal);
@@ -288,12 +288,12 @@ bool start_http_listener(Context context, ushort http_port)
         log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
 
 
-	    router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
-	    settings      = new HTTPServerSettings;
-	    settings.port = 8088;
-	    //settings.bindAddresses = [ "127.0.0.1" ];
-	    listenHTTP(settings, router);
-	    log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
+        router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
+        settings      = new HTTPServerSettings;
+        settings.port = 8088;
+        //settings.bindAddresses = [ "127.0.0.1" ];
+        listenHTTP(settings, router);
+        log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
 
         return true;
     }

@@ -68,8 +68,8 @@ Individual json_to_individual(const Json individual_json)
 
 Json resource_to_json(Resource resource)
 {
-	//writeln ("resource=", resource);
-	
+    //writeln ("resource=", resource);
+
     Json   resource_json = Json.emptyObject;
 
     string data = resource.data;
