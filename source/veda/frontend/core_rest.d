@@ -687,7 +687,7 @@ class VedaStorageRest : VedaStorageRest_API
             }
             catch (Throwable ex)
             {
-                throw new HTTPStatusException(rc, text(rc));
+                throw new HTTPStatusException(rc, ex.msg);
             }
 
             if (rc != ResultCode.OK)
