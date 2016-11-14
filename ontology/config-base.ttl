@@ -1098,27 +1098,3 @@ cfg:Event_16
   }
   """ ;
 .
-
-cfg:Event_17
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт уведомления о новой задаче" ;
-  v-s:triggerByType v-wf:UserTaskForm ;
-  v-s:script """
-var task_id = document["@"],
-    to = getUri(document["v-wf:to"]);
-//print("cfg:Event_17", "caught", "task", task_id, "to", to);
-  """ ;
-.
-cfg:Event_18
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт уведомления о новом комментарии" ;
-  v-s:triggerByType v-s:Comment ;
-  v-s:script """
-var comment_id = document["@"],
-    comment_target = getUri(document["v-s:backwardTarget"]);
-    stakeholder = getUri(comment_target["v-s:author"]);
-//print("cfg:Event_18", "caught", "comment", comment_id, "target", comment_target);
-  """ ;
-.
