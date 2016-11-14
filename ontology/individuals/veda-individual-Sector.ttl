@@ -513,6 +513,7 @@ d:45bb1de686d547098a58ca8b58a8dc5d
     v-s:hasParentLink d:a1ff805754004cdea5782e286d9754ac, d:0ed33c0939024c8991c60ac3acbdd287;
     rdfs:label "Техническое обслуживание и ремонт механического оборудования\n      \n"^^xsd:string;
     v-s:registrationNumber "090.010.050.003"^^xsd:string;
+    v-s:shortLabel 'M' ;
     .
 
 d:5b01cbe55fda45fdb346007a9d82b7b8
@@ -891,6 +892,7 @@ d:831daafd86d9489ebb458450a49998a2
     v-s:hasParentLink d:3f4a2dd6a8604b579c65857de9e39568, d:0ed33c0939024c8991c60ac3acbdd287;
     rdfs:label "Лесная, деревообрабатывающая  и  целлюлозно-бумажная промышленность"^^xsd:string;
     v-s:registrationNumber "090.010.170"^^xsd:string;
+    v-s:shortLabel 'T' ;
     .
 
 d:1375d1eed390496f8fee1fc9124d239a
@@ -1252,6 +1254,7 @@ d:ba1a7913d52e4a47967645767b6f2604
     v-s:hasParentLink d:a1ff805754004cdea5782e286d9754ac, d:0ed33c0939024c8991c60ac3acbdd287;
     rdfs:label "Техническое обслуживание и ремонт оборудования КИП и А\n      \n"^^xsd:string;
     v-s:registrationNumber "090.010.050.001"^^xsd:string;
+    v-s:shortLabel 'A' ;
     .
 
 d:748284793e5b42e69d10c456efd36eda
@@ -1571,6 +1574,7 @@ d:52690a3f0dbd4d3baf937220a7035ae0
     v-s:hasParentLink d:506614f30cdd4494976d190a83fccb4e;
     rdfs:label "Экологическая безопасность"^^xsd:string;
     v-s:registrationNumber "160.040.090"^^xsd:string;
+    v-s:shortLabel 'E' ;
     .
 
 d:f7f09ec9090143879cf7e94b0c3bcdd0
@@ -1798,6 +1802,7 @@ d:ae5e2e05b8bc48e2a10df25dfe18f1cb
     v-s:hasParentLink d:3f4a2dd6a8604b579c65857de9e39568, d:0ed33c0939024c8991c60ac3acbdd287;
     rdfs:label "Энергетика"^^xsd:string;
     v-s:registrationNumber "090.010.070"^^xsd:string;
+    v-s:shortLabel 'E' ;
     .
 
 d:bd282d53983843a183137a9dd8bd1dac
@@ -1878,4 +1883,9 @@ d:330ca7eede5f4ed5aaffc061c42d71f1
     v-s:hasParentLink d:be6914f2ce1049ab860cd014fe0ba9b5;
     rdfs:label "Качество продукции. Стандартизация. Сертификация. Маркировка"^^xsd:string;
     v-s:registrationNumber "020.030.060 "^^xsd:string;
+    .
+
+d:a7441b96b-5bd5-38cf-649b-0c3880d57840
+  a v-s:Sector;
+    rdfs:label "Не определено"^^xsd:string;
     .
