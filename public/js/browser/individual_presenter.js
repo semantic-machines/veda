@@ -580,7 +580,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
 
       function embeddedHandler(doc_rel_uri, values) {
-        if (doc_rel_uri === rel_uri) {
+        if (doc_rel_uri === rel_uri && mode === "edit") {
           values.map(function (value) {
             if (
               value.id !== about.id // prevent self parent
