@@ -1110,7 +1110,7 @@ v-wf:ProcessStopEvent
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает процесс в группу журнала документа." ;
   rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
-  v-s:filterOfType v-wf:Process ;
+  v-s:triggerByType v-wf:Process ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket

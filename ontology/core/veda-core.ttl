@@ -206,7 +206,7 @@ v-s:Event
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
 .
-v-s:filterOfType
+v-s:triggerByType
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
   rdfs:label "Filter"@en ;
@@ -332,7 +332,7 @@ v-s:permissionObject
   rdfs:label "Ресурс полномочий"@ru ;
   rdfs:range rdfs:Resource ;
 .
-v-s:filterOfTypeValue
+v-s:triggerByTypeValue
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Value of permission filter"@en ;
   rdfs:label "Значение фильтра прав"@ru ;

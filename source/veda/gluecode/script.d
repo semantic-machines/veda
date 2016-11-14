@@ -65,7 +65,7 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
 
             //writeln("scripts_text:", scripts_text);
 
-            Resources filters = ss.getResources(veda_schema__filter);
+            Resources filters = ss.getResources(veda_schema__triggerByType);
 
             foreach (filter; filters)
                 script.filters[ filter.uri ] = true;
