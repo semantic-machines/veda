@@ -55,7 +55,7 @@ module.exports = {
       basic.openPage(driver, drv, '#/'+individualId);
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems person is not saved")});
 */
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION);
     // Смотрим что в нём содержится введённый ранее текст
     driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
       assert(txt == firstName);
