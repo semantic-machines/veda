@@ -250,7 +250,7 @@ var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourc
   };
 put_individual(ticket, membership, _event_id);
 
-log_trace('cfg:Event_1', uri);
+log_trace(uri);
 
   """ ;
 .
