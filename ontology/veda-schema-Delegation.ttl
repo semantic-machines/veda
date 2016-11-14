@@ -311,7 +311,7 @@ cfg:Event_Delegation
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
-  v-s:filterOfType v-s:RequestDelegation ;
+  v-s:triggerByType v-s:RequestDelegation ;
   v-s:script """
 var request_uri = document["@"],
     dateFrom = document["v-s:dateFrom"],
@@ -319,17 +319,17 @@ var request_uri = document["@"],
     now = new Date(),
     delegator_uri = getUri(document["v-s:delegator"]),
     delegate_uri = getUri(document["v-s:delegate"]),
-    position_uris = getUris(document["v-s:delegatedPosition"]);
+    position_uris = getUris(document["v-s:delegatedPosition"]),
+    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean});
+
 print("[cfg:Event_Delegation] ************************** START **************************");
 print( "[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris) );
 
-if (delegator_uri !== user_uri) {
+if (delegator_uri !== user_uri && !request_deleted) {
   print("[cfg:Event_Delegation] ACCESS VIOLATION: delegator_uri !== user_uri");
   print("[cfg:Event_Delegation] ************************** END **************************");
   return;
 }
-
-//var request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean});
 
 var allDelegated = get_individual(ticket, "cfg:AllDelegatedAppointments");
 if (!allDelegated) {
@@ -340,6 +340,8 @@ if (!allDelegated) {
   };
 }
 allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
+
+var cache = {};
 
 position_uris.map(function (position_uri) {
   var uri = "d:" + ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_");
@@ -357,25 +359,33 @@ position_uris.map(function (position_uri) {
       "v-s:official": newBool(true),
       "rdfs:comment": newStr("создано cfg:Event_Delegation")
     };
-    put_individual(ticket, appointment, _event_id);
     print("[cfg:Event_Delegation] new appointment created", uri);
   } else {
     // Update dates
     appointment["v-s:dateFrom"] = dateFrom;
     appointment["v-s:dateTo"] = dateTo;
-    put_individual(ticket, appointment, _event_id);
     print("[cfg:Event_Delegation] appointment dates updated", uri);
   }
 
-  var inList = hasValue(allDelegated, "rdf:value", { data: uri, type: _Uri });
-  if ( !inList ) {
+  allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
+    return item.data !== uri;
+  });
+
+  if ( request_deleted ) {
+    appointment["v-s:deleted"] = newBool(true);
+  } else {
     allDelegated["rdf:value"].push({ data: uri, type: _Uri });
   }
+
+  put_individual(ticket, appointment, _event_id);
+
+  cache[uri] = appointment;
 });
 
+// Process allDelegated list
 allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var appointment_uri = item.data;
-  var appointment = get_individual(ticket, appointment_uri);
+  var appointment = cache[appointment_uri] || get_individual(ticket, appointment_uri);
 
   var isPremature = now < appointment["v-s:dateFrom"][0].data;
   var isActual = appointment["v-s:dateFrom"][0].data <= now && now <= appointment["v-s:dateTo"][0].data;
@@ -395,7 +405,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"].filter( function (item) {
         return item.data !== appointment_uri;
-      }).push({data: appointment_uri, type: _Uri});
+      }).concat({data: appointment_uri, type: _Uri});
       put_individual(ticket, delegate, _event_id);
       print("[cfg:Event_Delegation] delegate updated - actual appointment added", delegate_uri);
     }
