@@ -527,28 +527,16 @@ class PThreadContext : Context
 
     public bool is_ticket_valid(string ticket_id)
     {
-        //StopWatch sw; sw.start;
-
-        try
-        {
-//        writeln("@is_ticket_valid, ", ticket_id);
             Ticket *ticket = get_ticket(ticket_id);
 
             if (ticket is null)
-            {
                 return false;
-            }
 
             SysTime now = Clock.currTime();
             if (now.stdTime < ticket.end_time)
                 return true;
 
             return false;
-        }
-        finally
-        {
-//            stat(CMD_GET, sw);
-        }
     }
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)

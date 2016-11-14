@@ -545,10 +545,10 @@ class VedaStorageRest : VedaStorageRest_API
 
     void backup(bool to_binlog)
     {
+        long res = -1;
+
         try
         {
-            long     res = -1;
-
             OpResult op_res;
 
             Json     jreq = Json.emptyObject;
@@ -567,19 +567,46 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
+            trail([ "", "backup", text(to_binlog), text(res), "", "0" ]);
         }
     }
 
     long count_individuals()
     {
-        return context.count_individuals();
+        long res;
+
+        res = context.count_individuals();
+
+        trail([ "", "count_individuals", "", text(res), "", "0" ]);
+        return res;
     }
 
-    bool is_ticket_valid(string ticket)
+    bool is_ticket_valid(string ticket_id)
     {
-        bool res = context.is_ticket_valid(ticket);
+        bool       res;
+        Ticket     *ticket;
+        ResultCode rc;
 
-        return res;
+        try
+        {
+            ticket = context.get_ticket(ticket_id);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            SysTime now = Clock.currTime();
+            if (now.stdTime < ticket.end_time)
+                res = true;
+            else
+                res = false;
+
+            return res;
+        }
+        finally
+        {
+            trail([ ticket.user_uri, "is_ticket_valid", ticket_id, text(res), text(rc), "0" ]);
+        }
     }
 
     string[] query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
