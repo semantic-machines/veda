@@ -115,8 +115,10 @@ class ScriptProcess : VedaModule
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
 
-        foreach (script_id; event_scripts_order)
+        foreach (_script_id; event_scripts_order)
         {
+        	script_id = _script_id;  
+        	
             ScriptInfo script = event_scripts[ script_id ];
 
             if (script.compiled_script !is null)
@@ -177,7 +179,7 @@ class ScriptProcess : VedaModule
                 }
                 catch (Exception ex)
                 {
-                    log.trace_log_and_console("WARN! fail execute event script : %s %s", script_id, ex.msg);
+                    log.trace("WARN! fail execute event script : %s %s", script_id, ex.msg);
                 }
             }
         }

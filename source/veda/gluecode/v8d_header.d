@@ -242,6 +242,14 @@ struct _Buff
 }
 }
 
+string script_id;
+
+extern (C++) void log_trace(const char *str, int str_length)
+{
+    string sstr  = cast(string)str[ 0..str_length ];
+	log.trace ("[%s] %s", script_id, sstr);
+}
+
 extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 {
     string pn  = cast(string)prop_name[ 0..prop_name_length ];
@@ -575,7 +583,7 @@ private void reload_ext_scripts()
 
     foreach (idx, script; scripts)
     {
-        writeln("init script=", script_file_name[ idx ]);
+        log.tracec("init script=%s", script_file_name[ idx ]);
         script.run();
     }
 }

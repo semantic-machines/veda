@@ -39,14 +39,14 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             return;
 
         string str_script =
-            "var ticket = get_env_str_var ('$ticket');"
+            "try { var ticket = get_env_str_var ('$ticket');"
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"
             ~ "var _script_id = '" ~ ss.uri ~ "';"
             ~ vars_env
             ~ "script();"
             ~ "};"
-            ~ "function script() {" ~ scripts_text ~ "};"
+            ~ "function script() {" ~ scripts_text ~ "}; } catch (e) { log_trace (e); }"
         ;
         try
         {
@@ -133,12 +133,12 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
         }
         catch (Exception ex)
         {
-            log.trace_log_and_console("error:compile event script :%s", ex.msg);
+            log.trace("error:compile event script :%s", ex.msg);
         }
     }
     catch (Exception ex)
     {
-        log.trace_log_and_console("error:load event script :%s", ex.msg);
+        log.trace("error:load event script :%s", ex.msg);
     }
     finally
     {

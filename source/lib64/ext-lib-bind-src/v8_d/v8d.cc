@@ -11,6 +11,15 @@ using namespace std;
 using namespace v8;
 
 //////////////////////////////////////////////////////////////////
+
+namespace
+{
+void FatalErrorCallback_r(const char* location, const char* message)
+{
+  std::cout << "Fatal error in V8: " << location << " " << message;
+}
+}
+
 Handle<Value>
 individual2jsobject (Individual *individual, Isolate *isolate)
 {
@@ -341,6 +350,8 @@ set_in_individual (const char *_ticket, int _ticket_length, const char *_cbor, i
 int
 remove_from_individual (const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length,
 			const char *_event_id, int _event_id_length);
+
+void log_trace (const char *_str, int _str_length);
 //char *get_resource (int individual_idx, const char* _uri, int _uri_length, int* count_resources, int resource_idx);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -628,24 +639,33 @@ void
 Print (const v8::FunctionCallbackInfo<v8::Value>& args)
 {
   bool first = true;
+  v8::HandleScope handle_scope (args.GetIsolate ());
+
+  if (args.Length () == 0)    
+    return;
+
+  v8::String::Utf8Value str (args[0]);
+  const char* cstr = ToCString (str);    
+  std::string sstr(cstr, str.length());
 
   for (int i = 0; i < args.Length (); i++)
   {
-    v8::HandleScope handle_scope (args.GetIsolate ());
     if (first)
     {
       first = false;
     }
     else
     {
-      printf (" ");
+      sstr = sstr + " ";	
     }
-    v8::String::Utf8Value str (args[i]);
-    const char *cstr = ToCString (str);
-    printf ("%s", cstr);
+
+    v8::String::Utf8Value str_i (args[i]);
+    const char* cstr_i = ToCString (str_i);    
+    std::string sstr_i(cstr_i, str_i.length());
+    sstr = sstr + sstr_i;
   }
-  printf ("\n");
-  fflush (stdout);
+     
+  log_trace (sstr.c_str(), sstr.length ()); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -662,6 +682,7 @@ WrappedContext::WrappedContext ()
   v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New (isolate_);
   // Bind the global 'print' function to the C++ Print callback.
   global->Set (v8::String::NewFromUtf8 (isolate_, "print"), v8::FunctionTemplate::New (isolate_, Print));
+  global->Set (v8::String::NewFromUtf8 (isolate_, "log_trace"), v8::FunctionTemplate::New (isolate_, Print));
 
   global->Set (v8::String::NewFromUtf8 (isolate_, "get_env_str_var"),
 	       v8::FunctionTemplate::New (isolate_, GetEnvStrVariable));
@@ -735,11 +756,11 @@ run_WrappedScript (WrappedContext *_context, WrappedScript *ws, _Buff *_res, _Bu
   HandleScope scope (isolate);
 
   v8::Local<v8::Context> context = v8::Local<v8::Context>::New (isolate, _context->context_);
-
   Context::Scope context_scope (context);
 
   v8::Local<v8::Script> script = v8::Local<v8::Script>::New (isolate, ws->script_);
 
+  v8::V8::SetFatalErrorHandler(FatalErrorCallback_r);
   Handle<Value> result = script->Run ();
 
   if (_res != NULL)
