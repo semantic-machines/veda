@@ -39,3 +39,5 @@ veda-bootstrap
 /veda-fanout-sql
 /veda-webserver
 .veda-pid
+/veda-scripts-lp
+/veda-scripts-main
