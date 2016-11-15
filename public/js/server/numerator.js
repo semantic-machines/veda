@@ -46,8 +46,9 @@ function numerate(ticket, individual, super_classes, oldstate, _event_id) {
                 var rule = get_individual(ticket, type['v-s:hasNumeration'][0].data);
                 // print ('3.1 '+toJson(rule));
                 var key = rule['v-s:enumeratedProperty'][0].data;
-                // print ('3.2 '+toJson(key));
-                if (individual[key][0].data > 0) {
+
+                //print ('3.2 '+toJson(key) + ", individual=" + toJson (individual));
+                if (individual[key] && individual[key][0].data > 0) {
                     // print ('4'+key);
                     var numeration = get_individual(ticket, rule['v-s:hasNumerationRule'][0].data);
                     var scopeId = getScope(ticket, individual, numeration);
@@ -130,8 +131,12 @@ function numerate(ticket, individual, super_classes, oldstate, _event_id) {
                     }
                 } else {
                     // TODO REFACTOR THIS
-                    individual[key][0].data = 0;
-                    put_individual(ticket, individual, _event_id);
+		    if (individual[key])
+		    {		    
+                	individual[key][0].data = 0;
+                	put_individual(ticket, individual, _event_id);
+		    }
+
                     return {
                         'sucess' : false,
                         'result' : 'NUMBER IS NOT SPECIFIED'
