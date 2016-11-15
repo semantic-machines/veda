@@ -728,8 +728,8 @@ v-s:downtime
 .
 v-s:hasMaintenanceKind
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Equipment shutdown needed"@en ;
-  rdfs:label "Нужен ли останов оборудования"@ru ;
+  rdfs:label "Equipment shutdown kind"@en ;
+  rdfs:label "Вид останова оборудования"@ru ;
   rdfs:range v-s:MaintenanceKind ;
   rdfs:domain v-s:Maintained ;
 .
