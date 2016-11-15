@@ -7,7 +7,7 @@ module veda.core.util.utils;
 private
 {
     import core.stdc.stdio, core.stdc.string, core.sys.posix.time;
-    import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency;
+    import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency,  std.digest.crc;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
     import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates,
            veda.core.common.context;
@@ -129,8 +129,10 @@ public string[ string ] getAsSimpleMapWithoutPrefix(Individual indv)
     return res;
 }
 
+CRC32             hash;
+
 /// serialize key2slot struct
-public string serialize_key2slot(ref int[ string ] key2slot)
+public string serialize_key2slot(ref int[ string ] key2slot, out string hash_hex)
 {
     OutBuffer outbuff = new OutBuffer();
 
@@ -143,23 +145,44 @@ public string serialize_key2slot(ref int[ string ] key2slot)
         outbuff.write(text(value));
         outbuff.write('\n');
     }
+
+    hash.start();
+    hash.put(cast(ubyte[])outbuff.data);
+    hash_hex = crcHexString(hash.finish());
+
     return outbuff.toString();
 }
 
 /// parse key2slot struct
-public int[ string ] deserialize_key2slot(string data)
+public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
 {
-//	writeln ("@&1");
     int[ string ] key2slot;
+	rc = ResultCode.Internal_Server_Error;
 
-    int idx = 0;
-    foreach (record; csvReader!(Tuple!(string, int))(data))
-    {
-//	writeln ("@&2 record=[", record, "]");
-        key2slot[ record[ 0 ] ] = record[ 1 ];
-        idx++;
-    }
-//	writeln ("@&3");
+	try
+	{
+	    int idx = 0;
+	    foreach (record; csvReader!(Tuple!(string, int))(data))
+	    {
+	    	if (record.length != 2)
+	    	{
+				writeln ("ERR! key2slot, invalid record=", record);
+				rc = ResultCode.Unprocessable_Entity; 
+	    		return key2slot;
+	    	}
+			//	writeln ("@&2 record=[", record, "]");
+
+			if (idx > 0)				
+		        key2slot[ record[ 0 ] ] = record[ 1 ];
+	        idx++;
+	    }
+	    rc = ResultCode.OK;
+	}
+	catch (Throwable tr)
+	{
+		writeln ("ERR! key2slot err=", tr.msg);
+		rc = ResultCode.Unprocessable_Entity; 
+	}
 
     return key2slot;
 }

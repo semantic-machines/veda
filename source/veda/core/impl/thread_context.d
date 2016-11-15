@@ -27,14 +27,18 @@ private
 
 Tid  dummy_tid;
 
-File *ff_key2slot_r = null;
+private File *ff_key2slot_r = null;
+private long last_size_key2slot;
+private int[ string ] old_key2slot;
+private string file_name_key2slot;
+
 public int[ string ] read_key2slot()
 {
     int[ string ] key2slot;
 
     if (ff_key2slot_r is null)
     {
-        string file_name_key2slot = xapian_info_path ~ "/key2slot";
+        file_name_key2slot = xapian_info_path ~ "/key2slot";
         try
         {
             ff_key2slot_r = new File(file_name_key2slot, "r");
@@ -44,9 +48,21 @@ public int[ string ] read_key2slot()
 
     if (ff_key2slot_r !is null)
     {
-        ff_key2slot_r.seek(0);
-        auto buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
-        key2slot = deserialize_key2slot(cast(string)buf);
+		long cur_size = getSize (file_name_key2slot);
+		
+		if (cur_size > last_size_key2slot)
+		{
+	    	last_size_key2slot = cur_size;
+	        ff_key2slot_r.seek(0);
+	        auto buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
+	        ResultCode rc;
+	        key2slot = deserialize_key2slot(cast(string)buf, rc);
+	        old_key2slot = key2slot; 
+		}
+		else
+		{
+			return old_key2slot;
+		}
 //            writeln("@context:read_key2slot:key2slot", key2slot);
     }
     return key2slot;
@@ -67,9 +83,6 @@ class PThreadContext : Context
     private Onto          onto;
 
     private string        name;
-
-    private string        old_msg_key2slot;
-    private int[ string ] old_key2slot;
 
     private             string[ string ] prefix_map;
 

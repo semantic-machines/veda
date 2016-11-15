@@ -21,6 +21,7 @@ v-s:Activity
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:BackwardLink;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Activity"@en ;
