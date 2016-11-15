@@ -10,13 +10,7 @@ import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
-Logger _log;
-Logger log()
-{
-    if (_log is null)
-        _log = new Logger("veda-core-" ~ process_name, "log", "V8D");
-    return _log;
-}
+Logger log;
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
@@ -246,8 +240,9 @@ string script_id;
 
 extern (C++) void log_trace(const char *str, int str_length)
 {
-    string sstr  = cast(string)str[ 0..str_length ];
-	log.trace ("[%s] %s", script_id, sstr);
+    string sstr = cast(string)str[ 0..str_length ];
+
+    log.trace("[%s] %s", script_id, sstr);
 }
 
 extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
@@ -533,6 +528,7 @@ ScriptVM get_ScriptVM(Context ctx)
             {
                 script_vm = new JsVM();
                 g_context = ctx;
+                log = ctx.get_logger ();
 
                 string g_str_script_result = new char[ 1024 * 64 ];
                 string g_str_script_out    = new char[ 1024 * 64 ];
