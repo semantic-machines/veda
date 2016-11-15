@@ -637,4 +637,26 @@ veda.Module(function Util(veda) { "use strict";
       redirectAfterTimeout();
     }, timeout);
   }
+  
+  /**
+   * Check that element inside root hierarchy.
+   */
+  veda.Util.inSubHierarchy = function (root, element) {
+      if (typeof element === 'string') {
+          element = new veda.IndividualModel(element, undefined, undefined, undefined, false);
+      }      
+      if (element && element.hasValue('rdf:type') && element['rdf:type'][0].id == 'v-s:Department') {
+          if (element.id == root || (element.hasValue(['v-s:parentUnit']) && element['v-s:parentUnit'][0].id == root)) {
+              return true; // Found
+          } else {
+              if (element.hasValue(['v-s:parentUnit'])) {
+                  return eda.Util.inSubHierarchy(root, element['v-s:parentUnit'][0]); // Check parent
+              } else {
+                  return false; // No parent
+              }
+          }
+      } else {
+          return false; // Not a department 
+      }         
+  }
 });
