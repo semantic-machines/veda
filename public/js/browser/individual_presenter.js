@@ -791,7 +791,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         template.data("valid", isValid);
         template.trigger(isValid ? "valid" : "invalid", validation);
       }
-      // "validate" event should bubble up to be handled by parent template if current template is embedded
+      // "validate" event should bubble up to be handled by parent template only if current template is embedded
       if ( !template.data("isEmbedded") ) {
         e.stopPropagation();
       }
