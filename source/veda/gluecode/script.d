@@ -9,6 +9,7 @@ struct ScriptInfo
     string id;
     string str_script;
     bool[ string ] trigger_by_type;
+    bool[ string ] trigger_by_uid;
     bool[ string ] dependency;
     Script compiled_script;
     string run_at;
@@ -69,6 +70,11 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
 
             foreach (filter; trigger_by_type)
                 script.trigger_by_type[ filter.uri ] = true;
+
+            Resources trigger_by_uid = ss.getResources("v-s:triggerByUid");
+
+            foreach (filter; trigger_by_uid)
+                script.trigger_by_uid[ filter.uri ] = true;
 
             Resources dependency = ss.getResources("v-s:dependency");
             foreach (dp; dependency)

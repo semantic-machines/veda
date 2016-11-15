@@ -209,8 +209,15 @@ v-s:Event
 v-s:triggerByType
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
-  rdfs:label "Filter"@en ;
-  rdfs:label "Фильтр"@ru ;
+  rdfs:label "trigger by type"@en ;
+  rdfs:label "триггер по типу"@ru ;
+  rdfs:range rdfs:Resource ;
+.
+v-s:triggerByUid
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "trigger by uid"@en ;
+  rdfs:label "триггер по uid"@ru ;
   rdfs:range rdfs:Resource ;
 .
 v-s:dependency
