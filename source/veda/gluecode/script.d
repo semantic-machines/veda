@@ -8,7 +8,7 @@ struct ScriptInfo
 {
     string id;
     string str_script;
-    bool[ string ] filters;
+    bool[ string ] trigger_by_type;
     bool[ string ] dependency;
     Script compiled_script;
     string run_at;
@@ -53,11 +53,11 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             ScriptInfo script = ScriptInfo.init;
             script.id         = ss.uri;
             script.str_script = str_script;
-            
-			script.run_at = ss.getFirstLiteral("v-s:runAt");
-			
-			if (script.run_at is null)
-				script.run_at = "main";
+
+            script.run_at = ss.getFirstLiteral("v-s:runAt");
+
+            if (script.run_at is null)
+                script.run_at = "main";
 
             script.compiled_script = script_vm.compile(script.str_script);
             if (trace_msg[ 310 ] == 1)
@@ -65,10 +65,10 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
 
             //writeln("scripts_text:", scripts_text);
 
-            Resources filters = ss.getResources(veda_schema__triggerByType);
+            Resources trigger_by_type = ss.getResources("v-s:triggerByType");
 
-            foreach (filter; filters)
-                script.filters[ filter.uri ] = true;
+            foreach (filter; trigger_by_type)
+                script.trigger_by_type[ filter.uri ] = true;
 
             Resources dependency = ss.getResources("v-s:dependency");
             foreach (dp; dependency)

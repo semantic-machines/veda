@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(text (P_MODULE.ltr_scripts), "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(text(P_MODULE.ltr_scripts), "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -293,7 +293,7 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
 
     if (script.compiled_script !is null)
     {
-        if (script.filters.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
+        if (script.trigger_by_type.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
             return ResultCode.OK;
 
         try

@@ -25,10 +25,10 @@ private
     }
 }
 
-Tid  dummy_tid;
+Tid            dummy_tid;
 
-private File *ff_key2slot_r = null;
-private long last_size_key2slot;
+private File   *ff_key2slot_r = null;
+private long   last_size_key2slot;
 private int[ string ] old_key2slot;
 private string file_name_key2slot;
 
@@ -48,21 +48,21 @@ public int[ string ] read_key2slot()
 
     if (ff_key2slot_r !is null)
     {
-		long cur_size = getSize (file_name_key2slot);
-		
-		if (cur_size > last_size_key2slot)
-		{
-	    	last_size_key2slot = cur_size;
-	        ff_key2slot_r.seek(0);
-	        auto buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
-	        ResultCode rc;
-	        key2slot = deserialize_key2slot(cast(string)buf, rc);
-	        old_key2slot = key2slot; 
-		}
-		else
-		{
-			return old_key2slot;
-		}
+        long cur_size = getSize(file_name_key2slot);
+
+        if (cur_size > last_size_key2slot)
+        {
+            last_size_key2slot = cur_size;
+            ff_key2slot_r.seek(0);
+            auto       buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
+            ResultCode rc;
+            key2slot     = deserialize_key2slot(cast(string)buf, rc);
+            old_key2slot = key2slot;
+        }
+        else
+        {
+            return old_key2slot;
+        }
 //            writeln("@context:read_key2slot:key2slot", key2slot);
     }
     return key2slot;
@@ -84,21 +84,21 @@ class PThreadContext : Context
 
     private string        name;
 
-    private             string[ string ] prefix_map;
+    private               string[ string ] prefix_map;
 
-    private LmdbStorage inividuals_storage_r;
-    private LmdbStorage tickets_storage_r;
-    private VQL         _vql;
+    private LmdbStorage   inividuals_storage_r;
+    private LmdbStorage   tickets_storage_r;
+    private VQL           _vql;
 
-    private long        local_last_update_time;
-    private Individual  node = Individual.init;
-    private string      node_id;
+    private long          local_last_update_time;
+    private Individual    node = Individual.init;
+    private string        node_id;
 
-    private bool        API_ready = true;
-    private string      main_module_url;
-    private Logger      log;
+    private bool          API_ready = true;
+    private string        main_module_url;
+    private Logger        log;
 
-    private long        last_ticket_manager_op_id = 0;
+    private long          last_ticket_manager_op_id = 0;
 
     public Logger get_logger()
     {
@@ -540,16 +540,16 @@ class PThreadContext : Context
 
     public bool is_ticket_valid(string ticket_id)
     {
-            Ticket *ticket = get_ticket(ticket_id);
+        Ticket *ticket = get_ticket(ticket_id);
 
-            if (ticket is null)
-                return false;
-
-            SysTime now = Clock.currTime();
-            if (now.stdTime < ticket.end_time)
-                return true;
-
+        if (ticket is null)
             return false;
+
+        SysTime now = Clock.currTime();
+        if (now.stdTime < ticket.end_time)
+            return true;
+
+        return false;
     }
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
@@ -606,17 +606,17 @@ class PThreadContext : Context
 
         version (isServer)
         {
-        	log.trace ("is server");
+            log.trace("is server");
         }
 
         version (isModule)
         {
-        	log.trace ("is module");
+            log.trace("is module");
         }
 
         version (WebServer)
         {
-        	log.trace ("is webserver");
+            log.trace("is webserver");
         }
 
         //if (trace_msg[ T_API_60 ] == 1)
@@ -657,7 +657,7 @@ class PThreadContext : Context
 
                     ticket = create_new_ticket(user_id);
 
-			        log.trace("trusted authenticate, result ticket=[%s]", ticket);
+                    log.trace("trusted authenticate, result ticket=[%s]", ticket);
                     return ticket;
                 }
             }
@@ -924,7 +924,7 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace);
     }
 
-    public string[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit)
+    public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit)
     {
         //StopWatch sw; sw.start;
 
@@ -1113,18 +1113,18 @@ class PThreadContext : Context
                     res.result = ResultCode.Unprocessable_Entity;
                     return res;
                 }
-                
-                prev_indv.addResource("v-s:deleted", Resource (true));
+
+                prev_indv.addResource("v-s:deleted", Resource(true));
             }
 
             version (isServer)
             {
                 OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
-                
-                if (oprc.result == ResultCode.OK)                
-	                res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
-	            else
-		            res.result = oprc.result;
+
+                if (oprc.result == ResultCode.OK)
+                    res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
+                else
+                    res.result = oprc.result;
             }
             if (main_module_url !is null)
             {

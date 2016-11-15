@@ -101,7 +101,9 @@ class IndexerProperty
                 add_schema_data(indv);
             }
             database__2__true[ "base" ] = true;
-            log.trace("load indexes: class_property__2__indiviual=%s", class_property__2__indiviual);
+            
+            if (l_individuals.length > 0)
+	            log.trace("load indexes: class_property__2__indiviual=%s", class_property__2__indiviual);
         }
     }
 

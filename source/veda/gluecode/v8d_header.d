@@ -42,13 +42,13 @@ bool isFiltred(ScriptInfo *script, string[] indv_types, Onto onto)
 
     foreach (indv_type; indv_types)
     {
-        if ((indv_type in script.filters) !is null)
+        if ((indv_type in script.trigger_by_type) !is null)
         {
             any_exist = true;
             break;
         }
 
-        if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
+        if (onto.isSubClasses(cast(string)indv_type, script.trigger_by_type.keys) == true)
         {
             any_exist = true;
             break;
@@ -376,6 +376,46 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     }
 }
 
+extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
+                          const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit)
+{
+    string res;
+    string query;
+    string sort;
+    string databases;
+
+    try
+    {
+        string ticket_id = cast(string)_ticket[ 0.._ticket_length ];
+        query = cast(string)_query[ 0.._query_length ];
+
+        if (_sort !is null && _sort_length > 1)
+            sort = cast(string)_sort[ 0.._sort_length ];
+
+        if (_databases !is null && _databases_length > 1)
+            databases = cast(string)_databases[ 0.._databases_length ];
+
+        Ticket   *ticket = g_context.get_ticket(ticket_id);
+
+        string[] icb;
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
+        res = text(icb);
+
+        if (icb !is null)
+        {
+            tmp_individual.data   = cast(char *)res;
+            tmp_individual.length = cast(int)res.length;
+            return &tmp_individual;
+        }
+        else
+            return null;
+    }
+    finally
+    {
+//        log.trace ("@p:v8d end query[%s][%s][%s], res=[%s]", query, sort, databases, res);
+    }
+}
+
 extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length)
 {
     try
@@ -528,7 +568,7 @@ ScriptVM get_ScriptVM(Context ctx)
             {
                 script_vm = new JsVM();
                 g_context = ctx;
-                log = ctx.get_logger ();
+                log       = ctx.get_logger();
 
                 string g_str_script_result = new char[ 1024 * 64 ];
                 string g_str_script_out    = new char[ 1024 * 64 ];

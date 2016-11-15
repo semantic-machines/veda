@@ -10,6 +10,7 @@ private import veda.gluecode.scripts;
 int main(string[] args)
 {
     string vm_id = "main";
+
     process_name = "scripts-" ~ vm_id;
     Logger log = new Logger("veda-core-" ~ process_name, "log", "");
     log.tracec("use VM id=%s", vm_id);

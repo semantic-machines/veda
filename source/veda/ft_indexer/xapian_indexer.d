@@ -54,7 +54,7 @@ public class IndexerContext
 
     bool init(Ticket *_ticket)
     {
-    	ticket = _ticket;
+        ticket = _ticket;
         string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
         if (exists(file_name_key2slot) == false)
@@ -122,7 +122,7 @@ public class IndexerContext
                                                           xapian_db_type, &err);
             if (err != 0)
             {
-                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg (err));
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg(err));
                 return false;
             }
 
@@ -130,14 +130,14 @@ public class IndexerContext
                                                            xapian_db_type, &err);
             if (err != 0)
             {
-                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg (err));
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg(err));
                 return false;
             }
         }
         else
         {
-	        log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg (err));
-		    return false;        	
+            log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg(err));
+            return false;
         }
 
         this.indexer = new_TermGenerator(&err);
@@ -788,11 +788,11 @@ public class IndexerContext
         try
         {
             ff_key2slot_w.seek(0);
-    	    ff_key2slot_w.write('"');                        
+            ff_key2slot_w.write('"');
             ff_key2slot_w.write(hash);
-            ff_key2slot_w.write("\",");                        
-            ff_key2slot_w.write(data.length);                        
-            ff_key2slot_w.write('\n');                        
+            ff_key2slot_w.write("\",");
+            ff_key2slot_w.write(data.length);
+            ff_key2slot_w.write('\n');
             ff_key2slot_w.write(data);
             ff_key2slot_w.flush();
         }

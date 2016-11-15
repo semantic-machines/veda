@@ -94,7 +94,7 @@ class XapianReader : SearchReader
                    void delegate(string uri) add_out_element, bool inner_get)
     {
         int[ string ] key2slot = context.get_key2slot();
-
+    	
         if (key2slot == (int[ string ]).init)
             return 0;
 
@@ -114,7 +114,6 @@ class XapianReader : SearchReader
         if (_db_names is null || _db_names.length == 0)
         {
             // если не указанны базы данных, то попробуем определить их из текста запроса
-
             if (inner_get == false)
                 iproperty.load();
 

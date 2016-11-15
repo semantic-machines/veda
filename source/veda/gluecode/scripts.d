@@ -20,13 +20,13 @@ class ScriptProcess : VedaModule
     private string   vars_for_codelet_script;
 
     private ScriptVM script_vm;
-    private string vm_id;
+    private string   vm_id;
 
     this(string _vm_id, string _module_name, string _host, ushort _port, Logger log)
     {
         super(_module_name, _host, _port, log);
 
-		vm_id = _vm_id;
+        vm_id           = _vm_id;
         g_cache_of_indv = cache_of_indv;
     }
 
@@ -117,8 +117,8 @@ class ScriptProcess : VedaModule
 
         foreach (_script_id; event_scripts_order)
         {
-        	script_id = _script_id;  
-        	
+            script_id = _script_id;
+
             ScriptInfo script = event_scripts[ script_id ];
 
             if (script.compiled_script !is null)
@@ -130,18 +130,18 @@ class ScriptProcess : VedaModule
                     continue;
                 }
 
-				if (script.run_at != vm_id)
-					continue;
-					
+                if (script.run_at != vm_id)
+                    continue;
+
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
-                if (script.filters.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
+                if (script.trigger_by_type.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
                 {
                     //log.trace("skip (filter) script:%s", script_id);
                     continue;
-                }    
+                }
 
-				
+
                 //log.trace("filter pass script:%s", script_id);
 
                 try
@@ -159,7 +159,7 @@ class ScriptProcess : VedaModule
                                         count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
-	                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
@@ -207,6 +207,7 @@ class ScriptProcess : VedaModule
 
         script_vm = get_ScriptVM(context);
         load_event_scripts();
+
 
         return true;
     }
