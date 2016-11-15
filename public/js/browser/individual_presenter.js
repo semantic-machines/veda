@@ -142,12 +142,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("view edit search", showHideHandler);
 
-    // Cleanup memory
-    /*template.on("remove", function (event) {
-      $(".typeahead", wrapper).typeahead("destroy");
-      wrapper = embedded = props_ctrls = null;
-    });*/
-
     // Embedded templates list
     var embedded = [];
 
@@ -336,7 +330,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       isDraftHandler("v-s:isDraft");
     }, 100);
 
-    // Apply mode class to template to show/hide elements in different modes
+    // Apply mode to template to show/hide elements in different modes
     function modeHandler (e) {
       mode = e.type;
       mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
@@ -348,27 +342,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("view edit search", modeHandler);
 
-    // Validation with support of embedded templates (arbitrary depth)
-    function validationHandler () {
-      var isValid = checkState(template);
-      isValid = isValid && embedded.reduce(function (state, template) {
-        return state && template.data("valid").state;
-      }, true);
-      template.data("valid").state = isValid;
-      if (isValid) {
-        $save.removeAttr("disabled");
-        template.trigger("valid");
-      } else {
-        $save.attr("disabled", "disabled");
-        template.trigger("invalid");
-      }
-      // "validate" event bubbles up to be handled by parent templates
-    }
-    template.on("validate", validationHandler);
-    // Initial validation state
-    template.data("valid", {state: true});
-
-
     // Additional actions buttons
     var $send = $("#send.action", wrapper);
     var $sendButtons = $(".sendbutton", wrapper);
@@ -378,18 +351,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var $journal = $("#journal.action", wrapper);
 
     function validHandler(e) {
+      $save.removeAttr("disabled");
       $send.removeAttr("disabled");
       $sendButtons.removeAttr("disabled");
       $createReport.removeAttr("disabled");
       $createReportButtons.removeAttr("disabled");
-      //e.stopPropagation();
+      e.stopPropagation();
     }
     function inValidHandler(e) {
+      $save.attr("disabled", "disabled");
       $send.attr("disabled", "disabled");
       $sendButtons.attr("disabled", "disabled");
       $createReport.attr("disabled", "disabled");
       $createReportButtons.attr("disabled", "disabled");
-      //e.stopPropagation();
+      e.stopPropagation();
     }
     template.on("valid", validHandler);
     template.on("invalid", inValidHandler);
@@ -618,6 +593,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       aboutContainer.empty();
       about.present(aboutContainer, aboutTemplate);
       if (isEmbedded) {
+        aboutTemplate.data("isEmbedded", true);
         embedded.push(aboutTemplate);
       }
     });
@@ -662,6 +638,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
     });
 
+    // Initial validation state
+    var validation = {};
+    template.data({
+      "valid": true,
+      "validation": validation
+    });
+
     // Property control
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
 
@@ -674,6 +657,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       //control.removeAttr("property");
 
+      // Initial validation state
+      validation[property_uri] = true;
+
+      function validationHandler(e) {
+        if ( e.type === "valid" || validation[property_uri] === true ) {
+          control.removeClass("has-error");
+        } else {
+          control.addClass("has-error");
+        }
+        e.stopPropagation();
+      }
+      template.on("valid invalid", validationHandler);
+
+      template.on("view edit search", function (e) {
+        e.stopPropagation();
+        control.trigger(e.type);
+      });
+
       var opts = {
         individual: individual,
         property_uri: property_uri,
@@ -684,31 +685,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       controlType.call(control, opts);
 
       props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
-
-      var state = true;
-
-      template.on("view edit search", function (e) {
-        e.stopPropagation();
-        control.trigger(e.type);
-        if (spec) state = validate(template, spec, individual[property_uri], property_uri);
-        e.type === "edit" ?
-          state ? control.removeClass("has-error") : control.addClass("has-error")
-          :
-          control.removeClass("has-error");
-      });
-
-      function propertyModifiedHandler(doc_property_uri) {
-        if (doc_property_uri === property_uri) {
-          if (spec) state = validate(template, spec, individual[property_uri], property_uri);
-          if (mode === "edit") {
-            state ? control.removeClass("has-error") : control.addClass("has-error");
-          }
-        }
-      }
-      individual.on("individual:propertyModified", propertyModifiedHandler);
-      template.one("remove", function () {
-        individual.off("individual:propertyModified", propertyModifiedHandler);
-      });
 
       function assignDefaultValue (e) {
         if ( spec && !individual.hasValue(property_uri) ) {
@@ -750,6 +726,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       //control.removeAttr("rel");
 
+      // Initial validation state
+      validation[rel_uri] = true;
+
+      function validationHandler(e) {
+        if ( e.type === "valid" || validation[rel_uri] === true ) {
+          control.removeClass("has-error");
+        } else {
+          control.addClass("has-error");
+        }
+        e.stopPropagation();
+      }
+      template.on("valid invalid", validationHandler);
+
+      template.on("view edit search", function (e) {
+        e.stopPropagation();
+        control.trigger(e.type);
+      });
+
       var opts = {
         individual: individual,
         rel_uri: rel_uri,
@@ -759,31 +753,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       controlType.call(control, opts);
 
-      var state = true;
-
       function modeHandler(e) {
-        state = validate(template, spec, individual[rel_uri], rel_uri);
-        e.stopPropagation();
-        e.type === "edit" ?
-          state ? control.removeClass("has-error") : control.addClass("has-error")
-          :
-          control.removeClass("has-error");
         control.trigger(e.type);
       }
       template.on("view edit search", modeHandler);
-
-      function propertyModifiedHandler(doc_rel_uri) {
-        if (doc_rel_uri === rel_uri) {
-          state = validate(template, spec, individual[rel_uri], rel_uri);
-          if (mode === "edit") {
-            state ? control.removeClass("has-error") : control.addClass("has-error");
-          }
-        }
-      }
-      individual.on("individual:propertyModified", propertyModifiedHandler);
-      template.one("remove", function () {
-        individual.off("individual:propertyModified", propertyModifiedHandler);
-      });
 
       function assignDefaultObjectValue (e) {
         if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
@@ -804,6 +777,36 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
 
     });
+
+    // Validation with support of embedded templates (arbitrary depth)
+    function validateTemplate (e) {
+      if (mode === "edit") {
+        var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
+          validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
+          return acc && validation[property_uri];
+        }, true);
+        isValid = isValid && embedded.reduce(function (acc, template) {
+          return acc && template.data("valid");
+        }, true);
+        template.data("valid", isValid);
+        template.trigger(isValid ? "valid" : "invalid", validation);
+      }
+      // "validate" event should bubble up to be handled by parent template only if current template is embedded
+      if ( !template.data("isEmbedded") ) {
+        e.stopPropagation();
+      }
+    }
+    template.on("validate", validateTemplate);
+
+    function triggerValidation() {
+      template.trigger("validate");
+    };
+    individual.on("individual:propertyModified", triggerValidation);
+    template.one("remove", function () {
+      individual.off("individual:propertyModified", triggerValidation);
+    });
+    template.on("edit", triggerValidation);
+
 
     return template;
   }
@@ -865,6 +868,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         value.present(relContainer, undefined, mode);
         valTemplate = $("[resource='" + value.id + "']", relContainer);
       }
+      valTemplate.data("isEmbedded", true);
       embedded.push(valTemplate);
       valTemplate.on("remove", function () {
         if (embedded.length) {
@@ -930,28 +934,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return valTemplate;
   }
 
-  // Check validity state of a template
-  function checkState (template) {
-    var valid = template.data("valid");
-    return Object.keys(valid).reduce(function (state, spec_id) {
-      if (spec_id === "state") return state;
-      var spec = valid[spec_id];
-      var spec_state = Object.keys(spec).reduce(function (prop_state, property_uri) {
-        return prop_state && spec[property_uri];
-      }, true);
-      return state && spec_state;
-    }, true);
-  }
-
   // Property validation according to specification
-  function validate(template, spec, values, property_uri) {
+  function validate(individual, property_uri, spec) {
     var result = true;
-    if (!spec) {
-      template.trigger("validate");
-      return result;
-    }
-    var valid = template.data("valid");
-    valid[spec.id] = valid[spec.id] || {};
+    if (!spec) { return result; }
+    var values = individual[property_uri];
     // cardinality check
     if (spec.hasValue("v-ui:minCardinality")) {
       result = result && (
@@ -1009,8 +996,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       return result;
     }, result);
-    valid[spec.id][property_uri] = result;
-    template.trigger("validate");
     return result;
   }
 
