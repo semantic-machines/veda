@@ -67,7 +67,8 @@ public class IndexerContext
             auto buf = ff_key2slot_w.rawRead(new char[ 100 * 1024 ]);
 
             //writefln("@indexer:init:data [%s]", cast(string)buf);
-            key2slot = deserialize_key2slot(cast(string)buf);
+            ResultCode rc;
+            key2slot = deserialize_key2slot(cast(string)buf, rc);
             //writeln("@indexer:init:key2slot", key2slot);
         }
 
@@ -781,12 +782,18 @@ public class IndexerContext
     private void store__key2slot()
     {
         //writeln("#1 store__key2slot");
-        string data = serialize_key2slot(key2slot);
+        string hash;
+        string data = serialize_key2slot(key2slot, hash);
 
         try
         {
             ff_key2slot_w.seek(0);
-            ff_key2slot_w.writef("%s", data);
+    	    ff_key2slot_w.write('"');                        
+            ff_key2slot_w.write(hash);
+            ff_key2slot_w.write("\",");                        
+            ff_key2slot_w.write(data.length);                        
+            ff_key2slot_w.write('\n');                        
+            ff_key2slot_w.write(data);
             ff_key2slot_w.flush();
         }
         catch (Throwable tr)
