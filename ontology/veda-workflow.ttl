@@ -2009,7 +2009,7 @@ v-wf:event_df1
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:StartForm ;
+  v-s:triggerByType v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
   v-s:script """
 
@@ -2027,7 +2027,7 @@ v-wf:event_df2
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:Process ;
+  v-s:triggerByType v-wf:Process ;
   v-s:script """
 
 //  print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -2048,7 +2048,7 @@ v-wf:event_df3
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:WorkItem ;
+  v-s:triggerByType v-wf:WorkItem ;
   v-s:script """
 
   //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -2068,7 +2068,7 @@ v-wf:event_df4
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:WorkOrder ;
+  v-s:triggerByType v-wf:WorkOrder ;
   v-s:script """
 
   //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -2086,7 +2086,7 @@ v-wf:event_df5
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:DecisionForm ;
+  v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
 
   if ((!parent_script_id ||
