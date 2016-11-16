@@ -135,7 +135,7 @@ class ScriptProcess : VedaModule
 
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
-                if (script.trigger_by_type.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
+                if (is_filter_pass(&script, individual_id, indv_types, context.get_onto()) == false)
                 {
                     //log.trace("skip (filter) script:%s", script_id);
                     continue;

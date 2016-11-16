@@ -293,7 +293,7 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
 
     if (script.compiled_script !is null)
     {
-        if (script.trigger_by_type.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
+        if (is_filter_pass(&script, indv.uri, rdfType.keys, onto) == false)
             return ResultCode.OK;
 
         try

@@ -36,25 +36,35 @@ Cache!(string, string) g_cache_of_indv;
 
 private string empty_uid;
 
-bool isFiltred(ScriptInfo *script, string[] indv_types, Onto onto)
+bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_types, Onto onto)
 {
-    bool any_exist = false;
+    bool is_pass = false;
 
-    foreach (indv_type; indv_types)
+	if (script.trigger_by_uid.length == 0 && script.trigger_by_type.length == 0)
+		return true;
+
+    if (script.trigger_by_uid.length > 0 && (individual_id in script.trigger_by_uid) !is null)
+	    is_pass = true;
+
+    if (!is_pass && script.trigger_by_type.length > 0)
     {
-        if ((indv_type in script.trigger_by_type) !is null)
+        foreach (indv_type; indv_types)
         {
-            any_exist = true;
-            break;
-        }
+            if ((indv_type in script.trigger_by_type) !is null)
+            {
+                is_pass = true;
+                break;
+            }
 
-        if (onto.isSubClasses(cast(string)indv_type, script.trigger_by_type.keys) == true)
-        {
-            any_exist = true;
-            break;
+            if (onto.isSubClasses(cast(string)indv_type, script.trigger_by_type.keys) == true)
+            {
+                is_pass = true;
+                break;
+            }
         }
     }
-    return any_exist;
+
+    return is_pass;
 }
 
 void set_g_prev_state(string prev_state)
