@@ -242,9 +242,11 @@ class FanoutProcess : VedaModule
 
                 if (from !is null && to !is null)
                 {
+                	log.trace ("[DEBUG] extract from/to #1");
                     string email_from     = extract_email(sticket, from).getFirstString();
                     string email_to       = extract_email(sticket, to).getFirstString();
                     string email_reply_to = extract_email(sticket, reply_to).getFirstString();
+                	log.trace ("[DEBUG] extract from/to #2");
 
                     if (from.length > 0 && to.length > 0)
                     {
@@ -259,6 +261,7 @@ class FanoutProcess : VedaModule
                                               email_reply_to
                                               );
 
+                	    log.trace ("[DEBUG] set attachment #1");
                         foreach (attachment_id; attachment_ids)
                         {
                             try
@@ -290,15 +293,19 @@ class FanoutProcess : VedaModule
                                           ex.msg);
                             }
                         }
+                	    log.trace ("[DEBUG] set attachment #2");
 
                         SmtpReply res = smtp_conn.send(message);
                         log.trace("push_to_smtp: %s, %s, %s, result.msg=%s result.code=%d", new_indv.uri, message.sender, message.recipients,
                                   res.message,
                                   res.code);
-                        if (!res.success || res.code == 451)
+                        if (!res.success)
                         {
                             is_send = false;
-                            rc = ResultCode.Connect_Error;
+                            if (res.code == 451)
+	                            rc = ResultCode.Connect_Error;
+                            if (res.code == 501)
+	                            rc = ResultCode.Bad_Request;	                            
                         }
                         else
                         {
