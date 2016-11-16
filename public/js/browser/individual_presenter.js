@@ -658,13 +658,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       //control.removeAttr("property");
 
       // Initial validation state
-      validation[property_uri] = true;
+      validation[property_uri] = {state: true, cause: []};
 
       function validationHandler(e) {
-        if ( e.type === "valid" || validation[property_uri] === true ) {
+        if ( e.type === "valid" || validation[property_uri].state === true ) {
           control.removeClass("has-error");
+          control.popover("hide");
         } else {
           control.addClass("has-error");
+          control.popover({
+            content: function () {
+              return validation[property_uri].cause.map(function (cause_uri) {
+                return (new veda.IndividualModel(cause_uri))["rdfs:comment"].join(", ");
+              }).join("\n");
+            },
+            container: control,
+            trigger: "focus"
+          });
         }
         e.stopPropagation();
       }
@@ -727,13 +737,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       //control.removeAttr("rel");
 
       // Initial validation state
-      validation[rel_uri] = true;
+      validation[rel_uri] = {state: true, cause: []};
 
       function validationHandler(e) {
-        if ( e.type === "valid" || validation[rel_uri] === true ) {
+        if ( e.type === "valid" || validation[rel_uri].state === true ) {
           control.removeClass("has-error");
+          control.popover("hide");
         } else {
           control.addClass("has-error");
+          control.popover({
+            content: function () {
+              return validation[rel_uri].cause.map(function (cause_uri) {
+                return (new veda.IndividualModel(cause_uri))["rdfs:comment"].join(", ");
+              }).join("\n");
+            },
+            container: control,
+            trigger: "focus"
+          });
         }
         e.stopPropagation();
       }
@@ -783,13 +803,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (mode === "edit") {
         var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
           validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
-          return acc && validation[property_uri];
+          return acc && validation[property_uri].state;
         }, true);
         isValid = isValid && embedded.reduce(function (acc, template) {
           return acc && template.data("valid");
         }, true);
         template.data("valid", isValid);
         template.trigger(isValid ? "valid" : "invalid", validation);
+        console.log(individual.id, validation);
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded
       if ( !template.data("isEmbedded") ) {
@@ -936,24 +957,29 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
   // Property validation according to specification
   function validate(individual, property_uri, spec) {
-    var result = true;
+    var result = {
+      state: true,
+      cause: []
+    };
     if (!spec) { return result; }
     var values = individual[property_uri];
     // cardinality check
     if (spec.hasValue("v-ui:minCardinality")) {
-      result = result && (
-        values.length >= spec["v-ui:minCardinality"][0] &&
+      var minCardinalityState = (values.length >= spec["v-ui:minCardinality"][0] &&
         // filter empty values
         values.length === values.filter(function(item) {
           return (
             typeof item === "boolean" ? true :
             typeof item === "number" ? true : !!item
           ) ;
-        }).length
-      );
+        }).length);
+      result.state = result.state && minCardinalityState;
+      if (!minCardinalityState) {
+        result.cause.push("v-ui:minCardinality");
+      }
     }
     if (spec.hasValue("v-ui:maxCardinality")) {
-      result = result && (
+      var maxCardinalityState = (
         values.length <= spec["v-ui:maxCardinality"][0] &&
         // filter empty values
         values.length === values.filter(function(item) {
@@ -963,31 +989,87 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           ) ;
         }).length
       );
+      result.state = result.state && maxCardinalityState;
+      if (!maxCardinalityState) {
+        result.cause.push("v-ui:maxCardinality");
+      }
     }
     // check each value
     result = result && values.reduce(function (result, value) {
       // regexp check
       if (spec.hasValue("v-ui:regexp")) {
         var regexp = new RegExp(spec["v-ui:regexp"][0]);
-        result = result && regexp.test(value.toString());
+        var regexpState = regexp.test(value.toString());
+        result.state = result.state && regexpState;
+        if (!regexpState) {
+          result.cause.push("v-ui:regexp");
+        }
       }
       // range check
       switch (spec["rdf:type"][0].id) {
         case "v-ui:IntegerPropertySpecification" :
-          if (spec.hasValue("v-ui:minIntegerValue")) result = result && (value >= spec["v-ui:minIntegerValue"][0]);
-          if (spec.hasValue("v-ui:maxIntegerValue")) result = result && (value <= spec["v-ui:maxIntegerValue"][0]);
+          if (spec.hasValue("v-ui:minIntegerValue")) {
+            var minIntegerValueState = (value >= spec["v-ui:minIntegerValue"][0]);
+            result.state = result.state && minIntegerValueState;
+            if (!minIntegerValueState) {
+              result.cause.push("v-ui:minIntegerValue");
+            }
+          }
+          if (spec.hasValue("v-ui:maxIntegerValue")) {
+            var maxIntegerValueState = (value <= spec["v-ui:maxIntegerValue"][0]);
+            result.state = result.state && maxIntegerValueState;
+            if (!maxIntegerValueState) {
+              result.cause.push("v-ui:maxIntegerValue");
+            }
+          }
           break;
         case "v-ui:DecimalPropertySpecification" :
-          if (spec.hasValue("v-ui:minDecimalValue")) result = result && (value >= spec["v-ui:minDecimalValue"][0]);
-          if (spec.hasValue("v-ui:maxDecimalValue")) result = result && (value <= spec["v-ui:maxDecimalValue"][0]);
+          if (spec.hasValue("v-ui:minDecimalValue")) {
+            var minDecimalValueState = (value >= spec["v-ui:minDecimalValue"][0]);
+            result.state = result.state && minDecimalValueState;
+            if (!minDecimalValueState) {
+              result.cause.push("v-ui:minDecimalValue");
+            }
+          }
+          if (spec.hasValue("v-ui:maxDecimalValue")) {
+            var maxDecimalValueState = (value <= spec["v-ui:maxDecimalValue"][0]);
+            result.state = result.state && maxDecimalValueState;
+            if (!maxDecimalValueState) {
+              result.cause.push("v-ui:maxDecimalValue");
+            }
+          }
           break;
         case "v-ui:DatetimePropertySpecification" :
-          if (spec.hasValue("v-ui:minDatetimeValue")) result = result && (value >= spec["v-ui:minDatetimeValue"][0]);
-          if (spec.hasValue("v-ui:maxDatetimeValue")) result = result && (value <= spec["v-ui:maxDatetimeValue"][0]);
+          if (spec.hasValue("v-ui:minDatetimeValue")) {
+            var minDatetimeValueState = (value >= spec["v-ui:minDatetimeValue"][0]);
+            result.state = result.state && minDatetimeValueState;
+            if (!minDatetimeValueState) {
+              result.cause.push("v-ui:minDatetimeValue");
+            }
+          }
+          if (spec.hasValue("v-ui:maxDatetimeValue")) {
+            var maxDatetimeValueState = (value <= spec["v-ui:maxDatetimeValue"][0]);
+            result.state = result.state && maxDatetimeValueState;
+            if (!maxDatetimeValueState) {
+              result.cause.push("v-ui:maxDatetimeValue");
+            }
+          }
           break;
         case "v-ui:StringPropertySpecification" :
-          if (spec.hasValue("v-ui:minLength")) result = result && (value.length >= spec["v-ui:minLength"][0]);
-          if (spec.hasValue("v-ui:maxLength")) result = result && (value.length <= spec["v-ui:maxLength"][0]);
+          if (spec.hasValue("v-ui:minLength")) {
+            var minLengthState = (value.length >= spec["v-ui:minLength"][0]);
+            result.state = result.state && minLengthState;
+            if (!minLengthState) {
+              result.cause.push("v-ui:minLength");
+            }
+          }
+          if (spec.hasValue("v-ui:maxLength")) {
+            var maxLengthState = (value.length <= spec["v-ui:maxLength"][0]);
+            result.state = result.state && maxLengthState;
+            if (!maxLengthState) {
+              result.cause.push("v-ui:maxLength");
+            }
+          }
           break;
         case "v-ui:PropertySpecification" :
         case "v-ui:BooleanPropertySpecification" :
