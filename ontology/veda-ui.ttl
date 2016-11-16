@@ -137,7 +137,7 @@ v-ui:alternativeName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
   rdfs:label "Альтернативное наименование предиката"@ru ;
-  rdfs:label "Alternativ name for predicate"@en ;
+  rdfs:label "Alternative name for predicate"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:placeholder
@@ -152,6 +152,8 @@ v-ui:minCardinality
   rdfs:domain v-ui:PropertySpecification ;
   rdfs:label "Минимальная кардинальность"@ru ;
   rdfs:label "Minimal cardinality"@en ;
+  rdfs:comment "Значений меньше чем требуется"@ru ;
+  rdfs:comment "Less values than required"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:maxCardinality
@@ -159,6 +161,8 @@ v-ui:maxCardinality
   rdfs:domain v-ui:PropertySpecification ;
   rdfs:label "Максимальная кардинальность"@ru ;
   rdfs:label "Maximal cardinality"@en ;
+  rdfs:comment "Значений больше чем требуется"@ru ;
+  rdfs:comment "More values than required"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:regexp
@@ -168,6 +172,8 @@ v-ui:regexp
   rdfs:domain v-ui:DecimalPropertySpecification ;
   rdfs:label "Регулярное выражение"@ru ;
   rdfs:label "Regular expression"@en ;
+  rdfs:comment "Значение не соответствует регулярному выражению"@ru ;
+  rdfs:comment "Value does not match the regular expression"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:IntegerPropertySpecification
@@ -195,6 +201,8 @@ v-ui:minIntegerValue
   rdfs:domain v-ui:IntegerPropertySpecification ;
   rdfs:label "Минимальное целочисленное значение"@ru ;
   rdfs:label "Minimal integer value"@en ;
+  rdfs:comment "Значение меньше минимума"@ru ;
+  rdfs:comment "Value is less than minimum"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:maxIntegerValue
@@ -202,6 +210,8 @@ v-ui:maxIntegerValue
   rdfs:domain v-ui:IntegerPropertySpecification ;
   rdfs:label "Максимальное целочисленное значение"@ru ;
   rdfs:label "Maximal integer value"@en ;
+  rdfs:comment "Значение больше максимума"@ru ;
+  rdfs:comment "Value is greater than maximum"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:DecimalPropertySpecification
@@ -229,6 +239,8 @@ v-ui:minDecimalValue
   rdfs:domain v-ui:DecimalPropertySpecification ;
   rdfs:label "Минимальное десятичное значение"@ru ;
   rdfs:label "Minimal decimal value"@en ;
+  rdfs:comment "Значение меньше минимума"@ru ;
+  rdfs:comment "Value is less than minimum"@en ;
   rdfs:range xsd:decimal ;
 .
 v-ui:maxDecimalValue
@@ -236,6 +248,8 @@ v-ui:maxDecimalValue
   rdfs:domain v-ui:DecimalPropertySpecification ;
   rdfs:label "Максимальное десятичное значение"@ru ;
   rdfs:label "Maximal decimal value"@en ;
+  rdfs:comment "Значение больше максимума"@ru ;
+  rdfs:comment "Value is greater than maximum"@en ;
   rdfs:range xsd:decimal ;
 .
 v-ui:DatetimePropertySpecification
@@ -263,6 +277,8 @@ v-ui:minDatetimeValue
   rdfs:domain v-ui:DatetimePropertySpecification ;
   rdfs:label "Минимальное календарное значение"@ru ;
   rdfs:label "Minimal datetime value"@en ;
+  rdfs:comment "Значение меньше минимума"@ru ;
+  rdfs:comment "Value is less than minimum"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:maxDatetimeValue
@@ -270,6 +286,8 @@ v-ui:maxDatetimeValue
   rdfs:domain v-ui:DatetimePropertySpecification ;
   rdfs:label "Максимальное календарное значение"@ru ;
   rdfs:label "Maximal datetime value"@en ;
+  rdfs:comment "Значение больше максимума"@ru ;
+  rdfs:comment "Value is greater than maximum"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-ui:StringPropertySpecification
@@ -297,6 +315,8 @@ v-ui:minLength
   rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:label "Минимальная длина строки"@ru ;
   rdfs:label "Minimal string length"@en ;
+  rdfs:comment "Длина строки меньше допустимой"@ru ;
+  rdfs:comment "String length is less than allowed"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:maxLength
@@ -304,6 +324,8 @@ v-ui:maxLength
   rdfs:domain v-ui:StringPropertySpecification ;
   rdfs:label "Максимальная длина строки"@ru ;
   rdfs:label "Maximal string length"@en ;
+  rdfs:comment "Длина строки больше допустимой"@ru ;
+  rdfs:comment "String length is greater than allowed"@en ;
   rdfs:range xsd:integer ;
 .
 v-ui:BooleanPropertySpecification
@@ -1867,6 +1889,13 @@ td:PersonTemplate1
   <br>
   <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
+<script>
+  /*template.on("validate", validate);
+  function validate() {
+    template.trigger("invalid");
+  }
+  //# sourceURL=td:PersonTemplate1*/
+</script>
 """ ;
 .
 td:PsHasAppointmentPerson
