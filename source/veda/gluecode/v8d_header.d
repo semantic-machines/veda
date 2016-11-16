@@ -17,6 +17,8 @@ Logger log;
 string[ string ] g_prop;
 Context    g_context;
 
+string     g_vm_id;
+
 _Buff      g_super_classes;
 _Buff      g_parent_script_id;
 _Buff      g_parent_document_id;
@@ -393,6 +395,12 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
     string query;
     string sort;
     string databases;
+
+	if (g_vm_id != "V8.LowPriority")
+	{
+		log.trace ("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");	
+		return null;
+	}	
 
     try
     {
