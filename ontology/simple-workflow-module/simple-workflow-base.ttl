@@ -628,6 +628,13 @@ s-wf:ComplexRouteStartForm_distribution
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:pm_sf
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject s-wf:SimpleRouteStartForm, s-wf:ComplexRouteStartForm;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
 s-wf:SimpleRouteStartFormMinimal_Template
   rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
