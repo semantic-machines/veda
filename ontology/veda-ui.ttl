@@ -1892,7 +1892,12 @@ td:PersonTemplate1
 <script>
   /*template.on("validate", validate);
   function validate() {
-    template.trigger("invalid");
+    template.trigger("invalid", {
+      "rdfs:label": {
+        state: false,
+        cause: ["v-ui:regexp"]
+      }
+    });
   }
   //# sourceURL=td:PersonTemplate1*/
 </script>

@@ -638,12 +638,55 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
     });
 
+    // Validation with support of embedded templates (arbitrary depth)
+
     // Initial validation state
     var validation = {};
     template.data({
       "valid": true,
       "validation": validation
     });
+
+    function validateTemplate (e) {
+      if (mode === "edit") {
+        var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
+          validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
+          return acc && validation[property_uri].state;
+        }, true);
+        isValid = isValid && embedded.reduce(function (acc, template) {
+          return acc && template.data("valid");
+        }, true);
+        template.data("valid", isValid);
+        template.trigger(isValid ? "valid" : "invalid", validation);
+        //console.log(individual.id, validation);
+      }
+      // "validate" event should bubble up to be handled by parent template only if current template is embedded
+      if ( !template.data("isEmbedded") ) {
+        e.stopPropagation();
+      }
+    }
+    template.on("validate", validateTemplate);
+
+    function triggerValidation() {
+      template.trigger("validate");
+    };
+    individual.on("individual:propertyModified", triggerValidation);
+    template.one("remove", function () {
+      individual.off("individual:propertyModified", triggerValidation);
+    });
+    template.on("edit", triggerValidation);
+
+    /*template.on("valid invalid", function (e, validationResult) {
+      if (validationResult !== validation) {
+        for (var property_uri in validationResult) {
+          validation[property_uri] = validationResult[property_uri];
+        }
+        if (e.type === "invalid") {
+          template.data("isValid", false);
+        }
+      }
+      console.log(individual.id, "validation", validation);
+    });*/
 
     // Property control
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
@@ -674,7 +717,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             },
             container: control,
             trigger: "focus",
-            placement: "right",
+            placement: "top",
+            animation: false
           });
           if ( $("input", control).is(":focus") ) {
             control.popover("show");
@@ -757,7 +801,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             },
             container: control,
             trigger: "focus",
-            placement: "right",
+            placement: "top",
+            animation: false
           });
           if ( $("input", control).is(":focus") ) {
             control.popover("show");
@@ -798,44 +843,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (spec && spec.hasValue("v-ui:tooltip")) {
         control.tooltip({
           title: spec["v-ui:tooltip"].join(", "),
-          placement: "left",
+          placement: "top",
           container: control,
-          trigger: "focus"
+          trigger: "focus",
+          animation: false
         });
       }
 
     });
-
-    // Validation with support of embedded templates (arbitrary depth)
-    function validateTemplate (e) {
-      if (mode === "edit") {
-        var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
-          validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
-          return acc && validation[property_uri].state;
-        }, true);
-        isValid = isValid && embedded.reduce(function (acc, template) {
-          return acc && template.data("valid");
-        }, true);
-        template.data("valid", isValid);
-        template.trigger(isValid ? "valid" : "invalid", validation);
-        console.log(individual.id, validation);
-      }
-      // "validate" event should bubble up to be handled by parent template only if current template is embedded
-      if ( !template.data("isEmbedded") ) {
-        e.stopPropagation();
-      }
-    }
-    template.on("validate", validateTemplate);
-
-    function triggerValidation() {
-      template.trigger("validate");
-    };
-    individual.on("individual:propertyModified", triggerValidation);
-    template.one("remove", function () {
-      individual.off("individual:propertyModified", triggerValidation);
-    });
-    template.on("edit", triggerValidation);
-
 
     return template;
   }

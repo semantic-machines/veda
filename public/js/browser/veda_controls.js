@@ -41,9 +41,10 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "left",
+        placement: "bottom",
         container: control,
-        trigger: "focus"
+        trigger: "focus",
+        animation: false
       });
     }
 
@@ -223,9 +224,10 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "left",
+        placement: "bottom",
         container: control,
-        trigger: "focus"
+        trigger: "focus",
+        animation: false
       });
     }
 
@@ -355,9 +357,10 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "left",
+        placement: "top",
         container: control,
-        trigger: "focus"
+        trigger: "focus",
+        animation: false
       });
     }
 
@@ -511,9 +514,10 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "left",
+        placement: "bottom",
         container: control,
-        trigger: "focus"
+        trigger: "focus",
+        animation: false
       });
     }
 
@@ -632,9 +636,10 @@
         if (spec && spec.hasValue("v-ui:tooltip")) {
           control.parents("label").tooltip({
             title: spec["v-ui:tooltip"].join(", "),
-            placement: "left",
+            placement: "bottom",
             container: control,
-            trigger: "hover"
+            trigger: "hover",
+            animation: false
           });
         }
       }
