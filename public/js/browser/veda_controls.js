@@ -41,7 +41,7 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
+        placement: "left",
         container: control,
         trigger: "focus"
       });
@@ -223,7 +223,7 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
+        placement: "left",
         container: control,
         trigger: "focus"
       });
@@ -355,7 +355,7 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "top",
+        placement: "left",
         container: control,
         trigger: "focus"
       });
@@ -511,7 +511,7 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
+        placement: "left",
         container: control,
         trigger: "focus"
       });
@@ -632,7 +632,7 @@
         if (spec && spec.hasValue("v-ui:tooltip")) {
           control.parents("label").tooltip({
             title: spec["v-ui:tooltip"].join(", "),
-            placement: "bottom",
+            placement: "left",
             container: control,
             trigger: "hover"
           });

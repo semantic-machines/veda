@@ -673,8 +673,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               }).join("\n");
             },
             container: control,
-            trigger: "focus"
+            trigger: "focus",
+            placement: "right",
           });
+          if ( $("input", control).is(":focus") ) {
+            control.popover("show");
+          }
         }
         e.stopPropagation();
       }
@@ -752,8 +756,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               }).join("\n");
             },
             container: control,
-            trigger: "focus"
+            trigger: "focus",
+            placement: "right",
           });
+          if ( $("input", control).is(":focus") ) {
+            control.popover("show");
+          }
         }
         e.stopPropagation();
       }
@@ -790,7 +798,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (spec && spec.hasValue("v-ui:tooltip")) {
         control.tooltip({
           title: spec["v-ui:tooltip"].join(", "),
-          placement: "top",
+          placement: "left",
           container: control,
           trigger: "focus"
         });
