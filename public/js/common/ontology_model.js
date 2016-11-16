@@ -63,7 +63,12 @@ veda.Module(function (veda) { "use strict";
     }
 
     // Check whether server & client cfg:OntoVsn objects are equal
-    var clientVsn = ontology["cfg:OntoVsn"]["rdf:value"][0].data;
+    var clientVsn;
+    try {
+      clientVsn = ontology["cfg:OntoVsn"]["rdf:value"][0].data;
+    } catch (ex) {
+      clientVsn = undefined;
+    }
     var serverVsn = get_individual(veda.ticket, "cfg:OntoVsn")["rdf:value"][0].data;
     if ( clientVsn !== serverVsn ) {
       // Get ontology from server
