@@ -727,7 +727,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       function validationHandler(e) {
         if ( e.type === "valid" || validation[property_uri].state === true ) {
           control.removeClass("has-error");
-          control.popover("hide");
+          control.popover("destroy");
         } else {
           control.addClass("has-error");
           control.popover({
@@ -811,7 +811,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       function validationHandler(e) {
         if ( e.type === "valid" || validation[rel_uri].state === true ) {
           control.removeClass("has-error");
-          control.popover("hide");
+          control.popover("destroy");
         } else {
           control.addClass("has-error");
           control.popover({
