@@ -307,6 +307,26 @@ v-s:PsHasContractorOrganization
   rdfs:label "Спецификация свойства v-s:hasContractor для класса v-s:Organization"@ru ;
 .
 
+v-s:PsHasClassifierCountryOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization;
+  v-ui:forProperty v-s:hasClassifierCountry ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "v-s:hasClassifierCountry property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойства v-s:hasClassifierCountry для класса v-s:Organization"@ru ;
+.
+
+# ------------------------------------------------------------ СТРОКИ --
+
+v-s:NonUniqueTaxId
+  rdf:type v-s:Bundle ;
+  rdfs:label "Non unique tax id message"@en ;
+  rdfs:label "Сообщение не уникальный ИНН"@ru ;
+  rdfs:comment "Organization with this tax number already exists"@en ;
+  rdfs:comment "Организация с таким ИНН уже существует"@ru ;
+.
+
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:AddProfile
@@ -541,8 +561,22 @@ v-s:OrganizationTemplate
       state = false;
       cause.push("v-ui:minCardinality");
     } else {
-      state = regexp.test( individual["v-s:taxId"][0].toString() );
-      cause.push("v-ui:regexp");
+      // Check regexp
+      var taxId = individual["v-s:taxId"][0].toString();
+      state = regexp.test( taxId );
+      if (!state) {
+        cause.push("v-ui:regexp");
+      }
+      // Check unique
+      if (state) {
+        var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'");
+        if (!tmp[0] || tmp[0] === individual.id) {
+          state = true;
+        } else {
+          state = false;
+          cause.push("v-s:NonUniqueTaxId");
+        }
+      }
     }
     validation["v-s:taxId"] = {
       state: state,
@@ -550,7 +584,6 @@ v-s:OrganizationTemplate
     }
     template.trigger(state ? "valid" : "invalid", validation);
   }
-
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
   """ ;
