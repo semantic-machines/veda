@@ -55,8 +55,8 @@ v-s:PsAttachmentForInternalAccountingDocument
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:InternalAccountingDocument ;
   v-ui:forProperty v-s:attachment ;
-  v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
   rdfs:label "Attachments specification for InternalAccountingDocument class"@en ;
   rdfs:label "Спецификация файлов для класса Внутренний бухгалтерский документ"@ru ;
 .
@@ -69,8 +69,27 @@ v-s:Price
   rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
 .
-# v-s:cost
+# v-s:sum
 # v-s:hasCurrency
+
+v-s:PSsumPrice
+  rdf:type v-ui:DecimalPropertySpecification ;
+  v-ui:forClass v-s:Price ;
+  v-ui:forProperty v-s:sum ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "v-s:sum specification for v-s:Price class"@en ;
+  rdfs:label "Спецификация свойства v-s:cost для класса v-s:Price"@ru ;
+.
+v-s:PShasCurrencyPrice
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Price ;
+  v-ui:forProperty v-s:hasCurrency ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "v-s:hasCurrency specification for v-s:Price class"@en ;
+  rdfs:label "Спецификация свойства v-s:hasCurrency для класса v-s:Price"@ru ;
+.
 
 # ------------------------------------------------------------
 v-s:Cost
@@ -87,6 +106,16 @@ v-s:hasPrice
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Cost ;
 .
+v-s:PShasPriceCost
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Cost ;
+  v-ui:forProperty v-s:hasPrice ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "v-s:hasPrice specification for v-s:Cost class"@en ;
+  rdfs:label "Спецификация свойства v-s:hasPrice для класса v-s:Cost"@ru ;
+.
+
 # v-s:description
 
 # ------------------------------------------------------------

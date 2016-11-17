@@ -656,10 +656,10 @@ v-s:sum
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:cost
+v-s:amount
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Cost"@en ;
-  rdfs:label "Цена"@ru ;
+  rdfs:label "Amount"@en ;
+  rdfs:label "Количество"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
