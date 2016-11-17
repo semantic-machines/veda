@@ -1892,12 +1892,21 @@ td:PersonTemplate1
 <script>
   /*template.on("validate", validate);
   function validate() {
-    template.trigger("invalid", {
+    var result = {
       "rdfs:label": {
-        state: false,
-        cause: ["v-ui:regexp"]
+        state: true,
+        cause: []
       }
-    });
+    }
+    result["rdfs:label"].state = individual["rdfs:label"].reduce(
+      function (acc, value) {
+        return acc && (value.length > 5);
+      }
+    , true);
+    if (!result["rdfs:label"].state) {
+      result["rdfs:label"].cause.push("v-ui:minLength");
+    }
+    template.trigger(result["rdfs:label"].state ? "valid" : "invalid", result);
   }
   //# sourceURL=td:PersonTemplate1*/
 </script>
