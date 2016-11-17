@@ -675,9 +675,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("validate", validateTemplate);
     //var c1 = 0;
 
-
     function triggerValidation() {
-      template.trigger("validate");
+      if (mode === "edit") {
+        template.trigger("validate");
+      }
     };
     individual.on("individual:propertyModified", triggerValidation);
     template.one("remove", function () {
