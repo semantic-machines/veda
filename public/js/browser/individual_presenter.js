@@ -648,17 +648,24 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
 
     function validateTemplate (e) {
+      if ( !Object.keys(validation).length ) {
+        e.stopPropagation();
+        return;
+      }
       if (mode === "edit") {
         var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
-          validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
+          if ( !validation[property_uri].isCustom ) {
+            validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
+          }
           return acc && validation[property_uri].state;
         }, true);
         isValid = isValid && embedded.reduce(function (acc, template) {
           return acc && template.data("valid");
         }, true);
+        //console.log("validate handler", individual.id, validation);
+        //console.log("validate handler", ++c1);
         template.data("valid", isValid);
         template.trigger(isValid ? "valid" : "invalid", validation);
-        //console.log(individual.id, validation);
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded
       if ( !template.data("isEmbedded") ) {
@@ -666,6 +673,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
     }
     template.on("validate", validateTemplate);
+    //var c1 = 0;
+
 
     function triggerValidation() {
       template.trigger("validate");
@@ -676,17 +685,29 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
     template.on("edit", triggerValidation);
 
-    /*template.on("valid invalid", function (e, validationResult) {
-      if (validationResult !== validation) {
-        for (var property_uri in validationResult) {
-          validation[property_uri] = validationResult[property_uri];
+    // Handle validation events from template
+    template.on("valid invalid", function (e, validationResult) {
+      e.stopPropagation();
+      if (mode === "edit") {
+        if (validationResult !== validation) {
+          for (var property_uri in validationResult) {
+            validation[property_uri] = validationResult[property_uri];
+            validation[property_uri].isCustom = true;
+          }
+          var valid = template.data("isValid") && (e.type === "valid");
+          template.data("valid", valid);
+          e.type = valid ? "valid" : "invalid";
         }
-        if (e.type === "invalid") {
-          template.data("isValid", false);
+        // trigger validation in parent template if this template is embedded
+        if ( template.data("isEmbedded") && template.parent().length) {
+          template.parent().trigger("validate");
         }
+        //console.log("valid-invalid handler", individual.id, validation);
+        //console.log("valid-invalid handler", ++c2);
       }
-      console.log(individual.id, "validation", validation);
-    });*/
+    });
+
+    //var c2 = 0;
 
     // Property control
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
