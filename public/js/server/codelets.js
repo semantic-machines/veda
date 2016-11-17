@@ -147,7 +147,6 @@ function is_in_docflow_and_set_if_true(task)
     try
     {
         var res = false;
-
         if (task)
         {
             var doc_id = task.getInputVariable('docId');
@@ -182,6 +181,13 @@ function is_in_docflow_and_set_if_true(task)
                             }]
                         };
                         put_individual(task.ticket, new_doc, _event_id);
+                        
+                        var add_to_document = {
+                            '@': doc_id[0].data,
+                            'v-wf:isProcess': newUri(process['@'])
+                        };
+                        print('$ add_to_document >>'+toJson(add_to_document));
+                        add_to_individual(ticket, add_to_document, _event_id);
                     }
                 }
             }
