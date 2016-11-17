@@ -808,6 +808,38 @@ s-wf:ComplexRouteStartForm_Template
 
 
     // CUSTOM
+    if (doc['rdf:type'][0].id === "mnd-s:ActFailure") {
+      if (!doc.hasValue('v-s:hasAction')) {
+        // если [action] пусто, то согласование 1 открыто пусто, поручение - [manager] "Провести необходимое расследование"      
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+        routes['coordination1'][simple+'deadlineDays'] = [10];
+                      
+      	routes['instruction'][simple+'participant'] = doc["mnd-s:actFailureManager"];
+      	routes['instruction'][simple+'visible'] = [true];
+      	routes['instruction'][simple+'editable'] = [true];
+      	routes['instruction'][simple+'deadlineDays'] = [10];
+      	routes['instruction'][simple+'comment'] = [new String('Провести необходимое расследование')];      	      	          
+      } else {
+      	// если [action] не пусто, то согласование 1 - [member] + [chief], подписание - пусто, утверждение - Технический директор + Директор по производству
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+        if (doc.hasValue('v-s:hasMemberOfWorkGroup')) {
+          routes['coordination1'][simple+'participant'] = [];
+          doc['v-s:hasMemberOfWorkGroup'].forEach(function(mwg) {
+            routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(mwg['v-s:member']);
+          });          
+        }                
+      	routes['sign'][simple+'visible'] = [true];
+      	routes['sign'][simple+'editable'] = [true];
+      	routes['sign'][simple+'deadlineDays'] = [10];
+
+      	routes['approval'][simple+'participant'] = [new veda.IndividualModel('d:mondi_position_71017804'), new veda.IndividualModel('d:mondi_position_71018870')];
+      	routes['approval'][simple+'visible'] = [true];
+      	routes['approval'][simple+'editable'] = [true];
+      	routes['approval'][simple+'deadlineDays'] = [10];
+	  }
+    }
     if (doc['rdf:type'][0].id === "mnd-s:ContractorCategoryRequest") {
          if ((doc['mnd-s:hasContractorInteractionCategory'] && doc['mnd-s:hasContractorInteractionCategory'][0]) && 
              (doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb' ||
