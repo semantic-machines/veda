@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text (P_MODULE.fanout_email), "127.0.0.1", 8091, new Logger("veda-core-fanout-email", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(text (P_MODULE.fanout_email), new Logger("veda-core-fanout-email", "log", ""));
 
     p_fanout.run();
 }
@@ -28,9 +28,9 @@ class FanoutProcess : VedaModule
 
     MailSender smtp_conn;
 
-    this(string _module_name, string _host, ushort _port, Logger log)
+    this(string _module_name, Logger log)
     {
-        super(_module_name, _host, _port, log);
+        super(_module_name, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
@@ -242,9 +242,11 @@ class FanoutProcess : VedaModule
 
                 if (from !is null && to !is null)
                 {
-                	log.trace ("[DEBUG] extract from/to #1");
+                	log.trace ("[DEBUG] extract from/to #1 from=%s", from);
                     string email_from     = extract_email(sticket, from).getFirstString();
+                	log.trace ("[DEBUG] extract from/to #1.2 to=%s", to);
                     string email_to       = extract_email(sticket, to).getFirstString();
+                	log.trace ("[DEBUG] extract from/to #1.3 reply_to=%s", reply_to);
                     string email_reply_to = extract_email(sticket, reply_to).getFirstString();
                 	log.trace ("[DEBUG] extract from/to #2");
 

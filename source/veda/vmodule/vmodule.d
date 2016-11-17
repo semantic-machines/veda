@@ -74,8 +74,6 @@ class VedaModule // : WSLink
 
     Individual     node;
 
-    ushort         port;
-    string         host;
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
     string         message_header;
@@ -83,14 +81,12 @@ class VedaModule // : WSLink
 
     Logger         log;
 
-    this(string _module_id, string _host, ushort _port, Logger in_log)
+    this(string _module_id, Logger in_log)
     {
         module_id           = _module_id.replace ("-", "_");
         process_name          = text(module_id);
         prepareall_queue_name = process_name ~ "_prepare_all";
         message_header        = "MSG:" ~ module_id ~ ":";
-        port                  = _port;
-        host                  = _host;
         _log                  = in_log;
         log                   = _log;
     }

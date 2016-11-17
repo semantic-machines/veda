@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text (P_MODULE.fanout_sql), "127.0.0.1", 8091, new Logger("veda-core-fanout-sql", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(text (P_MODULE.fanout_sql), new Logger("veda-core-fanout-sql", "log", ""));
 
     p_fanout.run();
 }
@@ -27,9 +27,9 @@ class FanoutProcess : VedaModule
     Mysql  mysql_conn;
     string database_name;
 
-    this(string _module_name, string _host, ushort _port, Logger log)
+    this(string _module_name, Logger log)
     {
-        super(_module_name, _host, _port, log);
+        super(_module_name, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,

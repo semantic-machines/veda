@@ -17,7 +17,7 @@ int main(string[] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess("V8.LowPriority", process_name, "127.0.0.1", 8091, log);
+    ScriptProcess p_script = new ScriptProcess("V8.LowPriority", process_name, log);
     p_script.run();
 
     return 0;

@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(text(P_MODULE.ltr_scripts), "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(text(P_MODULE.ltr_scripts), new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -325,9 +325,9 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(string _module_name, string _host, ushort _port, Logger _log)
+    this(string _module_name, Logger _log)
     {
-        super(_module_name, _host, _port, _log);
+        super(_module_name, _log);
     }
 
     override void thread_id()

@@ -22,9 +22,9 @@ class ScriptProcess : VedaModule
     private ScriptVM script_vm;
     private string   vm_id;
 
-    this(string _vm_id, string _module_name, string _host, ushort _port, Logger log)
+    this(string _vm_id, string _module_name, Logger log)
     {
-        super(_module_name, _host, _port, log);
+        super(_module_name, log);
 
         vm_id           = _vm_id;
         g_vm_id			=  vm_id;
