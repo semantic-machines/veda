@@ -458,7 +458,7 @@ s-wf:SimpleRouteStartForm_controlled
 
 s-wf:SimpleRouteStartForm_controller
   rdf:type rdf:Property ;
-  rdfs:label "Контроллирующий"@ru ;
+  rdfs:label "Контролирующий"@ru ;
   rdfs:label "Controller"@en ;
   rdfs:domain s-wf:SimpleRouteStartForm ;
   rdfs:range v-s:Appointment ;
@@ -865,30 +865,7 @@ s-wf:ComplexRouteStartForm_Template
          routes['examination'][simple+'editable'] = [false];
          routes['examination'][simple+'deadlineDays'] = [10];                	                     
          routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
-    }    
-/*    
-    if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
-      routes['informing'][simple+'participant'] = doc['v-s:creator'];
-      routes['informing'][simple+'visible'] = [true];
-      routes['informing'][simple+'editable'] = [true];
-      routes['informing'][simple+'deadlineDays'] = [10];
-
-      routes['coordination2'][simple+'participant'] = doc['v-s:creator'];
-      routes['coordination2'][simple+'visible'] = [true];
-      routes['coordination2'][simple+'editable'] = [true];
-      routes['coordination2'][simple+'deadlineDays'] = [10];
-
-      routes['instruction2'][simple+'participant'] = doc['v-s:creator'];
-      routes['instruction2'][simple+'visible'] = [true];
-      routes['instruction2'][simple+'editable'] = [true];
-      routes['instruction2'][simple+'deadlineDays'] = [10];
-      
-      routes['instruction3'][simple+'participant'] = doc['v-s:creator'];
-      routes['instruction3'][simple+'visible'] = [true];
-      routes['instruction3'][simple+'editable'] = [true];
-      routes['instruction3'][simple+'deadlineDays'] = [10];
-    } else
-*/        
+    }
     if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
       // #COORDINATION1--------------------------------------------------------------------------------------------------------------------------------------- 
       routes['coordination1'][simple+'participant'] = [
@@ -914,9 +891,8 @@ s-wf:ComplexRouteStartForm_Template
       routes['examination'][simple+'visible'] = [true];
       routes['examination'][simple+'editable'] = [false];
       routes['examination'][simple+'deadlineDays'] = [10];
-      
       // #INSTRUCTION----------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]);
+      routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]); // Сотрудник. Мастер УВКХ
       routes['instruction'][simple+'visible'] = [true];
       routes['instruction'][simple+'editable'] = [false];
       routes['instruction'][simple+'deadlineDays'] = [10];
