@@ -133,7 +133,7 @@ footer {
 label .has-error + * {
   color: #a94442;
 }
-.has-error input[type='button'], .has-error input[type='button']:hover {
+.has-error .btn, .has-error input[type='button'], .has-error input[type='button']:hover {
   color: #a94442;
   border-color: #a94442;
 }
