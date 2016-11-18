@@ -665,6 +665,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         }, true);
         //console.log("validate handler", individual.id, validation);
         //console.log("validate handler", ++c1);
+        //if (!isValid) { console.log(individual.id, "validation", validation); }
         template.data("valid", isValid);
         template.trigger(isValid ? "valid" : "invalid", validation);
       }
@@ -707,6 +708,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           template.data("valid", isValid);
           e.type = isValid ? "valid" : "invalid";
         }
+
+        //console.log(individual.id, "valid-invalid", validation);
+
         // trigger validation in parent template if this template is embedded
         if ( template.data("isEmbedded") && template.parent().length) {
           template.parent().trigger("validate");
