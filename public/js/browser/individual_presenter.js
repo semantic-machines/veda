@@ -593,6 +593,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       aboutContainer.empty();
       about.present(aboutContainer, aboutTemplate);
       if (isEmbedded) {
+        aboutTemplate = $("[resource='" + about.id + "']", aboutContainer);
         aboutTemplate.data("isEmbedded", true);
         embedded.push(aboutTemplate);
       }
@@ -691,13 +692,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       e.stopPropagation();
       if (mode === "edit") {
         if (validationResult !== validation) {
+          // Remove previous custom validation results
+          Object.keys(validation).map(function (property_uri) {
+            if (validation[property_uri].isCustom) {
+              delete validation[property_uri];
+            }
+          });
+          // Merge custom validation results with standard results
           for (var property_uri in validationResult) {
             validation[property_uri] = validationResult[property_uri];
             validation[property_uri].isCustom = true;
           }
-          var valid = template.data("isValid") && (e.type === "valid");
-          template.data("valid", valid);
-          e.type = valid ? "valid" : "invalid";
+          var isValid = template.data("valid") && (e.type === "valid");
+          template.data("valid", isValid);
+          e.type = isValid ? "valid" : "invalid";
         }
         // trigger validation in parent template if this template is embedded
         if ( template.data("isEmbedded") && template.parent().length) {
@@ -726,7 +734,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       validation[property_uri] = {state: true, cause: []};
 
       function validationHandler(e) {
-        if ( e.type === "valid" || validation[property_uri].state === true ) {
+        if ( e.type === "valid" || !validation[property_uri] || validation[property_uri].state === true ) {
           control.removeClass("has-error");
           control.popover("destroy");
         } else {
@@ -738,7 +746,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               }).join("\n");
             },
             container: control,
-            trigger: "focus",
+            trigger: "hover focus",
             placement: "top",
             animation: false
           });
@@ -810,7 +818,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       validation[rel_uri] = {state: true, cause: []};
 
       function validationHandler(e) {
-        if ( e.type === "valid" || validation[rel_uri].state === true ) {
+        if ( e.type === "valid" || !validation[rel_uri] || validation[rel_uri].state === true) {
           control.removeClass("has-error");
           control.popover("destroy");
         } else {
@@ -822,7 +830,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               }).join("\n");
             },
             container: control,
-            trigger: "focus",
+            trigger: "hover focus",
             placement: "top",
             animation: false
           });
@@ -932,8 +940,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         value.present(relContainer, valTemplate, mode);
       } else {
         value.present(relContainer, undefined, mode);
-        valTemplate = $("[resource='" + value.id + "']", relContainer);
       }
+      valTemplate = $("[resource='" + value.id + "']", relContainer).first();
       valTemplate.data("isEmbedded", true);
       embedded.push(valTemplate);
       valTemplate.on("remove", function () {
@@ -948,8 +956,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         value.present(relContainer, valTemplate);
       } else {
         value.present(relContainer);
-        valTemplate = $("[resource='" + value.id + "']", relContainer);
       }
+      valTemplate = $("[resource='" + value.id + "']", relContainer).first();
     }
     if (!isAbout) {
       var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
@@ -993,8 +1001,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         cell.css("position", "relative").append(wrapper);
       } else {
         valTemplate.css("position", "relative");
-        // It is important to append buttons skipping script element in template!
-        valTemplate.not("script").append(wrapper);
+        valTemplate.append(wrapper);
       }
     }
     return valTemplate;
