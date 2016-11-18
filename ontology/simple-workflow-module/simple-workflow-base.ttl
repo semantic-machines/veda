@@ -916,7 +916,7 @@ s-wf:ComplexRouteStartForm_Template
       routes['examination'][simple+'deadlineDays'] = [10];
       
       // #INSTRUCTION----------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-MASTERS-OPDH_position")]);
+      routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]);
       routes['instruction'][simple+'visible'] = [true];
       routes['instruction'][simple+'editable'] = [false];
       routes['instruction'][simple+'deadlineDays'] = [10];
