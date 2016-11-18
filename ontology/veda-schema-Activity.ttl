@@ -37,7 +37,7 @@ v-s:topic
 v-s:member
   rdf:type owl:ObjectProperty ;
   rdfs:label "Member"@en ;
-  rdfs:label "Участники"@ru ;
+  rdfs:label "Участник"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Activity ;
 .
