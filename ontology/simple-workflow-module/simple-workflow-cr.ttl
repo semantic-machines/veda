@@ -1214,7 +1214,7 @@ s-wf:rul_transform21_0
   v-wf:aggregate  "putExecutor ('v-wf:to')";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate   "putBoolean ('v-wf:isCompleted', false)";
-  v-wf:aggregate   "putString ('rdfs:label', 'доработать :' + getElement ()[0].data)";
+  v-wf:aggregate   "putString ('rdfs:label', 'Доработать')";
   v-wf:grouping "1";
 .
 
