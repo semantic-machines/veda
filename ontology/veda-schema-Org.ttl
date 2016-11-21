@@ -548,11 +548,11 @@ v-s:OrganizationTemplate
 
   template.on("validate", validate);
   function validate() {
-    var validation = {},
+    var validation = { state: true },
         state = true,
         cause = [],
         regexp;
-    if ( individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
+    if ( !individual.hasValue("v-s:hasClassifierCountry") || individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
       regexp = /^([0-9]{10}|[0-9]{12})$/gi;
     } else if ( individual.hasValue("v-s:hasClassifierCountry") ) {
       regexp = /^[A-Z]{2,3}[0-9]{4,}$/gi;
@@ -570,7 +570,7 @@ v-s:OrganizationTemplate
       // Check unique
       if (state) {
         var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'");
-        if (!tmp[0] || tmp[0] === individual.id) {
+        if (!tmp.length || tmp[0] === individual.id) {
           state = true;
         } else {
           state = false;
@@ -582,7 +582,8 @@ v-s:OrganizationTemplate
       state: state,
       cause: cause
     }
-    template.trigger(state ? "valid" : "invalid", validation);
+    validation.state = validation["v-s:taxId"].state;
+    template.trigger("validated", validation);
   }
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
