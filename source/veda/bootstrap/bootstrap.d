@@ -78,12 +78,15 @@ import veda.util.queue;
 
 void main(char[][] args)
 {
-	bool need_remove_ontology = false;	
-	foreach (arg; args)
-	{
-		if (arg == "remove-ontology")
-			need_remove_ontology = true;
-	}
+    bool need_remove_ontology = false;
+    bool need_reload_ontology = false;
+    foreach (arg; args)
+    {
+        if (arg == "remove-ontology")
+            need_remove_ontology = true;
+        if (arg == "reload-ontology")
+            need_reload_ontology = true;
+    }
 
     string[ string ] env;
     int      exit_code;
@@ -176,6 +179,8 @@ void main(char[][] args)
             
             if (need_remove_ontology && ml == "veda-ttlreader")
             	sargs = ["./" ~ ml, "remove-ontology"];
+			else if (need_reload_ontology && ml == "veda-ttlreader")            	
+            	sargs = ["./" ~ ml, "reload-ontology"];
             else	
 	            sargs = ["./" ~ ml];
 	            
