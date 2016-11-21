@@ -1117,21 +1117,30 @@ class PThreadContext : Context
                 prev_indv.addResource("v-s:deleted", Resource(true));
             }
 
+            version (isModule)
+            {
+                JSONValue req_body;
+                req_body[ "function" ]       = "remove";
+                req_body[ "ticket" ]         = ticket.id;
+                req_body[ "uri" ]     = uri;
+                req_body[ "prepare_events" ] = prepare_events;
+                req_body[ "event_id" ]       = event_id;
+                req_body[ "transaction_id" ] = "";
+
+                res = reqrep_2_main_module(req_body);
+            }
+            
             version (isServer)
             {
                 OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
 
                 if (oprc.result == ResultCode.OK)
+                {
                     res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
+                }
                 else
                     res.result = oprc.result;
-            }
-            if (main_module_url !is null)
-            {
-                //writeln("context:store_individual #3 ", process_name);
-            }
-            else
-            {
+
                 Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
                 MapResource rdfType;
                 setMapResources(_types, rdfType);
@@ -1142,7 +1151,6 @@ class PThreadContext : Context
                     inc_count_onto_update();
                 }
             }
-            //veda.core.fanout.send_put(this, null, prev_state, res.op_id);
 
             return res;
         }
@@ -1154,8 +1162,6 @@ class PThreadContext : Context
 
             if (trace_msg[ T_API_210 ] == 1)
                 log.trace("[%s] remove_individual [%s] uri = %s", name, uri, res);
-
-//            stat(CMD_PUT, sw);
         }
     }
 
