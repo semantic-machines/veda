@@ -180,10 +180,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("showRights", showRightsHandler);
 
     function cancelHandler (e, parent) {
+      template.trigger("view");
       if (parent !== individual.id) {
         individual.reset();
       }
-      template.trigger("view");
       e.stopPropagation();
     }
     template.on("cancel", cancelHandler);
@@ -350,25 +350,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var $showRights = $("#rightsOrigin.action", wrapper);
     var $journal = $("#journal.action", wrapper);
 
-    function validHandler(e) {
-      $save.removeAttr("disabled");
-      $send.removeAttr("disabled");
-      $sendButtons.removeAttr("disabled");
-      $createReport.removeAttr("disabled");
-      $createReportButtons.removeAttr("disabled");
-      e.stopPropagation();
-    }
-    function inValidHandler(e) {
-      $save.attr("disabled", "disabled");
-      $send.attr("disabled", "disabled");
-      $sendButtons.attr("disabled", "disabled");
-      $createReport.attr("disabled", "disabled");
-      $createReportButtons.attr("disabled", "disabled");
-      e.stopPropagation();
-    }
-    template.on("valid", validHandler);
-    template.on("invalid", inValidHandler);
-
     $send.on("click", function () {veda.Util.send(individual, template);});
     $createReport.on("click", function () {veda.Util.createReport(individual);});
     $showRights.on("click", function () {veda.Util.showRights(individual);});
@@ -395,6 +376,95 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'][0])+'</a>'
       }));
+    });
+
+    // Validation with support of embedded templates (arbitrary depth)
+
+    // Initial validation state
+    var validation = {state: true};
+    template.data("validation", validation);
+
+    function validateTemplate (e) {
+      if ( Object.keys(validation).length === 1) {
+        e.stopPropagation();
+        return;
+      }
+      if (mode === "edit") {
+        var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
+          if (property_uri === "state") { return acc; }
+          if ( !validation[property_uri].isCustom ) {
+            validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
+          }
+          return acc && validation[property_uri].state;
+        }, true);
+        isValid = isValid && embedded.reduce(function (acc, template) {
+          var validation = template.data("validation");
+          return validation ? acc && validation.state : acc;
+        }, true);
+        validation.state = isValid;
+        //console.log("validate handler", individual.id, validation.state);
+        template.trigger("validated", validation);
+      }
+      // "validate" event should bubble up to be handled by parent template only if current template is embedded
+      if ( !template.data("isEmbedded") ) {
+        e.stopPropagation();
+      }
+    }
+    template.on("validate", validateTemplate);
+
+    function triggerValidation() {
+      if (mode === "edit") {
+        template.trigger("validate");
+      }
+    };
+    individual.on("individual:propertyModified", triggerValidation);
+    template.one("remove", function () {
+      individual.off("individual:propertyModified", triggerValidation);
+    });
+    template.on("edit", triggerValidation);
+
+    // Handle validation events from template
+    template.on("validated", function (e, validationResult) {
+      e.stopPropagation();
+      if (mode === "edit") {
+        if (validationResult !== validation) {
+          // Remove previous custom validation results
+          Object.keys(validation).map(function (property_uri) {
+            if (property_uri === "state") { return; }
+            if ( validation[property_uri].isCustom ) {
+              delete validation[property_uri];
+            }
+          });
+          // Merge custom validation results with standard validation results
+          Object.keys(validationResult).map(function (property_uri) {
+            if (property_uri === "state") { return; }
+            validation[property_uri] = validationResult[property_uri];
+            validation[property_uri].isCustom = true;
+          });
+          validation.state = validation.state && validationResult.state;
+        }
+        //console.log("validated", individual.id, validation.state);
+        // trigger validation in parent template if this template is embedded
+        if ( template.data("isEmbedded") && template.parent().length) {
+          template.parent().trigger("validate");
+        }
+      }
+    });
+
+    template.on("validated", function () {
+      if (validation.state) {
+        $save.removeAttr("disabled");
+        $send.removeAttr("disabled");
+        $sendButtons.removeAttr("disabled");
+        $createReport.removeAttr("disabled");
+        $createReportButtons.removeAttr("disabled");
+      } else {
+        $save.attr("disabled", "disabled");
+        $send.attr("disabled", "disabled");
+        $sendButtons.attr("disabled", "disabled");
+        $createReport.attr("disabled", "disabled");
+        $createReportButtons.attr("disabled", "disabled");
+      }
     });
 
     // Process RDFa compliant template
@@ -639,89 +709,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
     });
 
-    // Validation with support of embedded templates (arbitrary depth)
-
-    // Initial validation state
-    var validation = {};
-    template.data({
-      "valid": true,
-      "validation": validation
-    });
-
-    function validateTemplate (e) {
-      if ( !Object.keys(validation).length ) {
-        e.stopPropagation();
-        return;
-      }
-      if (mode === "edit") {
-        var isValid = Object.keys(validation).reduce( function (acc, property_uri) {
-          if ( !validation[property_uri].isCustom ) {
-            validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
-          }
-          return acc && validation[property_uri].state;
-        }, true);
-        isValid = isValid && embedded.reduce(function (acc, template) {
-          return acc && template.data("valid");
-        }, true);
-        //console.log("validate handler", individual.id, validation);
-        //console.log("validate handler", ++c1);
-        //if (!isValid) { console.log(individual.id, "validation", validation); }
-        template.data("valid", isValid);
-        template.trigger(isValid ? "valid" : "invalid", validation);
-      }
-      // "validate" event should bubble up to be handled by parent template only if current template is embedded
-      if ( !template.data("isEmbedded") ) {
-        e.stopPropagation();
-      }
-    }
-    template.on("validate", validateTemplate);
-    //var c1 = 0;
-
-    function triggerValidation() {
-      if (mode === "edit") {
-        template.trigger("validate");
-      }
-    };
-    individual.on("individual:propertyModified", triggerValidation);
-    template.one("remove", function () {
-      individual.off("individual:propertyModified", triggerValidation);
-    });
-    template.on("edit", triggerValidation);
-
-    // Handle validation events from template
-    template.on("valid invalid", function (e, validationResult) {
-      e.stopPropagation();
-      if (mode === "edit") {
-        if (validationResult !== validation) {
-          // Remove previous custom validation results
-          Object.keys(validation).map(function (property_uri) {
-            if (validation[property_uri].isCustom) {
-              delete validation[property_uri];
-            }
-          });
-          // Merge custom validation results with standard results
-          for (var property_uri in validationResult) {
-            validation[property_uri] = validationResult[property_uri];
-            validation[property_uri].isCustom = true;
-          }
-          var isValid = template.data("valid") && (e.type === "valid");
-          template.data("valid", isValid);
-          e.type = isValid ? "valid" : "invalid";
-        }
-
-        //console.log(individual.id, "valid-invalid", validation);
-
-        // trigger validation in parent template if this template is embedded
-        if ( template.data("isEmbedded") && template.parent().length) {
-          template.parent().trigger("validate");
-        }
-        //console.log("valid-invalid handler", individual.id, validation);
-        //console.log("valid-invalid handler", ++c2);
-      }
-    });
-
-    //var c2 = 0;
-
     // Property control
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
 
@@ -737,8 +724,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       // Initial validation state
       validation[property_uri] = {state: true, cause: []};
 
-      function validationHandler(e) {
-        if ( e.type === "valid" || !validation[property_uri] || validation[property_uri].state === true ) {
+      function validatedHandler(e) {
+        if ( validation.state || !validation[property_uri] || validation[property_uri].state === true ) {
           control.removeClass("has-error");
           control.popover("destroy");
         } else {
@@ -760,7 +747,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         }
         e.stopPropagation();
       }
-      template.on("valid invalid", validationHandler);
+      template.on("validated", validatedHandler);
 
       template.on("view edit search", function (e) {
         e.stopPropagation();
@@ -821,8 +808,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       // Initial validation state
       validation[rel_uri] = {state: true, cause: []};
 
-      function validationHandler(e) {
-        if ( e.type === "valid" || !validation[rel_uri] || validation[rel_uri].state === true) {
+      function validatedHandler(e) {
+        if ( validation.state || !validation[rel_uri] || validation[rel_uri].state === true) {
           control.removeClass("has-error");
           control.popover("destroy");
         } else {
@@ -844,7 +831,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         }
         e.stopPropagation();
       }
-      template.on("valid invalid", validationHandler);
+      template.on("validated", validatedHandler);
 
       template.on("view edit search", function (e) {
         e.stopPropagation();

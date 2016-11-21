@@ -1806,6 +1806,31 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
+<script>
+/*  template.on("validate", validate);
+  function validate() {
+    var result = {
+      "rdfs:label": {
+        state: true,
+        cause: []
+      }
+    }
+    result["rdfs:label"].state = individual["rdfs:label"].reduce(
+      function (acc, value) {
+        return acc && (value.length > 5);
+      }
+    , true);
+    if (!result["rdfs:label"].state) {
+      result["rdfs:label"].cause.push("v-ui:minLength");
+    }
+    result.state = result["rdfs:label"].state;
+
+    console.log("custom validate", individual.id, result.state);
+
+    template.trigger("validated", result);
+  }
+  //# sourceURL=td:PersonTemplate1*/
+</script>
 <div class="container">
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -1889,27 +1914,7 @@ td:PersonTemplate1
   <br>
   <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script>
-  /*template.on("validate", validate);
-  function validate() {
-    var result = {
-      "rdfs:label": {
-        state: true,
-        cause: []
-      }
-    }
-    result["rdfs:label"].state = individual["rdfs:label"].reduce(
-      function (acc, value) {
-        return acc && (value.length > 5);
-      }
-    , true);
-    if (!result["rdfs:label"].state) {
-      result["rdfs:label"].cause.push("v-ui:minLength");
-    }
-    template.trigger(result["rdfs:label"].state ? "valid" : "invalid", result);
-  }
-  //# sourceURL=td:PersonTemplate1*/
-</script>
+
 """ ;
 .
 td:PsHasAppointmentPerson
