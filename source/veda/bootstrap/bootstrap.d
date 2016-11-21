@@ -78,9 +78,15 @@ import veda.util.queue;
 
 void main(char[][] args)
 {
+	bool need_remove_ontology = false;	
+	foreach (arg; args)
+	{
+		if (arg == "remove-ontology")
+			need_remove_ontology = true;
+	}
+
     string[ string ] env;
     int      exit_code;
-
 
     string[] modules = [ "veda", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main", "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
@@ -165,7 +171,15 @@ void main(char[][] args)
         {
             auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
             writeln("start " ~ ml);
-            auto _pid = spawnProcess("./" ~ ml,
+            
+            string[] sargs;
+            
+            if (need_remove_ontology && ml == "veda-ttlreader")
+            	sargs = ["./" ~ ml, "remove-ontology"];
+            else	
+	            sargs = ["./" ~ ml];
+	            
+            auto _pid = spawnProcess(sargs,
                                      std.stdio.stdin,
                                      std.stdio.stdout,
                                      _logFile, env, Config.suppressConsole);
@@ -173,7 +187,8 @@ void main(char[][] args)
             if (ml == "veda-server")
             {
                 server_pid = _pid;
-            }
+            }            
+            
         }
     }
 
