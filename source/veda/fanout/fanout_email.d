@@ -191,7 +191,14 @@ class FanoutProcess : VedaModule
 
     private ResultCode push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     {
+        log.trace("push_to_smtp[%s]: start prepare", new_indv.uri);
+
         SmtpMessage message;
+
+		scope (exit)
+		{
+	        log.trace("push_to_smtp[%s]: end prepare", new_indv.uri);			
+		}
 
         try
         {
@@ -229,8 +236,6 @@ class FanoutProcess : VedaModule
 
 			ResultCode rc;
             bool is_send = false;
-
-            log.trace("push_to_smtp[%s]: start prepare", new_indv.uri);
 
             if (is_deleted == false)
             {
@@ -313,12 +318,12 @@ class FanoutProcess : VedaModule
                         {
                         	rc = ResultCode.OK;
                             is_send = true;
-                            new_indv.addResource("v-s:isSuccess", Resource(true));
+                            //new_indv.addResource("v-s:isSuccess", Resource(true));
                         }
 
-                        new_indv.addResource("v-s:infoOfExecuting", Resource(text(res)));
-                        new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-                        new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
+                        //new_indv.addResource("v-s:infoOfExecuting", Resource(text(res)));
+                        //new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                        //new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
                         //context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
                     }
                     else
