@@ -938,6 +938,10 @@ s-wf:ComplexRouteStartForm_Template
      });
      veda.Util.send(individual, template);
   });
+  $('#back', template).on('click', function () {
+  	 doc.present('#main', undefined, 'view');
+  });
+  
     //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
   </script>
   <div class="container-fluid">
@@ -1058,7 +1062,8 @@ s-wf:ComplexRouteStartForm_Template
         <hr />
       </div>
       <div class="panel-footer">
-        <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"/>
+        <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
+        <button type="button" class="action btn btn-default" id="back" about="v-s:Cancel" property="rdfs:label"></button>
       </div>
     </div>
   </div>
