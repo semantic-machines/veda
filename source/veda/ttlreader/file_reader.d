@@ -110,7 +110,7 @@ void main(char[][] args)
             if (cur_opid >= res.op_id)
                 complete_ft = true;
 
-            cur_opid = context.get_operation_state(P_MODULE.scripts, false);
+            cur_opid = context.get_operation_state(P_MODULE.scripts_main, false);
             log.tracec("INFO: res.op_id=%d, script_opid=%d", res.op_id, cur_opid);
             if (cur_opid >= res.op_id)
                 complete_script = true;
