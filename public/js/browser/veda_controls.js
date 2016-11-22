@@ -1311,12 +1311,6 @@
           $modal.modal();
           container.append($modal);
           var cntr = $(".modal-body", $modal);
-          cntr.on("valid", function () {
-            ok.removeAttr("disabled");
-          });
-          cntr.on("invalid", function () {
-            ok.attr("disabled", "disabled");
-          });
           newVal.one("individual:beforeReset", function () {
             $modal.modal("hide");
           });
@@ -1325,6 +1319,11 @@
             $modal.modal("hide");
           });
           newVal.present(cntr, undefined, "edit");
+          var template = cntr.children().first();
+          template.on("internal-validated", function () {
+            var validation = template.data("validation");
+            validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
+          });
         } else {
           select(newVal);
         }
