@@ -36,6 +36,25 @@ LIB_NAME[11]="automake"
 LIB_OK="Status: install ok installed"
 F_UL=0
 
+# install golang 1.7 and dependency
+mkdir tmp
+cd tmp
+
+wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
+sudo tar -xvf go1.7.linux-amd64.tar.gz
+sudo mv go /usr/local
+
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
+go version
+
+go get github.com/gorilla/websocket
+
+cd ..
+#
+
 for i in "${LIB_NAME[@]}"; do
 
     L1=`dpkg -s $i | grep 'install ok'`

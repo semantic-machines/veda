@@ -9,6 +9,10 @@ then
 fi
 ./update-version-ttl.sh
 
+export GOPATH=$HOME/go
+rm ./veda-ccus
+go build -o veda-ccus source/ccus/src/ccus/ccus.go source/ccus/src/ccus/conn.go
+
 ./build-component.sh veda-bootstrap bootstrap
 rm veda
 rename "s/veda-bootstrap/veda/g" *

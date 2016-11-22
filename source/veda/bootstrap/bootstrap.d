@@ -93,7 +93,7 @@ void main(char[][] args)
     int      exit_code;
 
     string[] modules =
-    [ "veda", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main", "veda-scripts-lp",
+    [ "veda", "veda-ccus", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main", "veda-scripts-lp",
      "veda-ft-indexer", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
 

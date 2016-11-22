@@ -485,7 +485,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             Tid tid_ccus_channel = getTid(P_MODULE.ccus_channel);
                                             if (tid_ccus_channel !is Tid.init)
+					    					{
+                                                log.trace("SEND SIGNAL TO CCUS %s", msg_to_modules);
                                                 send(tid_ccus_channel, msg_to_modules);
+					    					}
                                         }
                                     }
 
