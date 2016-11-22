@@ -44,9 +44,21 @@ shared static this()
     process_name = "ttl_reader";
 }
 
+Ticket sticket;
+
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void main(char[][] args)
 {
+    bool need_remove_ontology = false;
+    bool need_reload_ontology = false;
+    foreach (arg; args)
+    {
+        if (arg == "remove-ontology")
+            need_remove_ontology = true;
+        if (arg == "reload-ontology")
+            need_reload_ontology = true;
+    }
+
     string parent_url = "tcp://127.0.0.1:9112\0";
 
     Thread.sleep(dur!("seconds")(2));
@@ -57,11 +69,73 @@ void main(char[][] args)
     ubyte[] out_data;
 
     Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
+    sticket = context.sys_ticket();
 
-    auto    oFiles = dirEntries(onto_path, SpanMode.depth);
+    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 100000, 100000);
+    log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
-    long    count_individuals = context.count_individuals();
-    if (count_individuals < 10)
+    if (need_remove_ontology)
+    {
+        OpResult res;
+
+        //context.freeze();
+
+        log.tracec("WARN: ALL INDIVIDUALS containing [rdfs:isDefinedBy] WILL BE REMOVED");
+
+        foreach (uri; uris)
+        {
+            log.tracec("WARN: [%s] WILL BE REMOVED", uri);
+            context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
+        }
+
+        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 1000, 1000);
+        foreach (uri; uris)
+        {
+            log.tracec("WARN: [%s] WILL BE REMOVED", uri);
+            res = context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
+        }
+
+        bool complete_ft      = false;
+        bool complete_script  = false;
+        bool complete_subject = false;
+
+        while (true)
+        {
+    	    core.thread.Thread.sleep(dur!("seconds")(1));
+
+            long cur_opid;
+
+            cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
+            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);                        
+            if (cur_opid >= res.op_id)
+                complete_ft = true;
+
+            cur_opid = context.get_operation_state(P_MODULE.scripts_main, false);
+            log.tracec("INFO: res.op_id=%d, script_opid=%d", res.op_id, cur_opid);
+            if (cur_opid >= res.op_id)
+                complete_script = true;
+
+            cur_opid = context.get_operation_state(P_MODULE.subject_manager, false);
+            log.tracec("INFO: res.op_id=%d, subject_opid=%d", res.op_id, cur_opid);
+            if (cur_opid >= res.op_id)
+                complete_subject = true;
+
+		    if (complete_subject && complete_script && complete_ft)
+				break;
+        }
+
+        log.tracec("WARN: !!!! VEDA SYSTEM NEED RESTART");
+
+
+        //kill(pid, SIGKILL);
+
+        return;
+    }
+
+    auto oFiles = dirEntries(onto_path, SpanMode.depth);
+
+//    long    count_individuals = context.count_individuals();
+    if (uris.length == 0 || need_reload_ontology)
     {
         string[] files;
 
@@ -168,8 +242,6 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
     string[] files_to_load;
     bool     is_reload = false;
 
-    Ticket   sticket = context.sys_ticket();
-
     foreach (fname; changes)
     {
         if (extension(fname) == ".ttl" && fname.indexOf("#") < 0)
@@ -213,7 +285,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
             auto l_individuals = ttl2individuals(filename, prefixes, prefixes, log);
 
-			bool f_onto = false;
+            bool f_onto = false;
 
             foreach (uri, indv; l_individuals)
             {
@@ -231,19 +303,19 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 
                     if (loadPriority >= 0)
                         prefix_2_priority[ indv.uri ] = loadPriority;
-					
-					f_onto = true;
+
+                    f_onto = true;
 
                     break;
                 }
             }
-            
+
             if (!f_onto)
             {
-		        log.trace ("WARN! file [%s] does not contain an instance of type owl:Ontology", filename);
-	            filename_2_prefix[ filename ] = filename;
-                prefix_2_priority[ filename ] = 90;        
-                prefixes[filename] = filename;                        
+                log.trace("WARN! file [%s] does not contain an instance of type owl:Ontology", filename);
+                filename_2_prefix[ filename ] = filename;
+                prefix_2_priority[ filename ] = 90;
+                prefixes[ filename ]          = filename;
             }
 
             if (context !is null)

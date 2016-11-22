@@ -80,6 +80,7 @@ void main(char[][] args)
 {
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
+
     foreach (arg; args)
     {
         if (arg == "remove-ontology")
@@ -91,32 +92,36 @@ void main(char[][] args)
     string[ string ] env;
     int      exit_code;
 
-    string[] modules = [ "veda", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main", "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts" ];
+    string[] modules =
+    [ "veda", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main", "veda-scripts-lp",
+     "veda-ft-indexer", "veda-ltr-scripts" ];
     int[][ string ] command_2_pid;
 
-    bool is_found_modules = false;
+    bool     is_found_modules = false;
 
-	string[] wr_components = ["acl_preparer", "fanout_email", "fanout_sql", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager", "ticket_manager", "acl_preparer"];
-	
-	bool is_exist_lock = false;
-	
+    string[] wr_components =
+    [ "acl_preparer", "fanout_email", "fanout_sql", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager",
+     "ticket_manager", "acl_preparer" ];
+
+    bool is_exist_lock = false;
+
     foreach (ml; wr_components)
     {
-            if (ModuleInfoFile.is_lock (ml) == true)
-            {
-	            writefln("Modile_info [%s] already open, or not deleted lock file", ml);
-	            is_exist_lock = true;	
-            }	            
+        if (ModuleInfoFile.is_lock(ml) == true)
+        {
+            writefln("Modile_info [%s] already open, or not deleted lock file", ml);
+            is_exist_lock = true;
+        }
     }
-    
-    if (Queue.is_lock ("individuals-flow"))
+
+    if (Queue.is_lock("individuals-flow"))
     {
-	    writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
-	    is_exist_lock = true;
-    }    
-        
+        writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
+        is_exist_lock = true;
+    }
+
     if (is_exist_lock)
-	    return;    
+        return;
 
     for (int attempt = 0; attempt < 10; attempt++)
     {
@@ -141,7 +146,6 @@ void main(char[][] args)
                     }
                 }
             }
-            
         }
 
         if (is_found_modules == false)
@@ -155,13 +159,13 @@ void main(char[][] args)
         return;
     }
 
-    Pid server_pid;
+    Pid    server_pid;
 
-	string path = "./logs";
+    string path = "./logs";
     try
     {
-            mkdir(path);
-            writeln("create folder: ", path);
+        mkdir(path);
+        writeln("create folder: ", path);
     }
     catch (Exception ex)
     {
@@ -174,16 +178,16 @@ void main(char[][] args)
         {
             auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
             writeln("start " ~ ml);
-            
+
             string[] sargs;
-            
+
             if (need_remove_ontology && ml == "veda-ttlreader")
-            	sargs = ["./" ~ ml, "remove-ontology"];
-			else if (need_reload_ontology && ml == "veda-ttlreader")            	
-            	sargs = ["./" ~ ml, "reload-ontology"];
-            else	
-	            sargs = ["./" ~ ml];
-	            
+                sargs = [ "./" ~ ml, "remove-ontology" ];
+            else if (need_reload_ontology && ml == "veda-ttlreader")
+                sargs = [ "./" ~ ml, "reload-ontology" ];
+            else
+                sargs = [ "./" ~ ml ];
+
             auto _pid = spawnProcess(sargs,
                                      std.stdio.stdin,
                                      std.stdio.stdout,
@@ -192,8 +196,7 @@ void main(char[][] args)
             if (ml == "veda-server")
             {
                 server_pid = _pid;
-            }            
-            
+            }
         }
     }
 
