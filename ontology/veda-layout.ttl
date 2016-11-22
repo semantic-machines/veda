@@ -119,13 +119,6 @@ v-l:menuItem
   rdfs:domain v-l:Menu ;
   rdfs:range v-l:Menu ;
 .
-v-l:action
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Action"@en ;
-  rdfs:label "Действие"@ru ;
-  rdfs:domain v-l:Menu ;
-  rdfs:range xsd:string ;
-.
 v-l:staticLink
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Static link"@en ;
@@ -145,56 +138,36 @@ v-l:MenuItemViewTemplate
   rdfs:label "Menu item template"@en ;
   rdfs:label "Шаблон пункта Меню"@ru ;
   v-ui:template """
-<li class="hidden">
-  <a id="lnk">
-    <span property="rdfs:label"></span>
-  </a>
-</li>
-<li rel="v-l:objectLink" class="hidden">
-  <a href="#/@">
-    <span property="rdfs:label"></span>
-  </a>
-</li>
-<li role="presentation" class="dropdown hidden">
-  <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-    <span property="rdfs:label"></span> <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu" rel="v-l:menuItem" data-template="v-l:MenuItemViewTemplate"></ul>
-</li>
-<li class="divider"></li>
 <script>
-  var stcTmpl = template.eq(0), objTmpl = template.eq(1), subTmpl = template.eq(2), divTmpl = template.eq(3);
-  if (individual.id === "v-l:Divider") {
-    stcTmpl.remove();
-    objTmpl.remove();
-    subTmpl.remove();
-    return;
-  } else {
-    divTmpl.remove();
+  var type = (
+    individual.id === "v-l:Divider" ? "divider" :
+    individual.hasValue("v-l:menuItem") ? "submenu" :
+    individual.hasValue("v-l:objectLink") ? "object" :
+    individual.hasValue("v-l:staticLink") ? "static" : undefined
+  );
+  switch (type) {
+    case "divider": template.empty().addClass("divider"); break;
+    case "submenu": template.addClass("dropdown").find("#static, #object").remove(); break;
+    case "object" : template.attr("rel", "v-l:objectLink").find("#static, #submenu, #submenu-ul").remove(); break;
+    case "static" :
+      template.find("#object, #submenu, #submenu-ul").remove();
+      template.find("#static").attr("href", individual["v-l:staticLink"][0]);
+      break;
   }
-  if (individual.hasValue("v-l:menuItem")) {
-    stcTmpl.remove();
-    objTmpl.remove();
-  } else {
-    subTmpl.remove();
-    if (individual.hasValue("v-l:staticLink")) {
-      objTmpl.remove();
-      var lnk = $("#lnk", stcTmpl);
-      lnk.attr("href", individual["v-l:staticLink"][0])
-         .click(function (e) {
-          if (individual.hasValue("v-l:action")) {
-            e.preventDefault();
-            var action = new Function("veda", individual["v-l:action"][0]);
-            action(veda);
-          }
-         });
-    } else {
-      stcTmpl.remove();
-    }
-  }
-  template.toggleClass("hidden show");
   //# sourceURL=v-l:MenuItemViewTemplate
 </script>
+<li> <!-- rel="v-l:objectLink" class="divider" class="dropdown" -->
+  <a id="static">
+    <span property="rdfs:label"></span>
+  </a>
+  <a id="object" href="#/@">
+    <span property="rdfs:label"></span>
+  </a>
+  <a id="submenu" class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+    <span property="rdfs:label"></span> <span class="caret"></span>
+  </a>
+  <ul id="submenu-ul" class="dropdown-menu" role="menu" rel="v-l:menuItem" data-template="v-l:MenuItemViewTemplate"></ul>
+</li>
   """
 .
 v-l:MenuTemplate
@@ -376,18 +349,11 @@ v-l:Clear
   rdf:type v-l:Menu ;
   rdfs:label "Clear data"@en ;
   rdfs:label "Очистить данные"@ru ;
-  v-l:staticLink "#"^^xsd:string ;
-  v-l:action """
-localStorage.clear();
-location.reload();
-  """
+  v-l:staticLink "javascript: localStorage.clear() && location.reload();"^^xsd:string ;
 .
 v-l:Exit
   rdf:type v-l:Menu ;
   rdfs:label "Exit"@en ;
   rdfs:label "Выйти"@ru ;
-  v-l:staticLink "#"^^xsd:string ;
-  v-l:action """
-veda.logout();
-  """
+  v-l:staticLink "javascript: veda.logout();"^^xsd:string ;
 .
