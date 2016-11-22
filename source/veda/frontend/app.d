@@ -162,8 +162,10 @@ shared static this()
             return Individual.init;
     }
 
-    long count_individuals = context.count_individuals();
-    if (count_individuals < 2)
+    string[] uris = context.get_individuals_ids_via_query(&sys_ticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 100000, 100000);
+
+//    long count_individuals = context.count_individuals();
+    if (uris.length == 0)
     {
         context.sys_ticket(true);
         onto_config = load_config_onto();
