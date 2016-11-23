@@ -176,7 +176,7 @@ v-s:IdeaAndProjectsNumeration
 .
 v-s:NumerationEvent
   rdf:type v-s:Event ;
-  v-s:filterOfType v-s:Enumerated ;
+  v-s:triggerByType v-s:Enumerated ;
   v-s:script """
   var result = numerate(ticket, document, super_classes, prev_state, _event_id);
 """
