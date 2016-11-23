@@ -92,97 +92,97 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 
 		if len(msg) > 1 {
 			log.Printf("ws[%s]:receive msg %s", pc.ws.RemoteAddr(), msg)
-		}
 
-		if pc.ready == false {
-			kv := strings.Split(msg, "=")
+			if pc.ready == false {
+				kv := strings.Split(msg, "=")
 
-			if len(kv) == 2 {
-				if strings.Compare(kv[0], "ccus") == 0 {
-					pc.chid = kv[1]
-					log.Printf("ws[%s]:init chanell %s", pc.ws.RemoteAddr(), pc.chid)
+				if len(kv) == 2 {
+					if strings.Compare(kv[0], "ccus") == 0 {
+						pc.chid = kv[1]
+						log.Printf("ws[%s]:init chanell %s", pc.ws.RemoteAddr(), pc.chid)
+					}
 				}
-			}
-			pc.ready = true
-		} else {
-			if msg[0] == '#' {
-				msg_parts := strings.Split(msg, ";")
-				if len(msg_parts) == 3 {
+				pc.ready = true
+			} else {
+				if msg[0] == '#' {
+					msg_parts := strings.Split(msg, ";")
+					if len(msg_parts) == 3 {
 
-					uid := msg_parts[0][1:len(msg_parts[0])]
-					update_counter, err := strconv.Atoi(msg_parts[1])
-					if err != nil {
-						continue
-					}
-					opid, err := strconv.Atoi(msg_parts[2])
-					if err != nil {
-						continue
-					}
-					//					log.Printf("ws[%s] @1")
-					ni := updateInfo{uid, update_counter, opid}
-					//					log.Printf("ws[%s] @2 ni=%s", ni)
-					pc.cc <- ni
-					//					log.Printf("ws[%s] @3")
-
-				} else {
-					log.Printf("ws[%s][#] send=%s", pc.ws.RemoteAddr(), "Err:invalid message")
-					pc.ws.WriteMessage(websocket.TextMessage, []byte("Err:invalid message"))
-				}
-				continue
-
-			} else if msg[0] == '=' {
-
-				res := pc.get_list_of_subscribe()
-				pc.ws.WriteMessage(websocket.TextMessage, []byte("="+res))
-
-			} else if len(msg) == 2 && msg[0] == '-' && msg[1] == '*' {
-
-				pc.count_2_uid = make(map[string]int)
-
-			} else if len(msg) > 3 {
-				msg_parts := strings.Split(msg, ",")
-
-				for _, element := range msg_parts {
-					expr := strings.Split(element, "=")
-
-					uid_info := ""
-
-					if len(expr) > 0 {
-						uid_info = expr[0]
-					}
-
-					if len(expr) == 2 {
-						if len(uid_info) > 2 {
-							uid := uid_info[1:len(uid_info)]
-							if uid_info[0] == '+' {
-								uid_counter, err := strconv.Atoi(expr[1])
-								if err != nil {
-									continue
-								}
-								//log.Printf("ws[%s]:receive uid=%s uid_counter=%d", pc.ws.RemoteAddr(), uid, uid_counter)
-								pc.count_2_uid[uid] = uid_counter
-								g_count := pc.get_counter_4_uid(uid)
-								if uid_counter < g_count {
-									res := pc.get_list_of_subscribe()
-									log.Printf("ws[%s][+] send=%s", pc.ws.RemoteAddr(), res)
-									pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
-									last_check_opid = pc.get_last_opid()
-								}
-
-							}
+						uid := msg_parts[0][1:len(msg_parts[0])]
+						update_counter, err := strconv.Atoi(msg_parts[1])
+						if err != nil {
+							continue
 						}
-					} else if len(expr) == 1 {
-						if len(uid_info) > 2 {
-							if uid_info[0] == '-' {
+						opid, err := strconv.Atoi(msg_parts[2])
+						if err != nil {
+							continue
+						}
+						//					log.Printf("ws[%s] @1")
+						ni := updateInfo{uid, opid, update_counter}
+						//					log.Printf("ws[%s] @2 ni=%s", ni)
+						pc.cc <- ni
+						//					log.Printf("ws[%s] @3")
+
+					} else {
+						log.Printf("ws[%s][#] send=%s", pc.ws.RemoteAddr(), "Err:invalid message")
+						pc.ws.WriteMessage(websocket.TextMessage, []byte("Err:invalid message"))
+					}
+					continue
+
+				} else if msg[0] == '=' {
+
+					res := pc.get_list_of_subscribe()
+					pc.ws.WriteMessage(websocket.TextMessage, []byte("="+res))
+
+				} else if len(msg) == 2 && msg[0] == '-' && msg[1] == '*' {
+
+					pc.count_2_uid = make(map[string]int)
+
+				} else if len(msg) > 3 {
+					msg_parts := strings.Split(msg, ",")
+
+					for _, element := range msg_parts {
+						expr := strings.Split(element, "=")
+
+						uid_info := ""
+
+						if len(expr) > 0 {
+							uid_info = expr[0]
+						}
+
+						if len(expr) == 2 {
+							if len(uid_info) > 2 {
 								uid := uid_info[1:len(uid_info)]
-								delete(pc.count_2_uid, uid)
+								if uid_info[0] == '+' {
+									uid_counter, err := strconv.Atoi(expr[1])
+									if err != nil {
+										continue
+									}
+									//log.Printf("ws[%s]:receive uid=%s uid_counter=%d", pc.ws.RemoteAddr(), uid, uid_counter)
+									pc.count_2_uid[uid] = uid_counter
+									g_count := pc.get_counter_4_uid(uid)
+									if uid_counter < g_count {
+										res := pc.get_list_of_subscribe()
+										log.Printf("ws[%s][+] send=%s", pc.ws.RemoteAddr(), res)
+										pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
+										last_check_opid = pc.get_last_opid()
+									}
+
+								}
+							}
+						} else if len(expr) == 1 {
+							if len(uid_info) > 2 {
+								if uid_info[0] == '-' {
+									uid := uid_info[1:len(uid_info)]
+									delete(pc.count_2_uid, uid)
+								}
 							}
 						}
+
+						//log.Printf("ws[%s]uid_info=%s", pc.ws.RemoteAddr(), uid_info)
 					}
 
-					//log.Printf("ws[%s]uid_info=%s", pc.ws.RemoteAddr(), uid_info)
 				}
-
 			}
 		}
 

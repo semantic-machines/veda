@@ -52,7 +52,9 @@ func collector_updateInfo(cc chan updateInfo) {
 			}
 		} else {
 			_info_2_uid[gg.uid] = gg
-			_last_opid = gg.opid
+			if _last_opid < gg.opid {
+				_last_opid = gg.opid
+			}
 			log.Printf("collector:update info %s", gg)
 		}
 	}
