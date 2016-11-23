@@ -35,11 +35,11 @@ basic.getDrivers().forEach(function(drv) {
 	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 	testPager(driver);
 
-	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
-	driver.findElement({id:'submit'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
-	driver.sleep(basic.EXTRA_SLOW_OPERATION);
-	testPager(driver);
+	// basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
+	// driver.findElement({id:'submit'}).click()
+	// 	.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
+	// driver.sleep(basic.EXTRA_SLOW_OPERATION);
+	// testPager(driver);
 
 	// TO DO: testPager in messages
 
