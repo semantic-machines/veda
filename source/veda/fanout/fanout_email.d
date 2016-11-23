@@ -37,6 +37,13 @@ class FanoutProcess : VedaModule
                                 string event_id,
                                 long op_id)
     {
+        log.trace("[%s]: start prepare", new_indv.uri);
+        
+		scope (exit)
+		{
+	        log.trace("[%s]: end prepare", new_indv.uri);			
+		}
+        
         ResultCode res;
 
         try
@@ -191,14 +198,7 @@ class FanoutProcess : VedaModule
 
     private ResultCode push_to_smtp(ref Individual prev_indv, ref Individual new_indv)
     {
-        log.trace("push_to_smtp[%s]: start prepare", new_indv.uri);
-
         SmtpMessage message;
-
-		scope (exit)
-		{
-	        log.trace("push_to_smtp[%s]: end prepare", new_indv.uri);			
-		}
 
         try
         {

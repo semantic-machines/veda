@@ -2,7 +2,7 @@
 	"name": "veda-server",
 	"description": "veda-server",
 	"dependencies": {
-		"pacahon_third_party": "1.0.13", 
+		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.0"
 	},
 	"versions": ["isServer"],	
@@ -11,6 +11,7 @@
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
+        "../../lib64/liblmdb.a",
 	"../../lib64/libxapiand.a",
         "../../veda/bind/libwebsockets.d",
 	"../../veda/bind/nano.d", 

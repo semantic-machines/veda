@@ -2,7 +2,7 @@
 	"name": "veda-scripts-main",
 	"description": "veda-scripts-main",
 	"dependencies": {
-		"pacahon_third_party": "1.0.13", 
+		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.0", 
 		"d-nanomsg": "0.1.2"
 	},
@@ -23,6 +23,7 @@
 	"../../veda/gluecode/scripts.d", 
 	"../../veda/gluecode/scripts_main.d", 
 	"../../veda/gluecode/v8d_header.d",
+        "../../lib64/liblmdb.a",
         "../../lib64/libv8d.a", 
 	"../../lib64/libxapiand.a",
         "../../veda/bind/lmdb_header.d",
