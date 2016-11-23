@@ -9,6 +9,8 @@ then
 fi
 ./update-version-ttl.sh
 
+export GOROOT=/usr/local/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
 rm ./veda-ccus
 go build -o veda-ccus source/ccus/src/ccus/ccus.go source/ccus/src/ccus/conn.go

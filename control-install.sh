@@ -41,7 +41,7 @@ mkdir tmp
 cd tmp
 
 wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
-sudo tar -xvf go1.7.linux-amd64.tar.gz
+tar -xvf go1.7.linux-amd64.tar.gz
 sudo mv go /usr/local
 
 export GOROOT=/usr/local/go
