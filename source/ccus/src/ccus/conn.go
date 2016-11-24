@@ -192,7 +192,7 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 			if res != "" {
 				err := pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
 				if err != nil {
-					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s", pc.ws.RemoteAddr(), res)
+					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
 				} else {
 					log.Printf("SEND: ws[%s] found changes, %s", pc.ws.RemoteAddr(), res)
 				}
