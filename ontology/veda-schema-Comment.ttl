@@ -173,6 +173,11 @@ v-s:RecursiveCommentTemplate
       buttons.remove();
     }
   }
+
+   ;
+  if (!individual.rights.hasValue("v-s:canUpdate", true)) {
+    $("#edit-comment", template).remove();
+  }
   //# sourceURL=v-s:RecursiveCommentTemplate
 </script>
 <div class="media">
