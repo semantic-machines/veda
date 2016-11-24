@@ -190,8 +190,12 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 		if last_check_opid < last_opid {
 			res := pc.get_list_of_changes()
 			if res != "" {
-				log.Printf("ws[%s] found changes, send=%s", pc.ws.RemoteAddr(), res)
-				pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
+				err := pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
+				if err != nil {
+					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s", pc.ws.RemoteAddr(), res)
+				} else {
+					log.Printf("SEND: ws[%s] found changes, %s", pc.ws.RemoteAddr(), res)
+				}
 			}
 			last_check_opid = last_opid
 		}
