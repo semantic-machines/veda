@@ -1807,26 +1807,18 @@ td:PersonTemplate1
   v-ui:forClass v-s:Person ;
   v-ui:template """
 <script>
-/*  template.on("validate", validate);
+  /*template.on("validate", validate);
   function validate() {
     var result = {
       "rdfs:label": {
-        state: true,
-        cause: []
+        state: individual["rdfs:label"].reduce(
+          function (acc, value) {
+            return acc && (value.length > 5);
+          }
+        , true),
+        cause: ["v-ui:minLength"]
       }
     }
-    result["rdfs:label"].state = individual["rdfs:label"].reduce(
-      function (acc, value) {
-        return acc && (value.length > 5);
-      }
-    , true);
-    if (!result["rdfs:label"].state) {
-      result["rdfs:label"].cause.push("v-ui:minLength");
-    }
-    result.state = result["rdfs:label"].state;
-
-    console.log("custom validate", individual.id, result.state);
-
     template.trigger("validated", result);
   }
   //# sourceURL=td:PersonTemplate1*/
