@@ -292,7 +292,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
                 if (indv.isExists(rdf__type, owl__Ontology))
                 {
                     string o_file = filename_2_prefix.get(indv.uri, null);
-                    if (o_file !is null)
+                    if (o_file !is null && o_file != filename)
                     {
                         log.trace("ERR! onto[%s] already define in file [%s], this file=%s", indv.uri, o_file, filename);
                         continue;
@@ -354,9 +354,11 @@ void processed(string[] changes, Context context)
 {
     Ticket sticket = context.sys_ticket();
 
-    log.trace("find systicket [%s]", sticket.id);
+    log.trace("processed:find systicket [%s]", sticket.id);
 
     Individual[ string ] individuals = check_and_read_changed(changes, context);
+
+    log.trace("processed:check_and_read_changed, count individuals=[%d]", individuals.length);
 
     if (individuals.length > 0)
     {
@@ -390,7 +392,7 @@ void processed(string[] changes, Context context)
                         {
                             if (indv.getResources("rdf:type").length > 0)
                             {
-                                if (trace_msg[ 33 ] == 1)
+                                //if (trace_msg[ 33 ] == 1)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
 
@@ -427,7 +429,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
     try
     {
         if (trace_msg[ 30 ] == 1)
-            log.trace("ss_list.count=%d", ss_list.length);
+            log.trace("[%s]ss_list.count=%d", filename, ss_list.length);
 
         Ticket     sticket = context.sys_ticket();
 
@@ -524,7 +526,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
-            log.trace("prepare_list end");
+            log.trace("[%s] prepare_list end", filename);
     }
     catch (Exception ex)
     {
