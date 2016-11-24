@@ -533,7 +533,7 @@ v-s:OrganizationTemplate
     profile["rdf:type"] = [_class];
     profile["v-s:backwardTarget"] = [individual];
     profile["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
-    profile["rdfs:label"] = individual["rdfs:label"];
+    profile["rdfs:label"] = individual["v-s:shortLabel"] ;
     profile.present(cntr, tmpl, "edit");
     profile.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
