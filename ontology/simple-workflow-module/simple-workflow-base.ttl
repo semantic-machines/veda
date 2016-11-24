@@ -698,36 +698,35 @@ s-wf:SimpleRouteStartFormFull_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-  <div class="subroot">
-    <div class="panel panel-default">
-      <div class="panel-body">
-    <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-        <div class="row">
-          <div class="col-md-6">
-      <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+<div class="subroot">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      <div class="row">
+        <div class="col-md-6">
+          <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
+          <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
           <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
-          </div>
-          <div class="col-md-6">
-      <strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
-          <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
-          </div>
         </div>
-        <br />
-        <div class="row">
-          <div class="col-md-12">
-      <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
+        <div class="col-md-6">
+          <strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
+          <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
+          <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-md-12">
+          <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
+          <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
           <veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
-          </div>
         </div>
       </div>
     </div>
   </div>
+</div>
   """ ;
 .
-
 
 s-wf:controllerSpecification
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -753,340 +752,341 @@ s-wf:ComplexRouteStartForm_Template
   rdfs:label "Complex route start form template"@en ;
   v-ui:forClass s-wf:ComplexRouteStartForm ;
   v-ui:template """
-  <script>
-    var stages = [ // Default values fill
-      'informing',
-      'coordination1',
-      'coordination2',
-      'coordination3',
-      'coordination4',
-      'coordination5',
-      'coordination6',
-      'sign',
-      'approval',
-      'review',
-      'instruction',
-      'instruction2',
-      'instruction3',
-      'examination',
-      'distribution',
-      'auto_instruction'
-    ];
-    var complex = 's-wf:ComplexRouteStartForm_';
-    var simple = 's-wf:SimpleRouteStartForm_';
+<script>
+var stages = [ // Default values fill
+  'informing',
+  'coordination1',
+  'coordination2',
+  'coordination3',
+  'coordination4',
+  'coordination5',
+  'coordination6',
+  'sign',
+  'approval',
+  'review',
+  'instruction',
+  'instruction2',
+  'instruction3',
+  'examination',
+  'distribution',
+  'auto_instruction'
+];
+var complex = 's-wf:ComplexRouteStartForm_';
+var simple = 's-wf:SimpleRouteStartForm_';
 
-    var routes = [];
+var routes = [];
 
-  var doc = individual['v-wf:processedDocument'][0];
+var doc = individual['v-wf:processedDocument'][0];
 
-  if (doc) {
-      stages.forEach(function(stage) {
-        routes[stage] = new veda.IndividualModel();
-        routes[stage]['rdf:type'] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
-      });
+if (doc) {
+  stages.forEach(function(stage) {
+    routes[stage] = new veda.IndividualModel();
+    routes[stage]['rdf:type'] = [new veda.IndividualModel('s-wf:SimpleRouteStartForm')];
+  });
 
-    // DEFAULT
-    for (i = 1; i <= 6; i++) {
-      routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-      routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
+  // DEFAULT
+  for (i = 1; i <= 6; i++) {
+    routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
+  }
+
+  routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
+  routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
+  routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
+  routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
+  routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
+  routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
+  routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
+
+  // CUSTOM
+  if (doc['rdf:type'][0].id === "mnd-s:ActFailure") {
+    if (!doc.hasValue('v-s:hasAction')) {
+      // если [action] пусто, то согласование 1 открыто пусто, поручение - [manager] "Провести необходимое расследование"
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+
+      //routes['instruction'][simple+'participant'] = doc["mnd-s:actFailureManager"];
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [true];
+      routes['instruction'][simple+'deadlineDays'] = [10];
+      routes['instruction'][simple+'comment'] = [new String('Провести необходимое расследование')];
+    } else {
+      // если [action] не пусто, то согласование 1 - [member] + [chief], подписание - пусто, утверждение - Технический директор + Директор по производству
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      if (doc.hasValue('v-s:hasMemberOfWorkGroup')) {
+        routes['coordination1'][simple+'participant'] = [];
+        doc['v-s:hasMemberOfWorkGroup'].forEach(function(mwg) {
+          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(mwg['v-s:member']);
+        });
+      }
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'deadlineDays'] = [10];
+
+      routes['approval'][simple+'participant'] = [new veda.IndividualModel('d:mondi_position_71017804'), new veda.IndividualModel('d:mondi_position_71018870')];
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [true];
+      routes['approval'][simple+'deadlineDays'] = [10];
     }
-    
-    routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
-    routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
-    routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
-    routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
-    routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
-    routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
-    routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
-
-
-    // CUSTOM
-    if (doc['rdf:type'][0].id === "mnd-s:ActFailure") {
-      if (!doc.hasValue('v-s:hasAction')) {
-        // если [action] пусто, то согласование 1 открыто пусто, поручение - [manager] "Провести необходимое расследование"      
-        routes['coordination1'][simple+'visible'] = [true];
-        routes['coordination1'][simple+'editable'] = [true];
-        routes['coordination1'][simple+'deadlineDays'] = [10];
-                      
-//      	routes['instruction'][simple+'participant'] = doc["mnd-s:actFailureManager"];
-      	routes['instruction'][simple+'visible'] = [true];
-      	routes['instruction'][simple+'editable'] = [true];
-      	routes['instruction'][simple+'deadlineDays'] = [10];
-      	routes['instruction'][simple+'comment'] = [new String('Провести необходимое расследование')];      	      	          
-      } else {
-      	// если [action] не пусто, то согласование 1 - [member] + [chief], подписание - пусто, утверждение - Технический директор + Директор по производству
-        routes['coordination1'][simple+'visible'] = [true];
-        routes['coordination1'][simple+'editable'] = [true];
-        if (doc.hasValue('v-s:hasMemberOfWorkGroup')) {
-          routes['coordination1'][simple+'participant'] = [];
-          doc['v-s:hasMemberOfWorkGroup'].forEach(function(mwg) {
-            routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(mwg['v-s:member']);
-          });          
-        }                
-      	routes['sign'][simple+'visible'] = [true];
-      	routes['sign'][simple+'editable'] = [true];
-      	routes['sign'][simple+'deadlineDays'] = [10];
-
-      	routes['approval'][simple+'participant'] = [new veda.IndividualModel('d:mondi_position_71017804'), new veda.IndividualModel('d:mondi_position_71018870')];
-      	routes['approval'][simple+'visible'] = [true];
-      	routes['approval'][simple+'editable'] = [true];
-      	routes['approval'][simple+'deadlineDays'] = [10];
-	  }
-    }
-    if (doc['rdf:type'][0].id === "mnd-s:ContractorCategoryRequest") {
-         if ((doc['mnd-s:hasContractorInteractionCategory'] && doc['mnd-s:hasContractorInteractionCategory'][0]) && 
-             (doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb' ||
-              doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:05ca93a323534d1689d9005604a596e6' ||
-              doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:a687318c1b1f44468b6db49ad9a5d3f9'
-             )) {
-	       routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:ddc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
-           routes['coordination1'][simple+'visible'] = [true];
-	       routes['coordination1'][simple+'editable'] = [false];
-	       routes['coordination1'][simple+'deadlineDays'] = [10];                
-         }
-	     routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:d39bd6fed-fad3-453e-bca4-e8ebd0e3cc73")];
-         routes['coordination2'][simple+'visible'] = [true];
-	     routes['coordination2'][simple+'editable'] = [false];
-	     routes['coordination2'][simple+'deadlineDays'] = [10];
-	     
-         routes['coordination3'][simple+'visible'] = [true];
-	     routes['coordination3'][simple+'editable'] = [true];
-	     routes['coordination3'][simple+'deadlineDays'] = [10];
-	     
-	     routes['examination'][simple+'participant'] = [veda.user];
-         routes['examination'][simple+'visible'] = [true];
-         routes['examination'][simple+'editable'] = [false];
-         routes['examination'][simple+'deadlineDays'] = [10];                	                     
-         routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
-    }
-    if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
-      // #COORDINATION1--------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['coordination1'][simple+'participant'] = [
-      	new veda.IndividualModel("d:mondi_appointment_00046884_71015702"), // Дмитрий Злобин : Начальник управления
-      	new veda.IndividualModel("d:mondi_appointment_00058098_71024364") // Дмитрий Очеретенко : Главный эколог
-  	  ];
+  }
+  if (doc['rdf:type'][0].id === "mnd-s:ContractorCategoryRequest") {
+    if (
+      (doc['mnd-s:hasContractorInteractionCategory'] && doc['mnd-s:hasContractorInteractionCategory'][0]) &&
+      (doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb' ||
+       doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:05ca93a323534d1689d9005604a596e6' ||
+       doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:a687318c1b1f44468b6db49ad9a5d3f9'
+      )
+    ) {
+      routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:ddc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
       routes['coordination1'][simple+'visible'] = [true];
       routes['coordination1'][simple+'editable'] = [false];
       routes['coordination1'][simple+'deadlineDays'] = [10];
-      // #EXAMINATION----------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['examination'][simple+'participant'] = [
-      	new veda.IndividualModel("d:mondi_appointment_00049652_71000049"), // Вячеслав Луппов : Начальник
-      	new veda.IndividualModel("d:mondi_appointment_00027183_71015712"), // Александр Разумов : Начальник цеха
-      	new veda.IndividualModel("d:mondi_appointment_00066961_71024365"), // Дмитрий Караваев : Заместитель главного эколога
-      	new veda.IndividualModel("d:mondi_appointment_00016254_71019236"), // Сергей Щербаков : Заместитель начальника участка  	
-      	new veda.IndividualModel("d:mondi_appointment_00008542_71020127"), // Елена Ивашова : Инженер-технолог 1 категории
-      	new veda.IndividualModel("d:mondi_appointment_00056698_71019099"), // Елена Астраханова : Ведущий инженер
-      	new veda.IndividualModel("d:mondi_appointment_00057709_71011432"), // Наталья Пронько : Ведущий инженер	
-      	new veda.IndividualModel("d:SYK-SMEN-WATR_appointment"), // Сотрудник. Мастер УВКХ
-      	new veda.IndividualModel("d:SYK-MASTERS-OPDH_appointment"), // Мастерам УПХ ВОЦ (SYK-Masters-OPDH)
-      	new veda.IndividualModel("d:GLAV_DISP_appointment")
-      ];
-      routes['examination'][simple+'visible'] = [true];
-      routes['examination'][simple+'editable'] = [false];
-      routes['examination'][simple+'deadlineDays'] = [10];
-      // #INSTRUCTION----------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]); // Сотрудник. Мастер УВКХ
-      routes['instruction'][simple+'visible'] = [true];
-      routes['instruction'][simple+'editable'] = [false];
-      routes['instruction'][simple+'deadlineDays'] = [10];
-      routes['instruction'][simple+'comment'] = [new String('Заполнить отчёт')];
-      
-      // #INSTRUCTION2---------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['instruction2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00056698_71019099")]; // Елена Астраханова : Ведущий инженер
-      routes['instruction2'][simple+'visible'] = [true];
-      routes['instruction2'][simple+'editable'] = [false];
-      routes['instruction2'][simple+'deadlineDays'] = [10];
-      routes['instruction2'][simple+'comment'] = [new String('Проверить результаты')];
-            
-      // #INSTRUCTION3---------------------------------------------------------------------------------------------------------------------------------------- 
-      routes['instruction3'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00058098_71024364")]; // Дмитрий Очеретенко : Главный эколог
-      routes['instruction3'][simple+'visible'] = [true];
-      routes['instruction3'][simple+'editable'] = [false];
-      routes['instruction3'][simple+'deadlineDays'] = [10];
-      routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
     }
+    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:d39bd6fed-fad3-453e-bca4-e8ebd0e3cc73")];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [false];
+    routes['coordination2'][simple+'deadlineDays'] = [10];
 
-      stages.forEach(function(stage) {
-        var routeid = complex+stage;
-        individual[routeid] = [routes[stage]];
-        var sub = individual[routeid][0];
-        if (!sub.hasValue(simple+'visible') || sub[simple+'visible'][0] == false) {
-          $('.'+stage, template).hide();
-        }
-        if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-          $('.'+stage+' > div', template).attr('about', '@');
-          $('.'+stage+' > div', template).removeAttr('data-embedded');
-          $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]', template).remove();
-          sub.save();
-        }
-      });
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'deadlineDays'] = [10];
+
+    routes['examination'][simple+'participant'] = [veda.user];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [false];
+    routes['examination'][simple+'deadlineDays'] = [10];
+    routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+  }
+  if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
+    // #COORDINATION1---------------------------------------------------------------------------------------------------------------------------------------
+    routes['coordination1'][simple+'participant'] = [
+      new veda.IndividualModel("d:mondi_appointment_00046884_71015702"), // Дмитрий Злобин : Начальник управления
+      new veda.IndividualModel("d:mondi_appointment_00058098_71024364") // Дмитрий Очеретенко : Главный эколог
+    ];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    // #EXAMINATION-----------------------------------------------------------------------------------------------------------------------------------------
+    routes['examination'][simple+'participant'] = [
+      new veda.IndividualModel("d:mondi_appointment_00049652_71000049"), // Вячеслав Луппов : Начальник
+      new veda.IndividualModel("d:mondi_appointment_00027183_71015712"), // Александр Разумов : Начальник цеха
+      new veda.IndividualModel("d:mondi_appointment_00066961_71024365"), // Дмитрий Караваев : Заместитель главного эколога
+      new veda.IndividualModel("d:mondi_appointment_00016254_71019236"), // Сергей Щербаков : Заместитель начальника участка
+      new veda.IndividualModel("d:mondi_appointment_00008542_71020127"), // Елена Ивашова : Инженер-технолог 1 категории
+      new veda.IndividualModel("d:mondi_appointment_00056698_71019099"), // Елена Астраханова : Ведущий инженер
+      new veda.IndividualModel("d:mondi_appointment_00057709_71011432"), // Наталья Пронько : Ведущий инженер
+      new veda.IndividualModel("d:SYK-SMEN-WATR_appointment"), // Сотрудник. Мастер УВКХ
+      new veda.IndividualModel("d:SYK-MASTERS-OPDH_appointment"), // Мастерам УПХ ВОЦ (SYK-Masters-OPDH)
+      new veda.IndividualModel("d:GLAV_DISP_appointment")
+    ];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [false];
+    routes['examination'][simple+'deadlineDays'] = [10];
+    // #INSTRUCTION-----------------------------------------------------------------------------------------------------------------------------------------
+    routes['instruction'][simple+'participant'] = doc['v-s:creator'].concat([new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]); // Сотрудник. Мастер УВКХ
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'deadlineDays'] = [10];
+    routes['instruction'][simple+'comment'] = [new String('Заполнить отчёт')];
+
+    // #INSTRUCTION2----------------------------------------------------------------------------------------------------------------------------------------
+    routes['instruction2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00056698_71019099")]; // Елена Астраханова : Ведущий инженер
+    routes['instruction2'][simple+'visible'] = [true];
+    routes['instruction2'][simple+'editable'] = [false];
+    routes['instruction2'][simple+'deadlineDays'] = [10];
+    routes['instruction2'][simple+'comment'] = [new String('Проверить результаты')];
+
+    // #INSTRUCTION3----------------------------------------------------------------------------------------------------------------------------------------
+    routes['instruction3'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00058098_71024364")]; // Дмитрий Очеретенко : Главный эколог
+    routes['instruction3'][simple+'visible'] = [true];
+    routes['instruction3'][simple+'editable'] = [false];
+    routes['instruction3'][simple+'deadlineDays'] = [10];
+    routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
+  }
+
+  stages.forEach(function(stage) {
+    var routeid = complex+stage;
+    individual[routeid] = [routes[stage]];
+    var sub = individual[routeid][0];
+    if (!sub.hasValue(simple+'visible') || sub[simple+'visible'][0] == false) {
+      $('.'+stage, template).hide();
     }
-  $('#save_and_start_process', template).on('click', function () {
-     stages.forEach(function(stage) {
-        var routeid = complex+stage;
-        var sub = individual[routeid][0];
-        if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
-          delete individual.properties[routeid];
-        }
-     });
-     veda.Util.send(individual, template);
+    if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
+      $('.'+stage+' > div', template).attr('about', '@');
+      $('.'+stage+' > div', template).removeAttr('data-embedded');
+      $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]', template).remove();
+      sub.save();
+    }
   });
-  $('#back', template).on('click', function () {
-  	 doc.present('#main', undefined, 'view');
+}
+$('#save_and_start_process', template).on('click', function () {
+  stages.forEach(function(stage) {
+    var routeid = complex+stage;
+    var sub = individual[routeid][0];
+    if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
+      delete individual.properties[routeid];
+    }
   });
-  
-    //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
-  </script>
-  <div class="container-fluid">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-          <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
-          </div>
-          <div class="col-md-6 text-right">
-            <a href="#/@"><span property="@">ID</span></a>
-          </div>
+  veda.Util.send(individual, template);
+});
+$('#back', template).on('click', function () {
+  doc.present('#main', undefined, 'view');
+});
+
+  //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
+</script>
+<div class="container-fluid">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-6">
+        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
         </div>
-      </div>
-      <div class="panel-body">
-<!--      
-        <div class="row">
-            <div class="col-md-4">
-               <em about="v-wf:processInitiator" property="rdfs:label"></em>
-               <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
-            </div>
-            <div class="col-md-4">
-               <em about="v-wf:processedDocument" property="rdfs:label"></em>
-               <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-            </div>
-            <div class="col-md-4">
-               <em about="v-wf:forNet" property="rdfs:label"></em>
-               <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-            </div>
-            <div class="col-md-4">
-               <em about="v-wf:isProcess" property="rdfs:label"></em>
-               <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-            </div>
-            <div class="col-md-4">
-               <em about="v-wf:useTransformation" property="rdfs:label"></em>
-               <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-            </div>
+        <div class="col-md-6 text-right">
+          <a href="#/@"><span property="@">ID</span></a>
         </div>
-        <hr />
--->        
-        <div class="row">
-            <div class="col-md-4 informing">
-               <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_informing" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 coordination1">
-               <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination1" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 coordination2">
-               <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination2" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 coordination3">
-               <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination3" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 coordination4">
-               <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination4" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 coordination5">
-               <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination5" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 coordination6">
-               <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination6" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 sign">
-               <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_sign" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 approval">
-               <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_approval" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 review">
-               <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_review" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 examination">
-               <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 instruction">
-               <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 instruction2">
-               <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 instruction3">
-               <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
-            </div>
-            <div class="col-md-4 distribution">
-               <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
-               <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-               <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_distribution" class="-view edit search create"></veda-control>
-            </div>
-        </div>
-        <hr />
-      </div>
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
-        <button type="button" class="action btn btn-default" id="back" about="v-s:Cancel" property="rdfs:label"></button>
       </div>
     </div>
+    <div class="panel-body">
+<!--
+      <div class="row">
+          <div class="col-md-4">
+             <em about="v-wf:processInitiator" property="rdfs:label"></em>
+             <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
+          </div>
+          <div class="col-md-4">
+             <em about="v-wf:processedDocument" property="rdfs:label"></em>
+             <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          </div>
+          <div class="col-md-4">
+             <em about="v-wf:forNet" property="rdfs:label"></em>
+             <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          </div>
+          <div class="col-md-4">
+             <em about="v-wf:isProcess" property="rdfs:label"></em>
+             <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          </div>
+          <div class="col-md-4">
+             <em about="v-wf:useTransformation" property="rdfs:label"></em>
+             <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          </div>
+      </div>
+      <hr />
+-->
+      <div class="row">
+          <div class="col-md-4 informing">
+             <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_informing" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 coordination1">
+             <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination1" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 coordination2">
+             <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination2" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 coordination3">
+             <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination3" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 coordination4">
+             <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination4" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 coordination5">
+             <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination5" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 coordination6">
+             <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination6" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 sign">
+             <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_sign" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 approval">
+             <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_approval" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 review">
+             <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_review" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 examination">
+             <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 instruction">
+             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 instruction2">
+             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 instruction3">
+             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
+          </div>
+          <div class="col-md-4 distribution">
+             <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
+             <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_distribution" class="-view edit search create"></veda-control>
+          </div>
+      </div>
+      <hr />
+    </div>
+    <div class="panel-footer">
+      <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-default" id="back" about="v-s:Cancel" property="rdfs:label"></button>
+    </div>
   </div>
+</div>
 <script>
 /*
-	var stages = [ // Default values fill
-	  'informing',
-	  'coordination1',
-	  'coordination2',
-	  'coordination3',
-	  'coordination4',
-	  'coordination5',
-	  'coordination6',
-	  'sign',
-	  'approval',
-	  'review',
-	  'instruction',
-	  'instruction2',
-	  'instruction3',
-	  'examination',
-	  'distribution',
-	  'auto_instruction'
-	]; sourceURL=s-wf:ComplexRouteStartForm_Template
+  var stages = [ // Default values fill
+    'informing',
+    'coordination1',
+    'coordination2',
+    'coordination3',
+    'coordination4',
+    'coordination5',
+    'coordination6',
+    'sign',
+    'approval',
+    'review',
+    'instruction',
+    'instruction2',
+    'instruction3',
+    'examination',
+    'distribution',
+    'auto_instruction'
+  ]; sourceURL=s-wf:ComplexRouteStartForm_Template
     var complex = 's-wf:ComplexRouteStartForm_';
     var simple = 's-wf:SimpleRouteStartForm_';
     stages.forEach(function(stage) {
@@ -1097,7 +1097,7 @@ s-wf:ComplexRouteStartForm_Template
         $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]').hide();
       }
     });
-*/    
+*/
 </script>
   """ ;
 .
@@ -1387,6 +1387,45 @@ s-wf:UserTaskFormTemplate
   rdfs:label "Шаблон для класса Форма ответа на задачу"@ru ;
   v-ui:forClass s-wf:UserTaskForm ;
   v-ui:template """
+<script>
+  var radioTmpl = $(".radio.decision", template);
+  if (individual.hasValue("v-wf:possibleDecisionClass")) {
+    individual["v-wf:possibleDecisionClass"].map( function (value, index) {
+      var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
+      var input = $("input", tmpl).val(index);
+      $("label", tmpl).append(value["rdfs:label"].join(", "));
+      input.change(function () {
+        var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
+        var decision = createDecision(type);
+        individual["v-wf:takenDecision"] = [ decision ];
+      });
+      if (
+        individual.hasValue("v-wf:takenDecision")
+        && individual.isSync()
+        && individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
+      ) {
+        input.prop("checked", true);
+      }
+    });
+  }
+  radioTmpl.remove();
+  template.on("view edit search", function (e) {
+    e.type === "view" ? $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true) :
+    e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) :
+              $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
+  });
+  function createDecision(type) {
+    var decision = new veda.IndividualModel();
+    decision["rdf:type"] = [ type ];
+    decision["rdfs:label"] = type["rdfs:label"];
+    return decision;
+  }
+  $("#cancel", template).click( function (e) {
+    e.stopPropagation();
+    window.history.back();
+  });
+  //# sourceURL=s-wf:UserTaskFormTemplate_pre
+</script>
 <div>
   <div class="container">
     <div class="panel panel-default">
@@ -1444,48 +1483,13 @@ s-wf:UserTaskFormTemplate
   <div about="@" rel="v-wf:onDocument" class="view edit -search"></div>
 </div>
 <script>
-  var radioTmpl = $(".radio.decision", template);
-  if (individual.hasValue("v-wf:possibleDecisionClass")) {
-    individual["v-wf:possibleDecisionClass"].map( function (value, index) {
-      var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
-      var input = $("input", tmpl).val(index);
-      $("label", tmpl).append(value["rdfs:label"].join(", "));
-      input.change(function () {
-        var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
-        var decision = createDecision(type);
-        individual["v-wf:takenDecision"] = [ decision ];
-      });
-      if (
-        individual.hasValue("v-wf:takenDecision")
-        && individual.isSync()
-        && individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
-      ) {
-        input.prop("checked", true);
-      }
-    });
-  }
-  radioTmpl.remove();
-  template.on("view edit search", function (e) {
-    e.type === "view" ? $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true) :
-    e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) :
-              $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
-  });
-  function createDecision(type) {
-    var decision = new veda.IndividualModel();
-    decision["rdf:type"] = [ type ];
-    decision["rdfs:label"] = type["rdfs:label"];
-    return decision;
-  }
   if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
     $(".radio.decision input", template).first().prop("checked", true).change();
     template.trigger("edit");
   } else {
     template.trigger("view");
   }
-  $("#cancel", template).click( function () {
-    window.history.back();
-  });
-  //# sourceURL=s-wf:UserTaskFormTemplate
+  //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>
   """ ;
   .
@@ -2492,8 +2496,8 @@ s-wf:map_t2_sm5
 .
 
 
-s-wf:nc_finish a v-wf:OutputCondition; 
-  v-wf:locationY "371"^^xsd:integer;  
+s-wf:nc_finish a v-wf:OutputCondition;
+  v-wf:locationY "371"^^xsd:integer;
   v-wf:locationX "1300"^^xsd:integer;
   rdfs:label "C2c"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
