@@ -106,10 +106,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       // Timeout to wait all related individuals to render
       setTimeout(function () {
+        template.trigger(mode);
         if (post_render) {
           post_render(veda, individual, container, template, mode);
         }
-        template.trigger(mode);
       }, 0);
     });
 
@@ -625,8 +625,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.data("validation", validation);
 
     function validateTemplate (e) {
-      if ( Object.keys(validation).length === 1) {
-        e.stopPropagation();
+      if ( Object.keys(validation).length === 0) {
+        if ( !template.data("isEmbedded") ) {
+          e.stopPropagation();
+        }
         return;
       }
       if (mode === "edit") {
