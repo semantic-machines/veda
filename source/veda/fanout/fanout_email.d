@@ -249,11 +249,16 @@ class FanoutProcess : VedaModule
                 {
                 	log.trace ("[DEBUG] extract from/to #1 from=%s", from);
                     string email_from     = extract_email(sticket, from).getFirstString();
-                	log.trace ("[DEBUG] extract from/to #1.2 to=%s", to);
-                    string email_to       = extract_email(sticket, to).getFirstString();
-                	log.trace ("[DEBUG] extract from/to #1.3 reply_to=%s", reply_to);
-                    string email_reply_to = extract_email(sticket, reply_to).getFirstString();
-                	log.trace ("[DEBUG] extract from/to #2");
+                	
+                	Recipient[] rr_email_to; 
+                	foreach (Resource el; extract_email(sticket, to))
+                		rr_email_to ~= Recipient(el.data(), "To");
+                	log.trace ("[DEBUG] extract from/to #1.2 to=%s", rr_email_to);
+
+                	string str_email_reply_to = ""; 
+                	foreach (Resource el; extract_email(sticket, reply_to))
+                		str_email_reply_to ~= el.data() ~ ";";                	
+                	log.trace ("[DEBUG] extract from/to #1.3 reply_to=%s", str_email_reply_to);
 
                     if (from.length > 0 && to.length > 0)
                     {
@@ -262,10 +267,10 @@ class FanoutProcess : VedaModule
 
                         message = SmtpMessage(
                                               Recipient(email_from, "From"),
-                                              [ Recipient(email_to, "To") ],
+                                              rr_email_to,
                                               subject,
                                               message_body,
-                                              email_reply_to
+                                              str_email_reply_to
                                               );
 
                 	    log.trace ("[DEBUG] set attachment #1");
