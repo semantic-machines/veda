@@ -30,6 +30,7 @@ v-s:ContractorProfile
   rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Contractor profile"@en ;
   rdfs:label "Досье контрагента"@ru ;
 .
