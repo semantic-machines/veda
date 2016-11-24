@@ -30,6 +30,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 var cc = make(chan updateInfo)
 
 func collector_updateInfo(cc chan updateInfo) {
+	log.Printf("spawn collector")
 
 	_last_opid := 0
 	_info_2_uid := make(map[string]updateInfo)
@@ -54,6 +55,7 @@ func collector_updateInfo(cc chan updateInfo) {
 			_info_2_uid[gg.uid] = gg
 			if _last_opid < gg.opid {
 				_last_opid = gg.opid
+				log.Printf("collector:last_opid=%d", _last_opid)
 			}
 			log.Printf("collector:update info %s", gg)
 		}
