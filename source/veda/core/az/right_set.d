@@ -9,13 +9,6 @@ public static string membership_prefix = "M";
 public static string permission_prefix = "P";
 public static string filter_prefix     = "F";
 
-Logger log;
-
-void set_logger_to_right_set (Logger _log)
-{
-	log = _log;
-}
-
 struct Right
 {
     string id;
@@ -59,20 +52,23 @@ string access_to_pretty_string(const ubyte src)
 class RightSet
 {
     Right *[ string ] data;
+    Logger log;
 
-    this()
+    this(Logger _log)
     {
+        log = _log;
     }
 
-    this(Right *[] src)
+    this(Right *[] src, Logger _log)
     {
+        log = _log;
         foreach (el; src)
         {
             data[ el.id ] = el;
         }
     }
 
-    void   toString(scope void delegate(const(char)[]) sink) const
+    void toString(scope void delegate(const(char)[]) sink) const
     {
         foreach (key, value; data)
         {
@@ -199,30 +195,29 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     Resources delta_resource = get_disappeared(prev_resource, resource);
     Resources delta_in_set   = get_disappeared(prev_in_set, in_set);
 /*
-	if (delta_resource.length > 0)
-	{
-//	    log.trace ("- delta_resource=%s", delta_resource);
-//	    log.trace ("- delta_in_set=%s", delta_in_set);
+        if (delta_resource.length > 0)
+        {
+   //	    log.trace ("- delta_resource=%s", delta_resource);
+   //	    log.trace ("- delta_in_set=%s", delta_in_set);
 
-	    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-	    update_right_set(delta_resource, in_set, true, useFilter, prefix, access, op_id, storage);
-	}
-	else
-	{
-	    delta_resource = get_disappeared(resource, prev_resource);
-	    delta_in_set   = get_disappeared(in_set, prev_in_set);		
+            update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
+            update_right_set(delta_resource, in_set, true, useFilter, prefix, access, op_id, storage);
+        }
+        else
+        {
+            delta_resource = get_disappeared(resource, prev_resource);
+            delta_in_set   = get_disappeared(in_set, prev_in_set);
 
-//	    log.trace ("+ delta_resource=%s", delta_resource);
-//	    log.trace ("+ delta_in_set=%s", delta_in_set);
-    
-	    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-	    //update_right_set(delta_resource, delta_in_set, false, useFilter, prefix, access, op_id, storage);
-	}
-*/	
-	
+   //	    log.trace ("+ delta_resource=%s", delta_resource);
+   //	    log.trace ("+ delta_in_set=%s", delta_in_set);
+
+            update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
+            //update_right_set(delta_resource, delta_in_set, false, useFilter, prefix, access, op_id, storage);
+        }
+ */
+
     update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
     update_right_set(delta_resource, delta_in_set, true, useFilter, prefix, access, op_id, storage);
-	
 }
 
 private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
@@ -232,7 +227,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
     // для каждого из ресурсов выполним операцию добавления/удаления
     foreach (rs; resource)
     {
-        RightSet new_right_set = new RightSet();
+        RightSet new_right_set = new RightSet(log);
 
         string   prev_data_str = storage.find(prefix ~ rs.uri);
         if (prev_data_str !is null)
@@ -270,14 +265,14 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
 
         ResultCode res = storage.put(key, new_record, op_id);
 
-        //if (trace_msg[ 101 ] == 1)
+        if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
     }
 }
 
 void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
 {
-    //if (trace_msg[ 114 ] == 1)
+    if (trace_msg[ 114 ] == 1)
         log.trace("store Membership: [%s] op_id=%d", new_ind.uri, op_id);
 
     prepare_right_set(prev_ind, new_ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,

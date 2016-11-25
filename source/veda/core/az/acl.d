@@ -21,7 +21,7 @@ class Authorization : LmdbStorage
 
     this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
     {
-    	log = _log;
+        log = _log;
         super(_path, mode, _parent_thread_name, log);
         //cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache, "group");
         //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
@@ -47,12 +47,12 @@ class Authorization : LmdbStorage
                                                                                                                                string right) trace =
                         null)
     {
-    	if (db_is_opened == false)
-		    open_db();	    	
-    	    	
+        if (db_is_opened == false)
+            open_db();
+
         void reopen_db()
         {
-        	log.trace ("reopen acl.R");
+            log.trace("reopen acl.R");
             this.reopen_db();
         }
 
@@ -60,12 +60,12 @@ class Authorization : LmdbStorage
 
         if (ticket is null)
         {
-	        log.trace("ERR! authorize uri=%s, request_access=%s, ticket IS NULL", uri, access_to_pretty_string(request_access));
+            log.trace("ERR! authorize uri=%s, request_access=%s, ticket IS NULL", uri, access_to_pretty_string(request_access));
             return request_access;
-        }    
+        }
 
-    	if (db_is_opened == false)
-	    	return res;
+        if (db_is_opened == false)
+            return res;
 
         if (trace_msg[ 111 ] == 1)
             log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access));
@@ -201,7 +201,7 @@ class Authorization : LmdbStorage
             RightSet get_resource_groups(string uri, ubyte access)
             {
                 bool[ string ] prepared_uris;
-                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0));
+                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0), log);
             }
 
             // 0. читаем фильтр прав у object (uri)
@@ -266,7 +266,7 @@ class Authorization : LmdbStorage
                     if (rc == 0)
                     {
                         str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                        RightSet pp = new RightSet();
+                        RightSet pp = new RightSet(log);
                         rights_from_string(str, pp);
                         permission_2_group[ object_group.id ] = pp;
 
