@@ -150,7 +150,7 @@ veda.Module(function Backend(veda) { "use strict";
       type: "GET",
       url: "query",
       data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false,
-          "top" : top || 0, "limit" : limit || 1000 }
+          "top" : top || 0, "limit" : limit || 0 }
     };
     return call_server(ticket, params, success, fail);
   }
