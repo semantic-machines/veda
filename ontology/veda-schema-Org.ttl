@@ -330,10 +330,17 @@ v-s:PslabelForOrganization
   v-ui:maxCardinality 100 ;
   rdfs:label "rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойств rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress для класса v-s:Organization"@ru ;
-
 .
 
-
+v-s:taxRegistrationCauseForOrganization
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:taxRegistrationCause;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1;
+  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Organization"@ru ;
+.
 
 # ------------------------------------------------------------ СТРОКИ --
 
