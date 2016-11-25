@@ -36,7 +36,7 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(undefined, params, success, fail);
   }
-  
+
   window.get_rights = function (ticket, uri, success, fail) {
     var params = {
       type: "GET",
@@ -150,7 +150,7 @@ veda.Module(function Backend(veda) { "use strict";
       type: "GET",
       url: "query",
       data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false,
-          "top" : top || 0, "limit" : limit || 0}
+          "top" : top || 0, "limit" : limit || 1000 }
     };
     return call_server(ticket, params, success, fail);
   }
