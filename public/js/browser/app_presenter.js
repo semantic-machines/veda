@@ -65,10 +65,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
       hash = Sha256.hash(password),
       authResult;
     try {
-      errorMsg.addClass("hidden");
       authResult = veda.login(login, hash);
-      veda.trigger("login:success", authResult);
     } catch (ex1) {
+      authResult = undefined;
       if (ntlm) {
         var params = {
           type: "POST",
@@ -82,12 +81,19 @@ veda.Module(function AppPresenter(veda) { "use strict";
         try {
           authResult = $.ajax(params);
           authResult = JSON.parse( authResult.responseText );
-          veda.trigger("login:success", authResult);
           return;
-        } catch (ex2) {}
+        } catch (ex2) {
+          authResult = undefined;
+        }
       }
-      errorMsg.removeClass("hidden");
-      veda.trigger("login:failed");
+    } finally {
+      if (authResult) {
+        errorMsg.addClass("hidden");
+        veda.trigger("login:success", authResult);
+      } else {
+        errorMsg.removeClass("hidden");
+        veda.trigger("login:failed");
+      }
     }
   });
 
