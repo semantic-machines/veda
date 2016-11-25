@@ -330,17 +330,10 @@ v-s:PslabelForOrganization
   v-ui:maxCardinality 100 ;
   rdfs:label "rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойств rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress для класса v-s:Organization"@ru ;
+
 .
 
-v-s:taxRegistrationCauseForOrganization
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:Organization ;
-  v-ui:forProperty v-s:taxRegistrationCause;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1;
-  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
-  rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Organization"@ru ;
-.
+
 
 # ------------------------------------------------------------ СТРОКИ --
 
@@ -583,11 +576,10 @@ v-s:OrganizationTemplate
     });
   });
 
-  template.on("validate", validate);
-  function validate() {
-    var validation = { state: true },
-        state = true,
-        cause = [],
+  // Validation
+
+  template.on("validate", function () {
+    var result = {},
         regexp;
     if ( !individual.hasValue("v-s:hasClassifierCountry") || individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
       regexp = /^([0-9]{10}|[0-9]{12})$/gi;
@@ -595,53 +587,39 @@ v-s:OrganizationTemplate
       regexp = /^[A-Z]{2,3}[0-9]{4,}$/gi;
     }
     if ( !individual.hasValue("v-s:taxId") ) {
-      state = false;
-      cause.push("v-ui:minCardinality");
+      result["v-s:taxId"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      }
     } else {
       // Check regexp
       var taxId = individual["v-s:taxId"][0].toString();
-      state = regexp.test( taxId );
-      if (!state) {
-        cause.push("v-ui:regexp");
+      result["v-s:taxId"] = {
+        state: regexp.test( taxId ),
+        cause: ["v-ui:regexp"]
       }
       // Check unique
-      if (state) {
+      if ( result["v-s:taxId"].state ) {
         var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'");
-        if (!tmp.length || tmp[0] === individual.id) {
-          state = true;
-        } else {
-          state = false;
-          cause.push("v-s:NonUniqueTaxId");
+        result["v-s:taxId"] = {
+          state: (!tmp.length || tmp[0] === individual.id),
+          cause: ["v-s:NonUniqueTaxId"]
         }
       }
     }
-    validation["v-s:taxId"] = {
-      state: state,
-      cause: cause
-    }
-    validation.state = validation["v-s:taxId"].state;
-    template.trigger("validated", validation);
-  }
 
-   // Validation
-
-  /* Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102
-  то поле v-s:taxRegistrationCause должно быть обязательным.
-
-   */
-  template.on("validate", function () {
-    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS"))&&individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
+    // Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102 то поле v-s:taxRegistrationCause должно быть обязательным.
+    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
       var result = {
         "v-s:taxRegistrationCause": {
-          state: individual.hasValue("v-s:taxRegistrationCause"),
-          cause: ["v-ui:minCardinality"]
+          state: true,
+          cause: []
         }
       };
-      template.trigger("validated", result);
     }
+
+    template.trigger("validated", result);
   });
-
-
 
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
