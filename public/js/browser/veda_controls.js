@@ -145,9 +145,9 @@
     var ta = $("textarea", control);
     ta.attr("rows", this.attr("rows"));
     autosize(ta);
-    setTimeout (function () {
+    this.on("edit", function () {
       autosize.update(ta);
-    }, 100);
+    });
     this.on("remove", function () {
       autosize.destroy(ta);
     });
@@ -565,9 +565,9 @@
       var ta = $("textarea", control);
       ta.attr("rows", $this.attr("rows"));
       autosize(ta);
-      setTimeout (function () {
+      $this.on("edit", function () {
         autosize.update(ta);
-      }, 100);
+      });
       $this.on("remove", function () {
         autosize.destroy(ta);
       });
