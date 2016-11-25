@@ -292,7 +292,7 @@ veda.Module(function (veda) { "use strict";
           "'rdf:type' === 'v-ui:ObjectPropertySpecification'";
 
       var result = {};
-      get_individuals(veda.ticket, query(veda.ticket, q)).map( function (item) {
+      get_individuals(veda.ticket, query(veda.ticket, q, undefined, undefined, undefined, undefined, 10000)).map( function (item) {
         result[ item["@"] ] = item;
       });
       return result;
