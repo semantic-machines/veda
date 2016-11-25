@@ -15,7 +15,7 @@
   - Integrated LMDB database library. Key-value memory mapped storage (http://symas.com/mdb).
   - Integrated Xapian search engine library. Used for data indexing & querying (http://xapian.org).
   - Integrated V8 javascript engine library. Used for workflow execution engine and other server-side logic (https://code.google.com/p/v8).
-  - Vibe - high-level declarative REST and web application framework (http://vibed.org).
+  - Vibe.d - high-level declarative REST and web application framework (http://vibed.org).
   - nanomsg
   - websockets    
 
