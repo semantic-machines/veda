@@ -243,6 +243,13 @@ v-s:specialOpinion
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
 .
+v-s:hasDocumentKind
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Document kind"@en ;
+  rdfs:label "Вид документа"@ru ;
+  rdfs:range v-s:DocumentKind ;
+  rdfs:domain v-s:Thing ;
+.
 ### -------------------------------------------------------
 v-s:UserThing
   rdf:type owl:Class ;

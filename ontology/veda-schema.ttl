@@ -200,6 +200,13 @@ v-s:Sector
   rdfs:label "Sector"@en ;
   rdfs:label "Отрасль экономической деятельности"@ru ;
 .
+### ------------------------------------------------------
+v-s:DocumentKind
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Document kind"@en ;
+  rdfs:label "Вид документа"@ru ;
+.
 ### veda-workflow
 
 
