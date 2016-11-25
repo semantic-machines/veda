@@ -91,23 +91,19 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(undefined, params, success, fail);
   }
 
-        window.wait_module = function (module_id, op_id, success, fail)
-        {
-                var timeout = 1;
-                var op_id_from_module;
-                for (var i = 0; i < 100; i++)
-                {
-                        op_id_from_module = get_operation_state (module_id, op_id);
-
-                        if (op_id_from_module >= op_id)
-                                break;
-
-                        var endtime = new Date().getTime() + timeout;
-                        while (new Date().getTime() < endtime);
-
-                        timeout += 1;
-                }
-        }
+  window.wait_module = function (module_id, op_id, success, fail)
+  {
+    var timeout = 1;
+    var op_id_from_module;
+    for (var i = 0; i < 100; i++)
+    {
+      op_id_from_module = get_operation_state (module_id, op_id);
+      if (op_id_from_module >= op_id) { break; }
+      var endtime = new Date().getTime() + timeout;
+      while (new Date().getTime() < endtime);
+      timeout += 1;
+    }
+  }
 
   window.restart = function (ticket, success, fail) {
     var params = {
@@ -150,7 +146,7 @@ veda.Module(function Backend(veda) { "use strict";
       type: "GET",
       url: "query",
       data: { "ticket": ticket, "query": q, "sort": sort || null, "databases" : databases || null, "reopen" : reopen || false,
-          "top" : top || 0, "limit" : limit || 1000 }
+          "top" : top || 0, "limit" : limit || 0 }
     };
     return call_server(ticket, params, success, fail);
   }
