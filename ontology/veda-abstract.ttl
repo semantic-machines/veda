@@ -424,7 +424,13 @@ v-s:supplier
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Contractual ;
 .
-
+v-s:obligationKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Obligation kind"@en ;
+  rdfs:label "Вид обязательств"@ru ;
+  rdfs:range v-s:Sector ;
+  rdfs:domain v-s:Contractual ;
+.
 ### -------------------------------------------------------
 v-s:Controlled
   rdf:type owl:Class ;
@@ -732,4 +738,26 @@ v-s:hasMaintenanceKind
   rdfs:label "Вид останова оборудования"@ru ;
   rdfs:range v-s:MaintenanceKind ;
   rdfs:domain v-s:Maintained ;
+.
+
+### ------------------------------------------------------------
+v-s:Financial
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Financial thing"@en ;
+  rdfs:label "Финансовая сущность"@ru ;
+.
+v-s:expectedValueOfContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Expected value of contract"@en ;
+  rdfs:label "Ожидаемая сумма контракта"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+v-s:hasBudgetCategory
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Financial ;
+  rdfs:label "Budget category"@en ;
+  rdfs:label "Категория бюджета"@ru ;
+  rdfs:range v-s:BudgetCategory ;
 .

@@ -124,6 +124,8 @@ v-s:PShasPriceCost
 v-s:ContractRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Request ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Financial ;
   rdfs:label "ContractRequest"@en ;
   rdfs:label "Заявка на контракт"@ru ;
 .
@@ -151,6 +153,14 @@ v-s:ClassifierLegalForm
   rdfs:label "ClassifierLegalForm"@en ;
   rdfs:label "Организационно правовая форма"@ru ;
 .
+# ------------------------------------------------------------
+v-s:BudgetCategory
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Budget category"@en ;
+  rdfs:label "Категория бюджета"@ru ;
+.
+
 # ------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;

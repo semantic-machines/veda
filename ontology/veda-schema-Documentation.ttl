@@ -136,7 +136,7 @@ v-s:isPositiveObservation
 v-s:effectsDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Effects description"@en ;
-  rdfs:label "Опсиание последствий"@ru ;
+  rdfs:label "Описание последствий"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
