@@ -81,7 +81,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
         try {
           authResult = $.ajax(params);
           authResult = JSON.parse( authResult.responseText );
-          return;
         } catch (ex2) {
           authResult = undefined;
         }
