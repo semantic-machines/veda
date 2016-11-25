@@ -415,6 +415,15 @@ v-s:customer
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
+  rdfs:comment "Заказчик организация" ;
+.
+v-s:customerContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Customer"@en ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:comment "Заказчик контрагент" ;
 .
 v-s:supplier
   rdf:type owl:ObjectProperty ;
@@ -423,6 +432,15 @@ v-s:supplier
   rdfs:range v-s:Appointment ;
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Contractual ;
+  rdfs:comment "Исполнитель организация" ;
+.
+v-s:supplierContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Supplier"@en ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:comment "Исполнитель контрагент" ;
 .
 v-s:obligationKind
   rdf:type owl:ObjectProperty ;
