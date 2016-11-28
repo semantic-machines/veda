@@ -1,0 +1,90 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-DocumentKind/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-DocumentKind>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. Dictionary - DocumentKind"@en ;
+  rdfs:label "Онтология Veda. Справочник Вид документа"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+#-----------------------------------------------------
+d:97a6c9fbbc15418f8309490b2b6d3d6e
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы договорных документов";
+  v-s:registrationNumber "0";
+  rdfs:label "Формы договорных документов"^^xsd:string;
+.
+d:cc87e0778a864272b1b8d366f591da88
+  a v-s:DocumentKind;
+  v-s:shortLabel "Контракт";
+  v-s:registrationNumber "0";
+  rdfs:label "Контракт"^^xsd:string;
+  v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
+.
+d:fbf562d8a6a04d72b1034f7f7e4d21de
+  a v-s:DocumentKind;
+  v-s:shortLabel "Дополнительное соглашение";
+  v-s:registrationNumber "0";
+  rdfs:label "Дополнительное соглашение"^^xsd:string;
+  v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
+.
+d:074d6f4add1b4aebaf1cf7bc0332eb3d
+  a v-s:DocumentKind;
+  v-s:shortLabel "Заказ спецификация к контракту";
+  v-s:registrationNumber "0";
+  rdfs:label "Заказ спецификация к контракту"^^xsd:string;
+  v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
+.
+d:fecef6b8058549cfb0203b55bd2425de
+  a v-s:DocumentKind;
+  v-s:shortLabel ""Заказ Спецификация. Разовая закупка";
+  v-s:registrationNumber "0";
+  rdfs:label "Заказ Спецификация. Разовая закупка"^^xsd:string;
+  v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
+.
+#-----------------------------------------------------
+d:391696576b33490bb7fb3744cbcbccf6
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы бухгалтерских документов";
+  v-s:registrationNumber "0";
+  rdfs:label "Формы бухгалтерских документов"^^xsd:string;
+.
+
+
+
+#-----------------------------------------------------
+d:c3b38c81e1594593932b9872a3257948
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы документов по движению ОС";
+  v-s:registrationNumber "0";
+  rdfs:label "Формы документов по движению основных средств"^^xsd:string;
+.
+
+
+
+
+#-----------------------------------------------------
+d:391696576b33490bb7fb3744cbcbccf6
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы документов общего назначения";
+  v-s:registrationNumber "0";
+  rdfs:label "Формы документов общего назначения"^^xsd:string;
+.
+
+
+
+#-----------------------------------------------------
+d:8a7dde743f844ae0bf773fd3c245c5f7
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы технических документов";
+  v-s:registrationNumber "0";
+  rdfs:label "Формы технических документов"^^xsd:string;
+.
+
+
