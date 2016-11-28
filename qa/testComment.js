@@ -1,10 +1,9 @@
-var webdriver = require('selenium-webdriver'),
-    basic = require('./basic.js'),
+var basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
     assert = require('assert');
 
 function check(driver, comment, reply, edit, del) {
-    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#comment-content').scrollIntoView(true);");
     driver.findElements({css:'#comment-content'}).then(function (result) {
         assert.equal(comment, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'comments' is wrong, expected: " + reply);})
@@ -26,11 +25,11 @@ function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"][class=\"mode-edit\"] button[id=\"save\"]').scrollIntoView(true);");
     driver.findElement({css:'div[typeof="v-s:Comment"][class="mode-edit"] button[id="save"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click  on 'save' button");});
-    driver.sleep(basic.SLOW_OPERATION);
+    driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("location.reload();");
-    driver.sleep(basic.SLOW_OPERATION);
+    basic.isVisible(driver, 'div[id="comment-content"]', basic.SLOW_OPERATION);
     driver.findElement({css:'div[id="comment-content"]'})
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find comment");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
 }
 
 basic.getDrivers().forEach(function (drv) {
@@ -63,6 +62,8 @@ basic.getDrivers().forEach(function (drv) {
     basic.logout(driver);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
-    //check(driver, 1, 1, 0, 0);
+    check(driver, 1, 1, 0, 0);
+    driver.sleep(basic.FAST_OPERATION);
+
     driver.quit();
 })
