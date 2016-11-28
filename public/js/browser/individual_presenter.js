@@ -755,27 +755,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
 
       function assignDefaultValue (e) {
-        if ( spec && !individual.hasValue(property_uri) ) {
-          var defaultValue;
-          switch (property["rdfs:range"][0].id) {
-            case "xsd:boolean":
-              defaultValue = spec && spec.hasValue("v-ui:defaultBooleanValue") ? spec["v-ui:defaultBooleanValue"][0] : undefined;
-              break;
-            case "xsd:integer":
-            case "xsd:nonNegativeInteger":
-              defaultValue = spec && spec.hasValue("v-ui:defaultIntegerValue") ? spec["v-ui:defaultIntegerValue"][0] : undefined;
-              break;
-            case "xsd:decimal":
-              defaultValue = spec && spec.hasValue("v-ui:defaultDecimalValue") ? spec["v-ui:defaultDecimalValue"][0] : undefined;
-              break;
-            case "xsd:dateTime":
-              defaultValue = spec && spec.hasValue("v-ui:defaultDatetimeValue") ? spec["v-ui:defaultDatetimeValue"][0] : undefined;
-              break;
-            default:
-              defaultValue = spec && spec.hasValue("v-ui:defaultStringValue") ? spec["v-ui:defaultStringValue"][0] : undefined;
-              break;
-          }
-          if (defaultValue !== undefined) individual[property_uri] = [ defaultValue ];
+        if ( spec && spec.hasValue("v-ui:defaultValue") && !individual.hasValue(property_uri) ) {
+          individual[property_uri] = spec["v-ui:defaultValue"];
         }
         e.stopPropagation();
       }
@@ -841,13 +822,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       template.on("view edit search", modeHandler);
 
-      function assignDefaultObjectValue (e) {
-        if ( spec && spec.hasValue("v-ui:defaultObjectValue") && !individual.hasValue(rel_uri) ) {
-          individual[rel_uri] = [ spec["v-ui:defaultObjectValue"][0] ];
+      function assignDefaultValue (e) {
+        if ( spec && spec.hasValue("v-ui:defaultValue") && !individual.hasValue(rel_uri) ) {
+          individual[rel_uri] = spec["v-ui:defaultValue"];
         }
         e.stopPropagation();
       }
-      template.on("edit", assignDefaultObjectValue);
+      template.on("edit", assignDefaultValue);
 
       // tooltip from spec
       if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -1039,72 +1020,36 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       // range check
       switch (spec["rdf:type"][0].id) {
-        case "v-ui:IntegerPropertySpecification" :
-          if (spec.hasValue("v-ui:minIntegerValue")) {
-            var minIntegerValueState = (value >= spec["v-ui:minIntegerValue"][0]);
-            result.state = result.state && minIntegerValueState;
-            if (!minIntegerValueState) {
-              result.cause.push("v-ui:minIntegerValue");
+        case "v-ui:DatatypePropertySpecification" :
+          if (spec.hasValue("v-ui:minValue")) {
+            var minValueState = (value >= spec["v-ui:minValue"][0]);
+            result.state = result.state && minValueState;
+            if (!minValueState) {
+              result.cause.push("v-ui:minValue");
             }
           }
-          if (spec.hasValue("v-ui:maxIntegerValue")) {
-            var maxIntegerValueState = (value <= spec["v-ui:maxIntegerValue"][0]);
-            result.state = result.state && maxIntegerValueState;
-            if (!maxIntegerValueState) {
-              result.cause.push("v-ui:maxIntegerValue");
+          if (spec.hasValue("v-ui:maxValue")) {
+            var maxValueState = (value <= spec["v-ui:maxValue"][0]);
+            result.state = result.state && maxValueState;
+            if (!maxValueState) {
+              result.cause.push("v-ui:maxValue");
             }
           }
-          break;
-        case "v-ui:DecimalPropertySpecification" :
-          if (spec.hasValue("v-ui:minDecimalValue")) {
-            var minDecimalValueState = (value >= spec["v-ui:minDecimalValue"][0]);
-            result.state = result.state && minDecimalValueState;
-            if (!minDecimalValueState) {
-              result.cause.push("v-ui:minDecimalValue");
-            }
-          }
-          if (spec.hasValue("v-ui:maxDecimalValue")) {
-            var maxDecimalValueState = (value <= spec["v-ui:maxDecimalValue"][0]);
-            result.state = result.state && maxDecimalValueState;
-            if (!maxDecimalValueState) {
-              result.cause.push("v-ui:maxDecimalValue");
-            }
-          }
-          break;
-        case "v-ui:DatetimePropertySpecification" :
-          if (spec.hasValue("v-ui:minDatetimeValue")) {
-            var minDatetimeValueState = (value >= spec["v-ui:minDatetimeValue"][0]);
-            result.state = result.state && minDatetimeValueState;
-            if (!minDatetimeValueState) {
-              result.cause.push("v-ui:minDatetimeValue");
-            }
-          }
-          if (spec.hasValue("v-ui:maxDatetimeValue")) {
-            var maxDatetimeValueState = (value <= spec["v-ui:maxDatetimeValue"][0]);
-            result.state = result.state && maxDatetimeValueState;
-            if (!maxDatetimeValueState) {
-              result.cause.push("v-ui:maxDatetimeValue");
-            }
-          }
-          break;
-        case "v-ui:StringPropertySpecification" :
           if (spec.hasValue("v-ui:minLength")) {
-            var minLengthState = (value.length >= spec["v-ui:minLength"][0]);
+            var minLengthState = (value.toString().length >= spec["v-ui:minLength"][0]);
             result.state = result.state && minLengthState;
             if (!minLengthState) {
               result.cause.push("v-ui:minLength");
             }
           }
           if (spec.hasValue("v-ui:maxLength")) {
-            var maxLengthState = (value.length <= spec["v-ui:maxLength"][0]);
+            var maxLengthState = (value.toString().length <= spec["v-ui:maxLength"][0]);
             result.state = result.state && maxLengthState;
             if (!maxLengthState) {
               result.cause.push("v-ui:maxLength");
             }
           }
           break;
-        case "v-ui:PropertySpecification" :
-        case "v-ui:BooleanPropertySpecification" :
         case "v-ui:ObjectPropertySpecification" :
           break;
       }

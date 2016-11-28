@@ -76,37 +76,6 @@ v-ui:hasModel
   rdfs:label "Имеет модель"@ru ;
   rdfs:range v-s:ClassModel ;
 .
-v-ui:hasSpecification
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain owl:Class ;
-  rdfs:domain rdfs:Class ;
-  rdfs:label "Has specification"@en ;
-  rdfs:label "Имеет спецификацию"@ru ;
-  rdfs:range v-ui:PropertySpecification ;
-  rdfs:range v-ui:StringPropertySpecification ;
-  rdfs:range v-ui:IntegerPropertySpecification ;
-  rdfs:range v-ui:BooleanPropertySpecification ;
-  rdfs:range v-ui:DecimalPropertySpecification ;
-  rdfs:range v-ui:DatetimePropertySpecification ;
-  rdfs:range v-ui:ObjectPropertySpecification ;
-.
-v-ui:hasProperty
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain owl:Class ;
-  rdfs:domain rdfs:Class ;
-  rdfs:label "Has property"@en ;
-  rdfs:label "Имеет свойство"@ru ;
-  rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
-.
-v-ui:hasSubClass
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain owl:Class ;
-  rdfs:domain rdfs:Class ;
-  rdfs:label "Has subclass"@en ;
-  rdfs:label "Имеет подкласс"@ru ;
-  rdfs:range owl:Class ;
-  rdfs:range rdfs:Class ;
-.
 v-ui:template
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:ClassTemplate ;
@@ -165,154 +134,56 @@ v-ui:maxCardinality
   rdfs:comment "More values than required"@en ;
   rdfs:range xsd:integer ;
 .
+v-ui:defaultValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:PropertySpecification ;
+  rdfs:label "Значение по-умолчанию"@ru ;
+  rdfs:label "Default value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+v-ui:optionValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:PropertySpecification ;
+  rdfs:label "Допустимое значение"@ru ;
+  rdfs:label "Option value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+v-ui:DatatypePropertySpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-ui:PropertySpecification ;
+  rdfs:label "Datatype property specification"@en ;
+  rdfs:label "Спецификация литерального свойства"@ru ;
+.
 v-ui:regexp
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:domain v-ui:DecimalPropertySpecification ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
   rdfs:label "Регулярное выражение"@ru ;
   rdfs:label "Regular expression"@en ;
   rdfs:comment "Значение не соответствует регулярному выражению"@ru ;
   rdfs:comment "Value does not match the regular expression"@en ;
   rdfs:range xsd:string ;
 .
-v-ui:IntegerPropertySpecification
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "Integer property specification"@en ;
-  rdfs:label "Спецификация целочисленного свойства"@ru ;
-.
-v-ui:defaultIntegerValue
+v-ui:minValue
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "Целочисленное значение по-умолчанию"@ru ;
-  rdfs:label "Default integer value"@en ;
-  rdfs:range xsd:integer ;
-.
-v-ui:optionIntegerValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "Допустимое целочисленное значение"@ru ;
-  rdfs:label "Option integer value"@en ;
-  rdfs:range xsd:integer ;
-.
-v-ui:minIntegerValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "Минимальное целочисленное значение"@ru ;
-  rdfs:label "Minimal integer value"@en ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
+  rdfs:label "Минимальное значение"@ru ;
+  rdfs:label "Minimal value"@en ;
   rdfs:comment "Значение меньше минимума"@ru ;
   rdfs:comment "Value is less than minimum"@en ;
-  rdfs:range xsd:integer ;
+  rdfs:range rdfs:Resource ;
 .
-v-ui:maxIntegerValue
+v-ui:maxValue
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:IntegerPropertySpecification ;
-  rdfs:label "Максимальное целочисленное значение"@ru ;
-  rdfs:label "Maximal integer value"@en ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
+  rdfs:label "Максимальное значение"@ru ;
+  rdfs:label "Maximal value"@en ;
   rdfs:comment "Значение больше максимума"@ru ;
   rdfs:comment "Value is greater than maximum"@en ;
-  rdfs:range xsd:integer ;
-.
-v-ui:DecimalPropertySpecification
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "Decimal property specification"@en ;
-  rdfs:label "Спецификация десятичного свойства"@ru ;
-.
-v-ui:defaultDecimalValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "Десятичное значение по-умолчанию"@ru ;
-  rdfs:label "Default decimal value"@en ;
-  rdfs:range xsd:decimal ;
-.
-v-ui:optionDecimalValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "Допустимое десятичное значение"@ru ;
-  rdfs:label "Option decimal value"@en ;
-  rdfs:range xsd:integer ;
-.
-v-ui:minDecimalValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "Минимальное десятичное значение"@ru ;
-  rdfs:label "Minimal decimal value"@en ;
-  rdfs:comment "Значение меньше минимума"@ru ;
-  rdfs:comment "Value is less than minimum"@en ;
-  rdfs:range xsd:decimal ;
-.
-v-ui:maxDecimalValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DecimalPropertySpecification ;
-  rdfs:label "Максимальное десятичное значение"@ru ;
-  rdfs:label "Maximal decimal value"@en ;
-  rdfs:comment "Значение больше максимума"@ru ;
-  rdfs:comment "Value is greater than maximum"@en ;
-  rdfs:range xsd:decimal ;
-.
-v-ui:DatetimePropertySpecification
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "Datetime property specification"@en ;
-  rdfs:label "Спецификация календарного свойства"@ru ;
-.
-v-ui:defaultDatetimeValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "Календарное значение по-умолчанию"@ru ;
-  rdfs:label "Default datetime value"@en ;
-  rdfs:range xsd:dateTime ;
-.
-v-ui:optionDatetimeValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "Допустимое календарное значение"@ru ;
-  rdfs:label "Option datetime value"@en ;
-  rdfs:range xsd:dateTime ;
-.
-v-ui:minDatetimeValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "Минимальное календарное значение"@ru ;
-  rdfs:label "Minimal datetime value"@en ;
-  rdfs:comment "Значение меньше минимума"@ru ;
-  rdfs:comment "Value is less than minimum"@en ;
-  rdfs:range xsd:dateTime ;
-.
-v-ui:maxDatetimeValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:DatetimePropertySpecification ;
-  rdfs:label "Максимальное календарное значение"@ru ;
-  rdfs:label "Maximal datetime value"@en ;
-  rdfs:comment "Значение больше максимума"@ru ;
-  rdfs:comment "Value is greater than maximum"@en ;
-  rdfs:range xsd:dateTime ;
-.
-v-ui:StringPropertySpecification
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "String property specification"@en ;
-  rdfs:label "Спецификация строкового свойства"@ru ;
-.
-v-ui:defaultStringValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "Строковое значение по-умолчанию"@ru ;
-  rdfs:label "Default string value"@en ;
-  rdfs:range xsd:string ;
-.
-v-ui:optionStringValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:StringPropertySpecification ;
-  rdfs:label "Допустимое строковое значение"@ru ;
-  rdfs:label "Option string value"@en ;
-  rdfs:range xsd:string ;
+  rdfs:range rdfs:Resource ;
 .
 v-ui:minLength
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:StringPropertySpecification ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
   rdfs:label "Минимальная длина строки"@ru ;
   rdfs:label "Minimal string length"@en ;
   rdfs:comment "Длина строки меньше допустимой"@ru ;
@@ -321,45 +192,18 @@ v-ui:minLength
 .
 v-ui:maxLength
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:StringPropertySpecification ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
   rdfs:label "Максимальная длина строки"@ru ;
   rdfs:label "Maximal string length"@en ;
   rdfs:comment "Длина строки больше допустимой"@ru ;
   rdfs:comment "String length is greater than allowed"@en ;
   rdfs:range xsd:integer ;
 .
-v-ui:BooleanPropertySpecification
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "Boolean property specification"@en ;
-  rdfs:label "Спецификация булева свойства"@ru ;
-.
-v-ui:defaultBooleanValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:BooleanPropertySpecification ;
-  rdfs:label "Булево значение по-умолчанию"@ru ;
-  rdfs:label "Default boolean value"@en ;
-  rdfs:range xsd:boolean ;
-.
 v-ui:ObjectPropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
   rdfs:label "Object property specification"@en ;
   rdfs:label "Спецификация объектного свойства"@ru ;
-.
-v-ui:defaultObjectValue
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "Объектное значение по-умолчанию"@ru ;
-  rdfs:label "Default object value"@en ;
-  rdfs:range rdfs:Resource ;
-.
-v-ui:optionObjectValue
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "Допустимое объектное значение"@ru ;
-  rdfs:label "Option object value"@en ;
-  rdfs:range rdfs:Resource ;
 .
 v-ui:rangeRestriction
   rdf:type owl:ObjectProperty ;
@@ -435,7 +279,6 @@ v-ui:treeDisplayedProperty
   rdfs:range owl:ObjectProperty ;
   rdfs:range owl:DatatypeProperty ;
 .
-
 v-ui:Language
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -1061,55 +904,55 @@ v-s:script
   rdfs:domain v-ui:TestUIClass ;
 .
 v-ui:SpecTestBoolean
-  rdf:type v-ui:BooleanPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового булева свойства"@ru ;
   rdfs:label "Specification for test boolean property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testBoolean ;
 .
 v-ui:SpecTestInteger
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового целочисленного свойства"@ru ;
   rdfs:label "Specification for test integer property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testInteger ;
-  v-ui:optionIntegerValue "1"^^xsd:integer ;
-  v-ui:optionIntegerValue "2"^^xsd:integer ;
-  v-ui:optionIntegerValue "3"^^xsd:integer ;
+  v-ui:optionValue "1"^^xsd:integer ;
+  v-ui:optionValue "2"^^xsd:integer ;
+  v-ui:optionValue "3"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-ui:SpecTestDecimal
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового десятичного свойства"@ru ;
   rdfs:label "Specification for test decimal property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testDecimal ;
-  v-ui:optionDecimalValue "1.1"^^xsd:string ;
-  v-ui:optionDecimalValue "2.2"^^xsd:string ;
-  v-ui:optionDecimalValue "3.3"^^xsd:string ;
+  v-ui:optionValue "1.1"^^xsd:string ;
+  v-ui:optionValue "2.2"^^xsd:string ;
+  v-ui:optionValue "3.3"^^xsd:string ;
 .
 v-ui:SpecTestString
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового текстового свойства"@ru ;
   rdfs:label "Specification for test string property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testString ;
-  v-ui:optionStringValue "Предопределенное значение 1"^^xsd:string ;
-  v-ui:optionStringValue "Предопределенное значение 2"^^xsd:string ;
-  v-ui:optionStringValue "Предопределенное значение 3"^^xsd:string ;
+  v-ui:optionValue "Предопределенное значение 1"^^xsd:string ;
+  v-ui:optionValue "Предопределенное значение 2"^^xsd:string ;
+  v-ui:optionValue "Предопределенное значение 3"^^xsd:string ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-ui:SpecTestDatetime
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового календарного свойства"@ru ;
   rdfs:label "Specification for test datetime property"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-ui:testDatetime ;
-  v-ui:optionDatetimeValue "2011-01-02"^^xsd:dateTime ;
-  v-ui:optionDatetimeValue "2012-03-04"^^xsd:dateTime ;
-  v-ui:optionDatetimeValue "2013-05-06"^^xsd:dateTime ;
+  v-ui:optionValue "2011-01-02"^^xsd:dateTime ;
+  v-ui:optionValue "2012-03-04"^^xsd:dateTime ;
+  v-ui:optionValue "2013-05-06"^^xsd:dateTime ;
 .
 v-ui:SpecTestLink
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -1119,9 +962,9 @@ v-ui:SpecTestLink
   v-ui:forProperty v-ui:testLink ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:optionObjectValue v-ui:SpecTestLink ;
-  v-ui:optionObjectValue v-ui:SpecTestDatetime ;
-  v-ui:optionObjectValue v-ui:SpecTestString ;
+  v-ui:optionValue v-ui:SpecTestLink ;
+  v-ui:optionValue v-ui:SpecTestDatetime ;
+  v-ui:optionValue v-ui:SpecTestString ;
 .
 v-ui:TestUITemplate
   rdf:type v-ui:ClassTemplate ;
@@ -2142,7 +1985,7 @@ td:PropertySpecification8
   v-ui:queryPrefix "('rdf:type'=='v-ui:Preferences')"^^xsd:string ;
 .
 td:PropertySpecification10
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
   rdfs:label "Test property specification for Preferences class"@en ;
   v-ui:forClass v-ui:Preferences ;
@@ -2151,10 +1994,10 @@ td:PropertySpecification10
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:tooltip "Обязательно к заполнению, единичное целочисленное значение."@ru ;
   v-ui:tooltip "Required, single integer value."@en ;
-  v-ui:defaultIntegerValue "10"^^xsd:integer ;
+  v-ui:defaultValue "10"^^xsd:integer ;
 .
 td:PropertySpecification11
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
   rdfs:label "Test property specification for Preferences class"@en ;
   v-ui:forClass v-s:Account ;
@@ -2165,7 +2008,7 @@ td:PropertySpecification11
   v-ui:tooltip "Required, single string value."@en ;
 .
 td:PropertySpecification1
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация даты рождения для класса персона"@ru ;
   rdfs:label "Birthday property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -2179,7 +2022,7 @@ td:PropertySpecification1
 .
 
 td:PropertySpecification2
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация имени для класса персона"@ru ;
   rdfs:label "First name property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -2194,7 +2037,7 @@ td:PropertySpecification2
   v-ui:placeholder "first name"@en ;
 .
 td:PropertySpecification3
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация фамилии для класса персона"@ru ;
   rdfs:label "Last name property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;
@@ -2209,7 +2052,7 @@ td:PropertySpecification3
   v-ui:placeholder "last name"@en ;
 .
 td:PropertySpecification4
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация отчества для класса персона"@ru ;
   rdfs:label "Middle name property specification for Person class"@en ;
   v-ui:forClass v-s:Person ;

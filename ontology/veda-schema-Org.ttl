@@ -278,7 +278,7 @@ v-s:defaultAppointment
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasSubsidiaryForOrganization
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Organization ;
   v-ui:forProperty v-s:hasSubsidiary ;
   v-ui:minCardinality 0 ;
@@ -287,7 +287,7 @@ v-s:PsHasSubsidiaryForOrganization
 .
 
 v-s:PsTaxIdForOrganization
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Organization ;
   v-ui:forProperty v-s:taxId ;
   v-ui:minCardinality 1 ;
@@ -314,7 +314,7 @@ v-s:PsHasClassifierCountryOrganization
   v-ui:forProperty v-s:hasClassifierCountry ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:defaultObjectValue d:Country_RUS;
+  v-ui:defaultValue d:Country_RUS;
   rdfs:label "v-s:hasClassifierCountry property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойства v-s:hasClassifierCountry для класса v-s:Organization"@ru ;
 .

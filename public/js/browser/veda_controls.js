@@ -662,14 +662,13 @@
       parser = opts.parser,
       spec = opts.spec,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
-      optionProperty = opts.optionProperty,
       select = $("select", control),
       first_opt = $("option", control);
 
     function populate() {
-      if (spec && spec.hasValue(optionProperty)) {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
         select.empty().append(first_opt);
-        spec[optionProperty].map(function (value) {
+        spec["v-ui:optionValue"].map(function (value) {
           var opt = first_opt.clone().text(value).val(value).appendTo(select);
           if (isSingle && individual.hasValue(property_uri) && individual[property_uri][0].toString() === value.toString()) {
             opt.attr("selected", "true");
@@ -722,7 +721,6 @@
     return this;
   };
   $.fn.veda_integerSelect.defaults = {
-    optionProperty: "v-ui:optionIntegerValue",
     parser: function (input) {
       var int = parseInt(input, 10);
       return !isNaN(int) ? int : null;
@@ -736,7 +734,6 @@
     return this;
   };
   $.fn.veda_decimalSelect.defaults = {
-    optionProperty: "v-ui:optionDecimalValue",
     parser: function (input) {
       var float = parseFloat(input.replace(",", "."));
       return !isNaN(float) ? float : null;
@@ -750,7 +747,6 @@
     return this;
   };
   $.fn.veda_stringSelect.defaults = {
-    optionProperty: "v-ui:optionStringValue",
     parser: function (input, el) {
       return (input || null);
     }
@@ -763,7 +759,6 @@
     return this;
   };
   $.fn.veda_datetimeSelect.defaults = {
-    optionProperty: "v-ui:optionDatetimeValue",
     parser: function (input) {
       var timestamp = Date.parse(input);
       return !isNaN(timestamp) ? new Date(timestamp) : null;
@@ -781,13 +776,12 @@
       property_uri = opts.property_uri,
       parser = opts.parser,
       spec = opts.spec,
-      optionProperty = opts.optionProperty,
       holder = $(".checkbox", control);
 
     function populate() {
-      if (spec && spec.hasValue(optionProperty)) {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
         control.empty();
-        spec[optionProperty].map(function (value) {
+        spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
           var lbl = $("label", hld).append(value);
           var chk = $("input", lbl).val(value);
@@ -850,7 +844,6 @@
     return this;
   };
   $.fn.veda_integerCheckbox.defaults = {
-    optionProperty: "v-ui:optionIntegerValue",
     parser: function (input) {
       var int = parseInt(input, 10);
       return !isNaN(int) ? int : null;
@@ -864,7 +857,6 @@
     return this;
   };
   $.fn.veda_decimalCheckbox.defaults = {
-    optionProperty: "v-ui:optionDecimalValue",
     parser: function (input) {
       var float = parseFloat(input.replace(",", "."));
       return !isNaN(float) ? float : null;
@@ -878,7 +870,6 @@
     return this;
   };
   $.fn.veda_stringCheckbox.defaults = {
-    optionProperty: "v-ui:optionStringValue",
     parser: function (input, el) {
       return (input || null);
     }
@@ -891,7 +882,6 @@
     return this;
   };
   $.fn.veda_datetimeCheckbox.defaults = {
-    optionProperty: "v-ui:optionDatetimeValue",
     parser: function (input) {
       var timestamp = Date.parse(input);
       return !isNaN(timestamp) ? new Date(timestamp) : null;
@@ -909,13 +899,12 @@
       property_uri = opts.property_uri,
       parser = opts.parser,
       spec = opts.spec,
-      optionProperty = opts.optionProperty,
       holder = $(".radio", control).attr("name", individual.id + "_" + property_uri);
 
     function populate() {
-      if (spec && spec.hasValue(optionProperty)) {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
         control.empty();
-        spec[optionProperty].map(function (value) {
+        spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
           var lbl = $("label", hld).append(value);
           var chk = $("input", lbl).val(value);
@@ -978,7 +967,6 @@
     return this;
   };
   $.fn.veda_integerRadio.defaults = {
-    optionProperty: "v-ui:optionIntegerValue",
     parser: function (input) {
       var int = parseInt(input, 10);
       return !isNaN(int) ? int : null;
@@ -992,7 +980,6 @@
     return this;
   };
   $.fn.veda_decimalRadio.defaults = {
-    optionProperty: "v-ui:optionDecimalValue",
     parser: function (input) {
       var float = parseFloat(input.replace(",", "."));
       return !isNaN(float) ? float : null;
@@ -1006,7 +993,6 @@
     return this;
   };
   $.fn.veda_stringRadio.defaults = {
-    optionProperty: "v-ui:optionStringValue",
     parser: function (input, el) {
       return (input || null);
     }
@@ -1019,7 +1005,6 @@
     return this;
   };
   $.fn.veda_datetimeRadio.defaults = {
-    optionProperty: "v-ui:optionDatetimeValue",
     parser: function (input) {
       var timestamp = Date.parse(input);
       return !isNaN(timestamp) ? new Date(timestamp) : null;
@@ -1543,14 +1528,13 @@
       rel_uri = opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      optionProperty = opts.optionProperty,
       holder = $(".checkbox", control),
       template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
 
     function populate() {
-      if (spec && spec.hasValue(optionProperty)) {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
         control.empty();
-        spec[optionProperty].map(function (value) {
+        spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
           var lbl = $("label", hld);
           var cont = $("<span>").appendTo(lbl);
@@ -1609,7 +1593,6 @@
   };
   $.fn.veda_objectCheckbox.defaults = {
     template: $("#checkbox-control-template").html(),
-    optionProperty: "v-ui:optionObjectValue",
     parser: function (value) {
       return new veda.IndividualModel(value);
     }
@@ -1623,14 +1606,13 @@
       rel_uri = opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      optionProperty = opts.optionProperty,
       holder = $(".radio", control),
       template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
 
     function populate() {
-      if (spec && spec.hasValue(optionProperty)) {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
         control.empty();
-        spec[optionProperty].map(function (value) {
+        spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
           var lbl = $("label", hld);
           var cont = $("<span>").appendTo(lbl);
@@ -1691,7 +1673,6 @@
   };
   $.fn.veda_objectRadio.defaults = {
     template: $("#radio-control-template").html(),
-    optionProperty: "v-ui:optionObjectValue",
     parser: function (value) {
       return new veda.IndividualModel(value);
     }
@@ -1707,16 +1688,15 @@
       spec = opts.spec,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
       isObligatory = spec && spec.hasValue("v-ui:minCardinality") && spec["v-ui:minCardinality"][0] == 1,
-      optionProperty = opts.optionProperty,
       select = $("select", control),
         first_opt = $("option", control),
       template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
 
     function populate() {
-      if (spec && spec.hasValue(optionProperty)) {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
         select.empty();
         if (!isObligatory) { select.append(first_opt); }
-        spec[optionProperty].map(function (value) {
+        spec["v-ui:optionValue"].map(function (value) {
           var opt = first_opt.clone().empty().val(value.id).appendTo(select);
           value.present(opt, template, "view");
           if (isSingle && individual.hasValue(rel_uri) && individual[rel_uri][0].id === value.id) {
@@ -1768,7 +1748,6 @@
   };
   $.fn.veda_objectSelect.defaults = {
     template: $("#select-control-template").html(),
-    optionProperty: "v-ui:optionObjectValue",
     parser: function (value) {
       return new veda.IndividualModel(value);
     }

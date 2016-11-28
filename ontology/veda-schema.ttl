@@ -408,7 +408,7 @@ v-s:hasTransformation
   rdfs:range v-s:Transform ;
 .
 v-s:PsTransformation
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Спецификация к свойству трансформация для -Правило связи двух документов-"@ru ;
   rdfs:label "Spec for transformation property for DocumentLinkRules class"@en ;
@@ -426,7 +426,7 @@ v-s:displayName
   rdfs:range xsd:string ;
 .
 v-s:PsDisplayName
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:DocumentLinkRules ;
   v-ui:forProperty v-s:displayName ;
   v-ui:maxCardinality 1 ;
@@ -458,7 +458,7 @@ v-s:isClone
   rdfs:range xsd:boolean ;
 .
 v-s:PsRulesBooleanProperty
-  rdf:type v-ui:BooleanPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация булевых свойств класса Правило связи двух документов"@ru ;
   rdfs:label "Specification for boolean property for DocumentLinkRules"@en ;
   v-ui:forClass v-s:DocumentLinkRules ;

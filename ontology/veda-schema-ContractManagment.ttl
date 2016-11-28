@@ -75,7 +75,7 @@ v-s:Price
 # v-s:hasCurrency
 
 v-s:PSsumPrice
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Price ;
   v-ui:forProperty v-s:sum ;
   v-ui:minCardinality 1 ;
