@@ -16,43 +16,43 @@
 #-----------------------------------------------------
 d:97a6c9fbbc15418f8309490b2b6d3d6e
   a v-s:DocumentKind;
-  v-s:shortLabel "Формы договорных документов";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Формы договорных документов"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Формы договорных документов"^^xsd:string;
 .
 d:cc87e0778a864272b1b8d366f591da88
   a v-s:DocumentKind;
-  v-s:shortLabel "Контракт";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Контракт"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Контракт"^^xsd:string;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
 .
 d:fbf562d8a6a04d72b1034f7f7e4d21de
   a v-s:DocumentKind;
-  v-s:shortLabel "Дополнительное соглашение";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Дополнительное соглашение"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Дополнительное соглашение"^^xsd:string;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
 .
 d:074d6f4add1b4aebaf1cf7bc0332eb3d
   a v-s:DocumentKind;
-  v-s:shortLabel "Заказ спецификация к контракту";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Заказ спецификация к контракту"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Заказ спецификация к контракту"^^xsd:string;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
 .
 d:fecef6b8058549cfb0203b55bd2425de
   a v-s:DocumentKind;
-  v-s:shortLabel ""Заказ Спецификация. Разовая закупка";
-  v-s:registrationNumber "0";
+  v-s:shortLabel ""Заказ Спецификация. Разовая закупка"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Заказ Спецификация. Разовая закупка"^^xsd:string;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
 .
 #-----------------------------------------------------
 d:391696576b33490bb7fb3744cbcbccf6
   a v-s:DocumentKind;
-  v-s:shortLabel "Формы бухгалтерских документов";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Формы бухгалтерских документов"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Формы бухгалтерских документов"^^xsd:string;
 .
 
@@ -61,8 +61,8 @@ d:391696576b33490bb7fb3744cbcbccf6
 #-----------------------------------------------------
 d:c3b38c81e1594593932b9872a3257948
   a v-s:DocumentKind;
-  v-s:shortLabel "Формы документов по движению ОС";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Формы документов по движению ОС"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Формы документов по движению основных средств"^^xsd:string;
 .
 
@@ -72,8 +72,8 @@ d:c3b38c81e1594593932b9872a3257948
 #-----------------------------------------------------
 d:391696576b33490bb7fb3744cbcbccf6
   a v-s:DocumentKind;
-  v-s:shortLabel "Формы документов общего назначения";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Формы документов общего назначения"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Формы документов общего назначения"^^xsd:string;
 .
 
@@ -82,8 +82,8 @@ d:391696576b33490bb7fb3744cbcbccf6
 #-----------------------------------------------------
 d:8a7dde743f844ae0bf773fd3c245c5f7
   a v-s:DocumentKind;
-  v-s:shortLabel "Формы технических документов";
-  v-s:registrationNumber "0";
+  v-s:shortLabel "Формы технических документов"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Формы технических документов"^^xsd:string;
 .
 
