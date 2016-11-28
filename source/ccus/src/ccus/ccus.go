@@ -64,6 +64,7 @@ func collector_updateInfo(cc chan updateInfo) {
 
 func main() {
 
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	go collector_updateInfo(cc)
 
 	http.HandleFunc("/ccus", wsHandler)

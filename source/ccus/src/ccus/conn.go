@@ -100,6 +100,7 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 			} else {
 				log.Printf("SEND:ws[%s][#] err=%s", pc.ws.RemoteAddr(), "Err:invalid message")
 			}
+			return
 		}
 
 		if msg[0] != 'T' {
@@ -248,40 +249,49 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 
 // Receive msg from ws in goroutine
 func (pc *ccusConn) receiver() {
-
 	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
 
 	var cc_prepare = make(chan string)
 	go pc.preparer(cc_prepare)
 	go timer1(cc_prepare)
 
-	for {
+	var err1 error
+
+	for true {
+		pc.ws.SetWriteDeadline(time.Now().Add(writeWait))
 		_, bmsg, err := pc.ws.ReadMessage()
 		if err != nil {
+			err1 = err
 			break
 		}
 
 		msg := string(bmsg)
-
 		cc_prepare <- msg
 	}
 
-	log.Printf("ws[%s]:close", pc.ws.RemoteAddr())
+	log.Printf("ws[%s]:close, err=%s", pc.ws.RemoteAddr(), err1)
 	pc.ws.Close()
 }
 
-func (pc *ccusConn) sendState() {
-	go func() {
-		err := pc.ws.WriteMessage(websocket.TextMessage, []byte("msg"))
-		if err != nil {
-			pc.ws.Close()
-		}
-	}()
-}
+const (
+	// Time allowed to write a message to the peer.
+	writeWait = 30 * 60 * time.Second
+
+	// Time allowed to read the next pong message from the peer.
+	pongWait = 30 * 60 * time.Second
+
+	// Send pings to peer with this period. Must be less than pongWait.
+	//pingPeriod = (pongWait * 9) / 10
+
+	// Maximum message size allowed from peer.
+	//maxMessageSize = 512
+)
 
 func NewCcusConn(ws *websocket.Conn, cc chan updateInfo) *ccusConn {
 
 	log.Printf("ws[%s]:new connect %s", ws.RemoteAddr(), ws.LocalAddr())
+	ws.SetReadDeadline(time.Now().Add(pongWait))
+	ws.SetWriteDeadline(time.Now().Add(writeWait))
 	pc := &ccusConn{}
 	pc.ws = ws
 	pc.cc = cc
