@@ -27,7 +27,8 @@ function comment(driver, somethingUnique) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click  on 'save' button");});
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("location.reload();");
-    basic.isVisible(driver, 'div[id="comment-content"]', basic.SLOW_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION);
+    //basic.isVisible(driver, 'div[id="comment-content"]', basic.SLOW_OPERATION);
     driver.findElement({css:'div[id="comment-content"]'})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
 }
