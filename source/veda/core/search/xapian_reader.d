@@ -94,7 +94,7 @@ class XapianReader : SearchReader
                    void delegate(string uri) add_out_element, bool inner_get)
     {
         int[ string ] key2slot = context.get_key2slot();
-    	
+
         if (key2slot == (int[ string ]).init)
             return 0;
 

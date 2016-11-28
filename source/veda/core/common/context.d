@@ -9,7 +9,8 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.common.logger;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
+               veda.common.logger;
 
 /// Имена процессов
 public enum P_MODULE : byte
@@ -55,9 +56,9 @@ public enum P_MODULE : byte
 
     webserver                  = 15,
 
-    n_channel                   = 16,
-    
-    ccus_channel	   = 17,	
+    n_channel                  = 16,
+
+    ccus_channel               = 17,
 
     nop                        = 99
 }
@@ -235,7 +236,7 @@ interface Context
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
 
-	public Logger get_logger ();
+    public Logger get_logger();
 
     version (isServer)
     {
@@ -289,7 +290,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public string[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit);
+    public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();

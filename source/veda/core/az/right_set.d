@@ -197,8 +197,8 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
 
     if (delta_resource.length > 0)
     {
-   //	    log.trace ("- delta_resource=%s", delta_resource);
-   //	    log.trace ("- delta_in_set=%s", delta_in_set);
+        //	    log.trace ("- delta_resource=%s", delta_resource);
+        //	    log.trace ("- delta_in_set=%s", delta_in_set);
 
         update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
         update_right_set(delta_resource, in_set, true, useFilter, prefix, access, op_id, storage);
@@ -208,17 +208,17 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
         delta_resource = get_disappeared(resource, prev_resource);
         delta_in_set   = get_disappeared(in_set, prev_in_set);
 
-   //	    log.trace ("+ delta_resource=%s", delta_resource);
-   //	    log.trace ("+ delta_in_set=%s", delta_in_set);
+        //	    log.trace ("+ delta_resource=%s", delta_resource);
+        //	    log.trace ("+ delta_in_set=%s", delta_in_set);
 
         update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-            //update_right_set(delta_resource, delta_in_set, false, useFilter, prefix, access, op_id, storage);
+        //update_right_set(delta_resource, delta_in_set, false, useFilter, prefix, access, op_id, storage);
     }
 
 /*
     update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
     update_right_set(delta_resource, delta_in_set, true, useFilter, prefix, access, op_id, storage);
-*/    
+ */
 }
 
 private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,

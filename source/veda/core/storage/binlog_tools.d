@@ -5,7 +5,8 @@ module veda.core.storage.binlog_tools;
 
 import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
 import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual;
-import veda.common.type, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
+import veda.common.type, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
+       veda.onto.resource;
 import veda.core.storage.lmdb_storage;
 
 bool check_binlog(string file_name)
@@ -17,6 +18,7 @@ public string write_in_binlog(string msg, string new_hash, string bin_log_name, 
 {
     long      now = Clock.currTime().stdTime();
     OutBuffer oub = new OutBuffer();
+
     oub.write('\n');
     oub.write(cast(ubyte)0xff);
     oub.write(cast(ubyte)0x12);
