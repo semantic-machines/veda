@@ -69,7 +69,7 @@ v-fc:TargetTypeSpec
   v-ui:minCardinality "1"^^xsd:integer ;
 .
 v-fc:LabelSpec
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства rdfs:label для класса v-fc:Blank"@ru ;
   rdfs:label "Rdfs:label property specification for class v-fc:Blank"@en ;
   v-ui:forClass v-fc:Blank ;

@@ -600,7 +600,7 @@ v-s:PsInitiatorAuthorCoathorForInitiative
   rdfs:label "Спецификация инициатора для класса Идея"@ru ;
 .
 v-s:PsHasTotalEffects
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:EffectList ;
   v-ui:forProperty v-s:hasTotalPlanYearEffect ;
   v-ui:forProperty v-s:hasTotalFactYearEffect ;
@@ -612,7 +612,7 @@ v-s:PsHasTotalEffects
   rdfs:label "Спецификация эффектов для класса FinancialEffectForIdea and FinancialEffect"@ru ;
 .
 v-s:PsHasEffectAll
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Effect ;
   v-ui:forProperty v-s:planOnceEffect ;
   v-ui:forProperty v-s:planYearEffect ;
@@ -769,7 +769,7 @@ v-s:PsHasAsset
   rdfs:label "Спецификация ссылки на информация об основном средстве для класса Initiative"@ru ;
 .
 v-s:PsIsIncludingToReserv
-  rdf:type v-ui:BooleanPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:isIncludingToReserv ;
   v-ui:maxCardinality 1 ;
@@ -780,7 +780,7 @@ v-s:PsIsIncludingToReserv
   v-ui:tooltip "Tick this box if implementation of your initiative is including to reserv"@en ;
 .
 v-s:PsDescriptionForInitiative
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:description ;
   v-ui:maxCardinality 1 ;
@@ -791,7 +791,7 @@ v-s:PsDescriptionForInitiative
   rdfs:label "Спецификация краткого наименования для класса Инициатива"@ru ;
 .
 v-s:PsTitleForInitiative
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:title ;
   v-ui:maxCardinality 1 ;
@@ -802,7 +802,7 @@ v-s:PsTitleForInitiative
   rdfs:label "Спецификация краткого наименования для класса Инициатива"@ru ;
 .
 v-s:PsActualState
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:actualState ;
   v-ui:maxCardinality 1 ;
@@ -813,7 +813,7 @@ v-s:PsActualState
   rdfs:label "Спецификация  описания актуального для класса Инициативы"@ru ;
 .
 v-s:PsGoalState
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:goalState ;
   v-ui:maxCardinality 1 ;
@@ -824,7 +824,7 @@ v-s:PsGoalState
   rdfs:label "Спецификация  описания предложения для класса Инициативы"@ru ;
 .
 v-s:PsBackgroundToChange
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:backgroundToChange ;
   v-ui:maxCardinality 1 ;
@@ -835,7 +835,7 @@ v-s:PsBackgroundToChange
   rdfs:label "Спецификация предпосылок к изменениям класса Инициатива"@ru ;
 .
 v-s:PsGoal
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:goal ;
   v-ui:maxCardinality 1 ;
@@ -869,7 +869,7 @@ v-s:PsStakeholder
   rdfs:label "Спецификация заинтересованной стороны для класса Инициатива"@ru ;
 .
 v-s:PsIsProgramm
-  rdf:type v-ui:BooleanPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Если вы хотите использовать данный проект как программу отметьте данный переключатель"@ru ;
   rdfs:label "Specification isProgramm property for Project"@en ;
   v-ui:forClass v-s:Initiative ;
@@ -898,7 +898,7 @@ v-s:PsMember
   rdfs:label "Спецификация свойства Участник рабочей группы для класса MemberOfWorkGroup"@ru ;
 .
 v-s:PsTimeeffort
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:MemberOfWorkGroup ;
   v-ui:forProperty v-s:timeEffort ;
   v-ui:maxCardinality 1 ;
@@ -933,7 +933,7 @@ v-s:PsHasAddInitiative
   rdfs:label "Спецификация hasAddinitiative для класса Инициатива"@ru ;
 .
 v-s:PsScope
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:scope ;
   v-ui:maxCardinality 1 ;
@@ -944,7 +944,7 @@ v-s:PsScope
   rdfs:label "Спецификация описания рамок проекта класса Проект"@ru ;
 .
 v-s:PsAlternativeScope
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:alternativeScope ;
   v-ui:maxCardinality 1 ;
@@ -955,7 +955,7 @@ v-s:PsAlternativeScope
   rdfs:label "Спецификация альтернативных решений и выводов для класса Проект"@ru ;
 .
 v-s:PsOutOfScope
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:outOfScope ;
   v-ui:maxCardinality 1 ;
@@ -966,7 +966,7 @@ v-s:PsOutOfScope
   rdfs:label "Спецификация описания не входит в рамки проекта класса Проект"@ru ;
 .
 v-s:PsDatesInProjectPhase
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forProperty v-s:datePlan ;
@@ -979,7 +979,7 @@ v-s:PsDatesInProjectPhase
   rdfs:label "Спецификация cвойств даты для класса ProjectPhase "@ru ;
 .
 v-s:PsCompletion
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forClass v-s:ProjectPlan ;
@@ -992,7 +992,7 @@ v-s:PsCompletion
   rdfs:label "Спецификация cвойства процент выполнения для класса ProjectPhase"@ru ;
 .
 v-s:PsCommentForProjectPhase
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forClass v-s:ProjectPlan ;
@@ -1043,7 +1043,7 @@ v-s:PsProjectPhaseRisk
 .
 
 v-s:PsSum
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
   v-ui:forProperty v-s:sum ;
   v-ui:maxCardinality 1 ;
@@ -1054,7 +1054,7 @@ v-s:PsSum
   rdfs:label "Спецификация суммы для класса ProjectPhase"@ru ;
 .
 v-s:PsCommentForProjectPhaseCost
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;

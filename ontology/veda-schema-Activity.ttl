@@ -153,7 +153,7 @@ v-s:ActionPlan
 #-- Спецификации Аттрибутов ---------------------------
 
 v-s:PsDateToForAction
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Action ;
   v-ui:forProperty v-s:dateTo ;
   v-ui:maxCardinality 1 ;

@@ -397,7 +397,7 @@ v-wf:isTrace
 
 #------------------------------------------------------
 v-wf:netPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Net ;
@@ -710,16 +710,16 @@ jsWorkflow.ready(function () {
   """ ;
 .
 v-wf:taskPropertySpecification1
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства locationX, locationY"@ru ;
   rdfs:label "Property specification for locationX, locationY"@en ;
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:locationX, v-wf:locationY ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:defaultIntegerValue "10"^^xsd:integer ;
+  v-ui:defaultValue "10"^^xsd:integer ;
 .
 v-wf:taskPropertySpecification2
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Task, v-wf:Condition, v-wf:InputCondition, v-wf:OutputCondition, v-wf:Flow ;
@@ -727,7 +727,7 @@ v-wf:taskPropertySpecification2
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:taskPropertySpecification2
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Flow ;
@@ -742,11 +742,11 @@ v-wf:taskPropertySpecification3
   v-ui:forProperty v-wf:join, v-wf:split ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:optionObjectValue v-wf:AND ;
-  v-ui:optionObjectValue v-wf:OR ;
-  v-ui:optionObjectValue v-wf:XOR ;
-  v-ui:optionObjectValue v-wf:None ;
-  v-ui:defaultObjectValue v-wf:None ;
+  v-ui:optionValue v-wf:AND ;
+  v-ui:optionValue v-wf:OR ;
+  v-ui:optionValue v-wf:XOR ;
+  v-ui:optionValue v-wf:None ;
+  v-ui:defaultValue v-wf:None ;
 .
 v-wf:taskPropertySpecification4
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -812,7 +812,7 @@ v-wf:taskPropertySpecification11
   v-ui:queryPrefix "('rdfs:subClassOf'=='v-wf:DecisionForm')"^^xsd:string ;
 .
 v-wf:mappingPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства мэппинг"@ru ;
   rdfs:label "Property specification for Mapping"@en ;
   v-ui:forClass v-wf:Mapping ;
@@ -822,7 +822,7 @@ v-wf:mappingPropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:variablesPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства переменных"@ru ;
   rdfs:label "Property specification for variables"@en ;
   v-ui:forClass v-wf:VarDefine ;
@@ -830,7 +830,7 @@ v-wf:variablesPropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:executorPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства исполнителей"@ru ;
   rdfs:label "Property specification for executors"@en ;
   v-ui:forClass v-wf:ExecutorDefinition ;
@@ -1371,7 +1371,7 @@ v-wf:FlowTemplateAsProperties
 .
 
 v-wf:varPPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства переменных"@ru ;
   rdfs:label "Property specification for variables"@en ;
   v-ui:forClass v-wf:Process ;
@@ -1444,7 +1444,7 @@ v-wf:ProcessPropsTemplate
 .
 
 v-wf:varWIPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства переменных"@ru ;
   rdfs:label "Property specification for variables"@en ;
   v-ui:forClass v-wf:WorkItem ;
@@ -2895,7 +2895,7 @@ v-wf:TransformTemplateEmbedded
 """.
 
 v-wf:rulePropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-wf:Rule ;
   v-ui:forProperty v-wf:segregateObject ;
   v-ui:forProperty v-wf:segregateElement ;
@@ -2906,7 +2906,7 @@ v-wf:rulePropertySpecification1
 .
 
 v-wf:transformPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-wf:Transform ;
   v-ui:forProperty v-wf:create ;
   v-ui:forProperty v-wf:transformRule ;

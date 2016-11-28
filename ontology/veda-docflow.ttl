@@ -39,7 +39,7 @@ v-df:PsApprovalTask_from
   rdfs:label "Спецификация отправителя задачи для класса Форма задачи утверждение"@ru ;
 .
 v-df:PsApprovalTask_dateGiven
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-df:ApprovalTask ;
   v-ui:forProperty v-wf:dateGiven ;
   v-ui:minCardinality "1"^^xsd:integer ;
@@ -59,15 +59,15 @@ v-df:approvalTask_decisionKind
   rdfs:range xsd:string ;
 .
 v-df:PsApprovalTask_decisionKind
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация видов решения задачи утверждения"@ru ;
   rdfs:label "Specification for Approval task decision kind property"@en ;
   v-ui:forClass v-df:ApprovalTask ;
   v-ui:forProperty v-df:approvalTask_decisionKind ;
-  v-ui:optionStringValue "Утверждено"^^xsd:string ;
-  v-ui:optionStringValue "Отложено"^^xsd:string ;
-  v-ui:optionStringValue "Отклонено"^^xsd:string ;
-  v-ui:optionStringValue "На доработку"^^xsd:string ;
+  v-ui:optionValue "Утверждено"^^xsd:string ;
+  v-ui:optionValue "Отложено"^^xsd:string ;
+  v-ui:optionValue "Отклонено"^^xsd:string ;
+  v-ui:optionValue "На доработку"^^xsd:string ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
@@ -201,7 +201,7 @@ v-s:dateTo
   rdfs:domain v-df:InstructionRouteStartForm ;
 .
 v-df:PsStartForm_dateTo
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forProperty v-s:dateTo ;
@@ -217,7 +217,7 @@ v-s:count
   rdfs:domain v-df:InstructionRouteStartForm ;
 .
 v-df:PsCountForStartForm
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация количества дней для класса QuestionRouteStartForm"@ru ;
   rdfs:label "Count day property specification for QuestionRouteStartForm"@en ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
@@ -1009,7 +1009,7 @@ v-wf:DecisionRedirectTemplateSpec2
 .
 
 v-wf:DecisionRedirectTemplateSpec3
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Спецификация свойств для класса -Перенаправить другому-"@ru ;
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;

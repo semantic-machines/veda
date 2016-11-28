@@ -594,11 +594,7 @@ cfg:Event_6
   v-s:triggerByType v-s:ClassModel ;
   v-s:triggerByType v-ui:ClassTemplate ;
   v-s:triggerByType v-ui:PropertySpecification ;
-  v-s:triggerByType v-ui:IntegerPropertySpecification ;
-  v-s:triggerByType v-ui:DecimalPropertySpecification ;
-  v-s:triggerByType v-ui:DatetimePropertySpecification ;
-  v-s:triggerByType v-ui:StringPropertySpecification ;
-  v-s:triggerByType v-ui:BooleanPropertySpecification ;
+  v-s:triggerByType v-ui:DatatypePropertySpecification ;
   v-s:triggerByType v-ui:ObjectPropertySpecification ;
   v-s:triggerByType v-s:Bundle ;
   v-s:script """

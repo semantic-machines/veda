@@ -72,7 +72,7 @@ v-s:isIncludingToReserv
   rdfs:domain v-s:Asset ;
 .
 v-s:PsSomeDecimalInAsset
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:msfo ;
   v-ui:forProperty v-s:rsbu ;
@@ -85,7 +85,7 @@ v-s:PsSomeDecimalInAsset
   rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
 .
 v-s:PsAssetNumber
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:assetNumber ;
   v-ui:maxCardinality 1 ;

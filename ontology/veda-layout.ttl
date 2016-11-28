@@ -180,7 +180,7 @@ v-l:MenuTemplate
   """
 .
 v-l:PsStrings
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forProperty rdfs:label, v-l:staticLink ;
   v-ui:forClass v-l:Menu ;
   rdfs:label "Rdfs:label, v-l:staticLink specification for Menu class"@en ;

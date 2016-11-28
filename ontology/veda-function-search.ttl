@@ -117,7 +117,7 @@ v-fs:TypeToSearchSpecAT
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-fs:FulltextQuerySpec
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства v-fs:fulltextQuery для класса v-fs:FulltextRequest"@ru ;
   rdfs:label "V-fs:fulltextQuery property specification for class v-fs:FulltextRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
@@ -127,7 +127,7 @@ v-fs:FulltextQuerySpec
   v-ui:tooltip "Enter query"@en ;
 .
 v-fs:LabelSpec
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства rdfs:label для классов v-fs:FulltextRequest, v-fs:AttributiveRequest"@ru ;
   rdfs:label "Rdfs:label property specification for class v-fs:FulltextRequest, v-fs:AttributiveRequest"@en ;
   v-ui:forClass v-fs:FulltextRequest ;

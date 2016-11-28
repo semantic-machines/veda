@@ -126,11 +126,7 @@ veda.Module(function (veda) { "use strict";
           datatypes[individual.id] = individual;
           break;
         case "v-ui:PropertySpecification" :
-        case "v-ui:IntegerPropertySpecification" :
-        case "v-ui:DecimalPropertySpecification" :
-        case "v-ui:DatetimePropertySpecification" :
-        case "v-ui:StringPropertySpecification" :
-        case "v-ui:BooleanPropertySpecification" :
+        case "v-ui:DatatypePropertySpecification" :
         case "v-ui:ObjectPropertySpecification" :
           specifications[individual.id] = individual;
           break;
@@ -284,11 +280,7 @@ veda.Module(function (veda) { "use strict";
           "'rdf:type' === 'v-ui:ClassTemplate' || " +
           /* Property specifications */
           "'rdf:type' === 'v-ui:PropertySpecification' || " +
-          "'rdf:type' === 'v-ui:IntegerPropertySpecification' || " +
-          "'rdf:type' === 'v-ui:DecimalPropertySpecification' || " +
-          "'rdf:type' === 'v-ui:DatetimePropertySpecification' || " +
-          "'rdf:type' === 'v-ui:StringPropertySpecification' || " +
-          "'rdf:type' === 'v-ui:BooleanPropertySpecification' || " +
+          "'rdf:type' === 'v-ui:DatatypePropertySpecification' || " +
           "'rdf:type' === 'v-ui:ObjectPropertySpecification'";
 
       var result = {};
