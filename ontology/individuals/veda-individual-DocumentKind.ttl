@@ -43,7 +43,7 @@ d:074d6f4add1b4aebaf1cf7bc0332eb3d
 .
 d:fecef6b8058549cfb0203b55bd2425de
   a v-s:DocumentKind;
-  v-s:shortLabel ""Заказ Спецификация. Разовая закупка"^^xsd:string;
+  v-s:shortLabel "Заказ Спецификация. Разовая закупка"^^xsd:string;
   v-s:registrationNumber "0"^^xsd:string;
   rdfs:label "Заказ Спецификация. Разовая закупка"^^xsd:string;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
