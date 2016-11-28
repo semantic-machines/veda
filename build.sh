@@ -9,11 +9,13 @@ then
 fi
 ./update-version-ttl.sh
 
+echo make start VEDA-CCUS
 export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
 rm ./veda-ccus
 go build -o veda-ccus source/ccus/src/ccus/ccus.go source/ccus/src/ccus/conn.go
+echo make end VEDA-CCUS
 
 ./build-component.sh veda-bootstrap bootstrap
 rm veda
