@@ -128,24 +128,17 @@ v-s:Bundle
 v-s:Account
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
 .
+#v-s:mailbox
+
 v-s:login
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Account ;
   rdfs:label "Login"@en ;
   rdfs:label "Логин"@ru ;
-  rdfs:range xsd:string ;
-.
-v-s:mailbox
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Mailbox"@en ;
-  rdfs:comment "Адрес электронной почты"@ru ;
-  rdfs:domain v-s:Account ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Mailbox"@en ;
-  rdfs:label "Адрес эл. почты"@ru ;
   rdfs:range xsd:string ;
 .
 v-s:password
