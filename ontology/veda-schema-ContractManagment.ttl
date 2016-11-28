@@ -121,6 +121,14 @@ v-s:PShasPriceCost
 
 # ------------------------------------------------------------
 
+v-s:Contract
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Financial ;
+  rdfs:label "Contract"@en ;
+  rdfs:label "Контракт"@ru ;
+.
+# ------------------------------------------------------------
 v-s:ContractRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Request ;

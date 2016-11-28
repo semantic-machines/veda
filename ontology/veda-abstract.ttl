@@ -456,6 +456,13 @@ v-s:obligationKind
   rdfs:range v-s:Sector ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:hasContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contract"@en ;
+  rdfs:label "Контракт"@ru ;
+  rdfs:range v-s:Contract ;
+  rdfs:domain v-s:Contractual ;
+.
 ### -------------------------------------------------------
 v-s:Controlled
   rdf:type owl:Class ;
