@@ -964,11 +964,10 @@ class PThreadContext : Context
         {
             Individual individual = Individual.init;
 
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
+            string     individual_as_cbor = get_from_individual_storage(uri);
+            if (individual_as_cbor !is null && individual_as_cbor.length > 1)
             {
-                string individual_as_cbor = get_from_individual_storage(uri);
-
-                if (individual_as_cbor !is null && individual_as_cbor.length > 1)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
                 {
                     if (cbor2individual(&individual, individual_as_cbor) > 0)
                         individual.setStatus(ResultCode.OK);
@@ -980,15 +979,15 @@ class PThreadContext : Context
                 }
                 else
                 {
-                    individual.setStatus(ResultCode.Unprocessable_Entity);
-                    //writeln ("ERR!: empty cbor: [", individual_as_cbor, "] ", uri);
+                    if (trace_msg[ T_API_160 ] == 1)
+                        log.trace("get_individual, not authorized, uri=%s", uri);
+                    individual.setStatus(ResultCode.Not_Authorized);
                 }
             }
             else
             {
-                if (trace_msg[ T_API_160 ] == 1)
-                    log.trace("get_individual, not authorized, uri=%s", uri);
-                individual.setStatus(ResultCode.Not_Authorized);
+                individual.setStatus(ResultCode.Unprocessable_Entity);
+                //writeln ("ERR!: empty cbor: [", individual_as_cbor, "] ", uri);
             }
 
             return individual;
@@ -1122,14 +1121,14 @@ class PThreadContext : Context
                 JSONValue req_body;
                 req_body[ "function" ]       = "remove";
                 req_body[ "ticket" ]         = ticket.id;
-                req_body[ "uri" ]     = uri;
+                req_body[ "uri" ]            = uri;
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
                 req_body[ "transaction_id" ] = "";
 
                 res = reqrep_2_main_module(req_body);
             }
-            
+
             version (isServer)
             {
                 OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
