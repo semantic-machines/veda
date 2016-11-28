@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text (P_MODULE.fanout_email), new Logger("veda-core-fanout-email", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_email), new Logger("veda-core-fanout-email", "log", ""));
 
     p_fanout.run();
 }
@@ -38,12 +38,12 @@ class FanoutProcess : VedaModule
                                 long op_id)
     {
         log.trace("[%s]: start prepare", new_indv.uri);
-        
-		scope (exit)
-		{
-	        log.trace("[%s]: end prepare", new_indv.uri);			
-		}
-        
+
+        scope (exit)
+        {
+            log.trace("[%s]: end prepare", new_indv.uri);
+        }
+
         ResultCode res;
 
         try
@@ -55,7 +55,7 @@ class FanoutProcess : VedaModule
                 {
                     connect_to_smtp(context);
                     return ResultCode.Connect_Error;
-                }    
+                }
             }
         }
         catch (Throwable ex)
@@ -118,7 +118,7 @@ class FanoutProcess : VedaModule
         return ac.getResources("v-s:mailbox");
     }
 
-    private Resources extract_email(ref Ticket sticket, string ap_uri)
+    private Resources extract_email(ref Ticket sticket, string ap_uri, out string label)
     {
         if (ap_uri is null || ap_uri.length < 1)
             return null;
@@ -129,6 +129,8 @@ class FanoutProcess : VedaModule
 
         if (indv.getStatus() != ResultCode.OK)
             return null;
+
+        label = indv.getFirstLiteral("rdfs:label");
 
         if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
         {
@@ -234,8 +236,8 @@ class FanoutProcess : VedaModule
             if (!need_prepare)
                 return ResultCode.OK;
 
-			ResultCode rc;
-            bool is_send = false;
+            ResultCode rc;
+            bool       is_send = false;
 
             if (is_deleted == false)
             {
@@ -247,18 +249,20 @@ class FanoutProcess : VedaModule
 
                 if (from !is null && to !is null)
                 {
-                	log.trace ("[DEBUG] extract from/to #1 from=%s", from);
-                    string email_from     = extract_email(sticket, from).getFirstString();
-                	
-                	Recipient[] rr_email_to; 
-                	foreach (Resource el; extract_email(sticket, to))
-                		rr_email_to ~= Recipient(el.data(), "To");
-                	log.trace ("[DEBUG] extract from/to #1.2 to=%s", rr_email_to);
+                    //log.trace ("[DEBUG] extract from/to #1 from=%s", from);
+                    string      from_label = "Veda System";
+                    string      email_from = extract_email(sticket, from, from_label).getFirstString();
 
-                	string str_email_reply_to = ""; 
-                	foreach (Resource el; extract_email(sticket, reply_to))
-                		str_email_reply_to ~= el.data() ~ ";";                	
-                	log.trace ("[DEBUG] extract from/to #1.3 reply_to=%s", str_email_reply_to);
+                    string      label;
+                    Recipient[] rr_email_to;
+                    foreach (Resource el; extract_email(sticket, to, label))
+                        rr_email_to ~= Recipient(el.data(), "To");
+                    //log.trace ("[DEBUG] extract from/to #1.2 to=%s", rr_email_to);
+
+                    string str_email_reply_to = "";
+                    foreach (Resource el; extract_email(sticket, reply_to, label))
+                        str_email_reply_to ~= el.data() ~ ";";
+                    //log.trace ("[DEBUG] extract from/to #1.3 reply_to=%s", str_email_reply_to);
 
                     if (from.length > 0 && to.length > 0)
                     {
@@ -266,14 +270,14 @@ class FanoutProcess : VedaModule
                         message_body = extract_cids(message_body, attachment_ids);
 
                         message = SmtpMessage(
-                                              Recipient(email_from, "From"),
+                                              Recipient(email_from, from_label),
                                               rr_email_to,
                                               subject,
                                               message_body,
                                               str_email_reply_to
                                               );
 
-                	    log.trace ("[DEBUG] set attachment #1");
+                        log.trace("[DEBUG] set attachment #1");
                         foreach (attachment_id; attachment_ids)
                         {
                             try
@@ -305,7 +309,7 @@ class FanoutProcess : VedaModule
                                           ex.msg);
                             }
                         }
-                	    log.trace ("[DEBUG] set attachment #2");
+                        log.trace("[DEBUG] set attachment #2");
 
                         SmtpReply res = smtp_conn.send(message);
                         log.trace("push_to_smtp: %s, %s, %s, result.msg=%s result.code=%d", new_indv.uri, message.sender, message.recipients,
@@ -315,13 +319,13 @@ class FanoutProcess : VedaModule
                         {
                             is_send = false;
                             if (res.code == 451)
-	                            rc = ResultCode.Connect_Error;
+                                rc = ResultCode.Connect_Error;
                             if (res.code == 501)
-	                            rc = ResultCode.Bad_Request;	                            
+                                rc = ResultCode.Bad_Request;
                         }
                         else
                         {
-                        	rc = ResultCode.OK;
+                            rc      = ResultCode.OK;
                             is_send = true;
                             //new_indv.addResource("v-s:isSuccess", Resource(true));
                         }
