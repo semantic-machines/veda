@@ -137,7 +137,7 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 				}
 				//					log.Printf("ws[%s] @1")
 				ni := updateInfo{uid, opid, update_counter}
-				log.Printf("ws[%s] @2 ni=%s", ni)
+				//log.Printf("ws[%s] @2 ni=%s", ni)
 				pc.cc <- ni
 				//					log.Printf("ws[%s] @3")
 
