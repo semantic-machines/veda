@@ -129,13 +129,13 @@ v-s:StatusInvestigation
   rdfs:label "Investigation"@en ;
   rdfs:label "Расследование"@ru ;
 .
-v-s:StatusElimination
+v-s:StatusExecution
   rdf:type v-s:Status ;
-  rdfs:label "Elimination"@en ;
-  rdfs:label "Устранение"@ru ;
+  rdfs:label "Execution"@en ;
+  rdfs:label "Исполнение"@ru ;
 .
-v-s:StatusEliminated
+v-s:StatusExecuted
   rdf:type v-s:Status ;
-  rdfs:label "Eliminated"@en ;
-  rdfs:label "Устранено"@ru ;
+  rdfs:label "Executed"@en ;
+  rdfs:label "Исполнено"@ru ;
 .

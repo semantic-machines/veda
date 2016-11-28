@@ -16,19 +16,15 @@
 
 # -- вид обслуживания (останова обрудования) --
 
-d:8f4df97c49fd99ff23fe6bd9d491ca2e
-  rdf:type v-s:MaintenanceKind ;
-  rdfs:label "Ежемесячный ремонт"@ru ;
-.
 d:9eb9e3ee7b06641bbe895d94093f09d3
   rdf:type v-s:MaintenanceKind ;
-  rdfs:label "Ежегодный ремонт"@ru ;
+  rdfs:label "Капитальный ремонт"@ru ;
 .
 d:a8d25a725-84df-e2f1-ab8e-934931c4955e
   rdf:type v-s:MaintenanceKind ;
-  rdfs:label "ППР ПТО"@ru ;
+  rdfs:label "Планово-предупредительный ремонт"@ru ;
 .
 d:a3524ead5-f22d-6ad9-b63d-a56a443f0b40
   rdf:type v-s:MaintenanceKind ;
-  rdfs:label "Обслуживание во время эксплуатации"@ru ;
+  rdfs:label "Текущая эксплуатация"@ru ;
 .

@@ -511,7 +511,7 @@ d:45bb1de686d547098a58ca8b58a8dc5d
   v-s:responsible d:mondi_appointment_00018871_71013780;
     a v-s:Sector;
     v-s:hasParentLink d:a1ff805754004cdea5782e286d9754ac, d:0ed33c0939024c8991c60ac3acbdd287;
-    rdfs:label "Техническое обслуживание и ремонт механического оборудования\n      \n"^^xsd:string;
+    rdfs:label "Техническое обслуживание и ремонт механического оборудования"^^xsd:string;
     v-s:registrationNumber "090.010.050.003"^^xsd:string;
     v-s:shortLabel 'M' ;
     .
@@ -1252,7 +1252,7 @@ d:ba1a7913d52e4a47967645767b6f2604
   v-s:responsible d:mondi_appointment_00025753_71000234;
     a v-s:Sector;
     v-s:hasParentLink d:a1ff805754004cdea5782e286d9754ac, d:0ed33c0939024c8991c60ac3acbdd287;
-    rdfs:label "Техническое обслуживание и ремонт оборудования КИП и А\n      \n"^^xsd:string;
+    rdfs:label "Техническое обслуживание и ремонт оборудования КИП и А"^^xsd:string;
     v-s:registrationNumber "090.010.050.001"^^xsd:string;
     v-s:shortLabel 'A' ;
     .
@@ -1889,3 +1889,9 @@ d:a7441b96b-5bd5-38cf-649b-0c3880d57840
   a v-s:Sector;
     rdfs:label "Не определено"^^xsd:string;
     .
+
+d:9b9354e19fb24d74a71ab476100bf3e9
+  a v-s:Sector;
+    rdfs:label "Техническое обслуживание и ремонт технологического оборудования"^^xsd:string;
+    .
+
