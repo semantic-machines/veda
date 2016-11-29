@@ -449,6 +449,13 @@ v-s:supplierContractor
   rdfs:domain v-s:Contractual ;
   rdfs:comment "Исполнитель контрагент" ;
 .
+v-s:hasContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contractor"@en ;
+  rdfs:label "Контрагент"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Contractual ;
+.
 v-s:obligationKind
   rdf:type owl:ObjectProperty ;
   rdfs:label "Obligation kind"@en ;

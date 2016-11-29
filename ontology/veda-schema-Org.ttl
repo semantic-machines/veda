@@ -64,6 +64,7 @@ v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
 .
@@ -86,13 +87,6 @@ v-s:taxRegistrationNumber
   rdfs:label "Tax registration number"@en ;
   rdfs:label "ОГРН"@ru ;
   rdfs:range xsd:string ;
-  rdfs:domain v-s:Organization ;
-.
-v-s:hasContractor
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Contractor"@en ;
-  rdfs:label "Контрагент"@ru ;
-  rdfs:range v-s:Contractor ;
   rdfs:domain v-s:Organization ;
 .
 v-s:hasSubsidiary
