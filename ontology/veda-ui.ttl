@@ -1010,27 +1010,27 @@ v-ui:TestUITemplate
       <veda-control property="v-ui:testString" data-type="multilingualString" class="-view edit search"></veda-control>
       <veda-control property="v-ui:testString" data-type="text" class="-view edit search"></veda-control>
       <veda-control property="v-ui:testString" data-type="multilingualText" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="stringSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" data-type="datatypeSelect" class="-view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testInteger" property="rdfs:label"></em>
       <div property="v-ui:testInteger"></div>
       <veda-control property="v-ui:testInteger" data-type="integer" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="integerSelect" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="integerCheckbox"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="integerRadio"></veda-control>
+      <veda-control property="v-ui:testInteger" data-type="datatypeSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testInteger" data-type="datatypeCheckbox"></veda-control>
+      <veda-control property="v-ui:testInteger" data-type="datatypeRadio"></veda-control>
       <hr>
 
       <em about="v-ui:testDecimal" property="rdfs:label"></em>
       <div property="v-ui:testDecimal"></div>
       <veda-control property="v-ui:testDecimal" data-type="decimal" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDecimal" data-type="decimalSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDecimal" data-type="datatypeSelect" class="-view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testDatetime" property="rdfs:label"></em>
       <div property="v-ui:testDatetime" class="view -edit -search"></div>
       <veda-control property="v-ui:testDatetime" data-type="dateTime" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDatetime" data-type="datetimeSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDatetime" data-type="datatypeSelect" class="-view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testLink" property="rdfs:label"></em>
@@ -1129,10 +1129,12 @@ v-ui:FileTemplateWithComment
   </div>
 </div>
 <script>
-  var fn = individual["v-s:fileName"][0],
-    idx = fn.lastIndexOf("."),
-    ext = fn.substr(idx + 1);
-  $("span#icon", template).text(ext);
+  var fn = individual["v-s:fileName"][0];
+  if (typeof fn === "string" || fn instanceof String) {
+    var idx = fn.lastIndexOf("."),
+    var ext = fn.substr(idx + 1);
+    $("span#icon", template).text(ext);
+  }
   //# sourceURL=v-ui:FileTemplateWithComment
 </script>
   """ ;
