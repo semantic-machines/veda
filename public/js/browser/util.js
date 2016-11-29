@@ -23,12 +23,12 @@ veda.Module(function Util(veda) { "use strict";
   veda.Util.genUri = function () {
       return 'd:a' + veda.Util.guid();
   };
-  
+
   veda.Util.mlstring = function (ru, en) {
-      var str_ru = new String(ru); 
+      var str_ru = new String(ru);
       str_ru.language = "RU";
 
-      var str_en = new String(en); 
+      var str_en = new String(en);
       str_en.language = "EN";
 
       return [str_ru, str_en];
@@ -58,7 +58,7 @@ veda.Module(function Util(veda) { "use strict";
         formatted = veda.Util.formatNumber(value);
         break;
       default:
-        formatted = value.toString();
+        formatted = typeof value !== "undefined" ? value.toString() : value;
     }
     return formatted;
   };
@@ -74,8 +74,7 @@ veda.Module(function Util(veda) { "use strict";
     hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
     fdate = [day, month, year].join(".");
     ftime = [hours, mins, secs].join(":");
-    if (ftime === "00:00:00") return fdate;
-    return [fdate, ftime].join(" ");
+    return fdate + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
   };
   veda.Util.formatNumber = function (n) {
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
@@ -410,7 +409,7 @@ veda.Module(function Util(veda) { "use strict";
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
       //$('[resource="'+individual.id+'"]').find("#save").trigger("click");
-      template.trigger('save');        
+      template.trigger('save');
       var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
       if (Object.getOwnPropertyNames(s.results).length == 0) {
         var individualNode = $('[resource="'+individual.id+'"]');
@@ -423,7 +422,7 @@ veda.Module(function Util(veda) { "use strict";
           individual.trigger("individual:afterSend");
           if (individual.sendConfirmed != true) {
             veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000,
-              individual.redirectToIndividual?individual.redirectToIndividual.id:              
+              individual.redirectToIndividual?individual.redirectToIndividual.id:
               individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:
               individual.is('v-wf:StartForm')?individual.id:individual['v-wf:onDocument'][0].id, "view");
           }
@@ -637,14 +636,14 @@ veda.Module(function Util(veda) { "use strict";
       redirectAfterTimeout();
     }, timeout);
   }
-  
+
   /**
    * Check that element inside root hierarchy.
    */
   veda.Util.inSubHierarchy = function (root, element) {
       if (typeof element === 'string') {
           element = new veda.IndividualModel(element, undefined, undefined, undefined, false);
-      }      
+      }
       if (element && element.hasValue('rdf:type') && element['rdf:type'][0].id == 'v-s:Department') {
           if (element.id == root || (element.hasValue(['v-s:parentUnit']) && element['v-s:parentUnit'][0].id == root)) {
               return true; // Found
@@ -656,7 +655,7 @@ veda.Module(function Util(veda) { "use strict";
               }
           }
       } else {
-          return false; // Not a department 
-      }         
+          return false; // Not a department
+      }
   }
 });
