@@ -22,7 +22,7 @@ v-s:BackwardLink
 v-s:backwardTarget
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:BackwardLink ;
-  rdfs:label "backward target"@en ;
+  rdfs:label "target object"@en ;
   rdfs:label "целевой объект"@ru ;
   rdfs:range rdfs:Resource ;
 .
@@ -32,6 +32,13 @@ v-s:backwardProperty
   rdfs:label "backward property"@en ;
   rdfs:label "целевое свойство"@ru ;
   rdfs:range owl:ObjectProperty ;
+.
+v-s:omitBackwardTargetGroup
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BackwardLink ;
+  rdfs:label "omit backward target group?"@en ;
+  rdfs:label "не включать в группу целевого объекта?"@ru ;
+  rdfs:range xsd:boolean ;
 .
 # ------------------------------------------------------------
 v-s:Exportable

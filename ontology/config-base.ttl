@@ -1065,6 +1065,7 @@ cfg:Event_16
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      omitGroup = getFirstValue(document["v-s:omitBackwardTargetGroup"]),
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
       backwardTarget = get_individual(ticket, backwardTargetUri),
       backwardTarget_original = JSON.stringify(backwardTarget);
@@ -1100,7 +1101,9 @@ cfg:Event_16
   }
   if (JSON.stringify(backwardTarget).length !== backwardTarget_original.length) {
     put_individual(ticket, backwardTarget, _event_id);
-    put_individual(ticket, membership, _event_id);
+    if (!omitGroup) {
+      put_individual(ticket, membership, _event_id);
+    }
   }
   """ ;
 .
