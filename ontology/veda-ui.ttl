@@ -953,6 +953,7 @@ v-ui:SpecTestDatetime
   v-ui:optionValue "2011-01-02"^^xsd:dateTime ;
   v-ui:optionValue "2012-03-04"^^xsd:dateTime ;
   v-ui:optionValue "2013-05-06"^^xsd:dateTime ;
+  v-ui:defaultValue "2013-05-06"^^xsd:dateTime ;
 .
 v-ui:SpecTestLink
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -966,6 +967,20 @@ v-ui:SpecTestLink
   v-ui:optionValue v-ui:SpecTestDatetime ;
   v-ui:optionValue v-ui:SpecTestString ;
 .
+
+v-ui:TestUI
+  rdf:type v-ui:TestUIClass ;
+  rdfs:label "Индивид для тестирования интерфейса"@ru ;
+  rdfs:label "Test UI individual"@en ;
+  v-ui:testBoolean  "true"^^xsd:boolean ;
+  v-ui:testString   "Тестовое значение строкового свойства"@ru ;
+  v-ui:testString   "Test string property value"@en ;
+  v-ui:testInteger  "999"^^xsd:integer ;
+#  v-ui:testDatetime "1945-05-09T21:00:00"^^xsd:dateTime ;
+#  v-ui:testLink     v-ui:TestUIClass ;
+  v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
+.
+
 v-ui:TestUITemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Тестовый шаблон"@ru ;
@@ -1031,6 +1046,8 @@ v-ui:TestUITemplate
       <div property="v-ui:testDatetime" class="view -edit -search"></div>
       <veda-control property="v-ui:testDatetime" data-type="dateTime" class="-view edit search"></veda-control>
       <veda-control property="v-ui:testDatetime" data-type="select" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDatetime" data-type="checkbox" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDatetime" data-type="radio" class="-view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testLink" property="rdfs:label"></em>
@@ -1241,18 +1258,6 @@ v-ui:PsHasImage
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:hasImage ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-.
-v-ui:TestUI
-  rdf:type v-ui:TestUIClass ;
-  rdfs:label "Индивид для тестирования интерфейса"@ru ;
-  rdfs:label "Test UI individual"@en ;
-  v-ui:testBoolean  "true"^^xsd:boolean ;
-  v-ui:testString   "Тестовое значение строкового свойства"@ru ;
-  v-ui:testString   "Test string property value"@en ;
-  v-ui:testInteger  "999"^^xsd:integer ;
-  v-ui:testDatetime "1945-05-09T21:00:00"^^xsd:dateTime ;
-#  v-ui:testLink     v-ui:TestUIClass ;
-  v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
 .
 
 v-ui:JournalTemplate

@@ -743,6 +743,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         control.trigger(e.type);
       });
 
+      function assignDefaultValue (e) {
+        if ( spec && spec.hasValue("v-ui:defaultValue") && !individual.hasValue(property_uri) ) {
+          individual[property_uri] = spec["v-ui:defaultValue"];
+        }
+        e.stopPropagation();
+      }
+      template.on("edit", assignDefaultValue);
+
       var opts = {
         individual: individual,
         property_uri: property_uri,
@@ -753,14 +761,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       controlType.call(control, opts);
 
       props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
-
-      function assignDefaultValue (e) {
-        if ( spec && spec.hasValue("v-ui:defaultValue") && !individual.hasValue(property_uri) ) {
-          individual[property_uri] = spec["v-ui:defaultValue"];
-        }
-        e.stopPropagation();
-      }
-      template.on("edit", assignDefaultValue);
 
     });
 
@@ -808,20 +808,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         control.trigger(e.type);
       });
 
-      var opts = {
-        individual: individual,
-        rel_uri: rel_uri,
-        spec: spec,
-        mode: mode
-      };
-
-      controlType.call(control, opts);
-
-      function modeHandler(e) {
-        control.trigger(e.type);
-      }
-      template.on("view edit search", modeHandler);
-
       function assignDefaultValue (e) {
         if ( spec && spec.hasValue("v-ui:defaultValue") && !individual.hasValue(rel_uri) ) {
           individual[rel_uri] = spec["v-ui:defaultValue"];
@@ -829,6 +815,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         e.stopPropagation();
       }
       template.on("edit", assignDefaultValue);
+
+      var opts = {
+        individual: individual,
+        rel_uri: rel_uri,
+        spec: spec,
+        mode: mode
+      };
+      controlType.call(control, opts);
 
       // tooltip from spec
       if (spec && spec.hasValue("v-ui:tooltip")) {
