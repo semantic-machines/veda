@@ -18,7 +18,7 @@
 
     function singleValueHandler (doc_property_uri, values) {
       if (doc_property_uri === property_uri) {
-        input.val( values[0] );
+        input.val( veda.Util.formatValue(values[0]) );
       }
     }
 
@@ -31,7 +31,9 @@
       change = function (value) {
         individual[property_uri] = [value];
       };
-      input.val(individual[property_uri][0]);
+      if ( individual.hasValue(property_uri) ) {
+        input.val( veda.Util.formatValue(individual[property_uri][0]) );
+      }
       individual.on("individual:propertyModified", singleValueHandler);
       control.one("remove", function () {
         individual.off("individual:propertyModified", singleValueHandler);
@@ -77,7 +79,7 @@
 
     this.val = function (value) {
       if (!value) return input.val();
-      return input.val(value);
+      return input.val( veda.Util.formatValue(value) );
     }
     return control;
   };
@@ -186,6 +188,37 @@
     }
   };
 
+  // Datetime control
+/*  $.fn.veda_dateTime = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+      control = veda_literal_input.call(this, opts),
+      property_uri = opts.property_uri,
+      individual = opts.individual;
+
+    control.datetimepicker({
+      locale: "ru",
+      allowInputToggle: true,
+      format: "DD.MM.YYYY HH:mm",
+      sideBySide: true,
+      useCurrent: true
+    });
+
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_dateTime.defaults = {
+    template: $("#datetime-control-template").html(),
+    parser: function (input) {
+      if (input) {
+        var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
+        return new Date(timestamp);
+      }
+      return null;
+    }
+  };
+*/
+
+  // Datetime control
   $.fn.veda_dateTime = function (options) {
     var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
       control = $(opts.template),
