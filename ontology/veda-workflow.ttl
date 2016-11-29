@@ -869,15 +869,15 @@ v-wf:TaskTemplateAsProperties
   <tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
       <td><span about="v-wf:join" property="rdfs:label"></span></td>
       <td>
-        <veda-control id="VCjoin" rel="v-wf:join" data-type="objectSelect" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCjoin" about="@" rel="v-wf:join" data-template="v-ui:LabelTemplate"></div>
+        <veda-control id="VCjoin" rel="v-wf:join" data-type="select" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCjoin" about="@" rel="v-wf:join" data-template="v-ui:LabelTemplate"></div>
       </td>
   </tr>
   <tr onclick="javascript: $('#VCsplit').show(); $('#viewVCsplit').hide();">
       <td><span about="v-wf:split" property="rdfs:label"></span></td>
       <td>
-        <veda-control id="VCsplit" rel="v-wf:split" data-type="objectSelect" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCsplit" about="@" rel="v-wf:split" data-template="v-ui:LabelTemplate"></div>
+        <veda-control id="VCsplit" rel="v-wf:split" data-type="select" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCsplit" about="@" rel="v-wf:split" data-template="v-ui:LabelTemplate"></div>
       </td>
   </tr>
   <tr onclick="javascript: $('.VCdecisionForm').show(); $('.viewVCdecisionForm').hide();">
@@ -2624,11 +2624,11 @@ v-wf:TaskTemplateAsModal
     <div class="col-md-2">
       <div>
         <h4 about="v-wf:join" property="rdfs:label"></h4>
-          <veda-control rel="v-wf:join" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+        <veda-control rel="v-wf:join" data-type="select" class="fulltext dropdown"></veda-control>
       </div>
       <div>
         <h4 about="v-wf:split" property="rdfs:label"></h4>
-          <veda-control rel="v-wf:split" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+          <veda-control rel="v-wf:split" data-type="select" class="fulltext dropdown"></veda-control>
       </div>
     </div>
   </div>
@@ -2712,7 +2712,7 @@ v-wf:TaskTemplateAsModal
       <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
         <veda-control about="@" rel="v-wf:expectedResultType" data-type="link" class="fulltext dropdown"></veda-control>
 <!--
-        <veda-control rel="v-wf:expectedResultType" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+        <veda-control rel="v-wf:expectedResultType" data-type="select" class="fulltext dropdown"></veda-control>
       <div about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" data-embedded="true"></div>
       <veda-control data-type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
 -->

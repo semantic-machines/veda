@@ -128,17 +128,16 @@ v-df:ApprovalTaskTemplate
           <em about="v-df:approvalTask_decisionKind" property="rdfs:label"></em>
         </div>
         <div class="col-md-3">
-          <veda-control property="v-df:approvalTask_decisionKind" data-type="stringRadio"></veda-control>
+          <veda-control property="v-df:approvalTask_decisionKind" data-type="radio"></veda-control>
         </div>
       </div>
-
 
       <div class="row">
         <div class="col-md-3">
           <em about="v-wf:possibleDecisionClass" property="rdfs:label"></em>
         </div>
         <div class="col-md-3">
-          <veda-control rel="v-wf:possibleDecisionClass" data-type="objectRadio"></veda-control>
+          <veda-control rel="v-wf:possibleDecisionClass" data-type="radio"></veda-control>
         </div>
       </div>
 

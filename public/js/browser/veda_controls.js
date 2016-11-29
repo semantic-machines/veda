@@ -38,16 +38,6 @@
       });
     }
 
-    if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
-        title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
-        container: control,
-        trigger: "focus",
-        animation: false
-      });
-    }
-
     input.on("change focusout", function () {
       var value = opts.parser( this.value, this );
       change(value);
@@ -66,6 +56,16 @@
       });
     }
 
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "focus",
+        animation: false
+      });
+    }
+
     this.on("veda_focus", function (e) {
       input.trigger("focus");
       e.stopPropagation();
@@ -73,12 +73,6 @@
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
-      /*if (e.type === "search") {
-        change = function (value) {
-          individual[property_uri] = individual[property_uri].concat(value);
-          input.val("");
-        }
-      }*/
     });
 
     this.val = function (value) {
@@ -115,10 +109,10 @@
       } else if ( input === "false" ) {
         return false;
       } else {
-        var ind = new veda.IndividualModel(input);
-        if ( ind["rdf:type"][0].id !== "rdfs:Resource" ) { return ind; }
+        var individ = new veda.IndividualModel(input);
+        if ( individ.isSync() && !individ.isNew() ) { return ind; }
       }
-      return (input || null);
+      return (input ? new String(input) : null);
     }
   };
 
@@ -133,7 +127,7 @@
   $.fn.veda_string.defaults = {
     template: $("#string-control-template").html(),
     parser: function (input) {
-      return (input || null);
+      return (input ? new String(input) : null);
     },
     isSingle: true
   };
@@ -157,23 +151,9 @@
   $.fn.veda_text.defaults = {
     template: $("#text-control-template").html(),
     parser: function (input) {
-      return (input || null);
+      return (input ? new String(input) : null);
     },
     isSingle: true
-  };
-
-  // Boolean text control
-  $.fn.veda_boolean = function( options ) {
-    var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
-      control = veda_literal_input.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_boolean.defaults = {
-    template: $("#boolean-control-template").html(),
-    parser: function (input) {
-      return (input === "true");
-    }
   };
 
   // Integer control
@@ -191,86 +171,6 @@
     }
   };
 
-  // Numeration control
-  $.fn.veda_numeration = function( options ) {
-    var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
-      control = $(opts.template),
-      spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
-      property_uri = opts.property_uri,
-      individual = opts.individual,
-      input = $(".form-control", control),
-      button = $(".get-numeration-value", control);
-
-    input.attr("placeholder", placeholder);
-
-    function singleValueHandler (doc_property_uri, values) {
-      if (doc_property_uri === property_uri) {
-        input.val( values[0] );
-      }
-    }
-
-    var change = function (value) {
-      individual[property_uri] = [value];
-    };
-
-    input.val(individual[property_uri][0]);
-    individual.on("individual:propertyModified", singleValueHandler);
-    control.one("remove", function () {
-      individual.off("individual:propertyModified", singleValueHandler);
-    });
-
-    if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
-        title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
-        container: control,
-        trigger: "focus",
-        animation: false
-      });
-    }
-
-    input.on("change focusout", function () {
-      var value = opts.parser( this.value, this );
-      change(value);
-    });
-
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-    });
-
-    this.val = function (value) {
-      if (!value) return input.val();
-      return input.val(value);
-    }
-
-    button.on("click", function () {
-      var prop = new veda.IndividualModel(property_uri);
-      if (prop['v-s:hasNumerationMapper']) {
-        for (var mapkey in prop['v-s:hasNumerationMapper']) {
-          var map = prop['v-s:hasNumerationMapper'][mapkey];
-          if (map['v-s:numerationClass'][0].id == individual['rdf:type'][0].id) {
-            var numertor = map['v-s:hasNumerationRule'][0];
-              var scope = eval(numertor['v-s:numerationScope'][0].toString())(null, individual);
-              var nextValue = eval(numertor['v-s:numerationGetNextValue'][0].toString())(null, scope);
-              individual[property_uri] = [nextValue];
-          }
-        }
-      }
-    });
-
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_numeration.defaults = {
-    template: $("#numeration-control-template").html(),
-    parser: function (input) {
-      var int = parseInt( input.replace(",", "."), 10 );
-      return !isNaN(int) ? "" + int : null;
-    }
-  };
-
   // Decimal control
   $.fn.veda_decimal = function( options ) {
     var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
@@ -285,33 +185,6 @@
       return !isNaN(float) ? float : null;
     }
   };
-/*
-  // Datetime control
-  $.fn.veda_dateTime = function (options) {
-    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
-      control = veda_literal_input.call(this, opts),
-      individual = opts.individual,
-      property_uri = opts.property_uri,
-      spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
-      input = $("input", control);
-    control.datetimepicker({
-      locale: "ru",
-      allowInputToggle: true,
-      format: "DD.MM.YYYY HH:mm"
-    });
-    if (isSingle) input.val( moment(individual[property_uri][0]).format("DD.MM.YYYY HH:mm") );
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_dateTime.defaults = {
-    template: $("#datetime-control-template").html(),
-    parser: function (input) {
-      var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
-      return new Date(timestamp);
-    }
-  };
-*/
 
   $.fn.veda_dateTime = function (options) {
     var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
@@ -579,9 +452,9 @@
     template: $("#multilingual-text-control-template").html(),
   };
 
-  // BOOLEAN CHECKBOX CONTROL
-  $.fn.veda_booleanCheckbox = function( options ) {
-    var opts = $.extend( {}, $.fn.veda_booleanCheckbox.defaults, options ),
+  // BOOLEAN CONTROL
+  $.fn.veda_boolean = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
       control = $( opts.template ),
       input = $("input", control),
       individual = opts.individual,
@@ -647,19 +520,17 @@
     this.append(control);
     return this;
   };
-  $.fn.veda_booleanCheckbox.defaults = {
-    template: $("#boolean-checkbox-control-template").html(),
+  $.fn.veda_boolean.defaults = {
+    template: $("#boolean-control-template").html(),
   };
 
-  // LITERAL SELECT CONTROLS
+  // SELECT CONTROL
 
-  // Generic literal select behaviour
-  var veda_selectLiteral = function (options) {
-    var opts = $.extend( {}, veda_selectLiteral.defaults, options ),
+  $.fn.veda_select = function (options) {
+    var opts = $.extend( {}, $.fn.veda_select.defaults, options ),
       control = $(opts.template),
       individual = opts.individual,
-      property_uri = opts.property_uri,
-      parser = opts.parser,
+      property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
       select = $("select", control),
@@ -668,9 +539,10 @@
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         select.empty().append(first_opt);
+        first_opt.data("value", null);
         spec["v-ui:optionValue"].map(function (value) {
-          var opt = first_opt.clone().text(value).val(value).appendTo(select);
-          if (isSingle && individual.hasValue(property_uri) && individual[property_uri][0].toString() === value.toString()) {
+          var opt = first_opt.clone().text(value).data("value", value).appendTo(select);
+          if ( isSingle && individual.hasValue(property_uri, value) ) {
             opt.attr("selected", "true");
           }
         });
@@ -679,15 +551,13 @@
 
     populate();
 
-    if (isSingle) {
-      select.change(function () {
-        individual[property_uri] = [ parser(select.val()) ];
-      });
-    } else {
-      select.change(function () {
-        individual[property_uri] = individual[property_uri].concat( parser(select.val()) );
-      });
-    }
+    select.change(function () {
+      if (isSingle) {
+        individual[property_uri] = [ $("option:selected", select).data("value") ];
+      } else {
+        individual[property_uri] = individual[property_uri].concat( $("option:selected", select).data("value") );
+      }
+    });
 
     function handler(doc_property_uri) {
       if (doc_property_uri === property_uri) {
@@ -707,73 +577,21 @@
       if (!value) return $("select", this).val();
       return $("select", this).val( value.toString() );
     }
-    return control;
+
+    this.append(control);
+    return this;
   };
-  veda_selectLiteral.defaults = {
+  $.fn.veda_select.defaults = {
     template: $("#select-control-template").html(),
   }
 
-  // Integer select control
-  $.fn.veda_integerSelect = function (options) {
-    var opts = $.extend( {}, $.fn.veda_integerSelect.defaults, options ),
-      control = veda_selectLiteral.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_integerSelect.defaults = {
-    parser: function (input) {
-      var int = parseInt(input, 10);
-      return !isNaN(int) ? int : null;
-    }
-  };
-  // Decimal select control
-  $.fn.veda_decimalSelect = function (options) {
-    var opts = $.extend( {}, $.fn.veda_decimalSelect.defaults, options ),
-      control = veda_selectLiteral.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_decimalSelect.defaults = {
-    parser: function (input) {
-      var float = parseFloat(input.replace(",", "."));
-      return !isNaN(float) ? float : null;
-    }
-  };
-  // String select control
-  $.fn.veda_stringSelect = function (options) {
-    var opts = $.extend( {}, $.fn.veda_stringSelect.defaults, options ),
-      control = veda_selectLiteral.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_stringSelect.defaults = {
-    parser: function (input, el) {
-      return (input || null);
-    }
-  };
-  // Datetime select control
-  $.fn.veda_datetimeSelect = function (options) {
-    var opts = $.extend( {}, $.fn.veda_datetimeSelect.defaults, options ),
-      control = veda_selectLiteral.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_datetimeSelect.defaults = {
-    parser: function (input) {
-      var timestamp = Date.parse(input);
-      return !isNaN(timestamp) ? new Date(timestamp) : null;
-    }
-  };
-
   // CHECKBOX GROUP CONTROL
 
-  // Generic checkbox group behaviour
-
-  var veda_checkbox = function (options) {
-    var opts = $.extend( {}, veda_checkbox.defaults, options ),
+  $.fn.veda_checkbox = function (options) {
+    var opts = $.extend( {}, $.fn.veda_checkbox.defaults, options ),
       control = $(opts.template),
       individual = opts.individual,
-      property_uri = opts.property_uri,
+      property_uri = opts.property_uri || opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
       holder = $(".checkbox", control);
@@ -783,18 +601,17 @@
         control.empty();
         spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
-          var lbl = $("label", hld).append(value);
-          var chk = $("input", lbl).val(value);
-          var test = individual.hasValue(property_uri) && individual[property_uri].filter( function (i) { return i.toString() === value.toString() }).length;
-          if (test) {
+          var lbl = $("label", hld).append( value.toString() );
+          var chk = $("input", lbl).data("value", value);
+          if ( individual.hasValue(property_uri, value) ) {
             chk.attr("checked", "true");
           }
           chk.change(function () {
             if ( chk.is(":checked") ) {
-              individual[property_uri] = individual[property_uri].concat( parser( chk.val() ) );
+              individual[property_uri] = individual[property_uri].concat( chk.data("value") );
             } else {
               individual[property_uri] = individual[property_uri].filter( function (i) {
-                return i.toString() !== chk.val();
+                return i.valueOf() !== chk.data("value").valueOf();
               });
             }
           })
@@ -830,97 +647,43 @@
       populate();
       return this;
     }
-    return control;
+    this.append(control);
+    return this;
   };
-  veda_checkbox.defaults = {
+  $.fn.veda_checkbox.defaults = {
     template: $("#checkbox-control-template").html(),
   }
 
-  // Integer checkbox group control
-  $.fn.veda_integerCheckbox = function (options) {
-    var opts = $.extend( {}, $.fn.veda_integerCheckbox.defaults, options ),
-      control = veda_checkbox.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_integerCheckbox.defaults = {
-    parser: function (input) {
-      var int = parseInt(input, 10);
-      return !isNaN(int) ? int : null;
-    }
-  };
-  // Decimal checkbox group control
-  $.fn.veda_decimalCheckbox = function (options) {
-    var opts = $.extend( {}, $.fn.veda_decimalCheckbox.defaults, options ),
-      control = veda_checkbox.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_decimalCheckbox.defaults = {
-    parser: function (input) {
-      var float = parseFloat(input.replace(",", "."));
-      return !isNaN(float) ? float : null;
-    }
-  };
-  // String checkbox group control
-  $.fn.veda_stringCheckbox = function (options) {
-    var opts = $.extend( {}, $.fn.veda_stringCheckbox.defaults, options ),
-      control = veda_checkbox.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_stringCheckbox.defaults = {
-    parser: function (input, el) {
-      return (input || null);
-    }
-  };
-  // Detetime checkbox group control
-  $.fn.veda_datetimeCheckbox = function (options) {
-    var opts = $.extend( {}, $.fn.veda_datetimeCheckbox.defaults, options ),
-      control = veda_checkbox.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_datetimeCheckbox.defaults = {
-    parser: function (input) {
-      var timestamp = Date.parse(input);
-      return !isNaN(timestamp) ? new Date(timestamp) : null;
-    }
-  };
-
   // RADIO GROUP CONTROL
 
-  // Generic radio group behaviour
-
-  var veda_radio = function (options) {
-    var opts = $.extend( {}, veda_radio.defaults, options ),
+  $.fn.veda_radio = function (options) {
+    var opts = $.extend( {}, $.fn.veda_radio.defaults, options ),
       control = $(opts.template),
       individual = opts.individual,
-      property_uri = opts.property_uri,
+      property_uri = opts.property_uri || opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      holder = $(".radio", control).attr("name", individual.id + "_" + property_uri);
+      holder = $(".radio", control);
 
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         control.empty();
         spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
-          var lbl = $("label", hld).append(value);
-          var chk = $("input", lbl).val(value);
-          var test = individual.hasValue(property_uri) && individual[property_uri].filter( function (i) { return i.toString() === value.toString() }).length;
-          if (test) {
-            chk.attr("checked", "true");
+          var lbl = $("label", hld).append( value.toString() );
+          var rad = $("input", lbl).val(value).data("value", value);
+          if ( individual.hasValue(property_uri, value) ) {
+            rad.attr("checked", "true");
           }
-          chk.change(function () {
-            if ( chk.is(":checked") ) {
-              individual[property_uri] = [ parser( chk.val() ) ];
+          rad.change(function () {
+            if ( rad.is(":checked") ) {
+              individual[property_uri] = [ rad.data("value") ];
             } else {
               individual[property_uri] = individual[property_uri].filter( function (i) {
-                return i.toString() !== chk.val();
+                return i.valueOf() !== rad.data("value").valueOf();
               });
             }
-          })
+          });
         });
       }
     }
@@ -940,10 +703,10 @@
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.checkbox", control).addClass("disabled");
+        $("div.radio", control).addClass("disabled");
         $("input", control).attr("disabled", "true");
       } else {
-        $("div.checkbox", control).removeClass("disabled");
+        $("div.radio", control).removeClass("disabled");
         $("input", control).removeAttr("disabled");
       }
     });
@@ -953,61 +716,90 @@
       populate();
       return this;
     }
-    return control;
+    this.append(control);
+    return this;
   };
-  veda_radio.defaults = {
+  $.fn.veda_radio.defaults = {
     template: $("#radio-control-template").html(),
   }
 
-  // Integer radio group control
-  $.fn.veda_integerRadio = function (options) {
-    var opts = $.extend( {}, $.fn.veda_integerRadio.defaults, options ),
-      control = veda_radio.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_integerRadio.defaults = {
-    parser: function (input) {
-      var int = parseInt(input, 10);
-      return !isNaN(int) ? int : null;
+  // Numeration control
+  $.fn.veda_numeration = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
+      control = $(opts.template),
+      spec = opts.spec,
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      property_uri = opts.property_uri,
+      individual = opts.individual,
+      input = $(".form-control", control),
+      button = $(".get-numeration-value", control);
+
+    input.attr("placeholder", placeholder);
+
+    function singleValueHandler (doc_property_uri, values) {
+      if (doc_property_uri === property_uri) {
+        input.val( values[0] );
+      }
     }
-  };
-  // Decimal radio group control
-  $.fn.veda_decimalRadio = function (options) {
-    var opts = $.extend( {}, $.fn.veda_decimalRadio.defaults, options ),
-      control = veda_radio.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_decimalRadio.defaults = {
-    parser: function (input) {
-      var float = parseFloat(input.replace(",", "."));
-      return !isNaN(float) ? float : null;
+
+    var change = function (value) {
+      individual[property_uri] = [value];
+    };
+
+    input.val(individual[property_uri][0]);
+    individual.on("individual:propertyModified", singleValueHandler);
+    control.one("remove", function () {
+      individual.off("individual:propertyModified", singleValueHandler);
+    });
+
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "focus",
+        animation: false
+      });
     }
-  };
-  // String radio group control
-  $.fn.veda_stringRadio = function (options) {
-    var opts = $.extend( {}, $.fn.veda_stringRadio.defaults, options ),
-      control = veda_radio.call(this, opts);
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_stringRadio.defaults = {
-    parser: function (input, el) {
-      return (input || null);
+
+    input.on("change focusout", function () {
+      var value = opts.parser( this.value, this );
+      change(value);
+    });
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
+
+    this.val = function (value) {
+      if (!value) return input.val();
+      return input.val(value);
     }
-  };
-  // Detetime radio group control
-  $.fn.veda_datetimeRadio = function (options) {
-    var opts = $.extend( {}, $.fn.veda_datetimeRadio.defaults, options ),
-      control = veda_radio.call(this, opts);
+
+    button.on("click", function () {
+      var prop = new veda.IndividualModel(property_uri);
+      if (prop['v-s:hasNumerationMapper']) {
+        for (var mapkey in prop['v-s:hasNumerationMapper']) {
+          var map = prop['v-s:hasNumerationMapper'][mapkey];
+          if (map['v-s:numerationClass'][0].id == individual['rdf:type'][0].id) {
+            var numertor = map['v-s:hasNumerationRule'][0];
+              var scope = eval(numertor['v-s:numerationScope'][0].toString())(null, individual);
+              var nextValue = eval(numertor['v-s:numerationGetNextValue'][0].toString())(null, scope);
+              individual[property_uri] = [nextValue];
+          }
+        }
+      }
+    });
+
     this.append(control);
     return this;
   };
-  $.fn.veda_datetimeRadio.defaults = {
+  $.fn.veda_numeration.defaults = {
+    template: $("#numeration-control-template").html(),
     parser: function (input) {
-      var timestamp = Date.parse(input);
-      return !isNaN(timestamp) ? new Date(timestamp) : null;
+      var int = parseInt( input.replace(",", "."), 10 );
+      return !isNaN(int) ? "" + int : null;
     }
   };
 
@@ -1519,238 +1311,5 @@
     template: $("#link-control-template").html(),
     limit: 100
   };
-
-  // OBJECT CHECKBOX GROUP CONTROL
-  $.fn.veda_objectCheckbox = function (options) {
-    var opts = $.extend( {}, $.fn.veda_objectCheckbox.defaults, options ),
-      control = $(opts.template),
-      individual = opts.individual,
-      rel_uri = opts.rel_uri,
-      parser = opts.parser,
-      spec = opts.spec,
-      holder = $(".checkbox", control),
-      template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
-
-    function populate() {
-      if (spec && spec.hasValue("v-ui:optionValue")) {
-        control.empty();
-        spec["v-ui:optionValue"].map(function (value) {
-          var hld = holder.clone().appendTo(control);
-          var lbl = $("label", hld);
-          var cont = $("<span>").appendTo(lbl);
-          value.present(cont, template);
-          var chk = $("input", lbl).val(value.id);
-          var test = individual.hasValue(rel_uri) && individual[rel_uri].filter( function (i) { return i.id === value.id }).length;
-          if (test) {
-            chk.attr("checked", "true");
-          }
-          chk.change(function () {
-            if ( chk.is(":checked") ) {
-              individual[rel_uri] = individual[rel_uri].concat( parser( chk.val() ) );
-            } else {
-              individual[rel_uri] = individual[rel_uri].filter( function (i) {
-                return i.id !== chk.val();
-              });
-            }
-          })
-        });
-      }
-    }
-
-    populate();
-
-    /*function handler(doc_rel_uri) {
-      if (doc_rel_uri === rel_uri) {
-        populate();
-      }
-    }
-    individual.on("individual:propertyModified", handler);
-    this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
-    });*/
-
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-      if (e.type === "view") {
-        $("div.checkbox", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
-      } else {
-        $("div.checkbox", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
-      }
-    });
-
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () {
-        if (this.value) return new veda.IndividualModel(this.value);
-      });
-      populate();
-      return this;
-    }
-
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_objectCheckbox.defaults = {
-    template: $("#checkbox-control-template").html(),
-    parser: function (value) {
-      return new veda.IndividualModel(value);
-    }
-  }
-
-  // OBJECT RADIO GROUP CONTROL
-  $.fn.veda_objectRadio = function (options) {
-    var opts = $.extend( {}, $.fn.veda_objectRadio.defaults, options ),
-      control = $(opts.template),
-      individual = opts.individual,
-      rel_uri = opts.rel_uri,
-      parser = opts.parser,
-      spec = opts.spec,
-      holder = $(".radio", control),
-      template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
-
-    function populate() {
-      if (spec && spec.hasValue("v-ui:optionValue")) {
-        control.empty();
-        spec["v-ui:optionValue"].map(function (value) {
-          var hld = holder.clone().appendTo(control);
-          var lbl = $("label", hld);
-          var cont = $("<span>").appendTo(lbl);
-          //setTimeout (function () {
-            value.present(cont, template, "view");
-          //}, 0);
-          var chk = $("input", lbl).val(value.id);
-          var test = individual.hasValue(rel_uri) && individual[rel_uri].filter( function (i) { return i.id === value.id }).length;
-          if (test) {
-            chk.attr("checked", "true");
-          }
-          chk.change(function () {
-            if ( chk.is(":checked") ) {
-              individual[rel_uri] = [ parser( chk.val() ) ];
-            } else {
-              individual[rel_uri] = individual[rel_uri].filter( function (i) {
-                return i.id !== chk.val();
-              });
-            }
-          })
-        });
-      }
-    }
-
-    populate();
-
-    function handler(doc_rel_uri) {
-      if (doc_rel_uri === rel_uri) {
-        populate();
-      }
-    }
-    individual.on("individual:propertyModified", handler);
-    this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
-    });
-
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-      if (e.type === "view") {
-        $("div.radio", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
-      } else {
-        $("div.radio", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
-      }
-    });
-
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () {
-        if (this.value) return new veda.IndividualModel(this.value);
-      });
-      populate();
-      return this;
-    }
-
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_objectRadio.defaults = {
-    template: $("#radio-control-template").html(),
-    parser: function (value) {
-      return new veda.IndividualModel(value);
-    }
-  }
-
-  // OBJECT SELECT CONTROL
-  $.fn.veda_objectSelect = function (options) {
-    var opts = $.extend( {}, $.fn.veda_objectSelect.defaults, options ),
-      control = $(opts.template),
-      individual = opts.individual,
-      rel_uri = opts.rel_uri,
-      parser = opts.parser,
-      spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
-      isObligatory = spec && spec.hasValue("v-ui:minCardinality") && spec["v-ui:minCardinality"][0] == 1,
-      select = $("select", control),
-        first_opt = $("option", control),
-      template = new veda.IndividualModel( this.attr("data-template") || "v-ui:LabelTemplate" );
-
-    function populate() {
-      if (spec && spec.hasValue("v-ui:optionValue")) {
-        select.empty();
-        if (!isObligatory) { select.append(first_opt); }
-        spec["v-ui:optionValue"].map(function (value) {
-          var opt = first_opt.clone().empty().val(value.id).appendTo(select);
-          value.present(opt, template, "view");
-          if (isSingle && individual.hasValue(rel_uri) && individual[rel_uri][0].id === value.id) {
-            opt.attr("selected", "true");
-          }
-        });
-      }
-    }
-
-    populate();
-
-    if (isSingle) {
-      select.change(function () {
-        var value = select.val();
-        if (value) individual[rel_uri] = [ parser( select.val() ) ];
-      });
-    } else {
-      select.change(function () {
-        var value = select.val();
-        var parsed = parser(value);
-        if ( individual[rel_uri].indexOf(parsed) < 0 ) {
-          individual[rel_uri] = individual[rel_uri].concat( parsed );
-        }
-      });
-    }
-
-    function handler(doc_rel_uri) {
-      if (doc_rel_uri === rel_uri) {
-        populate();
-      }
-    }
-    individual.on("individual:propertyModified", handler);
-    this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
-    });
-
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-    });
-
-    this.val = function (value) {
-      if (!value) return $("select", this).val();
-      populate();
-      return this;
-    }
-
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_objectSelect.defaults = {
-    template: $("#select-control-template").html(),
-    parser: function (value) {
-      return new veda.IndividualModel(value);
-    }
-  }
 
 })( jQuery );

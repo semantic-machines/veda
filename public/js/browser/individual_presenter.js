@@ -1124,7 +1124,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             $(".value", result).append (
               "<div class='checkbox'>" +
                 "<label>" +
-                  "<veda-control property='" + property_uri + "' data-type='booleanCheckbox'></veda-control>" +
+                  "<veda-control property='" + property_uri + "' data-type='boolean'></veda-control>" +
                   "<em about='" + property_uri + "' property='rdfs:label' class='text-muted'></em>" +
                 "</label>" +
               "</div>"

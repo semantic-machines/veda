@@ -996,12 +996,10 @@ v-ui:TestUITemplate
 
       <div class="checkbox">
         <label>
-          <veda-control property="v-ui:testBoolean" data-type="booleanCheckbox"></veda-control>
+          <veda-control property="v-ui:testBoolean" data-type="boolean"></veda-control>
           <em about="v-ui:testBoolean" property="rdfs:label"></em>
         </label>
       </div>
-      <!--em about="v-ui:testBoolean" property="rdfs:label"></em>
-      <veda-control property="v-ui:testBoolean" data-type="booleanCheckbox"></veda-control-->
       <hr>
 
       <em about="v-ui:testString" property="rdfs:label"></em>
@@ -1010,35 +1008,37 @@ v-ui:TestUITemplate
       <veda-control property="v-ui:testString" data-type="multilingualString" class="-view edit search"></veda-control>
       <veda-control property="v-ui:testString" data-type="text" class="-view edit search"></veda-control>
       <veda-control property="v-ui:testString" data-type="multilingualText" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="datatypeSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" data-type="select" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testString" data-type="checkbox" class="view edit search"></veda-control>
+      <veda-control property="v-ui:testString" data-type="radio" class="view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testInteger" property="rdfs:label"></em>
       <div property="v-ui:testInteger"></div>
       <veda-control property="v-ui:testInteger" data-type="integer" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="datatypeSelect" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="datatypeCheckbox"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="datatypeRadio"></veda-control>
+      <veda-control property="v-ui:testInteger" data-type="select" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testInteger" data-type="checkbox"></veda-control>
+      <veda-control property="v-ui:testInteger" data-type="radio"></veda-control>
       <hr>
 
       <em about="v-ui:testDecimal" property="rdfs:label"></em>
       <div property="v-ui:testDecimal"></div>
       <veda-control property="v-ui:testDecimal" data-type="decimal" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDecimal" data-type="datatypeSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDecimal" data-type="select" class="-view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testDatetime" property="rdfs:label"></em>
       <div property="v-ui:testDatetime" class="view -edit -search"></div>
       <veda-control property="v-ui:testDatetime" data-type="dateTime" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDatetime" data-type="datatypeSelect" class="-view edit search"></veda-control>
+      <veda-control property="v-ui:testDatetime" data-type="select" class="-view edit search"></veda-control>
       <hr>
 
       <em about="v-ui:testLink" property="rdfs:label"></em>
       <div rel="v-ui:testLink" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
       <veda-control rel="v-ui:testLink" data-type="link" class="-view edit search full"></veda-control>
-      <veda-control rel="v-ui:testLink" data-type="objectCheckbox" data-template="v-ui:LabelTemplate"></veda-control>
-      <veda-control rel="v-ui:testLink" data-type="objectRadio" data-template="v-ui:LabelTemplate"></veda-control>
-      <veda-control rel="v-ui:testLink" data-type="objectSelect" class="-view edit search" data-template="v-ui:ClassNameLabelLinkTemplate"></veda-control>
+      <veda-control rel="v-ui:testLink" data-type="checkbox"></veda-control>
+      <veda-control rel="v-ui:testLink" data-type="radio"></veda-control>
+      <veda-control rel="v-ui:testLink" data-type="select" class="-view edit search"></veda-control>
 
       <!--hr>
       <em about="v-ui:template" property="rdfs:label"></em>
@@ -1251,7 +1251,7 @@ v-ui:TestUI
   v-ui:testString   "Test string property value"@en ;
   v-ui:testInteger  "999"^^xsd:integer ;
   v-ui:testDatetime "1945-05-09T21:00:00"^^xsd:dateTime ;
-  v-ui:testLink     v-ui:TestUIClass ;
+#  v-ui:testLink     v-ui:TestUIClass ;
   v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
 .
 

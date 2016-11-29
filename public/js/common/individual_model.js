@@ -527,11 +527,20 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Serialize to JSON string
-   * @return {String} JSON representation of individual.
+   * Serialize to string
+   * @return {String} String representation of individual.
    */
   proto.toString = function () {
     return this["rdf:type"][0]["rdfs:label"].join(", ") + ": " + ( this["rdfs:label"] ? this["rdfs:label"].join(", ") : this.id );
+  };
+
+  /**
+   * @method
+   * Return individual id
+   * @return {String} individual id.
+   */
+  proto.valueOf = function () {
+    return this.id;
   };
 
   /**

@@ -222,25 +222,25 @@ v-s:ContractorTemplate
     <br>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorLocked" data-type="booleanCheckbox"></veda-control>
+        <veda-control property="mnd-s:isContractorLocked" data-type="boolean"></veda-control>
         <em about="mnd-s:isContractorLocked" property="rdfs:label"></em>
       </label>
     </div>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorDeleted" data-type="booleanCheckbox"></veda-control>
+        <veda-control property="mnd-s:isContractorDeleted" data-type="boolean"></veda-control>
         <em about="mnd-s:isContractorDeleted" property="rdfs:label"></em>
       </label>
     </div>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorCreditor" data-type="booleanCheckbox"></veda-control>
+        <veda-control property="mnd-s:isContractorCreditor" data-type="boolean"></veda-control>
         <em about="mnd-s:isContractorCreditor" property="rdfs:label"></em>
       </label>
     </div>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorDebitor" data-type="booleanCheckbox"></veda-control>
+        <veda-control property="mnd-s:isContractorDebitor" data-type="boolean"></veda-control>
         <em about="mnd-s:isContractorDebitor" property="rdfs:label"></em>
       </label>
     </div>
