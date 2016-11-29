@@ -392,12 +392,12 @@ void processed(string[] changes, Context context)
                         {
                             if (indv.getResources("rdf:type").length > 0)
                             {
-                                //if (trace_msg[ 33 ] == 1)
+                                if (trace_msg[ 33 ] == 1)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
 
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
-                                //if (trace_msg[ 33 ] == 1)
+                                if (trace_msg[ 33 ] == 1)
                                 log.trace("file reader:store, uri=%s", indv.uri);
 
                                 if (res != ResultCode.OK)
