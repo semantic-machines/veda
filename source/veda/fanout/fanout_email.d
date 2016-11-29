@@ -249,7 +249,6 @@ class FanoutProcess : VedaModule
 
                 if (from !is null && to !is null)
                 {
-                    //log.trace ("[DEBUG] extract from/to #1 from=%s", from);
                     string      from_label = "Veda System";
                     string      email_from = extract_email(sticket, from, from_label).getFirstString();
 
@@ -257,12 +256,10 @@ class FanoutProcess : VedaModule
                     Recipient[] rr_email_to;
                     foreach (Resource el; extract_email(sticket, to, label))
                         rr_email_to ~= Recipient(el.data(), "To");
-                    //log.trace ("[DEBUG] extract from/to #1.2 to=%s", rr_email_to);
 
                     string str_email_reply_to = "";
                     foreach (Resource el; extract_email(sticket, reply_to, label))
                         str_email_reply_to ~= el.data() ~ ";";
-                    //log.trace ("[DEBUG] extract from/to #1.3 reply_to=%s", str_email_reply_to);
 
                     if (from.length > 0 && to.length > 0)
                     {
@@ -277,7 +274,6 @@ class FanoutProcess : VedaModule
                                               str_email_reply_to
                                               );
 
-                        log.trace("[DEBUG] set attachment #1");
                         foreach (attachment_id; attachment_ids)
                         {
                             try
@@ -309,7 +305,6 @@ class FanoutProcess : VedaModule
                                           ex.msg);
                             }
                         }
-                        log.trace("[DEBUG] set attachment #2");
 
                         SmtpReply res = smtp_conn.send(message);
                         log.trace("push_to_smtp: %s, %s, %s, result.msg=%s result.code=%d", new_indv.uri, message.sender, message.recipients,
