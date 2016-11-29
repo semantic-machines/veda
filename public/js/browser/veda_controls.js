@@ -269,12 +269,12 @@
       if (!value) return input.val();
       return input.val(value);
     }
-    this.append(control);
 
     this.on("remove", function () {
       control.data("DateTimePicker").destroy();
     });
 
+    this.append(control);
     return this;
   };
   $.fn.veda_dateTime.defaults = {
