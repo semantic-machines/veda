@@ -1352,7 +1352,7 @@ v-fs:TestBlankTemplate
     </div>
     <div class="col-md-3">
       <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-      <veda-control property="v-s:birthday" data-type="dateTime"></veda-control>
+      <veda-control property="v-s:birthday" data-type="datetime"></veda-control>
       <div property="v-s:birthday"></div>
     </div>
   </div>

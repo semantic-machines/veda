@@ -711,7 +711,7 @@ s-wf:SimpleRouteStartFormFull_Template
         <div class="col-md-6">
           <strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
           <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
-          <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
+          <veda-control data-type="datetime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
         </div>
       </div>
       <br />

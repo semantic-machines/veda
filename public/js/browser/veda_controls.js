@@ -189,8 +189,8 @@
   };
 
   // Datetime control
-/*  $.fn.veda_dateTime = function( options ) {
-    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+/*  $.fn.veda_datetime = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_datetime.defaults, options ),
       control = veda_literal_input.call(this, opts),
       property_uri = opts.property_uri,
       individual = opts.individual;
@@ -206,7 +206,7 @@
     this.append(control);
     return this;
   };
-  $.fn.veda_dateTime.defaults = {
+  $.fn.veda_datetime.defaults = {
     template: $("#datetime-control-template").html(),
     parser: function (input) {
       if (input) {
@@ -219,8 +219,8 @@
 */
 
   // Datetime control
-  $.fn.veda_dateTime = function (options) {
-    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+  $.fn.veda_datetime = function (options) {
+    var opts = $.extend( {}, $.fn.veda_datetime.defaults, options ),
       control = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
@@ -310,7 +310,7 @@
     this.append(control);
     return this;
   };
-  $.fn.veda_dateTime.defaults = {
+  $.fn.veda_datetime.defaults = {
     template: $("#datetime-control-template").html(),
     parser: function (input) {
       if (input) {
