@@ -1116,7 +1116,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           case "xsd:dateTime":
             $(".value", result).append (
               "<div property='" + property_uri + "' />" +
-              "<veda-control property='" + property_uri + "' data-type='datetime' class='-view edit search'></veda-control>"
+              "<veda-control property='" + property_uri + "' data-type='dateTime' class='-view edit search'></veda-control>"
             );
             break;
           case "xsd:boolean":

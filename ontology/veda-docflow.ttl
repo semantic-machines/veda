@@ -118,7 +118,7 @@ v-df:ApprovalTaskTemplate
         </div>
         <div class="col-md-3">
           <div property="v-wf:dateGiven" class="view -edit -search"></div>
-          <veda-control property="v-wf:dateGiven" data-type="datetime" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control property="v-wf:dateGiven" data-type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
         </div>
       </div>
       <hr class="margin-sm">
@@ -293,7 +293,7 @@ v-df:QuestionRouteStartFormTemplate
         <div class="col-md-2">
           <em about="v-s:dateTo" property="rdfs:label"></em>
           <div property="v-s:dateTo" class="view -edit -search"></div>
-          <veda-control property="v-s:dateTo" data-type="datetime" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
         </div>
         <div class="col-md-1">
           <em about="v-s:count" property="rdfs:label"></em>
@@ -373,7 +373,7 @@ v-df:InstructionRouteStartFormTemplate
         <div class="col-md-2">
           <em about="v-s:dateTo" property="rdfs:label"></em>
           <div property="v-s:dateTo" class="view -edit -search"></div>
-          <veda-control property="v-s:dateTo" data-type="datetime" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
         </div>
         <div class="col-md-1">
           <em about="v-s:count" property="rdfs:label"></em>
@@ -661,7 +661,7 @@ v-df:DecisionTemplate2
 #    <br>
 #    <em about="v-s:dateTo" property="rdfs:label"></em>
 #    <div property="v-s:dateTo" class="view -edit -search"></div>
-#    <veda-control property="v-s:dateTo" data-type="datetime" class="-view edit search"></veda-control>
+#    <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
 #  </div>
 #</div>
 #  """ ;
