@@ -1069,7 +1069,7 @@ cfg:Event_16
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
       backwardTarget = get_individual(ticket, backwardTargetUri),
       backwardTarget_original = JSON.stringify(backwardTarget);
-  if (!backwardTarget || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
+  if (!backwardPropertyUri || !backwardTarget || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
     return;
   }
   var membershipUri = 'd:backward_membership_' + backwardLinkUri.split(':').join('_') + '_' + backwardTargetUri.split(':').join('_'),
