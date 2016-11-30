@@ -27,7 +27,7 @@ class ScriptProcess : VedaModule
         super(_module_name, log);
 
         vm_id           = _vm_id;
-        g_vm_id			=  vm_id;
+        g_vm_id         = vm_id;
         g_cache_of_indv = cache_of_indv;
     }
 

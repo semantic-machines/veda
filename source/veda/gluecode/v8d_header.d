@@ -42,11 +42,11 @@ bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_type
 {
     bool is_pass = false;
 
-	if (script.trigger_by_uid.length == 0 && script.trigger_by_type.length == 0)
-		return true;
+    if (script.trigger_by_uid.length == 0 && script.trigger_by_type.length == 0)
+        return true;
 
     if (script.trigger_by_uid.length > 0 && (individual_id in script.trigger_by_uid) !is null)
-	    is_pass = true;
+        is_pass = true;
 
     if (!is_pass && script.trigger_by_type.length > 0)
     {
@@ -396,11 +396,11 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
     string sort;
     string databases;
 
-	if (g_vm_id != "V8.LowPriority")
-	{
-		log.trace ("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");	
-		return null;
-	}	
+    if (g_vm_id != "V8.LowPriority")
+    {
+        log.trace("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");
+        return null;
+    }
 
     try
     {
