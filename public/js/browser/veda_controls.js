@@ -574,7 +574,7 @@
         select.empty().append(first_opt);
         first_opt.data("value", null);
         spec["v-ui:optionValue"].map(function (value) {
-          var opt = first_opt.clone().text(value).data("value", value).appendTo(select);
+          var opt = first_opt.clone().text( veda.Util.formatValue(value) ).data("value", value).appendTo(select);
           if ( isSingle && individual.hasValue(property_uri, value) ) {
             opt.attr("selected", "true");
           }
@@ -608,7 +608,7 @@
 
     this.val = function (value) {
       if (!value) return $("select", this).val();
-      return $("select", this).val( value.toString() );
+      return $("select", this).val( veda.Util.formatValue(value) );
     }
 
     this.append(control);
@@ -634,7 +634,7 @@
         control.empty();
         spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
-          var lbl = $("label", hld).append( value.toString() );
+          var lbl = $("label", hld).append( veda.Util.formatValue(value) );
           var chk = $("input", lbl).data("value", value);
           if ( individual.hasValue(property_uri, value) ) {
             chk.attr("checked", "true");
@@ -647,7 +647,7 @@
                 return i.valueOf() !== chk.data("value").valueOf();
               });
             }
-          })
+          });
         });
       }
     }
@@ -703,8 +703,8 @@
         control.empty();
         spec["v-ui:optionValue"].map(function (value) {
           var hld = holder.clone().appendTo(control);
-          var lbl = $("label", hld).append( value.toString() );
-          var rad = $("input", lbl).val(value).data("value", value);
+          var lbl = $("label", hld).append( veda.Util.formatValue(value) );
+          var rad = $("input", lbl).data("value", value);
           if ( individual.hasValue(property_uri, value) ) {
             rad.attr("checked", "true");
           }
