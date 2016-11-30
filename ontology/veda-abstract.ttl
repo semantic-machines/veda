@@ -864,3 +864,17 @@ v-s:hasPrice
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Financial ;
 .
+### ------------------------------------------------------------
+v-s:Projectable
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Projectable thing"@en ;
+  rdfs:label "Проектируемая сущность"@ru ;
+.
+v-s:hasProject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Ссылка на проект"@ru ;
+  rdfs:label "Linked project"@en ;
+  rdfs:domain v-s:Projectable ;
+  rdfs:range v-s:Initiative ;
+.

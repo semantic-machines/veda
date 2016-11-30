@@ -126,6 +126,7 @@ v-s:Contract
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Projectable ;
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
@@ -135,6 +136,7 @@ v-s:ContractRequest
   rdfs:subClassOf v-s:Request ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Financial ;
+  rdfs:subClassOf v-s:Projectable ;
   rdfs:label "ContractRequest"@en ;
   rdfs:label "Заявка на контракт"@ru ;
 .
