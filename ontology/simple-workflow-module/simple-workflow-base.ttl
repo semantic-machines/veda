@@ -827,7 +827,7 @@ if (doc) {
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
 
-      //routes['instruction'][simple+'participant'] = doc["mnd-s:actFailureManager"];
+      routes['instruction'][simple+'participant'] = doc["mnd-s:actFailureManager"];
       routes['instruction'][simple+'visible'] = [true];
       routes['instruction'][simple+'editable'] = [true];
       routes['instruction'][simple+'deadlineDays'] = [10];
