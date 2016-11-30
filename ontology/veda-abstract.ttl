@@ -159,6 +159,14 @@ v-s:attachment
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
 .
+v-s:scanAttachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "ScanAttachment"@en ;
+  rdfs:label "Сканированный вариант документа"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ;
+  rdfs:subPropertyOf v-s:attachment ;
+.
 v-s:hasClassifiedAttachment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Classified attachment"@en ;
@@ -470,6 +478,22 @@ v-s:hasContract
   rdfs:range v-s:Contract ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:hasPaymentConditions
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Payment Conditions"@en ;
+  rdfs:label "Условия платежа"@ru ;
+  rdfs:range v-s:PaymentConditions ;
+.
+v-s:hasDeliveryConditions
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Delivery Conditions"@en ;
+  rdfs:label "Условия поставки"@ru ;
+  rdfs:range v-s:DeliveryConditions ;
+.
+
+
 ### -------------------------------------------------------
 v-s:Controlled
   rdf:type owl:Class ;
@@ -826,4 +850,11 @@ v-s:hasBudgetCategory
   rdfs:label "Budget category"@en ;
   rdfs:label "Категория бюджета"@ru ;
   rdfs:range v-s:BudgetCategory ;
+.
+v-s:hasPrice
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Price"@en ;
+  rdfs:label "Стоимость"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
 .
