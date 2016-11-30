@@ -492,7 +492,13 @@ v-s:hasDeliveryConditions
   rdfs:label "Условия поставки"@ru ;
   rdfs:range v-s:DeliveryConditions ;
 .
-
+v-s:hasContractScope
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contract scope"@en ;
+  rdfs:label "Характер контракта"@ru ;
+  rdfs:range v-s:ContractScope ;
+  rdfs:domain v-s:Contractual ;
+.
 
 ### -------------------------------------------------------
 v-s:Controlled

@@ -121,6 +121,11 @@ v-s:Contract
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Financial ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
@@ -163,6 +168,14 @@ v-s:BudgetCategory
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Budget category"@en ;
   rdfs:label "Категория бюджета"@ru ;
+.
+
+#-------------------------------------------------
+v-s:ContractScope
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Contract scope"@en ;
+  rdfs:label "Характер контракта"@ru ;
 .
 
 #----------------------------------------------
