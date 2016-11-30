@@ -7,6 +7,11 @@ function down_right_and_store(process, task)
 
 function change_rights(process, task, rightset)
 {
+    return change_rights(process, task, [{"data":"-r--"}], 'actor');
+}
+
+function change_rights(process, task, rightset, actor)
+{
     try
     {
 //print ("@JS down_right_and_store");
@@ -25,7 +30,7 @@ function change_rights(process, task, rightset)
         {
             //print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
             //print ("@JS2 executor=", toJson(process.getExecutor()));
-    	    var executor = (process.getLocalVariable ('actor'))? process.getLocalVariable ('actor') : process.getExecutor();
+    	    var executor = (process.getLocalVariable (actor))? process.getLocalVariable (actor) : process.getExecutor();
     
     	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
