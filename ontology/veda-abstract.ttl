@@ -103,6 +103,20 @@ v-s:deleted
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
+v-s:lockedInOrigin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Locked in origin"@en ;
+  rdfs:label "Заблокирован во внешней системе"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:deletedInOrigin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Deleted in origin"@en ;
+  rdfs:label "Удален во внешней системе"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:title
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Name"@en ;
@@ -499,6 +513,20 @@ v-s:hasContractScope
   rdfs:range v-s:ContractScope ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:isCreditor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Creditor indicator"@en ;
+  rdfs:label "Индикатор кредитора"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:isDebitor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Debitor indicator"@en ;
+  rdfs:label "Индикатор дебитора"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Contractual ;
+.
 
 ### -------------------------------------------------------
 v-s:Controlled
@@ -569,6 +597,13 @@ v-s:responsibleOrganization
   rdfs:label "Ответственная организация"@ru ;
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Controlled ;
+.
+v-s:financialOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Financial organization"@en ;
+  rdfs:label "Финансовая организация"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Financial ;
 .
 v-s:responsibleProcess
   rdf:type owl:ObjectProperty ;

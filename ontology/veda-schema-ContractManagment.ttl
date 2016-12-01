@@ -19,6 +19,7 @@ v-s:Contractor
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Organization ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;
 .
@@ -256,26 +257,26 @@ v-s:ContractorTemplate
     <br>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorLocked" data-type="boolean"></veda-control>
-        <em about="mnd-s:isContractorLocked" property="rdfs:label"></em>
+        <veda-control property="v-s:lockedInOrigin" data-type="boolean"></veda-control>
+        <em about="v-s:lockedInOrigin" property="rdfs:label"></em>
       </label>
     </div>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorDeleted" data-type="boolean"></veda-control>
-        <em about="mnd-s:isContractorDeleted" property="rdfs:label"></em>
+        <veda-control property="v-s:deletedInOrigin" data-type="boolean"></veda-control>
+        <em about="v-s:deletedInOrigin" property="rdfs:label"></em>
       </label>
     </div>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorCreditor" data-type="boolean"></veda-control>
-        <em about="mnd-s:isContractorCreditor" property="rdfs:label"></em>
+        <veda-control property="v-s:isCreditor" data-type="boolean"></veda-control>
+        <em about="v-s:isCreditor" property="rdfs:label"></em>
       </label>
     </div>
     <div class="checkbox">
       <label>
-        <veda-control property="mnd-s:isContractorDebitor" data-type="boolean"></veda-control>
-        <em about="mnd-s:isContractorDebitor" property="rdfs:label"></em>
+        <veda-control property="v-s:isDebitor" data-type="boolean"></veda-control>
+        <em about="v-s:isDebitor" property="rdfs:label"></em>
       </label>
     </div>
 
