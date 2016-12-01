@@ -135,6 +135,7 @@ v-s:Contract
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Projectable ;
+  rdfs:subClassOf v-s:Controlled ;
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
@@ -211,6 +212,18 @@ v-s:DeliveryConditions
 # v-s:registrationNumber
 # v-s:title
 # rdfs:label
+
+# ------------------------------------------------------------
+v-s:ContractPassport
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Contract passport"@en ;
+  rdfs:label "Паспорт сделки"@ru ;
+.
+# v-s:hasContract
+
 
 # ------------------------------------------------------------
 v-s:ContractorTemplate
