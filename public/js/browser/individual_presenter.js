@@ -510,19 +510,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       function propertyModifiedHandler (doc_rel_uri, values) {
         if (doc_rel_uri === rel_uri) {
           ++counter;
-          if (values.length) {
-            values.map(function (value) {
-              if (value.id in rendered) {
-                rendered[value.id].cnt = counter;
-                return;
-              }
-              setTimeout (function () {
-                var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
-                rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-              }, 0);
-            });
-          } else {
-            relContainer.empty();
+          try {
+            if (values.length) {
+              values.map(function (value) {
+                if (value.id in rendered) {
+                  rendered[value.id].cnt = counter;
+                  return;
+                }
+                setTimeout (function () {
+                  var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
+                  rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
+                }, 0);
+              });
+            } else {
+              relContainer.empty();
+            }
+          } catch (ex) {
+            if (ex instanceof TypeError) {
+              veda.trigger("warning", {status: "CL:001", description: "Attribute undefined - " + rel_uri});
+            }
           }
           // Remove rendered templates for removed values
           for (var i in rendered) {
