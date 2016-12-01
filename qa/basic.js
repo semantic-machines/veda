@@ -131,19 +131,19 @@ module.exports = {
 
 	logout: function(driver) {
 		driver.findElement({id:'menu'}).click()
-			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
+			.thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});
 		driver.wait
 		(
 			webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'})),
 			FAST_OPERATION
-		).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `exit` button inside menu");});
+		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `exit` button inside menu");});
 		driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'}).click()
 			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
 		FAST_OPERATION;
 		driver.findElement({css:'input[id="login"]'}).clear()
-			.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'login' field");});
+			.thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'login' field");});
 		driver.findElement({css:'input[id="password"]'}).clear()
-			.thenCatch(function (e) {basic.errorHandler(e, "Cannot clear 'password' field");});
+			.thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'password' field");});
 	},
 
 	isVisible: function (driver, element, time) {
@@ -152,7 +152,7 @@ module.exports = {
 		(
 			webdriver.until.elementIsVisible(driver.findElement({css:''+ element +''})),
 			time
-		).thenCatch(function (e) {basic.errorHandler(e, "Seems " + element +" is not visible");});
+		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems " + element +" is not visible");});
 	},
 
 	isEnabled: function (driver, element, time) {
@@ -160,7 +160,7 @@ module.exports = {
 		(
 			webdriver.until.elementIsEnabled(driver.findElement({css:''+ element +''})),
 			time
-		).thenCatch(function (e) {basic.errorHandler(e, "Cannot find" + element + "button");});
+		).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find" + element + "button");});
 	},
 	/**
 	 * Заполнить ссылочный атрибут значением из выпадающего списка 
