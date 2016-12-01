@@ -2,8 +2,9 @@
 
 # берет новые исходники из github, но не собирает
 
-DMD_VER=2.072.0
+DMD_VER=2.072.1
 DUB_VER=1.0.0
+GO_VER=go1.7
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
@@ -37,23 +38,21 @@ LIB_OK="Status: install ok installed"
 F_UL=0
 
 # install golang 1.7 and dependency
-mkdir tmp
-cd tmp
 
-wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
-tar -xvf go1.7.linux-amd64.tar.gz
-sudo mv go /usr/local
+if ! go version | grep $GO_VER ; then    
+    mkdir tmp
+    cd tmp
+    wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
+    tar -xvf go1.7.linux-amd64.tar.gz
+    sudo mv go /usr/local
+    export GOROOT=/usr/local/go
+    export GOPATH=$HOME/go
+    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    go version
+    go get github.com/gorilla/websocket
+    cd ..
+fi
 
-export GOROOT=/usr/local/go
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-
-go version
-
-go get github.com/gorilla/websocket
-
-cd ..
-#
 
 for i in "${LIB_NAME[@]}"; do
 
