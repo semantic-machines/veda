@@ -1149,7 +1149,7 @@ v-ui:FileTemplateWithComment
   var fn = individual["v-s:fileName"][0];
   if (typeof fn === "string" || fn instanceof String) {
     var idx = fn.lastIndexOf("."),
-    var ext = fn.substr(idx + 1);
+        ext = fn.substr(idx + 1);
     $("span#icon", template).text(ext);
   }
   //# sourceURL=v-ui:FileTemplateWithComment
