@@ -23,6 +23,13 @@ v-s:Contractor
   rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;
 .
+v-s:linkedOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "linked organization"@en ;
+  rdfs:label "Связанная организация"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractor ;
+.
 # ------------------------------------------------------------
 v-s:ContractorProfile
   rdf:type owl:Class ;
