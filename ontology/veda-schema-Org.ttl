@@ -330,7 +330,7 @@ v-s:taxRegistrationCauseForOrganization
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-s:Organization ;
   v-ui:forProperty v-s:taxRegistrationCause;
-  v-ui:minCardinality 1 ;
+  v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1;
   v-ui:regexp "^[0-9]{9}$";
   rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
@@ -612,12 +612,13 @@ v-s:OrganizationTemplate
     }
 
     // Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102 то поле v-s:taxRegistrationCause должно быть обязательным.
-    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
+    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && !individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
       var result = {
-        "v-s:taxRegistrationCause": {
-          state: true,
-          cause: []
+          "v-s:taxRegistrationCause": {
+          state: individual.hasValue("v-s:taxRegistrationCause"),
+          cause: ["v-ui:minCardinality"]
         }
+
       };
     }
 

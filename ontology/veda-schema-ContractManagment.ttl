@@ -101,6 +101,19 @@ v-s:PShasCurrencyPrice
   rdfs:label "Спецификация свойства v-s:hasCurrency для класса v-s:Price"@ru ;
 .
 
+v-s:PSBoleanAllContractor
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Contractor ;
+  v-ui:forProperty v-s:lockedInOrigin ;
+  v-ui:forProperty v-s:deletedInOrigin ;
+  v-ui:forProperty v-s:isCreditor ;
+  v-ui:forProperty v-s:isDebitor ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
+  rdfs:label "Спецификация свойства BoleanAllContractor для класса v-s:Contractor"@ru ;
+.
+
 # ------------------------------------------------------------
 v-s:Cost
   rdf:type owl:Class ;
@@ -247,7 +260,12 @@ v-s:ContractorTemplate
       </div>
     </div>
 
+    <em about="v-s:linkedOrganization" property="rdfs:label"></em>
+    <div rel="v-s:linkedOrganization">
+      <div about="@"  data-template="v-ui:LabelLinkTemplate"></div>
+    </div>
     <hr class="view -edit -search">
+
 
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
