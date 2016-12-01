@@ -178,6 +178,7 @@ this._init = function () {
       self.object[property_uri] = self[property_uri].map(function (item) {
         // Embedded blanks are for v-s:Embedded objects only
         // Prevent mutual v-s:parent links
+        item._init();
         if ( item.object.is("v-s:Embedded") && property_uri !== "v-s:parent" ) {
           item.object["v-s:parent"] = [ self.object ];
         }
@@ -189,7 +190,6 @@ this._init = function () {
   });
 }
 
-this._init();
 self.on("individual:beforeSave", updateBlank);
 //self.on("individual:afterSave", updateAspect);
 
