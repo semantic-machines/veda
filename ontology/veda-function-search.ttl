@@ -1159,6 +1159,7 @@ v-fs:AttributiveSearchTemplate
 
   // Render search form
   if ( searchBlank ) {
+    searchBlank._init();
     searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
   } else {
     $("#params", template).remove();
