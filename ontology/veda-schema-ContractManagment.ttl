@@ -277,9 +277,7 @@ v-s:ContractorTemplate
     </div>
 
     <em about="v-s:linkedOrganization" property="rdfs:label"></em>
-    <div rel="v-s:linkedOrganization">
-      <div about="@"  data-template="v-ui:LabelLinkTemplate"></div>
-    </div>
+    <div about="@" rel="v-s:linkedOrganization" data-template="v-ui:LabelLinkTemplate"></div>
     <hr class="view -edit -search">
 
 
