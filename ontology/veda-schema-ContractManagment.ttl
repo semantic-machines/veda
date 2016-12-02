@@ -152,6 +152,13 @@ v-s:Contract
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
+v-s:hasContractSpecification
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contract specification"@en ;
+  rdfs:label "Детализация контракта"@ru ;
+  rdfs:range v-s:ContractSpecification ;
+  rdfs:domain v-s:Contract ;
+.
 # ------------------------------------------------------------
 v-s:ContractRequest
   rdf:type owl:Class ;
@@ -238,6 +245,14 @@ v-s:ContractPassport
 .
 # v-s:hasContract
 
+# ------------------------------------------------------------
+v-s:ContractSpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Contract specification"@en ;
+  rdfs:label "Детализация контракта"@ru ;
+.
+# v-s:hasSector
 
 # ------------------------------------------------------------
 v-s:ContractorTemplate
