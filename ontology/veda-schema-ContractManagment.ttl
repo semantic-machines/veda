@@ -88,6 +88,8 @@ v-s:PSsumPrice
   v-ui:forProperty v-s:sum ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
+  v-ui:placeholder "Сумма"@ru ;
+  v-ui:placeholder "Sum"@en ;
   rdfs:label "v-s:sum specification for v-s:Price class"@en ;
   rdfs:label "Спецификация свойства v-s:cost для класса v-s:Price"@ru ;
 .
@@ -97,6 +99,8 @@ v-s:PShasCurrencyPrice
   v-ui:forProperty v-s:hasCurrency ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
+  v-ui:placeholder "Валюта"@ru ;
+  v-ui:placeholder "Currency"@en ;
   rdfs:label "v-s:hasCurrency specification for v-s:Price class"@en ;
   rdfs:label "Спецификация свойства v-s:hasCurrency для класса v-s:Price"@ru ;
 .
