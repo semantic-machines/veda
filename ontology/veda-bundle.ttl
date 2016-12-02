@@ -304,3 +304,8 @@ v-s:Attention
   rdfs:label "Внимание!"@ru ;
   rdfs:label "Attention!"@en ;
 .
+v-s:HeadOrganization
+  rdf:type v-s:Bundle ;
+  rdfs:label "Головная организация"@ru ;
+  rdfs:label "Head organization"@en ;
+.
