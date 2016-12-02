@@ -10,7 +10,13 @@ fi
 ./update-version-ttl.sh
 
 echo make start VEDA-CCUS
-export GOROOT=/usr/local/go
+
+if [ -z $GOROOT ]; then
+    export GOROOT=/usr/local/go
+else 
+    echo "var GOROOT is set to '$GOROOT'"; 
+fi
+
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 export GOPATH=$HOME/go
 rm ./veda-ccus
