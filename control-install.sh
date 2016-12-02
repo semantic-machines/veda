@@ -46,12 +46,13 @@ if ! go version | grep $GO_VER ; then
     tar -xvf go1.7.linux-amd64.tar.gz
     sudo mv go /usr/local
     export GOROOT=/usr/local/go
-    export GOPATH=$HOME/go
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
     go version
-    go get github.com/gorilla/websocket
     cd ..
 fi
+
+export GOPATH=$HOME/go
+go get github.com/gorilla/websocket
 
 
 for i in "${LIB_NAME[@]}"; do
