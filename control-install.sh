@@ -53,7 +53,7 @@ fi
 
 export GOPATH=$HOME/go
 go get github.com/gorilla/websocket
-
+ls $HOME/go 
 
 for i in "${LIB_NAME[@]}"; do
 
