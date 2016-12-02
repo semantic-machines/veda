@@ -232,6 +232,7 @@ v-s:ContractPassport
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:BackwardLink;
   rdfs:label "Contract passport"@en ;
   rdfs:label "Паспорт сделки"@ru ;
 .
