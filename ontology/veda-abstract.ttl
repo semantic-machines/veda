@@ -636,7 +636,7 @@ v-s:Registered
 v-s:registrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:label "Дата регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -650,7 +650,7 @@ v-s:registrationNumber
 v-s:registrationDateIn
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:label "Дата регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -664,7 +664,7 @@ v-s:registrationNumberIn
 v-s:registrationDateOut
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:label "Дата регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
