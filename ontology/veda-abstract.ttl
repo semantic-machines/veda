@@ -478,7 +478,7 @@ v-s:hasContractor
   rdfs:range v-s:Contractor ;
   rdfs:domain v-s:Contractual ;
 .
-v-s:obligationKind
+v-s:hasObligationKind
   rdf:type owl:ObjectProperty ;
   rdfs:label "Obligation kind"@en ;
   rdfs:label "Вид обязательств"@ru ;
