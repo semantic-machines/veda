@@ -5,6 +5,14 @@ body {
   color: #233333;
 }
 
+.container .container {
+  width: inherit;
+/*  padding-right: inherit;
+  padding-left: inherit;
+  margin-right: inherit;
+  margin-left: inherit;*/
+}
+
 /* Gray tooltip */
 .tooltip-inner {
   background-color: #333333;
