@@ -13,19 +13,19 @@
   v-s:loadPriority 10 ;
 .
 
-d:OKOPF_10000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Коммерческие корпоративные организации" ;
-  v-s:title "Организационно-правовые формы юридических лиц, являющихся коммерческими корпоративными организациями" ;
-  v-s:registrationNumber "10000" ;
-.
-d:OKOPF_11000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Хозяйственные товарищества" ;
-  v-s:title "Хозяйственные товарищества" ;
-  v-s:registrationNumber "11000" ;
-  v-s:hasParentLink d:OKOPF_10000
-.
+#d:OKOPF_10000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Коммерческие корпоративные организации" ;
+#  v-s:title "Организационно-правовые формы юридических лиц, являющихся коммерческими корпоративными организациями" ;
+#  v-s:registrationNumber "10000" ;
+#.
+#d:OKOPF_11000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Хозяйственные товарищества" ;
+#  v-s:title "Хозяйственные товарищества" ;
+#  v-s:registrationNumber "11000" ;
+#  v-s:hasParentLink d:OKOPF_10000
+#.
 d:OKOPF_11051
   a v-s:ClassifierLegalForm;
   rdfs:label "Полные товарищества" ;
@@ -40,20 +40,20 @@ d:OKOPF_11064
   v-s:registrationNumber "11064" ;
   v-s:hasParentLink d:OKOPF_11000
 .
-d:OKOPF_12000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Хозяйственные общества" ;
-  v-s:title "Хозяйственные общества" ;
-  v-s:registrationNumber "12000" ;
-  v-s:hasParentLink d:OKOPF_10000
-.
-d:OKOPF_12200
-  a v-s:ClassifierLegalForm;
-  rdfs:label "АО" ;
-  v-s:title "Акционерные общества" ;
-  v-s:registrationNumber "12200" ;
-  v-s:hasParentLink d:OKOPF_12000
-.
+#d:OKOPF_12000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Хозяйственные общества" ;
+#  v-s:title "Хозяйственные общества" ;
+#  v-s:registrationNumber "12000" ;
+#  v-s:hasParentLink d:OKOPF_10000
+#.
+#d:OKOPF_12200
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "АО" ;
+#  v-s:title "Акционерные общества" ;
+#  v-s:registrationNumber "12200" ;
+#  v-s:hasParentLink d:OKOPF_12000
+#.
 d:OKOPF_12247
   a v-s:ClassifierLegalForm;
   rdfs:label "ПАО" ;
@@ -82,20 +82,20 @@ d:OKOPF_13000
   v-s:registrationNumber "13000" ;
   v-s:hasParentLink d:OKOPF_10000
 .
-d:OKOPF_14000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Производственные кооперативы (артели)" ;
-  v-s:title "Производственные кооперативы (артели)" ;
-  v-s:registrationNumber "14000" ;
-  v-s:hasParentLink d:OKOPF_10000
-.
-d:OKOPF_14100
-  a v-s:ClassifierLegalForm;
-  rdfs:label "С.х. производственные кооперативы" ;
-  v-s:title "Сельскохозяйственные производственные кооперативы" ;
-  v-s:registrationNumber "14100" ;
-  v-s:hasParentLink d:OKOPF_14000
-.
+#d:OKOPF_14000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Производственные кооперативы (артели)" ;
+#  v-s:title "Производственные кооперативы (артели)" ;
+#  v-s:registrationNumber "14000" ;
+#  v-s:hasParentLink d:OKOPF_10000
+#.
+#d:OKOPF_14100
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "С.х. производственные кооперативы" ;
+#  v-s:title "Сельскохозяйственные производственные кооперативы" ;
+#  v-s:registrationNumber "14100" ;
+#  v-s:hasParentLink d:OKOPF_14000
+#.
 d:OKOPF_14153
   a v-s:ClassifierLegalForm;
   rdfs:label "Сельскохозяйственные артели (колхозы)" ;
@@ -117,7 +117,6 @@ d:OKOPF_14155
   v-s:registrationNumber "14155" ;
   v-s:hasParentLink d:OKOPF_14100
 .
-
 d:OKOPF_14200
   a v-s:ClassifierLegalForm;
   rdfs:label "Производственные кооперативы (кроме сельскохозяйственных производственных кооперативов)" ;
@@ -127,24 +126,24 @@ d:OKOPF_14200
 .
 d:OKOPF_19000
   a v-s:ClassifierLegalForm;
-  rdfs:label "Прочие ЮЛ, являющимися коммерч.орг." ;
+  rdfs:label "Прочие ЮЛ, являющиеся коммерч.орг." ;
   v-s:title "Прочие юридические лица, являющиеся коммерческими организациями" ;
   v-s:registrationNumber "19000" ;
   v-s:hasParentLink d:OKOPF_10000
 .
-d:OKOPF_20000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Некоммерческие корпоративные организации" ;
-  v-s:title "Организационно-правовые формы юридических лиц, являющихся некоммерческими корпоративными организациями" ;
-  v-s:registrationNumber "20000" ;
-  .
-d:OKOPF_20100
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Потребительские кооперативы" ;
-  v-s:title "Потребительские кооперативы" ;
-  v-s:registrationNumber "20100" ;
-  v-s:hasParentLink d:OKOPF_20000
-.
+#d:OKOPF_20000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Некоммерческие корпоративные организации" ;
+#  v-s:title "Организационно-правовые формы юридических лиц, являющихся некоммерческими корпоративными организациями" ;
+#  v-s:registrationNumber "20000" ;
+#  .
+#d:OKOPF_20100
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Потребительские кооперативы" ;
+#  v-s:title "Потребительские кооперативы" ;
+#  v-s:registrationNumber "20100" ;
+#  v-s:hasParentLink d:OKOPF_20000
+#.
 d:OKOPF_20101
   a v-s:ClassifierLegalForm;
   rdfs:label "ГСК" ;
@@ -187,7 +186,6 @@ d:OKOPF_20106
   v-s:registrationNumber "20106" ;
   v-s:hasParentLink d:OKOPF_20100
 .
-
 d:OKOPF_20107
   a v-s:ClassifierLegalForm;
   rdfs:label "Потребительские общества" ;
@@ -209,7 +207,6 @@ d:OKOPF_20109
   v-s:registrationNumber "20109" ;
   v-s:hasParentLink d:OKOPF_20100
 .
-
 d:OKOPF_20110
   a v-s:ClassifierLegalForm;
   rdfs:label "Сельскохозяйственные потребительские сбытовые (торговые) кооперативы" ;
@@ -294,7 +291,6 @@ d:OKOPF_20210
   v-s:registrationNumber "20210" ;
   v-s:hasParentLink d:OKOPF_20200
 .
-
 d:OKOPF_20211
   a v-s:ClassifierLegalForm;
   rdfs:label "Сельскохозяйственные потребительские обслуживающие кооперативы" ;
@@ -309,13 +305,13 @@ d:OKOPF_20217
   v-s:registrationNumber "20217" ;
   v-s:hasParentLink d:OKOPF_20200
 .
-d:OKOPF_20600
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Ассоциации (союзы)" ;
-  v-s:title "Ассоциации (союзы)" ;
-  v-s:registrationNumber "20600" ;
-  v-s:hasParentLink d:OKOPF_20000
-.
+#d:OKOPF_20600
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Ассоциации (союзы)" ;
+#  v-s:title "Ассоциации (союзы)" ;
+#  v-s:registrationNumber "20600" ;
+#  v-s:hasParentLink d:OKOPF_20000
+#.
 d:OKOPF_20601
   a v-s:ClassifierLegalForm;
   rdfs:label "Ассоциации (союзы) экономического взаимодействия субъектов РФ" ;
@@ -449,13 +445,13 @@ d:OKOPF_20620
   v-s:registrationNumber "20620" ;
   v-s:hasParentLink d:OKOPF_20600
 .
-d:OKOPF_20700
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Товарищества собственников недвижимости" ;
-  v-s:title "Товарищества собственников недвижимости" ;
-  v-s:registrationNumber "20700" ;
-  v-s:hasParentLink d:OKOPF_20000
-.
+#d:OKOPF_20700
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Товарищества собственников недвижимости" ;
+#  v-s:title "Товарищества собственников недвижимости" ;
+#  v-s:registrationNumber "20700" ;
+#  v-s:hasParentLink d:OKOPF_20000
+#.
 d:OKOPF_20701
   a v-s:ClassifierLegalForm;
   rdfs:label "Садоводческие, огороднические или дачные некоммерческие товарищества" ;
@@ -484,13 +480,12 @@ d:OKOPF_21200
   v-s:registrationNumber "21200" ;
   v-s:hasParentLink d:OKOPF_20000
 .
-d:OKOPF_30000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Организационно-правовые формы организаций, созданных без прав юридического лица" ;
-  v-s:title "Организационно-правовые формы организаций, созданных без прав юридического лица" ;
-  v-s:registrationNumber "30000" ;
-
-.
+#d:OKOPF_30000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Организационно-правовые формы организаций, созданных без прав юридического лица" ;
+#  v-s:title "Организационно-правовые формы организаций, созданных без прав юридического лица" ;
+#  v-s:registrationNumber "30000" ;
+#.
 d:OKOPF_30001
   a v-s:ClassifierLegalForm;
   rdfs:label "Представительства юридических лиц" ;
@@ -540,13 +535,12 @@ d:OKOPF_30008
   v-s:registrationNumber "30008" ;
   v-s:hasParentLink d:OKOPF_30000
 .
-d:OKOPF_40000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Организационно-правовые формы международных организаций, осуществляющих деятельность на территории РФ" ;
-  v-s:title "Организационно-правовые формы международных организаций, осуществляющих деятельность на территории Российской Федерации" ;
-  v-s:registrationNumber "40000" ;
-
-.
+#d:OKOPF_40000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Организационно-правовые формы международных организаций, осуществляющих деятельность на территории РФ" ;
+#  v-s:title "Организационно-правовые формы международных организаций, осуществляющих деятельность на территории Российской Федерации" ;
+#  v-s:registrationNumber "40000" ;
+#.
 d:OKOPF_40001
   a v-s:ClassifierLegalForm;
   rdfs:label "Межправительственные международные организации" ;
@@ -561,13 +555,12 @@ d:OKOPF_40002
   v-s:registrationNumber "40002" ;
   v-s:hasParentLink d:OKOPF_40000
 .
-d:OKOPF_50000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Организационно-правовые формы для деятельности граждан (физических лиц)" ;
-  v-s:title "Организационно-правовые формы для деятельности граждан (физических лиц)" ;
-  v-s:registrationNumber "50000" ;
-
-.
+#d:OKOPF_50000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Организационно-правовые формы для деятельности граждан (физических лиц)" ;
+#  v-s:title "Организационно-правовые формы для деятельности граждан (физических лиц)" ;
+#  v-s:registrationNumber "50000" ;
+#.
 d:OKOPF_50100
   a v-s:ClassifierLegalForm;
   rdfs:label "Организационно-правовые формы для коммерческой деятельности граждан" ;
@@ -589,13 +582,13 @@ d:OKOPF_50102
   v-s:registrationNumber "50102" ;
   v-s:hasParentLink d:OKOPF_50100
 .
-d:OKOPF_50200
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Организационно-правовые формы для деятельности граждан, не отнесенной к предпринимательству" ;
-  v-s:title "Организационно-правовые формы для деятельности граждан, не отнесенной к предпринимательству" ;
-  v-s:registrationNumber "50200" ;
-  v-s:hasParentLink d:OKOPF_50000
-.
+#d:OKOPF_50200
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Организационно-правовые формы для деятельности граждан, не отнесенной к предпринимательству" ;
+#  v-s:title "Организационно-правовые формы для деятельности граждан, не отнесенной к предпринимательству" ;
+#  v-s:registrationNumber "50200" ;
+#  v-s:hasParentLink d:OKOPF_50000
+#.
 d:OKOPF_50201
   a v-s:ClassifierLegalForm;
   rdfs:label "Адвокаты, учредившие адвокатский кабинет" ;
@@ -610,19 +603,19 @@ d:OKOPF_50202
   v-s:registrationNumber "50202" ;
   v-s:hasParentLink d:OKOPF_50200
 .
-d:OKOPF_60000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Организационно-правовые формы юридических лиц, являющихся коммерческими унитарными организациями" ;
-  v-s:title "Организационно-правовые формы юридических лиц, являющихся коммерческими унитарными организациями" ;
-  v-s:registrationNumber "60000" ;
-  .
-d:OKOPF_65000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Унитарные предприятия" ;
-  v-s:title "Унитарные предприятия" ;
-  v-s:registrationNumber "65000" ;
-  v-s:hasParentLink d:OKOPF_60000
-.
+#d:OKOPF_60000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Организационно-правовые формы юридических лиц, являющихся коммерческими унитарными организациями" ;
+#  v-s:title "Организационно-правовые формы юридических лиц, являющихся коммерческими унитарными организациями" ;
+#  v-s:registrationNumber "60000" ;
+#  .
+#d:OKOPF_65000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Унитарные предприятия" ;
+#  v-s:title "Унитарные предприятия" ;
+#  v-s:registrationNumber "65000" ;
+#  v-s:hasParentLink d:OKOPF_60000
+#.
 d:OKOPF_65100
   a v-s:ClassifierLegalForm;
   rdfs:label "Унитарные предприятия, основанные на праве оперативного управления (казенные предприятия)" ;
@@ -651,13 +644,13 @@ d:OKOPF_65143
   v-s:registrationNumber "65143" ;
   v-s:hasParentLink d:OKOPF_65100
 .
-d:OKOPF_65200
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Унитарные предприятия, основанные на праве хозяйственного ведения" ;
-  v-s:title "Унитарные предприятия, основанные на праве хозяйственного ведения" ;
-  v-s:registrationNumber "20614" ;
-  v-s:hasParentLink d:OKOPF_65000
-.
+#d:OKOPF_65200
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Унитарные предприятия, основанные на праве хозяйственного ведения" ;
+#  v-s:title "Унитарные предприятия, основанные на праве хозяйственного ведения" ;
+#  v-s:registrationNumber "20614" ;
+#  v-s:hasParentLink d:OKOPF_65000
+#.
 d:OKOPF_65241
   a v-s:ClassifierLegalForm;
   rdfs:label "Федеральные государственные унитарные предприятия" ;
@@ -679,19 +672,19 @@ d:OKOPF_65243
   v-s:registrationNumber "65243" ;
   v-s:hasParentLink d:OKOPF_65200
 .
-d:OKOPF_70000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Некоммерческие унитарные организации" ;
-  v-s:title "Организационно-правовые формы юридических лиц, являющихся некоммерческими унитарными организациями" ;
-  v-s:registrationNumber "70000" ;
-.
-d:OKOPF_70400
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Фонды" ;
-  v-s:title "Фонды" ;
-  v-s:registrationNumber "70400" ;
-  v-s:hasParentLink d:OKOPF_70000
-.
+#d:OKOPF_70000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Некоммерческие унитарные организации" ;
+#  v-s:title "Организационно-правовые формы юридических лиц, являющихся некоммерческими унитарными организациями" ;
+#  v-s:registrationNumber "70000" ;
+#.
+#d:OKOPF_70400
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Фонды" ;
+#  v-s:title "Фонды" ;
+#  v-s:registrationNumber "70400" ;
+#  v-s:hasParentLink d:OKOPF_70000
+#.
 d:OKOPF_70401
   a v-s:ClassifierLegalForm;
   rdfs:label "Благотворительные фонды" ;
@@ -734,13 +727,13 @@ d:OKOPF_71500
   v-s:registrationNumber "71500" ;
   v-s:hasParentLink d:OKOPF_70000
 .
-d:OKOPF_71600
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Публично-правовые компании" ;
-  v-s:title "Публично-правовые компании" ;
-  v-s:registrationNumber "71600" ;
-  v-s:hasParentLink d:OKOPF_70000
-.
+#d:OKOPF_71600
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Публично-правовые компании" ;
+#  v-s:title "Публично-правовые компании" ;
+#  v-s:registrationNumber "71600" ;
+#  v-s:hasParentLink d:OKOPF_70000
+#.
 d:OKOPF_71601
   a v-s:ClassifierLegalForm;
   rdfs:label "Государственные корпорации" ;
@@ -762,20 +755,20 @@ d:OKOPF_71610
   v-s:registrationNumber "71610" ;
   v-s:hasParentLink d:OKOPF_71600
 .
-d:OKOPF_75000
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Учреждения" ;
-  v-s:title "Учреждения" ;
-  v-s:registrationNumber "75000" ;
-  v-s:hasParentLink d:OKOPF_70000
-.
-d:OKOPF_75100
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Учреждения, созданные РФ" ;
-  v-s:title "Учреждения, созданные Российской Федерацией" ;
-  v-s:registrationNumber "75100" ;
-  v-s:hasParentLink d:OKOPF_75000
-.
+#d:OKOPF_75000
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Учреждения" ;
+#  v-s:title "Учреждения" ;
+#  v-s:registrationNumber "75000" ;
+#  v-s:hasParentLink d:OKOPF_70000
+#.
+#d:OKOPF_75100
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Учреждения, созданные РФ" ;
+#  v-s:title "Учреждения, созданные Российской Федерацией" ;
+#  v-s:registrationNumber "75100" ;
+#  v-s:hasParentLink d:OKOPF_75000
+#.
 d:OKOPF_75101
   a v-s:ClassifierLegalForm;
   rdfs:label "Федеральные государственные автономные учреждения" ;
@@ -797,13 +790,13 @@ d:OKOPF_75104
   v-s:registrationNumber "75104" ;
   v-s:hasParentLink d:OKOPF_75100
 .
-d:OKOPF_75200
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Учреждения, созданные субъектом РФ" ;
-  v-s:title "Учреждения, созданные субъектом Российской Федерации" ;
-  v-s:registrationNumber "75200" ;
-  v-s:hasParentLink d:OKOPF_75000
-.
+#d:OKOPF_75200
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Учреждения, созданные субъектом РФ" ;
+#  v-s:title "Учреждения, созданные субъектом Российской Федерации" ;
+#  v-s:registrationNumber "75200" ;
+#  v-s:hasParentLink d:OKOPF_75000
+#.
 d:OKOPF_75201
   a v-s:ClassifierLegalForm;
   rdfs:label "Государственные автономные учреждения субъектов РФ" ;
@@ -832,13 +825,13 @@ d:OKOPF_75300
   v-s:registrationNumber "75300" ;
   v-s:hasParentLink d:OKOPF_70000
 .
-d:OKOPF_75400
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Учреждения, созданные муниципальным образованием (муниципальные учреждения)" ;
-  v-s:title "Учреждения, созданные муниципальным образованием (муниципальные учреждения" ;
-  v-s:registrationNumber "75400" ;
-  v-s:hasParentLink d:OKOPF_70000
-.
+#d:OKOPF_75400
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Учреждения, созданные муниципальным образованием (муниципальные учреждения)" ;
+#  v-s:title "Учреждения, созданные муниципальным образованием (муниципальные учреждения" ;
+#  v-s:registrationNumber "75400" ;
+#  v-s:hasParentLink d:OKOPF_70000
+#.
 d:OKOPF_75401
   a v-s:ClassifierLegalForm;
   rdfs:label "Муниципальные автономные учреждения" ;
@@ -860,13 +853,13 @@ d:OKOPF_75404
   v-s:registrationNumber "75404" ;
   v-s:hasParentLink d:OKOPF_75400
 .
-d:OKOPF_75500
-  a v-s:ClassifierLegalForm;
-  rdfs:label "Частные учреждения" ;
-  v-s:title "Частные учреждения" ;
-  v-s:registrationNumber "75500" ;
-  v-s:hasParentLink d:OKOPF_75000
-.
+#d:OKOPF_75500
+#  a v-s:ClassifierLegalForm;
+#  rdfs:label "Частные учреждения" ;
+#  v-s:title "Частные учреждения" ;
+#  v-s:registrationNumber "75500" ;
+#  v-s:hasParentLink d:OKOPF_75000
+#.
 d:OKOPF_75502
   a v-s:ClassifierLegalForm;
   rdfs:label "Благотворительные учреждения" ;
