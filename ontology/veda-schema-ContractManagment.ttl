@@ -161,7 +161,7 @@ v-s:hasContractSpecification
   rdfs:label "Contract specification"@en ;
   rdfs:label "Детализация контракта"@ru ;
   rdfs:range v-s:ContractSpecification ;
-  rdfs:domain v-s:Contract ;
+  rdfs:domain v-s:Contractual ;
 .
 # ------------------------------------------------------------
 v-s:ContractRequest
