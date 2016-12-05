@@ -114,7 +114,7 @@ veda.Module(function (veda) { "use strict";
       },
       set: function (values) {
         this._.isSync = false;
-        var notNull = values.filter(function (i) { return i !== null });
+        var notNull = values.filter(function (i) { return i != undefined });
         var serialized = notNull.map( serializer );
         if (this._.filtered[property_uri] && this._.filtered[property_uri].length) {
           serialized = serialized.concat( this._.filtered[property_uri] );
@@ -420,7 +420,7 @@ veda.Module(function (veda) { "use strict";
    * @return {boolean} is requested property exists in this individual
    */
   proto.hasValue = function (property_uri, value) {
-    var result = !!(this[property_uri] && this[property_uri].length);
+    var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
     if (typeof value !== "undefined") {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
@@ -537,34 +537,38 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Return individual id
-   * @return {String} individual id.
+   * Return self
+   * @return {Object} self.
    */
   proto.valueOf = function () {
-    return this.id;
+    return this;
   };
 
   /**
    * @method
    * Prefetch linked objects. Useful for presenting objects with many links.
    * @param {Number} Depth of the object tree to prefetch.
+   * @param {allowed_property_uri, ...} Allowed property uri for links. If defined the tree is formed only for allowed properties.
    */
   proto.prefetch = function (depth) {
-    var uris = [], data = this.properties;
+    var allowed_props = [].slice.call(arguments, 1),
+        uris = [],
+        data = this.properties,
+        prefetch = this.prefetch;
     Object.keys(data).map( function (key) {
-      if (key === "@") return;
+      if ( key === "@" || (allowed_props.length && allowed_props.indexOf(key) < 0) ) return;
       data[key].map(function (value) {
         if (value.type !== "Uri") return;
         if (!veda.cache[value.data]) {
           uris.push(value.data);
         } else if (depth !== 0) {
-          uris.push(veda.cache[value.data].prefetch(0));
+          uris.push( prefetch.apply( veda.cache[value.data], [0].concat(allowed_props) ) );
         }
       });
     });
     uris = unique( veda.Util.flatten(uris, false) );
-    for (var i=0; i < depth && uris.length; i++) {
-      var result = get_individuals.call({}, veda.ticket, uris),
+    for (var i = 0; i < depth && uris.length; i++) {
+      var result = get_individuals(veda.ticket, uris),
         res_map = result.map(function (value) {
           var obj;
           if (!veda.cache[ value["@"] ]) {
@@ -572,7 +576,7 @@ veda.Module(function (veda) { "use strict";
           } else {
             obj = veda.cache[ value["@"] ];
           }
-          return obj.prefetch(0);
+          return prefetch.apply( obj, [0].concat(allowed_props) );
         });
       uris = unique( veda.Util.flatten(res_map, false) );
     }
@@ -580,7 +584,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   function unique(arr) {
-    var n = {}, r=[];
+    var n = {}, r = [];
     for(var i = 0; i < arr.length; i++) {
       if (!n[arr[i]]) {
         n[arr[i]] = true;

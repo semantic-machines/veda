@@ -268,7 +268,7 @@ veda.Module(function Util(veda) { "use strict";
 
   veda.Util.queryFromIndividual = function (individual) {
     var query;
-    var flat = veda.Util.flatten(individual.properties);
+    var flat = flattenIndividual(individual.properties);
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
         if (property_uri === "@") { return }
@@ -341,7 +341,7 @@ veda.Module(function Util(veda) { "use strict";
     return query;
   }
 
-  veda.Util.flatten = function flatten(object, prefix, union, depth) {
+  function flattenIndividual(object, prefix, union, depth) {
     if (typeof union === "undefined") {
       union = {};
     }
