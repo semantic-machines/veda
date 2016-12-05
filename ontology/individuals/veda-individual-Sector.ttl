@@ -190,7 +190,7 @@ d:0d748c70b31745329ff5fbe2893aa03f
 d:5026ea45f86d49df8d6a1fabc6a3446b
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "1. Купля-продажа"^^xsd:string;
+  rdfs:label "Купля-продажа"^^xsd:string;
   v-s:registrationNumber "030.120.010"^^xsd:string;
 .
 
@@ -238,7 +238,7 @@ d:97b94eb40c6b4583a9911ef6fcde067b
 d:dc518818cb1740a68e7c024d81102e37
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "3. Строительный подряд (в т.ч строительство под ключ)"^^xsd:string;
+  rdfs:label "Строительный подряд (в т.ч строительство под ключ)"^^xsd:string;
   v-s:registrationNumber "030.120.080"^^xsd:string;
 .
 
@@ -726,7 +726,7 @@ d:81c298f37fbd45758c8bdec4e1c0d954
 d:9f7bd8eb5f4b4ed4b1c67c2d07ea6144
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "8. Взаимодействие"^^xsd:string;
+  rdfs:label "Взаимодействие"^^xsd:string;
 .
 
 d:7575e29848f447248fafa99e73e890a0
@@ -870,21 +870,21 @@ d:9df38352d8444e83816ad5d1f9c2f0fc
 d:e7b11abf4006413b9e225481d0af0ddd
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "7. Агентский"^^xsd:string;
+  rdfs:label "Агентский"^^xsd:string;
   v-s:registrationNumber "030.120.170"^^xsd:string;
 .
 
 d:acf44ed83484468bab99124d4708ac4f
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "6. Страхование"^^xsd:string;
+  rdfs:label "Страхование"^^xsd:string;
   v-s:registrationNumber "030.120.160"^^xsd:string;
 .
 
 d:8fd1745c380c434f9fe22d8830098317
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "5. Финансовые услуги"^^xsd:string;
+  rdfs:label "Финансовые услуги"^^xsd:string;
 .
 
 d:831daafd86d9489ebb458450a49998a2
@@ -1037,7 +1037,7 @@ d:7bc0e1c8c41c4d52ad98cf157ddfbed0
 d:812b7db9dc974c34aaa02f4a0609032f
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "2. Возмездное оказание услуг"^^xsd:string;
+  rdfs:label "Возмездное оказание услуг"^^xsd:string;
   v-s:registrationNumber "030.120.100"^^xsd:string;
 .
 
@@ -1268,7 +1268,7 @@ d:748284793e5b42e69d10c456efd36eda
 d:1b0d368c502f4e4db36f0e6cf9513b16
   a v-s:Sector;
   v-s:hasParentLink d:69988613d9a148d998d2e40311b0b58e;
-  rdfs:label "4. Аренда"^^xsd:string;
+  rdfs:label "Аренда"^^xsd:string;
   v-s:registrationNumber "030.120.050"^^xsd:string;
 .
 
