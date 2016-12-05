@@ -281,7 +281,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     //  Delete
     $delete.on("click", function (e) {
       e.preventDefault();
-      if ( confirm("Вы действительно хотите удалить документ?") ) { template.trigger("delete"); }
+      if ( confirm("Вы уверены? / Are you sure?") ) { template.trigger("delete"); }
     });
     if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
 
