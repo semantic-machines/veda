@@ -259,6 +259,13 @@ v-s:ContractSpecification
 # v-s:hasSector
 
 # ------------------------------------------------------------
+v-s:ContractObject
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Contract object"@en ;
+  rdfs:label "Объект контракта"@ru ;
+.
+# ------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;
