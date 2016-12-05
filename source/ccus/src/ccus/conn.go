@@ -251,7 +251,7 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 func (pc *ccusConn) receiver() {
 
 	ch1 <- 1
-	log.Printf("ws[%s]:spawn receiver, count=%d", pc.ws.RemoteAddr(), count_connections)
+	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
 
 	var cc_prepare = make(chan string)
 	go pc.preparer(cc_prepare)
@@ -271,7 +271,7 @@ func (pc *ccusConn) receiver() {
 		cc_prepare <- msg
 	}
 
-	log.Printf("ws[%s]:close, err=%s, count=%d", pc.ws.RemoteAddr(), err1, count_connections)
+	log.Printf("ws[%s]:close, err=%s", pc.ws.RemoteAddr(), err1)
 	pc.ws.Close()
 
 	ch1 <- -1

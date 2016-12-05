@@ -27,8 +27,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	NewCcusConn(ws, cc)
 }
 
-
 var ch1 = make(chan int)
+
 func collector_stat(ch1 chan int) {
 	log.Printf("spawn stat collector")
 
@@ -49,6 +49,7 @@ func collector_stat(ch1 chan int) {
 }
 
 var cc = make(chan updateInfo)
+
 func collector_updateInfo(cc chan updateInfo) {
 	log.Printf("spawn update info collector")
 
@@ -69,7 +70,7 @@ func collector_updateInfo(cc chan updateInfo) {
 			gg1 := _info_2_uid[gg.uid]
 			cc <- gg1
 			if gg1.update_counter > 0 {
-				log.Printf("collector:ret gg1=%s", gg1)
+				log.Printf("collector:ret: uid=%s opid=%d update_counter=%d", gg1.uid, gg1.opid, gg1.update_counter)
 			}
 		} else {
 			_info_2_uid[gg.uid] = gg
@@ -77,7 +78,7 @@ func collector_updateInfo(cc chan updateInfo) {
 				_last_opid = gg.opid
 				log.Printf("collector:last_opid=%d", _last_opid)
 			}
-			log.Printf("collector:update info %s", gg)
+			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", gg.uid, gg.opid, gg.update_counter)
 		}
 	}
 }
