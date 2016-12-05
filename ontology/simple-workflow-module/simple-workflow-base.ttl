@@ -869,11 +869,13 @@ if (doc) {
     routes['coordination3'][simple+'editable'] = [true];
     routes['coordination3'][simple+'deadlineDays'] = [10];
 
-    routes['examination'][simple+'participant'] = [veda.user];
-    routes['examination'][simple+'visible'] = [true];
-    routes['examination'][simple+'editable'] = [false];
-    routes['examination'][simple+'deadlineDays'] = [10];
-    routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+    if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
+   	  routes['examination'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+	  routes['examination'][simple+'visible'] = [true];
+      routes['examination'][simple+'editable'] = [false];
+      routes['examination'][simple+'deadlineDays'] = [10];
+      routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+    }
   }  
 //---------------------------------------------------------------------------------------------------------------------Заявка на создание/изменение контрагента
   if (doc['rdf:type'][0].id === "mnd-s:ContractorCreateChangeRequest") { 
@@ -937,7 +939,20 @@ if (doc) {
         routes['review'][simple+'deadlineDays'] = [10];
       }
     } else if (doc.hasValue('v-s:hasBudgetCategory') && doc['v-s:hasBudgetCategory'][0].id == 'd:a193b366b-aaeb-c1f2-b101-89c95b10a6c8') {
-      
+        if (doc.hasValue('v-s:responsibleDepartment')) {
+          var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
+          if (dep.hasValue('v-s:hasChief')) {
+      		routes['coordination1'][simple+'participant'] = dep["v-s:hasChief"]; // Руководитель отдела ответственного подразделения
+      	  }
+        }
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+        routes['coordination1'][simple+'deadlineDays'] = [10];
+        
+        routes['review'][new veda.IndividualModel("xyu3")]; // Анна Тарасова : Руководитель группы
+        routes['review'][simple+'visible'] = [true];
+        routes['review'][simple+'editable'] = [false];
+        routes['review'][simple+'deadlineDays'] = [10];              
     } 
   }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт
