@@ -364,7 +364,7 @@ veda.Module(function Util(veda) { "use strict";
           var individ = new veda.IndividualModel(value.data);
           //if ( true ) {
           if ( individ.isNew() ) {
-            flatten(individ.properties, prefixed, union, depth+1);
+            flattenIndividual(individ.properties, prefixed, union, depth+1);
           } else {
             union[prefixed] = union[prefixed] ? union[prefixed] : [];
             union[prefixed].push( value );
