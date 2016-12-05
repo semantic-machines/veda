@@ -241,6 +241,9 @@ class FanoutProcess : VedaModule
 
             if (is_deleted == false)
             {
+                delete smtp_conn;
+                connect_to_smtp(context);
+
                 string from         = new_indv.getFirstLiteral("v-wf:from");
                 string to           = new_indv.getFirstLiteral("v-wf:to");
                 string subject      = new_indv.getFirstLiteral("v-s:subject");
@@ -249,8 +252,11 @@ class FanoutProcess : VedaModule
 
                 if (from !is null && to !is null)
                 {
-                    string      from_label = "Veda System";
-                    string      email_from = extract_email(sticket, from, from_label).getFirstString();
+                    string from_label;
+                    string email_from = extract_email(sticket, from, from_label).getFirstString();
+
+                    if (from_label is null || from_label.length == 0)
+                        from_label = "Veda System";
 
                     string      label;
                     Recipient[] rr_email_to;
@@ -310,7 +316,7 @@ class FanoutProcess : VedaModule
                         log.trace("push_to_smtp: %s, %s, %s, result.msg=%s result.code=%d", new_indv.uri, message.sender, message.recipients,
                                   res.message,
                                   res.code);
-                                                
+
                         if (!res.success)
                         {
                             is_send = false;
@@ -361,7 +367,7 @@ class FanoutProcess : VedaModule
             Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
-            log.trace("connect_to_smtp:found gates: %s", gates);
+            //log.trace("connect_to_smtp:found gates: %s", gates);
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
