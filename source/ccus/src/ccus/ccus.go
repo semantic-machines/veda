@@ -27,10 +27,30 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	NewCcusConn(ws, cc)
 }
 
-var cc = make(chan updateInfo)
 
+var ch1 = make(chan int)
+func collector_stat(ch1 chan int) {
+	log.Printf("spawn stat collector")
+
+	count_spawned := 0
+	count_closed := 0
+
+	for {
+		gg := <-ch1
+
+		if gg > 0 {
+			count_spawned = count_spawned + gg
+		} else {
+			count_closed = count_closed + gg*-1
+		}
+
+		log.Printf("stat collector: total count ws connections: %d", count_spawned-count_closed)
+	}
+}
+
+var cc = make(chan updateInfo)
 func collector_updateInfo(cc chan updateInfo) {
-	log.Printf("spawn collector")
+	log.Printf("spawn update info collector")
 
 	_last_opid := 0
 	_info_2_uid := make(map[string]updateInfo)
@@ -65,7 +85,9 @@ func collector_updateInfo(cc chan updateInfo) {
 func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	go collector_updateInfo(cc)
+	go collector_stat(ch1)
 
 	http.HandleFunc("/ccus", wsHandler)
 
