@@ -1266,6 +1266,9 @@ v-ui:JournalTemplate
   rdfs:label "Journal template"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
+<script>
+  individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
+</script>
 <div class="container-fluid journal">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}

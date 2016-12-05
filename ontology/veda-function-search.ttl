@@ -1217,16 +1217,27 @@ v-fs:AttributiveSearchTemplate
       notFound.removeClass("hidden");
     }
 
+    // Prefetch search results alltogether
+    var prefetch = [];
+    for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements; i++) {
+      if ( self.result[i] && !veda.cache[ self.result[i] ] ) {
+        prefetch.push( self.result[i] );
+      }
+    }
+    if (prefetch.length) {
+      get_individuals(veda.ticket, prefetch).map(function (json) {
+        var fetched = new veda.IndividualModel(json);
+      });
+    }
+
     // Render each result
     for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements; i++) {
-      //(function (i) {
-        //setTimeout(function () {
-          var tmpl = resultTemplate.replace("###", i + 1),
-              uri = self.result[i],
-              item = new veda.IndividualModel(uri);
-          item.present(resultContainer, tmpl);
-        //}, 0);
-      //}(i));
+      //setTimeout(function (i) {
+        var tmpl = resultTemplate.replace("###", i + 1),
+            uri = self.result[i],
+            item = new veda.IndividualModel(uri);
+        item.present(resultContainer, tmpl);
+      //}, 0, i);
     }
 
     // Show pager

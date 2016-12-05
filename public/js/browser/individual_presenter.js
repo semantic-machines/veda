@@ -416,8 +416,38 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
     });
 
+    // Fetch related individuals all together
+    var prefetch_args = [1];
+
+    // Related resources
+    var rels = $("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper);
+    rels.map( function () {
+      var rel_uri = $(this).attr("rel");
+      if ( individual.hasValue(rel_uri) ) {
+        prefetch_args.push(rel_uri);
+      }
+    });
+    if (prefetch_args.length > 1) {
+      individual.prefetch.apply(individual, prefetch_args);
+    }
+
+    // Fetch about resources alltogether
+    var abouts = [];
+    $("[about]:not([rel] *):not([about] *)", wrapper).map( function () {
+      var about_uri = $(this).attr("about");
+      if (about_uri !== "@" && !veda.cache[about_uri] ) {
+        abouts.push(about_uri);
+      }
+    });
+    if (abouts.length) {
+      get_individuals(veda.ticket, abouts).map(function (item) {
+        var about = new veda.IndividualModel(item);
+      });
+    }
+
     // Related resources & about resources
-    $("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
+    rels.map( function () {
+    //$("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
       var relContainer = $(this),
         about = relContainer.attr("about"),
         rel_uri = relContainer.attr("rel"),
@@ -1158,4 +1188,3 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return template;
   }
 });
-
