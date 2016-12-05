@@ -37,12 +37,12 @@ class FanoutProcess : VedaModule
                                 string event_id,
                                 long op_id)
     {
-        log.trace("[%s]: start prepare", new_indv.uri);
+        //log.trace("[%s]: start prepare", new_indv.uri);
 
-        scope (exit)
-        {
-            log.trace("[%s]: end prepare", new_indv.uri);
-        }
+        //scope (exit)
+        //{
+        //    log.trace("[%s]: end prepare", new_indv.uri);
+        //}
 
         ResultCode res;
 
@@ -255,7 +255,7 @@ class FanoutProcess : VedaModule
                     string      label;
                     Recipient[] rr_email_to;
                     foreach (Resource el; extract_email(sticket, to, label))
-                        rr_email_to ~= Recipient(el.data(), "To");
+                        rr_email_to ~= Recipient(el.data(), label);
 
                     string str_email_reply_to = "";
                     foreach (Resource el; extract_email(sticket, reply_to, label))
@@ -310,6 +310,7 @@ class FanoutProcess : VedaModule
                         log.trace("push_to_smtp: %s, %s, %s, result.msg=%s result.code=%d", new_indv.uri, message.sender, message.recipients,
                                   res.message,
                                   res.code);
+                                                
                         if (!res.success)
                         {
                             is_send = false;
