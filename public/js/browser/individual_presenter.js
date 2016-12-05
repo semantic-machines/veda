@@ -483,7 +483,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             individual[rel_uri] = [emptyValue];
           }
         } else if (e.type === "search") {
-          relContainer.sortable("disable");
+          relContainer.sortable("enable");
         }
         e.stopPropagation();
       });
