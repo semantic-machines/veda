@@ -249,7 +249,9 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 
 // Receive msg from ws in goroutine
 func (pc *ccusConn) receiver() {
-	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
+
+	ch1 <- 1
+	log.Printf("ws[%s]:spawn receiver, count=%d", pc.ws.RemoteAddr(), count_connections)
 
 	var cc_prepare = make(chan string)
 	go pc.preparer(cc_prepare)
@@ -269,8 +271,10 @@ func (pc *ccusConn) receiver() {
 		cc_prepare <- msg
 	}
 
-	log.Printf("ws[%s]:close, err=%s", pc.ws.RemoteAddr(), err1)
+	log.Printf("ws[%s]:close, err=%s, count=%d", pc.ws.RemoteAddr(), err1, count_connections)
 	pc.ws.Close()
+
+	ch1 <- -1
 }
 
 const (
