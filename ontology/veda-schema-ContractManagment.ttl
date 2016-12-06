@@ -265,6 +265,18 @@ v-s:ContractObject
   rdfs:label "Contract object"@en ;
   rdfs:label "Объект контракта"@ru ;
 .
+
+#-------------------------------------------------
+v-s:AccountingDoc
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Financial ;
+  rdfs:label "Accounting document"@en ;
+  rdfs:label "Первичный документ"@ru ;
+.
+
 # ------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
