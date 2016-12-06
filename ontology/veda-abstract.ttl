@@ -906,6 +906,14 @@ v-s:hasPrice
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Financial ;
 .
+v-s:prepayment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Prepayment"@en ;
+  rdfs:label "Авансовый платеж"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+
 ### ------------------------------------------------------------
 v-s:Projectable
   rdf:type owl:Class ;
