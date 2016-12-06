@@ -268,10 +268,29 @@ class Consumer
         }
 
         return cast(string)last_read_msg;
-//return null;
     }
 
-    public bool commit()
+    public bool next()
+    {
+        if (!queue.isReady || !isReady)
+        {
+            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            return false;
+        }
+
+        if (count_popped >= queue.count_pushed)
+        {
+            log.trace("ERR! queue[%s]:commit:count_popped(%d) >= queue.count_pushed(%d)", queue.name, count_popped, queue.count_pushed);
+            return false;
+        }
+
+        count_popped++;
+        first_element += header.length + header.msg_length;
+
+        return true;
+    }
+
+    public bool commit_and_next()
     {
         if (!queue.isReady || !isReady)
         {
@@ -305,6 +324,41 @@ class Consumer
 
         count_popped++;
         first_element += header.length + header.msg_length;
+
+        return put_info();
+    }
+
+    public bool commit_1()
+    {
+        if (!queue.isReady || !isReady)
+        {
+            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            return false;
+        }
+
+        if (count_popped >= queue.count_pushed)
+        {
+            log.trace("ERR! queue[%s]:commit:count_popped(%d) >= queue.count_pushed(%d)", queue.name, count_popped, queue.count_pushed);
+            return false;
+        }
+
+        header_buff[ header_buff.length - 4 ] = 0;
+        header_buff[ header_buff.length - 3 ] = 0;
+        header_buff[ header_buff.length - 2 ] = 0;
+        header_buff[ header_buff.length - 1 ] = 0;
+
+        hash.start();
+        hash.put(header_buff);
+        hash.put(last_read_msg);
+        crc = hash.finish();
+
+        if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
+        {
+            log.trace("ERR! queue:commit:invalid msg: fail crc[%s] : %s", text(crc), text(header));
+            log.trace(text(last_read_msg.length));
+            log.trace(cast(string)last_read_msg);
+            return false;
+        }
 
         return put_info();
     }
@@ -353,7 +407,7 @@ class Queue
 
         file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
         file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-		file_name_lock 		= queue_db_path ~ "/" ~ name ~ "_queue.lock";
+        file_name_lock      = queue_db_path ~ "/" ~ name ~ "_queue.lock";
     }
 
     ~this()
@@ -370,10 +424,10 @@ class Queue
 //      sink (", count_popped=" ~ text(count_popped));
     }
 
-	public static bool is_lock (string _queue_name)
-	{
-	    return (exists(queue_db_path ~ "/" ~ _queue_name ~ "_queue.lock"));		
-	}
+    public static bool is_lock(string _queue_name)
+    {
+        return(exists(queue_db_path ~ "/" ~ _queue_name ~ "_queue.lock"));
+    }
 
     public void remove()
     {
@@ -579,10 +633,10 @@ class Queue
     public void push(string msg, QMessageType type = QMessageType.STRING)
     {
         if (!isReady || mode == Mode.R)
-        {	
-        	log.trace ("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text (isReady), text (mode));
+        {
+            log.trace("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text(isReady), text(mode));
             return;
-        }    
+        }
 
         count_pushed++;
         put_msg(msg, type);
