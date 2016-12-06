@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
+	"io"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
@@ -249,19 +251,35 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 
 // Receive msg from ws in goroutine
 func (pc *ccusConn) receiver() {
+	var err1 error
+	var bmsg []byte
+	var err error
+	var messageType int
+	var r io.Reader
 
 	ch1 <- 1
+
 	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
 
 	var cc_prepare = make(chan string)
 	go pc.preparer(cc_prepare)
 	go timer1(cc_prepare)
 
-	var err1 error
-
 	for true {
 		pc.ws.SetWriteDeadline(time.Now().Add(writeWait))
-		_, bmsg, err := pc.ws.ReadMessage()
+
+		messageType, r, err = pc.ws.NextReader()
+		if err != nil {
+			err1 = err
+			break
+		}
+
+		if messageType == websocket.CloseMessage {
+			log.Printf("ws[%s]:receive close message", pc.ws.RemoteAddr())
+			break
+		}
+
+		bmsg, err = ioutil.ReadAll(r)
 		if err != nil {
 			err1 = err
 			break
@@ -279,10 +297,10 @@ func (pc *ccusConn) receiver() {
 
 const (
 	// Time allowed to write a message to the peer.
-	writeWait = 30 * 60 * time.Second
+	writeWait = 10 * 60 * time.Second
 
 	// Time allowed to read the next pong message from the peer.
-	pongWait = 30 * 60 * time.Second
+	pongWait = 10 * 60 * time.Second
 
 	// Send pings to peer with this period. Must be less than pongWait.
 	//pingPeriod = (pongWait * 9) / 10
