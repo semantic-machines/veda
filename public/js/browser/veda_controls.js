@@ -1077,6 +1077,7 @@
       tree = $("#tree", control),
       fullsearch = $("#fullsearch", control);
 
+    this.removeAttr("data-template");
     function renderTemplate (individual) {
       return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
     }
@@ -1238,7 +1239,7 @@
           displayKey: function (individual) {
             var result;
             try {
-              result = template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+              result = renderTemplate(individual);
             } catch (ex) {
               console.log(ex);
               result = individual.id;
@@ -1264,7 +1265,7 @@
       var handler = function (doc_rel_uri) {
         if (doc_rel_uri === rel_uri) {
           if (isSingle) {
-            if ( individual.hasValue(doc_rel_uri) ) {
+            if ( individual.hasValue(rel_uri) ) {
               try {
                 typeAhead.typeahead("val", renderTemplate( individual[rel_uri][0] ) );
               } catch (e) {
