@@ -1077,6 +1077,10 @@
       tree = $("#tree", control),
       fullsearch = $("#fullsearch", control);
 
+    function renderTemplate (individual) {
+      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+    }
+
     if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
     } else {
@@ -1257,13 +1261,12 @@
       });
 
       // Fill in value in fulltext field
-      var handler = function (doc_rel_uri, values) {
+      var handler = function (doc_rel_uri) {
         if (doc_rel_uri === rel_uri) {
           if (isSingle) {
-            if (values.length) {
-              var individual = values[0];
+            if ( individual.hasValue(doc_rel_uri) ) {
               try {
-                typeAhead.typeahead("val", template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); }) );
+                typeAhead.typeahead("val", renderTemplate( individual[rel_uri][0] ) );
               } catch (e) {
                 typeAhead.typeahead("val", "");
               }
@@ -1275,15 +1278,12 @@
           }
         }
       }
-
       individual.on("individual:propertyModified", handler);
       control.one("remove", function () {
         individual.off("individual:propertyModified", handler);
       });
 
-      if (individual.hasValue(rel_uri)) {
-        handler(rel_uri, individual[rel_uri]);
-      }
+      handler(rel_uri);
 
     } else {
       fulltext.remove();
