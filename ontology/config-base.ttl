@@ -69,6 +69,7 @@ cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
+  rdfs:label "Система Optiflow"@ru ;
 .
 
 cfg:VedaSystemAccount
