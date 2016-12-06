@@ -1264,18 +1264,14 @@
       // Fill in value in fulltext field
       var handler = function (doc_rel_uri) {
         if (doc_rel_uri === rel_uri) {
-          if (isSingle) {
-            if ( individual.hasValue(rel_uri) ) {
-              try {
-                typeAhead.typeahead("val", renderTemplate( individual[rel_uri][0] ) );
-              } catch (e) {
-                typeAhead.typeahead("val", "");
-              }
-            } else {
-              typeAhead.typeahead("val", "" );
+          if (isSingle && individual.hasValue(rel_uri)) {
+            try {
+              typeAhead.typeahead( "val", renderTemplate( individual[rel_uri][0]) );
+            } catch (e) {
+              typeAhead.typeahead("val", "");
             }
           } else {
-            typeAhead.typeahead("val", "" );
+            typeAhead.typeahead("val", "");
           }
         }
       }
