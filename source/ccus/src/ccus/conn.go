@@ -124,7 +124,14 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 			}
 		}
 
-		if msg[0] == '#' {
+		if len(msg) == 1 && msg[0] == 'T' {
+			//err := pc.ws.WriteMessage(websocket.PingMessage, []byte(""))
+			//if err != nil {
+			//	log.Printf("ws[%s] PING ERR, CLOSE, err=%s", pc.ws.RemoteAddr(), err)
+			//	return
+			//}
+
+		} else if msg[0] == '#' {
 			msg_parts := strings.Split(msg, ";")
 			if len(msg_parts) == 3 {
 
@@ -249,6 +256,11 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 	}
 }
 
+func close_handler(code int, text string) error {
+	log.Printf("call close handler")
+	return nil
+}
+
 // Receive msg from ws in goroutine
 func (pc *ccusConn) receiver() {
 	var err1 error
@@ -260,6 +272,8 @@ func (pc *ccusConn) receiver() {
 	ch1 <- 1
 
 	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
+
+	pc.ws.SetCloseHandler(close_handler)
 
 	var cc_prepare = make(chan string)
 	go pc.preparer(cc_prepare)
