@@ -271,6 +271,15 @@ v-s:defaultAppointment
 
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
+v-s:PshasClassifierLegalFormOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:hasClassifierLegalForm ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:rangeRestriction v-s:Subsidiary ;
+.
+
 v-s:PsHasSubsidiaryForOrganization
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Organization ;
@@ -691,7 +700,6 @@ v-s:SubsidiaryTemplate
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
     <button type="button" class="action btn btn-default  view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
   </div>
