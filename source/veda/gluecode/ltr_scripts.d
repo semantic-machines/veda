@@ -208,7 +208,7 @@ private void ltrs_thread(string parent_url)
                         {
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_cbor);
 
-                            bool res = task.consumer.commit();
+                            bool res = task.consumer.commit_and_next();
                             if (res == false)
                             {
                                 writeln("Queue commit fail !!!!");

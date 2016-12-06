@@ -4,20 +4,14 @@ private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
-    import backtrace.backtrace, Backtrace = backtrace.backtrace;
+    import kaleidic.nanomsg.nano;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info;
-    import kaleidic.nanomsg.nano;
+    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
-bool f_listen_exit = false;
-
-// ////// Logger ///////////////////////////////////////////
-import veda.common.logger;
+bool   f_listen_exit = false;
 Logger _log;
-
-// ////// ////// ///////////////////////////////////////////
 
 extern (C) void handleTermination(int _signal)
 {
@@ -30,9 +24,9 @@ extern (C) void handleTermination(int _signal)
     writeln("!SYS: ", process_name, ": preparation for the exit.");
 
     f_listen_exit = true;
-    
-    thread_term(); 
-    Runtime.terminate();    
+
+    thread_term();
+    Runtime.terminate();
 }
 
 shared static this()
@@ -40,8 +34,7 @@ shared static this()
     bsd_signal(SIGINT, &handleTermination);
 }
 
-
-class VedaModule // : WSLink
+class VedaModule
 {
     long   last_committed_op_id;
     long   last_check_time;
@@ -64,6 +57,7 @@ class VedaModule // : WSLink
     string         main_queue_name = "individuals-flow";
     Queue          main_queue;
     Consumer       main_cs;
+    Consumer       main_cs_prefetch;
 
     string         prepareall_queue_name;
     Queue          prepareall_queue;
@@ -77,13 +71,13 @@ class VedaModule // : WSLink
     string         main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket         sticket;
     string         message_header;
-    string		   module_id;	
+    string         module_id;
 
     Logger         log;
 
     this(string _module_id, Logger in_log)
     {
-        module_id           = _module_id.replace ("-", "_");
+        module_id             = _module_id.replace("-", "_");
         process_name          = text(module_id);
         prepareall_queue_name = process_name ~ "_prepare_all";
         message_header        = "MSG:" ~ module_id ~ ":";
@@ -96,8 +90,8 @@ class VedaModule // : WSLink
         delete module_info;
     }
 
-	private void open_perapareall_queue ()
-	{
+    private void open_perapareall_queue()
+    {
         // attempt open [prepareall] queue
         prepareall_queue = new Queue(prepareall_queue_name, Mode.R, log);
         prepareall_queue.open();
@@ -106,8 +100,8 @@ class VedaModule // : WSLink
         {
             prepareall_cs = new Consumer(prepareall_queue, process_name, log);
             prepareall_cs.open();
-        }		
-	}
+        }
+    }
 
     void run()
     {
@@ -124,9 +118,7 @@ class VedaModule // : WSLink
             context = new PThreadContext("cfg:standart_node", process_name, log, main_module_url);
 
         if (node == Individual.init)
-        {
             node = context.getConfiguration();
-        }
 
         cache_of_indv = new Cache!(string, string)(1000, "individuals");
 
@@ -151,12 +143,11 @@ class VedaModule // : WSLink
         main_cs = new Consumer(main_queue, process_name, log);
         main_cs.open();
 
+        main_cs_prefetch = new Consumer(main_queue, process_name ~ "_prefetch", log);
+        main_cs_prefetch.open();
+
         // attempt open [prepareall] queue
-		open_perapareall_queue ();
-
-        //if (count_signal == 0)
-        //    prepare_queue();
-
+        open_perapareall_queue();
         load_systicket();
 
         sock = nn_socket(AF_SP, NN_SUB);
@@ -177,8 +168,6 @@ class VedaModule // : WSLink
             else
                 log.trace("ERR! cannot connect socket to %s", notify_channel_url);
 
-
-            //listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
             if (already_notify_channel)
             {
                 while (f_listen_exit != true)
@@ -238,11 +227,37 @@ class VedaModule // : WSLink
         log.trace_console("end create queue, count: %d", queue.count_pushed);
         queue.close();
         context.unfreeze();
-        
-        open_perapareall_queue ();
+
+        open_perapareall_queue();
     }
 
-    private void prepare_queue()
+    private void configuration_found_in_queue()
+    {
+        string data;
+
+        while (true)
+        {
+            data = main_cs_prefetch.pop();
+            main_cs_prefetch.next();
+
+            if (data is null)
+                break;
+
+            Individual imm;
+            if (data !is null && cbor2individual(&imm, data) < 0)
+            {
+                log.trace("ERR! invalid individual:[%s]", data);
+                continue;
+            }
+            string uri = imm.getFirstLiteral("uri");
+            log.trace("PREFETCH %s", uri);
+
+            //Thread.sleep(dur!("seconds")(1));
+        }
+        main_cs_prefetch.commit_1();
+    }
+
+    private void prepare_queue(string msg)
     {
         main_queue.close();
         main_queue.open();
@@ -253,6 +268,8 @@ class VedaModule // : WSLink
                 break;
 
             string data = main_cs.pop();
+
+            //configuration_found_in_queue ();
 
             if (data is null)
             {
@@ -276,20 +293,18 @@ class VedaModule // : WSLink
                     {
                         Individual prev_indv;
 
-						try
-						{
-	                        rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
-						}
-						catch (Throwable tr)
-						{
-							log.trace ("ERR! indv.uri=%s, err=%s", indv.uri, tr.msg);
-						}
+                        try
+                        {
+                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
+                        }
+                        catch (Throwable tr)
+                        {
+                            log.trace("ERR! indv.uri=%s, err=%s", indv.uri, tr.msg);
+                        }
                     }
 
                     if (rc != ResultCode.Connect_Error)
-                    {
-                        prepareall_cs.commit();
-                    }
+                        prepareall_cs.commit_and_next();
 
                     continue;
                 }
@@ -302,19 +317,15 @@ class VedaModule // : WSLink
             count_readed++;
 
             Individual imm;
-
             if (data !is null && cbor2individual(&imm, data) < 0)
             {
                 log.trace("ERR! invalid individual:[%s]", data);
                 continue;
             }
 
-            string  new_bin = imm.getFirstLiteral("new_state");
-            //writeln ("@read from queue, new_bin=", new_bin);
+            string  new_bin  = imm.getFirstLiteral("new_state");
             string  prev_bin = imm.getFirstLiteral("prev_state");
-            //writeln ("@read from queue, prev_bin=", prev_bin);
             string  user_uri = imm.getFirstLiteral("user_uri");
-            //writeln ("@read from queue, user_uri=", user_uri);
             string  event_id = imm.getFirstLiteral("event_id");
             INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
             op_id = imm.getFirstInteger("op_id");
@@ -350,7 +361,7 @@ class VedaModule // : WSLink
 
                 if (res == ResultCode.OK)
                 {
-                    main_cs.commit();
+                    main_cs.commit_and_next();
                     module_info.put_info(op_id, committed_op_id);
                 }
                 else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
@@ -361,7 +372,7 @@ class VedaModule // : WSLink
                 }
                 else
                 {
-                    main_cs.commit();
+                    main_cs.commit_and_next();
                     module_info.put_info(op_id, committed_op_id);
                     log.trace("ERR! message fail prepared (res=%s), skip.", text(res));
                 }
@@ -418,7 +429,7 @@ class VedaModule // : WSLink
         if (now - last_check_time > 1_000_000)
         {
             last_check_time = now;
-            prepare_queue();
+            prepare_queue(null);
         }
 
         if (already_notify_channel)
@@ -434,16 +445,10 @@ class VedaModule // : WSLink
                 //log.trace("CLIENT (%s): RECEIVED %s", process_name, msg);
 
                 if (msg.length > message_header.length + 1 && msg.indexOf(message_header) >= 0)
-                {
                     receive_msg(msg[ (message_header.length)..$ ]);
-                }
                 else
-                {
-                    prepare_queue();
-                }
+                    prepare_queue(msg[ 1..$ ]);
             }
         }
     }
 }
-
-

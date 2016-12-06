@@ -458,8 +458,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             imm.uri = text(op_id);
                                             imm.addResource("cmd", Resource(cmd));
 
+                                            imm.addResource("uri", Resource(DataType.Uri, indv_uri));
+
                                             if (user_uri !is null && user_uri.length > 0)
-                                                imm.addResource("user_uri", Resource(DataType.String, user_uri));
+                                                imm.addResource("user_uri", Resource(DataType.Uri, user_uri));
 
                                             imm.addResource("new_state", Resource(DataType.String, new_state));
 
