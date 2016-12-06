@@ -21,38 +21,6 @@ function put(driver, type, text) {
 }
 
 
-function choose(driver, type, valueToSearch, valueToChoose) {
-	driver.findElement({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(valueToSearch)
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute " + type + "");});
-	driver.wait
-	(
-		function () {
-			return driver.findElements({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
-				return webdriver.promise.filter(suggestions, function(suggestion) {
-					return suggestion.getText().then(function(txt){
-						return txt.toLowerCase() === valueToChoose.toLowerCase();
-					});
-				}).then(function(x) { return x.length>0; });
-			});
-		},
-		basic.SLOW_OPERATION
-	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '"+ valueToSearch +"' from dropdown");});
-
-
-	// Кликаем на запрашиваемый тип в выпавшем списке
-	driver.findElements({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
-		webdriver.promise.filter(suggestions, function(suggestion) {
-			return suggestion.getText().then(function(txt){
-				if (valueToChoose === undefined) {
-					return txt.toLowerCase() == valueToSearch.toLowerCase();
-				} else {
-					return txt.toLowerCase() == valueToChoose.toLowerCase();
-				}
-			});
-		}).then(function(x) { x[0].click();});
-	}).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '"+ valueToChoose +"' from dropdown");});
-}
-
 basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 
@@ -66,7 +34,6 @@ basic.getDrivers().forEach (function (drv) {
 
 	driver.executeScript("document.querySelector('div[property=\"v-wf:segregateElement\"]').scrollIntoView(true);");
 	put(driver, 'v-wf:segregateElement', "contentName('@')");
-
 	driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);");
 	put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'v-wf:DecisionForm');");
 	put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm');");
@@ -76,7 +43,7 @@ basic.getDrivers().forEach (function (drv) {
 	put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');");
 	put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');");
 	clickButton(driver, "save", "v-wf:Rule");
-
+	//driver.sleep(basic.FAST_OPERATION);
 	basic.openCreateDocumentForm(driver, 'Трансформация', 'v-wf:Transform');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
 	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp + 1)
@@ -85,34 +52,23 @@ basic.getDrivers().forEach (function (drv) {
 	basic.chooseFromDropdown(driver, 'v-wf:transformRule', timeStamp, timeStamp);
 	clickButton(driver, "save", "v-wf:Transform");
 
-	basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
-	basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
-	driver.findElement({css:'.workflow-canvas-wrapper'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
-	basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
-	driver.findElement({css:'#props-col [about="rdfs:label"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on route rdfs:label");});
-	driver.findElement({css:'#VClabel input'}).sendKeys(timeStamp)
-			.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfl:label in net properties");});
+	createNet.startNet(driver, timeStamp);
 	driver.findElement({css:'.create-task'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click add task");});
 	driver.findElement({css:'.state-task'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'state-task'");});
-
 	driver.executeScript("document.querySelector('span[about=\"v-wf:startDecisionTransform\"]').scrollIntoView(true);");
 	driver.findElement({css:'span[about="v-wf:startDecisionTransform"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'v-wf:startDecisionTransform' field ");});
 	driver.findElement({css:'veda-control[class="VCstartDecisionTransform fulltext dropdown create properties-editor"]'}).click()
 	 	.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCstartDecisionTransform' field ");});
-	choose(driver, 'VCstartDecisionTransform', timeStamp + 1, timeStamp + 1);
-
+	createNet.chooseFromDropdown(driver, 'VCstartDecisionTransform', timeStamp + 1, timeStamp + 1);
 	driver.executeScript("document.querySelector('span[about=\"v-wf:executor\"]').scrollIntoView(true);");
 	driver.findElement({css:'span[about="v-wf:executor"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'v-wf:executor' field ");});
 	driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCexecutor' field ");});
-	choose(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик');
-
+	createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик');
 	createNet.connectNet(driver, 'true');
 	createNet.saveNet(driver);
 	createNet.checkNet(driver, timeStamp, 'red', 'red', '-');

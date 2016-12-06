@@ -2,6 +2,40 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     startForm = require('./startForm.js');
 
+
+
+function choose(driver, type, valueToSearch, valueToChoose) {
+    driver.findElement({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(valueToSearch)
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute " + type + "");});
+    driver.wait
+    (
+        function () {
+            return driver.findElements({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
+                return webdriver.promise.filter(suggestions, function(suggestion) {
+                    return suggestion.getText().then(function(txt){
+                        return txt.toLowerCase() === valueToChoose.toLowerCase();
+                    });
+                }).then(function(x) { return x.length>0; });
+            });
+        },
+        basic.SLOW_OPERATION
+    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '"+ valueToSearch +"' from dropdown");});
+
+
+    // Кликаем на запрашиваемый тип в выпавшем списке
+    driver.findElements({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
+        webdriver.promise.filter(suggestions, function(suggestion) {
+            return suggestion.getText().then(function(txt){
+                if (valueToChoose === undefined) {
+                    return txt.toLowerCase() == valueToSearch.toLowerCase();
+                } else {
+                    return txt.toLowerCase() == valueToChoose.toLowerCase();
+                }
+            });
+        }).then(function(x) { x[0].click();});
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '"+ valueToChoose +"' from dropdown");});
+}
+
 module.exports = {
     startNet: function (driver, timeStamp) {
         basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
@@ -15,6 +49,10 @@ module.exports = {
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfl:label in net properties");});
     },
 
+    chooseFromDropdown: function (driver, type, valueToSearch, valueToChoose) {
+        choose(driver, type, valueToSearch, valueToChoose);
+    },
+
     createTask: function(driver, toFind, taskExecutor) {
         driver.findElement({css:'.create-task'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click add task");});
@@ -26,33 +64,7 @@ module.exports = {
                 .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'executor' field ");});
             driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
                 .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCexecutor' field ");});
-            driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(toFind)
-                .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute 'VCexecutor'");});
-            driver.wait
-            (
-                function () {
-                    return driver.findElements({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
-                        return webdriver.promise.filter(suggestions, function(suggestion) {
-                            return suggestion.getText().then(function(txt){
-                                return txt.toLowerCase() === taskExecutor.toLowerCase();
-                            });
-                        }).then(function(x) { return x.length > 0;});
-                    });
-                },
-                basic.FAST_OPERATION
-            ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'Администратор4 : Аналитик' from dropdown");});
-
-            driver.findElements({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
-                webdriver.promise.filter(suggestions, function(suggestion) {
-                    return suggestion.getText().then(function(txt){
-                        if (taskExecutor === undefined) {
-                            return txt.toLowerCase() == toFind.toLowerCase();
-                        } else {
-                            return txt.toLowerCase() == taskExecutor.toLowerCase();
-                        }
-                    });
-                }).then(function(x) { x[0].click();});
-            }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Администратор4 :  Аналитик' from dropdown");});
+            choose(driver, 'VCexecutor', toFind, taskExecutor);
         }
     },
 
