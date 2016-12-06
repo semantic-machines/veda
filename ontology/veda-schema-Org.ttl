@@ -583,7 +583,7 @@ v-s:OrganizationTemplate
     subsidiary.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
     });
-    action.one("individual:afterSave", function () {
+    subsidiary.one("individual:afterSave", function () {
       modal.modal("hide").remove();
     });
   });
