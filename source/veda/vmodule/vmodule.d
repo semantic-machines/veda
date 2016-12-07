@@ -238,8 +238,6 @@ class VedaModule
         while (true)
         {
             data = main_cs_prefetch.pop();
-            main_cs_prefetch.next();
-
             if (data is null)
                 break;
 
@@ -252,6 +250,8 @@ class VedaModule
             string uri = imm.getFirstLiteral("uri");
             log.trace("PREFETCH %s", uri);
 
+            if (main_cs_prefetch.next() == false)
+                break;
             //Thread.sleep(dur!("seconds")(1));
         }
         main_cs_prefetch.commit_1();
@@ -267,9 +267,9 @@ class VedaModule
             if (f_listen_exit == true)
                 break;
 
-            string data = main_cs.pop();
-
             //configuration_found_in_queue ();
+
+            string data = main_cs.pop();
 
             if (data is null)
             {

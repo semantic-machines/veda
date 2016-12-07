@@ -253,8 +253,7 @@ class Consumer
 
         if (header.msg_length < buff.length)
         {
-            last_read_msg = buff[ 0..header.msg_length ];
-            last_read_msg = queue.ff_queue_r.rawRead(last_read_msg);
+            last_read_msg = queue.ff_queue_r.rawRead(buff[ 0..header.msg_length ]).dup;
             if (last_read_msg.length < header.msg_length)
             {
                 log.trace("pop:invalid msg: msg.length < header.msg_length : %s", text(header));
@@ -280,7 +279,7 @@ class Consumer
 
         if (count_popped >= queue.count_pushed)
         {
-            log.trace("ERR! queue[%s]:commit:count_popped(%d) >= queue.count_pushed(%d)", queue.name, count_popped, queue.count_pushed);
+            //log.trace("ERR! queue[%s][%s]:next:count_popped(%d) >= queue.count_pushed(%d)", queue.name, name, count_popped, queue.count_pushed);
             return false;
         }
 
@@ -300,7 +299,8 @@ class Consumer
 
         if (count_popped >= queue.count_pushed)
         {
-            log.trace("ERR! queue[%s]:commit:count_popped(%d) >= queue.count_pushed(%d)", queue.name, count_popped, queue.count_pushed);
+            log.trace("ERR! queue[%s][%s]:commit_and_next:count_popped(%d) >= queue.count_pushed(%d)", queue.name, name, count_popped,
+                      queue.count_pushed);
             return false;
         }
 
@@ -332,13 +332,13 @@ class Consumer
     {
         if (!queue.isReady || !isReady)
         {
-            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            log.trace("ERR! queue:[%s][%s]commit:!queue.isReady || !isReady", queue.name, name, );
             return false;
         }
 
-        if (count_popped >= queue.count_pushed)
+        if (count_popped > queue.count_pushed)
         {
-            log.trace("ERR! queue[%s]:commit:count_popped(%d) >= queue.count_pushed(%d)", queue.name, count_popped, queue.count_pushed);
+            log.trace("ERR! queue[%s][%s]:commit:count_popped(%d) >= count_pushed(%d)", queue.name, name, count_popped, queue.count_pushed);
             return false;
         }
 
@@ -354,9 +354,9 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue:commit:invalid msg: fail crc[%s] : %s", text(crc), text(header));
-            log.trace(text(last_read_msg.length));
-            log.trace(cast(string)last_read_msg);
+            log.trace("ERR! queue[%s][%s]:commit:invalid msg: fail crc[%s] : %s", queue.name, name, text(crc), text(header));
+            log.trace("last_read_msg.length=%d", last_read_msg.length);
+            log.trace("last_read_msg=%s", cast(string)last_read_msg);
             return false;
         }
 
