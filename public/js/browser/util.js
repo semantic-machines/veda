@@ -111,21 +111,33 @@ veda.Module(function Util(veda) { "use strict";
         if (property_uri === "@") { return; }
         if (property_uri === "rdf:type") { return; }
         triple.predicate = N3.Util.expandPrefixedName(property_uri, prefixes);
-        individual[property_uri].map(function (value) {
-          if (value instanceof Number || typeof value === "number" ) {
-            triple.object = isInteger(value.valueOf()) ? '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName('xsd:integer', prefixes) : '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName('xsd:decimal', prefixes);
-          } else if (value instanceof Boolean || typeof value === "boolean") {
-            triple.object = '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName("xsd:boolean", prefixes);
-          } else if (value instanceof String || typeof value === "string") {
-            triple.object = value.language ? '"' + value.valueOf() + '"@' + value.language.toLowerCase() : '"' + value.valueOf() + '"^^' + N3.Util.expandPrefixedName("xsd:string", prefixes);
-          } else if (value instanceof Date) {
-            triple.object = '"' + value.toISOString() + '"^^' + N3.Util.expandPrefixedName("xsd:dateTime", prefixes);
-          } else if (value instanceof veda.IndividualModel) {
-            if (value.id.indexOf(":") == value.id.length-1) {
-              triple.object = prefixes[value.id.substring(0, value.id.length - 1)];
-            } else {
-              triple.object = N3.Util.expandPrefixedName(value.id, prefixes);
-            }
+        individual.properties[property_uri].map(function (item) {
+          var value = item.data,
+              type = item.type,
+              lang = item.lang;
+          switch (type) {
+            case "Integer":
+              triple.object = '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:integer", prefixes);
+              break;
+            case "Decimal":
+              triple.object = '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:decimal", prefixes);
+              break;
+            case "Boolean":
+              triple.object = '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:boolean", prefixes);
+              break;
+            case "String":
+              triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:string", prefixes);
+              break;
+            case "Datetime":
+              triple.object = '"' + value.toISOString() + '"^^' + N3.Util.expandPrefixedName("xsd:dateTime", prefixes);
+              break;
+            case "Uri":
+              if (value.indexOf(":") == value.length-1) {
+                triple.object = prefixes[value.substring(0, value.length - 1)];
+              } else {
+                triple.object = N3.Util.expandPrefixedName(value, prefixes);
+              }
+              break;
           }
           writer.addTriple(triple);
         });
