@@ -517,7 +517,7 @@ v-s:hasContractObject
   rdf:type owl:ObjectProperty ;
   rdfs:label "Contract object"@en ;
   rdfs:label "Объект контракта"@ru ;
-  rdfs:range v-s:ContractObject ;
+  rdfs:range v-s:MaterialGroup ;
   rdfs:domain v-s:Contractual ;
 .
 v-s:isCreditor

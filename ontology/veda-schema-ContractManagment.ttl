@@ -259,11 +259,12 @@ v-s:ContractSpecification
 # v-s:hasSector
 
 # ------------------------------------------------------------
-v-s:ContractObject
+v-s:MaterialGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Contract object"@en ;
-  rdfs:label "Объект контракта"@ru ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Material group"@en ;
+  rdfs:label "Группа материалов"@ru ;
 .
 
 #-------------------------------------------------
