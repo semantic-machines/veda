@@ -855,12 +855,12 @@ if (doc) {
   }
 //---------------------------------------------------------------------------------------------------------------------------Запрос на согласование контрагента  
   if (doc['rdf:type'][0].id === "mnd-s:ContractorCategoryRequest") { 
-	routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:ddc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
+	routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:dc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
     routes['coordination1'][simple+'visible'] = [true];
 	routes['coordination1'][simple+'editable'] = [false];
 	routes['coordination1'][simple+'deadlineDays'] = [10];
 	                       
-    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:d39bd6fed-fad3-453e-bca4-e8ebd0e3cc73")];
+    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:39bd6fed-fad3-453e-bca4-e8ebd0e3cc73")];
     routes['coordination2'][simple+'visible'] = [true];
     routes['coordination2'][simple+'editable'] = [false];
     routes['coordination2'][simple+'deadlineDays'] = [10];
@@ -989,9 +989,15 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
         // CAPEX
-        routes['informing'][simple+'participant'] = [new veda.IndividualModel("xyu")]; // Специалист ОУП
-        
-        routes['coordination1'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract'];
+        routes['informing'][simple+'participant'] = [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")]; // Специалист ОУП
+                
+        routes['coordination1'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+        if (doc.hasValue('v-s:responsibleDepartment')) {
+          var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
+          if (dep.hasValue('v-s:hasChief')) {
+      		routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения + 
+      	  }
+        }
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
         routes['coordination1'][simple+'deadlineDays'] = [10];
