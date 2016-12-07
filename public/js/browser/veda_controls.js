@@ -1,5 +1,6 @@
 // Veda controls implemented as JQuery plugins
-;(function( $ ) { "use strict";
+"use strict";
+;(function( $ ) {
 
   // INPUT CONTROLS
 

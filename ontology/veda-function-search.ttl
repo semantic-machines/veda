@@ -1250,7 +1250,7 @@ v-fs:AttributiveSearchTemplate
         self.page = page - 1;
         renderResult();
       }
-    }
+    };
     $("#pager", template).pager(pagerOptions);
 
     $(".result-count", template).text("(" + self.result.length + ")");
