@@ -1111,10 +1111,10 @@ v-fs:AttributiveSearchTemplate
   v-ui:template """
 <script>
   var self = individual,
-      searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? $( self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() ) : undefined,
+      searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() : undefined,
       searchResultContainer = $(".search-result", template);
   if ( searchResultTemplate ) {
-    searchResultContainer.append( searchResultTemplate );
+    searchResultContainer.append( $(searchResultTemplate) );
     var resultContainer = $(".result-container", template);
     var resultTemplate = resultContainer.html();
     individual.resultTemplate = resultTemplate;
@@ -1241,7 +1241,7 @@ v-fs:AttributiveSearchTemplate
     }
 
     // Show pager
-    $("#pager", template).pager({
+    var pagerOptions = {
       pages: Math.floor(self.result.length / veda.user.displayedElements) + 1 * (self.result.length % veda.user.displayedElements ? 1 : 0),
       active: self.page + 1,
       neighbours: 3,
@@ -1250,7 +1250,8 @@ v-fs:AttributiveSearchTemplate
         self.page = page - 1;
         renderResult();
       }
-    });
+    }
+    $("#pager", template).pager(pagerOptions);
 
     $(".result-count", template).text("(" + self.result.length + ")");
   }

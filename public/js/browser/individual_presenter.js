@@ -189,20 +189,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("cancel", cancelHandler);
 
     // Deleted alert
-    var deletedAlert = $( deletedAlertTmpl );
-    var recoverBtn = $("button", deletedAlert);
-    if (individual.hasValue("v-s:deleted") && individual["v-s:deleted"][0] == true) {
+    var deletedAlert;
+    if ( individual.hasValue("v-s:deleted", true) ) {
       afterDeleteHandler();
     }
     function afterRecoverHandler() {
-      deletedAlert.remove();
+      if ( container.prop("id") === "main" ) {
+        deletedAlert.remove();
+      }
       template.removeClass("deleted");
     }
     function afterDeleteHandler() {
       template.addClass("deleted");
       if ( container.prop("id") === "main" ) {
+        deletedAlert = $( deletedAlertTmpl );
         template.prepend(deletedAlert);
-        recoverBtn.click(function () {
+        $("button", deletedAlert).click(function () {
           template.trigger("recover");
         });
       }
@@ -212,6 +214,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.one("remove", function () {
       individual.off("individual:afterRecover", afterRecoverHandler);
       individual.off("individual:afterDelete", afterDeleteHandler);
+      deletedAlert = null;
     });
 
     function deleteHandler (e, parent) {
@@ -291,20 +294,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
     var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
 
-    individual.on("individual:propertyModified", isDraftHandler);
-    template.on("remove", function () {
-      individual.off("individual:propertyModified", isDraftHandler);
-    });
-
     var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:label"].join(" ");
-    var draftLabel = $("<div class='label label-danger label-draft'></div>").text(Draft);
-    template.one("remove", function () {
-      draftLabel.remove();
-    });
+    var draftLabel;
     function isDraftHandler(property_uri) {
       if (property_uri === "v-s:isDraft") {
         // If individual is draft
         if ( individual.hasValue("v-s:isDraft", true) && !template.parent().closest("[resource='" + individual.id + "']").length ) {
+          draftLabel = $("<div class='label label-danger label-draft'></div>").text(Draft);
           if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
             var cell = template.children().last();
             cell.css("position", "relative").append(draftLabel);
@@ -318,7 +314,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           //Rename "Cancel" -> "Delete draft"
           $cancel.text(DeleteDraft);
         } else {
-          draftLabel.remove();
+          if (draftLabel) {
+            draftLabel.remove();
+          }
           //Rename "Continue edit" -> Edit"
           $edit.text(Edit);
           //Rename "Delete draft" -> "Cancel"
@@ -326,6 +324,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         }
       }
     }
+    individual.on("individual:propertyModified", isDraftHandler);
+    template.on("remove", function () {
+      individual.off("individual:propertyModified", isDraftHandler);
+      draftLabel = null;
+    });
+
     setTimeout( function () {
       isDraftHandler("v-s:isDraft");
     }, 100);
@@ -453,7 +457,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         rel_uri = relContainer.attr("rel"),
         isEmbedded = relContainer.attr("data-embedded") === "true",
         spec = specs[rel_uri],
-        rel_inline_template = relContainer.children(),
+        rel_inline_template = relContainer.html().trim(),
         rel_template_uri = relContainer.attr("data-template"),
         relTemplate,
         isAbout;
@@ -484,12 +488,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if ( rel_template_uri ) {
         var templateIndividual = new veda.IndividualModel( rel_template_uri );
-        relTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+        relTemplate = templateIndividual["v-ui:template"][0].toString();
+      } else if ( rel_inline_template.length ) {
+        relTemplate = rel_inline_template;
       }
-      if ( rel_inline_template.length ) {
-        relTemplate = rel_inline_template.remove();
-      }
-      rel_inline_template = null;
 
       template.on("view edit search", function (e) {
         if (e.type === "view") {
@@ -927,7 +929,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var valTemplate;
     if (isEmbedded) {
       if (relTemplate) {
-        valTemplate = relTemplate.clone();
+        valTemplate = $(relTemplate);
         value.present(relContainer, valTemplate, mode);
       } else {
         value.present(relContainer, undefined, mode);
@@ -943,7 +945,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
     } else {
       if (relTemplate) {
-        valTemplate = relTemplate.clone();
+        valTemplate = $(relTemplate);
         value.present(relContainer, valTemplate);
       } else {
         value.present(relContainer);
