@@ -20,14 +20,14 @@ type ccusConn struct {
 }
 
 func (pc *ccusConn) get_counter_4_uid(uid string) int {
-	pc.cc_in <- updateInfo{uid, 0, -1}
+	pc.cc_in <- updateInfo{uid, 0, -1, pc.cc_out}
 	g_info := <-pc.cc_out
 	//log.Printf("ws[%s]:get_counter_4_uid[%s] %d", pc.ws.RemoteAddr(), uid, g_info.update_counter)
 	return g_info.update_counter
 }
 
 func (pc *ccusConn) get_last_opid() int {
-	pc.cc_in <- updateInfo{"", -1, 0}
+	pc.cc_in <- updateInfo{"", -1, 0, pc.cc_out}
 	g_info := <-pc.cc_out
 	//log.Printf("ws[%s]:get_last_opid %d", pc.ws.RemoteAddr(), g_info.opid)
 	return g_info.opid
@@ -107,6 +107,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 	last_check_opid := 0
 	pc.count_2_uid = make(map[string]int)
+	pc.cc_out = make(chan updateInfo)	
 
 	for {
 		var control int
@@ -172,7 +173,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 					cc_prepare_out <- ""
 					continue
 				}
-				new_info := updateInfo{uid, opid, update_counter}
+				new_info := updateInfo{uid, opid, update_counter, nil}
 				//log.Printf("ws[%s] @2 ni=%s", ni)
 				pc.cc_in <- new_info
 				cc_prepare_out <- ""
@@ -346,6 +347,7 @@ func (pc *ccusConn) receiver() {
 	close(ch_prepare_out)
 	close(ch_preparer_control)
 	close(ch_timer_control)
+	close(pc.cc_out)
 }
 
 const (
@@ -362,7 +364,7 @@ const (
 	//maxMessageSize = 512
 )
 
-func NewCcusConn(ws *websocket.Conn, cc_in chan updateInfo, cc_out chan updateInfo) *ccusConn {
+func NewCcusConn(ws *websocket.Conn, cc_in chan updateInfo) *ccusConn {
 
 	log.Printf("ws[%s]:new connect %s", ws.RemoteAddr(), ws.LocalAddr())
 	ws.SetReadDeadline(time.Now().Add(pongWait))
@@ -370,7 +372,6 @@ func NewCcusConn(ws *websocket.Conn, cc_in chan updateInfo, cc_out chan updateIn
 	pc := &ccusConn{}
 	pc.ws = ws
 	pc.cc_in = cc_in
-	pc.cc_out = cc_out
 	go pc.receiver()
 
 	return pc
