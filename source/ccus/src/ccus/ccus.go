@@ -24,10 +24,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	} else if err != nil {
 		return
 	}
-	NewCcusConn(ws, cc)
+	//	log.Printf("wsHandler, err=%s", err)
+	NewCcusConn(ws, chan_update_info)
 }
 
-var ch1 = make(chan int)
+var ch1 = make(chan int, 1000)
 
 func collector_stat(ch1 chan int) {
 	log.Printf("spawn stat collector")
@@ -48,7 +49,7 @@ func collector_stat(ch1 chan int) {
 	}
 }
 
-var cc = make(chan updateInfo)
+var chan_update_info = make(chan updateInfo, 1000)
 
 func collector_updateInfo(cc chan updateInfo) {
 	log.Printf("spawn update info collector")
@@ -58,7 +59,6 @@ func collector_updateInfo(cc chan updateInfo) {
 
 	for {
 		gg := <-cc
-		//log.Printf("collector: in gg=%s", gg)
 
 		if gg.opid == -1 {
 			// это команда на запрос last_opid
@@ -68,6 +68,7 @@ func collector_updateInfo(cc chan updateInfo) {
 		} else if gg.update_counter == -1 {
 			// это команда на запрос udate_counter по uid
 			gg1 := _info_2_uid[gg.uid]
+
 			cc <- gg1
 			if gg1.update_counter > 0 {
 				log.Printf("collector:ret: uid=%s opid=%d update_counter=%d", gg1.uid, gg1.opid, gg1.update_counter)
@@ -87,7 +88,7 @@ func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
-	go collector_updateInfo(cc)
+	go collector_updateInfo(chan_update_info)
 	go collector_stat(ch1)
 
 	http.HandleFunc("/ccus", wsHandler)

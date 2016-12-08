@@ -78,31 +78,60 @@ func (pc *ccusConn) get_list_of_changes() string {
 	return res
 }
 
-func timer1(cc_prepare chan string) {
+const control_Close = 99
+const control_Tick = 1
+const control_None = 0
+
+func (pc *ccusConn) timer1(timer_control chan int, cc_prepare_in chan string) {
+	log.Printf("ws[%s]:spawn timer", pc.ws.RemoteAddr())
 	for {
-		cc_prepare <- "T"
+		var control int
+		select {
+		case control = <-timer_control:
+			break
+		default:
+		}
+		if control == control_Close {
+			break
+		}
+		cc_prepare_in <- "T"
 		time.Sleep(1000 * time.Millisecond)
+		//log.Printf("timer ws[%s], need_close=%b", pc.ws.RemoteAddr(), need_close)
 	}
+	log.Printf("ws[%s]:close timer", pc.ws.RemoteAddr())
 }
 
-func (pc *ccusConn) preparer(cc_prepare chan string) {
+func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_prepare_out chan string) {
+	log.Printf("ws[%s]:spawn preparer", pc.ws.RemoteAddr())
+
 	last_check_opid := 0
 	pc.count_2_uid = make(map[string]int)
 
 	for {
-		msg := <-cc_prepare
+		var control int
+		select {
+		case control = <-cc_control:
+			break
+		default:
+			control = control_None
+		}
+		if control == control_Close {
+			break
+		}
+
+		//log.Printf("ws[%s]:control=%d", pc.ws.RemoteAddr(), control)
+
+		var msg = "T"
+
+		if control == control_None {
+			msg = <-cc_prepare_in
+			//log.Printf("ws[%s]:preparer, recv msg=[%s]", pc.ws.RemoteAddr(), msg)
+		}
+
 		if len(msg) == 0 {
-			err := pc.ws.WriteMessage(websocket.TextMessage, []byte("Err:invalid message"))
-			if err != nil {
-				log.Printf("ERR! NOT SEND: ws[%s][#], msg=%s, err=%s", pc.ws.RemoteAddr(), "Err:invalid message", err)
-				if err == websocket.ErrCloseSent {
-					log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
-					return
-				}
-			} else {
-				log.Printf("SEND:ws[%s][#] err=%s", pc.ws.RemoteAddr(), "Err:invalid message")
-			}
-			return
+
+			cc_prepare_out <- "Err:invalid message"
+			break
 		}
 
 		if msg[0] != 'T' {
@@ -120,16 +149,12 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 					}
 				}
 				pc.ready = true
+				cc_prepare_out <- ""
 				continue
 			}
 		}
 
 		if len(msg) == 1 && msg[0] == 'T' {
-			//err := pc.ws.WriteMessage(websocket.PingMessage, []byte(""))
-			//if err != nil {
-			//	log.Printf("ws[%s] PING ERR, CLOSE, err=%s", pc.ws.RemoteAddr(), err)
-			//	return
-			//}
 
 		} else if msg[0] == '#' {
 			msg_parts := strings.Split(msg, ";")
@@ -138,46 +163,29 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 				uid := msg_parts[0][1:len(msg_parts[0])]
 				update_counter, err := strconv.Atoi(msg_parts[1])
 				if err != nil {
+					cc_prepare_out <- ""
 					continue
 				}
 				opid, err := strconv.Atoi(msg_parts[2])
 				if err != nil {
+					cc_prepare_out <- ""
 					continue
 				}
-				//					log.Printf("ws[%s] @1")
 				ni := updateInfo{uid, opid, update_counter}
 				//log.Printf("ws[%s] @2 ni=%s", ni)
 				pc.cc <- ni
-				//					log.Printf("ws[%s] @3")
+				cc_prepare_out <- ""
 
 			} else {
-				err := pc.ws.WriteMessage(websocket.TextMessage, []byte("Err:invalid message"))
-				if err != nil {
-					log.Printf("ERR! NOT SEND: ws[%s][#], msg=%s, err=%s", pc.ws.RemoteAddr(), "Err:invalid message", err)
-					if err == websocket.ErrCloseSent {
-						log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
-						return
-					}
-				} else {
-					log.Printf("SEND:ws[%s][#] err=%s", pc.ws.RemoteAddr(), "Err:invalid message")
-				}
+				cc_prepare_out <- "Err:invalid message"
 			}
 			continue
 
 		} else if msg[0] == '=' {
 
 			res := pc.get_list_of_subscribe()
-			err := pc.ws.WriteMessage(websocket.TextMessage, []byte("="+res))
-			if err != nil {
-				log.Printf("ERR! NOT SEND: ws[%s][=] res=%s, err=%s", pc.ws.RemoteAddr(), res, err)
-				if err == websocket.ErrCloseSent {
-					log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
-					return
-				}
-			} else {
-				log.Printf("SEND:ws[%s][=] res=%s", pc.ws.RemoteAddr(), res)
-			}
 
+			cc_prepare_out <- "=" + res
 		} else if len(msg) == 2 && msg[0] == '-' && msg[1] == '*' {
 
 			pc.count_2_uid = make(map[string]int)
@@ -200,6 +208,7 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 						if uid_info[0] == '+' {
 							uid_counter, err := strconv.Atoi(expr[1])
 							if err != nil {
+								cc_prepare_out <- ""
 								continue
 							}
 							//log.Printf("ws[%s]:receive uid=%s uid_counter=%d", pc.ws.RemoteAddr(), uid, uid_counter)
@@ -207,16 +216,8 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 							g_count := pc.get_counter_4_uid(uid)
 							if uid_counter < g_count {
 								res := pc.get_list_of_subscribe()
-								err := pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
-								if err != nil {
-									log.Printf("ERR! NOT SEND: ws[%s][+], res=%s, err=%s", pc.ws.RemoteAddr(), res, err)
-									if err == websocket.ErrCloseSent {
-										log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
-										return
-									}
-								} else {
-									log.Printf("SEND:ws[%s][+] res=%s", pc.ws.RemoteAddr(), res)
-								}
+
+								cc_prepare_out <- res
 								last_check_opid = pc.get_last_opid()
 							}
 
@@ -237,6 +238,7 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 		}
 
 		last_opid := pc.get_last_opid()
+
 		if last_check_opid < last_opid {
 			res := pc.get_list_of_changes()
 			if res != "" {
@@ -245,19 +247,21 @@ func (pc *ccusConn) preparer(cc_prepare chan string) {
 					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
 					if err == websocket.ErrCloseSent {
 						log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
-						return
+						break
 					}
 				} else {
-					log.Printf("SEND: ws[%s] found changes, %s", pc.ws.RemoteAddr(), res)
+					log.Printf("ws[%s]SEND: found changes, %s", pc.ws.RemoteAddr(), res)
 				}
 			}
 			last_check_opid = last_opid
 		}
+		//log.Printf("ws[%s]:preparer #20", pc.ws.RemoteAddr())
 	}
+	log.Printf("ws[%s]:close preparer", pc.ws.RemoteAddr())
 }
 
 func close_handler(code int, text string) error {
-	log.Printf("call close handler")
+	//log.Printf("call close handler")
 	return nil
 }
 
@@ -275,12 +279,16 @@ func (pc *ccusConn) receiver() {
 
 	pc.ws.SetCloseHandler(close_handler)
 
-	var cc_prepare = make(chan string)
-	go pc.preparer(cc_prepare)
-	go timer1(cc_prepare)
+	var ch_prepare_in = make(chan string)
+	var ch_prepare_out = make(chan string)
+	var ch_preparer_control = make(chan int)
+	var ch_timer_control = make(chan int)
+	go pc.preparer(ch_preparer_control, ch_prepare_in, ch_prepare_out)
+	go pc.timer1(ch_timer_control, ch_prepare_in)
 
 	for true {
-		pc.ws.SetWriteDeadline(time.Now().Add(writeWait))
+
+		//pc.ws.SetWriteDeadline(time.Now().Add(writeWait))
 
 		messageType, r, err = pc.ws.NextReader()
 		if err != nil {
@@ -289,7 +297,7 @@ func (pc *ccusConn) receiver() {
 		}
 
 		if messageType == websocket.CloseMessage {
-			log.Printf("ws[%s]:receive close message", pc.ws.RemoteAddr())
+			//log.Printf("ws[%s]:receive close message", pc.ws.RemoteAddr())
 			break
 		}
 
@@ -300,13 +308,38 @@ func (pc *ccusConn) receiver() {
 		}
 
 		msg := string(bmsg)
-		cc_prepare <- msg
+		//log.Printf("ws[%s]:recv msg=[%s]", pc.ws.RemoteAddr(), msg)
+		ch_prepare_in <- msg
+
+		msg = <-ch_prepare_out
+		//log.Printf("ret msg=[%s]", msg)
+
+		if msg != "" {
+			err := pc.ws.WriteMessage(websocket.TextMessage, []byte(msg))
+			if err != nil {
+				log.Printf("ws[%s]:reciever, ERR! NOT SEND: msg=[%s], err=%s", pc.ws.RemoteAddr(), msg, err)
+				if err == websocket.ErrCloseSent {
+					log.Printf("ws[%s]:reciever:CLOSE", pc.ws.RemoteAddr())
+					break
+				}
+			} else {
+				log.Printf("ws[%s]:reciever:SEND: msg=[%s]", pc.ws.RemoteAddr(), msg)
+			}
+		}
 	}
 
-	log.Printf("ws[%s]:close, err=%s", pc.ws.RemoteAddr(), err1)
-	pc.ws.Close()
+	log.Printf("ws[%s]:close receiver, err=%s", pc.ws.RemoteAddr(), err1)
 
-	ch1 <- -1
+	ch_timer_control <- control_Close
+	ch_preparer_control <- control_Close
+
+	ch1 <- (-1)
+
+	pc.ws.Close()
+	close(ch_prepare_in)
+	close(ch_prepare_out)
+	close(ch_preparer_control)
+	close(ch_timer_control)
 }
 
 const (
@@ -314,7 +347,7 @@ const (
 	writeWait = 10 * 60 * time.Second
 
 	// Time allowed to read the next pong message from the peer.
-	pongWait = 10 * 60 * time.Second
+	pongWait = 10000 * 60 * time.Second
 
 	// Send pings to peer with this period. Must be less than pongWait.
 	//pingPeriod = (pongWait * 9) / 10
