@@ -15,19 +15,20 @@ type ccusConn struct {
 	ws          *websocket.Conn
 	chid        string
 	count_2_uid map[string]int
-	cc          chan updateInfo
+	cc_in       chan updateInfo
+	cc_out      chan updateInfo
 }
 
 func (pc *ccusConn) get_counter_4_uid(uid string) int {
-	pc.cc <- updateInfo{uid, 0, -1}
-	g_info := <-pc.cc
+	pc.cc_in <- updateInfo{uid, 0, -1}
+	g_info := <-pc.cc_out
 	//log.Printf("ws[%s]:get_counter_4_uid[%s] %d", pc.ws.RemoteAddr(), uid, g_info.update_counter)
 	return g_info.update_counter
 }
 
 func (pc *ccusConn) get_last_opid() int {
-	pc.cc <- updateInfo{"", -1, 0}
-	g_info := <-pc.cc
+	pc.cc_in <- updateInfo{"", -1, 0}
+	g_info := <-pc.cc_out
 	//log.Printf("ws[%s]:get_last_opid %d", pc.ws.RemoteAddr(), g_info.opid)
 	return g_info.opid
 }
@@ -171,9 +172,9 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 					cc_prepare_out <- ""
 					continue
 				}
-				ni := updateInfo{uid, opid, update_counter}
+				new_info := updateInfo{uid, opid, update_counter}
 				//log.Printf("ws[%s] @2 ni=%s", ni)
-				pc.cc <- ni
+				pc.cc_in <- new_info
 				cc_prepare_out <- ""
 
 			} else {
@@ -230,8 +231,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 							delete(pc.count_2_uid, uid)
 						}
 					}
-				}
-
+				}				
 				//log.Printf("ws[%s]uid_info=%s", pc.ws.RemoteAddr(), uid_info)
 			}
 
@@ -239,6 +239,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 		last_opid := pc.get_last_opid()
 
+		//log.Printf("ws[%s]:preparer:check changes: last_opid=%d, last_check_opid=%d", pc.ws.RemoteAddr(), last_opid, last_check_opid)
 		if last_check_opid < last_opid {
 			res := pc.get_list_of_changes()
 			if res != "" {
@@ -247,6 +248,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
 					if err == websocket.ErrCloseSent {
 						log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
+						cc_prepare_out <- "EXIT"
 						break
 					}
 				} else {
@@ -255,7 +257,6 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			}
 			last_check_opid = last_opid
 		}
-		//log.Printf("ws[%s]:preparer #20", pc.ws.RemoteAddr())
 	}
 	log.Printf("ws[%s]:close preparer", pc.ws.RemoteAddr())
 }
@@ -315,6 +316,11 @@ func (pc *ccusConn) receiver() {
 		//log.Printf("ret msg=[%s]", msg)
 
 		if msg != "" {
+
+			if msg == "EXIT" {
+				break
+			}
+
 			err := pc.ws.WriteMessage(websocket.TextMessage, []byte(msg))
 			if err != nil {
 				log.Printf("ws[%s]:reciever, ERR! NOT SEND: msg=[%s], err=%s", pc.ws.RemoteAddr(), msg, err)
@@ -356,14 +362,15 @@ const (
 	//maxMessageSize = 512
 )
 
-func NewCcusConn(ws *websocket.Conn, cc chan updateInfo) *ccusConn {
+func NewCcusConn(ws *websocket.Conn, cc_in chan updateInfo, cc_out chan updateInfo) *ccusConn {
 
 	log.Printf("ws[%s]:new connect %s", ws.RemoteAddr(), ws.LocalAddr())
 	ws.SetReadDeadline(time.Now().Add(pongWait))
 	ws.SetWriteDeadline(time.Now().Add(writeWait))
 	pc := &ccusConn{}
 	pc.ws = ws
-	pc.cc = cc
+	pc.cc_in = cc_in
+	pc.cc_out = cc_out
 	go pc.receiver()
 
 	return pc
