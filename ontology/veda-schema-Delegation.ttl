@@ -320,7 +320,8 @@ var request_uri = document["@"],
     delegator_uri = getUri(document["v-s:delegator"]),
     delegate_uri = getUri(document["v-s:delegate"]),
     position_uris = getUris(document["v-s:delegatedPosition"]),
-    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean});
+    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean}),
+    delegate;
 
 print("[cfg:Event_Delegation] ************************** START **************************");
 print( "[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris) );
@@ -373,6 +374,17 @@ position_uris.map(function (position_uri) {
 
   if ( request_deleted ) {
     appointment["v-s:deleted"] = newBool(true);
+    delegate = get_individual(ticket, delegate_uri);
+    delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
+    delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"].filter( function (item) {
+      return item.data !== uri;
+    });
+    delegate["v-s:defaultAppointment"] = delegate["v-s:defaultAppointment"] || [];
+    delegate["v-s:defaultAppointment"] = delegate["v-s:defaultAppointment"].filter( function (item) {
+      return item.data !== uri;
+    });
+    print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
+    put_individual(ticket, delegate, _event_id);
   } else {
     allDelegated["rdf:value"].push({ data: uri, type: _Uri });
   }
