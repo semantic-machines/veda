@@ -71,14 +71,14 @@ func collector_updateInfo(cc_in chan updateInfo) {
 			gg1 := _info_2_uid[arg.uid]
 
 			arg.cc_out <- gg1
-			if gg1.update_counter > 0 {
-				log.Printf("collector:ret: uid=%s opid=%d update_counter=%d", gg1.uid, gg1.opid, gg1.update_counter)
-			}
+			//if gg1.update_counter > 0 {
+			//	log.Printf("collector:ret: uid=%s opid=%d update_counter=%d", gg1.uid, gg1.opid, gg1.update_counter)
+			//}
 		} else {
 			_info_2_uid[arg.uid] = arg
 			if _last_opid < arg.opid {
 				_last_opid = arg.opid
-				log.Printf("collector:set last_opid=%d", _last_opid)
+				//log.Printf("collector:set last_opid=%d", _last_opid)
 			}
 			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
 		}

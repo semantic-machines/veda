@@ -62,6 +62,7 @@ script:
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
   - node ./qa/testSimpleWorkflow.js
+  - node ./qa/testDelegationDocument.js
 
 # Stop deamon and show log
 after_script:

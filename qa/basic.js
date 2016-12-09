@@ -255,7 +255,14 @@ module.exports = {
 		}).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
 		
 		// Проверяем что тип появился на экране
-		if (templateRdfType === 'v-wf:Net') return; // Имеет нестандартный шаблон
+		if (templateRdfType === 'v-s:RequestDelegation' || templateRdfType === 'v-wf:Net') {
+			driver.wait
+			(
+				webdriver.until.elementIsVisible(driver.findElement({css:'div[typeof="'+templateRdfType+'"]'})),
+				FAST_OPERATION
+			).thenCatch(function (e) {errrorHandlerFunction(e, "Seems that create operation not works properly")});
+			return;
+		} // Имеет нестандартный шаблон
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'span[about="'+templateRdfType+'"]'})),
