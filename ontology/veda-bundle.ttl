@@ -314,3 +314,8 @@ v-s:StartTypingBundle
   rdfs:label "Начните ввод и выберите значение"@ru ;
   rdfs:label "Start typing and select value"@en ;
 .
+v-s:SelectValueBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выберите значение"@ru ;
+  rdfs:label "Select value"@en ;
+.

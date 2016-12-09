@@ -568,14 +568,36 @@
       spec = opts.spec,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
       select = $("select", control),
-      first_opt = $("option", control);
+      first_opt = $("option", control),
+      rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
+      range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
+      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
+      options;
+
+    if (spec && spec.hasValue("v-ui:optionValue")) {
+      options = spec["v-ui:optionValue"];
+    } else if (queryPrefix) {
+      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+      var queryResult = query(veda.ticket, queryPrefix);
+      if (queryResult.length) {
+        var individuals = get_individuals(veda.ticket, queryResult);
+        options = individuals.map(function (json) {
+          return new veda.IndividualModel(json);
+        });
+      }
+    } else {
+      options = [];
+    }
 
     function populate() {
-      if (spec && spec.hasValue("v-ui:optionValue")) {
-        select.empty().append(first_opt);
-        first_opt.data("value", null);
-        spec["v-ui:optionValue"].map(function (value) {
-          var opt = first_opt.clone().text( veda.Util.formatValue(value) ).data("value", value).appendTo(select);
+      if (options.length) {
+        select.empty();
+        first_opt.text(placeholder).data("value", null).appendTo(select);
+        options.map(function (value, index) {
+          if (index >= 100) return;
+          var opt = first_opt.clone().appendTo(select);
+          opt.text( veda.Util.formatValue(value) ).data("value", value);
           if ( isSingle && individual.hasValue(property_uri, value) ) {
             opt.attr("selected", "true");
           }
@@ -1086,7 +1108,7 @@
     if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
     } else {
-      var relRange = (new veda.IndividualModel(rel_uri))["rdfs:range"];
+      var relRange = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"];
       if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
         var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'";})
         queryPrefix = "(" + types.join(" || ") + ")";
