@@ -1059,7 +1059,7 @@
       template = this.attr("data-template") || "{individual['rdfs:label'].join(', ')}",
       individual = opts.individual,
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" "),
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : undefined,
       sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0] : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,

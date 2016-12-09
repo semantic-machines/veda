@@ -311,6 +311,6 @@ v-s:HeadOrganization
 .
 v-s:StartTypingBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Начните ввод, выберите значение"@ru ;
-  rdfs:label "Start typing, select value"@en ;
+  rdfs:label "Начните ввод и выберите значение"@ru ;
+  rdfs:label "Start typing and select value"@en ;
 .
