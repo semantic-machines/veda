@@ -116,10 +116,10 @@ void statistic_data_accumulator(string thread_name)
                             thread_term();
                         }
                     },
-                    (OwnerTerminated ot) 
+                    (OwnerTerminated ot)
                     {
-                      	return;
-                    },                     
+                        return;
+                    },
                     (Variant v) { writeln(thread_name, "::Received some other type.", v); });
             //               (Variant v) { writeln(thread_name, "::Received some other type.", v); });
         }

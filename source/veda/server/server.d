@@ -51,8 +51,8 @@ extern (C) void handleTermination2(int _signal)
     writeln("!SYS: ", process_name, ": preparation for the exit.");
 
     f_listen_exit = true;
-    
-    thread_term(); 
+
+    thread_term();
     Runtime.terminate();
 }
 
@@ -269,10 +269,10 @@ void commiter(string thread_name)
                                send(tid_response_reciever, true);
                            }
                        },
-                        (OwnerTerminated ot) 
-                        {
-                        	return;
-                        }, 
+                       (OwnerTerminated ot)
+                       {
+                           return;
+                       },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
         veda.server.storage_manager.flush_int_module(P_MODULE.subject_manager, false);

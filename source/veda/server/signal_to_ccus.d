@@ -51,6 +51,6 @@ void signal_to_ccus_channel(string thread_name)
             });
 
     ccus_channel.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
-    
-    log.trace ("signal_to_ccus_channel: exit");    
+
+    log.trace("signal_to_ccus_channel: exit");
 }
