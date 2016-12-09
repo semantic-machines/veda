@@ -14,6 +14,7 @@ type updateInfo struct {
 	uid            string
 	opid           int
 	update_counter int
+	cc_out chan updateInfo
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +26,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//	log.Printf("wsHandler, err=%s", err)
-	NewCcusConn(ws, chan_update_info)
+	NewCcusConn(ws, ch_update_info_in)
 }
 
 var ch1 = make(chan int, 1000)
@@ -49,37 +50,37 @@ func collector_stat(ch1 chan int) {
 	}
 }
 
-var chan_update_info = make(chan updateInfo, 1000)
+var ch_update_info_in = make(chan updateInfo, 1000)
 
-func collector_updateInfo(cc chan updateInfo) {
+func collector_updateInfo(cc_in chan updateInfo) {
 	log.Printf("spawn update info collector")
 
 	_last_opid := 0
 	_info_2_uid := make(map[string]updateInfo)
 
 	for {
-		gg := <-cc
+		arg := <-cc_in
 
-		if gg.opid == -1 {
+		if arg.opid == -1 {
 			// это команда на запрос last_opid
-			gg1 := updateInfo{"", _last_opid, 0}
-			cc <- gg1
-			//			log.Printf("collector:ret gg1=%s", gg1)
-		} else if gg.update_counter == -1 {
+			gg1 := updateInfo{"", _last_opid, 0, nil}
+			arg.cc_out <- gg1
+			//log.Printf("collector:ret: last_op_id=%d", gg1.opid)
+		} else if arg.update_counter == -1 {
 			// это команда на запрос udate_counter по uid
-			gg1 := _info_2_uid[gg.uid]
+			gg1 := _info_2_uid[arg.uid]
 
-			cc <- gg1
+			arg.cc_out <- gg1
 			if gg1.update_counter > 0 {
 				log.Printf("collector:ret: uid=%s opid=%d update_counter=%d", gg1.uid, gg1.opid, gg1.update_counter)
 			}
 		} else {
-			_info_2_uid[gg.uid] = gg
-			if _last_opid < gg.opid {
-				_last_opid = gg.opid
-				log.Printf("collector:last_opid=%d", _last_opid)
+			_info_2_uid[arg.uid] = arg
+			if _last_opid < arg.opid {
+				_last_opid = arg.opid
+				log.Printf("collector:set last_opid=%d", _last_opid)
 			}
-			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", gg.uid, gg.opid, gg.update_counter)
+			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
 		}
 	}
 }
@@ -88,7 +89,7 @@ func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
-	go collector_updateInfo(chan_update_info)
+	go collector_updateInfo(ch_update_info_in)
 	go collector_stat(ch1)
 
 	http.HandleFunc("/ccus", wsHandler)
