@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"strconv"
 	"strings"
 	"time"
@@ -107,7 +108,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 	last_check_opid := 0
 	pc.count_2_uid = make(map[string]int)
-	pc.cc_out = make(chan updateInfo)	
+	pc.cc_out = make(chan updateInfo)
 
 	for {
 		var control int
@@ -232,7 +233,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 							delete(pc.count_2_uid, uid)
 						}
 					}
-				}				
+				}
 				//log.Printf("ws[%s]uid_info=%s", pc.ws.RemoteAddr(), uid_info)
 			}
 
@@ -246,8 +247,9 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			if res != "" {
 				err := pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
 				if err != nil {
+					netErr, _ := err.(net.Error)
 					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
-					if err == websocket.ErrCloseSent {
+					if err == websocket.ErrCloseSent == true || netErr.Timeout() {
 						log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
 						cc_prepare_out <- "EXIT"
 						break
