@@ -103,10 +103,10 @@
     parser: function (input) {
       if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD"], true).isValid() ) {
         return moment(input, "DD.MM.YYYY HH:mm").toDate();
-      } else if ( !isNaN( parseFloat( input.replace(",", ".") ) ) ) {
-        return parseFloat( input.replace(",", ".") )
-      } else if ( !isNaN( parseInt( input.replace(",", "."), 10 ) ) ) {
-        return parseInt( input.replace(",", "."), 10 )
+      } else if ( !isNaN( parseFloat( input.split(" ").join("").split(",").join(".") ) ) ) {
+        return parseFloat( input.split(" ").join("").split(",").join(".") );
+      } else if ( !isNaN( parseInt( input.split(" ").join("").split(",").join("."), 10 ) ) ) {
+        return parseInt( input.split(" ").join("").split(",").join("."), 10 );
       } else if ( input === "true" ) {
         return true;
       } else if ( input === "false" ) {
@@ -169,7 +169,7 @@
   $.fn.veda_integer.defaults = {
     template: $("#integer-control-template").html(),
     parser: function (input) {
-      var int = parseInt( input.replace(",", "."), 10 );
+      var int = parseInt( input.split(" ").join("").split(",").join("."), 10 );
       return !isNaN(int) ? int : null;
     }
   };
@@ -184,7 +184,7 @@
   $.fn.veda_decimal.defaults = {
     template: $("#decimal-control-template").html(),
     parser: function (input) {
-      var float = parseFloat( input.replace(",", ".") );
+      var float = parseFloat( input.split(" ").join("").split(",").join(".") );
       return !isNaN(float) ? float : null;
     }
   };
@@ -854,7 +854,7 @@
   $.fn.veda_numeration.defaults = {
     template: $("#numeration-control-template").html(),
     parser: function (input) {
-      var int = parseInt( input.replace(",", "."), 10 );
+      var int = parseInt( input.split(" ").join("").split(",").join("."), 10 );
       return !isNaN(int) ? "" + int : null;
     }
   };
