@@ -2297,6 +2297,11 @@ v-ui:TaskGivenTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskGiven ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
+  if (!individual.hasValue("rdfs:comment")) { $("#comment", template).remove(); }
+  //# sourceURL=v-ui:TaskGivenTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2319,11 +2324,6 @@ v-ui:TaskGivenTemplate
     </div>
   </div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
-  if (!individual.hasValue("rdfs:comment")) $("#comment", template).remove();
-  //# sourceURL=v-ui:TaskGivenTemplate
-</script>
   """ ;
 .
 
@@ -2333,6 +2333,12 @@ v-ui:TaskCompletedTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskCompleted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
+  if (!individual.hasValue("v-wf:takenDecision")) { $("#decision", template).remove(); }
+  if (!individual.hasValue("v-wf:takenDecision") || !individual["v-wf:takenDecision"][0].hasValue("rdfs:comment")) { $("#comment", template).remove(); }
+  //# sourceURL=v-ui:TaskCompletedTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2372,12 +2378,6 @@ v-ui:TaskCompletedTemplate
     </div>
   </div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
-  if (!individual.hasValue("v-wf:takenDecision")) $("#decision", template).remove();
-  if (!individual.hasValue("v-wf:takenDecision") || !individual["v-wf:takenDecision"][0].hasValue("rdfs:comment")) $("#comment", template).remove();
-  //# sourceURL=v-ui:TaskCompletedTemplate
-</script>
   """ ;
 .
 v-ui:ProcessEventTemplate
@@ -2386,6 +2386,10 @@ v-ui:ProcessEventTemplate
   rdfs:label "Process event template"@en ;
   v-ui:forClass v-wf:ProcessStarted, v-wf:ProcessCompleted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
+  //# sourceURL=v-ui:ProcessEventTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2404,10 +2408,6 @@ v-ui:ProcessEventTemplate
   </div>
   </div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  //# sourceURL=v-ui:ProcessEventTemplate
-</script>
   """ ;
 .
 
@@ -2426,6 +2426,15 @@ v-ui:WorkItemStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkItemStarted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+  //# sourceURL=v-ui:WorkItemStartedEventTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2445,15 +2454,6 @@ v-ui:WorkItemStartedEventTemplate
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  //# sourceURL=v-ui:WorkItemStartedEventTemplate
-</script>
   """ ;
 .
 
@@ -2471,6 +2471,15 @@ v-ui:DecisionFormStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:DecisionFormStarted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+  //# sourceURL=v-ui:DecisionFormStartedEventTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2490,18 +2499,8 @@ v-ui:DecisionFormStartedEventTemplate
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  //# sourceURL=v-ui:DecisionFormStartedEventTemplate
-</script>
   """ ;
 .
-
 
 v-ui:TraceEventTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -2514,15 +2513,15 @@ v-ui:TraceEventTemplate
   </style>
   <hr class="margin-sm">
   <div class="row">
-  <div class="col-md-3 col-sm-3 event-type">
-    <span property="rdfs:label"></span>
-  </div>
-  <div class="col-md-7 col-sm-6 event-desc">
-    <pre property="rdfs:comment"></pre>
-  </div>
-  <div class="col-md-2 col-sm-3 event-date text-right">
-    <span property="v-s:created"></span>
-  </div>
+    <div class="col-md-3 col-sm-3 event-type">
+      <span property="rdfs:label"></span>
+    </div>
+    <div class="col-md-7 col-sm-6 event-desc">
+      <pre property="rdfs:comment"></pre>
+    </div>
+    <div class="col-md-2 col-sm-3 event-date text-right">
+      <span property="v-s:created"></span>
+    </div>
   </div>
 </div>
 <script>
