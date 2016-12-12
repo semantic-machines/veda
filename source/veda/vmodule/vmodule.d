@@ -239,7 +239,10 @@ class VedaModule
         {
             data = main_cs_prefetch.pop();
             if (data is null)
+            {
+            	log.trace("PREFETCH: pop return null");
                 break;
+            }    
 
             Individual imm;
             if (data !is null && cbor2individual(&imm, data) < 0)
@@ -250,11 +253,15 @@ class VedaModule
             string uri = imm.getFirstLiteral("uri");
             log.trace("PREFETCH %s", uri);
 
-            if (main_cs_prefetch.next() == false)
-                break;
+        //    if (main_cs_prefetch.next() == false)
+        //    {
+        //    	log.trace("PREFETCH: next break");
+        //        break;
+        //    }    
             //Thread.sleep(dur!("seconds")(1));
+	        main_cs_prefetch.commit_and_next();
         }
-        main_cs_prefetch.commit_1();
+        //main_cs_prefetch.commit_1();
     }
 
     private void prepare_queue(string msg)
@@ -267,7 +274,7 @@ class VedaModule
             if (f_listen_exit == true)
                 break;
 
-            //configuration_found_in_queue ();
+           configuration_found_in_queue ();
 
             string data = main_cs.pop();
 

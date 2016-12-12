@@ -273,13 +273,31 @@ class Consumer
     {
         if (!queue.isReady || !isReady)
         {
-            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            log.trace("ERR! queue:next: !queue.isReady || !isReady");
             return false;
         }
 
         if (count_popped >= queue.count_pushed)
         {
             //log.trace("ERR! queue[%s][%s]:next:count_popped(%d) >= queue.count_pushed(%d)", queue.name, name, count_popped, queue.count_pushed);
+            return false;
+        }
+
+        header_buff[ header_buff.length - 4 ] = 0;
+        header_buff[ header_buff.length - 3 ] = 0;
+        header_buff[ header_buff.length - 2 ] = 0;
+        header_buff[ header_buff.length - 1 ] = 0;
+
+        hash.start();
+        hash.put(header_buff);
+        hash.put(last_read_msg);
+        crc = hash.finish();
+
+        if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
+        {
+            log.trace("ERR! queue:next:invalid msg: fail crc[%s] : %s", text(crc), text(header));
+            log.trace(text(last_read_msg.length));
+            log.trace(cast(string)last_read_msg);
             return false;
         }
 
@@ -293,7 +311,7 @@ class Consumer
     {
         if (!queue.isReady || !isReady)
         {
-            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
             return false;
         }
 

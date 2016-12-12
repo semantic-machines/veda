@@ -8,6 +8,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -249,7 +250,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 				if err != nil {
 					netErr, _ := err.(net.Error)
 					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
-					if err == websocket.ErrCloseSent == true || netErr.Timeout() {
+					if err == websocket.ErrCloseSent || netErr.Timeout() || err == syscall.EPIPE {
 						log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
 						cc_prepare_out <- "EXIT"
 						break
@@ -327,7 +328,8 @@ func (pc *ccusConn) receiver() {
 			err := pc.ws.WriteMessage(websocket.TextMessage, []byte(msg))
 			if err != nil {
 				log.Printf("ws[%s]:reciever, ERR! NOT SEND: msg=[%s], err=%s", pc.ws.RemoteAddr(), msg, err)
-				if err == websocket.ErrCloseSent {
+				netErr, _ := err.(net.Error)
+				if err == websocket.ErrCloseSent || netErr.Timeout() || err == syscall.EPIPE {
 					log.Printf("ws[%s]:reciever:CLOSE", pc.ws.RemoteAddr())
 					break
 				}
