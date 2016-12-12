@@ -248,13 +248,13 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			if res != "" {
 				err := pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
 				if err != nil {
-					netErr, _ := err.(net.Error)
+					//netErr, _ := err.(net.Error)
 					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
-					if err == websocket.ErrCloseSent || netErr.Timeout() || err == syscall.EPIPE {
-						log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
-						cc_prepare_out <- "EXIT"
-						break
-					}
+					//if err == websocket.ErrCloseSent || netErr.Timeout() || err == syscall.EPIPE || netErr == syscall.EPIPE {
+					log.Printf("ws[%s] CLOSE", pc.ws.RemoteAddr())
+					cc_prepare_out <- "EXIT"
+					break
+					//}
 				} else {
 					log.Printf("ws[%s]SEND: found changes, %s", pc.ws.RemoteAddr(), res)
 				}
@@ -278,7 +278,7 @@ func (pc *ccusConn) receiver() {
 	var messageType int
 	var r io.Reader
 
-	ch1 <- 1
+	ch_ws_counter <- 1
 
 	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
 
@@ -329,7 +329,7 @@ func (pc *ccusConn) receiver() {
 			if err != nil {
 				log.Printf("ws[%s]:reciever, ERR! NOT SEND: msg=[%s], err=%s", pc.ws.RemoteAddr(), msg, err)
 				netErr, _ := err.(net.Error)
-				if err == websocket.ErrCloseSent || netErr.Timeout() || err == syscall.EPIPE {
+				if err == websocket.ErrCloseSent || netErr.Timeout() || err == syscall.EPIPE || netErr == syscall.EPIPE {
 					log.Printf("ws[%s]:reciever:CLOSE", pc.ws.RemoteAddr())
 					break
 				}
@@ -339,12 +339,11 @@ func (pc *ccusConn) receiver() {
 		}
 	}
 
+	ch_ws_counter <- -1
 	log.Printf("ws[%s]:close receiver, err=%s", pc.ws.RemoteAddr(), err1)
 
 	ch_timer_control <- control_Close
 	ch_preparer_control <- control_Close
-
-	ch1 <- (-1)
 
 	pc.ws.Close()
 	close(ch_prepare_in)
