@@ -78,7 +78,7 @@ v-s:Risk
 .
 v-s:consequence
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Consequence"@en ;
+  rdfs:label "Implication"@en ;
   rdfs:label "Последствия"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Risk ;

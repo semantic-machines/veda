@@ -161,7 +161,7 @@ v-s:summary
 .
 v-s:reason
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Reason"@en ;
+  rdfs:label "Root cause"@en ;
   rdfs:label "Причина"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
@@ -346,14 +346,14 @@ v-s:dateToPlan
 .
 v-s:dateFromFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date start fact"@en ;
+  rdfs:label "Date start actual"@en ;
   rdfs:label "Дата начала фактическая"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
 v-s:dateToFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date finish fact"@en ;
+  rdfs:label "Date finish actual"@en ;
   rdfs:label "Дата окончания фактическая"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
