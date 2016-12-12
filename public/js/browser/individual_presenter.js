@@ -2,8 +2,6 @@
 
 veda.Module(function IndividualPresenter(veda) { "use strict";
 
-  var deletedAlertTmpl = $("#deleted-individual-alert-template").html();
-
   //var c = 0;
 
   veda.on("individual:loaded", function (individual, container, template, mode) {
@@ -202,7 +200,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function afterDeleteHandler() {
       template.addClass("deleted");
       if ( container.prop("id") === "main" ) {
-        deletedAlert = $( deletedAlertTmpl );
+        deletedAlert = $( $("#deleted-individual-alert-template").html() );
         template.prepend(deletedAlert);
         $("button", deletedAlert).click(function () {
           template.trigger("recover");
@@ -214,7 +212,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.one("remove", function () {
       individual.off("individual:afterRecover", afterRecoverHandler);
       individual.off("individual:afterDelete", afterDeleteHandler);
-      deletedAlert = null;
     });
 
     function deleteHandler (e, parent) {
@@ -288,6 +285,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
     if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
 
+
     // Standart buttons labels change for drafts
     var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
     var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
@@ -326,8 +324,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     individual.on("individual:propertyModified", isDraftHandler);
     template.on("remove", function () {
-      individual.off("individual:propertyModified", isDraftHandler);
       draftLabel = null;
+      individual.off("individual:propertyModified", isDraftHandler);
     });
 
     setTimeout( function () {
