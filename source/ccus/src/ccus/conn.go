@@ -266,6 +266,10 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 		}
 	}
 	log.Printf("ws[%s]:close preparer", pc.ws.RemoteAddr())
+
+	close(cc_prepare_in)
+	close(cc_prepare_out)
+	close(cc_control)
 }
 
 func close_handler(code int, text string) error {
@@ -350,13 +354,10 @@ func (pc *ccusConn) receiver() {
 	ch_timer_control <- control_Close
 	ch_preparer_control <- control_Close
 
-	time.Sleep(1000 * time.Millisecond)
+	//	time.Sleep(1000 * time.Millisecond)
 
 	pc.ws.Close()
 	close(ch_timer_control)
-	close(ch_prepare_in)
-	close(ch_prepare_out)
-	close(ch_preparer_control)
 	close(pc.cc_out)
 }
 
