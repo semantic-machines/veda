@@ -86,11 +86,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if (template.first().is("script")) {
         pre_render_src = template.first().text();
-        pre_render = new Function("veda", "individual", "container", "template", "mode", pre_render_src);
+        pre_render = new Function("veda", "individual", "container", "template", "mode", "\"use strict\";" + pre_render_src);
       }
       if (template.last().is("script")) {
         post_render_src = template.last().text();
-        post_render = new Function("veda", "individual", "container", "template", "mode", post_render_src);
+        post_render = new Function("veda", "individual", "container", "template", "mode", "\"use strict\";" + post_render_src);
       }
       template = template.filter("*:not(script)");
 
