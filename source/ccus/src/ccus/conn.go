@@ -43,6 +43,9 @@ func (pc *ccusConn) get_list_of_subscribe() string {
 			i_count = g_count
 			pc.count_2_uid[i_uid] = i_count
 		}
+		if g_count == 0 {
+			i_count = g_count
+		}
 		if len(res) == 0 {
 			res = res + i_uid + "=" + strconv.Itoa(i_count)
 		} else {
