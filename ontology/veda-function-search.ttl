@@ -837,7 +837,7 @@ v-fs:AttributiveRequestTemplate
     tHead.html( head.clone() );
 
     // Sorting
-    var sortBy = dir = "";
+    var sortBy = "", dir = "";
     if ( self.hasValue("v-fs:sortOrder") ) {
       var t = self["v-fs:sortOrder"][0].split(" ");
       sortBy = t[0]; dir = t[1];
@@ -1177,7 +1177,7 @@ v-fs:AttributiveSearchTemplate
   });
 
   // Manage sort
-  var sortBy = dir = "";
+  var sortBy = "", dir = "";
   if ( self.hasValue("v-fs:sortOrder") ) {
     var tmp = self["v-fs:sortOrder"][0].split(" ");
     sortBy = tmp[0]; dir = tmp[1];
