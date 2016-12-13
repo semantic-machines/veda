@@ -44,6 +44,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.subscribe = function(uri) {
+      if (!uri) { return }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
         return;
@@ -64,7 +65,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.unsubscribe = function (uri) {
-      if (uri === "*") {
+      if (uri === "*" || !uri) {
         clearInterval(msgInterval);
         msgInterval = undefined;
         list = {};
