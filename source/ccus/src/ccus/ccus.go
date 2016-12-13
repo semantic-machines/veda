@@ -14,7 +14,7 @@ type updateInfo struct {
 	uid            string
 	opid           int
 	update_counter int
-	cc_out chan updateInfo
+	cc_out         chan updateInfo
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +39,7 @@ func collector_stat(ch1 chan int) {
 
 	for {
 		gg := <-ch1
-		log.Printf("stat collector: (%d)", gg)
+		//log.Printf("stat collector: (%d)", gg)
 
 		if gg > 0 {
 			count_spawned = count_spawned + gg

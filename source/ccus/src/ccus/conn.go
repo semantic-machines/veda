@@ -113,6 +113,9 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 	for {
 		var control int
+
+		control = control_None
+
 		select {
 		case control = <-cc_control:
 			break
@@ -237,12 +240,13 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 				}
 				//log.Printf("ws[%s]uid_info=%s", pc.ws.RemoteAddr(), uid_info)
 			}
+			cc_prepare_out <- ""
 
 		}
 
 		last_opid := pc.get_last_opid()
 
-		//log.Printf("ws[%s]:preparer:check changes: last_opid=%d, last_check_opid=%d", pc.ws.RemoteAddr(), last_opid, last_check_opid)
+		log.Printf("ws[%s]:preparer:check changes: last_opid=%d, last_check_opid=%d", pc.ws.RemoteAddr(), last_opid, last_check_opid)
 		if last_check_opid < last_opid {
 			res := pc.get_list_of_changes()
 			if res != "" {
@@ -284,10 +288,10 @@ func (pc *ccusConn) receiver() {
 
 	pc.ws.SetCloseHandler(close_handler)
 
-	var ch_prepare_in = make(chan string)
-	var ch_prepare_out = make(chan string)
-	var ch_preparer_control = make(chan int)
-	var ch_timer_control = make(chan int)
+	var ch_prepare_in = make(chan string, 10)
+	var ch_prepare_out = make(chan string, 10)
+	var ch_preparer_control = make(chan int, 10)
+	var ch_timer_control = make(chan int, 10)
 	go pc.preparer(ch_preparer_control, ch_prepare_in, ch_prepare_out)
 	go pc.timer1(ch_timer_control, ch_prepare_in)
 
@@ -313,11 +317,12 @@ func (pc *ccusConn) receiver() {
 		}
 
 		msg := string(bmsg)
-		//log.Printf("ws[%s]:recv msg=[%s]", pc.ws.RemoteAddr(), msg)
+		//log.Printf("ws[%s]:receiver:recv msg=[%s]", pc.ws.RemoteAddr(), msg)
 		ch_prepare_in <- msg
 
+		//log.Printf("ws[%s]:receiver: wait responce");
 		msg = <-ch_prepare_out
-		//log.Printf("ret msg=[%s]", msg)
+		//log.Printf("ws[%s]:receiver:ret msg=[%s]", pc.ws.RemoteAddr(), msg)
 
 		if msg != "" {
 
