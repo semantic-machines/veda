@@ -81,7 +81,7 @@ func collector_updateInfo(cc_in chan updateInfo) {
 				_last_opid = arg.opid
 				//log.Printf("collector:set last_opid=%d", _last_opid)
 			}
-			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
+			//log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
 		}
 	}
 }
