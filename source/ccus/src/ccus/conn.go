@@ -267,6 +267,8 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 	}
 	log.Printf("ws[%s]:close preparer", pc.ws.RemoteAddr())
 
+	time.Sleep(2000 * time.Millisecond)
+
 	close(cc_prepare_in)
 	close(cc_prepare_out)
 	close(cc_control)
