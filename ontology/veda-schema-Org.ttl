@@ -277,7 +277,6 @@ v-s:PshasClassifierLegalFormOrganization
   v-ui:forProperty v-s:hasClassifierLegalForm ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:rangeRestriction v-s:Subsidiary ;
 .
 
 v-s:PsHasSubsidiaryForOrganization
@@ -630,6 +629,8 @@ v-s:OrganizationTemplate
 
     template.trigger("validated", result);
   });
+
+
 
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
