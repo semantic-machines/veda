@@ -100,7 +100,7 @@ func (pc *ccusConn) timer1(timer_control chan int, cc_prepare_in chan string) {
 	log.Printf("ws[%s]:close timer", pc.ws.RemoteAddr())
 }
 
-func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_prepare_out chan string) {
+func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_prepare_out chan string, ch_timer_control chan int) {
 	log.Printf("ws[%s]:spawn preparer", pc.ws.RemoteAddr())
 
 	last_check_opid := 0
@@ -270,6 +270,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 	close(cc_prepare_in)
 	close(cc_prepare_out)
 	close(cc_control)
+	close(ch_timer_control)	
 }
 
 func close_handler(code int, text string) error {
@@ -295,7 +296,8 @@ func (pc *ccusConn) receiver() {
 	var ch_prepare_out = make(chan string, 10)
 	var ch_preparer_control = make(chan int, 10)
 	var ch_timer_control = make(chan int, 10)
-	go pc.preparer(ch_preparer_control, ch_prepare_in, ch_prepare_out)
+	go pc.preparer(ch_preparer_control, ch_prepare_in, ch_prepare_out, ch_timer_control)
+
 	go pc.timer1(ch_timer_control, ch_prepare_in)
 
 	for true {
@@ -357,7 +359,6 @@ func (pc *ccusConn) receiver() {
 	//	time.Sleep(1000 * time.Millisecond)
 
 	pc.ws.Close()
-	close(ch_timer_control)
 	close(pc.cc_out)
 }
 
