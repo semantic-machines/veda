@@ -1237,7 +1237,7 @@
         },
         {
           name: "dataset",
-          source: function (input, cb) {
+          source: function (input, callback) {
             var queryString;
             if ( input ) {
               var tokens = input.trim().replace("*", "").split(" ");
@@ -1248,7 +1248,6 @@
             }
             var limit = opts.limit || 0,
                 queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ),
-                cached = [],
                 result = [],
                 getList = queryResult.filter( function (uri, index) {
                   return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
@@ -1257,7 +1256,7 @@
             individuals.map( function (json) {
               result.push( new veda.IndividualModel(json) );
             });
-            cb(result);
+            callback(result);
           },
           displayKey: function (individual) {
             var result;
