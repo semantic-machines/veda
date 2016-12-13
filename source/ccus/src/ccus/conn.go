@@ -136,8 +136,11 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 		}
 
 		if len(msg) == 0 {
-
 			cc_prepare_out <- "Err:invalid message"
+			break
+		}
+
+		if msg[0] == 'E' {
 			break
 		}
 
@@ -246,7 +249,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 		last_opid := pc.get_last_opid()
 
-		log.Printf("ws[%s]:preparer:check changes: last_opid=%d, last_check_opid=%d", pc.ws.RemoteAddr(), last_opid, last_check_opid)
+		//log.Printf("ws[%s]:preparer:check changes: last_opid=%d, last_check_opid=%d", pc.ws.RemoteAddr(), last_opid, last_check_opid)
 		if last_check_opid < last_opid {
 			res := pc.get_list_of_changes()
 			if res != "" {
@@ -347,14 +350,17 @@ func (pc *ccusConn) receiver() {
 	ch_ws_counter <- -1
 	log.Printf("ws[%s]:close receiver, err=%s", pc.ws.RemoteAddr(), err1)
 
+	ch_prepare_in <- "E"
 	ch_timer_control <- control_Close
 	ch_preparer_control <- control_Close
 
+	time.Sleep(1000 * time.Millisecond)
+
 	pc.ws.Close()
+	close(ch_timer_control)
 	close(ch_prepare_in)
 	close(ch_prepare_out)
 	close(ch_preparer_control)
-	close(ch_timer_control)
 	close(pc.cc_out)
 }
 
