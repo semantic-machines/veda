@@ -376,10 +376,20 @@ v-s:OrganizationTemplate
   v-ui:template """
 <script>
   var _class = new veda.IndividualModel("v-s:ContractorProfile");
-  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true) || individual.hasValue("v-s:hasContractorProfile") ) {
-    $("#add-profile", template).remove();
+  var hasRights = _class.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
+
+  individual.on("individual:propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("individual:propertyModified", handler);
+  });
+  function handler(property_uri, values) {
+    if (property_uri === "v-s:hasContractorProfile" && (individual.hasValue("v-s:hasContractorProfile") || !hasRights)) {
+      $("#add-profile", template).remove();
+    }
   }
-    var _class = new veda.IndividualModel("v-s:Subsidiary");
+  handler("v-s:hasContractorProfile", individual["v-s:hasContractorProfile"]);
+
+  var _class = new veda.IndividualModel("v-s:Subsidiary");
   if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
     $("#add-subsidiary", template).remove();
   }
@@ -482,7 +492,11 @@ v-s:OrganizationTemplate
       </tbody>
     </table>
     <div class="view -edit -search">
-      <button class="btn btn-success" id="add-subsidiary" about="v-s:AddSubsidiary" property="rdfs:label"></button>
+      <button class="btn btn-success" id="add-subsidiary">
+        <span class="glyphicon glyphicon-zoom-in"></span>
+
+        <span about="v-s:AddSubsidiary" property="rdfs:label"></span>
+      </button>
     </div>
 
 
@@ -521,7 +535,10 @@ v-s:OrganizationTemplate
     <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
     <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     <div class="view -edit -search">
-      <button class="btn btn-success" id="add-profile" about="v-s:AddProfile" property="rdfs:label"></button>
+      <button class="btn btn-success" id="add-profile">
+      <span class="glyphicon glyphicon-zoom-in"></span>
+      <span  about="v-s:AddProfile" property="rdfs:label"> </span>
+      </button>
     </div>
 
     <em about="v-s:HeadOrganization" property="rdfs:label"></em>
