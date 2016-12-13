@@ -37,25 +37,18 @@ func (pc *ccusConn) get_last_opid() int {
 
 func (pc *ccusConn) get_list_of_subscribe() string {
 	res := ""
-
 	for i_uid, i_count := range pc.count_2_uid {
-
 		g_count := pc.get_counter_4_uid(i_uid)
-
 		if g_count > i_count {
-			i_count := g_count
-			if g_count > i_count {
-				i_count = g_count
-				pc.count_2_uid[i_uid] = i_count
-			}
-
-			if len(res) == 0 {
-				res = res + i_uid + "=" + strconv.Itoa(i_count)
-			} else {
-				res = res + "," + i_uid + "=" + strconv.Itoa(i_count)
-			}
+			i_count = g_count
 			pc.count_2_uid[i_uid] = i_count
 		}
+		if len(res) == 0 {
+			res = res + i_uid + "=" + strconv.Itoa(i_count)
+		} else {
+			res = res + "," + i_uid + "=" + strconv.Itoa(i_count)
+		}
+		pc.count_2_uid[i_uid] = i_count
 	}
 	return res
 }
