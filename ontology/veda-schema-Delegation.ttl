@@ -136,6 +136,7 @@ v-s:RequestDelegationTemplate
   </div>
 </div>
 <script>
+  if ( mode === "search") { return }
   if ( mode === "edit" && individual.isNew() ) {
     individual["v-s:delegator"] = [veda.user];
   }
