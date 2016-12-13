@@ -49,20 +49,6 @@ d:fecef6b8058549cfb0203b55bd2425de
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
 .
 
-
-
-
-
-
-#-----------------------------------------------------
-d:8a7dde743f844ae0bf773fd3c245c5f7
-  a v-s:DocumentKind;
-  v-s:shortLabel "Формы технических документов"^^xsd:string;
-  v-s:registrationNumber "0"^^xsd:string;
-  rdfs:label "Формы технических документов"^^xsd:string;
-.
-
-
 #-----------------------------------------------------
 d:391696576b33490bb7fb3744cbcbccf6
   a v-s:DocumentKind;
@@ -97,7 +83,6 @@ d:1208602a945049ebb74ec1958148125f
   rdfs:label "Аннотация"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
-
 d:a79e1abbf8ea4e2c94e2cb58e34ea07f
   a v-s:DocumentKind;
   v-s:registrationNumber "0"^^xsd:string;
@@ -539,8 +524,8 @@ d:8dbaf875a02d46169a03fb9b58428b16
   rdfs:label "Отметка"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
-d:
-  a v-s:DocumentKind;a4ec31594f5344809d646ee77ecc2bf4
+d:a4ec31594f5344809d646ee77ecc2bf4
+  a v-s:DocumentKind;
   v-s:registrationNumber "0"^^xsd:string;
   v-s:shortLabel "Отношение"^^xsd:string;
   rdfs:label "Отношение"^^xsd:string;
@@ -1107,8 +1092,6 @@ d:077f148f5f214e42b6f99ca239d88b7b
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
 
-
-
 #-----------------------------------------------------
 d:c3b38c81e1594593932b9872a3257948
   a v-s:DocumentKind;
@@ -1123,7 +1106,7 @@ d:90209600a3a44baa9e185809e4ecd866
   rdfs:label "Акт осмотра объекта основных средств, подлежащего списанию"^^xsd:string;
   v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
 .
-d:
+d:a14a4c3ac6b54181b612e7ae20c12fa5
   a v-s:DocumentKind;
   v-s:registrationNumber "0"^^xsd:string;
   v-s:shortLabel "Акт осмотра объекта основных средств"^^xsd:string;
@@ -1141,8 +1124,7 @@ d:d52b64869ee84959b72de00a511d0632
   a v-s:DocumentKind;
   v-s:registrationNumber "ОС-1а"^^xsd:string;
   v-s:shortLabel "ОС-1а. Акт о приеме передаче здания"^^xsd:string;
-  rdfs:label "Акт о приеме передаче здания (сооружения). Форма ОС-1а
-"^^xsd:string;
+  rdfs:label "Акт о приеме передаче здания (сооружения). Форма ОС-1а"^^xsd:string;
   v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
 .
 d:2e6a8b2f85b4483c9dc2c0e3402ededf
@@ -1183,8 +1165,7 @@ d:39701203bf96414182e480f7f117fd5d
 d:e5faf3d2bd2e4c2ea1a100a32ee1663d
   a v-s:DocumentKind;
   v-s:registrationNumber "ОС-4"^^xsd:string;
-  v-s:shortLabel "Акт осмотра объекта основных средств
-"^^xsd:string;
+  v-s:shortLabel "Акт осмотра объекта основных средств"^^xsd:string;
   rdfs:label "Акт о списании объектов основных средств (кроме транспортных средств). Форма ОС-4"^^xsd:string;
   v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
 .
@@ -1404,9 +1385,7 @@ d:be8f778490cc4432893973e53d87c333
   a v-s:DocumentKind;
   v-s:registrationNumber "0"^^xsd:string;
   v-s:shortLabel "Жд накладная имп."^^xsd:string;
-  rdfs:label "Железнодорожная накладная имп.
-
-"^^xsd:string;
+  rdfs:label "Железнодорожная накладная имп."^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
 d:029549e0607c412097e47e47b4e8dc94
@@ -1450,5 +1429,14 @@ d:70fdb1875257475a839210333d793377
   v-s:shortLabel "Жд накладная"^^xsd:string;
   rdfs:label "Железнодорожная накладная"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
+
+
+#-----------------------------------------------------
+d:8a7dde743f844ae0bf773fd3c245c5f7
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы технических документов"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
+  rdfs:label "Формы технических документов"^^xsd:string;
 .
 
