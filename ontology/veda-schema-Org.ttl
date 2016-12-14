@@ -581,8 +581,8 @@ v-s:OrganizationTemplate
     <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     <div class="view -edit -search">
       <button class="btn btn-success" id="add-profile">
-      <span class="glyphicon glyphicon-zoom-in"></span>
-      <span  about="v-s:AddProfile" property="rdfs:label"> </span>
+        <span class="glyphicon glyphicon-zoom-in"></span>
+        <span  about="v-s:AddProfile" property="rdfs:label"> </span>
       </button>
     </div>
 
