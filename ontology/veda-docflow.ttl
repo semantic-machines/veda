@@ -286,7 +286,7 @@ v-df:QuestionRouteStartFormTemplate
 
       <div class="row">
         <div class="col-md-3">
-          <em about="v-s:hasAppointment" property="rdfs:label"></em>
+          <em about="v-s:responsible" property="rdfs:label"></em>
           <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
           <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
         </div>
@@ -366,7 +366,7 @@ v-df:InstructionRouteStartFormTemplate
 
       <div class="row">
         <div class="col-md-3">
-          <em about="v-s:hasAppointment" property="rdfs:label"></em>
+          <em about="v-s:responsible" property="rdfs:label"></em>
           <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
           <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
         </div>
