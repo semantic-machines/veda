@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	ADDR string = ":8088"
+	WS_LISTEN_ADDR string = ":8088"
 )
 
 type updateInfo struct {
@@ -95,7 +95,7 @@ func main() {
 
 	http.HandleFunc("/ccus", wsHandler)
 
-	if err := http.ListenAndServe(ADDR, nil); err != nil {
+	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
