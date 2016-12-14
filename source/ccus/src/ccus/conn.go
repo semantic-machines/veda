@@ -8,6 +8,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -19,6 +20,7 @@ type ccusConn struct {
 	count_2_uid map[string]int
 	cc_in       chan updateInfo
 	cc_out      chan updateInfo
+	mu          sync.Mutex
 }
 
 func (pc *ccusConn) get_counter_4_uid(uid string) int {
@@ -146,12 +148,13 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 		if len(msg) > 3 {
 			if pc.ready == false {
+				// init channel
 				kv := strings.Split(msg, "=")
 
 				if len(kv) == 2 {
 					if strings.Compare(kv[0], "ccus") == 0 {
 						pc.chid = kv[1]
-						log.Printf("ws[%s]:init chanell %s", pc.ws.RemoteAddr(), pc.chid)
+						log.Printf("ws[%s]:init channel %s", pc.ws.RemoteAddr(), pc.chid)
 					}
 				}
 				pc.ready = true
@@ -163,6 +166,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 		if len(msg) == 1 && msg[0] == 'T' {
 
 		} else if msg[0] == '#' {
+			// update data
 			msg_parts := strings.Split(msg, ";")
 			if len(msg_parts) == 3 {
 
@@ -188,15 +192,17 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			continue
 
 		} else if msg[0] == '=' {
-
+			// get current status
 			res := pc.get_list_of_subscribe()
 
 			cc_prepare_out <- "=" + res
 		} else if len(msg) == 2 && msg[0] == '-' && msg[1] == '*' {
+			// unsubscribe all
 
 			pc.count_2_uid = make(map[string]int)
 
 		} else if len(msg) > 3 {
+			// subscribe
 			msg_parts := strings.Split(msg, ",")
 
 			for _, element := range msg_parts {
@@ -249,7 +255,10 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 		if last_check_opid < last_opid {
 			res := pc.get_list_of_changes()
 			if res != "" {
+				pc.ws.SetWriteDeadline(time.Now().Add(writeWait))
+				pc.mu.Lock()
 				err := pc.ws.WriteMessage(websocket.TextMessage, []byte(res))
+				pc.mu.Unlock()
 				if err != nil {
 					//netErr, _ := err.(net.Error)
 					log.Printf("ERR! NOT SEND: ws[%s] found changes, %s, err=%s", pc.ws.RemoteAddr(), res, err)
@@ -332,7 +341,10 @@ func (pc *ccusConn) receiver() {
 				break
 			}
 
+			pc.ws.SetWriteDeadline(time.Now().Add(writeWait))
+			pc.mu.Lock()
 			err := pc.ws.WriteMessage(websocket.TextMessage, []byte(msg))
+			pc.mu.Unlock()
 			if err != nil {
 				log.Printf("ws[%s]:reciever, ERR! NOT SEND: msg=[%s], err=%s", pc.ws.RemoteAddr(), msg, err)
 				netErr, _ := err.(net.Error)
@@ -357,7 +369,7 @@ func (pc *ccusConn) receiver() {
 
 	time.Sleep(2000 * time.Millisecond)
 
-	log.Printf("ws[%s]:reciever:close chanels", pc.ws.RemoteAddr())
+	log.Printf("ws[%s]:reciever:close channels", pc.ws.RemoteAddr())
 	close(ch_prepare_in)
 	close(ch_prepare_out)
 	close(ch_preparer_control)
@@ -377,9 +389,6 @@ const (
 
 	// Send pings to peer with this period. Must be less than pongWait.
 	//pingPeriod = (pongWait * 9) / 10
-
-	// Maximum message size allowed from peer.
-	//maxMessageSize = 512
 )
 
 func NewCcusConn(ws *websocket.Conn, cc_in chan updateInfo) *ccusConn {
