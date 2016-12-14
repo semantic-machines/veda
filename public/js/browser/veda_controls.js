@@ -1228,6 +1228,8 @@
     // Fulltext search feature
     if ( this.hasClass("fulltext") || this.hasClass("full") ) {
 
+      var timeout, delay = 500;
+
       fulltext.attr("placeholder", placeholder);
 
       var typeAhead = fulltext.typeahead (
@@ -1238,25 +1240,29 @@
         {
           name: "dataset",
           source: function (input, callback) {
-            var queryString;
-            if ( input ) {
-              var tokens = input.trim().replace("*", "").split(" ");
-              var q = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
-              queryString = "(" + queryPrefix + ") && (" + q + ")" ;
-            } else {
-              queryString = queryPrefix;
-            }
-            var limit = opts.limit || 0,
-                queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ),
-                result = [],
-                getList = queryResult.filter( function (uri, index) {
-                  return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
-                }),
-                individuals = getList.length ? get_individuals(veda.ticket, getList) : [];
-            individuals.map( function (json) {
-              result.push( new veda.IndividualModel(json) );
-            });
-            callback(result);
+            if (timeout) { clearTimeout(timeout); }
+            timeout = setTimeout(function () {
+              timeout = undefined;
+              var queryString;
+              if ( input ) {
+                var tokens = input.trim().replace("*", "").split(" ");
+                var q = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
+                queryString = "(" + queryPrefix + ") && (" + q + ")" ;
+              } else {
+                queryString = queryPrefix;
+              }
+              var limit = opts.limit || 0,
+                  queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ),
+                  result = [],
+                  getList = queryResult.filter( function (uri, index) {
+                    return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
+                  }),
+                  individuals = getList.length ? get_individuals(veda.ticket, getList) : [];
+              individuals.map( function (json) {
+                result.push( new veda.IndividualModel(json) );
+              });
+              callback(result);
+            }, delay);
           },
           displayKey: function (individual) {
             var result;
