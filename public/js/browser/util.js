@@ -405,10 +405,6 @@ veda.Module(function Util(veda) { "use strict";
    *  - Apply transformation and redirect to start form.
    */
   veda.Util.send = function (individual, template, transformId, modal) {
-    if (typeof modal == 'undefined') {
-      modal = false;
-    }
-
     if (transformId !== undefined) {
       template.trigger('save');
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
