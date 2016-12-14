@@ -267,12 +267,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 	}
 	log.Printf("ws[%s]:close preparer", pc.ws.RemoteAddr())
 
-	time.Sleep(2000 * time.Millisecond)
-
-	close(cc_prepare_in)
-	close(cc_prepare_out)
-	close(cc_control)
-	close(ch_timer_control)	
+	cc_prepare_out <- "END"
 }
 
 func close_handler(code int, text string) error {
@@ -352,16 +347,25 @@ func (pc *ccusConn) receiver() {
 	}
 
 	ch_ws_counter <- -1
-	log.Printf("ws[%s]:close receiver, err=%s", pc.ws.RemoteAddr(), err1)
+	log.Printf("ws[%s]:receiver:stop child threads, err=%s", pc.ws.RemoteAddr(), err1)
 
-	ch_prepare_in <- "E"
 	ch_timer_control <- control_Close
 	ch_preparer_control <- control_Close
+	ch_prepare_in <- "E"
 
-	//	time.Sleep(1000 * time.Millisecond)
+	<-ch_prepare_out
+
+	time.Sleep(2000 * time.Millisecond)
+
+	log.Printf("ws[%s]:reciever:close chanels", pc.ws.RemoteAddr())
+	close(ch_prepare_in)
+	close(ch_prepare_out)
+	close(ch_preparer_control)
+	close(ch_timer_control)
+	close(pc.cc_out)
 
 	pc.ws.Close()
-	close(pc.cc_out)
+	log.Printf("ws[%s]:reciever:close", pc.ws.RemoteAddr())
 }
 
 const (
