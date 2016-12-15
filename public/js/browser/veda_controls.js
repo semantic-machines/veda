@@ -1234,9 +1234,7 @@
 
       function dataSource (input, callback) {
         if (timeout) { clearTimeout(timeout); }
-        timeout = (function (delay) {
-          return setTimeout(mkQuery, delay, input, callback);
-        })(timeout && input ? delay : 0, input, callback);
+        timeout = setTimeout(mkQuery, timeout && input ? delay : 0, input, callback);
       }
 
       function mkQuery (input, callback) {
