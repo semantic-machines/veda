@@ -1231,12 +1231,12 @@
 
       var timeout, delay = 1000;
 
-      function dataSource (input, callback) {
+      var dataSource = function (input, callback) {
         if (timeout) { clearTimeout(timeout); }
         timeout = setTimeout(mkQuery, timeout && input ? delay : 0, input, callback);
       }
 
-      function mkQuery (input, callback) {
+      var mkQuery = function (input, callback) {
         var queryString;
         if ( input ) {
           var tokens = input.trim().replace("*", "").split(" ");
