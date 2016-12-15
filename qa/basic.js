@@ -172,7 +172,7 @@ module.exports = {
 	chooseFromDropdown: function(driver, attribute, valueToSearch, valueToChoose) {
 		driver.findElement({css:'div[rel="'+attribute+'"] + veda-control input[id="fulltext"]'}).sendKeys(valueToSearch)
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find attribute `"+attribute+"`")});
-		
+		driver.sleep(FAST_OPERATION);
 		// Проверяем что запрашивамый объект появился в выпадающем списке
 		driver.wait
 		(
@@ -234,6 +234,7 @@ module.exports = {
 		driver.findElement({id:'fulltext'}).sendKeys(templateName)
 		      .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot enter template name")});
 
+		driver.sleep(FAST_OPERATION);
 		// Проверяем что запрашиваемый тип появился в выпадающем списке
 		driver.wait
 		(
@@ -301,7 +302,8 @@ module.exports = {
 		// Вводим запрашиваемый тип документа
 		driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
 		driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys(templateName);
-		
+
+		driver.sleep(FAST_OPERATION);
 		// Проверяем что запрашиваемый тип появился в выпадающем списке
 		driver.wait
 		(
