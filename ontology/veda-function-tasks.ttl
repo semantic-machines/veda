@@ -168,7 +168,7 @@ v-ft:FunctionTasksTemplate
       cnt.empty();
       pager.empty();
 
-      var sortBy = dir = "";
+      var sortBy = "", dir = "";
       if ( tasks.hasValue("v-fs:sortOrder") ) {
         var t = tasks["v-fs:sortOrder"][0].split(" ");
         sortBy = t[0]; dir = t[1];
