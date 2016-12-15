@@ -142,7 +142,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			break
 		}
 
-		if msg[0] != 'T' {
+		if msg[0] != 'T' && msg[0] != '#' {
 			log.Printf("ws[%s]:receive msg %s", pc.ws.RemoteAddr(), msg)
 		}
 
