@@ -37,9 +37,11 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'edit' button");});
 
     driver.executeScript("document.querySelector('div[rel=\"v-s:attachment\"]').scrollIntoView(true);");
-    basic.isVisible(driver,'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete', basic.FAST_OPERATION);
-    driver.findElement({css:'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'button-delete' button");});
+    basic.isVisible(driver,'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete', basic.SLOW_OPERATION);
+    //driver.findElement({css:'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete'}).click()
+    //    .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'button-delete' button");});
+    driver.executeScript("document.elementFromPoint(675, 20).click();");
+
 
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
