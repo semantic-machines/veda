@@ -1719,8 +1719,8 @@ v-wf:StartForm
 v-wf:processedDocument
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Обрабатываемый документ"@ru ;
-  rdfs:label "Processed document"@en ;
+  rdfs:label "Документ"@ru ;
+  rdfs:label "Document"@en ;
   rdfs:domain v-wf:StartForm ;
   rdfs:range v-s:Thing ;
 .

@@ -1278,7 +1278,7 @@ v-ui:JournalTemplate
   <div rel="v-s:onDocument">
     <div>
       <h4>
-        <span about="rdf:type" property="rdfs:label"></span>:
+        <span about="v-wf:onDocument" property="rdfs:label"></span>:
         <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
       </h4>
     </div>
