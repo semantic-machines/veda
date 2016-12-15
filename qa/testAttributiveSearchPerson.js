@@ -72,6 +72,7 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Attributive` button");});
     driver.findElement({css:'div[typeof="v-fs:AttributiveRequest"] input[id="fulltext"]'}).sendKeys('Персона')
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot input templateName");});
+    driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
         function () {
