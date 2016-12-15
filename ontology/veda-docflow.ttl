@@ -269,7 +269,7 @@ v-df:QuestionRouteStartFormTemplate
     </div>
   </div>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
-  <div about="@" rel="v-wf:processedDocument" data-template="v-ui:LabelLinkTemplate" class="view edit search"></div>
+  <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
@@ -324,7 +324,7 @@ v-df:InstructionRouteStartFormTemplate
     </div>
   </div>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
-  <div about="@" rel="v-wf:processedDocument" data-template="v-ui:LabelLinkTemplate" class="view edit search"></div>
+  <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
@@ -346,7 +346,7 @@ v-df:InstructionRouteStartFormTemplate
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <em about="v-s:controller" property="rdfs:label"></em>
-  <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+  <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="well well-sm">
