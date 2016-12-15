@@ -380,8 +380,6 @@ v-df:QuestionRouteStartFormToNet
   v-wf:transformRule v-df:rul_QuestionTransform4 ;
   v-wf:transformRule v-df:rul_QuestionTransform5 ;
   v-wf:transformRule v-df:rul_QuestionTransform6_0 ;
-  v-wf:transformRule v-df:rul_QuestionTransform6_1 ;
-  v-wf:transformRule v-df:rul_QuestionTransform6_2 ;
   v-wf:transformRule v-df:rul_QuestionTransform6_3 ;
   v-wf:transformRule v-df:rul_QuestionTransform7 ;
   rdfs:isDefinedBy v-df: ;
@@ -433,21 +431,8 @@ v-df:rul_QuestionTransform6_0
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRedirect')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
-.
-v-df:rul_QuestionTransform6_1
-  rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('@')" ;
-  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
-  v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision_for_add_reaction')";
-.
-v-df:rul_QuestionTransform6_2
-  rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('@')" ;
-  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
-  v-wf:aggregate  "putString ('v-wf:variableName', 'decision_route_to_add_reaction')";
 .
 v-df:rul_QuestionTransform6_3
   rdf:type v-wf:Rule ;
@@ -477,8 +462,6 @@ v-df:InstructionRouteStartFormToNet
   v-wf:transformRule v-df:rul_InstructionTransform4 ;
   v-wf:transformRule v-df:rul_InstructionTransform5 ;
   v-wf:transformRule v-df:rul_InstructionTransform6_0 ;
-  v-wf:transformRule v-df:rul_InstructionTransform6_1 ;
-  v-wf:transformRule v-df:rul_InstructionTransform6_2 ;
   v-wf:transformRule v-df:rul_InstructionTransform6_3 ;
   v-wf:transformRule v-df:rul_InstructionTransform7 ;
   v-wf:transformRule v-df:rul_InstructionTransform8 ;
@@ -531,22 +514,11 @@ v-df:rul_InstructionTransform6_0
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRemake')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotPerformed')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRedirect')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRejected')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotForMe')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
-.
-v-df:rul_InstructionTransform6_1
-  rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('@')" ;
-  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
-  v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision_for_add_reaction')";
-.
-v-df:rul_InstructionTransform6_2
-  rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('@')" ;
-  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAchieved')";
-  v-wf:aggregate  "putString ('v-wf:variableName', 'decision_route_to_add_reaction')";
 .
 v-df:rul_InstructionTransform6_3
   rdf:type v-wf:Rule ;
