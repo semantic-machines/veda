@@ -405,7 +405,7 @@ veda.Module(function Util(veda) { "use strict";
    *  - Apply transformation and redirect to start form.
    */
   veda.Util.send = function (individual, template, transformId, modal) {
-    if (transformId !== undefined) {
+    if ( transformId ) {
       template.trigger('save');
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
       if (modal) {
@@ -416,11 +416,10 @@ veda.Module(function Util(veda) { "use strict";
       }
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
-      //$('[resource="'+individual.id+'"]').find("#save").trigger("click");
       template.trigger('save');
-      var s = new veda.SearchModel("'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '"+individual["rdf:type"][0].id+"'", null);
-      if (Object.getOwnPropertyNames(s.results).length == 0) {
-        var individualNode = $('[resource="'+individual.id+'"]');
+      var results = query(veda.ticket, "'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '" + individual["rdf:type"][0].id + "'");
+      if ( results.length === 0 ) {
+        var individualNode = $('[resource="' + individual.id + '"]');
         individualNode.find("#send.action").remove();
         individualNode.find("#edit.action").remove();
         individualNode.find("#save.action").remove();
@@ -428,37 +427,42 @@ veda.Module(function Util(veda) { "use strict";
         individualNode.find("#delete.action").remove();
         if (individual.is('v-wf:StartForm') || individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
           individual.trigger("individual:afterSend");
-          if (individual.sendConfirmed != true) {
-            veda.Util.showMessage("<div class='row'><div class='col-md-12'><br><br><h2>"+new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0]+"</h2></div></div>", "", 5000,
-              individual.redirectToIndividual?individual.redirectToIndividual.id:
-              individual.hasValue('v-wf:processedDocument')?individual['v-wf:processedDocument'][0].id:
-              individual.is('v-wf:StartForm')?individual.id:individual['v-wf:onDocument'][0].id, "view");
+          if (individual.sendConfirmed !== true) {
+            veda.Util.showMessage (
+              "<h2 class='text-center'>" + new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0] + "</h2>",
+              "",
+              5000,
+              individual.hasValue('v-wf:processedDocument') ?
+                individual['v-wf:processedDocument'][0].id : individual.is('v-wf:StartForm') ?
+                individual.id : individual['v-wf:onDocument'][0].id,
+              "view"
+            );
           }
         }
-      } else if (Object.getOwnPropertyNames(s.results).length == 1) {
-        $('[resource="'+individual.id+'"]').find("#save").trigger("click");
-        Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
-          var res = s.results[res_id];
+      } else if ( results.length === 1 ) {
+        template.trigger('save');
+        results.forEach( function (res_id) {
+          var res = new veda.IndividualModel(res_id);
           var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
           if (modal) {
             veda.Util.showModal(startForm, undefined, 'edit');
           } else {
-                  riot.route("#/" + startForm.id + "///edit", true);
+            riot.route("#/" + startForm.id + "///edit", true);
           }
         });
       } else {
-        var sendDropdown = $('[resource="'+individual.id+'"] #send + .dropdown-menu');
+        var sendDropdown = $('[resource="' + individual.id + '"] #send + .dropdown-menu');
         sendDropdown.addClass('dropup').addClass('dropdown-toggle');
-        if (sendDropdown.html()== '') {
-          Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
-            var res = s.results[res_id];
+        if (sendDropdown.html() === '') {
+          results.forEach( function (res_id) {
+            var res = new veda.IndividualModel(res_id);
             $("<li/>", {
-                 "style" : "cursor:pointer",
-                       "html" : "<a>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
-                       "click": (function (e) {
-                        veda.Util.send(individual, template, res['v-s:hasTransformation'][0].id);
-                       })
-                      }).appendTo(sendDropdown);
+              "style": "cursor:pointer",
+              "html" : "<a>" + new veda.IndividualModel(res_id)['rdfs:label'][0] + "</a>",
+              "click": (function (e) {
+                veda.Util.send(individual, template, res['v-s:hasTransformation'][0].id);
+              })
+            }).appendTo(sendDropdown);
           });
         }
       }
