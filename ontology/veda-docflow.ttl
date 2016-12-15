@@ -355,6 +355,7 @@ v-df:InstructionRouteStartFormTemplate
   </div>
 </div>
 <script>
+  individual["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
