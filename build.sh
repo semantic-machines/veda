@@ -21,7 +21,7 @@ if [ -z $1 ] || [ $1 == "ccus" ] ; then
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
     export GOPATH=$HOME/go
     rm ./veda-ccus
-    go build -o veda-ccus source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
+    go build -o veda-ccus  source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
     echo make end VEDA-CCUS
 fi
 
