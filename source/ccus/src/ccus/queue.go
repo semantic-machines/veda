@@ -487,10 +487,11 @@ func (ths *Queue) put_info() {
 	data := ths.name + ";" + strconv.FormatInt(int64(ths.chunk), 10) + ";" + strconv.FormatInt(int64(ths.right_edge), 10) + ";" + strconv.FormatUint(uint64(ths.count_pushed), 10)
 
 	ths.hash.Reset()
-	ths.hash.Write(data)
+	ths.hash.Write([]uint8(data))
 	hashInBytes := ths.hash.Sum(nil)[:]
 	hash_hex := []uint8(hex.EncodeToString(hashInBytes))
 
-	ths.ff_info_push_w.Write(data)
-	ths.ff_info_push_w.Writeln(hash_hex)
+	ths.ff_info_push_w.Write([]uint8(data))
+	ths.ff_info_push_w.Write([]uint8(hash_hex))
+	ths.ff_info_push_w.Write([]uint8("\n"))
 }
