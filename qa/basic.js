@@ -183,7 +183,7 @@ module.exports = {
 				  }).then(function(x) { return x.length>0; });
 			  });
 		  },
-		  FAST_OPERATION
+		  SLOW_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find `"+valueToSearch+"` from dropdown")});
 		
 		// Кликаем на запрашиваемый тип в выпавшем списке		
@@ -244,7 +244,7 @@ module.exports = {
 				  }).then(function(x) { return x.length>0; });
 			  });
 		  },
-		  FAST_OPERATION
+		  SLOW_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Dropdown doesnt contains value `"+templateName+"`")});
 
 		// Кликаем на запрашиваемый тип в выпавшем списке
@@ -259,7 +259,7 @@ module.exports = {
 			driver.wait
 			(
 				webdriver.until.elementIsVisible(driver.findElement({css:'div[typeof="'+templateRdfType+'"]'})),
-				FAST_OPERATION
+				SLOW_OPERATION
 			).thenCatch(function (e) {errrorHandlerFunction(e, "Seems that create operation not works properly")});
 			return;
 		} // Имеет нестандартный шаблон
@@ -312,7 +312,7 @@ module.exports = {
 				  }).then(function(x) { return x.length>0; });
 			  });
 		  },
-		  FAST_OPERATION
+		  SLOW_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Dropdown doesnt contains value `"+templateName+"`")});
 		
 		// Кликаем на запрашиваемый тип в выпавшем списке
@@ -326,7 +326,7 @@ module.exports = {
 		driver.wait
 		(
 		  webdriver.until.elementIsVisible(driver.findElement({css:'div[rel="v-fs:typeToSearch"] span[about="'+templateRdfType+'"]'})),
-		  FAST_OPERATION
+		  SLOW_OPERATION
 		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems that find operation not works properly")});
 	}
 };

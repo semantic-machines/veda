@@ -81,7 +81,7 @@ basic.getDrivers().forEach(function (drv) {
                 }).then(function(x) { return x.length > 0; });
             });
         },
-        basic.FAST_OPERATION
+        basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value "+'Персона');});
     driver.findElements({css:"veda-control.fulltext div.tt-suggestion>p"}).then(function (suggestions) {
         webdriver.promise.filter(suggestions, function(suggestion) {
