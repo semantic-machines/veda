@@ -480,6 +480,7 @@ v-df:InstructionRouteStartFormToNet
   v-wf:transformRule v-df:rul_InstructionTransform6_2 ;
   v-wf:transformRule v-df:rul_InstructionTransform6_3 ;
   v-wf:transformRule v-df:rul_InstructionTransform7 ;
+  v-wf:transformRule v-df:rul_InstructionTransform8 ;
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_InstructionTransform0
@@ -559,6 +560,13 @@ v-df:rul_InstructionTransform7
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putString ('v-wf:variableValue', 'Выполнить поручение')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
+.
+v-df:rul_InstructionTransform8
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:controller')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'controller')";
 .
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
