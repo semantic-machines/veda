@@ -71,8 +71,9 @@ veda.Module(function (veda) { "use strict";
     });
 
     if (container) {
-      this.on("individual:afterLoad", function (individual) {
+      this.one("individual:afterLoad", function (individual) {
         this.present.call(individual, container, template, mode);
+        container = template = mode = null;
       });
       /*this.on("individual:typeChanged", function () {
         this.present(container, template, mode);
