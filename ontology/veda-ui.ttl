@@ -1348,23 +1348,16 @@ v-ui:DocumentEventTemplate
     if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
       $(".stop-process", template).show();
-      $(".stop-process", template).on("click", function() {
-        if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
-          process['v-wf:isStopped'] = [ true ];
-          process.save();
-        }
-      });
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".start-process", template).addClass('text-danger');
       $(".start-process", template).css('text-decoration','line-through');
-      $(".start-process", template).trigger("click");
     }
   }
   if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-wf:ProcessStopped') {
     $(".row", template).addClass('text-danger');
   }
-  //# sourceURL=v-ui:DocumentEventTemplate
+  //# sourceURL=v-ui:DocumentEventTemplateBEfore
 </script>
 <div class="journal-record">
   <hr class="margin-sm">
@@ -1402,6 +1395,24 @@ v-ui:DocumentEventTemplate
   </div>
   <div rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
+<script>
+  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-s:ProcessStarted') {
+    var process = individual['v-wf:onProcess'][0];
+    if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
+        (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
+      $(".stop-process", template).on("click", function() {
+        if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
+          process['v-wf:isStopped'] = [ true ];
+          process.save();
+        }
+      });
+    }
+    if (process.hasValue("v-wf:isStopped", true)) {
+      $(".start-process", template).trigger("click");
+    }
+  }
+  //# sourceURL=v-ui:DocumentEventTemplateAfter
+</script>
   """ ;
 .
 
