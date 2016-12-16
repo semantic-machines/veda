@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"time"
 )
 
 const (
@@ -53,15 +54,50 @@ func collector_stat(ch1 chan int) {
 
 var ch_update_info_in = make(chan updateInfo, 1000)
 
-func collector_updateInfo(cc_in chan updateInfo) {
-	log.Printf("spawn update info collector")
+func queue_reader(ch_collector_update chan updateInfo) {
 
+	main_queue_name := "individuals-flow"
+	var main_queue *Queue
+	var main_cs *Consumer
+
+	main_queue = NewQueue(main_queue_name, R)
+	main_queue.open(CURRENT)
+
+	main_cs = NewConsumer(main_queue, "CCUS")
+	main_cs.open()
+
+	data := ""
+	count := 0
+
+	for {
+		time.Sleep(1000 * time.Millisecond)
+
+		main_queue.reopen_reader()
+
+		for true {
+			data = main_cs.pop()
+			//log.Printf("@1 data=[%s]", data)
+			if data == "" {
+				break
+			}
+			main_cs.commit_and_next(false)
+			count++
+		}
+
+		main_cs.sync()
+		log.Printf("@load from queue: count=%s", count)
+		//ch_collector_update
+	}
+}
+
+func collector_updateInfo(ch_collector_update chan updateInfo) {
+	log.Printf("spawn update info collector")
 	_last_opid := 0
 	_info_2_uid := make(map[string]updateInfo)
 	count_updates := 0
 
 	for {
-		arg := <-cc_in
+		arg := <-ch_collector_update
 
 		if arg.opid == -1 {
 			// это команда на запрос last_opid
@@ -97,6 +133,7 @@ func main() {
 
 	go collector_updateInfo(ch_update_info_in)
 	go collector_stat(ch_ws_counter)
+	//go queue_reader(ch_update_info_in)
 
 	http.HandleFunc("/ccus", wsHandler)
 
