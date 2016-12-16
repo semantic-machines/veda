@@ -206,78 +206,6 @@ veda.Module(function Util(veda) { "use strict";
     return result;
   };
 
-  /*veda.Util.queryFromIndividual = function (individual) {
-    // Serialize individual as search query
-    var query;
-    var allProps = Object.getOwnPropertyNames(individual.properties)
-      .map(function (property_uri) {
-        if (property_uri === "@") { return }
-        var property = new veda.IndividualModel(property_uri);
-        var values = individual[property_uri];//.filter(function(item){return !!item && !!item.valueOf();});
-        // Filter rdfs:Resource type
-        if (property_uri === "rdf:type") {
-          values = individual[property_uri].filter(function(item){ return item.id !== "rdfs:Resource" });
-        }
-        var oneProp;
-        switch (property["rdfs:range"][0].id) {
-          case "xsd:integer":
-          case "xsd:nonNegativeInteger":
-          case "xsd:decimal":
-            oneProp =
-              values.length === 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[0] + "]" :
-              values.length > 1 ? "'" + property_uri + "'==[" + values[0] + "," + values[values.length-1] + "]" :
-              undefined;
-            break;
-          case "xsd:dateTime":
-              if (values.length === 1) {
-                var start = values[0].toISOString().substring(0,19);
-                values[0].setHours(23, 59, 59, 999);
-                var end = values[0].toISOString().substring(0,19);
-                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
-              } else if (values.length > 1) {
-                values[values.length-1].setHours(23, 59, 59, 999);
-                oneProp = "'" + property_uri + "'==[" + values[0].toISOString().substring(0,19) + "," + values[values.length-1].toISOString().substring(0,19) + "]";
-              } else {
-                oneProp = undefined;
-              }
-            break;
-          case "xsd:boolean":
-            oneProp = values
-              //.filter(function(item){return !!item && !!item.valueOf();})
-              .map( function (value) {
-                return "'" + property_uri + "'=='" + value + "'";
-              })
-              .join("||");
-            break;
-          case "xsd:string":
-          case "rdfs:Literal":
-            oneProp = values
-              .filter(function(item){return !!item && !!item.valueOf();})
-              .map( function (value) {
-                return "'" + property_uri + "'=='" + value + "*'";
-              })
-              .join("||");
-            break;
-          default:
-            oneProp = values
-              .filter( function (value) {
-                return value instanceof veda.IndividualModel;
-              })
-              .map( function (value) {
-                return "'" + property_uri + "'=='" + value.id + "'";
-              })
-              .join("||");
-            break;
-        }
-        return oneProp ? "(" + oneProp + ")" : undefined;
-      })
-      .filter(function(item){return !!item;})
-      .join("&&");
-    query = allProps ? "(" + allProps + ")" : undefined;
-    return query;
-  }
-*/
-
   veda.Util.queryFromIndividual = function (individual) {
     var query;
     var flat = flattenIndividual(individual.properties);
@@ -299,8 +227,7 @@ veda.Module(function Util(veda) { "use strict";
               var start = values[0].data.substring(0,10)+"T00:00:00",
                   end;
               if (values.length === 1) {
-                //end = values[0].data.substring(0,10)+"T23:59:59";
-                end = "9999" + values[0].data.substring(4,10)+"T23:59:59";
+                end = "9999-12-31T23:59:59";
                 oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
               } else if (values.length > 1) {
                 end = values[values.length-1].data.substring(0,10)+"T23:59:59";
@@ -395,7 +322,8 @@ veda.Module(function Util(veda) { "use strict";
     if (modal) {
       veda.Util.showModal(startForm, undefined, 'edit');
     } else {
-      startForm.present('#main', undefined, 'edit');
+      //startForm.present('#main', undefined, 'edit');
+      riot.route("#/" + startForm.id + "///edit");
     }
   }
 
@@ -408,47 +336,20 @@ veda.Module(function Util(veda) { "use strict";
     if ( transformId ) {
       template.trigger('save');
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
-      if (modal) {
-        veda.Util.showModal(startForm, undefined, 'edit');
-      } else {
-        //riot.route( ["#", startForm.id, '#main', undefined, "edit"].join("/") );
-        startForm.present('#main', undefined, 'edit');
-      }
+      veda.Util.showModal(startForm, undefined, 'edit');
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
-      template.trigger('save');
       var results = query(veda.ticket, "'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '" + individual["rdf:type"][0].id + "'");
       if ( results.length === 0 ) {
-        var individualNode = $('[resource="' + individual.id + '"]');
-        individualNode.find("#send.action").remove();
-        individualNode.find("#edit.action").remove();
-        individualNode.find("#save.action").remove();
-        individualNode.find("#cancel.action").remove();
-        individualNode.find("#delete.action").remove();
-        if (individual.is('v-wf:StartForm') || individual.hasValue('v-wf:processedDocument') || individual.hasValue('v-wf:onDocument')) {
-          individual.trigger("individual:afterSend");
-          if (individual.sendConfirmed !== true) {
-            veda.Util.showMessage (
-              "<h2 class='text-center'>" + new veda.IndividualModel("v-s:WillBeProcessed")['rdfs:label'][0] + "</h2>",
-              "",
-              5000,
-              individual.hasValue('v-wf:processedDocument') ?
-                individual['v-wf:processedDocument'][0].id : individual.is('v-wf:StartForm') ?
-                individual.id : individual['v-wf:onDocument'][0].id,
-              "view"
-            );
-          }
-        }
+        template.trigger('save');
+        template.closest(".modal").modal("hide").remove();
+        veda.trigger("success", {status: "Успешно отправлено / Successfully sent"});
       } else if ( results.length === 1 ) {
         template.trigger('save');
         results.forEach( function (res_id) {
           var res = new veda.IndividualModel(res_id);
           var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-          if (modal) {
-            veda.Util.showModal(startForm, undefined, 'edit');
-          } else {
-            riot.route("#/" + startForm.id + "///edit", true);
-          }
+          veda.Util.showModal(startForm, undefined, 'edit');
         });
       } else {
         var sendDropdown = $('[resource="' + individual.id + '"] #send + .dropdown-menu');
@@ -600,53 +501,44 @@ veda.Module(function Util(veda) { "use strict";
     });
   }
 
-
   veda.Util.showModal = function (individual, template, mode) {
-    if (typeof mode == 'undefined') {
-      mode = 'view';
-    }
-
-    // Ignore individuals without id
-    if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
-    var container = $($("#notification-modal-template").html());
-    container.modal();
-
-    $("body").append(container);
-
-    var holder = $("<div>");
-    individual.present(holder, template, mode);
-    holder.appendTo($(".modal-body", container));
+    var modal = $( $("#notification-modal-template").html() );
+    modal.modal();
+    $("body").append(modal);
+    var container = $(".modal-body", modal);
+    individual.present(container, template, mode);
+    return modal;
   }
 
   veda.Util.showMessage = function (message, cssClass, timeout, redirectIndividual, redirectIndividualMode) {
     var container = $($("#notification-modal-template").html());
     container.modal();
-
     $("body").append(container);
+    var $notification = $("<div/>", {
+      'html': message,
+      'class': cssClass
+    });
+    $notification.appendTo($(".modal-body", container));
+    $notification.click(redirectAfterTimeout);
+
+    setTimeout( function () {
+      redirectAfterTimeout();
+    }, timeout);
 
     var redirectAlreadyCalled = false;
     function redirectAfterTimeout() {
       if (redirectAlreadyCalled) return;
       redirectAlreadyCalled = true;
       $('.modal').modal('hide');
-      var main = $('#main');
-      main.empty();
-      if (typeof redirectIndividual === 'string') {
-        redirectIndividual = new veda.IndividualModel(redirectIndividual, undefined, undefined, undefined, false);
+      if (redirectIndividual) {
+        var main = $('#main');
+        main.empty();
+        if (typeof redirectIndividual === 'string') {
+          redirectIndividual = new veda.IndividualModel(redirectIndividual, undefined, undefined, undefined, false);
+        }
+        redirectIndividual.present(main, undefined, redirectIndividualMode);
       }
-      redirectIndividual.present(main, undefined, redirectIndividualMode);
     }
-
-    var $notification = $("<div/>", {
-      'html': message,
-      'class': cssClass
-    });
-    $notification.appendTo($(".modal-body", container));
-    $notification.on("click", function() {redirectAfterTimeout();});
-
-    setTimeout( function () {
-      redirectAfterTimeout();
-    }, timeout);
   }
 
   /**
