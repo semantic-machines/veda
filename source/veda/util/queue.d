@@ -152,7 +152,7 @@ class Consumer
         std.file.remove(file_name_info_pop);
     }
 
-    private bool put_info()
+    private bool put_info(bool is_sync_data)
     {
         if (!queue.isReady || !isReady)
             return false;
@@ -161,7 +161,9 @@ class Consumer
         {
             ff_info_pop_w.seek(0);
             ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
-            ff_info_pop_w.flush();
+            
+            if (is_sync_data)
+	            ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
@@ -242,8 +244,6 @@ class Consumer
             log.trace("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
             return null;
         }
-//        writeln("@queue=", this);
-//        writeln("@header=", header);
 
         if (header.msg_length >= buff.length)
         {
@@ -269,31 +269,11 @@ class Consumer
         return cast(string)last_read_msg;
     }
 
-    public bool next()
+    public bool commit_and_next(bool is_sync_data)
     {
         if (!queue.isReady || !isReady)
         {
-            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
-            return false;
-        }
-
-        if (count_popped >= queue.count_pushed)
-        {
-            //log.trace("ERR! queue[%s][%s]:next:count_popped(%d) >= queue.count_pushed(%d)", queue.name, name, count_popped, queue.count_pushed);
-            return false;
-        }
-
-        count_popped++;
-        first_element += header.length + header.msg_length;
-
-        return true;
-    }
-
-    public bool commit_and_next()
-    {
-        if (!queue.isReady || !isReady)
-        {
-            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
             return false;
         }
 
@@ -325,42 +305,7 @@ class Consumer
         count_popped++;
         first_element += header.length + header.msg_length;
 
-        return put_info();
-    }
-
-    public bool commit_1()
-    {
-        if (!queue.isReady || !isReady)
-        {
-            log.trace("ERR! queue:[%s][%s]commit:!queue.isReady || !isReady", queue.name, name, );
-            return false;
-        }
-
-        if (count_popped > queue.count_pushed)
-        {
-            log.trace("ERR! queue[%s][%s]:commit:count_popped(%d) >= count_pushed(%d)", queue.name, name, count_popped, queue.count_pushed);
-            return false;
-        }
-
-        header_buff[ header_buff.length - 4 ] = 0;
-        header_buff[ header_buff.length - 3 ] = 0;
-        header_buff[ header_buff.length - 2 ] = 0;
-        header_buff[ header_buff.length - 1 ] = 0;
-
-        hash.start();
-        hash.put(header_buff);
-        hash.put(last_read_msg);
-        crc = hash.finish();
-
-        if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
-        {
-            log.trace("ERR! queue[%s][%s]:commit:invalid msg: fail crc[%s] : %s", queue.name, name, text(crc), text(header));
-            log.trace("last_read_msg.length=%d", last_read_msg.length);
-            log.trace("last_read_msg=%s", cast(string)last_read_msg);
-            return false;
-        }
-
-        return put_info();
+        return put_info(is_sync_data);
     }
 
     void toString(scope void delegate(const(char)[]) sink) const
