@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/binary"
 	"bufio"
+	"encoding/binary"
 	"reflect"
 	"unsafe"
+	//"log"
 )
 
 func ulong_to_buff(_buff []uint8, pos int, data uint64) {
@@ -26,12 +27,12 @@ func uint_to_buff(_buff []uint8, pos int, data uint32) {
 }
 
 func uint_from_buff(buff []uint8, pos int) uint32 {
-	num, _ := binary.Uvarint(buff[pos : pos+4])
+	num := binary.LittleEndian.Uint32(buff[pos : pos+8])
 	return uint32(num)
 }
 
 func ulong_from_buff(buff []uint8, pos int) uint64 {
-	num, _ := binary.Uvarint(buff[pos : pos+8])
+	num := binary.LittleEndian.Uint64(buff[pos : pos+8])
 	return num
 }
 
@@ -40,22 +41,23 @@ func ulong_from_buff(buff []uint8, pos int) uint64 {
 // An error is returned iff there is an error with the
 // buffered reader.
 func Readln(r *bufio.Reader) (string, error) {
-  var (isPrefix bool = true
-       err error = nil
-       line, ln []byte
-      )
-  for isPrefix && err == nil {
-      line, isPrefix, err = r.ReadLine()
-      ln = append(ln, line...)
-  }
-  return string(ln),err
+	var (
+		isPrefix bool  = true
+		err      error = nil
+		line, ln []byte
+	)
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		ln = append(ln, line...)
+	}
+	return string(ln), err
 }
 
 func CopyString(s string) string {
-        var b []byte
-        h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-        h.Data = (*reflect.StringHeader)(unsafe.Pointer(&s)).Data
-        h.Len = len(s)
-        h.Cap = len(s)
-        return string(b)
-} 
+	var b []byte
+	h := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	h.Data = (*reflect.StringHeader)(unsafe.Pointer(&s)).Data
+	h.Len = len(s)
+	h.Cap = len(s)
+	return string(b)
+}

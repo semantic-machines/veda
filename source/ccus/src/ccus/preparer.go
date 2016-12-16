@@ -85,6 +85,7 @@ const control_None = 0
 
 func (pc *ccusConn) timer1(timer_control chan int, cc_prepare_in chan string) {
 	log.Printf("ws[%s]:spawn timer", pc.ws.RemoteAddr())
+
 	for {
 		var control int
 		select {
