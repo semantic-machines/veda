@@ -454,6 +454,8 @@ s-wf:cr_rework a v-wf:Task;
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:startDecisionTransform s-wf:tr_refine_form;
+  v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b_remake, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_responsible, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
+  v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
 .
 
 s-wf:crf_rework_to_c1 a v-wf:Flow;

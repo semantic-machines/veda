@@ -2406,6 +2406,14 @@ s-wf:map_jrn_msg_nc_t2_b
   v-wf:mappingExpression "newStr ('Выдана задача: '+process.getLocalVariable ('actor_task_action')[0].data)" ;
 .
 
+s-wf:map_jrn_msg_nc_t2_b_remake
+  rdf:type v-wf:Mapping ;
+  rdfs:isDefinedBy s-wf: ;
+  v-wf:mapToVariable s-wf:var_journal_msg ;
+  v-wf:mappingExpression "newStr ('Выдана задача: Доработать')" ;
+.
+
+
 s-wf:map_jrn_msg_nc_t2_b_ev
   rdf:type v-wf:Mapping ;
   rdfs:isDefinedBy s-wf: ;
