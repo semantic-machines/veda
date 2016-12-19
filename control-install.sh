@@ -53,6 +53,7 @@ fi
 
 export GOPATH=$HOME/go
 go get github.com/gorilla/websocket
+cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go 
 
 for i in "${LIB_NAME[@]}"; do
