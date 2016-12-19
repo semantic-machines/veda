@@ -1239,7 +1239,7 @@
       var mkQuery = function (input, callback) {
         var queryString;
         if ( input ) {
-          var tokens = input.trim().replace("*", "").split(" ");
+          var tokens = input.replace(/[-*]/g, " ").replace(/\s+/g, " ").trim().split(" ");
           var q = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
           queryString = "(" + queryPrefix + ") && (" + q + ")" ;
         } else {

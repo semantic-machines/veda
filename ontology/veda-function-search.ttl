@@ -335,8 +335,10 @@ v-fs:FulltextRequestModel
       :
         "";
     var q = self.hasValue("v-fs:fulltextQuery") ? self["v-fs:fulltextQuery"][0] : "";
+    var re1 = new RegExp('[-*]','g');
+    var re2 = new RegExp('\\s+','g');
     if (q && q.indexOf("==") < 0) {
-      q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
+      q = "(" + q.replace(re1, " ").replace(re2, " ").trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
     }
     return [type, q].filter(function (item) { return !!item }).join("&&");
   }
