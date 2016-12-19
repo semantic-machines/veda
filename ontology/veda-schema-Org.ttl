@@ -666,6 +666,7 @@ v-s:SubsidiaryTemplate
     <span about="v-s:Subsidiary" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
   </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
   <hr>
   <div id="mainProperties">
     <em about="v-s:parentOrganization" property="rdfs:label"></em>
