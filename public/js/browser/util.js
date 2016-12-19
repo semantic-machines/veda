@@ -81,68 +81,77 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.toTTL = function (individualList, callback) {
-    var s = new veda.SearchModel("'rdf:type'=='owl:Ontology'", null);
-    var prefixes = {};
-    prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
-    prefixes["grddl"] = "http://www.w3.org/2003/g/data-view#";
-    Object.getOwnPropertyNames(s.results).map( function (res_id) {
-      var res = s.results[res_id];
-      prefixes[res_id.substring(0,res_id.length-1)] = res["v-s:fullUrl"][0].toString();
+    var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'"),
+        all_prefixes = {},
+        prefixes = {},
+        triples = [],
+        writer = N3.Writer();
+
+    all_prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
+    all_prefixes["grddl"] = "http://www.w3.org/2003/g/data-view#";
+    ontologies.map( function (ontology_uri) {
+      var ontology = new veda.IndividualModel(ontology_uri);
+      var prefix = ontology_uri.slice(0, -1);
+      all_prefixes[prefix] = ontology["v-s:fullUrl"][0].toString();
     });
-    var writer = N3.Writer({ prefixes: prefixes });
-    individualList.each(function (individual) {
-      var triple = {};
-      if (individual.id.indexOf(":") == individual.id.length-1) {
-        triple.subject = prefixes[individual.id.substring(0, individual.id.length - 1)];
-      } else {
-        triple.subject = N3.Util.expandPrefixedName(individual.id, prefixes);
+
+    function prefixer(uri) {
+      var colonIndex = uri.indexOf(":"),
+          prefix = uri.substring(0, colonIndex);
+      if ( !prefixes[prefix] ) {
+        prefixes[prefix] = all_prefixes[prefix];
       }
+      if ( colonIndex === uri.length-1 ) {
+        return prefixes[prefix];
+      } else {
+        return N3.Util.expandPrefixedName(uri, prefixes);
+      }
+    }
+
+    individualList.each(function (individual) {
+      var type_triple = {};
+      type_triple.subject = prefixer(individual.id);
       // rdf:type first!
-      triple.predicate = N3.Util.expandPrefixedName("rdf:type", prefixes);
-      individual["rdf:type"].map(function (value) {
-        if (value.id.indexOf(":") == value.id.length-1) {
-          triple.object = prefixes[value.id.substring(0, value.id.length - 1)];
-        } else {
-          triple.object = N3.Util.expandPrefixedName(value.id, prefixes);
-        }
-        writer.addTriple(triple);
+      type_triple.predicate = prefixer("rdf:type");
+      individual.properties["rdf:type"].map(function (value) {
+        type_triple.object = prefixer(value.data);
+        triples.push(type_triple);
       });
       Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
-        if (property_uri === "@") { return; }
-        if (property_uri === "rdf:type") { return; }
-        triple.predicate = N3.Util.expandPrefixedName(property_uri, prefixes);
+        if (property_uri === "@" || property_uri === "rdf:type") { return; }
+        var triple = {};
+        triple.subject = type_triple.subject;
+        triple.predicate = prefixer(property_uri);
         individual.properties[property_uri].map(function (item) {
           var value = item.data,
               type = item.type,
               lang = item.lang;
           switch (type) {
             case "Integer":
-              triple.object = '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:integer", prefixes);
+              triple.object = '"' + value + '"^^' + prefixer("xsd:integer");
               break;
             case "Decimal":
-              triple.object = '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:decimal", prefixes);
+              triple.object = '"' + value + '"^^' + prefixer("xsd:decimal");
               break;
             case "Boolean":
-              triple.object = '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:boolean", prefixes);
+              triple.object = '"' + value + '"^^' + prefixer("xsd:boolean");
               break;
             case "String":
-              triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + N3.Util.expandPrefixedName("xsd:string", prefixes);
+              triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
               break;
             case "Datetime":
-              triple.object = '"' + value.toISOString() + '"^^' + N3.Util.expandPrefixedName("xsd:dateTime", prefixes);
+              triple.object = '"' + value.toISOString() + '"^^' + prefixer("xsd:dateTime");
               break;
             case "Uri":
-              if (value.indexOf(":") == value.length-1) {
-                triple.object = prefixes[value.substring(0, value.length - 1)];
-              } else {
-                triple.object = N3.Util.expandPrefixedName(value, prefixes);
-              }
+              triple.object = prefixer(value);
               break;
           }
-          writer.addTriple(triple);
+          triples.push(triple);
         });
       });
     });
+    writer.addPrefixes(prefixes);
+    writer.addTriples(triples);
     writer.end(callback);
   };
 

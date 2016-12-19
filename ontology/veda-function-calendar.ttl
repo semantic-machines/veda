@@ -9,7 +9,7 @@
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 
 @prefix v-cal: <http://semantic-machines.com/veda/veda-function-calendar/> .
-<http://semantic-machines.com/veda/veda-function-tasks>
+<http://semantic-machines.com/veda/veda-function-calendar>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system function 'Calendar' ontology"@en ;
   rdfs:label "Онтология функции 'Календарь' системы Веда"@ru ;
