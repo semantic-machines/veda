@@ -3,9 +3,10 @@ package main
 import (
 	"bufio"
 	"encoding/binary"
+	"log"
 	"reflect"
 	"unsafe"
-	//"log"
+	"cbor"
 )
 
 func ulong_to_buff(_buff []uint8, pos int, data uint64) {
@@ -60,4 +61,68 @@ func CopyString(s string) string {
 	h.Len = len(s)
 	h.Cap = len(s)
 	return string(b)
+}
+
+func jeq(cborv interface{}) bool {
+	switch i := cborv.(type) {
+	case uint64:
+		log.Printf("%d", i)
+		return true
+//	case big.Int:
+		//		log.Printf("%s", i)
+//		return true
+	case int64:
+		log.Printf("%s", i)
+		return true
+	case float32:
+		log.Printf("%f", float64(i))
+		return true
+	case float64:
+		log.Printf("%f", i)
+		return true
+	case bool:
+		log.Printf("%b", i)
+		return true
+	case string:
+		log.Printf("%s", i)
+		return true
+		
+	case []interface{}:
+	log.Print("array")
+		for idx, cav := range i {
+			log.Printf("array: idx=%d", idx)
+			if !jeq(cav) {
+				return false
+			}
+		}
+		return true
+
+	case nil:
+		log.Printf("nil")
+
+		return true
+	case map[interface{}]interface{}:
+
+		for key, cav := range i {
+			log.Printf("map: key=%s", key)
+			if !jeq(cav) {
+				log.Print("map: false")
+				return false
+			}
+		}
+		return true
+	case []byte:
+		log.Printf("%s", string(i))
+		return true		
+	case cbor.CBORTag:
+		//log.Printf("tag: %s, type=%s tag=%s", cborv, i, i.Tag)
+		return jeq(i.WrappedObject)		
+	case interface{}:
+//		var tt cbor.CBORTag = cbor.CBORTag (cborv) 
+		log.Printf("tag: %s, type=%s", cborv, i)
+		return true
+	default:
+		log.Printf("default: %s, type=%s", cborv, i)
+	}
+	return false
 }

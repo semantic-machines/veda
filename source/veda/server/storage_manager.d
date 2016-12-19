@@ -500,6 +500,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                                 imm.addResource("event_id", Resource(DataType.String, event_id));
 
                                             imm.addResource("op_id", Resource(op_id));
+                                            imm.addResource("u_count", Resource(update_counter));
 
                                             //writeln ("*imm=[", imm, "]");
 

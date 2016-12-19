@@ -1,9 +1,11 @@
 package main
 
 import (
+	"cbor"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -76,10 +78,20 @@ func queue_reader(ch_collector_update chan updateInfo) {
 
 		for true {
 			data = main_cs.pop()
-			//log.Printf("@1 data=[%s]", data)
 			if data == "" {
 				break
 			}
+			log.Printf("@1 data=[%s].length=%d", data, len (data))
+			ring := cbor.NewDecoder(strings.NewReader(data))
+			var cborObject interface{}
+			err := ring.Decode(&cborObject)
+			if err != nil {
+				log.Fatalf("error decoding cbor: %v", err)
+				continue
+			}
+			
+			jeq(cborObject)
+			
 			main_cs.commit_and_next(false)
 			count++
 		}
@@ -133,7 +145,7 @@ func main() {
 
 	go collector_updateInfo(ch_update_info_in)
 	go collector_stat(ch_ws_counter)
-	//go queue_reader(ch_update_info_in)
+	go queue_reader(ch_update_info_in)
 
 	http.HandleFunc("/ccus", wsHandler)
 
