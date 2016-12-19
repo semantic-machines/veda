@@ -255,7 +255,7 @@ func (ths *Consumer) pop() string {
 
 	ths.queue.ff_queue_r.Read(header_buff)
 	ths.header.from_buff(header_buff)
-	log.Printf("@header=%s, ths.count_popped=%d", ths.header.toString(), ths.count_popped)
+	//log.Printf("@header=%s, ths.count_popped=%d", ths.header.toString(), ths.count_popped)
 
 	if ths.header.start_pos != ths.first_element {
 		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", ths.header.start_pos, ths.first_element, ths.header)

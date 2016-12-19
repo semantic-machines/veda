@@ -76,12 +76,14 @@ func queue_reader(ch_collector_update chan updateInfo) {
 
 		main_queue.reopen_reader()
 
+		t0 := time.Now()
+		log.Printf("@start prepare batch, count=%d", count)
 		for true {
 			data = main_cs.pop()
 			if data == "" {
 				break
 			}
-			log.Printf("@1 data=[%s].length=%d", data, len (data))
+			//			log.Printf("@1 data=[%s].length=%d", data, len (data))
 			ring := cbor.NewDecoder(strings.NewReader(data))
 			var cborObject interface{}
 			err := ring.Decode(&cborObject)
@@ -89,12 +91,19 @@ func queue_reader(ch_collector_update chan updateInfo) {
 				log.Fatalf("error decoding cbor: %v", err)
 				continue
 			}
-			
-			jeq(cborObject)
-			
+
+			var individual *Individual = NewIndividual()
+
+			cbor2individual(individual, cborObject)
+
+			//log.Printf("@2 individual=[%s]", individual)
+
 			main_cs.commit_and_next(false)
 			count++
 		}
+		 t1 := time.Now()
+		 delta := t1.Sub(t0).Seconds()
+		log.Printf("@end prepare batch, count=%d, total time=%v, cps=%.2f", count, t1.Sub(t0), float64 (count)/delta)
 
 		main_cs.sync()
 		log.Printf("@load from queue: count=%s", count)
