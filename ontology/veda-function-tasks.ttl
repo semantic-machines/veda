@@ -189,14 +189,15 @@ v-ft:FunctionTasksTemplate
         tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
       }
 
-      for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
-        (function (i) {
-          setTimeout(function () {
-            var _tmpl = tmpl.replace("###", i+1);
-            var result = new veda.IndividualModel( tasks.result[i] );
-            result.present(cnt, _tmpl);
-          }, 0);
-        }(i));
+      for (var result, _tmpl, i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
+        result = new veda.IndividualModel( tasks.result[i] );
+        if (individual.id === "v-ft:Inbox" && result.hasValue("v-wf:takenDecision") && result.isSync()) {
+          tasks.result.splice(i--, 1);
+          continue;
+        } else {
+          _tmpl = tmpl.replace("###", i+1);
+          result.present(cnt, _tmpl);
+        }
       }
 
       // Show pager

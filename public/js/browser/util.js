@@ -341,6 +341,11 @@ veda.Module(function Util(veda) { "use strict";
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
       var results = query(veda.ticket, "'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '" + individual["rdf:type"][0].id + "'");
       if ( results.length === 0 ) {
+        $("#send.action", template).remove();
+        $("#edit.action", template).remove();
+        $("#save.action", template).remove();
+        $("#cancel.action", template).remove();
+        $("#delete.action", template).remove();
         template.trigger('save');
         template.closest(".modal").modal("hide").remove();
         veda.trigger("success", {status: "Успешно отправлено / Successfully sent"});
