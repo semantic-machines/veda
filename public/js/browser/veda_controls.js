@@ -1362,6 +1362,9 @@
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
+      if (e.type === "search") {
+        isSingle = false;
+      }
     });
 
     this.append(control);

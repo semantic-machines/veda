@@ -337,7 +337,7 @@ v-ui:SystemPropertiesTemplate
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:edited" property="rdfs:label"></em>
-      <veda-control data-type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
+      <veda-control data-type="dateTime" property="v-s:edited" class="-view -edit search"></veda-control>
       <div about="@" property="v-s:edited" class="view edit -search"></div>
       <div property="v-s:edited" class="-view -edit search"></div>
     </div>
