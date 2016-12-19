@@ -226,7 +226,7 @@ func (ths *Consumer) get_info() bool {
 
 		ths.first_element = uint64(nn)
 
-log.Printf ("@ ch[4]=%s", ch[4])
+		log.Printf("@ ch[4]=%s", ch[4])
 
 		nn, err = strconv.ParseInt(ch[4], 10, 0)
 		if err != nil {
@@ -243,7 +243,7 @@ log.Printf ("@ ch[4]=%s", ch[4])
 }
 
 func (ths *Consumer) pop() string {
-	
+
 	if !ths.queue.isReady || !ths.isReady {
 		return ""
 	}
@@ -444,14 +444,14 @@ func (ths *Queue) open(_mode Mode) bool {
 
 func (ths *Queue) reopen_reader() {
 	var err error
-	
+
 	ths.ff_info_push_r.Close()
 	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 	if err != nil {
 		ths.isReady = false
 		return
-	}	
-	
+	}
+
 	ths.ff_queue_r.Close()
 	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
 	if err != nil {

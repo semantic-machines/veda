@@ -101,9 +101,9 @@ func queue_reader(ch_collector_update chan updateInfo) {
 			main_cs.commit_and_next(false)
 			count++
 		}
-		 t1 := time.Now()
-		 delta := t1.Sub(t0).Seconds()
-		log.Printf("@end prepare batch, count=%d, total time=%v, cps=%.2f", count, t1.Sub(t0), float64 (count)/delta)
+		t1 := time.Now()
+		delta := t1.Sub(t0).Seconds()
+		log.Printf("@end prepare batch, count=%d, total time=%v, cps=%.2f", count, t1.Sub(t0), float64(count)/delta)
 
 		main_cs.sync()
 		log.Printf("@load from queue: count=%s", count)

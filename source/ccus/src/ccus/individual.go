@@ -88,14 +88,6 @@ const (
 	Boolean DataType = 64
 )
 
-type Resource struct {
-	_type DataType
-	lang  LANG
-	data  interface{}
-}
-
-type Resources []Resource
-
 type Individual struct {
 	uri       string
 	resources map[string]Resources
@@ -106,6 +98,14 @@ func NewIndividual() *Individual {
 	p.resources = make(map[string]Resources)
 	return p
 }
+
+type Resource struct {
+	_type DataType
+	lang  LANG
+	data  interface{}
+}
+
+type Resources []Resource
 
 func NewResource() *Resource {
 	p := new(Resource)
