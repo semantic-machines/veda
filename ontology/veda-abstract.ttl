@@ -741,6 +741,13 @@ v-s:phone
   rdfs:range xsd:string ;
   rdfs:domain v-s:Deliverable2 ;
 .
+v-s:contactInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Contact Info"@en ;
+  rdfs:label "Контактная информация"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
 ### ------------------------------------------------------
 v-s:Measurable
   rdf:type owl:Class ;
