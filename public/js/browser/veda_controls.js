@@ -975,7 +975,14 @@
   };
 
   // FILE UPLOAD CONTROL
-  function uploadFile(file, success, progress) {
+  function uploadFile(file, fileType, maxSize, success, progress) {
+    if (maxSize && file.size > maxSize * 1024 * 1024) {
+      return veda.trigger("danger", {description: "Файл слишком большой (> " + maxSize + " Mb)"});
+    }
+    var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
+    if (fileType && fileType.split(",").indexOf(ext) < 0) {
+      return veda.trigger("danger", {description: "Тип файла не разрешен (" + fileType + ")"});
+    }
     var url = "/files",
         xhr = new XMLHttpRequest(),
         d = new Date(),
@@ -1003,7 +1010,10 @@
         rel_uri = opts.rel_uri,
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
         range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
-        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true;
+        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+        acceptedFileType = spec && spec.hasValue("v-ui:acceptedFileType") ? spec["v-ui:acceptedFileType"][0].valueOf() : undefined,
+        maxFileSize = spec && spec.hasValue("v-ui:maxFileSize") ? spec["v-ui:maxFileSize"][0] : undefined;
+
       var fileInput = $("#file", control);
       if (!isSingle) fileInput.attr("multiple", "multiple");
       var btn = $("#btn", control),
@@ -1013,7 +1023,7 @@
         fileInput.click();
       });
       var files = [], n;
-      var uploaded = function (file, path, uri) {
+      var uploaded = function (file, acceptedFileType, maxFileSize, path, uri) {
         var f = new veda.IndividualModel();
         f["rdf:type"] = range;
         f["v-s:fileName"] = [ file.name ];
@@ -1046,7 +1056,7 @@
         files = [];
         n = this.files.length;
         for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-          uploadFile(file, uploaded, progress);
+          uploadFile(file, acceptedFileType, maxFileSize, uploaded, progress)
         }
       });
       this.on("view edit search", function (e) {
