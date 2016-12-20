@@ -268,7 +268,13 @@ v-s:MaterialGroup
   rdfs:label "Material group"@en ;
   rdfs:label "Группа материалов"@ru ;
 .
-
+# ------------------------------------------------------------
+v-s:ClaimCircumstance
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Claim circumstance"@en ;
+  rdfs:label "Обстоятельства претензии"@ru ;
+.
 #-------------------------------------------------
 v-s:AccountingDoc
   rdf:type owl:Class ;
