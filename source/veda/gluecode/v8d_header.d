@@ -527,7 +527,9 @@ interface WrappedScript
 {
 }
 
-bool InitializeICU();
+void InitializeICU();
+void ShutdownPlatform();
+void Dispose();
 WrappedContext new_WrappedContext();
 WrappedScript new_WrappedScript(WrappedContext _context, char *src);
 void run_WrappedScript(WrappedContext _context, WrappedScript ws, _Buff *_res = null, _Buff *_out = null);

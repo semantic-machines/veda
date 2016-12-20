@@ -226,6 +226,13 @@ class PThreadContext : Context
         log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
     }
 
+    ~this()
+    {
+        log.trace_log_and_console("DELETE CONTEXT [%s]", name);
+        inividuals_storage_r.close_db();
+        tickets_storage_r.close_db();
+    }
+
     string begin_transaction()
     {
         string res;

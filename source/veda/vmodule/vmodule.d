@@ -2,7 +2,7 @@ module veda.vmodule.vmodule;
 
 private
 {
-    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread;
+    import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
     import kaleidic.nanomsg.nano;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
@@ -240,9 +240,9 @@ class VedaModule
             data = main_cs_prefetch.pop();
             if (data is null)
             {
-            	log.trace("PREFETCH: pop return null");
+                log.trace("PREFETCH: pop return null");
                 break;
-            }    
+            }
 
             Individual imm;
             if (data !is null && cbor2individual(&imm, data) < 0)
@@ -253,13 +253,13 @@ class VedaModule
             string uri = imm.getFirstLiteral("uri");
             log.trace("PREFETCH %s", uri);
 
-        //    if (main_cs_prefetch.next() == false)
-        //    {
-        //    	log.trace("PREFETCH: next break");
-        //        break;
-        //    }    
+            //    if (main_cs_prefetch.next() == false)
+            //    {
+            //      log.trace("PREFETCH: next break");
+            //        break;
+            //    }
             //Thread.sleep(dur!("seconds")(1));
-	        main_cs_prefetch.commit_and_next(true);
+            main_cs_prefetch.commit_and_next(true);
         }
         //main_cs_prefetch.commit_1();
     }
@@ -274,7 +274,7 @@ class VedaModule
             if (f_listen_exit == true)
                 break;
 
-           //configuration_found_in_queue ();
+            //configuration_found_in_queue ();
 
             string data = main_cs.pop();
 
@@ -387,6 +387,15 @@ class VedaModule
             catch (Throwable ex)
             {
                 log.trace("ERR! ex=%s", ex.msg);
+            }
+
+            if (count_success_prepared % 1000 == 0)
+            {
+                log.trace("reopen db's and gc collect");
+                context.reopen_ro_subject_storage_db();
+                context.reopen_ro_acl_storage_db();
+                context.reopen_ro_ticket_manager_db();
+                GC.collect();
             }
         }
         if (count_readed != count_success_prepared)

@@ -889,3 +889,15 @@ InitializeICU()
 {
     v8::V8::InitializeICU(NULL);
 }
+
+void
+ShutdownPlatform()
+{
+    v8::V8::ShutdownPlatform();
+}
+
+void
+Dispose()
+{
+    v8::V8::Dispose();
+}

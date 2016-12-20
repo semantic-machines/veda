@@ -39,6 +39,7 @@ class ScriptProcess : VedaModule
 
     override void receive_msg(string msg)
     {
+        log.trace("receive msg=%s", msg);
     }
 
     override Context create_context()
