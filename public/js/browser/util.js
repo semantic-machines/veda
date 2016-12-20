@@ -74,7 +74,7 @@ veda.Module(function Util(veda) { "use strict";
     hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
     fdate = [day, month, year].join(".");
     ftime = [hours, mins, secs].join(":");
-    return fdate + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
+    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
   };
   veda.Util.formatNumber = function (n) {
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
