@@ -1,0 +1,65 @@
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/mondi-schema-ClaimManagment/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system ontology. ClaimManagment"@en ;
+  rdfs:label "Онтология системы Veda. Управление претензиями"@ru ;
+  v-s:loadPriority 11 ;
+.
+#-- Классы --
+
+v-s:Claim
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Deliverable2 ;  
+  rdfs:subClassOf v-s:Controlled ;  
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Measurable ;  
+  rdfs:label "Claim"@en ;
+  rdfs:label "Претензия"@ru ;
+.
+v-s:claimDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Claim description"@en ;
+  rdfs:label "Описание обстоятельств претензии"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Claim ;
+.
+v-s:claimObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Claim object"@en ;
+  rdfs:label "Объект претензии"@ru ;
+  rdfs:range v-s:MaterialGroup ;
+  rdfs:domain v-s:Claim ;
+.
+v-s:claimRequirement
+  rdf:type owl:DataTypeProperty ;
+  rdfs:label "Claim requirement"@en ;
+  rdfs:label "Требование претензии"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Claim ;
+.
+v-s:claimVolume
+  rdf:type owl:DataTypeProperty ;
+  rdfs:label "Claim volume"@en ;
+  rdfs:label "Объем претензии"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Claim ;
+.
+v-s:compensationSum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Compaensation sum"@en ;
+  rdfs:label "Сумма к возмещению"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Claim ;
+.
+# ------------------------------------------------------------
+
