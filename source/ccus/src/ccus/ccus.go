@@ -23,17 +23,19 @@ type updateInfo struct {
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	ws, err := websocket.Upgrade(w, r, nil, 1024, 1024)
 	if _, ok := err.(websocket.HandshakeError); ok {
-		http.Error(w, "Not a websocket handshake", 400)
+		http.Error(w, "wsHandler: not a websocket handshake", 400)
 		return
 	} else if err != nil {
+		log.Printf("wsHandler, err=%s", err)
 		return
 	}
-	//	log.Printf("wsHandler, err=%s", err)
 	NewCcusConn(ws, ch_update_info_in)
 }
 
 var ch_ws_counter = make(chan int, 1000)
 
+//  collector_stat - routine that collects data on the number of current WS connections.
+//  send to [ch1 chan int], +1 or -1
 func collector_stat(ch1 chan int) {
 	log.Printf("spawn stat collector")
 
@@ -56,6 +58,7 @@ func collector_stat(ch1 chan int) {
 
 var ch_update_info_in = make(chan updateInfo, 1000)
 
+//  queue_reader - routine that read queue, and transmits information about the update to collector_updateInfo routine
 func queue_reader(ch_collector_update chan updateInfo) {
 
 	time.Sleep(1000 * time.Millisecond)
@@ -74,7 +77,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	count := 0
 
 	for {
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(300 * time.Millisecond)
 
 		main_queue.reopen_reader()
 
@@ -100,7 +103,17 @@ func queue_reader(ch_collector_update chan updateInfo) {
 
 			cbor2individual(individual, cborObject)
 
-			//log.Printf("@2 individual=[%s]", individual)
+			//log.Printf("@2 individual=[%v]", individual)
+			uri := individual.getFirstResource("uri")
+			u_count, ok1 := individual.getFirstInt("u_count")
+			op_id, ok2 := individual.getFirstInt("op_id")
+
+			if ok1 == true && ok2 == true {
+				//log.Printf("@3 uri=[%s], u_count=[%d], op_id=[%d]", uri.data.(string), u_count, op_id)
+
+				new_info := updateInfo{uri.data.(string), op_id, u_count, nil}
+				ch_collector_update <- new_info
+			}
 
 			main_cs.commit_and_next(false)
 			count++
@@ -121,7 +134,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 }
 
 func collector_updateInfo(ch_collector_update chan updateInfo) {
-	log.Printf("spawn update info collector")
+	log.Printf("spawn: update info collector")
 	_last_opid := 0
 	_info_2_uid := make(map[string]updateInfo)
 	count_updates := 0
@@ -150,8 +163,8 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 			}
 			//				log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
 			if count_updates%1000 == 0 {
-				log.Printf("collector:update info: uid=%s opid=%d update_counter=%d, total count=%d", arg.uid, arg.opid, arg.update_counter, count_updates)
-
+				//log.Printf("collector:update info: uid=%s opid=%d update_counter=%d, total count=%d", arg.uid, arg.opid, arg.update_counter, count_updates)
+				log.Printf("collector:update info: total update count=%d", count_updates)
 			}
 		}
 	}
@@ -168,6 +181,6 @@ func main() {
 	http.HandleFunc("/ccus", wsHandler)
 
 	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
-		log.Fatal("ListenAndServe:", err)
+		log.Fatal("listen and serve:", err)
 	}
 }
