@@ -7,6 +7,7 @@ var webdriver = require('selenium-webdriver'),
 function choose(driver, type, valueToSearch, valueToChoose) {
     driver.findElement({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(valueToSearch)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute " + type + "");});
+    driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
         function () {
