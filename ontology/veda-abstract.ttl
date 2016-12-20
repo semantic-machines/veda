@@ -821,6 +821,13 @@ v-s:hasCurrency
   rdfs:range v-s:Currency ;
   rdfs:domain v-s:Measurable ;
 .
+v-s:hasUnitOfMeasure
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Unit of measure"@en ;
+  rdfs:label "Единицы измерения"@ru ;
+  rdfs:range v-s:UnitOfMeasure ;
+  rdfs:domain v-s:Measurable ;  
+.
 ### ------------------------------------------------------
 v-s:ClassifiedRus
   rdf:type owl:Class ;
