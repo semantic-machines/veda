@@ -116,6 +116,12 @@ module.exports = {
 		driver.findElement({css:'button[id="submit"]'}).click().thenCatch(function (e) {errrorHandlerFunction(e, "Cannot submit login/password")});
 		driver.findElement({css:'button[id="submit"]'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {}).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot press enter")});
 
+		driver.wait
+		(
+			webdriver.until.elementIsVisible(driver.findElement({id:'user-info'})),
+			FAST_OPERATION
+		).thenCatch(function (e) {errrorHandlerFunction(e, "Seems 'user-info' is not visible");});
+
 		// Проверям что мы залогинены корректно
 		driver.wait
 		(
