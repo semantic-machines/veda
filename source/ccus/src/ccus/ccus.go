@@ -58,6 +58,8 @@ var ch_update_info_in = make(chan updateInfo, 1000)
 
 func queue_reader(ch_collector_update chan updateInfo) {
 
+	time.Sleep(1000 * time.Millisecond)
+
 	main_queue_name := "individuals-flow"
 	var main_queue *Queue
 	var main_cs *Consumer
@@ -72,12 +74,14 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	count := 0
 
 	for {
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 
 		main_queue.reopen_reader()
 
 		t0 := time.Now()
-		log.Printf("@start prepare batch, count=%d", count)
+		count_0 := count
+
+		//log.Printf("@start prepare batch, count=%d", count)
 		for true {
 			data = main_cs.pop()
 			if data == "" {
@@ -101,12 +105,17 @@ func queue_reader(ch_collector_update chan updateInfo) {
 			main_cs.commit_and_next(false)
 			count++
 		}
-		t1 := time.Now()
-		delta := t1.Sub(t0).Seconds()
-		log.Printf("@end prepare batch, count=%d, total time=%v, cps=%.2f", count, t1.Sub(t0), float64(count)/delta)
+		count_1 := count
 
-		main_cs.sync()
-		log.Printf("@load from queue: count=%s", count)
+		delta_count := count_1 - count_0
+
+		if delta_count > 0 {
+			t1 := time.Now()
+			delta := t1.Sub(t0).Seconds()
+			log.Printf("processed batch, count=%d, total time=%v, cps=%.2f", delta_count, t1.Sub(t0), float64(delta_count)/delta)
+
+			main_cs.sync()
+		}
 		//ch_collector_update
 	}
 }
