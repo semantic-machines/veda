@@ -7,11 +7,11 @@ basic.getDrivers().forEach(function (drv) {
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
     //download
-    driver.findElement({id:"menu"}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
-    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Graph"]', basic.FAST_OPERATION);
-    driver.findElement({css:'li[id="menu"] li[resource="v-l:Graph"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'search' button");});
+    driver.findElement({id:'user-info'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'user-info'")});
+    //driver.findElement({css:'span[class="glyphicon glypicon-link"]'}).click()
+    driver.findElement({css:'a[href="#/graph/td:RomanKarpov"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-link'");});
     driver.findElement({id:'export-ttl'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'export-ttl' button");});
 
