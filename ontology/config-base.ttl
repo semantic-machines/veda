@@ -346,6 +346,8 @@ cfg:Event_3
  * parent_document_id = id of the document that triggered this event.
  */
 
+if (user_uri == 'cfg:VedaSystem') return; // #245
+
 //print('super_classes > '+toJson(super_classes));
 
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
@@ -385,6 +387,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     var journal_uri = getJournalUri(document['@']);
     var exist_journal = get_individual(ticket, journal_uri);
 //  print('+J5');
+    var user = get_individual(ticket, user_uri);
     if (exist_journal)
     {
 //    print('+J6');
@@ -412,10 +415,8 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
                 type: _Uri
             }];
         }
-
-    var user = get_individual(ticket, user_uri);
-
-    if (user['v-s:hasAppointment']) {
+  
+        if (user['v-s:hasAppointment']) {
           journal_record['v-s:actor'] = user['v-s:hasAppointment']
         }
 
@@ -437,7 +438,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
                 data: document['@'],
                 type: _Uri
             }],
-            'v-s:actor': [
+            'v-s:actor': user['v-s:hasAppointment']?user['v-s:hasAppointment']:[
             {
                 data: user_uri,
                 type: _Uri
@@ -458,7 +459,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
             data: 'v-s:DocumentCreated',
             type: _Uri
         }];
-        journal_record['v-s:actor'] = [
+        journal_record['v-s:actor'] = user['v-s:hasAppointment']?user['v-s:hasAppointment']:[
         {
             data: user_uri,
             type: _Uri
