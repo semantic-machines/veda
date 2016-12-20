@@ -190,39 +190,10 @@
   };
 
   // Datetime control
-/*  $.fn.veda_dateTime = function( options ) {
-    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
-      control = veda_literal_input.call(this, opts),
-      property_uri = opts.property_uri,
-      individual = opts.individual;
-
-    control.datetimepicker({
-      locale: "ru",
-      allowInputToggle: true,
-      format: "DD.MM.YYYY HH:mm",
-      sideBySide: true,
-      useCurrent: true
-    });
-
-    this.append(control);
-    return this;
-  };
-  $.fn.veda_dateTime.defaults = {
-    template: $("#datetime-control-template").html(),
-    parser: function (input) {
-      if (input) {
-        var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
-        return new Date(timestamp);
-      }
-      return null;
-    }
-  };
-*/
-
-  // Datetime control
-  $.fn.veda_dateTime = function (options) {
-    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+  var veda_dateTime = function (options) {
+    var opts = $.extend( {}, veda_dateTime.defaults, options ),
       control = $(opts.template),
+      format = opts.format,
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       property_uri = opts.property_uri,
@@ -236,7 +207,7 @@
     var singleValueHandler = function (doc_property_uri, values) {
       if (doc_property_uri === property_uri) {
         if (values.length) {
-          input.val( moment(values[0]).format("DD.MM.YYYY HH:mm") );
+          input.val( moment(values[0]).format(format) );
         } else {
           input.val("");
         }
@@ -248,7 +219,7 @@
         individual[property_uri] = [value];
       };
       if (individual.hasValue(property_uri)) {
-        input.val( moment(individual[property_uri][0]).format("DD.MM.YYYY HH:mm") );
+        input.val( moment(individual[property_uri][0]).format(format) );
       }
       individual.on("individual:propertyModified", singleValueHandler);
       control.one("remove", function () {
@@ -274,7 +245,7 @@
     control.datetimepicker({
       locale: "ru",
       allowInputToggle: true,
-      format: "DD.MM.YYYY HH:mm",
+      format: format,
       sideBySide: true,
       useCurrent: true
     });
@@ -308,6 +279,66 @@
       control.data("DateTimePicker").destroy();
     });
 
+    return control;
+  };
+  veda_dateTime.defaults = {
+    template: $("#datetime-control-template").html(),
+    parser: function (input) {
+      if (input) {
+        var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
+        return new Date(timestamp);
+      }
+      return null;
+    },
+    format: "DD.MM.YYYY HH:mm"
+  };
+
+  // Date control
+  $.fn.veda_date = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_date.defaults, options ),
+      control = veda_dateTime.call(this, opts);
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_date.defaults = {
+    template: $("#datetime-control-template").html(),
+    parser: function (input) {
+      if (input) {
+        var timestamp = moment(input, "DD.MM.YYYY").toDate();
+        return new Date(timestamp);
+      }
+      return null;
+    },
+    format: "DD.MM.YYYY"
+  };
+
+  // Time control
+  $.fn.veda_time = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_time.defaults, options ),
+      control = veda_dateTime.call(this, opts);
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_time.defaults = {
+    template: $("#datetime-control-template").html(),
+    parser: function (input) {
+      if (input) {
+        var timestamp = moment(input, "HH:mm").toDate();
+        var result = new Date(timestamp);
+        result.setFullYear(1970);
+        result.setMonth(0);
+        result.setDate(1);
+        return result;
+      }
+      return null;
+    },
+    format: "HH:mm"
+  };
+
+  // Time control
+  $.fn.veda_dateTime = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
+      control = veda_dateTime.call(this, opts);
     this.append(control);
     return this;
   };
@@ -319,8 +350,10 @@
         return new Date(timestamp);
       }
       return null;
-    }
+    },
+    format: "DD.MM.YYYY HH:mm"
   };
+
 
   // MULTILINGUAL INPUT CONTROLS
 

@@ -99,6 +99,32 @@ func NewIndividual() *Individual {
 	return p
 }
 
+func (ths *Individual) getFirstResource(predicate string) Resource {
+	var rs Resource
+
+	rss, err := ths.resources[predicate]
+	if err != true {
+		return rs
+	}
+	return rss[0]
+}
+
+func (ths *Individual) getFirstInt(predicate string) (int, bool) {
+	rss, err := ths.resources[predicate]
+	if err != true {
+		return 0, false
+	}
+
+	if rss[0]._type == Integer {
+		val := int(rss[0].data.(uint64))
+		return val, true
+	} else {
+		return 0, false
+	}
+}
+
+//////////////////////////////////////////////////////
+
 type Resource struct {
 	_type DataType
 	lang  LANG
@@ -136,9 +162,18 @@ func NewResource_int64(num int64) *Resource {
 	p.data = num
 	return p
 }
+
 func NewResource_uint64(num uint64) *Resource {
 	p := new(Resource)
 	p._type = Integer
 	p.data = num
 	return p
+}
+
+func (ths *Resource) getInt() (int, bool) {
+	if ths._type == Integer {
+		return int(ths.data.(uint64)), true
+	} else {
+		return 0, false
+	}
 }
