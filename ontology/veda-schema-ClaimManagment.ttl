@@ -19,10 +19,10 @@ v-s:Claim
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Deliverable2 ;  
-  rdfs:subClassOf v-s:Controlled ;  
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Contractual ;
-  rdfs:subClassOf v-s:Measurable ;  
+  rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Claim"@en ;
   rdfs:label "Претензия"@ru ;
 .
@@ -41,14 +41,14 @@ v-s:claimObject
   rdfs:domain v-s:Claim ;
 .
 v-s:claimRequirement
-  rdf:type owl:DataTypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:label "Claim requirement"@en ;
   rdfs:label "Требование претензии"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
 v-s:claimVolume
-  rdf:type owl:DataTypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:label "Claim volume"@en ;
   rdfs:label "Объем претензии"@ru ;
   rdfs:range xsd:decimal ;
