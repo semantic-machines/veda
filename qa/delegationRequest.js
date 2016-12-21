@@ -23,6 +23,7 @@ module.exports = {
 
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).sendKeys(valueToChoose)
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute rel=v-s:delegate ");});
+        driver.sleep(basic.FAST_OPERATION);
         driver.wait
         (
             function () {
@@ -60,4 +61,4 @@ module.exports = {
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save' button")})
 
     }
-}
+};
