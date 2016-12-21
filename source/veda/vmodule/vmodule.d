@@ -389,14 +389,14 @@ class VedaModule
                 log.trace("ERR! ex=%s", ex.msg);
             }
 
-            if (count_success_prepared % 1000 == 0)
-            {
-                log.trace("reopen db's and gc collect");
-                context.reopen_ro_subject_storage_db();
-                context.reopen_ro_acl_storage_db();
-                context.reopen_ro_ticket_manager_db();
-                GC.collect();
-            }
+            //if (count_success_prepared % 1000 == 0)
+            //{
+            //    log.trace("reopen db's and gc collect");
+            //    context.reopen_ro_subject_storage_db();
+            //    context.reopen_ro_acl_storage_db();
+            //    context.reopen_ro_ticket_manager_db();
+            //    GC.collect();
+            //}
         }
         if (count_readed != count_success_prepared)
             log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);

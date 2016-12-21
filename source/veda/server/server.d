@@ -174,9 +174,6 @@ class VedaServer : WSClient
             tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
             wait_starting_thread(P_MODULE.n_channel, tids);
 
-            //tids[ P_MODULE.ccus_channel ] = spawn(&signal_to_ccus_channel, text(P_MODULE.ccus_channel));
-            //wait_starting_thread(P_MODULE.ccus_channel, tids);
-
             tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
                                                      tids[ P_MODULE.statistic_data_accumulator ]);
             wait_starting_thread(P_MODULE.print_statistic, tids);

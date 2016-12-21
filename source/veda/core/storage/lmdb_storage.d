@@ -5,10 +5,10 @@ module veda.core.storage.lmdb_storage;
 
 private
 {
-    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid;
+    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.bind.lmdb_header, veda.onto.individual;
-    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define,
-           veda.core.storage.binlog_tools;
+    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define;
+    import veda.core.storage.binlog_tools;
 
     alias core.thread.Thread core_thread;
 }
@@ -44,7 +44,7 @@ public class LmdbStorage : Storage
     MDB_env             *env;
     public const string summ_hash_this_db_id;
     private BigInt      summ_hash_this_db;
-    private DBMode      mode;
+    protected DBMode      mode;
     private string      _path;
     string              db_name;
     string              parent_thread_name;
@@ -52,6 +52,8 @@ public class LmdbStorage : Storage
     long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
+    int                 max_count_record_in_memory = 10_000;
+    byte[ string ]            records_in_memory;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
@@ -133,6 +135,9 @@ public class LmdbStorage : Storage
             flush(1);
         mdb_env_close(env);
         db_is_open[ _path ] = false;
+        records_in_memory   = records_in_memory.init;
+        GC.collect();
+
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
     }
 
@@ -734,7 +739,21 @@ public class LmdbStorage : Storage
         }
 
         if (str !is null)
-            return str.dup;
+        {
+            string res = str.dup;
+
+            if (mode == DBMode.R)
+            {
+                records_in_memory[ uri ] = 1;
+
+                if (records_in_memory.length > max_count_record_in_memory)
+                {
+					log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    reopen_db();
+                }    
+            }
+            return res;            
+        }
         else
             return str;
     }

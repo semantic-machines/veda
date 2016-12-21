@@ -281,6 +281,17 @@ class Authorization : LmdbStorage
 
             mdb_txn_abort(txn_r);
 
+            if (mode == DBMode.R)
+            {
+                records_in_memory[ uri ] = 1;
+
+                if (records_in_memory.length > max_count_record_in_memory)
+                {
+					log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    reopen_db();
+                }    
+            }
+
             foreach (obj_key; object_groups.data.keys)
             {
                 RightSet permissions = permission_2_group.get(obj_key, null);
