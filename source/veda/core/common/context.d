@@ -380,15 +380,24 @@ interface Context
 
 
     /**
-       Вернуть детализированный список доступных прав для пользователя на указанномый uri
+       Вернуть детализированный список доступных прав для пользователя по указанному uri, список представляет собой массив индивидов
        Params:
                  ticket = указатель на обьект Ticket
                  uri    = uri субьекта
-                 trace  = функция делегат, собирающая результат выполнения функции
+                 trace_acl  = функция делегат, собирающая результат выполнения функции
      */
-    public void get_rights_origin(Ticket *ticket, string uri,
-                                  void delegate(string resource_group, string subject_group, string right) trace);
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri,
+                                           void delegate(string resource_group, string subject_group, string right) trace_acl);
 
+    /**
+       Вернуть список групп в которые входит индивид указанный по uri, список представляет собой индивид
+       Params:
+                 ticket = указатель на обьект Ticket
+                 uri    = uri субьекта
+                 trace_group  = функция делегат, собирающая результат выполнения функции
+     */
+    public void get_membership_from_acl(Ticket *ticket, string uri,
+                                        void delegate(string resource_group) trace_group);
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 
     /**

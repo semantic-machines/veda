@@ -412,7 +412,7 @@ class VedaModule
 
             bool is_superadmin = false;
 
-            void trace(string resource_group, string subject_group, string right)
+            void trace_acl(string resource_group, string subject_group, string right)
             {
                 if (subject_group == "cfg:SuperUser")
                     is_superadmin = true;
@@ -420,7 +420,7 @@ class VedaModule
 
             while (is_superadmin == false)
             {
-                context.get_rights_origin(&sticket, "cfg:SuperUser", &trace);
+                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", &trace_acl);
 
                 log.trace("child_process is_superadmin=%s", text(is_superadmin));
                 Thread.sleep(dur!("seconds")(1));

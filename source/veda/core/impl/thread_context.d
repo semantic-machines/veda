@@ -367,7 +367,7 @@ class PThreadContext : Context
         }
 
         //writeln ("@p ### uri=", uri, " ", request_acess);
-        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this, is_check_for_reload);
+        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this, is_check_for_reload, null, null);
 
         //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
         return request_acess == res;
@@ -642,13 +642,13 @@ class PThreadContext : Context
         {
             bool is_superadmin = false;
 
-            void trace(string resource_group, string subject_group, string right)
+            void trace_acl(string resource_group, string subject_group, string right)
             {
                 if (subject_group == "cfg:SuperUser")
                     is_superadmin = true;
             }
 
-            get_rights_origin(tr_ticket, "cfg:SuperUser", &trace);
+            get_rights_origin_from_acl(tr_ticket, "cfg:SuperUser", &trace_acl);
 
             if (is_superadmin)
             {
@@ -922,13 +922,19 @@ class PThreadContext : Context
 
     public ubyte get_rights(Ticket *ticket, string uri)
     {
-        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true);
+        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, null);
     }
 
-    public void get_rights_origin(Ticket *ticket, string uri,
-                                  void delegate(string resource_group, string subject_group, string right) trace)
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri,
+                                           void delegate(string resource_group, string subject_group, string right) trace_acl)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace_acl, null);
+    }
+
+    public void get_membership_from_acl(Ticket *ticket, string uri,
+                                        void delegate(string resource_group) trace_group)
+    {
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, trace_group);
     }
 
     public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit)
@@ -974,7 +980,7 @@ class PThreadContext : Context
             string     individual_as_cbor = get_from_individual_storage(uri);
             if (individual_as_cbor !is null && individual_as_cbor.length > 1)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
                 {
                     if (cbor2individual(&individual, individual_as_cbor) > 0)
                         individual.setStatus(ResultCode.OK);
@@ -1017,7 +1023,7 @@ class PThreadContext : Context
 
             foreach (uri; uris)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
                 {
                     Individual individual         = Individual.init;
                     string     individual_as_cbor = get_from_individual_storage(uri);
@@ -1063,7 +1069,7 @@ class PThreadContext : Context
 
         try
         {
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
             {
                 string individual_as_cbor = get_from_individual_storage(uri);
 
@@ -1299,7 +1305,7 @@ class PThreadContext : Context
                     if (is_api_request)
                     {
                         // для обновляемого индивида проверим доступность бита Update
-                        if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, this, true) != Access.can_update)
+                        if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, this, true, null, null) != Access.can_update)
                         {
                             res.result = ResultCode.Not_Authorized;
                             return res;
@@ -1325,7 +1331,7 @@ class PThreadContext : Context
                     {
                         if (rr.info == NEW_TYPE)
                         {
-                            if (acl_indexes.authorize(key, ticket, Access.can_create, this, true) != Access.can_create)
+                            if (acl_indexes.authorize(key, ticket, Access.can_create, this, true, null, null) != Access.can_create)
                             {
                                 res.result = ResultCode.Not_Authorized;
                                 return res;

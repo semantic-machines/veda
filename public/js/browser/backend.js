@@ -55,6 +55,15 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(ticket, params, success, fail);
   }
 
+  window.get_membership = function (ticket, uri, success, fail) {
+    var params = {
+      type: "GET",
+      url: "get_membership",
+      data: { "ticket": ticket, "uri": uri }
+    };
+    return call_server(ticket, params, success, fail);
+  }
+
   window.authenticate = function (login, password, success, fail) {
     var params = {
       type: "GET",

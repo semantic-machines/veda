@@ -73,6 +73,9 @@ interface VedaStorageRest_API {
     @path("get_rights_origin") @method(HTTPMethod.GET)
     Json[] get_rights_origin(string ticket, string uri);
 
+    @path("get_membership") @method(HTTPMethod.GET)
+    Json get_membership(string ticket, string uri);
+
     @path("authenticate") @method(HTTPMethod.GET)
     Ticket authenticate(string login, string password);
 
@@ -281,9 +284,44 @@ class VedaStorageRest : VedaStorageRest_API
             if ((right_res & Access.can_create) > 0)
                 indv_res.addResource("v-s:canCreate", Resource(true));
 
-
             res = individual_to_json(indv_res);
             return res;
+        }
+        finally
+        {
+        }
+    }
+
+    Json get_membership(string _ticket, string uri)
+    {
+        Json     json;
+
+        Ticket     *ticket;
+        ResultCode rc;
+
+        try
+        {
+            ticket = context.get_ticket(_ticket);
+            if (ticket.result != ResultCode.OK)
+                throw new HTTPStatusException(ticket.result);
+
+            Individual indv_res = Individual.init;
+            indv_res.uri = "_";
+            indv_res.addResource(rdf__type,
+                                 Resource(DataType.Uri, "v-s:Membership"));
+            indv_res.addResource("v-s:resource",
+                                 Resource(DataType.Uri, uri));
+
+            void trace_group(string resource_group)
+            {
+                indv_res.addResource("v-s:memberOf",
+                                     Resource(DataType.Uri, resource_group));
+            }
+
+            context.get_membership_from_acl(ticket, uri, &trace_group);
+
+            json = individual_to_json(indv_res);
+            return json;
         }
         finally
         {
@@ -306,7 +344,7 @@ class VedaStorageRest : VedaStorageRest_API
                 throw new HTTPStatusException(ticket.result);
 
 
-            void trace(string resource_group, string subject_group, string right)
+            void trace_acl(string resource_group, string subject_group, string right)
             {
                 Individual indv_res = Individual.init;
 
@@ -322,7 +360,7 @@ class VedaStorageRest : VedaStorageRest_API
                 res ~= indv_res;
             }
 
-            context.get_rights_origin(ticket, uri, &trace);
+            context.get_rights_origin_from_acl(ticket, uri, &trace_acl);
 
 
             json = Json[].init;

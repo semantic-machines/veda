@@ -44,8 +44,10 @@ class Authorization : LmdbStorage
 
     ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
                                                                                                                                string subject_group,
-                                                                                                                               string right) trace =
-                        null)
+                                                                                                                               string right)
+                    trace_acl,
+                    void delegate(string resource_group) trace_group
+                    )
     {
         if (db_is_opened == false)
             open_db();
@@ -234,6 +236,11 @@ class Authorization : LmdbStorage
 
             foreach (object_group; object_groups.data)
             {
+                if (trace_group !is null)
+                {
+                    trace_group(object_group.id);
+                }
+
                 string acl_key;
                 if (filter_value !is null)
                     acl_key = permission_prefix ~ filter_value ~ object_group.id;
@@ -287,9 +294,9 @@ class Authorization : LmdbStorage
 
                 if (records_in_memory.length > max_count_record_in_memory)
                 {
-					log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
                     reopen_db();
-                }    
+                }
             }
 
             foreach (obj_key; object_groups.data.keys)
@@ -334,9 +341,9 @@ class Authorization : LmdbStorage
                                         res = cast(ubyte)(res | set_bit);
                                         //log.trace("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res));
 
-                                        if (trace !is null)
+                                        if (trace_acl !is null)
                                         {
-                                            trace(obj_key, perm_key, access_list_predicates[ idx ]);
+                                            trace_acl(obj_key, perm_key, access_list_predicates[ idx ]);
                                         }
                                     }
                                 }
