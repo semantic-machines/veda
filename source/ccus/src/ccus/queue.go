@@ -226,7 +226,7 @@ func (ths *Consumer) get_info() bool {
 
 		ths.first_element = uint64(nn)
 
-		log.Printf("@ ch[4]=%s", ch[4])
+		//log.Printf("@ ch[4]=%s", ch[4])
 
 		nn, err = strconv.ParseInt(ch[4], 10, 0)
 		if err != nil {

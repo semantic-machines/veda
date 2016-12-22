@@ -32,6 +32,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("wsHandler, err=%s", err)
 		return
 	}
+
 	NewCcusConn(ws, ch_update_info_in)
 }
 
@@ -195,9 +196,10 @@ func main() {
 	http.HandleFunc("/ccus", wsHandler)
 
 	g_count_updates = expvar.NewInt("count_updates")
-	g_count_ws_sessions = expvar.NewInt("g_count_ws_sessions")
+	g_count_ws_sessions = expvar.NewInt("count_ws_sessions")
 
+	log.Printf("Listen and serve: %s", WS_LISTEN_ADDR)
 	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
-		log.Fatal("listen and serve:", err)
+		log.Fatal("ERR! listen and serve:", err)
 	}
 }
