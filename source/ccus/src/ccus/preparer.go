@@ -293,7 +293,7 @@ func (pc *ccusConn) receiver() {
 	var messageType int
 	var r io.Reader
 
-	ch_ws_counter <- 1
+	ch_ws_counter <- infoConn{SPAWN, pc.ws.RemoteAddr()}
 
 	log.Printf("ws[%s]:spawn receiver", pc.ws.RemoteAddr())
 
@@ -336,6 +336,8 @@ func (pc *ccusConn) receiver() {
 		msg = <-ch_prepare_out
 		//log.Printf("ws[%s]:receiver:ret msg=[%s]", pc.ws.RemoteAddr(), msg)
 
+		ch_ws_counter <- infoConn{REQUEST, pc.ws.RemoteAddr()}
+
 		if msg != "" {
 
 			if msg == "EXIT" {
@@ -359,7 +361,7 @@ func (pc *ccusConn) receiver() {
 		}
 	}
 
-	ch_ws_counter <- -1
+	ch_ws_counter <- infoConn{DROP, pc.ws.RemoteAddr()}
 	log.Printf("ws[%s]:receiver:stop child threads, err=%s", pc.ws.RemoteAddr(), err1)
 
 	ch_timer_control <- control_Close

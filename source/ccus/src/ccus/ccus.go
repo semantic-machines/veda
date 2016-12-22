@@ -4,6 +4,7 @@ import (
 	"cbor"
 	"github.com/gorilla/websocket"
 	"log"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -15,6 +16,19 @@ import (
 const (
 	WS_LISTEN_ADDR string = ":8088"
 )
+
+type ConnActivity uint8
+
+const (
+	SPAWN   ConnActivity = 1
+	DROP    ConnActivity = 2
+	REQUEST ConnActivity = 3
+)
+
+type infoConn struct {
+	activity ConnActivity
+	addr     net.Addr
+}
 
 type updateInfo struct {
 	uid            string
@@ -36,7 +50,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	NewCcusConn(ws, ch_update_info_in)
 }
 
-var ch_ws_counter = make(chan int, 1000)
+var ch_ws_counter = make(chan infoConn, 1000)
 
 func goroutines() interface{} {
 	return runtime.NumGoroutine()
@@ -44,25 +58,48 @@ func goroutines() interface{} {
 
 //  collector_stat - routine that collects data on the number of current WS connections.
 //  send to [ch1 chan int], +1 or -1
-func collector_stat(ch1 chan int) {
+func collector_stat(ch1 chan infoConn) {
 	log.Printf("spawn stat collector")
+
+	var sessions map[net.Addr]int = make(map[net.Addr]int)
 
 	count_spawned := 0
 	count_closed := 0
+	count_request := 0
+	t0 := time.Now()
 
 	for {
-		gg := <-ch1
-		//log.Printf("stat collector: (%d)", gg)
+		var gg infoConn
 
-		if gg > 0 {
-			count_spawned = count_spawned + gg
-		} else {
-			count_closed = count_closed - gg
+		select {
+
+		case gg = <-ch1:
+			if gg.activity == REQUEST {
+				sessions[gg.addr] = sessions[gg.addr] + 1
+				count_request++
+			} else if gg.activity == SPAWN {
+				sessions[gg.addr] = 0
+				count_spawned++
+				g_count_ws_sessions.Set(int64(len(sessions)))
+				log.Printf("stat collector: ws spawn: total count ws connections: %d (%d)", len(sessions), count_spawned)
+			} else if gg.activity == DROP {
+				delete(sessions, gg.addr)
+				count_closed++
+				g_count_ws_sessions.Set(int64(len(sessions)))
+				log.Printf("stat collector: ws drop: total count ws connections: %d (%d)", len(sessions), count_spawned)
+			}
+			break
+
+		default:
+			time.Sleep(100 * time.Millisecond)
+			t1 := time.Now()
+			if t1.Sub(t0).Seconds() > 10 {
+				count_request = 0
+				t0 = time.Now()
+			}
+			g_count_request.Set(int64(count_request))
 		}
 
-		g_count_ws_sessions.Set(int64(count_spawned - count_closed))
-
-		log.Printf("stat collector: total count ws connections: %d (%d)", count_spawned-count_closed, gg)
 	}
 }
 
@@ -184,9 +221,9 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 
 var g_count_updates *expvar.Int
 var g_count_ws_sessions *expvar.Int
+var g_count_request *expvar.Int
 
 func main() {
-
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
 	go collector_updateInfo(ch_update_info_in)
@@ -197,6 +234,7 @@ func main() {
 
 	g_count_updates = expvar.NewInt("count_updates")
 	g_count_ws_sessions = expvar.NewInt("count_ws_sessions")
+	g_count_request = expvar.NewInt("count_request")
 
 	log.Printf("Listen and serve: %s", WS_LISTEN_ADDR)
 	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
