@@ -1317,6 +1317,38 @@ $('#back', template).on('click', function () {
   """ ;
 .
 
+s-wf:ComplexRouteTest_Template
+    rdfs:isDefinedBy s-wf: ;
+    rfs:type v-ui:ClassTemplate;
+    rdfs:label "Тестовый шаблон комплексного маршурута"@ru;
+    rdfs:label "Complex route test template"@en;
+    v-ui:forClass s-wf:ComplexRouteStartForm ;
+    v-ui:template """
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <span about="s-wf:" property="rdfs:label" />
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="#/@"><span property="@">ID</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
+        </div>
+    </div>
+</div>
+<script>
+    $('#send', template).on('click', function () {
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+      });
+</script>
+""" ;
+.
+
 #--------------------------------------------------------------------------------------
 
 s-wf:tr_taken_decision
