@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	//"strconv"
+	"expvar"
+	"runtime"
 )
 
 const (
@@ -34,6 +37,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 var ch_ws_counter = make(chan int, 1000)
 
+func goroutines() interface{} {
+	return runtime.NumGoroutine()
+}
+
 //  collector_stat - routine that collects data on the number of current WS connections.
 //  send to [ch1 chan int], +1 or -1
 func collector_stat(ch1 chan int) {
@@ -51,6 +58,8 @@ func collector_stat(ch1 chan int) {
 		} else {
 			count_closed = count_closed - gg
 		}
+
+		g_count_ws_sessions.Set(int64(count_spawned - count_closed))
 
 		log.Printf("stat collector: total count ws connections: %d (%d)", count_spawned-count_closed, gg)
 	}
@@ -162,6 +171,8 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 				//log.Printf("collector:set last_opid=%d", _last_opid)
 			}
 			//				log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
+			g_count_updates.Set(int64(count_updates))
+
 			if count_updates%1000 == 0 {
 				//log.Printf("collector:update info: uid=%s opid=%d update_counter=%d, total count=%d", arg.uid, arg.opid, arg.update_counter, count_updates)
 				log.Printf("collector:update info: total update count=%d", count_updates)
@@ -169,6 +180,9 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 		}
 	}
 }
+
+var g_count_updates *expvar.Int
+var g_count_ws_sessions *expvar.Int
 
 func main() {
 
@@ -179,6 +193,9 @@ func main() {
 	go queue_reader(ch_update_info_in)
 
 	http.HandleFunc("/ccus", wsHandler)
+
+	g_count_updates = expvar.NewInt("count_updates")
+	g_count_ws_sessions = expvar.NewInt("g_count_ws_sessions")
 
 	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
 		log.Fatal("listen and serve:", err)

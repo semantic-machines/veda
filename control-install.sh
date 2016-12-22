@@ -4,7 +4,7 @@
 
 DMD_VER=2.072.1
 DUB_VER=1.0.0
-GO_VER=go1.7
+GO_VER=go1.7.4
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
@@ -37,13 +37,13 @@ LIB_NAME[11]="automake"
 LIB_OK="Status: install ok installed"
 F_UL=0
 
-# install golang 1.7 and dependency
-
+# install golang and dependency
 if ! go version | grep $GO_VER ; then    
     mkdir tmp
     cd tmp
-    wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz
-    tar -xvf go1.7.linux-amd64.tar.gz
+    wget https://storage.googleapis.com/golang/go1.7.4.linux-amd64.tar.gz
+    tar -xvf go1.7.4.linux-amd64.tar.gz
+    sudo rm -r /usr/local/go
     sudo mv go /usr/local
     export GOROOT=/usr/local/go
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
@@ -53,6 +53,7 @@ fi
 
 export GOPATH=$HOME/go
 go get github.com/gorilla/websocket
+go get github.com/divan/expvarmon
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go 
 
