@@ -39,6 +39,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.logout(driver);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     delegationRequest.createRequestDelegation(driver, 'Администратор4');
+    driver.sleep(basic.FAST_OPERATION);
 
     basic.logout(driver);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
