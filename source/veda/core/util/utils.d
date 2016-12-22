@@ -526,7 +526,7 @@ string to_lower_and_replace_delimeters(string in_text)
             out_text[ i ] = std.ascii.toLower(cc);
     }
 
-    return cast(immutable)out_text;
+    return out_text.idup;
 }
 
 ////////////

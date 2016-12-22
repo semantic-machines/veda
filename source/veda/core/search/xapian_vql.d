@@ -565,7 +565,7 @@ class XapianVQL
                     return err;
                 }
 
-                string subject_id = cast(immutable)data_str[ 0..*data_len ].dup;
+                string subject_id = data_str[ 0..*data_len ].idup;
 
                 if (trace_msg[ 201 ] == 1)
                     log.trace("found subject_id:[%s]", subject_id);

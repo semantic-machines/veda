@@ -42,13 +42,15 @@ class Authorization : LmdbStorage
         //writeln("ACL:CACHE:RESET");
     }
 
-    ubyte authorize(string uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                                               string subject_group,
-                                                                                                                               string right)
+    ubyte authorize(string _uri, Ticket *ticket, ubyte request_access, Context context, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                                string subject_group,
+                                                                                                                                string right)
                     trace_acl,
                     void delegate(string resource_group) trace_group
                     )
     {
+        string uri = _uri.idup;
+
         if (db_is_opened == false)
             open_db();
 
@@ -288,16 +290,16 @@ class Authorization : LmdbStorage
 
             mdb_txn_abort(txn_r);
 
-            //if (mode == DBMode.R)
-            //{
-            //    records_in_memory[ uri ] = 1;
+            if (mode == DBMode.R)
+            {
+                records_in_memory[ uri ] = 1;
 
-            //    if (records_in_memory.length > max_count_record_in_memory)
-            //    {
-            //        log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-            //        reopen_db();
-            //    }
-            //}
+                if (records_in_memory.length > max_count_record_in_memory)
+                {
+	                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    reopen_db();
+                }
+            }
 
             foreach (obj_key; object_groups.data.keys)
             {

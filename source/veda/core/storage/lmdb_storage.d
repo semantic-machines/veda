@@ -44,7 +44,7 @@ public class LmdbStorage : Storage
     MDB_env             *env;
     public const string summ_hash_this_db_id;
     private BigInt      summ_hash_this_db;
-    protected DBMode      mode;
+    protected DBMode    mode;
     private string      _path;
     string              db_name;
     string              parent_thread_name;
@@ -52,8 +52,8 @@ public class LmdbStorage : Storage
     long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
-    //int                 max_count_record_in_memory = 10_000;
-    //byte[ string ]            records_in_memory;
+    int                 max_count_record_in_memory = 10_000;
+    byte[ string ]      records_in_memory;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
@@ -135,8 +135,8 @@ public class LmdbStorage : Storage
             flush(1);
         mdb_env_close(env);
         db_is_open[ _path ] = false;
-        //records_in_memory   = records_in_memory.init;
-        //GC.collect();
+        records_in_memory.clear;
+        GC.collect();
 
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
     }
@@ -646,8 +646,10 @@ public class LmdbStorage : Storage
             return false;
     }
 
-    public string find(string uri, bool return_value = true)
+    public string find(string _uri, bool return_value = true)
     {
+        string uri = _uri.idup;
+
         if (db_is_opened == false)
             open_db();
 
@@ -744,15 +746,15 @@ public class LmdbStorage : Storage
 
             if (mode == DBMode.R)
             {
-                //records_in_memory[ uri ] = 1;
+                records_in_memory[ uri ] = 1;
 
-                //if (records_in_memory.length > max_count_record_in_memory)
-                //{
-				//	log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                //    reopen_db();
-                //}    
+                if (records_in_memory.length > max_count_record_in_memory)
+                {
+                	log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    reopen_db();
+                }
             }
-            return res;            
+            return res;
         }
         else
             return str;
