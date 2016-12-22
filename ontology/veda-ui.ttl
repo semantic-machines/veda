@@ -205,7 +205,6 @@ v-ui:ObjectPropertySpecification
   rdfs:label "Object property specification"@en ;
   rdfs:label "Спецификация объектного свойства"@ru ;
 .
-# Data source
 v-ui:rangeRestriction
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
@@ -228,7 +227,6 @@ v-ui:sort
   rdfs:label "Sorting"@en ;
   rdfs:range xsd:string ;
 .
-# Trees
 v-ui:treeRoot
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
@@ -281,21 +279,6 @@ v-ui:treeDisplayedProperty
   rdfs:range owl:ObjectProperty ;
   rdfs:range owl:DatatypeProperty ;
 .
-# Files
-v-ui:acceptedFileType
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "Разрешенный тип файла"@ru ;
-  rdfs:label "Accepted file type"@en ;
-  rdfs:range xsd:string ;
-.
-v-ui:maxFileSize
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-ui:ObjectPropertySpecification ;
-  rdfs:label "Максимальный размер файла (Mb)"@ru ;
-  rdfs:label "Max file size (Mb)"@en ;
-  rdfs:range xsd:integer ;
-.
 v-ui:Language
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -342,7 +325,7 @@ v-ui:SystemPropertiesTemplate
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:created" property="rdfs:label"></em>
-      <veda-control property="v-s:created" data-type="date" class="-view -edit search"></veda-control>
+      <veda-control property="v-s:created" data-type="dateTime" class="-view -edit search"></veda-control>
       <div about="@" property="v-s:created" class="view edit -search"></div>
       <div property="v-s:created" class="-view -edit search"></div>
     </div>
@@ -354,7 +337,7 @@ v-ui:SystemPropertiesTemplate
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:edited" property="rdfs:label"></em>
-      <veda-control data-type="date" property="v-s:edited" class="-view -edit search"></veda-control>
+      <veda-control data-type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
       <div about="@" property="v-s:edited" class="view edit -search"></div>
       <div property="v-s:edited" class="-view -edit search"></div>
     </div>
@@ -824,12 +807,20 @@ v-ui:RabbitHole
   var text = "<span>" + mkLabel(individual) + "</span>";
   if (individual.hasValue("v-s:backwardTarget")) {
     travel(individual["v-s:backwardTarget"][0]);
+  } else if (individual.hasValue("v-s:parent")) {
+    travel(individual["v-s:parent"][0]);
   }
   $("small", template).append(text);
   function travel(individual) {
     text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " &rarr; " + text;
-    if (!individual.hasValue("v-s:backwardTarget")) { return; }
-    travel(individual['v-s:backwardTarget'][0]);
+    if (!individual.hasValue("v-s:parent") && !individual.hasValue("v-s:backwardTarget")) { return; }
+
+    if (individual.hasValue("v-s:backwardTarget")) {
+    travel(individual["v-s:backwardTarget"][0]);
+  } else if (individual.hasValue("v-s:parent")) {
+    travel(individual["v-s:parent"][0]);
+  }
+
   }
   function mkLabel(individual) {
     return individual["rdf:type"][0]["rdfs:label"].join(" ")// + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
@@ -864,19 +855,19 @@ v-ui:SavedSearchTemplate
   v-ui:forClass v-s:SavedSearch ;
   v-ui:template """
   <div>
-        <em about="rdfs:label" property="rdfs:label"></em>
-        <div property="rdfs:label"></div>
-        <div class="row">
-          <div class="col-md-12">
-               <em about="v-s:query" property="rdfs:label"></em>
-               <div property="v-s:query"></div>
-          </div>
-        </div>
-        <br/>
-        <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-        <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-        <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label"></div>
+    <div class="row">
+      <div class="col-md-12">
+           <em about="v-s:query" property="rdfs:label"></em>
+           <div property="v-s:query"></div>
+      </div>
+    </div>
+    <br/>
+    <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
   """ ;
 .
