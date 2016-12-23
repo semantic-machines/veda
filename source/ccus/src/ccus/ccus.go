@@ -65,7 +65,7 @@ func collector_stat(ch1 chan infoConn) {
 
 	count_spawned := 0
 	count_closed := 0
-	count_request := 0
+	dt_count_request := 0
 	t0 := time.Now()
 
 	for {
@@ -76,7 +76,7 @@ func collector_stat(ch1 chan infoConn) {
 		case gg = <-ch1:
 			if gg.activity == REQUEST {
 				sessions[gg.addr] = sessions[gg.addr] + 1
-				count_request++
+				dt_count_request++
 			} else if gg.activity == SPAWN {
 				sessions[gg.addr] = 0
 				count_spawned++
@@ -94,10 +94,10 @@ func collector_stat(ch1 chan infoConn) {
 			time.Sleep(100 * time.Millisecond)
 			t1 := time.Now()
 			if t1.Sub(t0).Seconds() > 10 {
-				count_request = 0
+				dt_count_request = 0
 				t0 = time.Now()
 			}
-			g_count_request.Set(int64(count_request))
+			g_count_request.Set(int64(dt_count_request))
 		}
 
 	}
@@ -123,16 +123,30 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	data := ""
 	count := 0
 
+	dt_count := 0
+
+	dt_count_t0 := time.Now()
+	dt_count_0 := count
+
 	for {
 		time.Sleep(300 * time.Millisecond)
 
 		main_queue.reopen_reader()
 
-		t0 := time.Now()
-		count_0 := count
+		batch_t0 := time.Now()
+		batch_count_0 := count
 
 		//log.Printf("@start prepare batch, count=%d", count)
 		for true {
+
+			dt_count_t1 := time.Now()
+			if dt_count_t1.Sub(dt_count_t0).Seconds() > 10 {
+				dt_count = count - dt_count_0
+				dt_count_0 = count
+				dt_count_t0 = dt_count_t1
+				g_dt_count_updates.Set(int64(dt_count))
+			}
+
 			data = main_cs.pop()
 			if data == "" {
 				break
@@ -165,14 +179,15 @@ func queue_reader(ch_collector_update chan updateInfo) {
 			main_cs.commit_and_next(false)
 			count++
 		}
-		count_1 := count
 
-		delta_count := count_1 - count_0
+		g_count_updates.Set(int64(count))
+		t1 := time.Now()
 
-		if delta_count > 0 {
-			t1 := time.Now()
-			delta := t1.Sub(t0).Seconds()
-			log.Printf("processed batch, count=%d, total time=%v, cps=%.2f", delta_count, t1.Sub(t0), float64(delta_count)/delta)
+		batch_count_1 := count
+		batch_dt_count := batch_count_1 - batch_count_0
+		if batch_dt_count > 0 {
+			delta_t := t1.Sub(batch_t0).Seconds()
+			log.Printf("processed batch, count=%d, total time=%v, cps=%.2f", batch_dt_count, t1.Sub(batch_t0), float64(batch_dt_count)/delta_t)
 
 			main_cs.sync()
 		}
@@ -208,8 +223,7 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 				_last_opid = arg.opid
 				//log.Printf("collector:set last_opid=%d", _last_opid)
 			}
-			//				log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
-			g_count_updates.Set(int64(count_updates))
+			//	log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
 
 			if count_updates%1000 == 0 {
 				//log.Printf("collector:update info: uid=%s opid=%d update_counter=%d, total count=%d", arg.uid, arg.opid, arg.update_counter, count_updates)
@@ -219,6 +233,7 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 	}
 }
 
+var g_dt_count_updates *expvar.Int
 var g_count_updates *expvar.Int
 var g_count_ws_sessions *expvar.Int
 var g_count_request *expvar.Int
@@ -232,6 +247,7 @@ func main() {
 
 	http.HandleFunc("/ccus", wsHandler)
 
+	g_dt_count_updates = expvar.NewInt("dt_count_updates")
 	g_count_updates = expvar.NewInt("count_updates")
 	g_count_ws_sessions = expvar.NewInt("count_ws_sessions")
 	g_count_request = expvar.NewInt("count_request")
