@@ -1023,7 +1023,7 @@
         fileInput.click();
       });
       var files = [], n;
-      var uploaded = function (file, acceptedFileType, maxFileSize, path, uri) {
+      var uploaded = function (file, path, uri) {
         var f = new veda.IndividualModel();
         f["rdf:type"] = range;
         f["v-s:fileName"] = [ file.name ];
