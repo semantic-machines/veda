@@ -98,7 +98,7 @@ module.exports = {
         }
         if (output != "-") {
             driver.findElement({css:'.state-io-condition-output[colored-to="' + output + '"]'})
-                .thenCatch(function (e) {basic.errorHandler(e, "Seems 'state-task' button is not located/" + output);});
+                .thenCatch(function (e) {basic.errorHandler(e, "Seems 'output' button is not located/" + output);});
         }
     }
 };

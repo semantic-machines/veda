@@ -1149,6 +1149,15 @@ if (doc) {
     routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
   }
 
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {
+      routes['coordination1'][simple+'participant'] = [
+              new veda.IndividualModel("td:RomanKarpov-Analyst1"),
+              new veda.IndividualModel("td:AndreyBychin-Analyst2")];
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+    }
+
   stages.forEach(function(stage) {
     var routeid = complex+stage;
     individual[routeid] = [routes[stage]];
