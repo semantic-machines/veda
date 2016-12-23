@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #write out current crontab & filter previous "veda-trigger-..." entries
-crontab -l | grep -vE "veda-trigger-" > current
+crontab -l | grep -vE "veda-trigger-[a-z]*\.sh" > current
 #echo new entries into cron file
 echo "00 * * * * `pwd`/veda-trigger-hourly.sh" >> current
 echo "10 0 * * * `pwd`/veda-trigger-daily.sh" >> current
