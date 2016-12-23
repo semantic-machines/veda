@@ -1156,8 +1156,8 @@ v-ui:PSAttachmentThing
 
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для файла 2"@ru ;
-  rdfs:label "File template 2"@en ;
+  rdfs:label "Шаблон для файла"@ru ;
+  rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
@@ -1177,6 +1177,56 @@ v-ui:FileTemplateWithComment
       <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
     </div>
   </div>
+</div>
+<script>
+  var fn = individual["v-s:fileName"][0];
+  if (typeof fn === "string" || fn instanceof String) {
+    var idx = fn.lastIndexOf("."),
+        ext = fn.substr(idx + 1);
+    $("span#icon", template).text(ext);
+  }
+  //# sourceURL=v-ui:FileTemplateWithComment
+</script>
+  """ ;
+.
+v-ui:FileTemplateWithComment2
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для файла 2"@ru ;
+  rdfs:label "File template 2"@en ;
+  #v-ui:forClass v-s:File ;
+  v-ui:template """
+<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
+  <div class="panel-body">
+
+    <!--Remove-->
+    <em about="v-s:fileUri" property="rdfs:label"></em>
+    <veda-control data-type="string" property="v-s:fileUri"></veda-control>
+    <em about="v-s:filePath" property="rdfs:label"></em>
+    <veda-control data-type="string" property="v-s:filePath"></veda-control>
+    <!--/Remove-->
+
+    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+    <strong property="rdfs:comment" class="view -edit -search"></strong>
+    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+    <br>
+    <hr class="margin-sm view -edit -search">
+    <div>
+      <span id="icon" class="label label-primary"></span>
+      <a href="/files/@">
+        <span about="@" property="v-s:fileName"></span>
+      </a>
+    </div>
+    <div class="view -edit -search" style="font-style:italic">
+      <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
+    </div>
+  </div>
+
+  <!--Remove-->
+  <div class="panel-footer">
+    <button class="action btn btn-success" id="save">Save</button>
+  </div>
+  <!--/Remove-->
+
 </div>
 <script>
   var fn = individual["v-s:fileName"][0];
