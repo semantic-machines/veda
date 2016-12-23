@@ -23,6 +23,7 @@ v-s:Claim
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Claim"@en ;
   rdfs:label "Претензия"@ru ;
 .

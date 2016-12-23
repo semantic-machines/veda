@@ -884,6 +884,27 @@ if (doc) {
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'deadlineDays'] = [10];
   }
+  
+//--------------------------------------------------------------------------------Претензия-------
+  if (doc['rdf:type'][0].id === "mnd-s:Claim") {
+    routes['informing'][simple+'visible'] = [true];
+    routes['informing'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    routes['sign'][simple+'deadlineDays'] = [5];
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'deadlineDays'] = [5];
+    routes['review'][simple+'visible'] = [true];
+    routes['review'][simple+'editable'] = [true];
+    routes['review'][simple+'deadlineDays'] = [3];
+  }      
 //-------------------------------------------------------------------------------------------------------------------------------------------Заявка на контракт
   if (doc['rdf:type'][0].id === "mnd-s:ContractRequest") {
     if (doc.hasValue('v-s:hasBudgetCategory') && (
@@ -3243,3 +3264,5 @@ s-wf:complexRouteRule
   rdfs:isDefinedBy s-wf: ;
   v-wf:grouping "1";
 .
+
+
