@@ -247,7 +247,7 @@ class VedaStorageRest : VedaStorageRest_API
                 }
                 else
                 {
-                	log.trace ("ERR! get_file:indvalid individual of v-s:File, not content predicate v-s:filePath or v-s:fileUri: %s", file_info);
+                	log.trace ("ERR! get_file:incomplete individual of v-s:File, It does not contain predicate v-s:filePath or v-s:fileUri: %s", file_info);
                 }
             }
         }
