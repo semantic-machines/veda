@@ -733,3 +733,9 @@ d:Bychina_create_Person
   v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
   v-s:canCreate "true"^^xsd:boolean ;
 .
+
+d:test-field-v-s:classFrom
+  rdf:type v-s:Variable ;
+  v-s:classFrom cfg:VedaSystem;
+  rdfs:label "этот индивид служит для добавления в поиск поля v-s:classFrom, нужно для тестов" ;
+.
