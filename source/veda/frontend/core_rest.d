@@ -178,7 +178,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     void fileManager(HTTPServerRequest req, HTTPServerResponse res)
     {
-        //writeln("@v req.path=", req.path);
+        //log.trace ("@v req.path=%s", req.path);
 
         string uri;
         // uri субьекта
@@ -194,7 +194,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         // найдем в хранилище указанного субьекта
 
-        //writeln("@v uri=", uri);
+        //log.trace("@v uri=%s", uri);
         auto   ticket_ff = "ticket" in req.query;
         string _ticket;
 
@@ -203,7 +203,7 @@ class VedaStorageRest : VedaStorageRest_API
         else
             _ticket = req.cookies.get("ticket", "");
 
-        //writeln("@v ticket=", _ticket);
+        //log.trace("@v ticket=%s", _ticket);
 
         if (uri.length > 3 && _ticket !is null)
         {
@@ -216,7 +216,7 @@ class VedaStorageRest : VedaStorageRest_API
             {
                 file_info = context.get_individual(ticket, uri);
 
-                //writeln("@v file_info=", file_info);
+                //log.trace("@v file_info=%s", file_info);
                 auto fileServerSettings = new HTTPFileServerSettings;
                 fileServerSettings.encodingFileExtension = [ "jpeg":".JPG" ];
 
@@ -237,13 +237,17 @@ class VedaStorageRest : VedaStorageRest_API
 
                     string originFileName = file_info.getFirstResource(veda_schema__fileName).get!string;
 
-                    //writeln("@v originFileName=", originFileName);
-                    //writeln("@v getMimeTypeForFile(originFileName)=", getMimeTypeForFile(originFileName));
+                    //log.trace("@v originFileName=%s", originFileName);
+                    //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
                     res.headers[ "Content-Disposition" ] = "attachment; filename=\"" ~ originFileName ~ "\"";
 
                     res.contentType = getMimeTypeForFile(originFileName);
                     dg(req, res);
+                }
+                else
+                {
+                	log.trace ("ERR! get_file:indvalid individual of v-s:File, not content predicate v-s:filePath or v-s:fileUri: %s", file_info);
                 }
             }
         }
