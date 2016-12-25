@@ -7,9 +7,7 @@ function openMsg(driver, decision) {
     basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
-    var container = driver.findElement({id:'main'});
-    var content = container.innerHTML;
-    container.innerHTML = content;
+    driver.navigate().refresh();
     driver.findElement({css:'a[property="rdfs:label"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Согласовать' button");});
     if(decision === '0') {
