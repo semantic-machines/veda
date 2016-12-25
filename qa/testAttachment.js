@@ -7,10 +7,12 @@ basic.getDrivers().forEach(function (drv) {
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
     //download
-    driver.findElement({id:'user-info'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'user-info'")});
-    //driver.findElement({css:'span[class="glyphicon glypicon-link"]'}).click()
-    driver.findElement({css:'a[href="#/graph/td:RomanKarpov"]'}).click()
+    basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
+    driver.findElement({id:'submit'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
+    driver.findElement({css:'a[href="#/cfg:Administrator"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Администратор'");});
+    driver.findElement({css:'a[href="#/graph/cfg:Administrator"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-link'");});
     driver.findElement({id:'export-ttl'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'export-ttl' button");});
