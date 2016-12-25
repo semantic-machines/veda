@@ -1156,7 +1156,14 @@ if (doc) {
       routes['coordination1'][simple+'visible'] = [true];
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
-    }
+
+      routes['coordination1'][simple+'participant'] = [
+              new veda.IndividualModel("td:RomanKarpov-Analyst1"),
+              new veda.IndividualModel("td:AndreyBychin-Analyst2")];
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+  }
 
   stages.forEach(function(stage) {
     var routeid = complex+stage;
