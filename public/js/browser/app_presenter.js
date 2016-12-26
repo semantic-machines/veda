@@ -40,7 +40,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     riot.route( function (hash) {
       if ( !hash ) { return welcome.present("#main"); }
       if ( hash.indexOf("#/") < 0 ) { return; }
-      var hash_tokens = hash.slice(2).split("/");
+      var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
       var page = hash_tokens[0];
       var params = hash_tokens.slice(1);
       page ? veda.load(page, params) : welcome.present("#main");
