@@ -15,7 +15,7 @@ function clickUp(element) {
 
 module.exports = {
     createRequestDelegation: function (driver, valueToChoose ) {
-        basic.openCreateDocumentForm(driver, 'Заявка на делегирование', 'v-s:RequestDelegation');
+        basic.openCreateDocumentForm(driver, 'Заявка на делегирование (пользователь)', 'v-s:RequestDelegationUser');
 
         driver.executeScript("document.querySelector('#positions').scrollIntoView(true);");
         driver.findElement({css:'div[id="positions"] input[id="td:Analyst1"]'}).click()
