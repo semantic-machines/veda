@@ -3,7 +3,7 @@
 # берет новые исходники из github, но не собирает
 
 DMD_VER=2.072.1
-DUB_VER=1.0.0
+DUB_VER=1.1.1
 GO_VER=go1.7.4
 
 # Get right version of DMD
