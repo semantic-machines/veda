@@ -7,9 +7,12 @@ function openMsg(driver, decision) {
     basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
-    driver.sleep(1000);
+    driver.sleep(basic.EXTRA_SLOW_OPERATION);
     driver.navigate().refresh();
     driver.sleep(4000);
+    var container = driver.findElement({id:'main'});
+    var content = container.innerHTML;
+    container.innerHTML = content;
     driver.findElement({css:'a[property="rdfs:label"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Согласовать' button");});
     if(decision === '0') {
@@ -27,6 +30,8 @@ function openMsg(driver, decision) {
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
     driver.findElement({id:'send'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Send' button");});
+    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
 }
 
 basic.getDrivers().forEach (function (drv) {
