@@ -290,17 +290,6 @@ class Authorization : LmdbStorage
 
             mdb_txn_abort(txn_r);
 
-            if (mode == DBMode.R)
-            {
-                records_in_memory[ uri ] = 1;
-
-                if (records_in_memory.length > max_count_record_in_memory)
-                {
-	                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                    reopen_db();
-                }
-            }
-
             foreach (obj_key; object_groups.data.keys)
             {
                 RightSet permissions = permission_2_group.get(obj_key, null);
@@ -363,6 +352,17 @@ class Authorization : LmdbStorage
         {
             if (trace_msg[ 111 ] == 1)
                 log.trace("authorize %s, request=%s, answer=[%s]", uri, access_to_pretty_string(request_access), access_to_pretty_string(res));
+        }
+
+        if (mode == DBMode.R)
+        {
+            records_in_memory[ uri ] = 1;
+
+            if (records_in_memory.length > max_count_record_in_memory)
+            {
+                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                reopen_db();
+            }
         }
 
         return res;

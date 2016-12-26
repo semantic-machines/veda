@@ -84,7 +84,7 @@ public bool rights_from_string(string src, RightSet new_rights)
     {
         for (long idx = 0; idx < tokens.length; idx += 2)
         {
-            string key = tokens[ idx ];
+            string key = tokens[ idx ].dup;
             if (key !is null && key.length > 0)
             {
                 ubyte access = parse!ubyte (tokens[ idx + 1 ], 16);
@@ -103,7 +103,7 @@ public bool rights_from_string(string src, ref Right *[] rights_list)
     {
         for (long idx = 0; idx < tokens.length; idx += 2)
         {
-            string key = tokens[ idx ];
+            string key = tokens[ idx ].dup;
             if (key !is null && key.length > 0)
             {
                 ubyte access = parse!ubyte (tokens[ idx + 1 ], 16);
