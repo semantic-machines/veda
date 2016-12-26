@@ -183,13 +183,7 @@ v-s:official
   rdfs:label "Официально"@ru ;
   rdfs:range xsd:boolean ;
 .
-v-s:valid
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Appointment ;
-  rdfs:label "Valid"@en ;
-  rdfs:label "Действительно"@ru ;
-  rdfs:range xsd:boolean ;
-.
+# v-s:valid
 
 # ------------------------------------------------------------
 v-s:Absence

@@ -272,6 +272,13 @@ v-s:hasDocumentKind
   rdfs:range v-s:DocumentKind ;
   rdfs:domain v-s:Thing ;
 .
+v-s:valid
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:label "Valid"@en ;
+  rdfs:label "Действительно"@ru ;
+  rdfs:range xsd:boolean ;
+.
 ### -------------------------------------------------------
 v-s:UserThing
   rdf:type owl:Class ;

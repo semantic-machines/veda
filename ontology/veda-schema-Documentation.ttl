@@ -213,3 +213,12 @@ v-s:UnitOfMeasure
   rdfs:label "Единицы измерения"@ru ;
 .
 
+#---------------------------------------------------------
+v-s:LocalRegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Local Regulatory document"@en ;
+  rdfs:label "Локальный нормативный документ"@ru ;
+.
+# v-s:hasDocumentKind
+# v-s:registrationNumber
