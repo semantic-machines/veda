@@ -1254,6 +1254,7 @@ if (doc) {
       routes['examination'][simple+'visible'] = [true];
       routes['instruction2'][simple+'participant'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
       routes['instruction2'][simple+'visible'] = [true];
+      routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
 
   stages.forEach(function(stage) {
