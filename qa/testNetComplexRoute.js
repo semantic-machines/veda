@@ -63,6 +63,25 @@ function acceptTask(driver, decision, login, password, firstName, lastName) {
     basic.logout(driver);
 }
 
+function checkRouteStatus(driver, element, color) {
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
+    driver.findElement({id:'submit'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
+    driver.findElement({css:'span[rel="v-wf:isProcess"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'экземпляр маршрута :Комплексный маршрут' button");});
+    driver.sleep(basic.FAST_OPERATION);
+    driver.findElement({css:'.glyphicon-share-alt'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-share-alt'");});
+    for (var i = 0; i < element.length; i++) {
+        driver.findElement({css:'div[id="'+ element[i] +'"][colored-to="'+ color[i] +'"]'})
+            .thenCatch(function (e) {basic.errorHandler(e, "Seems " + element[i] + " is not" + color[i] + "/routeStatus is wrong");});
+    }
+    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
+    basic.logout(driver);
+}
+
 
 
 basic.getDrivers().forEach (function (drv) {
@@ -86,40 +105,41 @@ basic.getDrivers().forEach (function (drv) {
     driver.sleep(3000);
     basic.logout(driver);
 
-    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4')
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    checkRouteStatus(driver, ['s-wf:cr_c1', 's-wf:cr_c2'], ['green', 'red']);
+
     //coordination2
 
     acceptTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
     acceptTask(driver, '1', 'bychinat', '123', '4', 'Администратор4');
+    checkRouteStatus(driver, ['s-wf:cr_c2', 's-wf:cr_rework'], ['green', 'red']);
     acceptTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2');
     acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
     acceptTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
+    checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination'],
+                                ['red', 'red', 'red']);
 
     //review, instruction, examination -> instruction2
     checkTask(driver, '3', 'bychinat', '123', '4', 'Администратор4');
     checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
     acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
+        ['red', 'red', 'green', 'red']);
     checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
     acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
+        ['green', 'red', 'green', 'red']);
     checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
     acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
+        ['green', 'green', 'green', 'red']);
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     checkMsg(driver, '1');
     openMsg(driver, '0');
-
-    //check
-    basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
-    driver.findElement({id:'submit'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
-    driver.findElement({css:'span[rel="v-wf:isProcess"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'экземпляр маршрута :Комплексный маршрут' button");});
-    driver.sleep(basic.FAST_OPERATION);
-    driver.findElement({css:'.glyphicon-share-alt'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-share-alt'");});
-    driver.findElement({css:'.state-io-condition-output[colored-to="red"]'})
-        .thenCatch(function (e) {basic.errorHandler(e, "Seems 'output' is not red");});
-
+    basic.logout(driver);
+    checkRouteStatus(driver, ['s-wf:cr_instruction2', 's-wf:cr_finish'],
+        ['red' , 'red']);
 
     driver.quit();
 });
