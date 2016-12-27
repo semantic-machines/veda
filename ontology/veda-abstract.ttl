@@ -3,6 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 <http://semantic-machines.com/veda/veda-abstract>
   rdf:type owl:Ontology ;
@@ -584,6 +585,15 @@ v-s:checkedProcess
   rdfs:range v-s:Process ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:PScheckedRequirement_Controlled
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Controlled ;
+  v-ui:forProperty v-s:checkedRequirement ;
+  rdfs:label "v-s:checkedRequirement property specification for v-s:Controlled class"@en ;
+  rdfs:label "Спецификация свойства v-s:checkedRequirement для класса v-s:Controlled"@ru ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
 v-s:checkedRequirement
   rdf:type owl:ObjectProperty ;
   rdfs:label "Checked requirement"@en ;
@@ -833,7 +843,7 @@ v-s:hasUnitOfMeasure
   rdfs:label "Unit of measure"@en ;
   rdfs:label "Единицы измерения"@ru ;
   rdfs:range v-s:UnitOfMeasure ;
-  rdfs:domain v-s:Measurable ;  
+  rdfs:domain v-s:Measurable ;
 .
 ### ------------------------------------------------------
 v-s:ClassifiedRus
