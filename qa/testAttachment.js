@@ -10,7 +10,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
     driver.findElement({id:'submit'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'a[href="#/cfg:Administrator"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Администратор'");});
     driver.findElement({css:'a[href="#/graph/cfg:Administrator"]'}).click()

@@ -1,5 +1,6 @@
 var basic = require('./basic.js'),
-    timeStamp = ''+Math.round(+new Date()/1000);
+    timeStamp = ''+Math.round(+new Date()/1000),
+    assert = require('assert');
 
 function openMsg(driver, decision) {
     driver.findElement({id:'menu'}).click()
@@ -31,6 +32,24 @@ function openMsg(driver, decision) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
 }
 
+function checkMsg(driver, count) {
+    driver.findElement({id:'menu'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
+    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
+    driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
+    var container = driver.findElement({id:'main'});
+    var content = container.innerHTML;
+    container.innerHTML = content;
+    driver.sleep(basic.FAST_OPERATION);
+    driver.findElements({css:'a[property="rdfs:label"]'}).then(function (result) {
+        assert.equal(count, result.length);
+    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
+    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
+}
+
+
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
@@ -49,6 +68,7 @@ basic.getDrivers().forEach (function (drv) {
     //coordination1
 
     openMsg(driver, '0');
+    driver.sleep(3000);
     basic.logout(driver);
 
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
@@ -79,6 +99,44 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver);
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    openMsg(driver, '0');
+    driver.sleep(basic.FAST_OPERATION);
+    basic.logout(driver);
+
+    //review, instruction, examination -> instruction2
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
+    checkMsg(driver, '3');
+    basic.logout(driver);
+
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    checkMsg(driver, '0');
+    basic.logout(driver);
+
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
+    openMsg(driver, '0');
+    driver.sleep(basic.FAST_OPERATION);
+    basic.logout(driver);
+
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    checkMsg(driver, '0');
+    basic.logout(driver);
+
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
+    openMsg(driver, '0');
+    driver.sleep(basic.FAST_OPERATION);
+    basic.logout(driver);
+
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    checkMsg(driver, '0');
+    basic.logout(driver);
+
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
+    openMsg(driver, '0');
+    driver.sleep(basic.FAST_OPERATION);
+    basic.logout(driver);
+
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    checkMsg(driver, '1');
     openMsg(driver, '0');
 
     //check
