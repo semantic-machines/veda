@@ -907,7 +907,7 @@ if (doc) {
   }      
 //-------------------------------------------------------------------------------------------------------------------------------------------Заявка на контракт
   if (doc['rdf:type'][0].id === "mnd-s:ContractRequest") {
-   if (doc.hasValue('v-s:customer') && doc.hasValue['v-s:customer'][0].id == 'd:org_50001654') {
+   if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
     // Закупка
     if (doc.hasValue('v-s:hasBudgetCategory') && (
       doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
@@ -1031,7 +1031,7 @@ if (doc) {
   }
 //--------------------------------------------------------------------------------------------------------------------------------Выполнение заявки на контракт
   if (doc['rdf:type'][0].id === "mnd-s:ContractRequestReport") {
-    if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_50001654") { 
+    if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") { 
       // Закупка
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasBudgetCategory') && doc['v-s:backwardTarget'][0]['v-s:hasBudgetCategory'][0].id == "d:a193b366b-aaeb-c1f2-b101-89c95b10a6c8") {
         // OPEX              
@@ -1043,7 +1043,8 @@ if (doc) {
           routes['coordination1'][simple+'deadlineDays'] = [10];
           routes['coordination1'][simple+'comment'] = [new String('Согласовать список участников тендера')];
           
-          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:hasStrategyOfChoice') && doc['v-s:backwardTarget'][0]['mnd-s:hasStrategyOfChoice'][0] > 7000000) {
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:hasStrategyOfChoice')  && doc['v-s:backwardTarget'][0]['mnd-s:hasStrategyOfChoice'][0].hasValue('v-s:sum')
+              && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0]['v-s:sum'][0] > 7000000) {
 	         // TODO: сделать неудаляемым
 	        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
 	        routes['coordination2'][simple+'visible'] = [true];
@@ -1058,8 +1059,97 @@ if (doc) {
             routes['coordination3'][simple+'editable'] = [true];
             routes['coordination3'][simple+'deadlineDays'] = [10];
             routes['coordination3'][simple+'comment'] = [new String('Провести тендер')];
-          }                    
+          }
+             
+          routes['coordination4'][simple+'participant'] = [];                              
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:initiator')) {
+            var dep = new veda.IndividualModel(doc['v-s:backwardTarget'][0]['v-s:initiator'][0].id);
+            if (dep.hasValue('v-s:hasChief')) {
+             routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
+            }            
+          }
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+             routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00048762_71013780")); // Андрей Скрябин - Главный механик
+          }
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+             routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00044583_71012089")); // Андрей Шульгин - Главный электрик
+          }
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+             routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00025753_71000234")); // Юрий Исаев:гл. метролог
+          }
+          routes['coordination4'][simple+'visible'] = [true];
+          routes['coordination4'][simple+'editable'] = [true];
+          routes['coordination4'][simple+'deadlineDays'] = [10];
+          routes['coordination4'][simple+'comment'] = [new String('Согласовать результаты тендера')];
+          
+          // АЛГО2
+          routes['coordination5'][simple+'visible'] = [true];
+          routes['coordination5'][simple+'editable'] = [true];
+          routes['coordination5'][simple+'deadlineDays'] = [10];
+          routes['coordination5'][simple+'comment'] = [new String('Согласовать результаты тендера')];
+          
+          routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
+          routes['sign'][simple+'visible'] = [true];
+	      routes['sign'][simple+'editable'] = [true];
+	      routes['sign'][simple+'deadlineDays'] = [10];
+	      routes['sign'][simple+'comment'] = [new String('СУтвердить результаты тендера')];
+	      
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum') 
+              && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] > 7000000) {
+	         // TODO: сделать неудаляемым
+	        routes['approval'][simple+'visible'] = [true];
+	        routes['approval'][simple+'editable'] = [true];
+	        routes['approval'][simple+'deadlineDays'] = [10];
+	        routes['approval'][simple+'comment'] = [new String('Согласовать список участников тендера у директора по направлению')];
+          }
+          
+          if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
+            routes['instruction'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+            routes['instruction'][simple+'visible'] = [true];
+            routes['instruction'][simple+'editable'] = [false];
+            routes['instruction'][simple+'deadlineDays'] = [10];
+            routes['instruction'][simple+'comment'] = [new String('Согласование завершено')];
+          }
+          
+          routes['coordination4'][simple+'participant'] = [];                              
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:initiator')) {
+            var dep = new veda.IndividualModel(doc['v-s:backwardTarget'][0]['v-s:initiator'][0].id);
+            if (dep.hasValue('v-s:hasChief')) {
+              routes['examination'][simple+'participant'] = dep["v-s:hasChief"]; // Руководитель отдела ответственного подразделения +
+              routes['examination'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+              routes['examination'][simple+'visible'] = [true];
+              routes['examination'][simple+'editable'] = [false];
+              routes['examination'][simple+'deadlineDays'] = [10];
+              routes['examination'][simple+'comment'] = [new String('Ознакомиться с результатами тендера')];
+            }            
+          }
+        } else {
+          // Не тендер
+          routes['coordination1'][simple+'participant'] = [];                              
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+             routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00048762_71013780")); // Андрей Скрябин - Главный механик
+          }
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+             routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00044583_71012089")); // Андрей Шульгин - Главный электрик
+          }
+          if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+             routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00025753_71000234")); // Юрий Исаев:гл. метролог
+          }
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum') 
+              && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] > 700000) {
+             if (doc['v-s:backwardTarget'][0].hasValue('v-s:initiator')) {
+               var dep = new veda.IndividualModel(doc['v-s:backwardTarget'][0]['v-s:initiator'][0].id);
+               if (dep.hasValue('v-s:hasChief')) {
+                 routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
+               }
+          }
+          routes['coordination1'][simple+'visible'] = [true];
+          routes['coordination1'][simple+'editable'] = [true];
+          routes['coordination1'][simple+'deadlineDays'] = [10];
+          routes['coordination1'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];          
         }
+      } else if  {
+      
       }
     }    
   }
@@ -2311,6 +2401,7 @@ s-wf:var_actor_task_action
   rdfs:isDefinedBy s-wf: ;
 .
 
+
 s-wf:var_actor_task_comment
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "actor_task_comment" ;
@@ -2318,6 +2409,7 @@ s-wf:var_actor_task_comment
   rdfs:label "Var actor task comment" ;
   rdfs:isDefinedBy s-wf: ;
 .
+
 
 s-wf:var_actor_task_description
   rdf:type v-wf:VarDefine ;
