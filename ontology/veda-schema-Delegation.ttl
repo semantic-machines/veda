@@ -407,6 +407,7 @@ cfg:Event_Delegation
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByType v-s:RequestDelegation ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 var request_uri = document["@"],
     request_type = getUri(document["rdf:type"]),
@@ -421,7 +422,7 @@ var request_uri = document["@"],
     delegate;
 
 print("[cfg:Event_Delegation] ************************** START **************************");
-print( "[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual );
+print("[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual);
 
 if (request_type === "v-s:RequestDelegationUser" && delegator_uri !== user_uri && !request_deleted) {
   print("[cfg:Event_Delegation] ACCESS VIOLATION: delegator_uri !== user_uri");
@@ -511,6 +512,7 @@ cfg:Event_ProcessAllDelegated
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByUid cfg:daily ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 // Process allDelegated list
 var now = new Date(), allDelegated = get_individual(ticket, "cfg:AllDelegatedAppointments");
