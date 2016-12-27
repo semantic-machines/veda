@@ -110,6 +110,12 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 	pc.count_2_uid = make(map[string]int)
 	pc.cc_out = make(chan updateInfo)
 
+	defer func() {
+        if r := recover(); r != nil {
+            log.Println("Recovered in preparer", r)
+        }
+    }()
+
 	for {
 		var control int
 
