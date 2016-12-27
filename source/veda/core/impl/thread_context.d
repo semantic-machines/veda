@@ -182,6 +182,11 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
+	public string get_config_uri ()
+	{
+		return node_id;
+	}
+
     this(string _node_id, string context_name, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
         log = _log;

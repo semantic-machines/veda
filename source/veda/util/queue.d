@@ -161,9 +161,9 @@ class Consumer
         {
             ff_info_pop_w.seek(0);
             ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
-            
+
             if (is_sync_data)
-	            ff_info_pop_w.flush();
+                ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
@@ -267,6 +267,11 @@ class Consumer
         }
 
         return cast(string)last_read_msg;
+    }
+
+    public void sync()
+    {
+        ff_info_pop_w.flush();
     }
 
     public bool commit_and_next(bool is_sync_data)

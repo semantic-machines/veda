@@ -95,6 +95,13 @@ class FanoutProcess : VedaModule
         return true;
     }
 
+    override bool close()
+    {
+        delete smtp_conn;
+        return true;
+    }
+
+
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
     private Resources get_email_from_appointment(ref Ticket sticket, ref Individual ap)
     {

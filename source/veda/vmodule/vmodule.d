@@ -192,6 +192,7 @@ class VedaModule
                                 long op_id);
 
     abstract bool configure();
+    abstract bool close();
 
     abstract Context create_context();
 
@@ -240,7 +241,7 @@ class VedaModule
             data = main_cs_prefetch.pop();
             if (data is null)
             {
-                log.trace("PREFETCH: pop return null");
+                //log.trace("PREFETCH: pop return null");
                 break;
             }
 
@@ -251,17 +252,28 @@ class VedaModule
                 continue;
             }
             string uri = imm.getFirstLiteral("uri");
-            log.trace("PREFETCH %s", uri);
+            //log.trace("PREFETCH %s", uri);
 
-            //    if (main_cs_prefetch.next() == false)
-            //    {
-            //      log.trace("PREFETCH: next break");
-            //        break;
-            //    }
+            if (context.get_config_uri() == uri)
+            {
+                log.trace("prefetch: found change in config [%s]", uri);
+                string new_bin = imm.getFirstLiteral("new_state");
+                if (new_bin !is null && cbor2individual(&node, new_bin) < 0)
+                {
+                    log.trace("ERR! invalid individual:[%s]", new_bin);
+                }
+                else
+                {
+                    log.trace("prefetch: reconfigure, use [%s]", node);
+                    close();
+                    configure();
+                }
+            }
+
             //Thread.sleep(dur!("seconds")(1));
-            main_cs_prefetch.commit_and_next(true);
+            main_cs_prefetch.commit_and_next(false);
         }
-        //main_cs_prefetch.commit_1();
+        main_cs_prefetch.sync();
     }
 
     private void prepare_queue(string msg)
@@ -274,7 +286,7 @@ class VedaModule
             if (f_listen_exit == true)
                 break;
 
-            //configuration_found_in_queue ();
+            configuration_found_in_queue();
 
             string data = main_cs.pop();
 
@@ -381,7 +393,7 @@ class VedaModule
                 {
                     main_cs.commit_and_next(true);
                     module_info.put_info(op_id, committed_op_id);
-                    log.trace("ERR! message fail prepared (res=%s), skip.", text(res));
+                    log.trace("ERR! message fail prepared (res=%s), skip.  count=%d", text(res), count_success_prepared);
                 }
             }
             catch (Throwable ex)

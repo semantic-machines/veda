@@ -197,6 +197,8 @@ class ScriptProcess : VedaModule
 
     override bool configure()
     {
+        log.trace("configure scripts");
+
         vars_for_event_script =
             "var user_uri = get_env_str_var ('$user');"
             ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
@@ -211,6 +213,12 @@ class ScriptProcess : VedaModule
         load_event_scripts();
 
 
+        return true;
+    }
+
+    override bool close()
+    {
+        vql.close_db();
         return true;
     }
 
@@ -235,8 +243,8 @@ class ScriptProcess : VedaModule
             prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script);
         }
 
-        if (trace_msg[ 300 ] == 1)
-            log.trace("end load db scripts, count=%d ", res.length);
+//        if (trace_msg[ 300 ] == 1)
+        log.trace("load db scripts, count=%d ", res.length);
     }
 
     private void set_g_parent_script_id_etc(string event_id)

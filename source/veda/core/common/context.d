@@ -444,6 +444,7 @@ interface Context
      */
     public void unfreeze();
 
+    public string get_config_uri();
     public Individual getConfiguration();
 }
 

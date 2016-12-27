@@ -228,14 +228,14 @@ Resource json_to_resource(JSONValue resource_json)
         else if (type == DataType.Datetime)
         {
             string val = resource_json.getString("data");
-            
+
             long   tm;
-            
+
             if (val.indexOf('-') >= 1)
-                tm  = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+                tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
             else
                 tm = to!long (val);
-            
+
             resource = tm;
         }
 

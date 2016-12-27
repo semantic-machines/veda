@@ -367,7 +367,7 @@ class XapianReader : SearchReader
         committed_op_id = cur_committed_op_id;
     }
 
-    private void close_db()
+    public void close_db()
     {
         foreach (el; using_dbqp.values)
         {

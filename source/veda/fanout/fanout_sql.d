@@ -79,6 +79,14 @@ class FanoutProcess : VedaModule
         return true;
     }
 
+    override bool close()
+    {
+        if (mysql_conn !is null)
+            mysql_conn.close();
+        return true;
+    }
+
+
     bool[ string ] isExistsTable;
 
     private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv)

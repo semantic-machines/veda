@@ -2,7 +2,7 @@
  * XAPIAN indexer thread
  */
 
-module veda.veda.ft_indexer.xapian_indexer;
+module veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -51,6 +51,13 @@ public class IndexerContext
     string thread_name;
 
     Ticket *ticket;
+
+    void close()
+    {
+        indexer_base_db.close(&err);
+        indexer_system_db.close(&err);
+        indexer_deleted_db.close(&err);
+    }
 
     bool init(Ticket *_ticket)
     {
