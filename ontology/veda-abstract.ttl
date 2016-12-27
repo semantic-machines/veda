@@ -30,7 +30,7 @@ v-s:owner
   rdf:type owl:ObjectProperty ;
   rdfs:label "Owner"@en ;
   rdfs:label "Владелец"@ru ;
-  rdfs:range v-s:Person ;
+  rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Thing ;
 .
 v-s:author

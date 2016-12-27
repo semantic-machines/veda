@@ -222,3 +222,19 @@ v-s:LocalRegulatoryDocument
 .
 # v-s:hasDocumentKind
 # v-s:registrationNumber
+
+v-s:hasVersionOfLocalRegulatoryDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Versions of documents"@en ;
+  rdfs:label "Версии документов"@ru ;
+  rdfs:range v-s:VersionOfLocalRegulatoryDocument ;
+  rdfs:domain v-s:LocalRegulatoryDocument ;
+.
+
+#---------------------------------------------------------
+v-s:VersionOfLocalRegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:LocalRegulatoryDocument ;
+  rdfs:label "Verions of local regulatory document"@en ;
+  rdfs:label "Версия локального нормативного документа"@ru ;
+.
