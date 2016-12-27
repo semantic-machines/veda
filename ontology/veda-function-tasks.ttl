@@ -16,6 +16,140 @@
   v-s:loadPriority 9 ;
 .
 
+########## TASKS COUNTERS ###########
+
+v-ft:TaskCounter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Task counter"@en ;
+  rdfs:label "Счетчик задач"@ru ;
+.
+v-ft:inboxCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество входящих"@en ;
+  rdfs:label "inbox сount"@ru ;
+.
+v-ft:outboxCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество исходящих"@en ;
+  rdfs:label "outbox сount"@ru ;
+.
+v-ft:completedCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество выполненных"@en ;
+  rdfs:label "completed сount"@ru ;
+.
+
+v-ft:Event_UpdateTaskCounter
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обновления счетчиков задач" ;
+  v-s:triggerByType v-wf:DecisionForm ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+var task = document,
+    to = getUri(document["v-wf:to"]),
+    from = getUri(document["v-wf:from"]),
+    isCompleted = hasValue(document, "v-wf:from", {type: _Boolean, data: true}),
+    isDeleted = hasValue(document, "v-s:deleted", {type: _Boolean, data: true}),
+
+    toCounterUri = "d:taskCounter_" + to.split(':').join('_'),
+    fromCounterUri = "d:taskCounter_" + from.split(':').join('_'),
+    toCounter = get_individual(ticket, toCounterUri),
+    fromCounter = get_individual(ticket, fromCounterUri),
+
+    updateTo = !!to,
+    updateFrom = !!from;
+
+if (!isDeleted && !isCompleted && prev_state) { return; }
+
+if ( to && !toCounter ) {
+  toCounter = {
+    "@": toCounterUri,
+    "rdf:type": newUri('v-ft:TaskCounter'),
+    "v-s:owner": newUri(to),
+    "v-ft:inboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + to + "')").length ),
+    "v-ft:outboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + to + "')").length ),
+    "v-ft:completedCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + to + "')").length ),
+    "rdfs:label": newStr('создано автоматически в обработчике v-ft:Event_UpdateTaskCounter')
+  }
+  put_individual(ticket, toCounter, _event_id);
+  updateTo = false;
+}
+
+if ( from && !fromCounter ) {
+  fromCounter = {
+    "@": fromCounterUri,
+    "rdf:type": newUri('v-ft:TaskCounter'),
+    "v-s:owner": newUri(from),
+    "v-ft:inboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + from + "')").length ),
+    "v-ft:outboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + from + "')").length ),
+    "v-ft:completedCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + from + "')").length ),
+    "rdfs:label": newStr('создано автоматически в обработчике v-ft:Event_UpdateTaskCounter')
+  }
+  put_individual(ticket, fromCounter, _event_id);
+  updateFrom = false;
+}
+
+var toInboxCount = toCounter["v-ft:inboxCount"][0],
+    toOutboxCount = toCounter["v-ft:outboxCount"][0],
+    toCompletedCount = toCounter["v-ft:completedCount"][0],
+    fromInboxCount = fromCounter["v-ft:inboxCount"][0],
+    fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
+    fromCompletedCount = fromCounter["v-ft:completedCount"][0];
+
+if (updateTo) {
+  switch (true) {
+    case isDeleted && !isCompleted:
+      toInboxCount.data--;
+      break;
+    case isDeleted && isCompleted:
+      toCompletedCount.data--;
+      break;
+    case !isDeleted && !isCompleted:
+      toInboxCount.data++;
+      break;
+    case !isDeleted && isCompleted:
+      toInboxCount.data--;
+      break;
+  }
+  put_individual(ticket, toCounter, _event_id);
+}
+
+if (updateFrom) {
+  switch (true) {
+    case isDeleted && !isCompleted:
+      fromOutboxCount.data--;
+      break;
+    case isDeleted && isCompleted:
+      break;
+    case !isDeleted && !isCompleted:
+      fromOutboxCount.data++;
+      break;
+    case !isDeleted && isCompleted:
+      fromOutboxCount.data--;
+      break;
+  }
+  put_individual(ticket, fromCounter, _event_id);
+}
+  """ ;
+.
+
 ########## TASKS FUNCTION ###########
 
 v-ft:FunctionTasks
@@ -55,21 +189,21 @@ v-ft:Inbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$2')"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:to' == '$1' || 'v-wf:to' == '$2'))"^^xsd:string ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$2')"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:from' == '$1' || 'v-wf:from' == '$2'))"^^xsd:string ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && ('v-wf:to' == '$1' || 'v-wf:to' == '$2'))"^^xsd:string ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
