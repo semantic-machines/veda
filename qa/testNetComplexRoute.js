@@ -50,6 +50,21 @@ function checkMsg(driver, count) {
 }
 
 
+function checkTask(driver, count, login, password, firstName, lastName) {
+    basic.login(driver, login, password, firstName, lastName);
+    checkMsg(driver, count);
+    basic.logout(driver);
+}
+
+function acceptTask(driver, decision, login, password, firstName, lastName) {
+    basic.login(driver, login, password, firstName, lastName);
+    openMsg(driver, decision);
+    driver.sleep(basic.FAST_OPERATION);
+    basic.logout(driver);
+}
+
+
+
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
@@ -71,69 +86,23 @@ basic.getDrivers().forEach (function (drv) {
     driver.sleep(3000);
     basic.logout(driver);
 
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4')
     //coordination2
 
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    openMsg(driver, '1');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    openMsg(driver, '1');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
+    acceptTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '1', 'bychinat', '123', '4', 'Администратор4');
+    acceptTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    acceptTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
 
     //review, instruction, examination -> instruction2
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    checkMsg(driver, '3');
-    basic.logout(driver);
-
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    checkMsg(driver, '0');
-    basic.logout(driver);
-
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    checkMsg(driver, '0');
-    basic.logout(driver);
-
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
-
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    checkMsg(driver, '0');
-    basic.logout(driver);
-
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-    openMsg(driver, '0');
-    driver.sleep(basic.FAST_OPERATION);
-    basic.logout(driver);
+    checkTask(driver, '3', 'bychinat', '123', '4', 'Администратор4');
+    checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+    checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     checkMsg(driver, '1');
