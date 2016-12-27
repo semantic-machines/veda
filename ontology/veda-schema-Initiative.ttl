@@ -60,7 +60,7 @@ v-s:isProgramm
 v-s:goal
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Goals"@en ;
-  rdfs:label "Цели мероприятия"@ru ;
+  rdfs:label "Цели"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Initiative ;
 .

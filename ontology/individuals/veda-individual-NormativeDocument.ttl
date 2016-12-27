@@ -13,430 +13,443 @@
   v-s:loadPriority 10 ;
 .
 
+d:2d21e7eaab284fafa112caade001d482
+    a v-s:NormativeDocument;
+    rdfs:label "ISO 9001"^^xsd:string;
+.
+d:58d89d397b754f50a254292c0dca7dc8
+    a v-s:NormativeDocument;
+    rdfs:label "ISO 14001"^^xsd:string;
+.
+d:4aec74ad30f34d86b52c3669f4fa56b4
+    a v-s:NormativeDocument;
+    rdfs:label "OHSAS 18001"^^xsd:string;
+.
+
 d:c4edc01cf20a4500ba6378ad2ea06a8f
     a v-s:NormativeDocument;
     rdfs:label " Межотраслевые правила по охране труда при использовании химических веществ"^^xsd:string;
     v-s:shortLabel "ПОТ Р М-004-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:397b736683354293a78e70149d867220
     a v-s:NormativeDocument;
     rdfs:label "\"ГОСТ 12.2.003-91. Система стандартов безопасности труда. Оборудование производственное. Общие требования безопасности\""^^xsd:string;
     v-s:attachment d:d183adc5-e8a3-437a-bfdc-47d0114f54fc;
     v-s:shortLabel "ГОСТ 12.2.003-91"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:87738d2511b94137a638eb2f0d1b3e2a
     a v-s:NormativeDocument;
     rdfs:label "\"О регистрации случаев обращения за первой помощью\""^^xsd:string;
     v-s:attachment d:17d706f9-c19b-4482-90f6-ddeec576730f;
     v-s:shortLabel "Рапоряжение №20 от 28.02.2007г."^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a00e165bf46d4648bd83d99c5e65934f
     a v-s:NormativeDocument;
     rdfs:label "\"Об утверждении Федеральных норм и правил в области промышленной безопасности \"Правила безопасности опасных производственных объектов, на которых используются подъемные сооружения\""^^xsd:string;
     v-s:shortLabel "Приказ Ростехнадзора от 12.11.2013 N 533"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:28ae4144b53740a989e851e8c254296f
     a v-s:NormativeDocument;
     rdfs:label "\"ПОТ Р М-016-2001. РД 153-34.0-03.150-00. Межотраслевые Правила по охране труда (Правила безопасности) при эксплуатации электроустановок\""^^xsd:string;
     v-s:shortLabel "ПОТ Р М-016-2001. РД 153-34.0-03.150-00"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:64ca963b02e24548a6440d664f360515
     a v-s:NormativeDocument;
     rdfs:label "\"Порядок обучения по охране труда и проверки знаний требований охраны труда работников организаций\""^^xsd:string;
     v-s:attachment d:320fb5ca-9cba-4d7d-8742-34dbcf49309c;
     v-s:shortLabel "N 1/29"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:78f8099307de4e03a40b251e26c16615
     a v-s:NormativeDocument;
     rdfs:label "\"СП 9.13130.2009. Свод правил. Техника пожарная. Огнетушители. Требования к эксплуатации\""^^xsd:string;
     v-s:shortLabel "СП 9.13130.2009. "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a32179c8b355486f84a723092aadb57f
     a v-s:NormativeDocument;
     rdfs:label "\"Совещание по развитию качества\""^^xsd:string;
     v-s:attachment d:39808546-0bf9-449e-a486-4bc9065af87d;
     v-s:shortLabel "ИП - инструкция предприятия"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:800ba98606694bf9b5c29ff33fb1a9ac
     a v-s:NormativeDocument;
     rdfs:label "\"Требования к комплектации изделиями медицинского назначения аптечек для оказания первой помощи работникам \""^^xsd:string;
     v-s:attachment d:4e8a5f8f-d283-40f4-835a-95081af07c31;
     v-s:shortLabel "Приказ Минздравсоцразвития России от 5 марта 2011 г. N 169н"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:7ee2f3d4e73e4fcf8847b8847fa38f04
     a v-s:NormativeDocument;
     rdfs:label "\"Управление внешними нормативными документами\""^^xsd:string;
     v-s:attachment d:0be921ef-1068-4e9a-8956-2d7dc572aeaf;
     v-s:shortLabel "ИИСМ 4.2.3х4.4.5х4.4.5"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:7b8884bd8f6c4b24b0f47750762d73af
     a v-s:NormativeDocument;
     rdfs:label "111"^^xsd:string;
     v-s:shortLabel "111"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9237bfb03b0c4713b994382ba83f0456
     a v-s:NormativeDocument;
     rdfs:label "LB"^^xsd:string;
     v-s:shortLabel "1223"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:704c6bd677f646f4a9dec4a5250a9cb3
     a v-s:NormativeDocument;
     rdfs:label "LML1-16 Стандарт для стальных лестниц, площадок и ограждений"^^xsd:string;
     v-s:attachment d:73769cdd-18b8-4501-ac14-4194ab56802f;
     v-s:shortLabel "LML1-16 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c347e956f7b4449eacf8558094f7d960
     a v-s:NormativeDocument;
     rdfs:label "Road Map"^^xsd:string;
     v-s:shortLabel "Road Map"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:546b4aa4c6044f7ba44ec59a19174fe9
     a v-s:NormativeDocument;
     rdfs:label "Road Map"^^xsd:string;
     v-s:shortLabel "Road Map"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f425dfa9284f4fbcb6e8ba38cfbdeb70
     a v-s:NormativeDocument;
     rdfs:label "«Порядок  переработки рулонов бумаги на перемоточном продольно - резательном станке»"^^xsd:string;
     v-s:attachment d:4753212a-307c-4c47-96eb-f8a3b653ddf9;
     v-s:shortLabel "Инструкция"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:99561301ccfa495396bfce161ca330e2
     a v-s:NormativeDocument;
     rdfs:label "Анализ интегрированной системы менеджмента  со стороны руководства"^^xsd:string;
     v-s:attachment d:35dfc32c-40c2-4c66-b77e-0702a899a54f;
     v-s:shortLabel "ИИСМ 5.6 / 4.6 / 4.6 – v 8 - 2015"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:0b26bb50a60641ff83d20ff826016684
     a v-s:NormativeDocument;
     rdfs:label "Анализ опасностей и оценка рисков гигиенической безопасности на потоке производства картона"^^xsd:string;
     v-s:attachment d:6dafeaf5-6783-4151-b385-5fc5490f1788;
     v-s:shortLabel "GMP"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:7938aa9b3f9f452c9b81d619726cd12b
     a v-s:NormativeDocument;
     rdfs:label "Анализ опасностей и оценка рисков гигиенической безопасности на потоке производства картона"^^xsd:string;
     v-s:attachment d:2032c1d2-7bd4-4b77-8e05-a73d7706d235, d:def54f9e-6ffc-48c2-b92a-3db7ca3876d6;
     v-s:shortLabel "НД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e010ff34c61a4aba84817d78d79c8840
     a v-s:NormativeDocument;
     rdfs:label "БДД"^^xsd:string;
     v-s:attachment d:90c0e81c-a9df-4855-9144-ab875237aa45;
     v-s:shortLabel "Методическое пособие"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:59191b84534645268018196338755f86
     a v-s:NormativeDocument;
     rdfs:label "Бани и душевые"^^xsd:string;
     v-s:attachment d:dcc3dd81-23da-439a-87cb-484a67ce7823;
     v-s:shortLabel "Технические условия для бань и душевых"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:043d81243ca549b686d6e47ff03c7a70
     a v-s:NormativeDocument;
     rdfs:label "Безопасная работа на токарных станках "^^xsd:string;
     v-s:attachment d:46dde63e-043a-4254-895d-892461dc0e66;
     v-s:shortLabel "UFF & CB :\t02/2012"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e21127b5e68d437fa3c2ce69c6bad3ba
     a v-s:NormativeDocument;
     rdfs:label "Безопасная работа с использованием лесов"^^xsd:string;
     v-s:attachment d:b842e3f8-e1eb-4dd8-aada-f6a0951a5557;
     v-s:shortLabel "Стандарт по безопасности 001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:73d47d0b55f9474ab37c9da072dea7dc
     a v-s:NormativeDocument;
     rdfs:label "Дополнение к инструкции \"Идентификация законных и других требований, оценка соответствия требованиям\""^^xsd:string;
     v-s:attachment d:81a2f92c-09c7-4efd-8402-02a390482c34, d:65a52e4d-74a1-4805-b8b9-d7c2adfe3dc7;
     v-s:shortLabel "ИИСМ -/4.3.2, 4.5.2/4.3.2, 4.5.2-2010 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c6f40b634a7a43b5ab8385516b302e5c
     a v-s:NormativeDocument;
     rdfs:label "ИИСМ \"Анализ удовлетворенности потребителей\""^^xsd:string;
     v-s:attachment d:fa629309-efce-421d-ab60-341ffcc2005b;
     v-s:shortLabel "8.2.1/ХХХ/ХХХ - V4.2015"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:520f80498f8e4da28c1b93d22bc10777
     a v-s:NormativeDocument;
     rdfs:label "ИИСМ \"Внутренние аудиты ИСМ\""^^xsd:string;
     v-s:attachment d:f281c469-b496-455c-93ef-4297386c17ce;
     v-s:shortLabel "ИИСМ 8.2.2х4.5.5х4.5.5v7"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:599d0f6903894c48a0c49ae459524479
     a v-s:NormativeDocument;
     rdfs:label "ИИСМ Обмен информацией"^^xsd:string;
     v-s:attachment d:efba029d-8272-4c32-bc83-26c038b5bd49;
     v-s:shortLabel "5.5.3х4.4.3х4.4.3-11v.4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:43138c61910b4fc59eb8aa34001935c8
     a v-s:NormativeDocument;
     rdfs:label "ИИСМ Управление несоответствующей продукцией"^^xsd:string;
     v-s:attachment d:83f76e8e-77b9-45b7-b906-bcef741dddb7, d:fe52eac6-b6a4-4aa5-ba29-31abbc456819;
     v-s:shortLabel "8.3/-/- v8 - 2014 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f4eaf8339e5443ce9f70ce70b750297d
     a v-s:NormativeDocument;
     rdfs:label "ИНСТРУКЦИЯ ИНТЕГРИРОВАННОЙ СИСТЕМЫ МЕНЕДЖМЕНТА\nИдентификация законных и других требований, оценка соответствия требованиям \nв области экологии и охраны труда"^^xsd:string;
     v-s:attachment d:48e2980c-6639-4761-a0bb-286bf72261cb, d:d5f050be-540b-4178-a4ef-3b65f44ad285;
     v-s:shortLabel "ИИСМ  -  /4.3.2, 4.5.2/ 4.3.2, 4.5.2 – 2012 v.7"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9230756bf53c497f85b69647e8d37a98
     a v-s:NormativeDocument;
     rdfs:label "ИНСТРУКЦИЯ ПРЕДПРИЯТИЯ \"ПОРЯДОК СОЗДАНИЯ PAPER PROFILE\"\n\n"^^xsd:string;
     v-s:attachment d:cbf0c66a-43dd-45a4-9596-225b8fa3399a;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3d9027bbc2aa46e59cffc976cb67b639
     a v-s:NormativeDocument;
     rdfs:label "ИНСТРУКЦИЯ ПРЕДПРИЯТИЯ Порядок разработки и ввода нового продукта"^^xsd:string;
     v-s:attachment d:ea4799b7-58e7-4fbe-be9b-65e9d6d85a6f;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c0685be36fbc4c64ac91f64627049506
     a v-s:NormativeDocument;
     rdfs:label "ИОТ"^^xsd:string;
     v-s:attachment d:62a04761-6582-4ee0-bc3b-90140bcff806;
     v-s:shortLabel "ИОТ 3.33"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:09df4710348e4b879b0fc23e3a830a5e
     a v-s:NormativeDocument;
     rdfs:label "ИП Порядок работы с паспортами качества для продукции, отгружаемой на внутренний и экспортный рынок"^^xsd:string;
     v-s:attachment d:1b9318c7-4cf5-48f8-a8f8-4bb216adf5b4;
     v-s:shortLabel "V 3 сентябрь 2015г."^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8d1ad5b3535d4a21850ec9128b662452
     a v-s:NormativeDocument;
     rdfs:label "ИП для для лиц, ответственных за контроль закрепления, перемещение и сохранность железнодорожного подвижного состава на территории цехов ОАО «Монди СЛПК»"^^xsd:string;
     v-s:attachment d:41c92b8b-f31c-4328-825d-8d13c0dea4c6;
     v-s:shortLabel "ЖДТ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b37c6b74ec3e41f5b0aa0a9a3b919694
     a v-s:NormativeDocument;
     rdfs:label "Изменение 1 к  инструкции ИСМ \"Управление несоответствующей продукцией, несоответствиями в области качества, экологии и безопасности труда\""^^xsd:string;
     v-s:attachment d:7d95077e-5b6b-4cff-9b6d-259e3e76c2e1;
     v-s:shortLabel "ИИСМ 8.3/4.5.3/4.5.3-11"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:d982efd04b6043f6bdcb2bdc3f8a2426
     a v-s:NormativeDocument;
     rdfs:label "Изменение к инструкции «Управление несоответствующей продукцией, несоответствиями в области качества, экологии и безопасности труда»"^^xsd:string;
     v-s:attachment d:6355458b-b8ad-4a33-b823-a267bdde8e90;
     v-s:shortLabel "ИИСМ 8.3/4.5.3/4.5.3"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:326a965017784f73bf32126b02a73520
     a v-s:NormativeDocument;
     rdfs:label "Инстр. по ОТ для водителя лесовоза"^^xsd:string;
     v-s:attachment d:d5d45d6c-28d4-4bae-872c-6cf9ffaeea6a;
     v-s:shortLabel "№ 2201"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:671729594c164330892e49462df44e56
     a v-s:NormativeDocument;
     rdfs:label "Инструкция \"О дополнительных требованиях по обеспечению безопасности в кабине грузового автомобиля\"."^^xsd:string;
     v-s:attachment d:b274690d-4cd3-4de2-898d-ca518ad6b8e2;
     v-s:shortLabel "САТ Инструкция о дополнительных требованиях по обеспечению безопасности в кабине грузового автомобиля\""^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:7865827639c84b86be29e4355c2571df
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ"^^xsd:string;
     v-s:attachment d:16d6b47a-7e99-4a44-b931-56476c4246a4;
     v-s:shortLabel "8.3/4.5.3/4.5.3-11"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3347282358154d3b8bd40d72c29b6be1
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ"^^xsd:string;
     v-s:attachment d:2ccfacc4-d65d-42de-8ba7-1917c24079f0;
     v-s:shortLabel "8.3/4.5.3/4.5.3-11"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:1bbd898437034da48afb778db4ded854
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Анализ ИСМ со стороны руководства\""^^xsd:string;
     v-s:attachment d:4ec7ed14-a233-4db0-ba5b-e1afe82588c7;
     v-s:shortLabel "ИИСМ 5.6/4.6/4.6"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:10b4a6b8937e4fb6b4f1c6517ad37120
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Внутренние аудиты ИСМ\""^^xsd:string;
     v-s:attachment d:c0542c29-1f0c-40ab-9ae4-799f87af4216;
     v-s:shortLabel "ИИСМ 8.2.2/4.5.5/4.5.5"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:d3bf6104e101461fafbb4288d084be59
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Готовность и реагирование на аварийные ситуации\""^^xsd:string;
     v-s:attachment d:cbf67186-e145-47eb-9eeb-16a94e1e69fe;
     v-s:shortLabel "ИИСМ ХХХ/4.4.7/4.4.7"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f04e026b2a5842fa8e0c89d9c9dcf123
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Готовность и реагирование на аварийные ситуации\""^^xsd:string;
     v-s:attachment d:34da5c7f-b936-4143-9daf-66f5236f58e7;
     v-s:shortLabel "ИИСМ ХХХ/4.4.7/4.4.7 v6"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:be5ee883271d42aebc66cbffcedfbb3c
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Идентификация и прослеживаемость продукции \" "^^xsd:string;
     v-s:attachment d:68e6ac81-44b0-4b17-ac36-522977c47939, d:cf6ecdf9-6fd8-4ad3-bc89-43ab3a7311c9;
     v-s:shortLabel "ИИСМ 7.5.3/ХХХ v4 - 2015"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:88701182030841928c060f402f4d6693
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Идентификация, оценка значимости экологических аспектов\""^^xsd:string;
     v-s:attachment d:baa83ccc-df96-4773-8959-3ad08e6e31be;
     v-s:shortLabel "ИИСМ ХХХ/4.3.1/ХХХ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e2fb3c31da44473a8fa5449e4920c99a
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Корректирующие и предупреждающие действия\""^^xsd:string;
     v-s:attachment d:044d52ef-8617-483a-8e88-aebade14eff5;
     v-s:shortLabel "ИИСМ 8.5.2; 8.5.3/4.5.3/4.5.3-11 v4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e76e0542651a492aaf2805ae1e00fcfb
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Управление измерительным оборудованием\""^^xsd:string;
     v-s:attachment d:7004dd61-db67-4db2-b381-07ee4acfd8d7;
     v-s:shortLabel "ИИСМ 7.6/4.5.1/4.5.1-11v4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:1bb1ae3c45fe43388a7386e344b31e12
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ИСМ \"Управление измерительным оборудованием\""^^xsd:string;
     v-s:attachment d:5b4e6b7c-722f-492b-97e5-dfda16c929a9;
     v-s:shortLabel "ИИСМ 7.6/4.5.1/4.5.1 v4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:cfba2812d0ae456aa64c7659d206affd
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ППРС"^^xsd:string;
     v-s:attachment d:59a06fbc-3784-44f6-976f-b88656a62662;
     v-s:shortLabel "Инструкция"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:54b4b5a8f1a045b4b248c5eca3231e7a
     a v-s:NormativeDocument;
     rdfs:label "Инструкция интегрированной системы менеджмента"^^xsd:string;
     v-s:attachment d:b8d4173f-f374-4f6c-8808-073956c9ed7a;
     v-s:shortLabel "ИИСМ  7.4.1/4.4.6./4.4.6-13V6"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:30c762c289884f7ea1d25bac499192c1
     a v-s:NormativeDocument;
     rdfs:label "Инструкция интегрированной системы менеджмента \"Управление измерительным оборудованием\""^^xsd:string;
     v-s:attachment d:d9ce2c40-c055-42f1-bf41-546040631a70;
     v-s:shortLabel "ИИСМ 7.6х4.5.1х4.5.1 v4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:148a3e0b231147059271fa186665054f
     a v-s:NormativeDocument;
     rdfs:label "Инструкция интегрированной системы менеджмента ИИСМ 7.4.1/4.4.6/4.4.6-14V7 Порядок оценки и выбора поставщиков древесного сырья."^^xsd:string;
     v-s:attachment d:79d1f204-9a40-4bc8-b4d7-2101e3783b8a;
     v-s:shortLabel "ИИСМ 7.4.1/4.4.6/4.4.6-14V7"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:49506bda89df40fa844f4be49e6c2e24
     a v-s:NormativeDocument;
     rdfs:label "Инструкция о проведении огневых работ на территории ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:d48b114b-14d2-427f-beca-26a46196b049;
     v-s:shortLabel "Приказ №564"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b7496fbca4564b37ba910c7b7b4b8f6f
     a v-s:NormativeDocument;
     rdfs:label "Инструкция ответственному за исправное состояние и безопасную эксплуатацию трубопроводов пара и горячей воды\n"^^xsd:string;
     v-s:attachment d:7fcb6fde-f5ca-46ab-982f-a81727a2f435;
     v-s:shortLabel "11"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6643f5436e654f6d9f453cf1936cd353
     a v-s:NormativeDocument;
     rdfs:label "Инструкция по монтажу и сборки лесов Layher"^^xsd:string;
     v-s:attachment d:58363aca-69ab-4895-8157-a51eb1e68e89;
     v-s:shortLabel "Инструкция по монтажу и сборки лесов Layher"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:2e1518fb99c5402fbb7fe0e7ed07a0f7
     a v-s:NormativeDocument;
     rdfs:label "Инструкция по организации безопасного проведения газоопасных работ в цехах (участках) ОАО «Монди СЛПК»"^^xsd:string;
     v-s:shortLabel "Инструкция по организации безопасного проведения газоопасных работ в цехах (участках) ОАО «Монди СЛПК»"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6ed3a35e815d4e929c3da8a5b94258e3
     a v-s:NormativeDocument;
     rdfs:label "Инструкция по охране труда для работающих на компьютере."^^xsd:string;
     v-s:attachment d:522a3599-07b6-4218-b361-c5c24364c518;
     v-s:shortLabel "б/н от 29.12.2011 г."^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:63f8f44198f34e95aa4fac7df1003a31
     a v-s:NormativeDocument;
     rdfs:label "Инструкция по эксплуатации ПЭ-4610"^^xsd:string;
     v-s:attachment d:973a02be-377f-4c98-8894-7cdafe98ba7b;
     v-s:shortLabel "-"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:cabdbf7023674941966883f3317e6597
     a v-s:NormativeDocument;
     rdfs:label "Инструкция предприятия"^^xsd:string;
     v-s:attachment d:59504490-d8da-4bbc-a914-895cd2775529;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a644c09a56fe4203a3c390e0f3471392
     a v-s:NormativeDocument;
     rdfs:label "Инструкция предприятия \"Порядок разработки и ввода нового продукта\""^^xsd:string;
     v-s:attachment d:1d4cd6d6-8cf2-457d-9d50-2014a8ccd6b6;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:caf7a5e3c8aa483385027d52f8c0d68c
     a v-s:NormativeDocument;
     rdfs:label "Инструкция предприятия \"Совещание по развитию качества\""^^xsd:string;
     v-s:attachment d:bb2e4254-acb3-4b8c-91d3-8dbb31b45b6b;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:1e8bbe0036c446aea11f712082b8983b
     a v-s:NormativeDocument;
@@ -445,1262 +458,1262 @@ d:1e8bbe0036c446aea11f712082b8983b
     v-s:attachment d:72385892-be5b-4950-81bd-33ccd5ff45aa, d:19bdfa3c-028f-4a5c-9fb6-9201f0420f1c, d:774ccf3f-ed48-41d4-a6ce-b12d18751ac6, d:4e3b1b4c-5640-488f-bc9f-68685ecbefc5;
     v-s:attachment d:575f2f35-f3fc-49a2-bacd-715fe41b30c7;
     v-s:shortLabel "б/н"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e564a5c58d7d423aa9bc5e886c893e00
     a v-s:NormativeDocument;
     rdfs:label "Инструкция №68У"^^xsd:string;
     v-s:attachment d:850a3b82-2e44-4496-8ff2-58dae21dc94e;
     v-s:shortLabel "Инструкция №68У"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f5805a08ca3b4b06a6f9f8af0f000c8b
     a v-s:NormativeDocument;
     rdfs:label "Использование лесов"^^xsd:string;
     v-s:attachment d:1c9eb9ce-4bfe-422d-9fa8-011d1fb7bec4;
     v-s:shortLabel "Использование лесов"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e9d80f6326ec4b0f9d08f6bb163e10d8
     a v-s:NormativeDocument;
     rdfs:label "МЕЖОТРАСЛЕВЫЕ ПРАВИЛА ПО ОХРАНЕ ТРУДА ПРИ РАБОТЕ НА ВЫСОТЕ"^^xsd:string;
     v-s:attachment d:039932dc-b01d-4d7c-a607-f6ec6db13415;
     v-s:shortLabel "ПОТ РМ 012-2000"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:23e08cca5754473bac4712c88699b85a
     a v-s:NormativeDocument;
     rdfs:label "МЕЖОТРАСЛЕВЫЕ ПРАВИЛА ПО ОХРАНЕ ТРУДА ПРИ ХОЛОДНОЙ ОБРАБОТКЕ МЕТАЛЛОВ"^^xsd:string;
     v-s:attachment d:cd5b7a82-786c-4374-a55e-3dbc20c3ce2d;
     v-s:shortLabel "ПОТ Р М 006-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:2e4766c469d349aca0a3dc86ae85a94b
     a v-s:NormativeDocument;
     rdfs:label "МЕЖОТРАСЛЕВЫЕ ПРАВИЛА ПО ОХРАНЕ ТРУДА ПРИ ЭЛЕКТРО- И ГАЗОСВАРОЧНЫХ РАБОТАХ"^^xsd:string;
     v-s:attachment d:7eadec34-b50d-4bf3-b0d8-b7a6b1750340;
     v-s:shortLabel "ПОТ РМ 020-2001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:5c392dbab10e4bb3b4f93ac5d01a465b
     a v-s:NormativeDocument;
     rdfs:label "Маркировка бумаги и картона на предприятии АО \"Монди СЛПК\""^^xsd:string;
     v-s:shortLabel "Инструкция предприятия"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4405488295fd4a26a0ce0e935433f6cc
     a v-s:NormativeDocument;
     rdfs:label "Маркировка бумаги и картона на предприятии ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:0d6f9996-cedf-4a0b-b77e-86204ed94493;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:bffa0e0205b9494eaf08da14ce7657d5
     a v-s:NormativeDocument;
     rdfs:label "Маркировка бумаги и картона на предприятии ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:f3105f14-f876-466e-aa2f-b33c7df67be7;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6231945e52cd4d6095e87f6bf898511f
     a v-s:NormativeDocument;
     rdfs:label "Маркировка бумаги и картона на предприятии ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:ca677181-c148-43b4-82b2-60c38c37f4dd;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:0323684814784e149c77c387d32b265e
     a v-s:NormativeDocument;
     rdfs:label "Маркировка бумаги и картона на предприятии ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:f6ba976b-4b07-4949-a62e-9bc340dd8c7b;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8ed8b72003d942c690213879266c2a64
     a v-s:NormativeDocument;
     rdfs:label "Маркировка бумаги и картона на предприятии ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:8c4859dd-6067-4b4e-98a7-6e3a8cbe2a52;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:50318cf155864783a99e6087f4d42653
     a v-s:NormativeDocument;
     rdfs:label "Мартица аспектов качества процессов ИСМ"^^xsd:string;
     v-s:attachment d:801750dc-b03e-4922-9471-12fa9c5eb3ae;
     v-s:shortLabel "М"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a6ffabb1ab7e47218f5910b0cdfa1ca7
     a v-s:NormativeDocument;
     rdfs:label "Матрица аспектов качества АО \"Монди СЛПК\" (май 2015 г.)"^^xsd:string;
     v-s:attachment d:79038705-3852-4cdb-b257-daf1e268019b;
     v-s:shortLabel "матрица"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9a689a59977b4d57a35eea82c3f9c5b1
     a v-s:NormativeDocument;
     rdfs:label "Матрица соответствия экологических аспектов и процессов ИСМ ОАО \"Монди СЛПК\" (сентябрь 2014 г.)"^^xsd:string;
     v-s:attachment d:e5dd7d8a-d686-42ee-82b4-e35dce38de16;
     v-s:shortLabel "Матрица"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ad4a24a7d1114ed3bf64da2ce79a6316
     a v-s:NormativeDocument;
     rdfs:label "Матрица экологических аспектов АО \"Монди СЛПК\" (апрель 2015 г.)"^^xsd:string;
     v-s:shortLabel "матрица"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:5cf217c7ca77422188e954548e6acfb2
     a v-s:NormativeDocument;
     rdfs:label "Матрица экологических аспектов АО \"Монди СЛПК\" при нормальных и аварийных условиях (апрель 2015 г.)"^^xsd:string;
     v-s:attachment d:d12b8e9e-7e30-4320-bbcb-cf35c6fd9f0c;
     v-s:shortLabel "матрица"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:38188376605d467db2b34e835a263344
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила на АТС"^^xsd:string;
     v-s:attachment d:18798d56-fd8b-4236-a6b7-86dad627d96a;
     v-s:shortLabel "ПОТ РМ-027-2003"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b0f6e0b85c884569aeb5ada8dbe1c766
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила на автомобильном транспорте"^^xsd:string;
     v-s:attachment d:489b6ccd-e11d-4929-8cbc-9acdcefe12b3;
     v-s:shortLabel "Правила"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8b42d39376ff4a26b7c6e83c2dc65fb2
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда на автомобильном транспорте"^^xsd:string;
     v-s:shortLabel "ПОТ Р М-027-2003"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3adb4fb01bcd4b4bb7c2871d9ad84e5d
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда на автомобильном транспорте"^^xsd:string;
     v-s:attachment d:a8fe2760-2dd2-48e7-a72a-f183c692e563;
     v-s:shortLabel "ПОТ РМ-027-2003"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:741a73a533a64a9fa46bb0d7c29779f4
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда при работе на высоте"^^xsd:string;
     v-s:shortLabel "ПОТ Р М-012-2000"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:23d3c88f1fca4c50bdbfa868d4535291
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда при холодной обработке металлов"^^xsd:string;
     v-s:shortLabel "ПОТ Р М 006-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6d528cdf1bd0446c82f5af68462a40e7
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда при эксплуатации водопроводно - канализационного хозяйства"^^xsd:string;
     v-s:attachment d:58ffd8b5-b6aa-4174-9c3f-53305a82d8d5;
     v-s:shortLabel "ПОТ Р М-025-2002"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b265fd0c665f4c9184b16327d336409c
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда при эксплуатации промышленного транспорта (конвейерный, трубопроводный и другие транспортные средства непрерывного действия)"^^xsd:string;
     v-s:shortLabel "Постановление Минтруда РФ от 17.06.2003 N 36"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:566c6b5ff52d432b875e3a19998b9647
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда при эксплуатации промышленного транспорта (конвейерный, трубопроводный и другие транспортные средства непрерывного действия)"^^xsd:string;
     v-s:attachment d:aeefb75e-b2ba-4e0b-95a3-13e3b409d249;
     v-s:shortLabel "ПОТ Р М-029-2003"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:1f4be231796a48b1af2f43578a399f4c
     a v-s:NormativeDocument;
     rdfs:label "Межотраслевые правила по охране труда при эксплуатации промышленного транспорта (напольный безрельсовый колесный транспорт)"^^xsd:string;
     v-s:attachment d:3b9b0449-f293-4234-8902-f4935bfe0b84;
     v-s:shortLabel "ПОТ Р М-008-99"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:2fd1de8fcdff4b59b09531dd97746340
     a v-s:NormativeDocument;
     rdfs:label "Метод оценки удовлетворенности внутренних потребителей"^^xsd:string;
     v-s:attachment d:d0f7f814-4eed-4aab-b9b0-e5441c37fc2e;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e152ffe429ff4f0b82c3a0ea466814d9
     a v-s:NormativeDocument;
     rdfs:label "Методика  определения уровня арендной платы за нежилые и производственные  помещения, находящиеся в собственности АО «Монди СЛПК» "^^xsd:string;
     v-s:attachment d:386ca72d-2dfb-42ef-b452-b3520ac4f589, d:e01c8b3c-06e4-46a0-a015-75e6d064e3c3;
     v-s:shortLabel "2"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a02daafe8d934ecda5f204a4aa715b2f
     a v-s:NormativeDocument;
     rdfs:label "Методология"^^xsd:string;
     v-s:attachment d:30198d6d-e586-4a72-9ac5-16a684147204, d:142e7d22-e4ce-4c84-9076-1638d97b14fe;
     v-s:shortLabel "1"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a3138c8f79684db79d2943f4b69df704
     a v-s:NormativeDocument;
     rdfs:label "Методология разделения финансовой отчетности АО \"Монди Сыктывкарский ЛПК\" на Бумажный и Картонный бизнесы"^^xsd:string;
     v-s:attachment d:211eb421-ec99-41d1-9cc1-2b91598dc398, d:e4dd4221-98a4-42be-940b-4fbac8366fd1;
     v-s:shortLabel "версия №1 15.07.2015"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:0c7aea81630e4ff9a28662a6f5cdc6ec
     a v-s:NormativeDocument;
     rdfs:label "Нормы расхода сырья и химикатов на 2010 год"^^xsd:string;
     v-s:attachment d:839f6ecb-5fe4-49ae-a65d-2781e3cc73e3;
     v-s:shortLabel "Нормы расхода сырья и химикатов"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:085135e415944eae93716b5e48941b1e
     a v-s:NormativeDocument;
     rdfs:label "О вводе в действие технического стандарта предприятия LML 1-6 «Указатель материалов для трубопроводов и клапанов в зависимости от технологической среды», ревизия 2."^^xsd:string;
     v-s:attachment d:dadef9e4-7f70-4ac3-8f2b-55e8430b7213, d:165d4480-7fe1-4338-9858-7abb5ed54de6, d:5e3592b7-6aad-4a2d-9d7e-c87afb1b8cab;
     v-s:shortLabel "LML 1-6 rev 2."^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:55794da067a04211826fba792bde09c5
     a v-s:NormativeDocument;
     rdfs:label "О назначении ответственных за содержанием медицинской аптечки первой помощи"^^xsd:string;
     v-s:attachment d:8ff3c58a-1800-467b-9e0f-0f87c3a27a4d;
     v-s:shortLabel "Распоряжение №63 от 07 июля 2005"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:34eee4b807c749f39cf3c2673b60f878
     a v-s:NormativeDocument;
     rdfs:label "Об утверждении Межотраслевых правил по охране труда при электро- и газосварочных работах"^^xsd:string;
     v-s:shortLabel "Постановление Минтруда РФ от 09.10.2001 N 72"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6c1cafa066294b509af7d6a53ab3a9fb
     a v-s:NormativeDocument;
     rdfs:label "Об утверждении Правил технической эксплуатации электроустановок потребителей"^^xsd:string;
     v-s:shortLabel "Приказ Минэнерго РФ от 13.01.2003 N 6"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:686773be5cd6408c8f4a317f644ce245
     a v-s:NormativeDocument;
     rdfs:label "Обмен информацией в ИСМ"^^xsd:string;
     v-s:attachment d:90e90ad0-358c-4c02-b9b1-b2c54ee6c259;
     v-s:shortLabel "5.5.3/4.4.3/4.4.3"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4bf56fef5c0a41c58e6388fb0a97a5c2
     a v-s:NormativeDocument;
     rdfs:label "Общие требования безопасности к оборудованию"^^xsd:string;
     v-s:attachment d:033f6cb0-0118-428f-8b50-2dd8a03cf178;
     v-s:shortLabel "ГОСТ 12.2.003-91(2001)"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a1e5e5b970974242a8328174b239fa6a
     a v-s:NormativeDocument;
     rdfs:label "Описание и расчет показателя KPI Претензии"^^xsd:string;
     v-s:attachment d:fd79fade-786c-4b61-a2fb-3df3c96f51a8;
     v-s:shortLabel "методика"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8d221c4c1cc34365b831eb57b7713c40
     a v-s:NormativeDocument;
     rdfs:label "Описание процесса доставки готовой продукции\nгрузополучателям автотранспортом ТЭК после выгрузки \nиз вагона на внешнем складе. \n"^^xsd:string;
     v-s:attachment d:cf6f1fd0-700e-41ec-8f45-eeaa4f5d0a1f;
     v-s:shortLabel "Б/Н"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:605b3f947ad04bab9b37fd2f31c31b6c
     a v-s:NormativeDocument;
     rdfs:label "ПДД"^^xsd:string;
     v-s:shortLabel "ПДД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9baad0e0d49c489dac8abdd88c4758c8
     a v-s:NormativeDocument;
     rdfs:label "ПДД РФ"^^xsd:string;
     v-s:shortLabel "Перечень неисправностей и условий, при которых запрещается эксплуатация транспортных средств"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:d6ba433aab4a4244a724d52c7946b061
     a v-s:NormativeDocument;
     rdfs:label "ПДД РФ"^^xsd:string;
     v-s:shortLabel "Пункт 3.4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:67e2a1f947ac4e2d8c5372d1c6b1fee6
     a v-s:NormativeDocument;
     rdfs:label "ПЛАН ПО КАЧЕСТВУ ПРОДУКЦИИ ПРОИЗВОДСТВА БУМАГИ "^^xsd:string;
     v-s:attachment d:b569616d-be59-45ac-a91a-e6c98715247a, d:0d64b87c-0c22-405c-91d3-fbadd7b99cae;
     v-s:shortLabel "НД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b5252854408341b4add3770776e0650c
     a v-s:NormativeDocument;
     rdfs:label "ПЛАН ПО КАЧЕСТВУ ПРОДУКЦИИ ПРОИЗВОДСТВА ЦЕЛЛЮЛОЗЫ"^^xsd:string;
     v-s:attachment d:d24b670f-7c60-4ce0-a816-07f454e79641, d:3f933614-c43d-44b7-bcbb-ee7fd60dc81c;
     v-s:shortLabel "НД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e880c866c09b4045923aa4df023a4269
     a v-s:NormativeDocument;
     rdfs:label "ПОЛОЖЕНИЕ О ПОРЯДКЕ ИДЕНТИФИКАЦИИ И УЧЕТА ПРИЧИН ПРОСТОЕВ ЦЛБ"^^xsd:string;
     v-s:attachment d:399f942f-26af-4317-b507-a505573510dc;
     v-s:shortLabel "Положение ОАО \"Монди СЛПК\""^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:45d328ba9a1d40edacccd66ab2bf368a
     a v-s:NormativeDocument;
     rdfs:label "ПОЛОЖЕНИЕ о порядке компенсации работникам ОАО «Монди СЛПК» расходов на оплату стоимости проезда к месту использования отпуска и обратно"^^xsd:string;
     v-s:attachment d:0abe6640-8e1e-4e6a-903d-e66e1f2dff52;
     v-s:shortLabel "о порядке компенсации работникам ОАО «Монди СЛПК» расходов на оплату стоимости проезда к месту использования отпуска и обратно"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:492b59a541794633aa7e7ef8cba02f61
     a v-s:NormativeDocument;
     rdfs:label "ПОТ РМ на ЛЗ производстве"^^xsd:string;
     v-s:attachment d:66ce2faf-5a0b-4354-bfc3-4e11aba22a7b;
     v-s:shortLabel "ПОТ РМ 001-97."^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:2ff5c8fa74f54fdc92dc133acbc8c16b
     a v-s:NormativeDocument;
     rdfs:label "ПОТ РМ-004-97 Химические вещества"^^xsd:string;
     v-s:attachment d:f72934f1-a758-4650-be30-c4afda97338c;
     v-s:shortLabel "ПОТ РМ-004-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:201639a03e7c42658053b02f0643b34f
     a v-s:NormativeDocument;
     rdfs:label "ПОТ РО 14000-004-98"^^xsd:string;
     v-s:attachment d:bf0237b8-3489-4359-8d65-d504db5e7511;
     v-s:shortLabel "ПОТ РО 14000-004-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:007c975500634f7eb7708ff3919d48c9
     a v-s:NormativeDocument;
     rdfs:label "ПОТ РО 14000-005-98. Положение. Работы с повышенной опасностью. Организация проведения"^^xsd:string;
     v-s:attachment d:cedb081a-5110-4ab3-af60-f8ba6271afd5;
     v-s:shortLabel "ПОТ РО 14000-005-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3bddeaac90d2482f9b1ac7c82cacf3dd
     a v-s:NormativeDocument;
     rdfs:label "ПОТ РО-14000-007-98"^^xsd:string;
     v-s:attachment d:3c0d9c26-fc61-45c7-9f6b-7b3c6b2f9902;
     v-s:shortLabel "ПОТ РО-14000-007-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c50379e6cf6f4015885c4e12c2a7fd8a
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛ УСТРОЙСТВА И БЕЗОПАСНОЙ ЭКСПЛУАТАЦИИ ТЕХНОЛОГИЧЕСКИХ ТРУБОПРОВОДОВ"^^xsd:string;
     v-s:attachment d:2ca4edf0-07f4-4ecf-82bb-f7d7d7adbbc2;
     v-s:shortLabel "ПБ 03-585-03"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:81219ed45c06498b9a82727aed9d1642
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛА"^^xsd:string;
     v-s:shortLabel "ПОТ РМ 001-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3b77c5a2f0954f58ae08a00b6cc873b7
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛА ДОРОЖНОГО ДВИЖЕНИЯ"^^xsd:string;
     v-s:attachment d:206a55ae-f75a-4037-b7e8-9167bf92a32c;
     v-s:shortLabel "ПДД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4670cbcc33c447b6b1c5139df7b96ab0
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛА ПО ОХРАНЕ ТРУДА В ЦЕЛЛЮЛОЗНО-БУМАЖНОЙ И ЛЕСОХИМИЧЕСКОЙ ПРОМЫШЛЕННОСТИ"^^xsd:string;
     v-s:attachment d:4a46c069-e1cb-4461-a0e0-753e89117562;
     v-s:shortLabel "ПОТ РО 00-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a42d9d7966344f76853dc45d910e51e9
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛА ПО ОХРАНЕ ТРУДА В ЦЕЛЛЮЛОЗНО-БУМАЖНОЙ И ЛЕСОХИМИЧЕСКОЙ ПРОМЫШЛЕННОСТИ"^^xsd:string;
     v-s:attachment d:b5e71194-0b68-43c0-b698-0e1984e8874c;
     v-s:shortLabel "ПОТ РО 00-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:873fd30497e6466188dbbc9a7f0eb1c9
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛА ПО ОХРАНЕ ТРУДА ПРИ РАБОТЕ НА ВЫСОТЕ"^^xsd:string;
     v-s:attachment d:100f8aa1-37a2-421a-8a45-a4b80121be1e, d:262b4d64-8dda-4fdb-8617-c303c46a8dd1;
     v-s:shortLabel "ПРИКАЗ от 28 марта 2014 г. N 155н"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8a389a99483d44279361a3b774cf7236
     a v-s:NormativeDocument;
     rdfs:label "ПРАВИЛА ПРОТИВОПОЖАРНОГО РЕЖИМА В РОССИЙСКОЙ ФЕДЕРАЦИИ"^^xsd:string;
     v-s:attachment d:afc39908-3641-4bcf-8855-859ded60e3d5;
     v-s:shortLabel "ПБ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:bd53556c2070413881ed77e4ae600b2d
     a v-s:NormativeDocument;
     rdfs:label "ПУЭ гл.2.4.-2.5."^^xsd:string;
     v-s:attachment d:7a373eaa-af84-432d-9ba4-475f773802b0;
     v-s:shortLabel "ПУЭ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fa0a78de9328452b8d61f5569667151f
     a v-s:NormativeDocument;
     rdfs:label "ПУЭ шестое издание"^^xsd:string;
     v-s:shortLabel "\"Правила устройства электроустановок (ПУЭ). Шестое издание\""^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:829aeb3a8c49457d8f42dd06831905af
     a v-s:NormativeDocument;
     rdfs:label "Пассажирский АТС"^^xsd:string;
     v-s:attachment d:9a602989-57b6-4102-82ce-c1d023d23adf;
     v-s:shortLabel "ГОСТ Р 51825-2001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6e955a78e01544818fe967ee2d187d32
     a v-s:NormativeDocument;
     rdfs:label "Пассажирский АТС"^^xsd:string;
     v-s:attachment d:f7d2a1a4-fc5c-42ff-83b3-777da49a8ce3;
     v-s:shortLabel "ГОСТ Р 51825-2001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b73dd0305fb14cfe931f795fb4702c58
     a v-s:NormativeDocument;
     rdfs:label "Пассажирский АТС"^^xsd:string;
     v-s:attachment d:2a1d59bb-7f04-40f0-9b55-ba8ee8d5cc84;
     v-s:shortLabel "ГОСТ Р 51825-2001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4c21eaf2245546908150b0f30d736171
     a v-s:NormativeDocument;
     rdfs:label "Пассажирский АТС"^^xsd:string;
     v-s:attachment d:d109ebdf-5136-424c-bb42-f0a4cad2950a;
     v-s:shortLabel "ГОСТ Р 51825-2001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:894b65a80c7244f4b49727d94ae680ed
     a v-s:NormativeDocument;
     rdfs:label "Пассажирский АТС"^^xsd:string;
     v-s:attachment d:5909e3e5-2380-45a6-ac9e-85fbcfae5f16;
     v-s:shortLabel "ГОСТ Р 51825-2001"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:878d8c31eff042c58b692edd0aa18b29
     a v-s:NormativeDocument;
     rdfs:label "Перечень неисправностей и условий, при которых запрещается эксплуатация транспортных средств"^^xsd:string;
     v-s:shortLabel "3.5. Установка проблесковых маячков, способы их крепления и видимость светового сигнала не соответствуют установленным требованиям."^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:502c0e2f625943e09d6f86d1a2a74756
     a v-s:NormativeDocument;
     rdfs:label "Политика гигиенической безопасности продукции БДМ-21 (картона)"^^xsd:string;
     v-s:attachment d:7dccc579-9f8e-47f3-a116-87ed9520f84d;
     v-s:shortLabel "НД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:547edf397e664a2e89c3bf819877b591
     a v-s:NormativeDocument;
     rdfs:label "Положение  о вахтовом методе организации работ"^^xsd:string;
     v-s:attachment d:0080ef21-4353-4b1d-b743-09df1cb05e54;
     v-s:shortLabel "Положение ОАО Монди СЛПК"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:868f46525e0d43aea0312ba2542c50bb
     a v-s:NormativeDocument;
     rdfs:label "Положение о вахтовом методе работ"^^xsd:string;
     v-s:attachment d:1080fa0f-b970-4898-a1fd-464938421772;
     v-s:shortLabel "ПОЛОЖЕНИЕ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:049a6781445a446c8b22ab54688f4c57
     a v-s:NormativeDocument;
     rdfs:label "Положение о порядке и условиях выплат работникам ОАО \"Монди СЛПК\" за участие в реализации проекта \"Новый взгляд\""^^xsd:string;
     v-s:attachment d:f6bf0d11-a01d-4243-b074-cbce562f3691;
     v-s:shortLabel "1"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:701795e3aa3844f4b85f7a0b5452ef01
     a v-s:NormativeDocument;
     rdfs:label "Положение о системе управления промышленной безопасностью"^^xsd:string;
     v-s:attachment d:8312fde8-9a5b-447b-924f-1f1637cd4dca, d:c76a15ea-9449-4522-8827-0025c802533c;
     v-s:shortLabel "СУПБ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b984d020fb93427c90cf821b3bb247dd
     a v-s:NormativeDocument;
     rdfs:label "Положение оп коллективной ответственности"^^xsd:string;
     v-s:attachment d:33478cfc-71d2-4708-8cc0-720542d0c09e;
     v-s:shortLabel "Положение"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3b3cf45cd854454b81cd11a62ee5f8a2
     a v-s:NormativeDocument;
     rdfs:label "Положение по блокировке энергии на ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:shortLabel "Положение по блокировке энергии на ОАО \"Монди СЛПК\""^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fbc2c0e3c1394d519e97cc99e271fc7b
     a v-s:NormativeDocument;
     rdfs:label "Положение по блокировке энергии на ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:shortLabel "176"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e75304f6ae1844bca5fc53d75020f881
     a v-s:NormativeDocument;
     rdfs:label "Положение по организации безопасной работы с использованием лесов"^^xsd:string;
     v-s:shortLabel "861 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c283c8c817e844e0b6fbb8ff131b6479
     a v-s:NormativeDocument;
     rdfs:label "Порядок ввода нового дизайна упаковочного материала для бумаги в листах"^^xsd:string;
     v-s:attachment d:ae9ffe89-f4da-49d2-95f5-5efa9796a30d;
     v-s:shortLabel "инструкция предприятия"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:5c45c94e495141a0b738fc832ca4dc12
     a v-s:NormativeDocument;
     rdfs:label "Порядок выбора и оценки поставщиков материалов, оборудования, услуг"^^xsd:string;
     v-s:attachment d:9b4cab20-3f99-48eb-b32f-6f35bf3b6109;
     v-s:shortLabel "ИИСМ 7.4.1/4.4.6/4.4.6–2014"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fcebf93e797a40538f3f1dc1902724ab
     a v-s:NormativeDocument;
     rdfs:label "Порядок организации и проведения технического обслуживания  и ремонта измерительного оборудования и средств  автоматизации"^^xsd:string;
     v-s:attachment d:343d4bf5-bec0-42c9-934e-bf87518d8952;
     v-s:shortLabel "Инструкция Предприятия"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ba4baeae60c043b3bc64237d55a77a60
     a v-s:NormativeDocument;
     rdfs:label "Порядок оценки и выбора поставщиков материалов, оборудования, услуг"^^xsd:string;
     v-s:attachment d:f7087311-6adf-4a51-a051-a03d10ac421e;
     v-s:shortLabel "ИИСМ 7.4.1/4.4.6/4.4.6–2013"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:18c1af8d346e455f821c37485b8d05be
     a v-s:NormativeDocument;
     rdfs:label "Порядок оценки и выбора поставщиков материалов, оборудования, услуг"^^xsd:string;
     v-s:attachment d:9ecedec2-747a-4a9d-a814-bea51075085d;
     v-s:shortLabel "ИИСМ 7.4.1х4.4.6х4.4.6-11"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:16f0165c7149434887579b5f4d2f0684
     a v-s:NormativeDocument;
     rdfs:label "Порядок пеработки рулонов на ППРС"^^xsd:string;
     v-s:attachment d:b3cb65e4-c3ac-4c46-a5ef-b64978e7e317;
     v-s:shortLabel "инструкция"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4aff6549921f4525ac8a17f1ba2587f7
     a v-s:NormativeDocument;
     rdfs:label "Порядок работы с паспортами качества для продукции, отгружаемой на внутренний и экспортный рынок"^^xsd:string;
     v-s:attachment d:69944ed7-3c91-4b17-9daa-5084740aa2c1;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:86d0fead7b5f4d84a2bc4bad68d37a32
     a v-s:NormativeDocument;
     rdfs:label "Порядок разработки и ввода нового продукта"^^xsd:string;
     v-s:attachment d:d02350e7-645a-492a-8894-588e6da227c9;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8a42518a2fde425eaf528bf960ea4a8f
     a v-s:NormativeDocument;
     rdfs:label "Порядок рассмотрения претензий и замечаний"^^xsd:string;
     v-s:attachment d:3e54caaa-38be-4d5e-b40c-620188ccb160;
     v-s:shortLabel "НД П"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:520495ed91f34ca5915327dfa421b32e
     a v-s:NormativeDocument;
     rdfs:label "Порядок рассмотрения претензий и замечаний по качеству и количеству"^^xsd:string;
     v-s:attachment d:1bb803af-f924-467e-8c62-62dae5e44001;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:1db22d7adaa5420eac115f20220310a1
     a v-s:NormativeDocument;
     rdfs:label "Порядок согласования и утверждения дизайнов упаковочного материала для продукции АО «Монди СЛПК»."^^xsd:string;
     v-s:attachment d:8267f806-ac54-496d-9ff8-7efe2978ec69;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:78889428262642bcb8a2ac0212cd5ee0
     a v-s:NormativeDocument;
     rdfs:label "Порядок управления Программой качества"^^xsd:string;
     v-s:attachment d:f8d7c5bf-8d47-4ee6-aeef-248336b97bf5;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ad93c5e725ef4ab5b88d777c0623874a
     a v-s:NormativeDocument;
     rdfs:label "Постановление"^^xsd:string;
     v-s:attachment d:104fe197-9137-409a-aa19-02415d325842;
     v-s:shortLabel "25.04.2012 г. N 390"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ddd251f2895746699a65425cdce607ff
     a v-s:NormativeDocument;
     rdfs:label "Праввила противопожарного режима"^^xsd:string;
     v-s:shortLabel "01"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a5269748282a4db88fcd318a976f79d2
     a v-s:NormativeDocument;
     rdfs:label "Правила безопасности при работе с инструментом и приспособлениями."^^xsd:string;
     v-s:shortLabel "РД 34.03.204"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:658df987f91e4f29be7284ed07d6d68b
     a v-s:NormativeDocument;
     rdfs:label "Правила дорожного жвижения"^^xsd:string;
     v-s:attachment d:aeb70932-9241-4dd9-9e63-da65db721408;
     v-s:shortLabel "ПДД"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:bfe33fdc145641a38953fc88a4237fa9
     a v-s:NormativeDocument;
     rdfs:label "Правила заполнения журналов и документов"^^xsd:string;
     v-s:attachment d:be0ea010-db50-43f7-a1d4-ef9ab926a95a;
     v-s:shortLabel "Классификация документов"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ee0a66a6fbb04d8c9b111e0118de9a34
     a v-s:NormativeDocument;
     rdfs:label "Правила охраны труда при использовании химических веществ"^^xsd:string;
     v-s:attachment d:ed36b4e4-ffa2-4940-b0a3-35abcf2e3f2d;
     v-s:shortLabel "ПОТ РМ-004-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:daab11923d8f4c7fb24c396e627da426
     a v-s:NormativeDocument;
     rdfs:label "Правила по охране труда в лесозаготовительном, деревообрабатывающем производствах"^^xsd:string;
     v-s:attachment d:d101636e-1930-43a6-a053-1672c097c02e;
     v-s:shortLabel "ПОТ РМ 001-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:69ed1b9d76fc4b7fba6854a75dd7a88c
     a v-s:NormativeDocument;
     rdfs:label "Правила по охране труда при погрузочно-разгрузочных работах и размещении грузов"^^xsd:string;
     v-s:attachment d:5bc06292-8217-4865-8f4f-74a797857b7b;
     v-s:shortLabel "ПОТ РМ-007-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:223e17ae177b47638378b67ba68a9eb7
     a v-s:NormativeDocument;
     rdfs:label "Правила пожарной безопасности"^^xsd:string;
     v-s:attachment d:d9495193-178d-4442-9c0a-30f286ac1ac0;
     v-s:shortLabel "ППБО-157-90"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9c5208f94dcc40589c94077dfce52029
     a v-s:NormativeDocument;
     rdfs:label "Правила пожарной безопасности"^^xsd:string;
     v-s:attachment d:4c3b2c4c-0df3-4964-a652-fcc42337ef40;
     v-s:shortLabel "ППБ 01-03 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:d7348ed1132f4914859e944051c89f31
     a v-s:NormativeDocument;
     rdfs:label "Правила противопожарного режима"^^xsd:string;
     v-s:attachment d:c9c4ed7a-559a-497e-bfc9-29f25e90fc64;
     v-s:shortLabel "ППР"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:bcd81e66d6ba4784af036f07bf2196f1
     a v-s:NormativeDocument;
     rdfs:label "Правила противопожарного режима в РФ"^^xsd:string;
     v-s:attachment d:76be4e05-8a76-4b5d-9b4c-75b94a598a66;
     v-s:shortLabel "ПП №390 ППР в РФ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:691dbe5810c64233b3241c494a523f8d
     a v-s:NormativeDocument;
     rdfs:label "Правила противопожарного режима в РФ"^^xsd:string;
     v-s:attachment d:bf7967f3-8ca9-4216-bb66-5e3e223d5993;
     v-s:shortLabel "ПП №390 ППР в РФ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:510a9300f7dc487ebecd556fe0d46099
     a v-s:NormativeDocument;
     rdfs:label "Правила противопожарного режима в Российской Федерации"^^xsd:string;
     v-s:attachment d:c94446f9-0ca9-4c6f-8127-51cc7f7766fc;
     v-s:shortLabel "Постановление Правительства РФ от 25_04_2012 N 390 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:838adfef80ad4cbb95964dcb8b71490a
     a v-s:NormativeDocument;
     rdfs:label "Правила техники безопасности при эксплуатации тепломеханического оборудования электростанций и тепловых сетей"^^xsd:string;
     v-s:shortLabel "РД 34.03.201-97"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ba131818aae9434f9659ecec0882d9a5
     a v-s:NormativeDocument;
     rdfs:label "Правила устройства и безопасной эксплуатации грузоподъемных кранов"^^xsd:string;
     v-s:attachment d:27dae753-bbd0-407c-9d92-40b035b141fe;
     v-s:shortLabel " ПБ 10-382-00 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:207c856ccf04420ab33ca0eff8d44101
     a v-s:NormativeDocument;
     rdfs:label "Правила устройства электроустановок"^^xsd:string;
     v-s:attachment d:f09a0e83-a9e6-492c-b169-785cc7704621;
     v-s:shortLabel "ПУЭ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:0dd5116e4d9e462bb47e98aa1aec371c
     a v-s:NormativeDocument;
     rdfs:label "Правила устройства электроустановок"^^xsd:string;
     v-s:attachment d:8103792e-515f-4095-b725-bb11d1b5800e;
     v-s:shortLabel "ПУЭ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:73911f0f35214cddb855aaf91b39dc60
     a v-s:NormativeDocument;
     rdfs:label "Правила эксплуатации электроустановок"^^xsd:string;
     v-s:attachment d:97bf9c25-f67d-4e6b-b2ea-048d65c078f2;
     v-s:shortLabel "ПУЭ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e49ef928adb045ddaa9115323e045251
     a v-s:NormativeDocument;
     rdfs:label "Предписание № 61/1/1 УНД ГУ МЧС России по РК"^^xsd:string;
     v-s:attachment d:e81ee892-e93a-49b6-925c-606b1b3a87ee;
     v-s:shortLabel "Предписание №61/1/1"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:b813124f252741739a898df615edd699
     a v-s:NormativeDocument;
     rdfs:label "Приказ МПР №721 от 01.09.11"^^xsd:string;
     v-s:attachment d:7593edbe-996f-4cc7-9a65-690a2727e54c;
     v-s:shortLabel "721"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3e18951f0d3c40debf23455f258edb10
     a v-s:NormativeDocument;
     rdfs:label "Приказ Минтранса РФ от 16.05.2003 N 133 \"Об утверждении Положения об особенностях режима рабочего времени и времени отдыха работников плавающего состава судов внутреннего водного транспорта\" (Зарегистрировано в Минюсте РФ 01.09.2003 N 5036)"^^xsd:string;
     v-s:attachment d:ec7b9e54-0b6d-42cb-a11b-508c22663bc7;
     v-s:shortLabel "Положение"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e5e55e3a11684de38cd56cd91d3329dc
     a v-s:NormativeDocument;
     rdfs:label "Приказ о мерах по обеспечению пожарной безопасности на весенне-летний пожароопасный период 2015г"^^xsd:string;
     v-s:attachment d:6dee94d9-dd3f-48c7-93d7-2b27c9a8387f;
     v-s:shortLabel "Приказ №325"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e21d2c8e23c147c3a4f4c84986248c51
     a v-s:NormativeDocument;
     rdfs:label "Приказ № 600 от 20.11.2012 «Об обеспечении безопасности дорожного движения»"^^xsd:string;
     v-s:shortLabel "приказ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f325781edcd4448f8460b9ff048e33e2
     a v-s:NormativeDocument;
     rdfs:label "Приказ №214 от 02 апреля 2013."^^xsd:string;
     v-s:attachment d:0a33f019-7001-4323-bf19-18202ea3ce6f;
     v-s:shortLabel "\" О несчастном случае с водителем автомобиля ЦУМ\""^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c61047865ad64ed381243bc754e81365
     a v-s:NormativeDocument;
     rdfs:label "Приказ №600 от 20.11.2012 Обеспечение безопасности дорожного движения"^^xsd:string;
     v-s:attachment d:129d8089-0360-4e22-9864-3d2f4f779fe3;
     v-s:shortLabel "Приказ №600"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:656b5f6d806c45fabeb6362cb2822d3a
     a v-s:NormativeDocument;
     rdfs:label "Производственные риски"^^xsd:string;
     v-s:attachment d:664b3538-21b3-45fb-bf4f-59c79fd17366;
     v-s:shortLabel "РИСК"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:83918b0e2ff54632983a5f3a0f5e5a14
     a v-s:NormativeDocument;
     rdfs:label "Противопожарный режим"^^xsd:string;
     v-s:attachment d:c1b3117f-44d5-4f7c-a297-b0d0becc5867;
     v-s:shortLabel "ППБ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fb551185c5da4d05ae3d437bc2506942
     a v-s:NormativeDocument;
     rdfs:label "Путевая документация"^^xsd:string;
     v-s:attachment d:d2326670-d74a-494a-bbf3-88ddf6a1176a;
     v-s:shortLabel "Путевой лист"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ec9b79c150c846a1b73869174309af7d
     a v-s:NormativeDocument;
     rdfs:label "РЕШЕНИЕ"^^xsd:string;
     v-s:attachment d:22bc7c79-5ca1-491f-a0b4-4376a5234014;
     v-s:shortLabel "09,12,11 N 877"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:aaa5470d84e149afbef58cd878973abe
     a v-s:NormativeDocument;
     rdfs:label "РОССИЙСКИЙ НАЦИОНАЛЬНЫЙ СТАНДАРТ ДОБРОВОЛЬНОЙ ЛЕСНОЙ СЕРТИФИКАЦИИ"^^xsd:string;
     v-s:attachment d:961d59b9-d22b-4947-8b0f-40f54bef892d;
     v-s:shortLabel "FSC"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e15282798f3a4352a22cd6461e8b4fbe
     a v-s:NormativeDocument;
     rdfs:label "Разработка ИОТ"^^xsd:string;
     v-s:attachment d:d1b75b97-7246-4a9e-9578-c46e6dfbe12b;
     v-s:shortLabel "Методические рекомендации"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e7f0c1968c684af89f9e730d1a512547
     a v-s:NormativeDocument;
     rdfs:label "Распоряжение Директора СЛЗ"^^xsd:string;
     v-s:attachment d:8ac3d750-a8ab-42bd-bfdf-381c851af6a4;
     v-s:shortLabel "Распоряжение № 106-21 от 30.04.15г"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:158566200b434abdaf4e48eded28ff5d
     a v-s:NormativeDocument;
     rdfs:label "Распоряжение Директора СЛЗ"^^xsd:string;
     v-s:attachment d:68fcf23e-9b41-4696-852b-26ad2fa8b602;
     v-s:shortLabel "Распоряжение № 106-21 от 30.04.15г"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:321b70f010164225b36964687f55e2f8
     a v-s:NormativeDocument;
     rdfs:label "Распоряжение №15 о введение в действие памяток в области пожарной безопасности"^^xsd:string;
     v-s:attachment d:895265ce-ec9d-4ad2-8805-c8f24c159577;
     v-s:shortLabel "Распоряжение №15"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:7fca8de8b8dc4461b035938727f4f7e2
     a v-s:NormativeDocument;
     rdfs:label "Регламент по содержанию лесных дорог"^^xsd:string;
     v-s:attachment d:0c86e35e-c6d4-4d51-a1d8-e59cfbe8e1de;
     v-s:shortLabel "1"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:899e4693cc2744c7966fccc901726e77
     a v-s:NormativeDocument;
     rdfs:label "Руководство по интегрированной системе менеджмента"^^xsd:string;
     v-s:attachment d:ccfe7107-34f6-408c-8508-25b78850dbe2;
     v-s:shortLabel "РИСМ-2012"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fd26105898bf4b84b59b41e2ccf9c43d
     a v-s:NormativeDocument;
     rdfs:label "Руководство по системе менеджмента гигиены на потоке производства картона"^^xsd:string;
     v-s:attachment d:9daa957f-bfca-4d1f-9f8d-87d376f05292;
     v-s:shortLabel "GMP"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:2427b708ef6d480086ea9c960c76eb7b
     a v-s:NormativeDocument;
     rdfs:label "Руководство по системе менеджмента гигиены на потоке производства картона"^^xsd:string;
     v-s:attachment d:4a7ba8a3-6bb6-436d-af1b-d37f28ed03e1;
     v-s:shortLabel "GMP"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c0ce962ae8f34130aaee4364b8045544
     a v-s:NormativeDocument;
     rdfs:label "Руководство по системе менеджмента гигиены на потоке производства картона"^^xsd:string;
     v-s:attachment d:4e61f69a-51fc-427f-aff0-24643c45b53a;
     v-s:shortLabel "GMP"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:229e3ada8ab040a89ca1b29bdd421ab7
     a v-s:NormativeDocument;
     rdfs:label "СНИП 12-04-2002"^^xsd:string;
     v-s:attachment d:10905a03-ec63-4452-988c-bc776776eff3;
     v-s:shortLabel "Строительные нормы и правила"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9e52286042424c589c158e5567d4e86e
     a v-s:NormativeDocument;
     rdfs:label "ССБТ. Конвейеры. Общие требования безопасности (с Изменениями N 1, 2)."^^xsd:string;
     v-s:attachment d:c0864e24-7b6f-43f6-a064-6de97166e9ef;
     v-s:shortLabel "ГОСТ 12.2.022-80"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8df43929a3624e618af6bdcacc766797
     a v-s:NormativeDocument;
     rdfs:label "Сан-Эпид требования к хран продуктов"^^xsd:string;
     v-s:attachment d:8aac24f9-7d32-463e-9639-3bbf6d468e10;
     v-s:shortLabel "СанПин продукты"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f59d4140c3b046baad4ab2d75f726fd7
     a v-s:NormativeDocument;
     rdfs:label "Санитарно-эпидемиологические правила"^^xsd:string;
     v-s:attachment d:4cfbdc3b-2987-43c3-ba74-e7be75f3bcf5;
     v-s:shortLabel "СП 2.2.1312-03"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:e444f2b3bcb8423dbebff61990c9aaef
     a v-s:NormativeDocument;
     rdfs:label "Санитарные правила и нормы"^^xsd:string;
     v-s:attachment d:347c9120-c1f9-4e50-9e01-92fe9021d25f;
     v-s:shortLabel "САНПИН 2.2.22.4.1340-03"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:f06bf869e123451d9e7174e3c09691ec
     a v-s:NormativeDocument;
     rdfs:label "Санитарные правила и нормы"^^xsd:string;
     v-s:attachment d:68fd1d08-a86f-44f8-9424-32a212ed7b9f;
     v-s:shortLabel "СанПиН"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:bce0969b869e4642b188c02ccfa4dcc6
     a v-s:NormativeDocument;
     rdfs:label "Свод правил"^^xsd:string;
     v-s:attachment d:20fda60e-ea94-4ea7-94f5-e55b1210a11c;
     v-s:shortLabel "СП 9.13130.2009"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3a6b1e1713e04d40938f5c6188615a3b
     a v-s:NormativeDocument;
     rdfs:label "Свод правил"^^xsd:string;
     v-s:attachment d:ce0b8e75-9f46-442a-a33b-2b3c4c91d8c7;
     v-s:shortLabel "СП5.13130.2009"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:897fe334b2204c3f815d428761d92c2c
     a v-s:NormativeDocument;
     rdfs:label "Свод правил"^^xsd:string;
     v-s:attachment d:ce50697e-0fa0-452a-9c0d-09bc053b5ee9;
     v-s:shortLabel "СП 1.13130.2009"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8d962797c6fe43058944c80fd4a309dc
     a v-s:NormativeDocument;
     rdfs:label "Свод правил"^^xsd:string;
     v-s:attachment d:fc6a6b1e-f3ec-42fa-bfee-56c0802bce1e;
     v-s:shortLabel "СП 9.13130.2009"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:77cc76855b74409f82519bd4f26cc5f9
     a v-s:NormativeDocument;
     rdfs:label "Свод правил СП 4.13130.2013"^^xsd:string;
     v-s:attachment d:1d8c3d2c-eb9b-4660-ab3d-c141fc0146cc;
     v-s:shortLabel "СП 4.13130.2013"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:32a2b5f146d74eebaa2121f17177c0e7
     a v-s:NormativeDocument;
     rdfs:label "Система гигиенической безопасности (GMP). Анализ опасностей и оценка рисков гигиенической безопасности на потоке производства картона."^^xsd:string;
     v-s:attachment d:640f4d72-89e4-4e3e-ad3e-889370320495;
     v-s:shortLabel "Система гигиенической безопасности (GMP)"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:429b7bb48d454a1c8a74b938e948fcb2
     a v-s:NormativeDocument;
     rdfs:label "Система противопожарной защиты. Эвакуационные пути и выходы"^^xsd:string;
     v-s:attachment d:5ef9747e-cbd6-439d-84ea-07c627786a18;
     v-s:shortLabel "СП 1.13130"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:356bc2d73e1a4d98807585bc827238ad
     a v-s:NormativeDocument;
     rdfs:label "Системы противопожарной защиты. Установки пожарной сигнализации и пожаротушения автоматические. Нормы и правила проектирования."^^xsd:string;
     v-s:attachment d:79b96207-a253-4a6d-bdb9-0dfd416dace3;
     v-s:shortLabel "СП 5.13130.2009"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ee08ee8cfedd492abd18e2a8813621e8
     a v-s:NormativeDocument;
     rdfs:label "Системы противопожарной защиты. Эвакуационные пути и выходы."^^xsd:string;
     v-s:attachment d:efb46231-521b-4c6b-8458-9ce47293ed8d;
     v-s:shortLabel "СП 1.13130.2013"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3204eea3dde54572b18cc2ca09411921
     a v-s:NormativeDocument;
     rdfs:label "Складирование"^^xsd:string;
     v-s:attachment d:5e647e29-2f8e-45e7-83e1-b495f16d57cf;
     v-s:shortLabel "ПОТ РО-14000-007-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ec070f2368aa4648beb00e9073870ee4
     a v-s:NormativeDocument;
     rdfs:label "Совещание по качеству"^^xsd:string;
     v-s:attachment d:9237d713-1c79-417b-9d5f-5a7f60b7bb53;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a4793a5d47c0423685b2842bfac5e7f2
     a v-s:NormativeDocument;
     rdfs:label "Стандарт  ОАО \"Монди СЛПК\" \"Щепа технологическая, древесные отходы закупаемые ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:29613caf-9f4a-49ca-8493-88f9d56cdacb;
     v-s:shortLabel "СТО 00279404-018-2013"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:50d9aaea9bbf4c3e9bee42078cd50a22
     a v-s:NormativeDocument;
     rdfs:label "Стандарт ОАО \"Монди СЛПК\"  \"Щепа технологическая, кора, опилки закупаемые ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:8b40987d-20d0-42a8-97fa-159459e38167;
     v-s:shortLabel "СТО 00279404-010-2013"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a68d649f8ba84b1293af38fc0aa77d77
     a v-s:NormativeDocument;
     rdfs:label "Стандарт вахтового поселка"^^xsd:string;
     v-s:shortLabel "Стандарт корпоративный"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:5c8020777df245e4b00dd78ac78bc2bc
     a v-s:NormativeDocument;
     rdfs:label "Стандарт по каскам при работе на высоте"^^xsd:string;
     v-s:attachment d:1c34536f-5ad1-47d3-be65-80d37f9c2cd2;
     v-s:shortLabel "003"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9dee9ef6c110454a948e403055d0e0ee
     a v-s:NormativeDocument;
     rdfs:label "Стандарт по ограждениям ленточных конвейеров"^^xsd:string;
     v-s:attachment d:e448d5cc-37c9-4916-a5fe-6e2e6feb6b95;
     v-s:shortLabel "LML1-17"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:d32e44e63aa141ac857b80efcd12b741
     a v-s:NormativeDocument;
     rdfs:label "Стандарт предприятия "^^xsd:string;
     v-s:attachment d:10863205-2261-4416-9d41-fd35d3d49a78;
     v-s:shortLabel "002"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9ab640f802eb4cec8ccf496ff61f910a
     a v-s:NormativeDocument;
     rdfs:label "Стандарт предприятия \"Нормативы технического обслуживания технологического оборудования\""^^xsd:string;
     v-s:attachment d:6df62768-adcb-408b-bb34-f4972961be35;
     v-s:shortLabel "№ LGML1-1 rev 0. "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a1aaa372994a47049071289e2129d61e
     a v-s:NormativeDocument;
     rdfs:label "ТЕХНИЧЕСКАЯ ЭКСПЛУАТАЦИЯ ПРОМЫШЛЕННЫХ \nЗДАНИЙ И СООРУЖЕНИЙ"^^xsd:string;
     v-s:attachment d:213483b2-74fa-4d85-8e44-94d6d58d9608;
     v-s:shortLabel "ПОТ РО-14000-004-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:d356460ca05040f19336f3feb8904edb
     a v-s:NormativeDocument;
     rdfs:label "ТЕХНИЧЕСКАЯ ЭКСПЛУАТАЦИЯ ПРОМЫШЛЕННЫХ \nЗДАНИЙ И СООРУЖЕНИЙ"^^xsd:string;
     v-s:attachment d:e7e5fffa-e14a-46b6-901a-4f0f85a82a1f;
     v-s:shortLabel "ПОТ РО-14000-004-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:96a2dd93438f459588e6956fc5ebb3da
     a v-s:NormativeDocument;
     rdfs:label "ТЕХНИЧЕСКАЯ ЭКСПЛУАТАЦИЯ ПРОМЫШЛЕННЫХ \nЗДАНИЙ И СООРУЖЕНИЙ"^^xsd:string;
     v-s:attachment d:e34ff378-7752-4f9a-8a75-d2e4f0d80d34;
     v-s:shortLabel "ПОТ РО-14000-004-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:a2ab2857714843b8bbaf436a6ec75255
     a v-s:NormativeDocument;
     rdfs:label "ТЕХНИЧЕСКИЙ РЕГЛАМЕНТ О БЕЗОПАСНОСТИ КОЛЕСНЫХ ТРАНСПОРТНЫХ СРЕДСТВ"^^xsd:string;
     v-s:attachment d:458c907d-46a1-4c8e-afc6-617b9da7723e;
     v-s:shortLabel "ПОСТАНОВЛЕНИЕ ПРАВИТЕЛЬСТВА РОССИЙСКОЙ ФЕДЕРАЦИИ от 10 сентября 2009 г. N 720"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9cc59d4ada8d402fa91dc442b7f18ad4
     a v-s:NormativeDocument;
     rdfs:label "ТЕХНИЧЕСКИЙ РЕГЛАМЕНТ О БЕЗОПАСНОСТИ КОЛЕСНЫХ ТРАНСПОРТНЫХ СРЕДСТВ"^^xsd:string;
     v-s:attachment d:09024fe4-739f-4250-aea2-db2eb77f0ee4;
     v-s:shortLabel "ПОСТАНОВЛЕНИЕ от 10 сентября 2009 г. N 720 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:628e75f277bc464c813870ad1a4fe337
     a v-s:NormativeDocument;
     rdfs:label "Тех.Регламент по треб.Пожарной безопасности"^^xsd:string;
     v-s:attachment d:421fcc41-a44d-40e9-8255-eae5dcd3b3bb;
     v-s:shortLabel "22 июля 2008 года N 123-ФЗ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ccfd758f489748e5a7f8878aab3079ca
     a v-s:NormativeDocument;
     rdfs:label "Техника пожарная. Огнетушители. Требования к эксплуатации."^^xsd:string;
     v-s:attachment d:eaf61c3a-7614-42aa-97f2-abc980b2a129;
     v-s:shortLabel "СП 9.13130.2009"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:abeef712aa0e40398a489e52e432c685
     a v-s:NormativeDocument;
     rdfs:label "Технический регламент"^^xsd:string;
     v-s:attachment d:5281e9e5-0569-4508-9df2-26fd26fbf2e8;
     v-s:shortLabel "№123-ФЗ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:69db5f16a66d4c39b974ea45ac9bcc63
     a v-s:NormativeDocument;
     rdfs:label "Технический регламент о требованиях пожарной безопасности"^^xsd:string;
     v-s:attachment d:40843d5a-c562-44ae-8360-c1bea612fabd;
     v-s:shortLabel "№123-ФЗ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3558f8a93ca54867b1114aaca6664750
     a v-s:NormativeDocument;
     rdfs:label "Технический регламент о требованиях пожарной безопасности"^^xsd:string;
     v-s:attachment d:6461e6b2-b776-4b20-937c-b7c012f60e41;
     v-s:shortLabel "№123-ФЗ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:53556912cae1458c8b6b1a0856d2324c
     a v-s:NormativeDocument;
     rdfs:label "Технический регламент о требованиях пожарной безопасности"^^xsd:string;
     v-s:attachment d:0ca4438a-535f-4452-a4ac-82ef1c7fd327;
     v-s:shortLabel "№123-ФЗ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3dc5ecb1a4034ad5974ad8a20af21820
     a v-s:NormativeDocument;
     rdfs:label "Технологическая карта проведения комплекса работ  по подъему древесины с воды в период выкатки мостовыми кранами на ДПЦ-2 ОАО \"Монди СЛПК\""^^xsd:string;
     v-s:attachment d:0ac67a0f-0960-48f9-a485-c226bb90d9ed, d:ab8c2ca4-ad20-4b6a-bef3-ff2a97f24304;
     v-s:shortLabel "ТК"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4d91e40336a341949251ef77c790536e
     a v-s:NormativeDocument;
     rdfs:label "Требования к лестницам и подмостям."^^xsd:string;
     v-s:attachment d:3eafc485-9d3e-4d42-9d8d-e2cb9f647e67;
     v-s:shortLabel "ПОТ Р М-012-2000"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fe18adf4c2474c75aefe94912c138221
     a v-s:NormativeDocument;
     rdfs:label "Требования к огнетушителям"^^xsd:string;
     v-s:attachment d:24dda7e1-89b8-4ccd-8d53-3226f34c57fa;
     v-s:shortLabel "ПОТ РМ 005"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:dd6ed1debf4142b393568c2be0dbc992
     a v-s:NormativeDocument;
     rdfs:label "Требования к серверным помещениям"^^xsd:string;
     v-s:attachment d:0551a2e7-66d0-49c2-b6c8-2f0ca0218d0e;
     v-s:shortLabel "ППБ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:1c4a60477f594215bb9b0702a7901567
     a v-s:NormativeDocument;
     rdfs:label "Трудовой кодекс РФ"^^xsd:string;
     v-s:attachment d:e3caea65-2640-4be9-83ac-85762f918aef;
     v-s:shortLabel "ТК РФ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:ddebbccf76fd4d019ac0d41e81802d46
     a v-s:NormativeDocument;
     rdfs:label "Трудовой кодекс РФ"^^xsd:string;
     v-s:attachment d:c8b19ded-311b-4ba2-8d04-03124683761e;
     v-s:shortLabel "ТК РФ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8d8c000ad009425f935ea1924cb2f9de
     a v-s:NormativeDocument;
     rdfs:label "Управление документацией"^^xsd:string;
     v-s:attachment d:2f43522b-4cb4-4576-86bb-a11246118271;
     v-s:shortLabel "ИИСМ 4.2.3/4.4.5/4.4.5-2010"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:094633fd9a8a447cb8361be5fad15a62
     a v-s:NormativeDocument;
     rdfs:label "Управление несоответствующей продукцией"^^xsd:string;
     v-s:attachment d:8fd55e75-8207-4471-9b1a-bdc85ab7e8ab;
     v-s:shortLabel "ИИСМ 8.3/-/- -13 v6"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fb8a3f875fae4e89bec800f07bfdbfc1
     a v-s:NormativeDocument;
     rdfs:label "Управление стандартами предприятия на бумагу и картон"^^xsd:string;
     v-s:attachment d:ef49cbde-5520-4b21-8af9-6c5301fa6bda;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fbb84290090f4b529a09bc7d6c3b06f7
     a v-s:NormativeDocument;
     rdfs:label "Управление стандартами предприятия на бумагу и картон"^^xsd:string;
     v-s:attachment d:1226bb14-66ca-4760-9b25-fb813380c9f7;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:3c3c8e5f137c491b8054314ef3af29f0
     a v-s:NormativeDocument;
     rdfs:label "Упрощенная схема ввода нового граммажа бумажной продукции"^^xsd:string;
     v-s:attachment d:1618e268-aead-44fe-894a-51b52fb8366c;
     v-s:shortLabel "Дополнение 1 к ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:56b736b53f294d0391236f3cef7c5d5d
     a v-s:NormativeDocument;
     rdfs:label "Фото"^^xsd:string;
     v-s:attachment d:2c216593-f9b3-4a1e-89e5-ad7e008ca9ed, d:49fbe8eb-15e4-4d63-87d8-aadda9186d5a, d:a8db66de-8330-4f62-83fc-2779ee8b01c0;
     v-s:shortLabel "1,2,3,"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:c2830eff654141378f3a6157f04a2d17
     a v-s:NormativeDocument;
     rdfs:label "Функциональные обязанности руководителей и членов рабочих групп при разработке новых продуктов"^^xsd:string;
     v-s:attachment d:81eca1a2-3cc5-4012-8535-3caf6e50709b, d:c790106b-1682-449a-ae37-ea1b9ed55677;
     v-s:shortLabel "ИП"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:69852de442f442f2b2d0b0903da07c69
     a v-s:NormativeDocument;
     rdfs:label "ЦВЕТА СИГНАЛЬНЫЕ, ЗНАКИ БЕЗОПАСНОСТИ  И РАЗМЕТКА СИГНАЛЬНАЯ"^^xsd:string;
     v-s:shortLabel "ГОСТ Р 12.4.026-2001 "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:5a42c8c135f147afb759408e058b8388
     a v-s:NormativeDocument;
     rdfs:label "Цвета сигнальные и знаки безопасности."^^xsd:string;
     v-s:shortLabel "ГОСТ 12.4.026-76"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:fb8ae4114f1040e99f6752c98aeb2896
     a v-s:NormativeDocument;
     rdfs:label "Экологическая безопасность"^^xsd:string;
     v-s:attachment d:212779d8-f9f7-47a0-862f-e08e82065a26;
     v-s:shortLabel "ЭБ РФ"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:896fe1cce6fe493480a5f9d4b0d6519d
     a v-s:NormativeDocument;
     rdfs:label "Эксплуатация зданий и сооружений"^^xsd:string;
     v-s:attachment d:1e708aee-d37f-4625-a98e-b592f0978970;
     v-s:shortLabel "ПОТ РО 14000-004-98"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:dfbed4894a894c21939d8bfe39c41b88
     a v-s:NormativeDocument;
     rdfs:label "зона спускника БМ15"^^xsd:string;
     v-s:attachment d:671dc63e-a11f-4d09-8031-3b0da159230c, d:41fb3d4a-83e2-4e92-b98c-f867a637df94;
     v-s:shortLabel "фото"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:19e15f1eea7349a7a32f09d75ce7d2d9
     a v-s:NormativeDocument;
     rdfs:label "иисм \"Управление измерительным оборудованием\""^^xsd:string;
     v-s:attachment d:dde50bba-e0ea-4f64-929c-3c7f45e09b03;
     v-s:shortLabel "ИИСМ 7.6х4.5.1х4.5.1 v4"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:7ed6043a41904c10b1b15af6b62bf8bd
     a v-s:NormativeDocument;
     rdfs:label "лотрщоь"^^xsd:string;
     v-s:shortLabel "длозщло"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:38111f10d61645818edc9fd21730e51c
     a v-s:NormativeDocument;
     rdfs:label "п. 62 ППР в РФ Устройства для самозакрывания дверей должны находиться в исправном состоянии. Не допускается устанавливать какие-либо приспособления, препятствующие нормальному закрыванию противопожарных "^^xsd:string;
     v-s:shortLabel "1п. 62 ППР в РФ Устройства для самозакрывания дверей должны находиться в исправном состоянии. Не допускается устанавливать какие-либо приспособления, препятствующие нормальному закрыванию противопожарных "^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:0e2c8721a63a46889074396f2be29482
     a v-s:NormativeDocument;
@@ -1709,50 +1722,50 @@ d:0e2c8721a63a46889074396f2be29482
     v-s:attachment d:6754f2fe-cdd6-4705-8d05-ff54c0ff3d64, d:7e5e88b3-742b-4e3f-98c5-3c15514de302, d:eae9a16a-0ccf-4e8e-838f-ce7de9a908b3, d:94d5077f-6bb7-4b15-b2fe-8e632cf6c739;
     v-s:attachment d:84c21fe6-fef6-4256-a371-bafa4a312592, d:5379e7ec-898a-495e-ad9a-999ceb6f273d, d:fc5c441c-cf29-4767-adac-c4a2dc0afd61;
     v-s:shortLabel "инвентаризация"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:9ed7c44adbd440b08f8db030f6e31abf
     a v-s:NormativeDocument;
     rdfs:label "правила устройства и безопасной эксплуатации сосудов работающих под давлением"^^xsd:string;
     v-s:shortLabel "ПБ 03-576-03"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:74900143673b470683405c7b07abbeb8
     a v-s:NormativeDocument;
     rdfs:label "правила устройства и безопасной эксплуатации сосудов работающих под давлением"^^xsd:string;
     v-s:shortLabel "ПБ 03-576-03"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:8106e2cdfc1c4e0cb44fed58446e0ca0
     a v-s:NormativeDocument;
     rdfs:label "правила устройства и безопасной эксплуатации сосудов работающих под давлением"^^xsd:string;
     v-s:shortLabel "ПБ 03-576-03"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:4ff976beccf147a7824a6928378455da
     a v-s:NormativeDocument;
     rdfs:label "приказ"^^xsd:string;
     v-s:attachment d:b996bcdb-e20f-4154-b3a3-2dd0e7fc966b;
     v-s:shortLabel "№150"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:74d8c3062b8d471ba721247e61c7f4fe
     a v-s:NormativeDocument;
     rdfs:label "руководство по системе менеджмента гигиены на потоке производства картона"^^xsd:string;
     v-s:attachment d:e77ad2d9-e496-4b57-9afe-22523980d3e2;
     v-s:shortLabel "GMP"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:537c6e3bab0445b59111f9df56edf5d7
     a v-s:NormativeDocument;
     rdfs:label "стандарт СУГ"^^xsd:string;
     v-s:attachment d:0d3e1c89-4814-471a-9452-dfb95d179fea;
     v-s:shortLabel "008"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
 
 d:6f58ef6c11724bf6916801d4c439aee6
     a v-s:NormativeDocument;
     rdfs:label "фото"^^xsd:string;
     v-s:attachment d:b1ffb8ac-c8b5-4fc1-8447-2cd33a8b4e68;
     v-s:shortLabel "фото 1"^^xsd:string;
-    v-s:updateCounter "1"^^xsd:integer.
+.
