@@ -44,6 +44,8 @@ if ! go version | grep $GO_VER ; then
     wget https://storage.googleapis.com/golang/go1.7.4.linux-amd64.tar.gz
     tar -xvf go1.7.4.linux-amd64.tar.gz
     sudo rm -r /usr/local/go
+    sudo rm /usr/bin/go
+    sudo rm /usr/bin/gofmt
     sudo mv go /usr/local
     export GOROOT=/usr/local/go
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
