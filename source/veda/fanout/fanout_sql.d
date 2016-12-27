@@ -86,6 +86,10 @@ class FanoutProcess : VedaModule
         return true;
     }
 
+    override void event_of_change(string uri)
+    {
+        configure();
+    }
 
     bool[ string ] isExistsTable;
 
@@ -307,8 +311,10 @@ class FanoutProcess : VedaModule
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
+                log.trace("connect_to_mysql:connection: %s=[%s]", gate.uri, connection);
+                subscribe_on_prefetch(gate.uri);
 
-                Resource   transport = connection.getFirstResource("v-s:transport");
+                Resource transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)
                 {
                     if (transport.data() == "mysql")

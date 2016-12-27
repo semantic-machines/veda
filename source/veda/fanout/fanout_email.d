@@ -101,6 +101,11 @@ class FanoutProcess : VedaModule
         return true;
     }
 
+    override void event_of_change(string uri)
+    {
+        configure();
+    }
+
 
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
     private Resources get_email_from_appointment(ref Ticket sticket, ref Individual ap)
@@ -378,7 +383,7 @@ class FanoutProcess : VedaModule
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
-
+                subscribe_on_prefetch(gate.uri);
                 Resource   transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)
                 {

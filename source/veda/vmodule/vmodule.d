@@ -73,7 +73,9 @@ class VedaModule
     string         message_header;
     string         module_id;
 
-    Logger         log;
+    bool[ string ]   subsrc;
+
+    Logger log;
 
     this(string _module_id, Logger in_log)
     {
@@ -200,6 +202,18 @@ class VedaModule
 
     abstract void receive_msg(string msg);
 
+    public void subscribe_on_prefetch(string uri)
+    {
+        subsrc[ uri.idup ] = true;
+    }
+
+    public void unsubscribe_on_prefetch(string uri)
+    {
+        subsrc.remove(uri.dup);
+    }
+
+    abstract void event_of_change(string uri);
+
     public void prepare_all()
     {
         long  total_count    = context.get_subject_storage_db().count_entries();
@@ -266,8 +280,13 @@ class VedaModule
                 {
                     log.trace("prefetch: reconfigure, use [%s]", node);
                     close();
+                    context.get_onto();
                     configure();
                 }
+            }
+            else if ((uri in subsrc) !is null)
+            {
+                event_of_change(uri);
             }
 
             //Thread.sleep(dur!("seconds")(1));

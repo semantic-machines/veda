@@ -108,4 +108,9 @@ class FTIndexerProcess : VedaModule
         ictx.close();
         return true;
     }
+
+    override void event_of_change(string uri)
+    {
+        configure();
+    }
 }

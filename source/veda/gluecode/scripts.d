@@ -221,6 +221,11 @@ class ScriptProcess : VedaModule
         vql.close_db();
         return true;
     }
+    
+	override void event_of_change(string uri)
+	{
+		configure();
+	}    
 
     public void load_event_scripts()
     {
@@ -236,15 +241,13 @@ class ScriptProcess : VedaModule
                 "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
                 res);
 
-        int count = 0;
-
         foreach (ss; res)
         {
             prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script);
         }
 
 //        if (trace_msg[ 300 ] == 1)
-        log.trace("load db scripts, count=%d ", res.length);
+        log.trace("load db scripts, count=%d ", event_scripts_order.length);
     }
 
     private void set_g_parent_script_id_etc(string event_id)
