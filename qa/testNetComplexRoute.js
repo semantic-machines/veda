@@ -13,13 +13,33 @@ function openMsg(driver, decision) {
     container.innerHTML = content;
     driver.findElement({css:'a[property="rdfs:label"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Согласовать' button");});
-    if(decision === '0') {
+    if (decision === '0') {
         driver.findElement({css:'div[class="radio decision"] input[value="0"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '0' decision");});
     }
-    if(decision === '1') {
+    if (decision === '1') {
         driver.findElement({css:'div[class="radio decision"] input[value="1"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '1' decision");});
+        driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'comment'");});
+    }
+    if (decision === '2') {
+        driver.findElement({css:'div[class="radio decision"] input[value="2"]'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '2' decision");});
+        driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'comment'");});
+    }
+    if (decision === '3') {
+        driver.findElement({css:'div[class="radio decision"] input[value="3"]'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '3' decision");});
+        driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
+        basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор2', 'Администратор4 : Аналитик');
+        driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'comment'");});
+    }
+    if (decision === '4') {
+        driver.findElement({css:'div[class="radio decision"] input[value="4"]'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '4' decision");});
         driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'comment'");});
     }
@@ -95,6 +115,7 @@ basic.getDrivers().forEach (function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Send' button");});
 
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
+    driver.sleep(basic.FAST_OPERATION);
     driver.findElement({id:'save_and_start_process'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save_and_start_process' button");});
     driver.sleep(basic.FAST_OPERATION);
@@ -117,7 +138,7 @@ basic.getDrivers().forEach (function (drv) {
     acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
     acceptTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
     checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination'],
-                                ['red', 'red', 'red']);
+        ['red', 'red', 'red']);
 
     //review, instruction, examination -> instruction2
     checkTask(driver, '3', 'bychinat', '123', '4', 'Администратор4');
@@ -134,10 +155,14 @@ basic.getDrivers().forEach (function (drv) {
     checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
         ['green', 'green', 'green', 'red']);
 
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    checkMsg(driver, '1');
-    openMsg(driver, '0');
-    basic.logout(driver);
+    checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '3', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '4', 'bychinat', '123', '4', 'Администратор4');
+    acceptTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '2', 'bychinat', '123', '4', 'Администратор4');
+    acceptTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2');
+    acceptTask(driver, '0', 'bychinat', '123', '4', 'Администратор4');
+
     checkRouteStatus(driver, ['s-wf:cr_instruction2', 's-wf:cr_finish'],
         ['red' , 'red']);
 
