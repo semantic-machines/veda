@@ -71,56 +71,22 @@ var task = document,
     isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: _Boolean, data: true}) && hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
     isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: _Boolean, data: true}) && hasValue(task, "v-s:deleted", {type: _Boolean, data: true}),
 
-    toCounterUri = "d:taskCounter_" + to.split(':').join('_'),
-    fromCounterUri = "d:taskCounter_" + from.split(':').join('_'),
-    toCounter = to ? get_individual(ticket, toCounterUri) : undefined,
-    fromCounter = from ? get_individual(ticket, fromCounterUri) : undefined,
+    toCounterUri = to ? "d:taskCounter_" + to.split(':').join('_') : undefined,
+    fromCounterUri = from ? "d:taskCounter_" + from.split(':').join('_') : undefined,
+    toCounter = toCounterUri ? get_individual(ticket, toCounterUri) : undefined,
+    fromCounter = fromCounterUri ? get_individual(ticket, fromCounterUri) : undefined,
 
     updateTo = !!toCounter,
     updateFrom = !!fromCounter;
 
-print("[v-ft:Event_UpdateTaskCounter] ************************** START **************************");
-print("[v-ft:Event_UpdateTaskCounter]", "task =", task_uri, "| from =", from, "| to =", to, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted);
-
-if ( !toCounter ) {
-  toCounter = {
-    "@": toCounterUri,
-    "rdf:type": newUri('v-ft:TaskCounter'),
-    "v-s:owner": newUri(to),
-    "v-ft:inboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + to + "')").length ),
-    "v-ft:outboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + to + "')").length ),
-    "v-ft:completedCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + to + "')").length ),
-    "rdfs:label": newStr('создано автоматически в обработчике v-ft:Event_UpdateTaskCounter')
-  }
-  put_individual(ticket, toCounter, _event_id);
-  updateTo = false;
-  print("[v-ft:Event_UpdateTaskCounter]", "toCounter created =", JSON.stringify(toCounter));
-}
-
-if ( !fromCounter ) {
-  fromCounter = {
-    "@": fromCounterUri,
-    "rdf:type": newUri('v-ft:TaskCounter'),
-    "v-s:owner": newUri(from),
-    "v-ft:inboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + from + "')").length ),
-    "v-ft:outboxCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + from + "')").length ),
-    "v-ft:completedCount": newInt( query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + from + "')").length ),
-    "rdfs:label": newStr('создано автоматически в обработчике v-ft:Event_UpdateTaskCounter')
-  }
-  put_individual(ticket, fromCounter, _event_id);
-  updateFrom = false;
-  print("[v-ft:Event_UpdateTaskCounter]", "fromCounter created =", JSON.stringify(fromCounter));
-}
+print("************************** START **************************");
+print("task =", task_uri, "| from =", from, "| to =", to, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted);
 
 if ( isNew || isDeleted || isCompleted ) {
-  var toInboxCount = toCounter["v-ft:inboxCount"][0],
-      toOutboxCount = toCounter["v-ft:outboxCount"][0],
-      toCompletedCount = toCounter["v-ft:completedCount"][0],
-      fromInboxCount = fromCounter["v-ft:inboxCount"][0],
-      fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
-      fromCompletedCount = fromCounter["v-ft:completedCount"][0];
-
   if (updateTo) {
+    var toInboxCount = toCounter["v-ft:inboxCount"][0],
+        toOutboxCount = toCounter["v-ft:outboxCount"][0],
+        toCompletedCount = toCounter["v-ft:completedCount"][0];
     switch (true) {
       case isNew:
         toInboxCount.data++;
@@ -134,10 +100,13 @@ if ( isNew || isDeleted || isCompleted ) {
         break;
     }
     put_individual(ticket, toCounter, _event_id);
-    print("[v-ft:Event_UpdateTaskCounter]", "toCounter updated =", JSON.stringify(toCounter));
+    print("toCounter updated =", JSON.stringify(toCounter));
   }
 
   if (updateFrom) {
+    var fromInboxCount = fromCounter["v-ft:inboxCount"][0],
+        fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
+        fromCompletedCount = fromCounter["v-ft:completedCount"][0];
     switch (true) {
       case isNew:
         fromOutboxCount.data++;
@@ -150,10 +119,63 @@ if ( isNew || isDeleted || isCompleted ) {
         break;
     }
     put_individual(ticket, fromCounter, _event_id);
-    print("[v-ft:Event_UpdateTaskCounter]", "fromCounter updated =", JSON.stringify(fromCounter));
+    print("fromCounter updated =", JSON.stringify(fromCounter));
   }
 }
-print("[v-ft:Event_UpdateTaskCounter] ************************** END **************************");
+print("************************** END **************************");
+  """ ;
+.
+
+v-ft:Event_UpdateAllTaskCounters
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Еженедельный скрипт обновления счетчиков задач для всех должностей и назначений" ;
+  v-s:triggerByUid cfg:weekly ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+print("************************** START **************************");
+
+var owners = query(ticket, "'rdf:type'==='v-s:Position' || 'rdf:type'==='v-s:Appointment'");
+print("owners count =", owners.length);
+
+owners.forEach(function (owner) {
+  if (owner === null) { return; }
+  var uri = "d:taskCounter_" + owner.split(':').join('_'),
+      inbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "')"),
+      inboxCount = inbox[0] ? inbox.length : 0,
+      outbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + owner + "')"),
+      outboxCount = outbox[0] ? outbox.length : 0,
+      completed = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + owner + "')"),
+      completedCount = completed[0] ? completed.length : 0,
+
+      taskCounter = {
+        "@": uri,
+        "rdf:type": newUri('v-ft:TaskCounter'),
+        "v-s:owner": newUri(owner),
+        "v-ft:inboxCount": newInt(inboxCount),
+        "v-ft:outboxCount": newInt(outboxCount),
+        "v-ft:completedCount": newInt(completedCount),
+        "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateAllTaskCounters")
+      };
+  put_individual(ticket, taskCounter, _event_id);
+  /*print(
+    "Calculated counters:", uri,
+    "| inbox =", JSON.stringify(inbox), "| inboxCount =", inboxCount,
+    "| outbox =", JSON.stringify(outbox), "| outboxCount =", outboxCount,
+    "| completed =", JSON.stringify(completed), "| completedCount =", completedCount
+  );*/
+});
+
+print("************************** END **************************");
   """ ;
 .
 
