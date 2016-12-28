@@ -1162,7 +1162,7 @@ if (doc) {
     }
   }
 //--------------------------------------------------------------------------------------------------------------------------------Выполнение заявки на контракт
-  if (doc['rdf:type'][0].id === "mnd-s:ContractRequestReport") {
+  if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
     if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") { 
       // Закупка
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasBudgetCategory') && doc['v-s:backwardTarget'][0]['v-s:hasBudgetCategory'][0].id == "d:a193b366b-aaeb-c1f2-b101-89c95b10a6c8") {
