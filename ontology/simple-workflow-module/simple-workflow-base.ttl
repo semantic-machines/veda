@@ -2284,7 +2284,7 @@ s-wf:rul_tr_form_2
   rdf:type v-wf:Rule ;
   v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
   v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-  v-wf:aggregate  "putValue ('v-wf:from')";
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:occupation'])";
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "От кого = инициатор"@ru ;
