@@ -1148,8 +1148,6 @@ if (doc) {
           routes['coordination1'][simple+'deadlineDays'] = [10];
           routes['coordination1'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];          
         }
-      } else if  {
-      
       }
     }    
   }
