@@ -1162,7 +1162,7 @@ if (doc) {
     }
   }
 //--------------------------------------------------------------------------------------------------------------------------------Выполнение заявки на контракт
-  if (doc['rdf:type'][0].id === "mnd-s:ContractRequestReport") {
+  if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
     if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") { 
       // Закупка
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasBudgetCategory') && doc['v-s:backwardTarget'][0]['v-s:hasBudgetCategory'][0].id == "d:a193b366b-aaeb-c1f2-b101-89c95b10a6c8") {
@@ -2284,7 +2284,7 @@ s-wf:rul_tr_form_2
   rdf:type v-wf:Rule ;
   v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
   v-wf:segregateElement "contentName('v-wf:variableValue')" ;
-  v-wf:aggregate  "putValue ('v-wf:from')";
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:occupation'])";
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "От кого = инициатор"@ru ;
