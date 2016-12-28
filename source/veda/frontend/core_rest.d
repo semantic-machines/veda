@@ -146,6 +146,13 @@ interface VedaStorageRest_API {
 extern (C) void handleTerminationR(int _signal)
 {
 //    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
+
+	if (tdb_cons !is null)
+	{
+	    log.trace("flush trail db");
+	    tdb_cons.finalize();
+	}    
+
     writefln("!SYS: veda.app.rest: caught signal: %s", text(_signal));
 
     vibe.core.core.exitEventLoop();
@@ -154,6 +161,7 @@ extern (C) void handleTerminationR(int _signal)
 
     thread_term();
     Runtime.terminate();
+        
 //    kill(getpid(), SIGKILL);
 //    exit(_signal);
 }
@@ -528,6 +536,8 @@ class VedaStorageRest : VedaStorageRest_API
 
     void flush(int module_id, long wait_op_id)
     {
+        ulong    timestamp = Clock.currTime().stdTime() / 10;
+
         Json     jreq = Json.emptyObject;
         OpResult op_res;
 
@@ -547,12 +557,14 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail(null, null, "flush", jreq, "", op_res.result, 0);
+            trail(null, null, "flush", jreq, "", op_res.result, timestamp);
         }
     }
 
     OpResult restart(string _ticket)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
+
         OpResult   res;
         Ticket     *ticket = context.get_ticket(_ticket);
         ResultCode rc;
@@ -576,7 +588,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail(_ticket, ticket.user_uri, "restart", Json.emptyObject, text(res), res.result, 0);
+            trail(_ticket, ticket.user_uri, "restart", Json.emptyObject, text(res), res.result, timestamp);
         }
     }
 
@@ -588,6 +600,8 @@ class VedaStorageRest : VedaStorageRest_API
 
     void backup(bool to_binlog)
     {
+        ulong    timestamp = Clock.currTime().stdTime() / 10;
+
         long     res  = -1;
         Json     jreq = Json.emptyObject;
         OpResult op_res;
@@ -608,12 +622,13 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail(null, null, "backup", jreq, "", op_res.result, 0);
+            trail(null, null, "backup", jreq, "", op_res.result, timestamp);
         }
     }
 
     long count_individuals()
     {
+        ulong    timestamp = Clock.currTime().stdTime() / 10;
         long     res;
 
         OpResult op_res;
@@ -621,12 +636,13 @@ class VedaStorageRest : VedaStorageRest_API
         res           = context.count_individuals();
         op_res.result = ResultCode.OK;
 
-        trail(null, null, "count_individuals", Json.emptyObject, text(res), op_res.result, 0);
+        trail(null, null, "count_individuals", Json.emptyObject, text(res), op_res.result, timestamp);
         return res;
     }
 
     bool is_ticket_valid(string ticket_id)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
         bool       res;
         Ticket     *ticket;
         ResultCode rc;
@@ -649,13 +665,15 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail(ticket_id, ticket.user_uri, "is_ticket_valid", Json.emptyObject, text(res), rc, 0);
+            trail(ticket_id, ticket.user_uri, "is_ticket_valid", Json.emptyObject, text(res), rc, timestamp);
         }
     }
 
     string[] query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
                    int limit = 10000)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
+
         string[]   res;
         Ticket     *ticket;
         ResultCode rc;
@@ -682,12 +700,14 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
-            trail(_ticket, ticket.user_uri, "query", jreq, text(res), rc, 0);
+            trail(_ticket, ticket.user_uri, "query", jreq, text(res), rc, timestamp);
         }
     }
 
     Json[] get_individuals(string _ticket, string[] uris)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
+
         Json[]     res;
         ResultCode rc;
         Json       args = Json.emptyArray;
@@ -721,12 +741,14 @@ class VedaStorageRest : VedaStorageRest_API
         {
             Json jreq = Json.emptyObject;
             jreq[ "uris" ] = args;
-            trail(_ticket, ticket.user_uri, "get_individuals", jreq, text(res), rc, 0);
+            trail(_ticket, ticket.user_uri, "get_individuals", jreq, text(res), rc, timestamp);
         }
     }
 
     Json get_individual(string _ticket, string uri, bool reopen = false)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
+
         Json       res;
         ResultCode rc = ResultCode.Internal_Server_Error;
         Ticket     *ticket;
@@ -784,12 +806,14 @@ class VedaStorageRest : VedaStorageRest_API
         {
             Json jreq = Json.emptyObject;
             jreq[ "uri" ] = uri;
-            trail(_ticket, ticket.user_uri, "get_individual", jreq, res.toString(), rc, 0);
+            trail(_ticket, ticket.user_uri, "get_individual", jreq, res.toString(), rc, timestamp);
         }
     }
 
     OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id, string transaction_id)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
+
         OpResult   op_res;
         ResultCode rc = ResultCode.Internal_Server_Error;
         Ticket     *ticket;
@@ -827,12 +851,14 @@ class VedaStorageRest : VedaStorageRest_API
         }
         finally
         {
-            trail(_ticket, ticket.user_uri, "remove_individual", jreq, "", op_res.result, 0);
+            trail(_ticket, ticket.user_uri, "remove_individual", jreq, "", op_res.result, timestamp);
         }
     }
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
+
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -842,7 +868,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult op_res = modify_individual(context, "put", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        OpResult op_res = modify_individual(context, "put", _ticket, individual_json, prepare_events, event_id, transaction_id, timestamp);
         rc = op_res.result;
 
         if (rc != ResultCode.OK)
@@ -853,6 +879,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -862,7 +889,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult op_res = modify_individual(context, "add_to", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        OpResult op_res = modify_individual(context, "add_to", _ticket, individual_json, prepare_events, event_id, transaction_id, timestamp);
         rc = op_res.result;
 
         if (rc != ResultCode.OK)
@@ -873,6 +900,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -882,7 +910,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult op_res = modify_individual(context, "set_in", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        OpResult op_res = modify_individual(context, "set_in", _ticket, individual_json, prepare_events, event_id, transaction_id, timestamp);
         rc = op_res.result;
 
         if (rc != ResultCode.OK)
@@ -893,6 +921,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id, string transaction_id)
     {
+        ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -902,7 +931,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult op_res = modify_individual(context, "remove_from", _ticket, individual_json, prepare_events, event_id, transaction_id);
+        OpResult op_res = modify_individual(context, "remove_from", _ticket, individual_json, prepare_events, event_id, transaction_id, timestamp);
         rc = op_res.result;
 
         if (rc != ResultCode.OK)
@@ -931,36 +960,44 @@ class VedaStorageRest : VedaStorageRest_API
 private TrailDBConstructor tdb_cons;
 private bool               is_trail     = true;
 private long               count_trails = 0;
+private TrailDB exist_trail;
 
-void trail(string ticket_id, string user_id, string action, Json args, string result, ResultCode result_code, int duration)
+void trail(string ticket_id, string user_id, string action, Json args, string result, ResultCode result_code, ulong start_time)
 {
     if (!is_trail)
         return;
 
     try
     {
+        ulong    timestamp = Clock.currTime().stdTime() / 10;
+    	
         if (tdb_cons is null)
         {
-            TrailDB exist_trail;
+            //try
+            //{
+            //	rename (trails_path ~ "/rest_trails_chunk.tdb", trails_path ~ "/rest_trails.tdb");
+            //    exist_trail = new TrailDB(trails_path ~ "/rest_trails.tdb");
+            //    //exist_trail.dontneed ();
+            //}
+            //catch (Throwable tr)
+            //{
+            //    log.trace("ERR! exist_trail: %s", tr.msg);
+            //}
 
-            try
-            {
-                exist_trail = new TrailDB(trails_path ~ "/rest_trails");
-            }
-            catch (Throwable tr)
-            {
-            }
-
-			log.trace ("open trail db");
+            log.trace("open trail db");
 
             tdb_cons =
-                new TrailDBConstructor(trails_path ~ "/rest_trails", [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
-            if (exist_trail !is null)
-                tdb_cons.append(exist_trail);
+                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ text(timestamp), [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
+                
+            //if (exist_trail !is null)
+            //{
+            //    log.trace("append to exist trail db");
+            //    tdb_cons.append(exist_trail);
+            //    log.trace("merge is ok");
+            //}                
         }
 
         RawUuid  uuid      = randomUUID().data;
-        ulong    timestamp = Clock.currTime().stdTime() / 10000;
 
         string[] vals;
 
@@ -970,30 +1007,30 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
         vals ~= text(args);
         vals ~= result;
         vals ~= text(result_code);
+        vals ~= text(timestamp - start_time);
 
-        tdb_cons.add(uuid, timestamp, vals);
+        tdb_cons.add(uuid, timestamp / 1000, vals);
         count_trails++;
 
         if (count_trails > 1000)
         {
-			log.trace ("flush trail db");
-        	
+            log.trace("flush trail db");
             tdb_cons.finalize();
+            delete tdb_cons;
+//            exist_trail.close ();
             tdb_cons     = null;
             count_trails = 0;
         }
     }
     catch (Throwable tr)
     {
-        log.trace("ERR: trail %s", tr.msg);
+        log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
     }
 }
 
-
-
 //////////////////////////////////////////////////////////////////// ws-server-transport
 private OpResult modify_individual(Context context, string cmd, string _ticket, Json individual_json, bool prepare_events, string event_id,
-                                   string transaction_id)
+                                   string transaction_id, ulong start_time)
 {
     OpResult op_res;
 
@@ -1033,7 +1070,7 @@ private OpResult modify_individual(Context context, string cmd, string _ticket, 
 //        update_counter = juc[ 0 ][ "data" ].get!long;
     //set_updated_uid(juri.get!string, op_res.op_id, update_counter + 1);
 
-    trail(_ticket, ticket.user_uri, cmd, jreq, res, op_res.result, 0);
+    trail(_ticket, ticket.user_uri, cmd, jreq, res, op_res.result, start_time);
 
     return op_res;
 }
