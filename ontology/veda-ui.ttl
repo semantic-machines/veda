@@ -1581,7 +1581,7 @@ v-ui:TreeTemplate
 <script>
   var tbody = $("#tbody", template),
     thead = $("#thead", template),
-    headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>";
+    headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>",
     rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
     literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"],
     allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.reduce(function (acc, _class) {
