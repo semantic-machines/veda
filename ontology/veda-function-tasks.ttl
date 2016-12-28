@@ -64,23 +64,25 @@ v-ft:Event_UpdateTaskCounter
  * parent_document_id = id of the document that triggered this event.
  */
 var task = document,
+    task_uri = document["@"],
     to = getUri(task["v-wf:to"]),
     from = getUri(task["v-wf:from"]),
-    isCompleted = hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
-    isDeleted = hasValue(task, "v-s:deleted", {type: _Boolean, data: true}),
+    isNew = !prev_state,
+    isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: _Boolean, data: true}) && hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
+    isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: _Boolean, data: true}) && hasValue(task, "v-s:deleted", {type: _Boolean, data: true}),
 
     toCounterUri = "d:taskCounter_" + to.split(':').join('_'),
     fromCounterUri = "d:taskCounter_" + from.split(':').join('_'),
-    toCounter = get_individual(ticket, toCounterUri),
-    fromCounter = get_individual(ticket, fromCounterUri),
+    toCounter = to ? get_individual(ticket, toCounterUri) : undefined,
+    fromCounter = from ? get_individual(ticket, fromCounterUri) : undefined,
 
-    updateTo = !!to,
-    updateFrom = !!from;
+    updateTo = !!toCounter,
+    updateFrom = !!fromCounter;
 
-// Nothing valuable
-if (!isDeleted && !isCompleted && prev_state) { return; }
+print("[v-ft:Event_UpdateTaskCounter] ************************** START **************************");
+print("[v-ft:Event_UpdateTaskCounter]", "task =", task_uri, "| from =", from, "| to =", to, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted);
 
-if ( to && !toCounter ) {
+if ( !toCounter ) {
   toCounter = {
     "@": toCounterUri,
     "rdf:type": newUri('v-ft:TaskCounter'),
@@ -92,9 +94,10 @@ if ( to && !toCounter ) {
   }
   put_individual(ticket, toCounter, _event_id);
   updateTo = false;
+  print("[v-ft:Event_UpdateTaskCounter]", "toCounter created =", JSON.stringify(toCounter));
 }
 
-if ( from && !fromCounter ) {
+if ( !fromCounter ) {
   fromCounter = {
     "@": fromCounterUri,
     "rdf:type": newUri('v-ft:TaskCounter'),
@@ -106,49 +109,51 @@ if ( from && !fromCounter ) {
   }
   put_individual(ticket, fromCounter, _event_id);
   updateFrom = false;
+  print("[v-ft:Event_UpdateTaskCounter]", "fromCounter created =", JSON.stringify(fromCounter));
 }
 
-var toInboxCount = toCounter["v-ft:inboxCount"][0],
-    toOutboxCount = toCounter["v-ft:outboxCount"][0],
-    toCompletedCount = toCounter["v-ft:completedCount"][0],
-    fromInboxCount = fromCounter["v-ft:inboxCount"][0],
-    fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
-    fromCompletedCount = fromCounter["v-ft:completedCount"][0];
+if ( isNew || isDeleted || isCompleted ) {
+  var toInboxCount = toCounter["v-ft:inboxCount"][0],
+      toOutboxCount = toCounter["v-ft:outboxCount"][0],
+      toCompletedCount = toCounter["v-ft:completedCount"][0],
+      fromInboxCount = fromCounter["v-ft:inboxCount"][0],
+      fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
+      fromCompletedCount = fromCounter["v-ft:completedCount"][0];
 
-if (updateTo) {
-  switch (true) {
-    case isDeleted && !isCompleted:
-      toInboxCount.data--;
-      break;
-    case isDeleted && isCompleted:
-      toCompletedCount.data--;
-      break;
-    case !isDeleted && !isCompleted:
-      toInboxCount.data++;
-      break;
-    case !isDeleted && isCompleted:
-      toInboxCount.data--;
-      break;
+  if (updateTo) {
+    switch (true) {
+      case isNew:
+        toInboxCount.data++;
+        break;
+      case isCompleted:
+        toInboxCount.data--;
+        toCompletedCount.data++;
+        break;
+      case isDeleted:
+        toInboxCount.data--;
+        break;
+    }
+    put_individual(ticket, toCounter, _event_id);
+    print("[v-ft:Event_UpdateTaskCounter]", "toCounter updated =", JSON.stringify(toCounter));
   }
-  put_individual(ticket, toCounter, _event_id);
-}
 
-if (updateFrom) {
-  switch (true) {
-    case isDeleted && !isCompleted:
-      fromOutboxCount.data--;
-      break;
-    case isDeleted && isCompleted:
-      break;
-    case !isDeleted && !isCompleted:
-      fromOutboxCount.data++;
-      break;
-    case !isDeleted && isCompleted:
-      fromOutboxCount.data--;
-      break;
+  if (updateFrom) {
+    switch (true) {
+      case isNew:
+        fromOutboxCount.data++;
+        break;
+      case isCompleted:
+        fromOutboxCount.data--;
+        break;
+      case isDeleted:
+        fromOutboxCount.data--;
+        break;
+    }
+    put_individual(ticket, fromCounter, _event_id);
+    print("[v-ft:Event_UpdateTaskCounter]", "fromCounter updated =", JSON.stringify(fromCounter));
   }
-  put_individual(ticket, fromCounter, _event_id);
 }
+print("[v-ft:Event_UpdateTaskCounter] ************************** END **************************");
   """ ;
 .
 
