@@ -235,7 +235,7 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "top",
+        placement: "auto left",
         container: control,
         trigger: "focus",
         animation: false
