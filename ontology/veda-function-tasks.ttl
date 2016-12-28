@@ -64,10 +64,10 @@ v-ft:Event_UpdateTaskCounter
  * parent_document_id = id of the document that triggered this event.
  */
 var task = document,
-    to = getUri(document["v-wf:to"]),
-    from = getUri(document["v-wf:from"]),
-    isCompleted = hasValue(document, "v-wf:from", {type: _Boolean, data: true}),
-    isDeleted = hasValue(document, "v-s:deleted", {type: _Boolean, data: true}),
+    to = getUri(task["v-wf:to"]),
+    from = getUri(task["v-wf:from"]),
+    isCompleted = hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
+    isDeleted = hasValue(task, "v-s:deleted", {type: _Boolean, data: true}),
 
     toCounterUri = "d:taskCounter_" + to.split(':').join('_'),
     fromCounterUri = "d:taskCounter_" + from.split(':').join('_'),
@@ -77,6 +77,7 @@ var task = document,
     updateTo = !!to,
     updateFrom = !!from;
 
+// Nothing valuable
 if (!isDeleted && !isCompleted && prev_state) { return; }
 
 if ( to && !toCounter ) {
