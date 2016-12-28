@@ -36,7 +36,7 @@ class ScriptProcess : VedaModule
     override void thread_id()
     {
     }
-
+    
     override void receive_msg(string msg)
     {
         log.trace("receive msg=%s", msg);
@@ -242,12 +242,14 @@ class ScriptProcess : VedaModule
                 res);
 
         foreach (ss; res)
-        {
             prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script);
-        }
+
+		string scripts_ordered_list;
+        foreach (_script_id; event_scripts_order)
+        	scripts_ordered_list ~= "," ~ _script_id;  
 
 //        if (trace_msg[ 300 ] == 1)
-        log.trace("load db scripts, count=%d ", event_scripts_order.length);
+        log.trace("load db scripts, count=%d, scripts_uris=[%s] ", event_scripts_order.length, scripts_ordered_list);
     }
 
     private void set_g_parent_script_id_etc(string event_id)

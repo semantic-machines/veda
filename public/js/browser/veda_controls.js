@@ -1276,7 +1276,7 @@
 
       var dataSource = function (input, callback) {
         if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(mkQuery, timeout && input ? delay : 0, input, callback);
+        timeout = setTimeout(mkQuery, input ? delay : 0, input, callback);
       }
 
       var mkQuery = function (input, callback) {
