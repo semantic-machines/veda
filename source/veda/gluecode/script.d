@@ -60,6 +60,9 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             if (script.run_at is null)
                 script.run_at = "main";
 
+            if (script.run_at != g_vm_id)
+	            return;
+
             script.compiled_script = script_vm.compile(script.str_script);
             if (trace_msg[ 310 ] == 1)
                 log.trace("#compile event script.id=%s, text=%s", script.id, script.str_script);
