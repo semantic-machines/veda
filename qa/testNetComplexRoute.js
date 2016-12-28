@@ -81,8 +81,7 @@ function checkRouteStatus(driver, element, color, count) {
             assert.equal(count, result.length);
         }).thenCatch(function (e) {basic.errorHandler(e, "Seems " + element[i] + " is not" + color[i] + "/routeStatus is wrong");});
     }
-    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
+    welcome(driver);
     basic.logout(driver);
 }
 
@@ -97,7 +96,7 @@ basic.getDrivers().forEach (function (drv) {
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
     driver.findElement({id:'send'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Send' button");});
-
+    driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
     driver.sleep(basic.FAST_OPERATION);
     driver.findElement({id:'save_and_start_process'}).click()
