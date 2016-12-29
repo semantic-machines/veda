@@ -1573,6 +1573,7 @@ v-ui:TreeTemplate
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
 <div class="table-responsive">
+  <br>
   <table class="table table-condensed table-striped">
     <thead id="thead"></thead>
     <tbody id="tbody"></tbody>
