@@ -7,10 +7,10 @@ function down_right_and_store(process, task)
 
 function change_rights(process, task, rightset)
 {
-    return change_rights(process, task, [{"data":"-r--"}], 'actor');
+    return change_rights_actor(process, task, [{"data":"-r--"}], 'actor');
 }
 
-function change_rights(process, task, rightset, actor)
+function change_rights_actor(process, task, rightset, actor)
 {
     try
     {

@@ -1976,7 +1976,7 @@ s-wf:codelet_change_controller_right
   rdfs:label "Выдать права контролирующему" ;
   v-s:script """
   process.getInputVariable ('rightset')?
-  change_rights (process, task, process.getInputVariable ('rightset'), 'controller') :
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'controller') :
   down_right_and_store (process, task)
 """ ;
   rdfs:isDefinedBy s-wf: ;
@@ -1987,7 +1987,7 @@ s-wf:codelet_change_responsible_right
   rdfs:label "Выдать права ответственному" ;
   v-s:script """
   process.getInputVariable ('rightset')?
-  change_rights (process, task, process.getInputVariable ('rightset'), 'responsible') :
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'responsible') :
   down_right_and_store (process, task)
 """ ;
   rdfs:isDefinedBy s-wf: ;
