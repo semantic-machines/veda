@@ -72,6 +72,7 @@ v-cal:FunctionCalendarModel
       var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
       var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
       var dueDate = event["v-wf:dateGiven"][0];
+      var now = new Date();
       switch (true) {
         case (dueDate < today) :
           className = "fc-danger";
@@ -88,8 +89,8 @@ v-cal:FunctionCalendarModel
         "title": label,
         "url": "#/" + event.id,
         "className": className,
-        "start": event["v-wf:dateGiven"][0].valueOf(),
-        "end": event["v-wf:dateGiven"][0].valueOf() + 60 * 60 * 1000
+        "start": dueDate ? dueDate.valueOf() : now.valueOf(),
+        "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
       }
     });
   }
@@ -107,7 +108,7 @@ v-cal:TasksCalendar
   rdf:type v-cal:FunctionCalendar ;
   rdfs:label "Tasks calendar"@en ;
   rdfs:label "Календарь задач"@ru ;
-  v-cal:query "( ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '{1}') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '{2}') ) && ( 'v-wf:dateGiven' == [{3}T00:00:00,{4}T23:59:59] )"^^xsd:string ;
+  v-cal:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}') && 'v-wf:dateGiven' == [{3}T00:00:00,{4}T23:59:59]"^^xsd:string ;
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-cal:FunctionCalendarTemplate
