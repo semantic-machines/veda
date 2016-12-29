@@ -26,7 +26,7 @@ public void set_g_process_name(string new_data)
     process_name = new_data;
 }
 
-long     max_size_of_individual = 1024 * 64;
+long     max_size_of_individual = 1024 * 512;
 
 string[] access_list_predicates = [ "v-s:canCreate", "v-s:canRead", "v-s:canUpdate", "v-s:canDelete" ];
 
