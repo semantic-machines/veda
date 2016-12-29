@@ -661,7 +661,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
         <div class="row">
           <div class="col-md-12">
       <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
-      <div about="@" rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+      <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
           <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
           </div>
         </div>
@@ -669,7 +669,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
         <div class="row">
           <div class="col-md-12">
       <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+      <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
           <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
           </div>
         </div>
@@ -803,7 +803,7 @@ if (doc) {
     routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
   }
-
+	
   routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
   routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
@@ -1576,77 +1576,62 @@ $('#back', template).on('click', function () {
           <div class="col-md-4 informing">
              <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_informing" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination1">
              <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination1" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination2">
              <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination2" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination3">
              <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination3" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination4">
              <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination4" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination5">
              <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination5" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination6">
              <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination6" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 sign">
              <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_sign" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 approval">
              <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_approval" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 review">
              <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_review" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 examination">
              <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 instruction">
              <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 instruction2">
              <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 instruction3">
              <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 distribution">
              <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_distribution" class="-view edit search create"></veda-control>
           </div>
       </div>
       <hr />
@@ -1976,7 +1961,7 @@ s-wf:codelet_change_controller_right
   rdfs:label "Выдать права контролирующему" ;
   v-s:script """
   process.getInputVariable ('rightset')?
-  change_rights (process, task, process.getInputVariable ('rightset'), 'controller') :
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'controller') :
   down_right_and_store (process, task)
 """ ;
   rdfs:isDefinedBy s-wf: ;
@@ -1987,7 +1972,7 @@ s-wf:codelet_change_responsible_right
   rdfs:label "Выдать права ответственному" ;
   v-s:script """
   process.getInputVariable ('rightset')?
-  change_rights (process, task, process.getInputVariable ('rightset'), 'responsible') :
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'responsible') :
   down_right_and_store (process, task)
 """ ;
   rdfs:isDefinedBy s-wf: ;
