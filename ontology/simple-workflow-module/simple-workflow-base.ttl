@@ -799,29 +799,25 @@ if (doc) {
   });
 
   // DEFAULT
-  function setDefaults(routes) {
-    for (var i = 1; i <= 6; i++) {
-	   if (!routes['coordination'+i][simple+'possible_decisions']) routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	   if (!routes['coordination'+i][simple+'task_label']) routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
-	}
-	
-	if (!routes['sign'][simple+'possible_decisions']) 			routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['sign'][simple+'task_label']) 					routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
-	if (!routes['approval'][simple+'possible_decisions']) 		routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['approval'][simple+'task_label']) 				routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
-	if (!routes['review'][simple+'possible_decisions']) 		routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['review'][simple+'task_label']) 				routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
-	if (!routes['instruction'][simple+'possible_decisions']) 	routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['instruction'][simple+'task_label']) 			routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
-	if (!routes['instruction2'][simple+'possible_decisions']) 	routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['instruction2'][simple+'task_label']) 			routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
-	if (!routes['instruction3'][simple+'possible_decisions']) 	routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['instruction3'][simple+'task_label']) 			routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
-	if (!routes['examination'][simple+'possible_decisions']) 	routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-	if (!routes['examination'][simple+'task_label']) 			routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
+  for (var i = 1; i <= 6; i++) {
+    routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+    routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
   }
-  
-  setDefaults(routes);
+	
+  routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
+  routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
+  routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
+  routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
+  routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
+  routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
+  routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+  routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
 
   // CUSTOM
 //-------------------------------------------------------------------------------------------------------------------------------------Акт расследования аварии
