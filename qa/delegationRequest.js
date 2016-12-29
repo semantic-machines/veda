@@ -14,14 +14,14 @@ function clickUp(element) {
 
 
 module.exports = {
-    createRequestDelegation: function (driver, valueToChoose ) {
+    createRequestDelegation: function (driver, valueToSearch, valueToChoose ) {
         basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser');
 
         driver.executeScript("document.querySelector('#positions').scrollIntoView(true);");
         driver.findElement({css:'div[id="positions"] input[id="td:Analyst1"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Аналитик' position")})
 
-        driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).sendKeys(valueToChoose)
+        driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).sendKeys(valueToSearch)
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute rel=v-s:delegate ");});
         driver.sleep(basic.FAST_OPERATION);
         driver.wait
@@ -36,13 +36,13 @@ module.exports = {
                 });
             },
             basic.SLOW_OPERATION
-        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '"+ valuetoChoose +"' from dropdown");});
+        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '"+ valueToSearch +"' from dropdown");});
 
         driver.findElements({css:'veda-control[rel="v-s:delegate"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
             webdriver.promise.filter(suggestions, function(suggestion) {
                 return suggestion.getText().then(function(txt){
                     if (valueToChoose === undefined) {
-                        return txt.toLowerCase() == valuetoChoose.toLowerCase();
+                        return txt.toLowerCase() == valueToSearch.toLowerCase();
                     } else {
                         return txt.toLowerCase() == valueToChoose.toLowerCase();
                     }
