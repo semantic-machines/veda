@@ -661,7 +661,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
         <div class="row">
           <div class="col-md-12">
       <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
-      <div about="@" rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+      <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
           <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
           </div>
         </div>
@@ -669,7 +669,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
         <div class="row">
           <div class="col-md-12">
       <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+      <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
           <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
           </div>
         </div>
@@ -799,25 +799,29 @@ if (doc) {
   });
 
   // DEFAULT
-  for (var i = 1; i <= 6; i++) {
-    routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-    routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
+  function setDefaults(routes) {
+    for (var i = 1; i <= 6; i++) {
+	   if (!routes['coordination'+i][simple+'possible_decisions']) routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	   if (!routes['coordination'+i][simple+'task_label']) routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
+	}
+	
+	if (!routes['sign'][simple+'possible_decisions']) 			routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['sign'][simple+'task_label']) 					routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
+	if (!routes['approval'][simple+'possible_decisions']) 		routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['approval'][simple+'task_label']) 				routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
+	if (!routes['review'][simple+'possible_decisions']) 		routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['review'][simple+'task_label']) 				routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
+	if (!routes['instruction'][simple+'possible_decisions']) 	routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['instruction'][simple+'task_label']) 			routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
+	if (!routes['instruction2'][simple+'possible_decisions']) 	routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['instruction2'][simple+'task_label']) 			routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
+	if (!routes['instruction3'][simple+'possible_decisions']) 	routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['instruction3'][simple+'task_label']) 			routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
+	if (!routes['examination'][simple+'possible_decisions']) 	routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
+	if (!routes['examination'][simple+'task_label']) 			routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
   }
-
-  routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
-  routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
-  routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
-  routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['instruction'][simple+'task_label'] = veda.Util.mlstring("Исполнить поручение", "Execute task");
-  routes['instruction2'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['instruction2'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Execute task");
-  routes['instruction3'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['instruction3'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Execute task");
-  routes['examination'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['examination'][simple+'task_label'] = veda.Util.mlstring("Ознакомиться", "Examine");
+  
+  setDefaults(routes);
 
   // CUSTOM
 //-------------------------------------------------------------------------------------------------------------------------------------Акт расследования аварии
@@ -1576,77 +1580,62 @@ $('#back', template).on('click', function () {
           <div class="col-md-4 informing">
              <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_informing" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination1">
              <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination1" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination2">
              <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination2" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination3">
              <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination3" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination4">
              <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination4" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination5">
              <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination5" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 coordination6">
              <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_coordination6" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 sign">
              <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_sign" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 approval">
              <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_approval" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 review">
              <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_review" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 examination">
              <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_examination" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 instruction">
              <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 instruction2">
              <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 instruction3">
              <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_instruction" class="-view edit search create"></veda-control>
           </div>
           <div class="col-md-4 distribution">
              <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-             <veda-control data-type="link" rel="s-wf:ComplexRouteStartForm_distribution" class="-view edit search create"></veda-control>
           </div>
       </div>
       <hr />
