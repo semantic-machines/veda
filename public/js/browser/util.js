@@ -343,7 +343,7 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.send = function (individual, template, transformId, modal) {
     if ( transformId ) {
-      template.trigger('save');
+      if (!individual.isSync) template.trigger('save');
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
       veda.Util.showModal(startForm, undefined, 'edit');
     } else {
