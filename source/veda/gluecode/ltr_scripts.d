@@ -373,10 +373,15 @@ class ScriptProcess : VedaModule
         return true;
     }
 
-	override void event_of_change(string uri)
-	{
-		configure();
-	}
+    override bool open()
+    {
+        return true;
+    }
+
+    override void event_of_change(string uri)
+    {
+        configure();
+    }
 }
 
 private void start_script(string execute_script_srz, string queue_id)

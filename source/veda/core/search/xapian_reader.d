@@ -367,20 +367,27 @@ class XapianReader : SearchReader
         committed_op_id = cur_committed_op_id;
     }
 
-    public void close_db()
+    public bool close_db()
     {
         foreach (el; using_dbqp.values)
         {
             el.db.close(&err);
             if (err != 0)
+            {
                 log.trace("xapian_reader:close database:err=%s", get_xapian_err_msg(err));
+                return false;
+            }
         }
         foreach (db; opened_db.values)
         {
             db.close(&err);
             if (err != 0)
+            {
                 log.trace("xapian_reader:close database:err=%s", get_xapian_err_msg(err));
+                return false;
+            }
         }
+        return true;
     }
 }
 

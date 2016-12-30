@@ -89,23 +89,24 @@ class FTIndexerProcess : VedaModule
         {
             prepare_all();
         }
+    }
 
-        //log.trace("@3");
+    override bool open()
+    {
+        ictx.thread_name = process_name;
+        ictx.init(&sticket);
+        return true;
     }
 
     override bool configure()
     {
-        //writeln("@ configure B");
-        ictx.thread_name = process_name;
-        ictx.init(&sticket);
-
-        //writeln("@ configure E");
         return true;
     }
 
     override bool close()
     {
-        ictx.close();
+        if (ictx !is null)
+            ictx.close();
         return true;
     }
 

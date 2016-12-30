@@ -17,7 +17,7 @@ int main(string[] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-	Thread.getThis().priority(Thread.PRIORITY_MIN);
+    Thread.getThis().priority(Thread.PRIORITY_MIN);
 
     ScriptProcess p_script = new ScriptProcess("V8.LowPriority", process_name, log);
     p_script.run();
