@@ -92,7 +92,9 @@ veda.Module(function Util(veda) { "use strict";
     ontologies.map( function (ontology_uri) {
       var ontology = new veda.IndividualModel(ontology_uri);
       var prefix = ontology_uri.slice(0, -1);
-      all_prefixes[prefix] = ontology["v-s:fullUrl"][0].toString();
+      if (ontology.hasValue("v-s:fullUrl")) {
+        all_prefixes[prefix] = ontology["v-s:fullUrl"][0].toString();
+      }
     });
 
     function prefixer(uri) {
