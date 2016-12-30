@@ -30,11 +30,11 @@ veda.Module(function (veda) { "use strict";
     //"owl:sameAs",
     "owl:topObjectProperty",
     "owl:topDataProperty",
-    "owl:versionInfo",
+    "owl:versionInfo"//,
     //"rdf:value",
-    "rdfs:isDefinedBy",
-    "rdfs:member",
-    "rdfs:seeAlso"
+    //"rdfs:isDefinedBy",
+    //"rdfs:member",
+    //"rdfs:seeAlso"
   ];
 
   veda.OntologyModel = function () {
