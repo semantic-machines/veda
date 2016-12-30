@@ -54,9 +54,12 @@ public class IndexerContext
 
     void close()
     {
-        indexer_base_db.close(&err);
-        indexer_system_db.close(&err);
-        indexer_deleted_db.close(&err);
+        if (indexer_base_db !is null)
+            indexer_base_db.close(&err);
+        if (indexer_system_db !is null)
+            indexer_system_db.close(&err);
+        if (indexer_deleted_db !is null)
+            indexer_deleted_db.close(&err);
     }
 
     bool init(Ticket *_ticket)

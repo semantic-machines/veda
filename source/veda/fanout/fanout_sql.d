@@ -69,13 +69,15 @@ class FanoutProcess : VedaModule
         return null;
     }
 
+    override bool open()
+    {
+        connect_to_mysql(context);
+        return true;
+    }
 
     override bool configure()
     {
         log.trace("use configuration: %s", node);
-
-        connect_to_mysql(context);
-
         return true;
     }
 

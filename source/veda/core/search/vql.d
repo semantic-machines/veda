@@ -44,9 +44,9 @@ class VQL
         xr      = new XapianReader(_context);
     }
 
-    public void close_db()
+    public bool close_db()
     {
-        xr.close_db();
+        return xr.close_db();
     }
 
     public void reopen_db()

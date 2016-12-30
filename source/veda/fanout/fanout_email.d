@@ -86,12 +86,15 @@ class FanoutProcess : VedaModule
     }
 
 
+    override bool open()
+    {
+        connect_to_smtp(context);
+        return true;
+    }
+
     override bool configure()
     {
         log.trace("use configuration: %s", node);
-
-        connect_to_smtp(context);
-
         return true;
     }
 

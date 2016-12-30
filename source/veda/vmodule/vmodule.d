@@ -124,6 +124,7 @@ class VedaModule
 
         cache_of_indv = new Cache!(string, string)(1000, "individuals");
 
+        open();
         if (configure() == false)
         {
             log.trace("[%s] configure is fail, terminate", process_name);
@@ -195,6 +196,7 @@ class VedaModule
 
     abstract bool configure();
     abstract bool close();
+    abstract bool open();
 
     abstract Context create_context();
 
@@ -280,6 +282,7 @@ class VedaModule
                 {
                     log.trace("prefetch: reconfigure, use [%s]", node);
                     close();
+                    open();
                     context.get_onto();
                     configure();
                 }
