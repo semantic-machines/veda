@@ -2,7 +2,7 @@
 
 # берет новые исходники из github, но не собирает
 
-DMD_VER=2.072.1
+DMD_VER=2.072.2
 DUB_VER=1.1.1
 GO_VER=go1.7.4
 
@@ -11,6 +11,7 @@ if ! dmd --version | grep $DMD_VER ; then
     wget http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
     sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
     rm dmd_$DMD_VER-0_amd64.deb
+    rm -r ~/.dub
 fi
 
 # Get right version of DUB
