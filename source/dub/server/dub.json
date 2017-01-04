@@ -3,7 +3,7 @@
 	"description": "veda-server",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.0"
+		"backtrace-d": "0.1.2"
 	},
 	"versions": ["isServer"],	
         "libs": [
