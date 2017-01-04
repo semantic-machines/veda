@@ -534,6 +534,12 @@ class XapianVQL
 
         byte err;
 
+        if (ticket is null)
+        {
+            log.trace("exec_xapian_query_and_queue_authorize:ticket is null");
+            return -1;
+        }
+
         //writeln (cast(void*)xapian_enquire, " count_authorize=", count_authorize);
         XapianMSet matches = xapian_enquire.get_mset(0, limit, &err);
         if (err < 0)
@@ -581,7 +587,7 @@ class XapianVQL
                 }
                 else
                 {
-                    log.trace("subject_id:[%s] not authorized", subject_id);
+                    log.trace("subject_id:[%s] not authorized, user_uri=%s", subject_id, ticket.user_uri);
                 }
 
                 acl_db_reopen = false;
