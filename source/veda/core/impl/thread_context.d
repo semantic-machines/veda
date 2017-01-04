@@ -182,10 +182,10 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
-	public string get_config_uri ()
-	{
-		return node_id;
-	}
+    public string get_config_uri()
+    {
+        return node_id;
+    }
 
     this(string _node_id, string context_name, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
@@ -968,21 +968,23 @@ class PThreadContext : Context
 
     public Individual get_individual(Ticket *ticket, string uri)
     {
-        //       StopWatch sw; sw.start;
+        Individual individual = Individual.init;
+
+        if (ticket is null)
+        {
+            log.trace("get_individual, uri=%s, ticket is null", uri);
+            return individual;
+        }
 
         if (trace_msg[ T_API_150 ] == 1)
         {
             if (ticket !is null)
                 log.trace("get_individual, uri=%s, ticket=%s", uri, ticket.id);
-            else
-                log.trace("get_individual, uri=%s, ticket=null", uri);
         }
 
         try
         {
-            Individual individual = Individual.init;
-
-            string     individual_as_cbor = get_from_individual_storage(uri);
+            string individual_as_cbor = get_from_individual_storage(uri);
             if (individual_as_cbor !is null && individual_as_cbor.length > 1)
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
@@ -998,7 +1000,7 @@ class PThreadContext : Context
                 else
                 {
                     if (trace_msg[ T_API_160 ] == 1)
-                        log.trace("get_individual, not authorized, uri=%s", uri);
+                        log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
                     individual.setStatus(ResultCode.Not_Authorized);
                 }
             }
@@ -1063,13 +1065,17 @@ class PThreadContext : Context
 
         rs = ResultCode.Unprocessable_Entity;
 
+        if (ticket is null)
+        {
+            rs = ResultCode.Ticket_not_found;
+            log.trace("get_individual as cbor, uri=%s, ticket is null", uri);
+            return null;
+        }
 
         if (trace_msg[ T_API_180 ] == 1)
         {
             if (ticket !is null)
                 log.trace("get_individual as cbor, uri=%s, ticket=%s", uri, ticket.id);
-            else
-                log.trace("get_individual as cbor, uri=%s, ticket=null", uri);
         }
 
         try
@@ -1091,7 +1097,7 @@ class PThreadContext : Context
             else
             {
                 if (trace_msg[ T_API_190 ] == 1)
-                    log.trace("get_individual as cbor, not authorized, uri=%s", uri);
+                    log.trace("get_individual as cbor, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
                 rs = ResultCode.Not_Authorized;
             }
 
