@@ -741,10 +741,10 @@ class PThreadContext : Context
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
 
-        return get_ticket(systicket_id);
+        return get_ticket(systicket_id, true);
     }
 
-    public Ticket *get_ticket(string ticket_id)
+    public Ticket *get_ticket(string ticket_id, bool is_systicket = false)
     {
         //StopWatch sw; sw.start;
 
@@ -806,10 +806,9 @@ class PThreadContext : Context
                     log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
 
                 SysTime now = Clock.currTime();
-                if (now.stdTime >= tt.end_time)
+                if (now.stdTime >= tt.end_time && !is_systicket)
                 {
-                    if (trace_msg[ T_API_110 ] == 1)
-                        log.trace("тикет просрочен, id=%s", ticket_id);
+                    log.trace("ticket expired, ticket=[%s], user=[%s]", tt.id, tt.user_uri);
 
                     if (ticket_id == "guest")
                     {
@@ -819,6 +818,7 @@ class PThreadContext : Context
                     else
                     {
                         tt        = new Ticket;
+                        tt.id     = "?";
                         tt.result = ResultCode.Ticket_expired;
                     }
                     return tt;
@@ -829,7 +829,7 @@ class PThreadContext : Context
                 }
 
                 if (trace_msg[ T_API_120 ] == 1)
-                    log.trace("тикет, %s", *tt);
+                    log.trace("ticket: %s", *tt);
             }
             return tt;
         }
@@ -1075,7 +1075,7 @@ class PThreadContext : Context
         if (trace_msg[ T_API_180 ] == 1)
         {
             if (ticket !is null)
-                log.trace("get_individual as cbor, uri=%s, ticket=%s", uri, ticket.id);
+                log.trace("get_individual as cbor, uri=[%s], ticket=[%s]", uri, ticket.id);
         }
 
         try
@@ -1097,7 +1097,7 @@ class PThreadContext : Context
             else
             {
                 if (trace_msg[ T_API_190 ] == 1)
-                    log.trace("get_individual as cbor, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
+                    log.trace("get_individual as cbor, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
                 rs = ResultCode.Not_Authorized;
             }
 

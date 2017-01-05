@@ -273,7 +273,7 @@ interface Context
     /**
        Вернуть обьект Ticket по Id
      */
-    public Ticket *get_ticket(string ticket_id);
+    public Ticket *get_ticket(string ticket_id, bool is_systicket = false);
 
     /**
        Проверить сессионный билет

@@ -587,7 +587,7 @@ class XapianVQL
                 }
                 else
                 {
-                    log.trace("subject_id:[%s] not authorized, user_uri=%s", subject_id, ticket.user_uri);
+                    log.trace("subject_id:[%s] not authorized, ticket=[%s], user_uri=[%s]", subject_id, ticket.id, ticket.user_uri);
                 }
 
                 acl_db_reopen = false;
