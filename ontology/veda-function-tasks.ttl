@@ -93,12 +93,12 @@ v-ft:FunctionTasksTemplate
 </script>
 <div class="container-fluid">
   <br>
-  <ul id="box-tabs" class="nav nav-pills nav-right" role="tablist">
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
-    <li class="pull-right" role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
-    <li class="pull-right" role="presentation"><a href="#/v-ft:Completed" about="v-ft:Completed" property="rdfs:label"></a></li>
-    <li class="pull-right" role="presentation"><a href="#/v-ft:Outbox" about="v-ft:Outbox" property="rdfs:label"></a></li>
-    <li class="pull-right" role="presentation"><a href="#/v-ft:Inbox" about="v-ft:Inbox" property="rdfs:label"></a></li>
+    <li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
+    <li role="presentation"><a href="#/v-ft:Completed" about="v-ft:Completed" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Outbox" about="v-ft:Outbox" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Inbox" about="v-ft:Inbox" property="rdfs:label"></a></li>
   </ul>
   <br>
   <table class="table table-condensed table-bordered table-striped">
