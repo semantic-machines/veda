@@ -895,12 +895,12 @@
   // SOURCE CODE CONTROL
   $.fn.veda_source = function (options) {
     var self = this,
-      opts = $.extend( {}, $.fn.veda_source.defaults, options ),
-      control = $(opts.template),
-      individual = opts.individual,
-      property_uri = opts.property_uri,
-      fscreen = $("#full-screen", control),
-      editorEl = control.get(0);
+        opts = $.extend( {}, $.fn.veda_source.defaults, options ),
+        control = $(opts.template),
+        individual = opts.individual,
+        property_uri = opts.property_uri,
+        fscreen = $("#full-screen", control),
+        editorEl = control.get(0);
 
     opts.value = individual.hasValue(property_uri) ? individual[property_uri][0].toString() : "";
     opts.change = function (value) {
@@ -953,10 +953,10 @@
 
     fscreen.click(function () {
       var body = $("body"),
-          all = $("body > *"),
-        parent = control.parent(),
-        wrapper = $("<div class='fs-wrapper'></div>"),
-        cm = $(".CodeMirror", control);
+          all = $("body > *:not(script)"),
+          parent = control.parent(),
+          wrapper = $("<div class='fs-wrapper'></div>"),
+          cm = $(".CodeMirror", control);
       if ( !parent.hasClass("fs-wrapper") ) {
         control.wrap( wrapper );
         cm.addClass("CodeMirror-fs");
@@ -975,6 +975,7 @@
       fscreen.toggleClass("glyphicon-resize-full glyphicon-resize-small");
       editor.refresh();
     });
+
     this.append(control);
     return this;
   }

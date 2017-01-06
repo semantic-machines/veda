@@ -713,12 +713,24 @@ class PThreadContext : Context
                 string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
                 if (usesCredential_uri !is null)
                 {
+                    log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
                     Individual i_usesCredential = this.get_individual(&sticket, usesCredential_uri);
                     pass = i_usesCredential.getFirstLiteral("v-s:password");
                 }
                 else
                 {
                     pass = user.getFirstLiteral("v-s:password");
+
+                    Individual i_usesCredential;
+                    i_usesCredential.uri = user.uri ~ "-crdt";
+                    i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
+                    i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
+                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", false, true);
+                    log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
+                    user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
+                    user.removeResource("v-s:password");
+                    op_res = this.put_individual(&sticket, user.uri, user, false, "", false, true);
+                    log.trace("authenticate: update user[%s], res=%s", user, op_res);
                 }
 
                 if (pass !is null && pass == password)
@@ -728,7 +740,7 @@ class PThreadContext : Context
                 }
             }
 
-            log.trace("fail authenticate, login=[%s] password=[%s]", login, password);
+            log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
 
             ticket.result = ResultCode.Authentication_Failed;
 
