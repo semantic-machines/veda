@@ -9,7 +9,8 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.common.logger;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
+               veda.common.logger;
 
 /// Имена процессов
 public enum P_MODULE : byte
@@ -33,7 +34,7 @@ public enum P_MODULE : byte
     statistic_data_accumulator = 5,
 
     /// исполнение скриптов
-    scripts                    = 6,
+    scripts_main               = 6,
 
     /// Сохранение накопленных данных в полнотекстовом индексаторе
     commiter                   = 7,
@@ -55,9 +56,9 @@ public enum P_MODULE : byte
 
     webserver                  = 15,
 
-    n_channel                   = 16,
-    
-    ccus_channel	   = 17,	
+    n_channel                  = 16,
+
+    ccus_channel               = 17,
 
     nop                        = 99
 }
@@ -174,18 +175,11 @@ public struct Ticket
         end_time = tt.end_time;
     }
 
-    immutable this(string _id, string _user_uri, long _end_time)
+    this(string _id, string _user_uri, long _end_time)
     {
         id       = _id;
         user_uri = _user_uri;
         end_time = _end_time;
-    }
-
-    /// Создание $(D immutable) копии
-    immutable(Ticket) idup()
-    {
-        immutable(Ticket) result = immutable Ticket(id, user_uri, end_time);
-        return result;
     }
 }
 
@@ -242,7 +236,7 @@ interface Context
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
 
-	public Logger get_logger ();
+    public Logger get_logger();
 
     version (isServer)
     {
@@ -279,7 +273,7 @@ interface Context
     /**
        Вернуть обьект Ticket по Id
      */
-    public Ticket *get_ticket(string ticket_id);
+    public Ticket *get_ticket(string ticket_id, bool is_systicket = false);
 
     /**
        Проверить сессионный билет
@@ -296,7 +290,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public immutable(string)[] get_individuals_ids_via_query(Ticket * ticket, string query_str, string sort_str, string db_str, int top, int limit);
+    public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();
@@ -386,15 +380,24 @@ interface Context
 
 
     /**
-       Вернуть детализированный список доступных прав для пользователя на указанномый uri
+       Вернуть детализированный список доступных прав для пользователя по указанному uri, список представляет собой массив индивидов
        Params:
                  ticket = указатель на обьект Ticket
                  uri    = uri субьекта
-                 trace  = функция делегат, собирающая результат выполнения функции
+                 trace_acl  = функция делегат, собирающая результат выполнения функции
      */
-    public void get_rights_origin(Ticket *ticket, string uri,
-                                  void delegate(string resource_group, string subject_group, string right) trace);
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri,
+                                           void delegate(string resource_group, string subject_group, string right) trace_acl);
 
+    /**
+       Вернуть список групп в которые входит индивид указанный по uri, список представляет собой индивид
+       Params:
+                 ticket = указатель на обьект Ticket
+                 uri    = uri субьекта
+                 trace_group  = функция делегат, собирающая результат выполнения функции
+     */
+    public void get_membership_from_acl(Ticket *ticket, string uri,
+                                        void delegate(string resource_group) trace_group);
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 
     /**
@@ -441,6 +444,7 @@ interface Context
      */
     public void unfreeze();
 
+    public string get_config_uri();
     public Individual getConfiguration();
 }
 

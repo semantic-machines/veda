@@ -9,8 +9,10 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     var tmpl = $(template);
     var ol = $("#drafts-list", tmpl);
     var deleteAllBtn = $("#delete-all", tmpl).click( function () {
-      ol.empty();
-      veda.drafts.clear();
+      if ( confirm ("Вы уверены? / Are you sure?") ) {
+        ol.empty();
+        veda.drafts.clear();
+      }
     });
     container.empty().append(tmpl);
 

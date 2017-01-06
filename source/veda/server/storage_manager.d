@@ -124,7 +124,7 @@ public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
 {
     ResultCode rc;
 
-    Tid tid = getTid(P_MODULE.subject_manager);
+    Tid        tid = getTid(P_MODULE.subject_manager);
 
     if (tid != Tid.init)
     {
@@ -186,7 +186,8 @@ public long unload(P_MODULE storage_id, string queue_name)
     return count;
 }
 
-public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter, string event_id,
+public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter,
+                      string event_id,
                       bool ignore_freeze,
                       out long op_id)
 {
@@ -238,10 +239,12 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbStorage                  storage          = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
-    int                          size_bin_log     = 0;
-    int                          max_size_bin_log = 10_000_000;
-    string                       bin_log_name     = get_new_binlog_name(db_path);
+    LmdbStorage                  storage                        = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+    int                          size_bin_log                   = 0;
+    int                          max_size_bin_log               = 10_000_000;
+    string                       bin_log_name                   = get_new_binlog_name(db_path);
+    long                         last_reopen_rw_op_id 			= 0;
+    int                          max_count_updates              = 10_000;
 
     long                         op_id           = storage.last_op_id;
     long                         committed_op_id = 0;
@@ -315,13 +318,25 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             if (cmd == CMD_COMMIT)
                             {
                                 storage.flush(1);
+
+                                if (last_reopen_rw_op_id == 0)
+                                    last_reopen_rw_op_id = op_id;
+
+                                if (op_id - last_reopen_rw_op_id > max_count_updates)
+                                {
+                                    log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
+                                    storage.close_db();
+                                    storage.open_db();
+                                    last_reopen_rw_op_id = op_id;
+                                }
+
                                 committed_op_id = op_id;
                                 module_info.put_info(op_id, committed_op_id);
                                 //log.trace ("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
                             else if (cmd == CMD_UNFREEZE)
                             {
-                            	log.trace ("UNFREEZE");
+                                log.trace("UNFREEZE");
                                 is_freeze = false;
                             }
                         },
@@ -331,13 +346,25 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             {
                                 committed_op_id = op_id;
                                 storage.flush(1);
+
+                                if (last_reopen_rw_op_id == 0)
+                                    last_reopen_rw_op_id = op_id;
+
+                                if (op_id - last_reopen_rw_op_id > max_count_updates)
+                                {
+                                    log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
+                                    storage.close_db();
+                                    storage.open_db();
+                                    last_reopen_rw_op_id = op_id;
+                                }
+
                                 send(tid_response_reciever, true);
                                 module_info.put_info(op_id, committed_op_id);
                                 log.trace("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
                             else if (cmd == CMD_FREEZE)
                             {
-                            	log.trace ("FREEZE");
+                                log.trace("FREEZE");
                                 is_freeze = true;
                                 send(tid_response_reciever, true);
                             }
@@ -419,7 +446,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (INDV_OP cmd, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter, string event_id, bool ignore_freeze,
+                        (INDV_OP cmd, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter, string event_id,
+                         bool ignore_freeze,
                          Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.Not_Ready;
@@ -458,8 +486,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             imm.uri = text(op_id);
                                             imm.addResource("cmd", Resource(cmd));
 
+                                            imm.addResource("uri", Resource(DataType.Uri, indv_uri));
+
                                             if (user_uri !is null && user_uri.length > 0)
-                                                imm.addResource("user_uri", Resource(DataType.String, user_uri));
+                                                imm.addResource("user_uri", Resource(DataType.Uri, user_uri));
 
                                             imm.addResource("new_state", Resource(DataType.String, new_state));
 
@@ -470,6 +500,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                                 imm.addResource("event_id", Resource(DataType.String, event_id));
 
                                             imm.addResource("op_id", Resource(op_id));
+                                            imm.addResource("u_count", Resource(update_counter));
 
                                             //writeln ("*imm=[", imm, "]");
 
@@ -478,14 +509,17 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             individual_queue.push(cbor);
 //                                          string msg_to_modules = indv_uri ~ ";" ~ text(update_counter) ~ ";" ~ text (op_id) ~ "\0";
-                                            string msg_to_modules = format ("#%s;%d;%d", indv_uri, update_counter, op_id);
-                                            
+                                            string msg_to_modules = format("#%s;%d;%d", indv_uri, update_counter, op_id);
+
                                             int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);
 //                                          log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_channel_url);
 
-                                            Tid tid_ccus_channel = getTid(P_MODULE.ccus_channel);
-                                            if (tid_ccus_channel !is Tid.init)
-                                                send(tid_ccus_channel, msg_to_modules);
+                                            //Tid tid_ccus_channel = getTid(P_MODULE.ccus_channel);
+                                            //if (tid_ccus_channel !is Tid.init)
+                                            //{
+                                            //    //log.trace("SEND SIGNAL TO CCUS %s", msg_to_modules);
+                                            //    send(tid_ccus_channel, msg_to_modules);
+                                            //}
                                         }
                                     }
 
@@ -545,7 +579,12 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             if (cmd == CMD_SET_TRACE)
                                 set_trace(arg, arg2);
                         },
-                        (Variant v) { writeln(thread_name, "::storage_manager::Received some other type.", v); });
+                        (OwnerTerminated ot)
+                        {
+                            //log.trace("%s::storage_manager::OWNER TERMINATED", thread_name);
+                            return;
+                        },
+                        (Variant v) { log.trace("%s::storage_manager::Received some other type. %s", thread_name, v); });
             }
             catch (Throwable ex)
             {

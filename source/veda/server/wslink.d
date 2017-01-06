@@ -6,7 +6,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.algorithm : remove;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage;
     import veda.core.common.context, veda.util.tools, veda.onto.onto;
     import veda.bind.libwebsocketd;
     import veda.util.container;
@@ -45,26 +45,26 @@ class WSClient
     lws_context_creation_info info;
     lws                       *wsi;
     lws_protocols[]           protocol = new lws_protocols[ 2 ];
-    string 					  ws_path;			
+    string                    ws_path;
 
     ushort                    port;
     string                    host;
-    Logger 					  log;
-    string					  handshake;
+    Logger                    log;
+    string                    handshake;
 
     this(string _host, ushort _port, string _ws_path, string _handshake, Logger in_log)
     {
-    	handshake = _handshake;
-        port = _port;
-        host = _host;
-        _log = in_log;
-        log  = in_log;
-        ws_path = _ws_path;
+        handshake = _handshake;
+        port      = _port;
+        host      = _host;
+        _log      = in_log;
+        log       = in_log;
+        ws_path   = _ws_path;
     }
 
     ~this()
     {
-    	//wsi
+        //wsi
     }
 
     private void init_channel()
@@ -97,7 +97,7 @@ class WSClient
         i.address = i.host;
         i.port    = port;
         i.context = ws_context;
-        i.path    = cast(char*)(ws_path ~ "\0");//"/ws\0";
+        i.path    = cast(char *)(ws_path ~ "\0"); //"/ws\0";
 
         wsi = lws_client_connect_via_info(&i);
 
@@ -111,10 +111,14 @@ class WSClient
         log.trace("init_channel: %s:%d%s, is Ok", host, port, ws_path);
     }
 
-    void listen(void function(lws *wsi) _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws *wsi) _ev_LWS_CALLBACK_CLIENT_WRITEABLE, void function(lws * wsi, char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+    void listen(void function(lws * wsi) _ev_LWS_CALLBACK_GET_THREAD_ID, void function(lws * wsi) _ev_LWS_CALLBACK_CLIENT_WRITEABLE, void function(
+                                                                                                                                                   lws
+                                                                                                                                                   *
+                                                                                                                                                   wsi,
+                                                                                                                                                   char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
-        ev_LWS_CALLBACK_GET_THREAD_ID  = _ev_LWS_CALLBACK_GET_THREAD_ID;
-        ev_LWS_CALLBACK_CLIENT_RECEIVE = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
+        ev_LWS_CALLBACK_GET_THREAD_ID    = _ev_LWS_CALLBACK_GET_THREAD_ID;
+        ev_LWS_CALLBACK_CLIENT_RECEIVE   = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
         ev_LWS_CALLBACK_CLIENT_WRITEABLE = _ev_LWS_CALLBACK_CLIENT_WRITEABLE;
 
         try
@@ -141,7 +145,7 @@ class WSClient
                         lws_callback_on_writable(wsi);
                         f1 = true;
                     }
-                    ev_LWS_CALLBACK_GET_THREAD_ID (wsi);
+                    ev_LWS_CALLBACK_GET_THREAD_ID(wsi);
                 }
 
                 log.trace("DISCONNECT");
@@ -239,9 +243,9 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:
         //writefln("[%s:%d%s] On writeable is called.", host, port, ws_path);
         //websocket_write(wsi, "test msg-count=" ~ text(msg_count));
-        //msg_count++;               
-         ev_LWS_CALLBACK_CLIENT_WRITEABLE(wsi);
-        
+        //msg_count++;
+        ev_LWS_CALLBACK_CLIENT_WRITEABLE(wsi);
+
         writeable_flag = 1;
         break;
 

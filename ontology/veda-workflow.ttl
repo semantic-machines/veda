@@ -27,14 +27,14 @@ v-wf:appInboxUrl
 
 v-wf:Net
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net"@en ;
   rdfs:label "Сеть"@ru ;
 .
 v-wf:NetElement
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net element"@en ;
   rdfs:label "Элемент сети"@ru ;
@@ -69,21 +69,21 @@ v-wf:Task
 .
 v-wf:Flow
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Flow"@en ;
   rdfs:label "Поток"@ru ;
 .
 v-wf:ExecutorDefinition
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Executor definition"@en ;
   rdfs:label "Выбор исполнителя"@ru ;
 .
 v-wf:TransitionBehavior
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Transition behavior"@en ;
   rdfs:label "Тип перехода"@ru ;
@@ -319,7 +319,7 @@ v-wf:executorExpression
 #------------------------------------------------------
 v-wf:VarDefine
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Определение переменой"@ru ;
@@ -346,7 +346,7 @@ v-wf:varDefineScope
 
 v-wf:Variable
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Переменная"@ru ;
@@ -397,7 +397,7 @@ v-wf:isTrace
 
 #------------------------------------------------------
 v-wf:netPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Net ;
@@ -710,16 +710,16 @@ jsWorkflow.ready(function () {
   """ ;
 .
 v-wf:taskPropertySpecification1
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства locationX, locationY"@ru ;
   rdfs:label "Property specification for locationX, locationY"@en ;
   v-ui:forClass v-wf:Task ;
   v-ui:forProperty v-wf:locationX, v-wf:locationY ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:defaultIntegerValue "10"^^xsd:integer ;
+  v-ui:defaultValue "10"^^xsd:integer ;
 .
 v-wf:taskPropertySpecification2
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Task, v-wf:Condition, v-wf:InputCondition, v-wf:OutputCondition, v-wf:Flow ;
@@ -727,7 +727,7 @@ v-wf:taskPropertySpecification2
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:taskPropertySpecification2
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства комментарий"@ru ;
   rdfs:label "Property specification for comment"@en ;
   v-ui:forClass v-wf:Flow ;
@@ -742,11 +742,11 @@ v-wf:taskPropertySpecification3
   v-ui:forProperty v-wf:join, v-wf:split ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:optionObjectValue v-wf:AND ;
-  v-ui:optionObjectValue v-wf:OR ;
-  v-ui:optionObjectValue v-wf:XOR ;
-  v-ui:optionObjectValue v-wf:None ;
-  v-ui:defaultObjectValue v-wf:None ;
+  v-ui:optionValue v-wf:AND ;
+  v-ui:optionValue v-wf:OR ;
+  v-ui:optionValue v-wf:XOR ;
+  v-ui:optionValue v-wf:None ;
+  v-ui:defaultValue v-wf:None ;
 .
 v-wf:taskPropertySpecification4
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -812,7 +812,7 @@ v-wf:taskPropertySpecification11
   v-ui:queryPrefix "('rdfs:subClassOf'=='v-wf:DecisionForm')"^^xsd:string ;
 .
 v-wf:mappingPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства мэппинг"@ru ;
   rdfs:label "Property specification for Mapping"@en ;
   v-ui:forClass v-wf:Mapping ;
@@ -822,7 +822,7 @@ v-wf:mappingPropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:variablesPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства переменных"@ru ;
   rdfs:label "Property specification for variables"@en ;
   v-ui:forClass v-wf:VarDefine ;
@@ -830,7 +830,7 @@ v-wf:variablesPropertySpecification1
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
 .
 v-wf:executorPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация свойства исполнителей"@ru ;
   rdfs:label "Property specification for executors"@en ;
   v-ui:forClass v-wf:ExecutorDefinition ;
@@ -869,15 +869,15 @@ v-wf:TaskTemplateAsProperties
   <tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
       <td><span about="v-wf:join" property="rdfs:label"></span></td>
       <td>
-        <veda-control id="VCjoin" rel="v-wf:join" data-type="objectSelect" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCjoin" about="@" rel="v-wf:join" data-template="v-ui:LabelTemplate"></div>
+        <veda-control id="VCjoin" rel="v-wf:join" data-type="select" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCjoin" about="@" rel="v-wf:join" data-template="v-ui:LabelTemplate"></div>
       </td>
   </tr>
   <tr onclick="javascript: $('#VCsplit').show(); $('#viewVCsplit').hide();">
       <td><span about="v-wf:split" property="rdfs:label"></span></td>
       <td>
-        <veda-control id="VCsplit" rel="v-wf:split" data-type="objectSelect" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCsplit" about="@" rel="v-wf:split" data-template="v-ui:LabelTemplate"></div>
+        <veda-control id="VCsplit" rel="v-wf:split" data-type="select" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCsplit" about="@" rel="v-wf:split" data-template="v-ui:LabelTemplate"></div>
       </td>
   </tr>
   <tr onclick="javascript: $('.VCdecisionForm').show(); $('.viewVCdecisionForm').hide();">
@@ -1094,6 +1094,50 @@ v-wf:TaskTemplateAsProperties
         <veda-control rel="v-wf:completedJournalMap" data-type="link" class="VCcompletedJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div rel="v-wf:completedJournalMap">
           <div deleteButton="hide" class="VCcompletedJournalMap">
+            <p>
+            #<a href="#/@">
+              <span about="@" rel="v-wf:mapToVariable">
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+            </a>
+          </p>
+        <div>
+      </div>
+    </td>
+  </tr>
+  <tr onclick="javascript: $('.button-delete', $('.VCstartingMessageMap').show()).show();">
+    <td>
+      <span about="v-wf:startingMessageMap" property="rdfs:label"></span>
+    </td>
+      <td>
+        <veda-control rel="v-wf:startingMessageMap" data-type="link" class="VCstartingMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+        <div rel="v-wf:startingMessageMap">
+          <div deleteButton="hide" class="VCstartingMessageMap">
+            <p>
+            #<a href="#/@">
+              <span about="@" rel="v-wf:mapToVariable">
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+            </a>
+          </p>
+        <div>
+      </div>
+    </td>
+  </tr>
+  <tr onclick="javascript: $('.button-delete', $('.VCcompletedMessageMap').show()).show();">
+    <td>
+      <span about="v-wf:completedMessageMap" property="rdfs:label"></span>
+    </td>
+      <td>
+        <veda-control rel="v-wf:completedMessageMap" data-type="link" class="VCcompletedMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
+        <div rel="v-wf:completedMessageMap">
+          <div deleteButton="hide" class="VCcompletedMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1327,7 +1371,7 @@ v-wf:FlowTemplateAsProperties
 .
 
 v-wf:varPPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства переменных"@ru ;
   rdfs:label "Property specification for variables"@en ;
   v-ui:forClass v-wf:Process ;
@@ -1400,7 +1444,7 @@ v-wf:ProcessPropsTemplate
 .
 
 v-wf:varWIPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация свойства переменных"@ru ;
   rdfs:label "Property specification for variables"@en ;
   v-ui:forClass v-wf:WorkItem ;
@@ -1551,13 +1595,20 @@ v-wf:DecisionFormTemplate
       individual["v-wf:read"] = [true];
     }
   });
+  individual.on("individual:afterSave", afterSaveHandler);
   template.one("remove", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
       individual.reset();
       individual["v-wf:read"] = [true];
       individual.save();
     }
+    individual.off("individual:afterSave", afterSaveHandler);
   });
+  function afterSaveHandler () {
+    if ( individual.hasValue("v-wf:takenDecision") ) {
+      veda.trigger("task:completed", individual.id);
+    }
+  }
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
   """ ;
@@ -1568,6 +1619,7 @@ v-wf:DecisionFormTemplate
 v-wf:DecisionForm
   rdf:type rdfs:Class ;
   rdfs:isDefinedBy v-wf: ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Форма решения"@ru ;
   rdfs:label "Decision form"@en ;
 .
@@ -1661,14 +1713,14 @@ v-wf:StartForm
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Стартовая форма"@ru ;
   rdfs:label "Start form"@en ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
 .
 
 v-wf:processedDocument
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Обрабатываемый документ"@ru ;
-  rdfs:label "Processed document"@en ;
+  rdfs:label "Документ"@ru ;
+  rdfs:label "Document"@en ;
   rdfs:domain v-wf:StartForm ;
   rdfs:range v-s:Thing ;
 .
@@ -1704,7 +1756,7 @@ v-wf:useTransformation
 
 v-wf:Mapping
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Mapping"@en ;
   rdfs:label "Преобразование"@ru ;
@@ -1923,7 +1975,7 @@ v-wf:isStopped
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Work order"@en ;
   rdfs:label "Рабочее задание"@ru ;
@@ -1957,8 +2009,9 @@ v-wf:event_df1
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:StartForm ;
+  v-s:triggerByType v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 
   if (!parent_script_id
@@ -1975,7 +2028,8 @@ v-wf:event_df2
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:Process ;
+  v-s:triggerByType v-wf:Process ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 
 //  print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -1996,7 +2050,8 @@ v-wf:event_df3
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:WorkItem ;
+  v-s:triggerByType v-wf:WorkItem ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 
   //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -2016,7 +2071,8 @@ v-wf:event_df4
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:WorkOrder ;
+  v-s:triggerByType v-wf:WorkOrder ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 
   //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -2034,7 +2090,8 @@ v-wf:event_df5
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
-  v-s:filter v-wf:DecisionForm ;
+  v-s:triggerByType v-wf:DecisionForm ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 
   if ((!parent_script_id ||
@@ -2050,7 +2107,7 @@ v-wf:event_df5
 
 v-wf:Decision
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision"@en ;
@@ -2245,6 +2302,11 @@ v-ui:TaskGivenTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskGiven ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
+  if (!individual.hasValue("rdfs:comment")) { $("#comment", template).remove(); }
+  //# sourceURL=v-ui:TaskGivenTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2267,11 +2329,6 @@ v-ui:TaskGivenTemplate
     </div>
   </div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
-  if (!individual.hasValue("rdfs:comment")) $("#comment", template).remove();
-  //# sourceURL=v-ui:TaskGivenTemplate
-</script>
   """ ;
 .
 
@@ -2281,6 +2338,12 @@ v-ui:TaskCompletedTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskCompleted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
+  if (!individual.hasValue("v-wf:takenDecision")) { $("#decision", template).remove(); }
+  if (!individual.hasValue("v-wf:takenDecision") || !individual["v-wf:takenDecision"][0].hasValue("rdfs:comment")) { $("#comment", template).remove(); }
+  //# sourceURL=v-ui:TaskCompletedTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2320,12 +2383,6 @@ v-ui:TaskCompletedTemplate
     </div>
   </div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
-  if (!individual.hasValue("v-wf:takenDecision")) $("#decision", template).remove();
-  if (!individual.hasValue("v-wf:takenDecision") || !individual["v-wf:takenDecision"][0].hasValue("rdfs:comment")) $("#comment", template).remove();
-  //# sourceURL=v-ui:TaskCompletedTemplate
-</script>
   """ ;
 .
 v-ui:ProcessEventTemplate
@@ -2334,6 +2391,10 @@ v-ui:ProcessEventTemplate
   rdfs:label "Process event template"@en ;
   v-ui:forClass v-wf:ProcessStarted, v-wf:ProcessCompleted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
+  //# sourceURL=v-ui:ProcessEventTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2352,10 +2413,6 @@ v-ui:ProcessEventTemplate
   </div>
   </div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  //# sourceURL=v-ui:ProcessEventTemplate
-</script>
   """ ;
 .
 
@@ -2374,6 +2431,15 @@ v-ui:WorkItemStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkItemStarted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+  //# sourceURL=v-ui:WorkItemStartedEventTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2393,15 +2459,6 @@ v-ui:WorkItemStartedEventTemplate
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  //# sourceURL=v-ui:WorkItemStartedEventTemplate
-</script>
   """ ;
 .
 
@@ -2419,6 +2476,15 @@ v-ui:DecisionFormStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:DecisionFormStarted ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
+  $("#exp", template).click(function (e) {
+    e.preventDefault();
+    $("div[rel='v-s:subJournal']", template).toggle();
+    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+  });
+  //# sourceURL=v-ui:DecisionFormStartedEventTemplate
+</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
@@ -2438,18 +2504,8 @@ v-ui:DecisionFormStartedEventTemplate
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
-<script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  $("#exp", template).click(function (e) {
-    e.preventDefault();
-    $("div[rel='v-s:subJournal']", template).toggle();
-    $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-  });
-  //# sourceURL=v-ui:DecisionFormStartedEventTemplate
-</script>
   """ ;
 .
-
 
 v-ui:TraceEventTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -2462,15 +2518,15 @@ v-ui:TraceEventTemplate
   </style>
   <hr class="margin-sm">
   <div class="row">
-  <div class="col-md-3 col-sm-3 event-type">
-    <span property="rdfs:label"></span>
-  </div>
-  <div class="col-md-7 col-sm-6 event-desc">
-    <pre property="rdfs:comment"></pre>
-  </div>
-  <div class="col-md-2 col-sm-3 event-date text-right">
-    <span property="v-s:created"></span>
-  </div>
+    <div class="col-md-3 col-sm-3 event-type">
+      <span property="rdfs:label"></span>
+    </div>
+    <div class="col-md-7 col-sm-6 event-desc">
+      <pre property="rdfs:comment"></pre>
+    </div>
+    <div class="col-md-2 col-sm-3 event-date text-right">
+      <span property="v-s:created"></span>
+    </div>
   </div>
 </div>
 <script>
@@ -2487,7 +2543,7 @@ v-ui:TraceEventTemplate
 
 v-wf:StatusWorkflow
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
 .
@@ -2572,11 +2628,11 @@ v-wf:TaskTemplateAsModal
     <div class="col-md-2">
       <div>
         <h4 about="v-wf:join" property="rdfs:label"></h4>
-          <veda-control rel="v-wf:join" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+        <veda-control rel="v-wf:join" data-type="select" class="fulltext dropdown"></veda-control>
       </div>
       <div>
         <h4 about="v-wf:split" property="rdfs:label"></h4>
-          <veda-control rel="v-wf:split" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+          <veda-control rel="v-wf:split" data-type="select" class="fulltext dropdown"></veda-control>
       </div>
     </div>
   </div>
@@ -2660,7 +2716,7 @@ v-wf:TaskTemplateAsModal
       <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
         <veda-control about="@" rel="v-wf:expectedResultType" data-type="link" class="fulltext dropdown"></veda-control>
 <!--
-        <veda-control rel="v-wf:expectedResultType" data-type="objectSelect" class="fulltext dropdown"></veda-control>
+        <veda-control rel="v-wf:expectedResultType" data-type="select" class="fulltext dropdown"></veda-control>
       <div about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" data-embedded="true"></div>
       <veda-control data-type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
 -->
@@ -2843,7 +2899,7 @@ v-wf:TransformTemplateEmbedded
 """.
 
 v-wf:rulePropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-wf:Rule ;
   v-ui:forProperty v-wf:segregateObject ;
   v-ui:forProperty v-wf:segregateElement ;
@@ -2854,7 +2910,7 @@ v-wf:rulePropertySpecification1
 .
 
 v-wf:transformPropertySpecification1
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-wf:Transform ;
   v-ui:forProperty v-wf:create ;
   v-ui:forProperty v-wf:transformRule ;

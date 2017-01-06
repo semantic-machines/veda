@@ -1239,6 +1239,15 @@ function removeFromGroup(ticket, group, resource)
 
 function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 {
+    if (subj_uri == undefined || obj_uri == undefined) {
+	var error = new Error();
+	print("ERR! INVALID ARGS IN addRigth");
+	print("subj_uri=", subj_uri);
+	print("obj_uri=", obj_uri);
+	print("Error stack:", error.stack);
+    }
+	
+
   if (new_uri)
   {
     var prev = get_individual(ticket, new_uri);
@@ -1281,8 +1290,8 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 
   var res = put_individual(ticket, new_permission, _event_id);
 
-  return [new_permission, res];
   //print("ADD RIGHT:", toJson(new_permission));
+  return [new_permission, res];
 }
 
 function clone(obj)

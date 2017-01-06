@@ -1,0 +1,30 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-MaintenanceKind>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. Dictionary - MaintenanceKind"@en ;
+  rdfs:label "Онтология Veda. Справочник Вид обслуживания"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+
+# -- вид обслуживания (останова обрудования) --
+
+d:9eb9e3ee7b06641bbe895d94093f09d3
+  rdf:type v-s:MaintenanceKind ;
+  rdfs:label "Капитальный ремонт"@ru ;
+.
+d:a8d25a725-84df-e2f1-ab8e-934931c4955e
+  rdf:type v-s:MaintenanceKind ;
+  rdfs:label "Планово-предупредительный ремонт"@ru ;
+.
+d:a3524ead5-f22d-6ad9-b63d-a56a443f0b40
+  rdf:type v-s:MaintenanceKind ;
+  rdfs:label "Текущая эксплуатация"@ru ;
+.

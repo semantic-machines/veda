@@ -6,8 +6,8 @@ module veda.onto.individual;
 private
 {
     import std.stdio, std.typecons, std.conv, std.algorithm, std.exception : assumeUnique;
-    import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils, veda.util.container,
-           veda.util.cbor8individual;
+    import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils;
+    import veda.util.container, veda.common.type, veda.util.cbor8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
@@ -38,21 +38,6 @@ public struct Individual
     {
         uri       = _uri;
         resources = _resources;
-    }
-
-    immutable this(string _uri, immutable(Resources[ string ]) _resources)
-    {
-        uri       = _uri;
-        resources = _resources;
-    }
-
-    immutable(Individual) idup()
-    {
-        resources.rehash();
-        immutable Resources[ string ]    tmp1 = assumeUnique(resources);
-
-        immutable(Individual) result = immutable Individual(uri, tmp1);
-        return result;
     }
 
     Individual dup()
@@ -91,7 +76,7 @@ public struct Individual
         Resources rss;
 
         rss = resources.get(predicate, rss);
-        if (rss.length > 0)
+        if (rss.length > 0 && rss[ 0 ].type == DataType.Integer)
             return rss[ 0 ].get!long;
 
         return default_value;
@@ -102,7 +87,7 @@ public struct Individual
         Resources rss;
 
         rss = resources.get(predicate, rss);
-        if (rss.length > 0)
+        if (rss.length > 0 && rss[ 0 ].type == DataType.Boolean)
             return rss[ 0 ].get!bool;
 
         return default_value;

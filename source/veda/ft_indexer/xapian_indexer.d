@@ -2,7 +2,7 @@
  * XAPIAN indexer thread
  */
 
-module veda.veda.ft_indexer.xapian_indexer;
+module veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -52,8 +52,19 @@ public class IndexerContext
 
     Ticket *ticket;
 
-    bool init()
+    void close()
     {
+        if (indexer_base_db !is null)
+            indexer_base_db.close(&err);
+        if (indexer_system_db !is null)
+            indexer_system_db.close(&err);
+        if (indexer_deleted_db !is null)
+            indexer_deleted_db.close(&err);
+    }
+
+    bool init(Ticket *_ticket)
+    {
+        ticket = _ticket;
         string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
         if (exists(file_name_key2slot) == false)
@@ -66,7 +77,8 @@ public class IndexerContext
             auto buf = ff_key2slot_w.rawRead(new char[ 100 * 1024 ]);
 
             //writefln("@indexer:init:data [%s]", cast(string)buf);
-            key2slot = deserialize_key2slot(cast(string)buf);
+            ResultCode rc;
+            key2slot = deserialize_key2slot(cast(string)buf, rc);
             //writeln("@indexer:init:key2slot", key2slot);
         }
 
@@ -120,7 +132,7 @@ public class IndexerContext
                                                           xapian_db_type, &err);
             if (err != 0)
             {
-                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg(err));
                 return false;
             }
 
@@ -128,9 +140,14 @@ public class IndexerContext
                                                            xapian_db_type, &err);
             if (err != 0)
             {
-                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg(err));
                 return false;
             }
+        }
+        else
+        {
+            log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg(err));
+            return false;
         }
 
         this.indexer = new_TermGenerator(&err);
@@ -482,6 +499,10 @@ public class IndexerContext
                                                                 {
                                                                     index_integer(ln ~ "." ~ indexed_field.uri, rc);
                                                                 }
+                                                                else if (rc.type == DataType.Datetime)
+                                                                {
+                                                                    index_date(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
                                                                 else if (rc.type == DataType.Boolean)
                                                                 {
                                                                     index_boolean(ln ~ "." ~ indexed_field.uri, rc);
@@ -771,12 +792,18 @@ public class IndexerContext
     private void store__key2slot()
     {
         //writeln("#1 store__key2slot");
-        string data = serialize_key2slot(key2slot);
+        string hash;
+        string data = serialize_key2slot(key2slot, hash);
 
         try
         {
             ff_key2slot_w.seek(0);
-            ff_key2slot_w.writef("%s", data);
+            ff_key2slot_w.write('"');
+            ff_key2slot_w.write(hash);
+            ff_key2slot_w.write("\",");
+            ff_key2slot_w.write(data.length);
+            ff_key2slot_w.write('\n');
+            ff_key2slot_w.write(data);
             ff_key2slot_w.flush();
         }
         catch (Throwable tr)

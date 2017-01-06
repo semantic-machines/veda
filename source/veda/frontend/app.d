@@ -1,4 +1,4 @@
-import std.conv, std.stdio, std.file;
+import std.conv, std.stdio, std.file, core.runtime, core.thread;
 import vibe.d;
 import properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
@@ -17,9 +17,9 @@ veda.common.logger.Logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-extern (C) void handleTermination(int _signal)
+extern (C) void handleTerminationW(int _signal)
 {
-    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
+//    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
     writefln("!SYS: veda.app: caught signal: %s", text(_signal));
 
     //veda.core.threads.dcs_manager.close();
@@ -32,8 +32,11 @@ extern (C) void handleTermination(int _signal)
     vibe.core.core.exitEventLoop();
 
     writeln("!SYS: veda.app: exit");
-    kill(getpid(), SIGKILL);
-    exit(_signal);
+
+    thread_term();
+    Runtime.terminate();
+//    kill(getpid(), SIGKILL);
+//    exit(_signal);
 }
 
 void shutdown(int _signal)
@@ -111,8 +114,6 @@ HTTPListener[ ushort ] listener_2_port;
 
 shared static this()
 {
-    bsd_signal(SIGINT, &handleTermination);
-
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
         registerMemoryErrorHandler();
@@ -143,7 +144,7 @@ shared static this()
 //    }
     veda.core.common.context.Context context;
 
-    context = new PThreadContext(node_id, "frontend", P_MODULE.webserver, log, "127.0.0.1:8088/ws");
+    context = new PThreadContext(node_id, "frontend", log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 
@@ -161,8 +162,10 @@ shared static this()
             return Individual.init;
     }
 
-    long count_individuals = context.count_individuals();
-    if (count_individuals < 2)
+    string[] uris = context.get_individuals_ids_via_query(&sys_ticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 100000, 100000);
+
+//    long count_individuals = context.count_individuals();
+    if (uris.length == 0)
     {
         context.sys_ticket(true);
         onto_config = load_config_onto();
@@ -287,12 +290,12 @@ bool start_http_listener(Context context, ushort http_port)
         log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
 
 
-	    router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
-	    settings      = new HTTPServerSettings;
-	    settings.port = 8088;
-	    //settings.bindAddresses = [ "127.0.0.1" ];
-	    listenHTTP(settings, router);
-	    log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
+        //router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
+        //settings      = new HTTPServerSettings;
+        //settings.port = 8088;
+        //settings.bindAddresses = [ "127.0.0.1" ];
+        //listenHTTP(settings, router);
+        //log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
 
         return true;
     }
@@ -310,7 +313,7 @@ Individual *[ string ] load_config_onto()
     log.trace("load_config_onto");
     string[ string ] prefixes;
 
-    Individual *[ string ] l_individuals = ttl2individuals(onto_path ~ "/config.ttl", prefixes, prefixes);
+    Individual *[ string ] l_individuals = ttl2individuals(onto_path ~ "/config.ttl", prefixes, prefixes, log);
 
     log.trace("load_config_onto %s", l_individuals);
 

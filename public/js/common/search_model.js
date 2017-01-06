@@ -58,7 +58,7 @@ veda.Module(function (veda) { "use strict";
 
       // Transform user input like "roman karpov" to "'*'=='roman' && '*'=='karpov'"
       if (q && q.indexOf("==") < 0) {
-        q = "(" + q.trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
+        q = "(" + q.replace(/[-*]/g, " ").replace(/\s+/g, " ").trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
       }
 
       // Prefix query if defined in constructor

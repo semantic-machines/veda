@@ -94,70 +94,70 @@ public enum INDV_OP : byte
 }
 
 
-   /// Команды используемые процессами
-    /// Сохранить
+/// Команды используемые процессами
+/// Сохранить
 byte CMD_PUT          = 1;
 
-    /// Найти
+/// Найти
 byte CMD_FIND         = 2;
 
-    /// Получить
+/// Получить
 byte CMD_GET          = 2;
 
-    /// Проверить
+/// Проверить
 byte CMD_EXAMINE      = 4;
 
-    /// Авторизовать
+/// Авторизовать
 byte CMD_AUTHORIZE    = 8;
 
-    /// Коммит
+/// Коммит
 byte CMD_COMMIT       = 16;
 
-byte CMD_MSG      	  = 17;
+byte CMD_MSG          = 17;
 
-    /// Конец данных
+/// Конец данных
 byte CMD_END_DATA     = 32;
 
-    /// Включить/выключить отладочные сообщения
+/// Включить/выключить отладочные сообщения
 byte CMD_SET_TRACE    = 33;
 
-    /// Выгрузить
+/// Выгрузить
 byte CMD_UNLOAD       = 34;
 
-    /// Перезагрузить
+/// Перезагрузить
 byte CMD_RELOAD       = 40;
 
-    /// Backup
+/// Backup
 byte CMD_BACKUP       = 41;
 
-    /// Остановить прием команд на изменение
+/// Остановить прием команд на изменение
 byte CMD_FREEZE       = 42;
 
-    /// Возобновить прием команд на изменение
+/// Возобновить прием команд на изменение
 byte CMD_UNFREEZE     = 43;
 
-    /// Сохранить соответствие ключ - слот (xapian)
+/// Сохранить соответствие ключ - слот (xapian)
 byte CMD_PUT_KEY2SLOT = 44;
 
-    /// Установить в
+/// Установить в
 byte CMD_SET_IN       = 45;
 
-    /// Удалить
+/// Удалить
 byte CMD_DELETE       = 46;
 
-    /// Добавить в
+/// Добавить в
 byte CMD_ADD_IN       = 47;
 
-    /// Убрать из
+/// Убрать из
 byte CMD_REMOVE_FROM  = 48;
 
 
 byte CMD_EXIT         = 49;
 
-    /// Установить
+/// Установить
 byte CMD_SET          = 50;
 
-    /// Убрать
+/// Убрать
 byte CMD_REMOVE       = 51;
 
 byte CMD_START        = 52;
@@ -168,12 +168,12 @@ byte CMD_RESUME       = 54;
 
 byte CMD_PAUSE        = 55;
 
-byte CMD_WAIT        = 56;
+byte CMD_WAIT         = 56;
 
-    /// Пустая комманда
-byte CMD_NOP          = 64;
+/// Пустая комманда
+byte   CMD_NOP        = 64;
 
-string nullz = "00000000000000000000000000000000";
+string nullz          = "00000000000000000000000000000000";
 
 /// Десятичное число
 struct decimal
@@ -200,14 +200,30 @@ struct decimal
     /// конструктор
     this(string num)
     {
-        string[] ff = split(num, ".");
+        if (num is null)
+            return;
 
-        if (ff.length == 2)
+        if (num.indexOf(',') > 0)
         {
-            byte sfp = cast(byte)ff[ 1 ].length;
+            string[] ff = split(num, ",");
+            writeln("ff=", ff);
+            if (ff.length == 2)
+            {
+                mantissa = to!long (ff[ 0 ]);
+                exponent = to!byte (ff[ 1 ]);
+            }
+        }
+        else
+        {
+            string[] ff = split(num, ".");
 
-            mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
-            exponent = -sfp;
+            if (ff.length == 2)
+            {
+                byte sfp = cast(byte)ff[ 1 ].length;
+
+                mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
+                exponent = -sfp;
+            }
         }
     }
 
@@ -252,19 +268,19 @@ struct decimal
 
     string asString()
     {
-        string str_res;	
-		string sign = "";
-		string str_mantissa;
+        string str_res;
+        string sign = "";
+        string str_mantissa;
 
-		if (mantissa < 0)
-		{
-			sign = "-";
-	        str_mantissa = text(-mantissa);
-		}
-		else
-	        str_mantissa = text(mantissa);
+        if (mantissa < 0)
+        {
+            sign         = "-";
+            str_mantissa = text(-mantissa);
+        }
+        else
+            str_mantissa = text(mantissa);
 
-        long   lh = exponent * -1;
+        long lh = exponent * -1;
 
         lh = str_mantissa.length - lh;
         string slh;
@@ -286,7 +302,7 @@ struct decimal
         else
         {
             slr = nullz[ 0.. (-lh) ] ~str_mantissa;
-        }   
+        }
 
         str_res = sign ~ slh ~ "." ~ slr;
         return str_res;

@@ -6,20 +6,9 @@ module veda.core.search.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
 import veda.bind.xapian_d_header;
-import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context,
-       veda.core.common.log_msg;
+import veda.core.util.utils, veda.util.cbor, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context;
+import veda.core.common.log_msg, veda.common.logger;
 import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
-
-// ////// Logger ///////////////////////////////////////////
-import veda.common.logger;
-Logger _log;
-Logger log()
-{
-    if (_log is null)
-        _log = new Logger("veda-core-" ~ process_name, "log", "SEARCH");
-    return _log;
-}
-// ////// ////// ///////////////////////////////////////////
 
 protected byte err;
 
@@ -41,6 +30,8 @@ class Database_QueryParser
 
 class XapianReader : SearchReader
 {
+    XapianVQL               xpnvql;
+    Logger                  log;
     private                 Database_QueryParser[ string[] ]      using_dbqp;
 
     private                 XapianDatabase[ string ]              opened_db;
@@ -51,7 +42,15 @@ class XapianReader : SearchReader
 
     private Context         context;
     private IndexerProperty iproperty;
-	ModuleInfoFile mdif;
+    ModuleInfoFile          mdif;
+
+    this(Context _context)
+    {
+        context   = _context;
+        xpnvql    = new XapianVQL(context.get_logger());
+        log       = context.get_logger();
+        iproperty = new IndexerProperty(context);
+    }
 
     private MInfo get_info()
     {
@@ -61,12 +60,6 @@ class XapianReader : SearchReader
         }
         MInfo info = mdif.get_info();
         return info;
-    }
-
-    this(Context _context)
-    {
-        context   = _context;
-        iproperty = new IndexerProperty(context);
     }
 
     private string dummy;
@@ -121,7 +114,6 @@ class XapianReader : SearchReader
         if (_db_names is null || _db_names.length == 0)
         {
             // если не указанны базы данных, то попробуем определить их из текста запроса
-
             if (inner_get == false)
                 iproperty.load();
 
@@ -164,7 +156,7 @@ class XapianReader : SearchReader
         }
         else
         {
-   	        //log.trace ("cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
+            //log.trace ("cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
         }
 
         Database_QueryParser db_qp = get_dbqp(db_names);
@@ -176,7 +168,7 @@ class XapianReader : SearchReader
         {
             try
             {
-                transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
+                xpnvql.transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
                 state = 0;
             }
             catch (XapianError ex)
@@ -210,7 +202,7 @@ class XapianReader : SearchReader
             return 0;
 
         if (trace_msg[ 323 ] == 1)
-            log.trace("[%s][Q:%X] xapian query [%s]", context.get_name(), cast(void *)str_query, get_query_description(query));
+            log.trace("[%s][Q:%X] xapian query [%s]", context.get_name(), cast(void *)str_query, xpnvql.get_query_description(query));
 
         if (query !is null)
         {
@@ -222,7 +214,7 @@ class XapianReader : SearchReader
                 return 0;
             }
 
-            XapianMultiValueKeyMaker sorter = get_sorter(str_sort, key2slot);
+            XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot);
 
             xapian_enquire.set_query(query, &err);
             if (sorter !is null)
@@ -233,8 +225,8 @@ class XapianReader : SearchReader
             state = -1;
             while (state < 0)
             {
-                state = exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, top, limit, add_out_element,
-                                                              context);
+                state = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, top, limit, add_out_element,
+                                                                     context);
                 if (state < 0)
                 {
                     add_out_element(null); // reset previous collected data
@@ -350,11 +342,11 @@ class XapianReader : SearchReader
     }
 
     public void reopen_db()
-    {    	
-    	long cur_committed_op_id = get_info().committed_op_id;
-    
+    {
+        long cur_committed_op_id = get_info().committed_op_id;
+
         //log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
-    	    	                
+
         foreach (el; using_dbqp.values)
         {
             el.db.reopen(&err);
@@ -375,20 +367,27 @@ class XapianReader : SearchReader
         committed_op_id = cur_committed_op_id;
     }
 
-    private void close_db()
+    public bool close_db()
     {
         foreach (el; using_dbqp.values)
         {
             el.db.close(&err);
             if (err != 0)
+            {
                 log.trace("xapian_reader:close database:err=%s", get_xapian_err_msg(err));
+                return false;
+            }
         }
         foreach (db; opened_db.values)
         {
             db.close(&err);
             if (err != 0)
+            {
                 log.trace("xapian_reader:close database:err=%s", get_xapian_err_msg(err));
+                return false;
+            }
         }
+        return true;
     }
 }
 

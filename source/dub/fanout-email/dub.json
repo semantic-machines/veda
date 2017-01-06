@@ -2,11 +2,10 @@
 	"name": "veda-fanout-email",
 	"description": "veda-fanout-email",
 	"dependencies": {
-		"pacahon_third_party": "1.0.13", 
-		"backtrace-d": "0.1.0", 
-		"mysql-d": "0.3.2",
+		"pacahon_third_party": "1.0.15", 
+		"backtrace-d": "0.1.2", 
 		"smtp": "~master",
-		"d-nanomsg": "~>0.1.2"
+		"d-nanomsg": "0.2.0"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
@@ -21,6 +20,7 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
+        "../../lib64/liblmdb.a",
 	"../../lib64/libxapiand.a", 
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",

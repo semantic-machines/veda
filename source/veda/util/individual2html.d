@@ -13,7 +13,7 @@ private void write_individual(Individual *ii, ref OutBuffer ou)
 {
     ou.write("\n<p><b><a name=\"");
     ou.write(ii.uri);
-    ou.write("\"" "></a>");
+    ou.write("\"\" \"></a>");
     ou.write(ii.uri);
     ou.write("<b>\n");
 

@@ -7,8 +7,6 @@ function check(driver, count) {
     driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).clear();
     driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot input search request");});
-    driver.sleep(basic.FAST_OPERATION);
-
     driver.findElement({css:'button[id="submit"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
     driver.wait
@@ -32,7 +30,6 @@ function clickButton(driver, button) {
         webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
         basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
-    driver.sleep(basic.FAST_OPERATION);
     driver.findElement({css:'button[id="'+ button +'"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
 }
@@ -49,23 +46,17 @@ basic.getDrivers().forEach(function(drv){
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill label field");});
     clickButton(driver, "save");
-    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
         .thenCatch(function (e) {bssic.errorHandler(e, "Cannot click on 'StartForm' button");});
     clickButton(driver, "delete");
     driver.switchTo().alert().accept();
-    driver.sleep(basic.FAST_OPERATION);
     check(driver, 0);
 
     driver.findElement({id:"menu"}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
-    driver.wait
-    (
-        webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'})),
-        basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `search` button inside menu");});
+    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Search"]', basic.FAST_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button");});
     driver.findElement({css:'#q'}).sendKeys("'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'")
@@ -77,7 +68,6 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'individual-label'");});
     driver.findElement({css:'div[role="alert"] button[class="btn btn-default btn-sm"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Recovery' button");});
-    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.quit();

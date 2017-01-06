@@ -6,6 +6,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+
 <http://semantic-machines.com/veda/veda-schema-Initiative>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology. Initiative"@en ;
@@ -18,7 +19,7 @@
 #--------------------------------------------------
 v-s:Initiative
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Contractual ;
@@ -32,14 +33,6 @@ v-s:initiativeSnapshot
   rdfs:label "Release"@en ;
   rdfs:label "Срез"@ru ;
   rdfs:range v-s:Initiative ;
-  rdfs:domain v-s:Initiative ;
-.
-#   --- Может заменить на Требуемый останов  required...
-v-s:hasMaintenanceKind
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Equipment shutdown needed"@en ;
-  rdfs:label "Нужен ли останов оборудования"@ru ;
-  rdfs:range v-s:MaintenanceKind ;
   rdfs:domain v-s:Initiative ;
 .
 #   --- Название связано в Проектом а не с инициативой
@@ -67,7 +60,7 @@ v-s:isProgramm
 v-s:goal
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Goals"@en ;
-  rdfs:label "Цели мероприятия"@ru ;
+  rdfs:label "Цели"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Initiative ;
 .
@@ -135,6 +128,7 @@ v-s:hasEffectList
 v-s:Idea
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Initiative ;
+  rdfs:subClassOf v-s:Maintained ;
   rdfs:label "Idea"@en ;
   rdfs:label "Идея"@ru ;
 .
@@ -142,6 +136,8 @@ v-s:Idea
 v-s:Project
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Initiative ;
+  rdfs:subClassOf v-s:WorkGroup ;
+  rdfs:subClassOf v-s:Maintained ;
   rdfs:label "Project"@en ;
   rdfs:label "Проект"@ru ;
 .
@@ -164,13 +160,6 @@ v-s:outOfScope
   rdfs:label "OutOfScope"@en ;
   rdfs:label "Не в ходит в рамки"@ru ;
   rdfs:range xsd:string ;
-  rdfs:domain v-s:Project ;
-.
-v-s:hasMemberOfWorkGroup
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Участники рабочей группы"@ru ;
-  rdfs:label "Work group members"@en ;
-  rdfs:range v-s:MemberOfWorkGroup ;
   rdfs:domain v-s:Project ;
 .
 #--------------------------------------------------
@@ -200,7 +189,7 @@ v-s:involvedDepartment
 v-s:Effect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Effect"@en ;
@@ -347,7 +336,7 @@ v-s:hasKpiGroup
 #--------------------------------------------------
 v-s:EffectList
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Effect list"@en ;
@@ -392,7 +381,7 @@ v-s:hasEffect
 #--------------------------------------------------
 v-s:KpiGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Kpi group"@en ;
   rdfs:label "Группа целевого показателя"@ru ;
 .
@@ -400,7 +389,7 @@ v-s:KpiGroup
 # -- Проверить - используется ли
 v-s:ClassifiedAttachment
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Classified attachment"@en ;
   rdfs:label "Классифицированное вложение"@ru ;
 .
@@ -408,33 +397,51 @@ v-s:ClassifiedAttachment
 # -- Перенести в другой файл
 v-s:FileContentClassifier
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "File content classifier"@en ;
   rdfs:label "Содержимое файла"@ru ;
 .
 #--------------------------------------------------
 v-s:ProjectStage
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "ProjectStage"@en ;
   rdfs:label "Стадия проекта"@ru ;
 .
 #--------------------------------------------------
 v-s:ProjectKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Project category"@en ;
   rdfs:label "Вид проекта"@ru ;
 .
 #--------------------------------------------------
+v-s:WorkGroup
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Work group"@en ;
+  rdfs:label "Рабочая группа"@ru ;
+.
+v-s:hasMemberOfWorkGroup
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Участники рабочей группы"@ru ;
+  rdfs:label "Work group members"@en ;
+  rdfs:range v-s:MemberOfWorkGroup ;
+  rdfs:domain v-s:WorkGroup ;
+.
+#--------------------------------------------------
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
+# rdfs:label
+# v-s:employee
+# v-s:occupation
 v-s:timeEffort
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Work hours"@en ;
@@ -443,11 +450,10 @@ v-s:timeEffort
   rdfs:domain v-s:MemberOfWorkGroup ;
 .
 
-
 #--------------------------------------------------
 v-s:ProjectPlan
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Project plan"@en ;
@@ -470,7 +476,7 @@ v-s:hasProjectPhase
 #--------------------------------------------------
 v-s:ProjectPhase
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Project phase"@en ;
@@ -493,7 +499,7 @@ v-s:hasProjectPhaseCost
 #--------------------------------------------------
 v-s:ProjectMilestone
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Project milestone"@en ;
@@ -502,7 +508,7 @@ v-s:ProjectMilestone
 #--------------------------------------------------
 v-s:ProjectPhaseCost
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:label "Project phase costs"@en ;
@@ -512,7 +518,7 @@ v-s:ProjectPhaseCost
 #--------------------------------------------------
 v-s:ProjectPhaseRisk
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Project phase risks"@en ;
   rdfs:label "Риски фазы проекта"@ru ;
@@ -529,23 +535,23 @@ v-s:riskAttachment
 #--------------------------------------------------
 v-s:ProjectPhaseKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Project phase kind"@en ;
   rdfs:label "Вид фазы проекта"@ru ;
 .
 #--------------------------------------------------
 # -- Подумать о другом названии и перенсти в другой файл
-v-s:CurrencyKind
+v-s:Currency
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:label "Currency kind"@en ;
-  rdfs:label "Вид валюты"@ru ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Currency"@en ;
+  rdfs:label "Валюта"@ru ;
 .
 #--------------------------------------------------
 # -- перенсти в другой файл
 v-s:MaintenanceKind
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Kind of maintenance"@en ;
   rdfs:label "Вид обуслуживания оборудования"@ru ;
 .
@@ -594,7 +600,7 @@ v-s:PsInitiatorAuthorCoathorForInitiative
   rdfs:label "Спецификация инициатора для класса Идея"@ru ;
 .
 v-s:PsHasTotalEffects
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:EffectList ;
   v-ui:forProperty v-s:hasTotalPlanYearEffect ;
   v-ui:forProperty v-s:hasTotalFactYearEffect ;
@@ -606,7 +612,7 @@ v-s:PsHasTotalEffects
   rdfs:label "Спецификация эффектов для класса FinancialEffectForIdea and FinancialEffect"@ru ;
 .
 v-s:PsHasEffectAll
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Effect ;
   v-ui:forProperty v-s:planOnceEffect ;
   v-ui:forProperty v-s:planYearEffect ;
@@ -763,7 +769,7 @@ v-s:PsHasAsset
   rdfs:label "Спецификация ссылки на информация об основном средстве для класса Initiative"@ru ;
 .
 v-s:PsIsIncludingToReserv
-  rdf:type v-ui:BooleanPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:isIncludingToReserv ;
   v-ui:maxCardinality 1 ;
@@ -774,7 +780,7 @@ v-s:PsIsIncludingToReserv
   v-ui:tooltip "Tick this box if implementation of your initiative is including to reserv"@en ;
 .
 v-s:PsDescriptionForInitiative
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:description ;
   v-ui:maxCardinality 1 ;
@@ -785,7 +791,7 @@ v-s:PsDescriptionForInitiative
   rdfs:label "Спецификация краткого наименования для класса Инициатива"@ru ;
 .
 v-s:PsTitleForInitiative
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:title ;
   v-ui:maxCardinality 1 ;
@@ -796,7 +802,7 @@ v-s:PsTitleForInitiative
   rdfs:label "Спецификация краткого наименования для класса Инициатива"@ru ;
 .
 v-s:PsActualState
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:actualState ;
   v-ui:maxCardinality 1 ;
@@ -807,7 +813,7 @@ v-s:PsActualState
   rdfs:label "Спецификация  описания актуального для класса Инициативы"@ru ;
 .
 v-s:PsGoalState
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:goalState ;
   v-ui:maxCardinality 1 ;
@@ -818,7 +824,7 @@ v-s:PsGoalState
   rdfs:label "Спецификация  описания предложения для класса Инициативы"@ru ;
 .
 v-s:PsBackgroundToChange
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:backgroundToChange ;
   v-ui:maxCardinality 1 ;
@@ -829,7 +835,7 @@ v-s:PsBackgroundToChange
   rdfs:label "Спецификация предпосылок к изменениям класса Инициатива"@ru ;
 .
 v-s:PsGoal
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
   v-ui:forProperty v-s:goal ;
   v-ui:maxCardinality 1 ;
@@ -863,7 +869,7 @@ v-s:PsStakeholder
   rdfs:label "Спецификация заинтересованной стороны для класса Инициатива"@ru ;
 .
 v-s:PsIsProgramm
-  rdf:type v-ui:BooleanPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Если вы хотите использовать данный проект как программу отметьте данный переключатель"@ru ;
   rdfs:label "Specification isProgramm property for Project"@en ;
   v-ui:forClass v-s:Initiative ;
@@ -873,6 +879,7 @@ v-s:occupationForMemberOfWorkGroup
   rdf:type v-ui:ObjectPropertySpecification ;
   rdfs:label "Спецификация должности для класса Член рабочей группы"@ru ;
   rdfs:label "Employee property specification for Member of WorkGroup"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='d:mondi_orggroup_ProjectOffice')"^^xsd:string ;
   v-ui:forClass v-s:MemberOfWorkGroup ;
   v-ui:forProperty v-s:occupation ;
   v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
@@ -891,7 +898,7 @@ v-s:PsMember
   rdfs:label "Спецификация свойства Участник рабочей группы для класса MemberOfWorkGroup"@ru ;
 .
 v-s:PsTimeeffort
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:MemberOfWorkGroup ;
   v-ui:forProperty v-s:timeEffort ;
   v-ui:maxCardinality 1 ;
@@ -926,7 +933,7 @@ v-s:PsHasAddInitiative
   rdfs:label "Спецификация hasAddinitiative для класса Инициатива"@ru ;
 .
 v-s:PsScope
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:scope ;
   v-ui:maxCardinality 1 ;
@@ -937,7 +944,7 @@ v-s:PsScope
   rdfs:label "Спецификация описания рамок проекта класса Проект"@ru ;
 .
 v-s:PsAlternativeScope
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:alternativeScope ;
   v-ui:maxCardinality 1 ;
@@ -948,7 +955,7 @@ v-s:PsAlternativeScope
   rdfs:label "Спецификация альтернативных решений и выводов для класса Проект"@ru ;
 .
 v-s:PsOutOfScope
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Project ;
   v-ui:forProperty v-s:outOfScope ;
   v-ui:maxCardinality 1 ;
@@ -959,7 +966,7 @@ v-s:PsOutOfScope
   rdfs:label "Спецификация описания не входит в рамки проекта класса Проект"@ru ;
 .
 v-s:PsDatesInProjectPhase
-  rdf:type v-ui:DatetimePropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forProperty v-s:datePlan ;
@@ -972,7 +979,7 @@ v-s:PsDatesInProjectPhase
   rdfs:label "Спецификация cвойств даты для класса ProjectPhase "@ru ;
 .
 v-s:PsCompletion
-  rdf:type v-ui:IntegerPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forClass v-s:ProjectPlan ;
@@ -985,7 +992,7 @@ v-s:PsCompletion
   rdfs:label "Спецификация cвойства процент выполнения для класса ProjectPhase"@ru ;
 .
 v-s:PsCommentForProjectPhase
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhase ;
   v-ui:forClass v-s:ProjectMilestone ;
   v-ui:forClass v-s:ProjectPlan ;
@@ -1036,7 +1043,7 @@ v-s:PsProjectPhaseRisk
 .
 
 v-s:PsSum
-  rdf:type v-ui:DecimalPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
   v-ui:forProperty v-s:sum ;
   v-ui:maxCardinality 1 ;
@@ -1047,7 +1054,7 @@ v-s:PsSum
   rdfs:label "Спецификация суммы для класса ProjectPhase"@ru ;
 .
 v-s:PsCommentForProjectPhaseCost
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;
@@ -1057,17 +1064,17 @@ v-s:PsCommentForProjectPhaseCost
   rdfs:label "Comment property specification for ProjectPhaseCost class"@en ;
   rdfs:label "Спецификация комментария класса ProjectPhaseCost"@ru ;
 .
-v-s:PsHasCurrencyKind
+v-s:PsHasCurrency
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:ProjectPhaseCost ;
-  v-ui:forProperty v-s:hasCurrencyKind ;
+  v-ui:forProperty v-s:hasCurrency ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:CurrencyKind')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of CurrencyKind class"@en ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Currency')"^^xsd:string ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Currency class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение."@ru ;
-  rdfs:label "CurrencyKind specification for ProjectPhase class"@en ;
-  rdfs:label "Спецификация вида валюты для класса ProjectPhase"@ru ;
+  rdfs:label "Currency specification for ProjectPhase class"@en ;
+  rdfs:label "Спецификация валюты для класса ProjectPhase"@ru ;
 .
 v-s:PsProjectPhases
   rdf:type v-ui:ObjectPropertySpecification ;

@@ -10,18 +10,14 @@ import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
-Logger _log;
-Logger log()
-{
-    if (_log is null)
-        _log = new Logger("veda-core-" ~ process_name, "log", "V8D");
-    return _log;
-}
+Logger log;
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
 string[ string ] g_prop;
 Context    g_context;
+
+string     g_vm_id;
 
 _Buff      g_super_classes;
 _Buff      g_parent_script_id;
@@ -42,25 +38,35 @@ Cache!(string, string) g_cache_of_indv;
 
 private string empty_uid;
 
-bool isFiltred(ScriptInfo *script, string[] indv_types, Onto onto)
+bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_types, Onto onto)
 {
-    bool any_exist = false;
+    bool is_pass = false;
 
-    foreach (indv_type; indv_types)
+    if (script.trigger_by_uid.length == 0 && script.trigger_by_type.length == 0)
+        return true;
+
+    if (script.trigger_by_uid.length > 0 && (individual_id in script.trigger_by_uid) !is null)
+        is_pass = true;
+
+    if (!is_pass && script.trigger_by_type.length > 0)
     {
-        if ((indv_type in script.filters) !is null)
+        foreach (indv_type; indv_types)
         {
-            any_exist = true;
-            break;
-        }
+            if ((indv_type in script.trigger_by_type) !is null)
+            {
+                is_pass = true;
+                break;
+            }
 
-        if (onto.isSubClasses(cast(string)indv_type, script.filters.keys) == true)
-        {
-            any_exist = true;
-            break;
+            if (onto.isSubClasses(cast(string)indv_type, script.trigger_by_type.keys) == true)
+            {
+                is_pass = true;
+                break;
+            }
         }
     }
-    return any_exist;
+
+    return is_pass;
 }
 
 void set_g_prev_state(string prev_state)
@@ -242,6 +248,15 @@ struct _Buff
 }
 }
 
+string script_id;
+
+extern (C++) void log_trace(const char *str, int str_length)
+{
+    string sstr = cast(string)str[ 0..str_length ];
+
+    log.trace("[%s] %s", script_id, sstr);
+}
+
 extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 {
     string pn  = cast(string)prop_name[ 0..prop_name_length ];
@@ -373,6 +388,52 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     }
 }
 
+extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
+                          const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit)
+{
+    string res;
+    string query;
+    string sort;
+    string databases;
+
+    if (g_vm_id != "V8.LowPriority")
+    {
+        log.trace("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");
+        return null;
+    }
+
+    try
+    {
+        string ticket_id = cast(string)_ticket[ 0.._ticket_length ];
+        query = cast(string)_query[ 0.._query_length ];
+
+        if (_sort !is null && _sort_length > 1)
+            sort = cast(string)_sort[ 0.._sort_length ];
+
+        if (_databases !is null && _databases_length > 1)
+            databases = cast(string)_databases[ 0.._databases_length ];
+
+        Ticket   *ticket = g_context.get_ticket(ticket_id);
+
+        string[] icb;
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
+        res = text(icb);
+
+        if (icb !is null)
+        {
+            tmp_individual.data   = cast(char *)res;
+            tmp_individual.length = cast(int)res.length;
+            return &tmp_individual;
+        }
+        else
+            return null;
+    }
+    finally
+    {
+//        log.trace ("@p:v8d end query[%s][%s][%s], res=[%s]", query, sort, databases, res);
+    }
+}
+
 extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length)
 {
     try
@@ -466,7 +527,9 @@ interface WrappedScript
 {
 }
 
-bool InitializeICU();
+void InitializeICU();
+void ShutdownPlatform();
+void Dispose();
 WrappedContext new_WrappedContext();
 WrappedScript new_WrappedScript(WrappedContext _context, char *src);
 void run_WrappedScript(WrappedContext _context, WrappedScript ws, _Buff *_res = null, _Buff *_out = null);
@@ -525,6 +588,7 @@ ScriptVM get_ScriptVM(Context ctx)
             {
                 script_vm = new JsVM();
                 g_context = ctx;
+                log       = ctx.get_logger();
 
                 string g_str_script_result = new char[ 1024 * 64 ];
                 string g_str_script_out    = new char[ 1024 * 64 ];
@@ -575,7 +639,7 @@ private void reload_ext_scripts()
 
     foreach (idx, script; scripts)
     {
-        writeln("init script=", script_file_name[ idx ]);
+        log.tracec("init script=%s", script_file_name[ idx ]);
         script.run();
     }
 }

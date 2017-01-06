@@ -5,6 +5,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/veda-schema-Org>
   rdf:type owl:Ontology ;
@@ -18,7 +19,7 @@
 
 v-s:OrganizationUnit
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
@@ -62,6 +63,8 @@ v-s:hasFunctionalChief
 v-s:Organization
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
 .
@@ -84,13 +87,6 @@ v-s:taxRegistrationNumber
   rdfs:label "Tax registration number"@en ;
   rdfs:label "ОГРН"@ru ;
   rdfs:range xsd:string ;
-  rdfs:domain v-s:Organization ;
-.
-v-s:hasContractor
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Contractor"@en ;
-  rdfs:label "Контрагент"@ru ;
-  rdfs:range v-s:Contractor ;
   rdfs:domain v-s:Organization ;
 .
 v-s:hasSubsidiary
@@ -126,6 +122,7 @@ v-s:Subsidiary
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Organization ;
   rdfs:subClassOf v-s:Department ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Subsidiary"@en ;
   rdfs:label "Филиал"@ru ;
 .
@@ -149,10 +146,14 @@ v-s:Position
 # ------------------------------------------------------------
 v-s:HRRecord
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:label "HR record"@en ;
   rdfs:label "Кадровая запись"@ru ;
 .
+
+# Тут не хватает полей, которые описаны в v-s:PermissionStatement  v-s:startTime   v-s:endTime
+
 v-s:employee
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:HRRecord ;
@@ -182,13 +183,8 @@ v-s:official
   rdfs:label "Официально"@ru ;
   rdfs:range xsd:boolean ;
 .
-v-s:valid
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Appointment ;
-  rdfs:label "Valid"@en ;
-  rdfs:label "Действительно"@ru ;
-  rdfs:range xsd:boolean ;
-.
+# v-s:valid
+
 # ------------------------------------------------------------
 v-s:Absence
   rdf:type owl:Class ;
@@ -199,7 +195,7 @@ v-s:Absence
 # ------------------------------------------------------------
 v-s:Person
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ManuallyVersioned ;
   rdfs:comment "A person." ;
   rdfs:isDefinedBy v-s: ;
@@ -267,11 +263,10 @@ v-s:defaultAppointment
   rdfs:domain v-s:Person ;
 .
 
-
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasSubsidiaryForOrganization
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Organization ;
   v-ui:forProperty v-s:hasSubsidiary ;
   v-ui:minCardinality 0 ;
@@ -280,16 +275,70 @@ v-s:PsHasSubsidiaryForOrganization
 .
 
 v-s:PsTaxIdForOrganization
-  rdf:type v-ui:StringPropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Organization ;
   v-ui:forProperty v-s:taxId ;
-  v-ui:forProperty v-s:taxRegistrationCause ;
-  v-ui:forProperty v-s:taxRegistrationNumber ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:regexp "^[0-9a-zA-Z]{5,}$" ;
-  v-ui:tooltip "Цифро-буквенное значение. Минимум 5 символов."@ru ;
-  v-ui:tooltip "Alphanumeric value. 5 characters minimum."@en ;
+  v-ui:regexp "^([A-Z]{2,3}[0-9]{4,}|([0-9]{10}|[0-9]{12}))$" ;
+  v-ui:tooltip "Цифро-буквенное значение, минимум 6 символов. Примеры: 123456789101, KZ4438"@ru ;
+  v-ui:tooltip "Alphanumeric value, 6 characters minimum. Ex: 123456789101, KZ4438"@en ;
+.
+
+v-s:PsHasContractorOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization;
+  v-ui:forProperty v-s:hasContractor ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:rangeRestriction v-s:Contractor;
+  rdfs:label "v-s:hasContractor property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойства v-s:hasContractor для класса v-s:Organization"@ru ;
+.
+
+v-s:PsHasClassifierCountryOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization;
+  v-ui:forProperty v-s:hasClassifierCountry ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:defaultValue d:Country_RUS;
+  rdfs:label "v-s:hasClassifierCountry property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойства v-s:hasClassifierCountry для класса v-s:Organization"@ru ;
+.
+
+v-s:PslabelForOrganization
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty rdfs:label ;
+  v-ui:forProperty v-s:shortLabel;
+  v-ui:forProperty v-s:legalAddress;
+  v-ui:forProperty v-s:postalAddress;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойств rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress для класса v-s:Organization"@ru ;
+.
+
+v-s:taxRegistrationCauseForOrganization
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:taxRegistrationCause;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1;
+  v-ui:regexp "^[0-9]{9}$";
+  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
+  rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Organization"@ru ;
+.
+
+# ------------------------------------------------------------ СТРОКИ --
+
+v-s:NonUniqueTaxId
+  rdf:type v-s:Bundle ;
+  rdfs:label "Non unique tax id message"@en ;
+  rdfs:label "Сообщение не уникальный ИНН"@ru ;
+  rdfs:comment "Organization with this tax number already exists"@en ;
+  rdfs:comment "Организация с таким ИНН уже существует"@ru ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
@@ -298,6 +347,11 @@ v-s:AddProfile
   rdf:type v-s:Bundle ;
   rdfs:label "Add profile"@en ;
   rdfs:label "Создать досье"@ru ;
+.
+v-s:AddSubsidiary
+  rdf:type v-s:Bundle ;
+  rdfs:label "Add subsidiary"@en ;
+  rdfs:label "Добавить филиал"@ru ;
 .
 
 v-s:OrganizationTemplate
@@ -308,9 +362,77 @@ v-s:OrganizationTemplate
   v-ui:template """
 <script>
   var _class = new veda.IndividualModel("v-s:ContractorProfile");
-  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true) || individual.hasValue("v-s:hasContractorProfile") ) {
-    $("#add-profile", template).remove();
+  var hasRights = _class.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
+
+  individual.on("individual:propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("individual:propertyModified", handler);
+  });
+  function handler(property_uri, values) {
+    if (property_uri === "v-s:hasContractorProfile" && (individual.hasValue("v-s:hasContractorProfile") || !hasRights)) {
+      $("#add-profile", template).remove();
+    }
   }
+  handler("v-s:hasContractorProfile", individual["v-s:hasContractorProfile"]);
+
+  var _class = new veda.IndividualModel("v-s:Subsidiary");
+  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
+    $("#add-subsidiary", template).remove();
+  }
+
+// Validation
+
+  template.on("validate", function () {
+    var result = {},
+        regexp;
+    if ( !individual.hasValue("v-s:hasClassifierCountry") || individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
+      regexp = /^([0-9]{10}|[0-9]{12})$/gi;
+    } else if ( individual.hasValue("v-s:hasClassifierCountry") ) {
+      regexp = /^[A-Z]{2,3}[0-9]{4,}$/gi;
+    }
+    if ( !individual.hasValue("v-s:taxId") ) {
+      result["v-s:taxId"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      }
+    } else {
+      // Check regexp
+      var taxId = individual["v-s:taxId"][0].toString();
+      result["v-s:taxId"] = {
+        state: regexp.test( taxId ),
+        cause: ["v-ui:regexp"]
+      }
+      // Check unique
+      if ( result["v-s:taxId"].state ) {
+        var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'");
+        result["v-s:taxId"] = {
+          state: (!tmp.length || tmp[0] === individual.id),
+          cause: ["v-s:NonUniqueTaxId"]
+        }
+      }
+    }
+    // Если значение поля v-s:hasClassifierCountry=d:Country_RUS то поле v-s:hasClassifierLegalForm Обязательное
+    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS"))) {
+      result["v-s:hasClassifierLegalForm"] = {
+        state: individual.hasValue("v-s:hasClassifierLegalForm"),
+        cause: ["v-ui:minCardinality"]
+      }
+    }
+    // Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102 то поле v-s:taxRegistrationCause должно быть обязательным.
+    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && !individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
+      result["v-s:taxRegistrationCause"] = {
+        state: /^[0-9]{9}$/.test(individual["v-s:taxRegistrationCause"][0]),
+        cause: ["v-ui:regexp"]
+      }
+    }
+
+
+    template.trigger("validated", result);
+  });
+
+
+
+  //# sourceURL=v-s:OrganizationTemplate_pre
 </script>
 <div class="container">
   <h2>
@@ -321,12 +443,23 @@ v-s:OrganizationTemplate
   <div id="mainProperties">
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
-    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+    <veda-control id="krot" data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
 
     <em about="v-s:shortLabel" property="rdfs:label"></em>
     <div property="v-s:shortLabel" class="view -edit -search"></div>
     <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
-
+    <div class="row">
+      <div class="col-md-4">
+        <em about="v-s:hasClassifierCountry" property="rdfs:label"></em>
+        <div rel="v-s:hasClassifierCountry" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasClassifierCountry" class="-view edit search fulltext dropdown" data-template="{individual['v-s:shortLabel'][0] + ' | ' + individual['rdfs:label'][0]}"></veda-control>
+      </div>
+      <div class="col-md-8">
+        <em about="v-s:hasClassifierLegalForm" property="rdfs:label"></em>
+        <div rel="v-s:hasClassifierLegalForm" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasClassifierLegalForm" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
     <hr class="view -edit -search">
 
     <div class="row">
@@ -350,15 +483,20 @@ v-s:OrganizationTemplate
     <hr class="view -edit -search">
 
     <div class="row">
-      <div class="col-sm-6">
+      <div class="col-sm-4">
         <em about="v-s:legalAddress" property="rdfs:label"></em>
         <div property="v-s:legalAddress" class="view -edit -search"></div>
         <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
       </div>
-      <div class="col-sm-6">
+      <div class="col-sm-4">
         <em about="v-s:postalAddress" property="rdfs:label"></em>
         <div property="v-s:postalAddress" class="view -edit -search"></div>
         <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-4">
+        <em about="v-s:mailbox" property="rdfs:label"></em>
+        <div property="v-s:mailbox" class="view -edit -search"></div>
+        <veda-control data-type="text" rows="3" property="v-s:mailbox" class="-view edit search"></veda-control>
       </div>
     </div>
 
@@ -367,7 +505,7 @@ v-s:OrganizationTemplate
     <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
     <table class="table table-condensed table-bordered">
       <thead>
-        <tr class="active">
+        <tr class="view -edit -search active">
           <th width="1%"><span class="glyphicon glyphicon-search"></th>
           <th about="v-s:shortLabel" property="rdfs:label"></th>
           <th about="v-s:taxRegistrationCause" property="rdfs:label"></th>
@@ -392,19 +530,57 @@ v-s:OrganizationTemplate
         </tr>
       </tbody>
     </table>
-    <veda-control data-type="link" rel="v-s:hasSubsidiary" class="-view edit search create create-modal"></veda-control>
+    <div class="view -edit -search">
+      <button class="btn btn-success" id="add-subsidiary">
+        <span class="glyphicon glyphicon-zoom-in"></span>
+
+        <span about="v-s:AddSubsidiary" property="rdfs:label"></span>
+      </button>
+    </div>
+
 
     <em about="v-s:hasContractor" property="rdfs:label"></em>
-    <div rel="v-s:hasContractor" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
-    <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown"></veda-control>
+     <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="v-s:registrationNumber" property="rdfs:label"></th>
+          <th about="v-s:shortLabel" property="rdfs:label"></th>
+          <th about="v-s:taxId" property="rdfs:label"></th>
+          <th about="v-s:legalAddress" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="v-s:hasContractor">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div about="@" property="v-s:registrationNumber" class="view edit -search"></div>
+          </td>
+          <td>
+            <div about="@" property="v-s:shortLabel" class="view edit -search"></div>
+          </td>
+          <td>
+            <div about="@" property="v-s:taxId" class="view edit -search"></div>
+          </td>
+          <td>
+            <div about="@"  property="v-s:legalAddress" class="view edit -search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext dropdown" data-template="{individual['v-s:registrationNumber'] + ' | ' + individual['v-s:shortLabel'][0] + ' | ' + individual['v-s:taxId'][0]}"></veda-control>
 
     <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
     <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     <div class="view -edit -search">
-      <button class="btn btn-success" id="add-profile" about="v-s:AddProfile" property="rdfs:label"></button>
+      <button class="btn btn-success" id="add-profile">
+        <span class="glyphicon glyphicon-zoom-in"></span>
+        <span  about="v-s:AddProfile" property="rdfs:label"> </span>
+      </button>
     </div>
 
-    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <em about="v-s:HeadOrganization" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
     <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
   </div>
@@ -418,7 +594,6 @@ v-s:OrganizationTemplate
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
   </div>
@@ -431,19 +606,45 @@ v-s:OrganizationTemplate
     modal.appendTo(template);
     var cntr = $(".modal-body", modal),
         _class = new veda.IndividualModel("v-s:ContractorProfile"),
-        action = new veda.IndividualModel(),
+        profile = new veda.IndividualModel(),
         tmpl = new veda.IndividualModel("mnd-s:ContractorProfileTemplate");
-    action["rdf:type"] = [_class];
-    action["v-s:backwardTarget"] = [individual];
-    action["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
-    action.present(cntr, tmpl, "edit");
-    action.one("individual:beforeReset", function () {
+    profile["rdf:type"] = [_class];
+    profile["v-s:backwardTarget"] = [individual];
+    profile["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
+    profile["rdfs:label"] = individual["v-s:shortLabel"] ;
+    profile["v-s:omitBackwardTargetGroup"] = [true];
+    profile.present(cntr, tmpl, "edit");
+    profile.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
     });
-    action.one("individual:afterSave", function () {
+    profile.one("individual:afterSave", function () {
       modal.modal("hide").remove();
     });
   });
+
+    $("#add-subsidiary", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal();
+    modal.appendTo(template);
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:Subsidiary"),
+        subsidiary = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:SubsidiaryTemplate");
+    subsidiary["rdf:type"] = [_class];
+    subsidiary["v-s:backwardTarget"] = [individual];
+    subsidiary["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasSubsidiary")];
+    subsidiary.present(cntr, tmpl, "edit");
+    subsidiary.one("individual:beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    subsidiary.one("individual:afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+
+  //# sourceURL=v-s:OrganizationTemplate_post
 </script>
   """ ;
 .
@@ -459,15 +660,12 @@ v-s:SubsidiaryTemplate
     <span about="v-s:Subsidiary" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
   </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
   <hr>
   <div id="mainProperties">
     <em about="v-s:parentOrganization" property="rdfs:label"></em>
-    <div rel="v-s:parentOrganization" class="view -edit -search">
-      <a href="#/@">
-        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
-      </a>
-    </div>
-    <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext dropdown"></veda-control>
+    <span about="@" rel="v-s:backwardTarget" data-template="v-ui:LabelLinkTemplate"></span>
+
 
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
@@ -515,8 +713,7 @@ v-s:SubsidiaryTemplate
     <!-- BUTTONS -->
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+    <button type="button" class="action btn btn-default  view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
   </div>
@@ -581,6 +778,8 @@ v-s:DepartmentTemplate
     <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
 
   </div>
+
+
   <hr>
   <div id="systemProperties">
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
@@ -598,3 +797,6 @@ v-s:DepartmentTemplate
 </div>
   """ ;
 .
+
+
+

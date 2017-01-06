@@ -44,33 +44,98 @@ shared static this()
     process_name = "ttl_reader";
 }
 
+Ticket sticket;
+
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void main(char[][] args)
 {
+    bool need_remove_ontology = false;
+    bool need_reload_ontology = false;
+    foreach (arg; args)
+    {
+        if (arg == "remove-ontology")
+            need_remove_ontology = true;
+        if (arg == "reload-ontology")
+            need_reload_ontology = true;
+    }
+
     string parent_url = "tcp://127.0.0.1:9112\0";
 
     Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
 
-//    core.thread.Thread tr = core.thread.Thread.getThis();
-//    tr.name = std.conv.text(id);
-
     try { mkdir("ontology"); } catch (Exception ex) {}
 
     ubyte[] out_data;
 
-//    // SEND ready
-//    receive((Tid tid_response_reciever)
-//            {
-//                send(tid_response_reciever, true);
-//            });
+    Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
+    sticket = context.sys_ticket();
 
-    Context context = new PThreadContext(process_name, "file_reader", P_MODULE.file_reader, log, parent_url);
+    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 100000, 100000);
+    log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
-    auto    oFiles = dirEntries(onto_path, SpanMode.depth);
+    if (need_remove_ontology)
+    {
+        OpResult res;
 
-    long    count_individuals = context.count_individuals();
-    if (count_individuals < 10)
+        //context.freeze();
+
+        log.tracec("WARN: ALL INDIVIDUALS containing [rdfs:isDefinedBy] WILL BE REMOVED");
+
+        foreach (uri; uris)
+        {
+            log.tracec("WARN: [%s] WILL BE REMOVED", uri);
+            context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
+        }
+
+        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 1000, 1000);
+        foreach (uri; uris)
+        {
+            log.tracec("WARN: [%s] WILL BE REMOVED", uri);
+            res = context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
+        }
+
+        bool complete_ft      = false;
+        bool complete_script  = false;
+        bool complete_subject = false;
+
+        while (true)
+        {
+    	    core.thread.Thread.sleep(dur!("seconds")(1));
+
+            long cur_opid;
+
+            cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
+            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);                        
+            if (cur_opid >= res.op_id)
+                complete_ft = true;
+
+            cur_opid = context.get_operation_state(P_MODULE.scripts_main, false);
+            log.tracec("INFO: res.op_id=%d, script_opid=%d", res.op_id, cur_opid);
+            if (cur_opid >= res.op_id)
+                complete_script = true;
+
+            cur_opid = context.get_operation_state(P_MODULE.subject_manager, false);
+            log.tracec("INFO: res.op_id=%d, subject_opid=%d", res.op_id, cur_opid);
+            if (cur_opid >= res.op_id)
+                complete_subject = true;
+
+		    if (complete_subject && complete_script && complete_ft)
+				break;
+        }
+
+        log.tracec("WARN: !!!! VEDA SYSTEM NEED RESTART");
+
+
+        //kill(pid, SIGKILL);
+
+        return;
+    }
+
+    auto oFiles = dirEntries(onto_path, SpanMode.depth);
+
+//    long    count_individuals = context.count_individuals();
+    if (uris.length == 0 || need_reload_ontology)
     {
         string[] files;
 
@@ -157,6 +222,7 @@ void main(char[][] args)
 
 //SysTime[ string ] file_modification_time;
 long[ string ]    prefix_2_priority;
+string[ string ] filename_2_prefix;
 
 // Digests a file and prints the result.
 string digestFile(Hash) (string filename) if (isDigest!Hash)
@@ -172,12 +238,9 @@ string digestFile(Hash) (string filename) if (isDigest!Hash)
 Individual[ string ] check_and_read_changed(string[] changes, Context context)
 {
     Individual[ string ] individuals;
-    string[ string ] filename_2_prefix;
     Individual *[ string ][ string ] individuals_2_filename;
     string[] files_to_load;
     bool     is_reload = false;
-
-    Ticket   sticket = context.sys_ticket();
 
     foreach (fname; changes)
     {
@@ -220,24 +283,43 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
             if (context !is null)
                 prefixes = context.get_prefix_map();
 
-            auto l_individuals = ttl2individuals(filename, prefixes, prefixes);
+            auto l_individuals = ttl2individuals(filename, prefixes, prefixes, log);
 
-            if (context !is null)
-                context.add_prefix_map(prefixes);
+            bool f_onto = false;
 
             foreach (uri, indv; l_individuals)
             {
                 if (indv.isExists(rdf__type, owl__Ontology))
                 {
+                    string o_file = filename_2_prefix.get(indv.uri, null);
+                    if (o_file !is null && o_file != filename)
+                    {
+                        log.trace("ERR! onto[%s] already define in file [%s], this file=%s", indv.uri, o_file, filename);
+                        continue;
+                    }
+
                     filename_2_prefix[ indv.uri ] = filename;
                     long loadPriority = indv.getFirstInteger("v-s:loadPriority", -1);
 
                     if (loadPriority >= 0)
                         prefix_2_priority[ indv.uri ] = loadPriority;
 
+                    f_onto = true;
+
                     break;
                 }
             }
+
+            if (!f_onto)
+            {
+                log.trace("WARN! file [%s] does not contain an instance of type owl:Ontology", filename);
+                filename_2_prefix[ filename ] = filename;
+                prefix_2_priority[ filename ] = 90;
+                prefixes[ filename ]          = filename;
+            }
+
+            if (context !is null)
+                context.add_prefix_map(prefixes);
 
             individuals_2_filename[ filename ] = l_individuals;
         }
@@ -271,9 +353,12 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
 void processed(string[] changes, Context context)
 {
     Ticket sticket = context.sys_ticket();
-    log.trace("find systicket [%s]", sticket.id);
+
+    log.trace("processed:find systicket [%s]", sticket.id);
 
     Individual[ string ] individuals = check_and_read_changed(changes, context);
+
+    log.trace("processed:check_and_read_changed, count individuals=[%d]", individuals.length);
 
     if (individuals.length > 0)
     {
@@ -313,7 +398,7 @@ void processed(string[] changes, Context context)
 
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
                                 if (trace_msg[ 33 ] == 1)
-                                    log.trace("file reader:store, uri=%s", indv.uri);
+                                log.trace("file reader:store, uri=%s", indv.uri);
 
                                 if (res != ResultCode.OK)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
@@ -344,7 +429,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
     try
     {
         if (trace_msg[ 30 ] == 1)
-            log.trace("ss_list.count=%d", ss_list.length);
+            log.trace("[%s]ss_list.count=%d", filename, ss_list.length);
 
         Ticket     sticket = context.sys_ticket();
 
@@ -378,6 +463,8 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         foreach (ss; ss_list)
         {
+            //log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
+
             if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
@@ -439,7 +526,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
-            log.trace("prepare_list end");
+            log.trace("[%s] prepare_list end", filename);
     }
     catch (Exception ex)
     {

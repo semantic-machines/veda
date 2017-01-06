@@ -15,13 +15,17 @@ function menu(driver, attr){
 
 function testPager(driver) {
 	driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
-	driver.findElement({css:'#pager > li:nth-child(2) > a'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 2 page");});
-	driver.sleep(basic.EXTRA_SLOW_OPERATION	);
-	driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
-	driver.findElement({css:'#pager > li:nth-child(1) > a'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 1 page");});
-	driver.sleep(basic.EXTRA_SLOW_OPERATION);
+
+	var flag = driver.findElement({css:'#pager > li:nth-child(2) > a'}).isDisplayed();
+	if (flag) {
+		driver.findElement({css:'#pager > li:nth-child(2) > a'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 2 page");});
+		driver.sleep(basic.EXTRA_SLOW_OPERATION);
+		driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
+		driver.findElement({css:'#pager > li:nth-child(1) > a'}).click()
+			.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 1 page");});
+		driver.sleep(basic.SLOW_OPERATION);
+	}
 }
 
 basic.getDrivers().forEach(function(drv) {
@@ -36,14 +40,13 @@ basic.getDrivers().forEach(function(drv) {
 	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 	testPager(driver);
 
-	//menu(driver, 'v-l:Find');
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
 	driver.findElement({id:'submit'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
+	 	.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
 	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 	testPager(driver);
 
-	// TO DO: testPager in messages
+	// TO DO: testPager in messages; OPTIMIZE;
 
 	driver.quit();
 });

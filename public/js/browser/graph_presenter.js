@@ -32,11 +32,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
               node.group = "template";
               break;
             case "v-ui:PropertySpecification" :
-            case "v-ui:IntegerPropertySpecification" :
-            case "v-ui:DecimalPropertySpecification" :
-            case "v-ui:DatetimePropertySpecification" :
-            case "v-ui:StringPropertySpecification" :
-            case "v-ui:BooleanPropertySpecification" :
+            case "v-ui:DatatypePropertySpecification" :
             case "v-ui:ObjectPropertySpecification" :
               node.group = "specification";
               break;
@@ -246,21 +242,13 @@ veda.Module(function GraphPresenter(veda) { "use strict";
           case "class-templates" : addInLinks( id, "'rdf:type'==='v-ui:ClassTemplate'&&'v-ui:forClass'==='{id}'" ); break;
           case "class-specifications" :
             addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification'||" +
-                    "'rdf:type'==='v-ui:IntegerPropertySpecification'||" +
-                    "'rdf:type'==='v-ui:DecimalPropertySpecification'||" +
-                    "'rdf:type'==='v-ui:DatetimePropertySpecification'||" +
-                    "'rdf:type'==='v-ui:StringPropertySpecification'||" +
-                    "'rdf:type'==='v-ui:BooleanPropertySpecification'||" +
+                    "'rdf:type'==='v-ui:DatatypePropertySpecification'" +
                     "'rdf:type'==='v-ui:ObjectPropertySpecification'" +
                     ")&&'v-ui:forClass'==='{id}'" );
           break;
           case "property-specifications" :
             addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification'||" +
-                    "'rdf:type'==='v-ui:IntegerPropertySpecification'||" +
-                    "'rdf:type'==='v-ui:DecimalPropertySpecification'||" +
-                    "'rdf:type'==='v-ui:DatetimePropertySpecification'||" +
-                    "'rdf:type'==='v-ui:StringPropertySpecification'||" +
-                    "'rdf:type'==='v-ui:BooleanPropertySpecification'||" +
+                    "'rdf:type'==='v-ui:DatatypePropertySpecification'" +
                     "'rdf:type'==='v-ui:ObjectPropertySpecification'" +
                     ")&&'v-ui:forProperty'=='{id}'" );
           break;

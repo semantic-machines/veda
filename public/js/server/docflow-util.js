@@ -58,13 +58,10 @@ function WorkItemResult(_work_item_result)
     /////////////////////////// functions prepare work_item_result
     this.getValue = function(var_name)
     {
-        //print("%%%1");
         for (var i in this.work_item_result)
         {
-            //print("%%%2");
             return this.work_item_result[i][var_name];
         }
-        //print("%%%3");
     };
 
     this.compare = function(var_name, value)
@@ -105,9 +102,23 @@ function WorkItemResult(_work_item_result)
         return false;
     };
 
+    this.is_exists_result = function()
+    {
+        if (!this.work_item_result || this.work_item_result.length < 1)
+            return false;
+        
+        for (var i = 0; i < this.work_item_result.length; i++)
+        {
+            if (this.work_item_result[i].result)
+                return true;
+        }
+
+        return false;
+    }
 
     this.is_all_executors_taken_decision = function(var_name, value)
     {
+        //print('BLABLABLA > '+toJson(this));
         if (!value || value.length < 1)
             return false;
 
@@ -602,17 +613,6 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
     }
 
 }
-//////////////////////////////////////////////////////////////////////////
-function is_exists_result(data)
-{
-    for (var i = 0; i < data.length; i++)
-    {
-        if (data[i].result)
-            return true;
-    }
-
-    return false;
-}
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -857,6 +857,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 
                     new_message['v-s:subject'] = newStr (output_subject, lang);
                     new_message['v-s:messageBody'] = newStr (output_body, lang);
+                    new_message['v-wf:onWorkOrder'] = newUri (_order['@']);
 
                     put_individual(ticket, new_message, _event_id);
                 }
@@ -1069,7 +1070,7 @@ function get_properties_chain(var1, query, result_if_fail_search)
         return res;
 
     var doc;
-    //    print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
+        //print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
     try
     {
     doc = get_individual(ticket, getUri(var1));
@@ -1077,12 +1078,12 @@ function get_properties_chain(var1, query, result_if_fail_search)
     if (doc)
         traversal(doc, query, 0, res);
 
-    //    print('@@@get_properties_chain #2 res=', toJson(res));
+        //print('@@@get_properties_chain #2 res=', toJson(res));
 
 	if (result_if_fail_search && (res == undefined || res.length == 0))
 		res = result_if_fail_search;
 
-     //   print('@@@get_properties_chain #3 res=', toJson(res));
+        //print('@@@get_properties_chain #3 res=', toJson(res));
     }
     catch (e)
     {

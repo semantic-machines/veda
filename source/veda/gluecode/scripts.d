@@ -7,19 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.vmodule.vmodule;
-private import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
-
-void main(char[][] args)
-{
-    process_name = "scripts";
-
-    Thread.sleep(dur!("seconds")(1));
-
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.scripts, "127.0.0.1", 8091, new Logger("veda-core-scripts", "log", ""));
-
-    p_script.run();
-}
+private import veda.vmodule.vmodule, veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 class ScriptProcess : VedaModule
 {
@@ -32,11 +20,14 @@ class ScriptProcess : VedaModule
     private string   vars_for_codelet_script;
 
     private ScriptVM script_vm;
+    private string   vm_id;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
+    this(string _vm_id, string _module_name, Logger log)
     {
-        super(_module_name, _host, _port, log);
+        super(_module_name, log);
 
+        vm_id           = _vm_id;
+        g_vm_id         = vm_id;
         g_cache_of_indv = cache_of_indv;
     }
 
@@ -48,6 +39,7 @@ class ScriptProcess : VedaModule
 
     override void receive_msg(string msg)
     {
+        log.trace("receive msg=%s", msg);
     }
 
     override Context create_context()
@@ -125,39 +117,48 @@ class ScriptProcess : VedaModule
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
 
-        foreach (script_id; event_scripts_order)
+        foreach (_script_id; event_scripts_order)
         {
-            auto script = event_scripts[ script_id ];
+            script_id = _script_id;
+
+            ScriptInfo script = event_scripts[ script_id ];
 
             if (script.compiled_script !is null)
             {
                 //log.trace("look script:%s", script_id);
-                if (event_id !is null && event_id.length > 1 && event_id == (individual_id ~ '+' ~ script_id))
+                if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
                 {
                     //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                     continue;
                 }
 
+                if (script.run_at != vm_id)
+                    continue;
+
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
-                if (script.filters.length > 0 && isFiltred(&script, indv_types, context.get_onto()) == false)
+                if (is_filter_pass(&script, individual_id, indv_types, context.get_onto()) == false)
+                {
+                    //log.trace("skip (filter) script:%s", script_id);
                     continue;
+                }
+
 
                 //log.trace("filter pass script:%s", script_id);
 
                 try
                 {
 /*
-    if (count_sckip == 0)
-    {
-   long now_sckip;
-    writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
-    readf(" %d", &now_sckip);
-    count_sckip = now_sckip;
-    }
+                                    if (count_sckip == 0)
+                                    {
+                                            long now_sckip;
+                                            writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                                            readf(" %d", &now_sckip);
+                                            count_sckip = now_sckip;
+                                    }
 
-    if (count_sckip > 0)
-        count_sckip--;
+                                    if (count_sckip > 0)
+                                        count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
                     log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
@@ -180,21 +181,35 @@ class ScriptProcess : VedaModule
                 }
                 catch (Exception ex)
                 {
-                    log.trace_log_and_console("WARN! fail execute event script : %s %s", script_id, ex.msg);
+                    log.trace("WARN! fail execute event script : %s %s", script_id, ex.msg);
                 }
             }
         }
-//                                writeln("count:", count);
 
-        //clear_script_data_cache ();
-        // writeln("scripts B #e *", process_name);
+        //log.trace("count:", count);
+
+        // clear_script_data_cache ();
+        // log.trace("scripts B #e *", process_name);
         committed_op_id = op_id;
 
         return ResultCode.OK;
     }
 
+    override bool open()
+    {
+        vql       = new VQL(context);
+        script_vm = get_ScriptVM(context);
+
+        if (script_vm !is null)
+            return true;
+
+        return false;
+    }
+
     override bool configure()
     {
+        log.trace("configure scripts");
+
         vars_for_event_script =
             "var user_uri = get_env_str_var ('$user');"
             ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
@@ -203,12 +218,19 @@ class ScriptProcess : VedaModule
             ~ "var super_classes = get_env_str_var ('$super_classes');"
             ~ "var _event_id = document['@'] + '+' + _script_id;";
 
-        vql = new VQL(context);
-
-        script_vm = get_ScriptVM(context);
         load_event_scripts();
 
         return true;
+    }
+
+    override bool close()
+    {
+        return vql.close_db();
+    }
+
+    override void event_of_change(string uri)
+    {
+        configure();
     }
 
     public void load_event_scripts()
@@ -225,15 +247,15 @@ class ScriptProcess : VedaModule
                 "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
                 res);
 
-        int count = 0;
-
         foreach (ss; res)
-        {
             prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script);
-        }
 
-        if (trace_msg[ 300 ] == 1)
-            log.trace("end load db scripts, count=%d ", res.length);
+        string scripts_ordered_list;
+        foreach (_script_id; event_scripts_order)
+            scripts_ordered_list ~= "," ~ _script_id;
+
+//        if (trace_msg[ 300 ] == 1)
+        log.trace("load db scripts, count=%d, scripts_uris=[%s] ", event_scripts_order.length, scripts_ordered_list);
     }
 
     private void set_g_parent_script_id_etc(string event_id)
