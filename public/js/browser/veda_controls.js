@@ -893,7 +893,6 @@
   };
 
   // SOURCE CODE CONTROL
-  // supports only one-way binding (editor -> individual) except initial value
   $.fn.veda_source = function (options) {
     var self = this,
       opts = $.extend( {}, $.fn.veda_source.defaults, options ),
@@ -935,6 +934,21 @@
     editor.on("change", function () {
       var value = opts.parser( editor.doc.getValue() );
       opts.change(value);
+    });
+    function handler(property_modified, values) {
+      if (property_modified === property_uri) {
+        var doc = editor.getDoc();
+        var value = doc.getValue();
+        if (!values.length || values[0].toString() !== value) {
+          var cursor = doc.getCursor();
+          doc.setValue( values.length ? values[0].toString() : "" );
+          doc.setCursor(cursor);
+        }
+      }
+    }
+    individual.on("individual:propertyModified", handler );
+    this.on("remove", function () {
+      individual.off("individual:propertyModified", handler);
     });
 
     fscreen.click(function () {
