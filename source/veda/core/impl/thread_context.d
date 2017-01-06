@@ -218,7 +218,7 @@ class PThreadContext : Context
 //        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
 //        is_traced_module[ P_MODULE.scripts ]          = true;
 
-        getConfiguration();
+        get_configuration();
 
         _vql = new VQL(this);
 
@@ -332,7 +332,7 @@ class PThreadContext : Context
         return ticket;
     }
 
-    public Individual getConfiguration()
+    public Individual get_configuration()
     {
         if (node == Individual.init && node_id !is null)
         {
@@ -702,15 +702,26 @@ class PThreadContext : Context
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket;
-            Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            Individual[] candidate_users = this.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;
                 if (user_id is null)
                     continue;
 
-                Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
-                if (pass.length > 0 && pass[ 0 ] == password)
+                string pass;
+                string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+                if (usesCredential_uri !is null)
+                {
+                    Individual i_usesCredential = this.get_individual(&sticket, usesCredential_uri);
+                    pass = i_usesCredential.getFirstLiteral("v-s:password");
+                }
+                else
+                {
+                    pass = user.getFirstLiteral("v-s:password");
+                }
+
+                if (pass !is null && pass == password)
                 {
                     ticket = create_new_ticket(user_id);
                     return ticket;
