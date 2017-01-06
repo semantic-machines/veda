@@ -118,20 +118,25 @@ v-s:UserScriptTemplate
   <h2 about="v-s:UserScript" property="rdfs:label"></h2>
 
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <em about="rdfs:label" property="rdfs:label"></em>
       <div property="rdfs:label" class="view -edit -search"></div>
-      <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
     </div>
-    <div class="col-md-3 view -edit -search">
+    <div class="col-md-4">
+      <em about="rdfs:comment" property="rdfs:label"></em>
+      <div property="rdfs:comment" class="view -edit -search"></div>
+      <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2 view -edit -search">
       <em about="v-s:lastRun" property="rdfs:label"></em>
       <div about="@" property="v-s:lastRun"></div>
     </div>
-    <div class="col-md-3 view -edit -search">
+    <div class="col-md-2 view -edit -search">
       <em about="v-s:updateCounter" property="rdfs:label"></em>
       <div about="@" property="v-s:updateCounter"></div>
     </div>
-    <div class="col-md-3 view -edit -search">
+    <div class="col-md-2 view -edit -search">
       <div class="checkbox">
         <label>
           <veda-control property="v-s:toBeRun" data-type="boolean"></veda-control>
