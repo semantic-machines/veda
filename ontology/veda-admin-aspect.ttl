@@ -115,7 +115,7 @@ v-s:UserScriptTemplate
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   v-ui:template """
 <div class="container-fluid">
-  <h3 about="v-s:UserScript" property="rdfs:label"></h3>
+  <h2 about="v-s:UserScript" property="rdfs:label"></h2>
 
   <div class="row">
     <div class="col-md-3">
@@ -134,7 +134,7 @@ v-s:UserScriptTemplate
     <div class="col-md-3 view -edit -search">
       <div class="checkbox">
         <label>
-          <veda-control property="v-s:toBeRun" data-type="booleanCheckbox"></veda-control>
+          <veda-control property="v-s:toBeRun" data-type="boolean"></veda-control>
           <em about="v-s:toBeRun" property="rdfs:label"></em>
         </label>
       </div>
@@ -163,7 +163,7 @@ v-s:UserScriptTemplate
     <button type="button" class="action btn btn-success -view edit -search save" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="action btn btn-danger view -edit -search pull-right" id="run" about="v-s:RunBundle" property="rdfs:label"/>
+    <button type="button" class="action btn btn-danger view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
   </div>
 
 </div>
