@@ -163,28 +163,23 @@ class XapianVQL
                 {
                     log.trace("transform_vql_to_xapian, invalid tta=[%s]", tta);
                     throw new XapianError(err, "invalid tta=" ~ text(tta));
-//	        return null;
                 }
+
                 string ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
                 string rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
                 if (!is_strict_equality && rs.indexOf(':') > 0)
                 {
                     Classes subclasses = ctx.get_onto().get_sub_classes(rs);
-                    //writeln ("@ class=,", rs, ", subclasses=", subclasses);
 
                     foreach (classz; subclasses.keys)
-                    {
                         rs ~= " OR " ~ classz;
-                    }
-
-                    //writeln ("@ RS=", rs);
                 }
 
-                //writeln("#2 % query_l=", query_l);
-                //writeln("#2 % query_r=", query_r);
-                //writeln("ls=", ls);
-                //writeln("rs=", rs);
+                //log.trace("query_l=|%s|", query_l);
+                //log.trace("query_r=|%s|", query_r);
+                //log.trace("ls=|%s|", ls);
+                //log.trace("rs=|%s|", rs);
 
                 if (query_l is null && query_r is null)
                 {
@@ -210,15 +205,12 @@ class XapianVQL
                         else
                         {
                             int slot;
-                            //writeln("@p slot=", slot, " predicate=", ls);
                             if (rs !is null && rs.length > 2 && rs[ 0 ] == '*')
-                            {
                                 slot = key2slot.get(ls ~ "#F", -1);
-                            }
                             else
-                            {
                                 slot = key2slot.get(ls, -1);
-                            }
+
+                            //log.trace("@p slot=%d, predicate=%s", slot, ls);
 
                             if (slot > 0)
                             {
@@ -242,12 +234,10 @@ class XapianVQL
                                     {
                                         char[] query_str = to_lower_and_replace_delimeters(rs).dup;
                                         if (rs[ 0 ] == '*')
-                                        {
                                             reverse(query_str);
-                                        }
 
                                         xtr = "X" ~ text(slot) ~ "X";
-//                            string query_str = rs.toLower ();
+
                                         feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD | feature_flag.FLAG_PHRASE |
                                                              feature_flag.FLAG_LOVEHATE;
                                         if (tta.op == "!=")
@@ -274,8 +264,7 @@ class XapianVQL
                                             string[] vals = rs.split(",");
                                             if (vals.length == 2)
                                             {
-                                                double c_from, c_to;
-//                              writeln ("@p vals=", vals);
+                                                double    c_from, c_to;
 
                                                 TokenType tt = get_token_type(vals[ 0 ], c_from);
                                                 if (tt == TokenType.DATE || tt == TokenType.NUMBER)
@@ -283,20 +272,39 @@ class XapianVQL
                                                     tt = get_token_type(vals[ 1 ], c_to);
                                                     if (tt == TokenType.DATE || tt == TokenType.NUMBER)
                                                     {
-                                                        //writeln("@p c_from=", c_from);
-                                                        //writeln("@p c_to=", c_to);
-
-
                                                         query = new_Query_range(xapian_op.OP_VALUE_RANGE, slot, c_from, c_to, &err);
                                                     }
                                                 }
                                             }
+                                            else if (vals.length == 1)
+                                            {
+                                                string el = rs;
+                                                if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
+                                                    el = el[ 1..$ - 1 ];
+
+                                                Classes subclasses = ctx.get_onto().get_sub_classes(el);
+                                                string  query_str  = el;
+                                                xtr = "X" ~ text(slot) ~ "X";
+                                                foreach (classz; subclasses.keys)
+                                                    query_str ~= " OR " ~ classz;
+
+                                                query_str = to_lower_and_replace_delimeters(query_str);
+
+                                                feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD |
+                                                                     feature_flag.FLAG_PHRASE |
+                                                                     feature_flag.FLAG_LOVEHATE;
+
+                                                query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                       xtr.length, &err);
+
+                                                if (err != 0)
+                                                    throw new XapianError(err,
+                                                                          cast(string)("parse_query2.1('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr
+                                                                                       ~ "'"));
+
+                                                //log.trace("transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
+                                            }
                                         }
-//                            else if (tta.R.token_decor == Decor.QUOTED)
-//                            {
-//                                xtr   = "X" ~ text(slot) ~ "X" ~ to_lower_and_replace_delimeters(rs);
-//                                query = new_Query(cast(const char *)xtr, xtr.length, &err);
-//                            }
                                         else
                                         {
                                             double d_val;
@@ -324,7 +332,7 @@ class XapianVQL
                                         }
 
                                         if (err != 0)
-                                            log.trace("XAPIAN:transform_vql_to_xapian:parse_query3('x'=x) [%s]", xtr);
+                                            log.trace("XAPIAN:transform_vql_to_xapian:parse_query3 ('x'=x) [%s], err=%s", xtr, get_xapian_err_msg(err));
                                     }
                                 }
                             }
