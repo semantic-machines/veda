@@ -392,7 +392,7 @@ class VedaModule
             if (onto is null)
                 onto = context.get_onto();
 
-            onto.update_class_in_hierarchy(new_indv, true);
+            onto.update_onto_hierarchy(new_indv, true);
 
             cache_of_indv.put(new_indv.uri, new_bin);
 

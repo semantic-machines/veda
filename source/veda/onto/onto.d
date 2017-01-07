@@ -14,23 +14,28 @@ private
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
-alias bool[ string ] Classes;
+alias bool[ string ] Names;
 
 class Onto
 {
     private Context context;
-    Logger log;
+    Logger          log;
     public int      reload_count = 0;
 
     private         Individual[ string ] individuals;
-    private         Classes[ string ] class2superclasses;
-    private         Classes[ string ] class2subclasses;
+
+    private         Names[ string ] class2superclasses;
+    private         Names[ string ] class2subclasses;
+
+    private         Names[ string ] property2subproperties;
+    private         Names[ string ] property2superproperties;
+
     private         bool[ string ]    orphans;
 
     public this(Context _context)
     {
         context = _context;
-        log = context.get_logger();
+        log     = context.get_logger();
     }
 
     Individual[ string ] get_individuals()
@@ -38,21 +43,26 @@ class Onto
         return individuals;
     }
 
-    public Classes get_super_classes(string _class_uri)
+    public Names get_super_classes(string _class_uri)
     {
         return class2superclasses.get(_class_uri, null);
     }
 
-    public Classes get_sub_classes(string _class_uri)
+    public Names get_sub_classes(string _class_uri)
     {
         return class2subclasses.get(_class_uri, null);
+    }
+
+    public Names get_sub_properties(string _property_uri)
+    {
+        return property2subproperties.get(_property_uri, null);
     }
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
         foreach (_subclass_uri; _subclasses_uri)
         {
-            Classes subclasses = class2subclasses.get(_subclass_uri, null);
+            Names subclasses = class2subclasses.get(_subclass_uri, null);
 
             if (subclasses !is null)
             {
@@ -82,18 +92,13 @@ class Onto
                                                                        "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
                                                                        true, 10000, 10000);
 
-        //if (trace_msg[ 20 ] == 1)
         log.trace_log_and_console("[%s] load onto, count individuals: %d", context.get_name, l_individuals.length);
 
         foreach (indv; l_individuals)
-        {
             individuals[ indv.uri ] = indv;
-        }
 
         foreach (indv; l_individuals)
-        {
-            update_class_in_hierarchy(indv);
-        }
+            update_onto_hierarchy(indv);
 
         //foreach (key, value; class2subclasses)
         //{
@@ -104,37 +109,64 @@ class Onto
             log.trace_log_and_console("[%s] load onto..Ok", context.get_name);
     }
 
-    public void update_class_in_hierarchy(ref Individual indv, bool replace = false)
+    public void update_onto_hierarchy(ref Individual indv, bool replace = false)
     {
-        //log.trace ("@1#update_class_in_hierarchy[%s] replace=%s", indv.uri, text (replace));
+        //log.trace ("@1#update_onto_hierarchy[%s] replace=%s", indv.uri, text (replace));
+        bool is_class    = false;
+        bool is_property = false;
 
-        if (replace == true && indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
-            individuals[ indv.uri ] = indv;
+        if (indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
+            is_property = true;
 
         if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
+            is_class = true;
+
+        if (replace == true && is_property)
+            individuals[ indv.uri ] = indv;
+
+        if (is_class || is_property)
         {
             if (replace == true)
                 individuals[ indv.uri ] = indv;
 
-            string  type_uri = indv.uri;
+            string type_uri = indv.uri;
 
-            Classes icl;
+            Names  icl;
 
             if (replace == false)
-                icl = class2superclasses.get(type_uri, null);
+            {
+                if (is_class)
+                {
+                    icl = class2superclasses.get(type_uri, null);
 
-            if (icl is null)
-                _update_class(type_uri);
+                    if (icl is null)
+                        _update_element(type_uri, class2superclasses, class2subclasses, rdfs__subClassOf);
+                }
+
+                if (is_property)
+                {
+                    icl = property2subproperties.get(type_uri, null);
+
+//		            if (icl is null)
+//		                _update_property(type_uri);
+                }
+            }
         }
+
 
         // если этот класс числится в осиротевших ссылках, найти в подклассах где он упоминается и так-же обновить.
         if (orphans.get(indv.uri, false) == true)
         {
-            Classes nuscs = class2subclasses.get(indv.uri, null);
+            Names nuscs = class2subclasses.get(indv.uri, null);
 
             foreach (cl; nuscs.keys)
             {
-                _update_class(cl);
+                if (is_class)
+                    _update_element(cl, class2superclasses, class2subclasses, rdfs__subClassOf);
+
+                //if (is_property)
+                //      _update_property(cl);
+
                 orphans[ cl ] = false;
             }
 
@@ -142,36 +174,38 @@ class Onto
         }
     }
 
-    private void _update_class(string type_uri)
+    private void _update_element(string type_uri, ref Names[ string ] element2superelementes, ref Names[ string ] element2subelementes,
+                                 string parent_predicate)
     {
-        //                  writeln ("@b1 update_class_in_hierarchy, uri=", indv.uri);
-        Classes superclasses = Classes.init;
+        Names superelementes = Names.init;
 
-        prepare_superclasses(superclasses, individuals, type_uri);
-        class2superclasses[ type_uri ] = superclasses;
+        prepare_superelementes(parent_predicate, element2superelementes, element2subelementes, superelementes, individuals, type_uri);
+        element2superelementes[ type_uri ] = superelementes;
 
-        foreach (classz; superclasses.keys)
+        foreach (el; superelementes.keys)
         {
-            if (individuals.get(classz, Individual.init) == Individual.init)
-                orphans[ classz ] = true;
+            if (individuals.get(el, Individual.init) == Individual.init)
+                orphans[ el ] = true;
 
-            Classes subclasses = class2subclasses.get(classz, Classes.init);
-            subclasses[ type_uri ]     = true;
-            class2subclasses[ classz ] = subclasses;
+            Names subelementes = element2subelementes.get(el, Names.init);
+            subelementes[ type_uri ]   = true;
+            element2subelementes[ el ] = subelementes;
         }
     }
 
-    private void prepare_superclasses(ref Classes superclasses, ref Individual[ string ] classes, string look_cl, int level = 0)
+    private void prepare_superelementes(string parent_predicate, ref Names[ string ] element2superelementes, ref Names[ string ] element2subelementes,
+                                        ref Names superelementes, ref Individual[ string ] elementes, string look_cl,
+                                        int level = 0)
     {
-        //log.trace ("#1 prepare_superclasses=%s", look_cl);
+        //log.trace ("#1 prepare_superelementes=%s", look_cl);
 
-        Individual ii = classes.get(look_cl, Individual.init);
+        Individual ii = elementes.get(look_cl, Individual.init);
 
-        Resource[] list = ii.getResources(rdfs__subClassOf);
-        foreach (classz; list)
+        Resource[] list = ii.getResources(parent_predicate);
+        foreach (elementz; list)
         {
-            superclasses[ classz.uri ] = true;
-            prepare_superclasses(superclasses, classes, classz.uri, level + 1);
+            superelementes[ elementz.uri ] = true;
+            prepare_superelementes(parent_predicate, element2superelementes, element2subelementes, superelementes, elementes, elementz.uri, level + 1);
         }
     }
 }

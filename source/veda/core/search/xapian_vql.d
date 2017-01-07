@@ -170,12 +170,17 @@ class XapianVQL
 
                 if (!is_strict_equality && rs.indexOf(':') > 0)
                 {
-                    Classes subclasses = ctx.get_onto().get_sub_classes(rs);
+                    Names subclasses = ctx.get_onto().get_sub_classes(rs);
 
                     foreach (classz; subclasses.keys)
                         rs ~= " OR " ~ classz;
                 }
 
+				if (tta.L.token_decor == Decor.RANGE)
+                {
+	                 log.trace ("@1");	
+                }
+                                        
                 //log.trace("query_l=|%s|", query_l);
                 //log.trace("query_r=|%s|", query_r);
                 //log.trace("ls=|%s|", ls);
@@ -282,7 +287,7 @@ class XapianVQL
                                                 if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
                                                     el = el[ 1..$ - 1 ];
 
-                                                Classes subclasses = ctx.get_onto().get_sub_classes(el);
+                                                Names subclasses = ctx.get_onto().get_sub_classes(el);
                                                 string  query_str  = el;
                                                 xtr = "X" ~ text(slot) ~ "X";
                                                 foreach (classz; subclasses.keys)
