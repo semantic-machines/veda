@@ -32,7 +32,7 @@ v-s:assetNumber
   rdfs:label "Fixed asset ID"@en ;
   rdfs:label "Номер ОС"@ru ;
   rdfs:range xsd:string ;
-  rdfs:subPropertyOf v-s:Description ;
+  rdfs:subPropertyOf v-s:description ;
   rdfs:domain v-s:Asset ;
 .
 v-s:msfo
