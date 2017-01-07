@@ -178,10 +178,10 @@ class XapianVQL
 
 				if (tta.L.token_decor == Decor.RANGE)
                 {
-                	//Names suproperties = ctx.get_onto().get_sub_classes (ls);
-	                 log.trace ("@1");	
+                	Names subroperties = ctx.get_onto().get_sub_properies (ls);
+	                log.trace ("@1, subroperties=%s", subroperties);	
                 }
-                                        
+                                       
                 //log.trace("query_l=|%s|", query_l);
                 //log.trace("query_r=|%s|", query_r);
                 //log.trace("ls=|%s|", ls);
