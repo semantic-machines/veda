@@ -176,12 +176,16 @@ class XapianVQL
                         rs ~= " OR " ~ classz;
                 }
 
-				if (tta.L.token_decor == Decor.RANGE)
+                if (tta.L.token_decor == Decor.RANGE)
                 {
-                	Names subroperties = ctx.get_onto().get_sub_properies (ls);
-	                log.trace ("@1, subroperties=%s", subroperties);	
+                    string el = ls;
+                    if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
+                        el = el[ 1..$ - 1 ];
+
+                    Names subroperties = ctx.get_onto().get_sub_properies(el);
+                    log.trace("@1, subroperties of [%s]=%s", el, subroperties);
                 }
-                                       
+
                 //log.trace("query_l=|%s|", query_l);
                 //log.trace("query_r=|%s|", query_r);
                 //log.trace("ls=|%s|", ls);
@@ -288,8 +292,8 @@ class XapianVQL
                                                 if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
                                                     el = el[ 1..$ - 1 ];
 
-                                                Names subclasses = ctx.get_onto().get_sub_classes(el);
-                                                string  query_str  = el;
+                                                Names  subclasses = ctx.get_onto().get_sub_classes(el);
+                                                string query_str  = el;
                                                 xtr = "X" ~ text(slot) ~ "X";
                                                 foreach (classz; subclasses.keys)
                                                     query_str ~= " OR " ~ classz;
