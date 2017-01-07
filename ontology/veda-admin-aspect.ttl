@@ -196,7 +196,7 @@ v-s:AdministrationAspect1
   rdf:type v-s:AdministrationAspect ;
   rdfs:label "Administration"@en ;
   rdfs:label "Администрирование"@ru ;
-  rdfs:comment "All your base are belong to us" ;
+  rdfs:comment "All your base are belong to us ©" ;
   v-s:shortLabel "Administration"@en ;
   v-s:shortLabel "Администрирование"@ru ;
   v-s:hasImage v-s:AdministrationImage ;
