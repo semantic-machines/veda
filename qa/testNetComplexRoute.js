@@ -2,15 +2,27 @@ var basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
     assert = require('assert');
 
+function findUp(driver) {
+    return driver.findElements({css:'a[property="rdfs:label"]'}).then(function (result) {
+        return result[3];
+    })
+}
+
+function clickUp(element) {
+    element.click()
+        .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on task");});
+}
+
+
 function open(driver) {
     driver.findElement({id:'menu'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
     basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
-    var container = driver.findElement({id:'main'});
-    var content = container.innerHTML;
-    container.innerHTML = content;
+    // var container = driver.findElement({id:'main'});
+    // var content = container.innerHTML;
+    // container.innerHTML = content;
 }
 
 function decision(driver, number) {
@@ -25,8 +37,7 @@ function welcome(driver) {
 
 function openMsg(driver, number, commentValue, chooseValue) {
     open(driver);
-    driver.findElement({css:'a[property="rdfs:label"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Согласовать' button");});
+    driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
     decision(driver, number);
     if (commentValue === '+') {
         driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
@@ -46,7 +57,7 @@ function openMsg(driver, number, commentValue, chooseValue) {
 function checkMsg(driver, count) {
     open(driver);
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElements({css:'a[property="rdfs:label"]'}).then(function (result) {
+    driver.findElements({css:'span[property="v-s:description"]'}).then(function (result) {
         assert.equal(count, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
     welcome(driver);
