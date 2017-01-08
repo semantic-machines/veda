@@ -16,6 +16,13 @@ private
 
 alias bool[ string ] Names;
 
+// bi-directional access to hierarchical elements
+private class Bdathe
+{
+    private Names[ string ] el_2_super_els;
+    private Names[ string ] el_2_sub_els;
+}
+
 class Onto
 {
     private Context context;
@@ -24,18 +31,17 @@ class Onto
 
     private         Individual[ string ] individuals;
 
-    private         Names[ string ] _class2superclasses;
-    private         Names[ string ] _class2subclasses;
-
-    private         Names[ string ] _prop2superprops;
-    private         Names[ string ] _prop2subprops;
+    private Bdathe  _class;
+    private Bdathe  _property;
 
     private         bool[ string ]    orphans;
 
     public this(Context _context)
     {
-        context = _context;
-        log     = context.get_logger();
+        context   = _context;
+        log       = context.get_logger();
+        _class    = new Bdathe();
+        _property = new Bdathe();
     }
 
     Individual[ string ] get_individuals()
@@ -45,24 +51,29 @@ class Onto
 
     public Names get_super_classes(string _class_uri)
     {
-        return _class2superclasses.get(_class_uri, null);
+        return _class.el_2_super_els.get(_class_uri, null);
     }
 
     public Names get_sub_classes(string _class_uri)
     {
-        return _class2subclasses.get(_class_uri, null);
+        return _class.el_2_sub_els.get(_class_uri, null);
     }
 
     public Names get_sub_properies(string _uri)
     {
-        return _prop2subprops.get(_uri, null);
+        return _property.el_2_sub_els.get(_uri, null);
+    }
+
+    public string[] get_properies()
+    {
+        return null;
     }
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
         foreach (_subclass_uri; _subclasses_uri)
         {
-            Names subclasses = _class2subclasses.get(_subclass_uri, null);
+            Names subclasses = _class.el_2_sub_els.get(_subclass_uri, null);
 
             if (subclasses !is null)
             {
@@ -122,10 +133,11 @@ class Onto
             if (replace == true)
                 individuals[ indv.uri ] = indv;
             else
-                icl = _prop2superprops.get(type_uri, null);
+                icl = _property.el_2_super_els.get(type_uri, null);
 
             if (icl is null)
-                _update_element(type_uri, _prop2superprops, _prop2subprops, "rdfs:subPropertyOf");
+                _update_element(type_uri, _property, "rdfs:subPropertyOf");
+
             is_prop = true;
         }
         else if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
@@ -133,10 +145,10 @@ class Onto
             if (replace == true)
                 individuals[ indv.uri ] = indv;
             else
-                icl = _class2superclasses.get(type_uri, null);
+                icl = _class.el_2_super_els.get(type_uri, null);
 
             if (icl is null)
-                _update_element(type_uri, _class2superclasses, _class2subclasses, rdfs__subClassOf);
+                _update_element(type_uri, _class, rdfs__subClassOf);
 
             is_class = true;
         }
@@ -144,14 +156,14 @@ class Onto
         // если этот класс числится в осиротевших ссылках, найти в подклассах где он упоминается и так-же обновить.
         if ((is_class || is_prop) && orphans.get(indv.uri, false) == true)
         {
-            Names nuscs = _class2subclasses.get(indv.uri, null);
+            Names nuscs = _class.el_2_sub_els.get(indv.uri, null);
 
             foreach (cl; nuscs.keys)
             {
                 if (is_class)
-                    _update_element(cl, _class2superclasses, _class2subclasses, rdfs__subClassOf);
+                    _update_element(cl, _class, rdfs__subClassOf);
                 else if (is_prop)
-                    _update_element(cl, _prop2superprops, _prop2subprops, "rdfs:subPropertyOf");
+                    _update_element(cl, _property, "rdfs:subPropertyOf");
 
                 orphans[ cl ] = false;
             }
@@ -160,27 +172,26 @@ class Onto
         }
     }
 
-    private void _update_element(string type_uri, ref Names[ string ] element2superelementes, ref Names[ string ] element2subelementes,
-                                 string parent_predicate)
+    private void _update_element(string type_uri, Bdathe elh, string parent_predicate)
     {
         // writeln ("@b1 update_element_in_hierarchy, uri=", indv.uri);
         Names superelementes = Names.init;
 
-        prepare_superelements(parent_predicate, element2superelementes, element2subelementes, superelementes, individuals, type_uri);
-        element2superelementes[ type_uri ] = superelementes;
+        prepare_superelements(parent_predicate, elh, superelementes, individuals, type_uri);
+        elh.el_2_super_els[ type_uri ] = superelementes;
 
         foreach (elementz; superelementes.keys)
         {
             if (individuals.get(elementz, Individual.init) == Individual.init)
                 orphans[ elementz ] = true;
 
-            Names subelementes = element2subelementes.get(elementz, Names.init);
-            subelementes[ type_uri ]         = true;
-            element2subelementes[ elementz ] = subelementes;
+            Names subelementes = elh.el_2_sub_els.get(elementz, Names.init);
+            subelementes[ type_uri ]     = true;
+            elh.el_2_sub_els[ elementz ] = subelementes;
         }
     }
 
-    private void prepare_superelements(string parent_predicate, ref Names[ string ] element2superelementes, ref Names[ string ] element2subelementes,
+    private void prepare_superelements(string parent_predicate, Bdathe elh,
                                        ref Names superelementes, ref Individual[ string ] elementes, string look_cl,
                                        int level = 0)
     {
@@ -192,7 +203,7 @@ class Onto
         foreach (elementz; list)
         {
             superelementes[ elementz.uri ] = true;
-            prepare_superelements(parent_predicate, element2superelementes, element2subelementes, superelementes, elementes, elementz.uri, level + 1);
+            prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
         }
     }
 }
