@@ -21,6 +21,8 @@ private class Bdathe
 {
     private Names[ string ] el_2_super_els;
     private Names[ string ] el_2_sub_els;
+    private bool[ string ]  orphans;
+    private bool[string] els;
 }
 
 class Onto
@@ -33,8 +35,6 @@ class Onto
 
     private Bdathe  _class;
     private Bdathe  _property;
-
-    private         bool[ string ]    orphans;
 
     public this(Context _context)
     {
@@ -66,7 +66,7 @@ class Onto
 
     public string[] get_properies()
     {
-        return null;
+        return _property.els.keys;
     }
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
@@ -111,11 +111,6 @@ class Onto
         foreach (indv; l_individuals)
             update_onto_hierarchy(indv);
 
-        //foreach (key, value; class2subclasses)
-        //{
-        //    writeln("@ class=", key, ", subclasses=", value);
-        //}
-
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto..Ok", context.get_name);
     }
@@ -138,6 +133,8 @@ class Onto
             if (icl is null)
                 _update_element(type_uri, _property, "rdfs:subPropertyOf");
 
+			_property.els [indv.uri] = true;
+			
             is_prop = true;
         }
         else if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
@@ -150,22 +147,33 @@ class Onto
             if (icl is null)
                 _update_element(type_uri, _class, rdfs__subClassOf);
 
+			//_class.els [indv.uri] = true;
+
             is_class = true;
         }
 
         // если этот класс числится в осиротевших ссылках, найти в подклассах где он упоминается и так-же обновить.
-        if ((is_class || is_prop) && orphans.get(indv.uri, false) == true)
+        if (is_class && _class.orphans.get(indv.uri, false) == true)
         {
             Names nuscs = _class.el_2_sub_els.get(indv.uri, null);
 
             foreach (cl; nuscs.keys)
             {
-                if (is_class)
-                    _update_element(cl, _class, rdfs__subClassOf);
-                else if (is_prop)
-                    _update_element(cl, _property, "rdfs:subPropertyOf");
+                 _update_element(cl, _class, rdfs__subClassOf);
+                _class.orphans[ cl ] = false;
+            }
 
-                orphans[ cl ] = false;
+            //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
+        }
+		else
+        if (is_prop && _property.orphans.get(indv.uri, false) == true)
+        {
+            Names nuscs = _property.el_2_sub_els.get(indv.uri, null);
+
+            foreach (cl; nuscs.keys)
+            {
+                _update_element(cl, _property, "rdfs:subPropertyOf");
+                _property.orphans[ cl ] = false;
             }
 
             //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
@@ -183,7 +191,10 @@ class Onto
         foreach (elementz; superelementes.keys)
         {
             if (individuals.get(elementz, Individual.init) == Individual.init)
-                orphans[ elementz ] = true;
+            {
+                elh.orphans[ elementz ] = true;
+                elh.els.remove (elementz);
+            }
 
             Names subelementes = elh.el_2_sub_els.get(elementz, Names.init);
             subelementes[ type_uri ]     = true;

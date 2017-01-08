@@ -94,7 +94,7 @@ class FTIndexerProcess : VedaModule
     override bool open()
     {
         ictx.thread_name = process_name;
-        ictx.init(&sticket);
+        ictx.init(&sticket, context);
         return true;
     }
 
