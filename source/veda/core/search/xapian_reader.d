@@ -143,10 +143,10 @@ class XapianReader : SearchReader
             db_names = [ "base" ];
 
         if (trace_msg[ 321 ] == 1)
-            log.trace("[%s][Q:%X] query [%s]", context.get_name(), cast(void *)str_query, str_query);
+            log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
 
         if (trace_msg[ 322 ] == 1)
-            log.trace("[%s][Q:%X] TTA [%s]", context.get_name(), cast(void *)str_query, tta.toString());
+            log.trace("[Q:%X] TTA [%s]", cast(void *)str_query, tta.toString());
 
         long cur_committed_op_id = get_info().committed_op_id;
         if (cur_committed_op_id > committed_op_id)
@@ -235,9 +235,8 @@ class XapianReader : SearchReader
                         break;
 
                     reopen_db();
-                    log.trace("WARN! [%s][%s] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
-                              context.get_name(), str_query,
-                              state, attempt_count);
+                    log.trace("WARN! [%s] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
+                              str_query, state, attempt_count);
                 }
             }
 
@@ -247,9 +246,8 @@ class XapianReader : SearchReader
                 read_count = state;
 
             if (state < 0)
-                log.trace("ERR! [%s][Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d, query=[%s]",
-                          context.get_name(), cast(void *)str_query,
-                          attempt_count, str_query);
+                log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d, query=[%s]",
+                          cast(void *)str_query, attempt_count, str_query);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);
