@@ -736,7 +736,6 @@ d:Bychina_create_Person
 
 d:test-field-v-s:classFrom
   rdf:type v-s:Variable ;
-  v-s:assetNumber "республика";
   v-s:classFrom cfg:VedaSystem;
   rdfs:label "этот индивид служит для добавления в поиск поля v-s:classFrom, нужно для тестов" ;
 .
