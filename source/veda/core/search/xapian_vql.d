@@ -113,6 +113,81 @@ class XapianVQL
     public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
                                           ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp)
     {
+        //log.trace ("tta in= %s", tta);
+        prepare_subproperties(ctx, tta);
+        //log.trace ("tta out= %s", tta);
+        return _transform_vql_to_xapian(ctx, tta, p_op, l_token, op, query, key2slot, _rd, level, qp);
+    }
+
+    private void prepare_subproperties(Context ctx, TTA tta)
+    {
+        string ls;
+        string rs;
+
+        if (tta.L !is null)
+        {
+            if (tta.L.token_decor == Decor.RANGE)
+            {
+                string el = tta.L.op;
+                if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
+                    el = el[ 1..$ - 1 ];
+
+                Names subproperties = ctx.get_onto().get_sub_properies(el);
+                //log.trace("@0, subroperties of [%s]=%s", el, subproperties);
+
+                TTA    tmpR   = tta.R;
+                string tmp_op = tta.op;
+
+                // L1, L2, L3
+                // (L == R || (L1 == R || (L2 == R || L3 == R)))
+                //
+                TTA curL  = new TTA(tmp_op, new TTA(el, null, null), tmpR);
+                TTA nextR = new TTA("||", null, null);
+                tta.L  = curL;
+                tta.R  = nextR;
+                tta.op = "||";
+                //log.trace ("#1 tta=%s", tta);
+
+                int idx = 0;
+                foreach (key, value; subproperties)
+                {
+                    //log.trace ("#2 nextR=%s", nextR);
+                    //log.trace ("key=%s", key);
+                    curL = new TTA(tmp_op, new TTA(key, null, null), tmpR);
+
+                    idx++;
+                    if (idx < subproperties.length)
+                    {
+                        nextR.L = curL;
+                        nextR.R = new TTA("||", null, null);
+                        nextR   = nextR.R;
+                    }
+                    else
+                    {
+                        nextR.op = curL.op;
+                        nextR.L  = curL.L;
+                        nextR.R  = curL.R;
+                    }
+
+                    //log.trace ("#3 nextR=%s", nextR);
+                }
+            }
+
+            prepare_subproperties(ctx, tta.L);
+        }
+
+        if (tta.R !is null)
+            prepare_subproperties(ctx, tta.R);
+    }
+
+    private string _transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
+                                            ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp)
+    {
+        //if (level == 0)
+        //	log.trace ("----------------------------");
+
+        //log.trace ("%d TTA=%s", level, tta);
+
         try
         {
             if (key2slot.length == 0)
@@ -130,13 +205,12 @@ class XapianVQL
             {
                 if (tta.L is null || tta.R is null)
                 {
-                    log.trace("transform_vql_to_xapian, invalid tta=[%s]", tta);
+                    log.trace("_transform_vql_to_xapian, invalid tta=[%s]", tta);
                     throw new XapianError(err, "invalid tta=" ~ text(tta));
-//	        return null;
                 }
 
-                string    ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
-                string    rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+                string    ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+                string    rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
                 double    value;
                 TokenType rs_type = get_token_type(rs, value);
@@ -161,12 +235,17 @@ class XapianVQL
 
                 if (tta.L is null || tta.R is null)
                 {
-                    log.trace("transform_vql_to_xapian, invalid tta=[%s]", tta);
+                    log.trace("_transform_vql_to_xapian, invalid tta=[%s]", tta);
                     throw new XapianError(err, "invalid tta=" ~ text(tta));
                 }
 
-                string ls = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
-                string rs = transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+                string ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+                string rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+
+                //log.trace("%d query_l=%s", level, query_l);
+                //log.trace("%d query_r=%s", level, query_r);
+                //log.trace("%d ls=%s", level, ls);
+                //log.trace("%d rs=%s", level, rs);
 
                 if (!is_strict_equality && rs.indexOf(':') > 0)
                 {
@@ -175,21 +254,6 @@ class XapianVQL
                     foreach (classz; subclasses.keys)
                         rs ~= " OR " ~ classz;
                 }
-
-                if (tta.L.token_decor == Decor.RANGE)
-                {
-                    string el = ls;
-                    if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
-                        el = el[ 1..$ - 1 ];
-
-                    Names subroperties = ctx.get_onto().get_sub_properies(el);
-                    log.trace("@1, subroperties of [%s]=%s", el, subroperties);
-                }
-
-                //log.trace("query_l=|%s|", query_l);
-                //log.trace("query_r=|%s|", query_r);
-                //log.trace("ls=|%s|", ls);
-                //log.trace("rs=|%s|", rs);
 
                 if (query_l is null && query_r is null)
                 {
@@ -237,6 +301,11 @@ class XapianVQL
 
                                     query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                            xtr.length, &err);
+                                    if (query is null)
+                                        throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
+
+                                    if (err != 0)
+                                        throw new XapianError(err, "parse_query1.1 query=" ~ query_str);
                                 }
                                 else
                                 {
@@ -283,6 +352,8 @@ class XapianVQL
                                                     if (tt == TokenType.DATE || tt == TokenType.NUMBER)
                                                     {
                                                         query = new_Query_range(xapian_op.OP_VALUE_RANGE, slot, c_from, c_to, &err);
+                                                        if (query is null)
+                                                            throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
                                                     }
                                                 }
                                             }
@@ -312,7 +383,7 @@ class XapianVQL
                                                                           cast(string)("parse_query2.1('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr
                                                                                        ~ "'"));
 
-                                                //log.trace("transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
+                                                //log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
                                             }
                                         }
                                         else
@@ -339,10 +410,13 @@ class XapianVQL
                                             //writeln("@ length=", len, ", tt=", tt, ", d_val=", d_val);
                                             xtr   = "X" ~ text(slot) ~ "X" ~ tt;
                                             query = new_Query(cast(char *)xtr, cast(uint)xtr.length, &err);
+                                            if (query is null)
+                                                throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
                                         }
 
                                         if (err != 0)
-                                            log.trace("XAPIAN:transform_vql_to_xapian:parse_query3 ('x'=x) [%s], err=%s", xtr, get_xapian_err_msg(err));
+                                            log.trace("XAPIAN:_transform_vql_to_xapian:parse_query3 ('x'=x) [%s], err=%s", xtr,
+                                                      get_xapian_err_msg(err));
                                     }
                                 }
                             }
@@ -396,14 +470,14 @@ class XapianVQL
 
                 string tta_R;
                 if (tta.R !is null)
-                    tta_R = transform_vql_to_xapian(ctx, tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp);
+                    tta_R = _transform_vql_to_xapian(ctx, tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp);
 
                 if (t_op_r !is null)
                     op = t_op_r;
 
                 string tta_L;
                 if (tta.L !is null)
-                    tta_L = transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, t_op_l, query_l, key2slot, ld, level + 1, qp);
+                    tta_L = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, t_op_l, query_l, key2slot, ld, level + 1, qp);
 
                 if (t_op_l !is null)
                     op = t_op_l;
@@ -450,6 +524,9 @@ class XapianVQL
                     else
                         query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
 
+                    if (query is null)
+                        throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
+
                     if (query_r !is null)
                         destroy_Query(query_r);
 
@@ -471,6 +548,8 @@ class XapianVQL
                         else
                             query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
 
+                        if (query is null)
+                            throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
                         //writeln("#3.1 && query=", get_query_description(query));
                     }
                     else
@@ -500,13 +579,16 @@ class XapianVQL
             else if (tta.op == "||")
             {
                 if (tta.R !is null)
-                    transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+                    _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
 
                 if (tta.L !is null)
-                    transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+                    _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
 
                 if (query_l !is null)
                     query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
+
+                if (query is null)
+                    throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
 
                 if (query_r !is null)
                     destroy_Query(query_r);
@@ -520,12 +602,12 @@ class XapianVQL
                 //writeln("#5 tta.op=", tta.op);
                 return tta.op;
             }
-//    writeln("#6 null");
+            //log.trace ("%d return, tta=%s, query=%s", level, tta, get_query_description(query));
             return null;
         }
         catch (Throwable tr)
         {
-            log.trace("EX: transform_vql_to_xapian, tta=[%s], err=[%s]", tta, tr.info);
+            log.trace("EX: _transform_vql_to_xapian, tta=[%s], err=[%s]", tta, tr.info);
             throw tr;
             //return null;
         }

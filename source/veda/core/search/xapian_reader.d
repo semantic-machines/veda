@@ -105,7 +105,7 @@ class XapianReader : SearchReader
 
         if (tta is null)
         {
-            log.trace("[%s]fail parse query (phase 1) [%s], tta is null", context.get_name(), str_query);
+            log.trace("fail parse query (phase 1) [%s], tta is null", str_query);
             return 0;
         }
 
@@ -173,12 +173,12 @@ class XapianReader : SearchReader
             }
             catch (XapianError ex)
             {
-                log.trace("[%s]fail parse query (phase 2) [%s], err:[%s]", context.get_name(), str_query, ex.msg);
+                log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, ex.msg);
                 state = ex.code;
             }
             catch (Throwable tr)
             {
-                log.trace("[%s]fail parse query (phase 2) [%s], err:[%s]", context.get_name(), str_query, tr.msg);
+                log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
                 return 0;
             }
 
@@ -192,8 +192,8 @@ class XapianReader : SearchReader
                 }
 
                 reopen_db();
-                log.trace("[%s][Q:%X] transform_vql_to_xapian, attempt=%d",
-                          context.get_name(), cast(void *)str_query,
+                log.trace("[Q:%X] transform_vql_to_xapian, attempt=%d",
+                          cast(void *)str_query,
                           attempt_count);
             }
         }
@@ -202,7 +202,7 @@ class XapianReader : SearchReader
             return 0;
 
         if (trace_msg[ 323 ] == 1)
-            log.trace("[%s][Q:%X] xapian query [%s]", context.get_name(), cast(void *)str_query, xpnvql.get_query_description(query));
+            log.trace("[Q:%X] xapian query [%s]", cast(void *)str_query, xpnvql.get_query_description(query));
 
         if (query !is null)
         {
@@ -259,7 +259,7 @@ class XapianReader : SearchReader
         }
         else
         {
-            log.trace("[%s]invalid query [%s]", context.get_name(), str_query);
+            log.trace("invalid query [%s]", str_query);
         }
 
         return 0;
