@@ -615,6 +615,7 @@ class XapianVQL
 
     public SearchResult exec_xapian_query_and_queue_authorize(Ticket *ticket,
                                                               XapianEnquire xapian_enquire,
+                                                              int from,
                                                               int top,
                                                               int limit,
                                                               void delegate(string uri) add_out_element,
