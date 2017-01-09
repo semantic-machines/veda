@@ -235,6 +235,36 @@ v-s:hasVersionOfLocalRegulatoryDocument
 v-s:VersionOfLocalRegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:LocalRegulatoryDocument ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Verions of local regulatory document"@en ;
   rdfs:label "Версия локального нормативного документа"@ru ;
+.
+v-s:hasDescriptionOfChange
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Description of changes"@en ;
+  rdfs:label "Описание изменений"@ru ;
+  rdfs:range v-s:DescriptionOfChange ;
+  rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
+.
+
+#---------------------------------------------------------
+v-s:DescriptionOfChange
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Description of changes"@en ;
+  rdfs:label "Описание изменений"@ru ;
+.
+v-s:asis
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "As is"@en ;
+  rdfs:label "Было"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:DescriptionOfChange ;
+.
+v-s:tobe
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "To be"@en ;
+  rdfs:label "Стало"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:DescriptionOfChange ;
 .
