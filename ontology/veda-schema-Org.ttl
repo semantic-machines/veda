@@ -404,7 +404,7 @@ v-s:OrganizationTemplate
       }
       // Check unique
       if ( result["v-s:taxId"].state ) {
-        var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'");
+        var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").result;
         result["v-s:taxId"] = {
           state: (!tmp.length || tmp[0] === individual.id),
           cause: ["v-s:NonUniqueTaxId"]
