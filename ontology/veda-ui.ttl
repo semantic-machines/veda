@@ -930,12 +930,6 @@ v-ui:testFile
   rdfs:domain v-ui:TestUIClass ;
   rdfs:range v-s:File ;
 .
-v-ui:template
-  rdfs:domain v-ui:TestUIClass ;
-.
-v-s:script
-  rdfs:domain v-ui:TestUIClass ;
-.
 v-ui:SpecTestBoolean
   rdf:type v-ui:DatatypePropertySpecification ;
   rdfs:label "Спецификация тестового булева свойства"@ru ;

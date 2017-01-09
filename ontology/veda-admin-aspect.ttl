@@ -115,26 +115,31 @@ v-s:UserScriptTemplate
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   v-ui:template """
 <div class="container-fluid">
-  <h3 about="v-s:UserScript" property="rdfs:label"></h3>
+  <h2 about="v-s:UserScript" property="rdfs:label"></h2>
 
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <em about="rdfs:label" property="rdfs:label"></em>
       <div property="rdfs:label" class="view -edit -search"></div>
-      <veda-control property="rdfs:label" type="string" class="-view edit search"></veda-control>
+      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
     </div>
-    <div class="col-md-3 view -edit -search">
+    <div class="col-md-4">
+      <em about="rdfs:comment" property="rdfs:label"></em>
+      <div property="rdfs:comment" class="view -edit -search"></div>
+      <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2 view -edit -search">
       <em about="v-s:lastRun" property="rdfs:label"></em>
       <div about="@" property="v-s:lastRun"></div>
     </div>
-    <div class="col-md-3 view -edit -search">
+    <div class="col-md-2 view -edit -search">
       <em about="v-s:updateCounter" property="rdfs:label"></em>
       <div about="@" property="v-s:updateCounter"></div>
     </div>
-    <div class="col-md-3 view -edit -search">
+    <div class="col-md-2 view -edit -search">
       <div class="checkbox">
         <label>
-          <veda-control property="v-s:toBeRun" data-type="booleanCheckbox"></veda-control>
+          <veda-control property="v-s:toBeRun" data-type="boolean"></veda-control>
           <em about="v-s:toBeRun" property="rdfs:label"></em>
         </label>
       </div>
@@ -163,7 +168,7 @@ v-s:UserScriptTemplate
     <button type="button" class="action btn btn-success -view edit -search save" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="action btn btn-danger view -edit -search pull-right" id="run" about="v-s:RunBundle" property="rdfs:label"/>
+    <button type="button" class="action btn btn-danger view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
   </div>
 
 </div>
@@ -191,7 +196,7 @@ v-s:AdministrationAspect1
   rdf:type v-s:AdministrationAspect ;
   rdfs:label "Administration"@en ;
   rdfs:label "Администрирование"@ru ;
-  rdfs:comment "All your base are belong to us" ;
+  rdfs:comment "All your base are belong to us ©" ;
   v-s:shortLabel "Administration"@en ;
   v-s:shortLabel "Администрирование"@ru ;
   v-s:hasImage v-s:AdministrationImage ;
