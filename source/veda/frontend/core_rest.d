@@ -104,7 +104,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
+    SearchResult query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
                    int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
@@ -634,7 +634,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    string[] query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
+    SearchResult query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
                    int limit = 10000)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
@@ -653,7 +653,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, top, limit);
 			
-            return sr.result;
+            return sr;
         }
         finally
         {
