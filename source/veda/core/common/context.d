@@ -183,6 +183,12 @@ public struct Ticket
     }
 }
 
+public struct SearchResult
+{
+    string[] data;
+    long     last_cursor_pos;
+}
+
 interface Storage
 {
     public ResultCode put(string in_key, string in_value, long op_id);
@@ -290,7 +296,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit);
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();

@@ -674,7 +674,7 @@ class VedaStorageRest : VedaStorageRest_API
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
 
-        string[]   res;
+		SearchResult sr;
         Ticket     *ticket;
         ResultCode rc;
 
@@ -686,9 +686,9 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            res = context.get_individuals_ids_via_query(ticket, _query, sort, databases, top, limit);
-
-            return res;
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, top, limit);
+			
+            return sr.data;
         }
         finally
         {
@@ -700,7 +700,7 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
-            trail(_ticket, ticket.user_uri, "query", jreq, text(res), rc, timestamp);
+            trail(_ticket, ticket.user_uri, "query", jreq, text(sr.data), rc, timestamp);
         }
     }
 

@@ -965,28 +965,16 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, trace_group);
     }
 
-    public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit)
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit)
     {
-        //StopWatch sw; sw.start;
+    	SearchResult sr;
 
-        try
-        {
-            if (query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0)
-            {
-            }
-            else
-            {
+            if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
                 query_str = "'*' == '" ~ query_str ~ "'";
-            }
 
-            string[] res;
-            _vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
-            return res;
-        }
-        finally
-        {
-//            stat(CMD_GET, sw);
-        }
+            _vql.get(ticket, query_str, sort_str, db_str, top, limit, sr);            
+            
+            return sr;
     }
 
     public Individual get_individual(Ticket *ticket, string uri)

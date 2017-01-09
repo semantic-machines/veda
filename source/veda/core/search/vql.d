@@ -96,7 +96,7 @@ class VQL
     }
 
     public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
-                   ref string[] ids, bool inner_get = false)
+                   ref SearchResult sr, bool inner_get = false)
     {
         int                       res_count;
 
@@ -105,10 +105,10 @@ class VQL
         {
             if (uri is null)
             {
-                ids = ids.init;
+                sr.data = sr.data.init;
                 return;
             }
-            ids ~= uri;
+            sr.data ~= uri;
         }
         dg = &collect_subject;
 
