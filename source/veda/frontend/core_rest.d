@@ -94,9 +94,6 @@ interface VedaStorageRest_API {
     @path("flush") @method(HTTPMethod.GET)
     void flush(int module_id, long wait_op_id);
 
-    @path("restart") @method(HTTPMethod.GET)
-    OpResult restart(string ticket);
-
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
@@ -560,38 +557,6 @@ class VedaStorageRest : VedaStorageRest_API
             trail(null, null, "flush", jreq, "", op_res.result, timestamp);
         }
     }
-
-    OpResult restart(string _ticket)
-    {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
-
-        OpResult   res;
-        Ticket     *ticket = context.get_ticket(_ticket);
-        ResultCode rc;
-
-        try
-        {
-            if (ticket.result != ResultCode.OK)
-                throw new HTTPStatusException(ticket.result);
-
-            rc = ticket.result;
-
-            if (rc == ResultCode.OK)
-            {
-                shutdown(-1);
-            }
-
-            if (res.result != ResultCode.OK)
-                throw new HTTPStatusException(res.result);
-
-            return res;
-        }
-        finally
-        {
-            trail(_ticket, ticket.user_uri, "restart", Json.emptyObject, text(res), res.result, timestamp);
-        }
-    }
-
 
     void set_trace(int idx, bool state)
     {
