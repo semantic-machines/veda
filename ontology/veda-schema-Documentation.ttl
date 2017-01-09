@@ -218,6 +218,9 @@ v-s:LocalRegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:BackwardLink ;  
+  rdfs:subClassOf v-s:Registered ;    
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Local Regulatory document"@en ;
   rdfs:label "Локальный нормативный документ"@ru ;
 .
