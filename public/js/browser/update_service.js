@@ -21,9 +21,10 @@ veda.Module(function UpdateService(veda) { "use strict";
         msgInterval,
         msgDelay = 1000,
         connectTimeout,
-        connectDelay = Math.round(5000 + 5000 * Math.random()),
-        maxConnectDelay = 30000,
-        connectTries = -1,
+        connectTries = 0,
+        initialDelay = Math.round(1000 + 4000 * Math.random()),
+        connectDelay = 10000,
+        maxConnectDelay = 60000,
         list = {},
         delta = {};
 
@@ -43,6 +44,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.subscribe = function(uri) {
+      if (!uri) { return }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
         return;
@@ -63,7 +65,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.unsubscribe = function (uri) {
-      if (uri === "*") {
+      if (uri === "*" || !uri) {
         clearInterval(msgInterval);
         msgInterval = undefined;
         list = {};
@@ -133,7 +135,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     function openedHandler(event) {
       //if (connectTries >= 0) { veda.trigger("success", {status: "WS: Соединение восстановлено"}) }
       console.log("client: websocket opened");
-      connectTries = -1;
+      connectTries = 0;
       var msg = "ccus=" + veda.ticket;
       if (socket && socket.readyState === 1) {
         //Handshake
@@ -153,12 +155,13 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function closedHandler(event) {
-      if (connectDelay * connectTries < maxConnectDelay) { connectTries++ }
+      var delay = initialDelay + connectDelay * connectTries;
+      if (delay < maxConnectDelay) { connectTries++ }
       //veda.trigger("danger", {status: "WS: Соединение прервано"});
-      console.log("client: websocket closed,", "re-connect in", Math.round(connectDelay * connectTries / 1000), "secs" );
+      console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
         socket = initSocket();
-      }, connectDelay * connectTries);
+      }, delay);
     }
 
     function errorHandler(event) {
@@ -186,6 +189,10 @@ veda.Module(function UpdateService(veda) { "use strict";
               updateCounter = parseInt(tmp[1]),
               individual = new veda.IndividualModel(uri),
               list = self.list();
+          if ( !individual.hasValue("v-s:updateCounter", 0) && !individual.hasValue("v-s:updateCounter", updateCounter) && !individual.hasValue("v-s:isDraft", true) ) {
+            individual.update();
+            updateCounter = individual["v-s:updateCounter"][0];
+          }
           list[uri] = list[uri] ? {
             subscribeCounter: list[uri].subscribeCounter,
             updateCounter: updateCounter
@@ -193,9 +200,6 @@ veda.Module(function UpdateService(veda) { "use strict";
             subscribeCounter: 1,
             updateCounter: updateCounter
           };
-          if ( !individual.hasValue("v-s:updateCounter", updateCounter) && !individual.hasValue("v-s:isDraft", true) ) {
-            individual.update();
-          }
         } catch (e) {
           //console.log("error: individual update service failed for id =", uri, e);
         }

@@ -2,7 +2,7 @@
  * XAPIAN indexer thread
  */
 
-module veda.veda.ft_indexer.xapian_indexer;
+module veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -52,8 +52,20 @@ public class IndexerContext
 
     Ticket *ticket;
 
-    bool init()
+    void close()
     {
+        if (indexer_base_db !is null)
+            indexer_base_db.close(&err);
+        if (indexer_system_db !is null)
+            indexer_system_db.close(&err);
+        if (indexer_deleted_db !is null)
+            indexer_deleted_db.close(&err);
+    }
+
+    bool init(Ticket *_ticket, Context _context)
+    {
+        context = _context;
+        ticket  = _ticket;
         string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
         if (exists(file_name_key2slot) == false)
@@ -66,7 +78,8 @@ public class IndexerContext
             auto buf = ff_key2slot_w.rawRead(new char[ 100 * 1024 ]);
 
             //writefln("@indexer:init:data [%s]", cast(string)buf);
-            key2slot = deserialize_key2slot(cast(string)buf);
+            ResultCode rc;
+            key2slot = deserialize_key2slot(cast(string)buf, rc);
             //writeln("@indexer:init:key2slot", key2slot);
         }
 
@@ -105,6 +118,15 @@ public class IndexerContext
         }
         catch (Exception ex) {}
 
+        // check in key2slot for properties
+        string[] props = context.get_onto().get_properies();
+        foreach (prop; props)
+        {
+            //log.trace ("prop=%s", prop);
+            get_slot_and_set_if_not_found(prop, key2slot);
+        }
+
+
         // /////////// XAPIAN INDEXER ///////////////////////////
         XapianStem stemmer = new_Stem(cast(char *)this.lang, cast(uint)this.lang.length, &err);
 
@@ -120,7 +142,7 @@ public class IndexerContext
                                                           xapian_db_type, &err);
             if (err != 0)
             {
-                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg(err));
                 return false;
             }
 
@@ -128,9 +150,14 @@ public class IndexerContext
                                                            xapian_db_type, &err);
             if (err != 0)
             {
-                writeln("!!!!!!! Err in new_WritableDatabase, err=", err);
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg(err));
                 return false;
             }
+        }
+        else
+        {
+            log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg(err));
+            return false;
         }
 
         this.indexer = new_TermGenerator(&err);
@@ -140,16 +167,6 @@ public class IndexerContext
 
         if (count_created_db_folder != 0)
         {
-            try
-            {
-//		if (ictx.context.count_individuals() > 16)
-//			need_all_reindex = true;
-            }
-            catch (Throwable tr)
-            {
-//			writeln ("tr=", tr.toString());
-            }
-
             log.trace("index is empty or not completed");
 
             if (need_all_reindex == true)
@@ -163,11 +180,7 @@ public class IndexerContext
     void reload_index_schema()
     {
         if (iproperty !is null)
-        {
-            //writeln ("@@@1 RELOAD INDEX PROPERIES");
             iproperty.load(true);
-            //writeln ("@@@2 iproperty=", iproperty);
-        }
     }
 
     void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context)
@@ -482,6 +495,10 @@ public class IndexerContext
                                                                 {
                                                                     index_integer(ln ~ "." ~ indexed_field.uri, rc);
                                                                 }
+                                                                else if (rc.type == DataType.Datetime)
+                                                                {
+                                                                    index_date(ln ~ "." ~ indexed_field.uri, rc);
+                                                                }
                                                                 else if (rc.type == DataType.Boolean)
                                                                 {
                                                                     index_boolean(ln ~ "." ~ indexed_field.uri, rc);
@@ -771,12 +788,18 @@ public class IndexerContext
     private void store__key2slot()
     {
         //writeln("#1 store__key2slot");
-        string data = serialize_key2slot(key2slot);
+        string hash;
+        string data = serialize_key2slot(key2slot, hash);
 
         try
         {
             ff_key2slot_w.seek(0);
-            ff_key2slot_w.writef("%s", data);
+            ff_key2slot_w.write('"');
+            ff_key2slot_w.write(hash);
+            ff_key2slot_w.write("\",");
+            ff_key2slot_w.write(data.length);
+            ff_key2slot_w.write('\n');
+            ff_key2slot_w.write(data);
             ff_key2slot_w.flush();
         }
         catch (Throwable tr)
@@ -784,9 +807,6 @@ public class IndexerContext
             log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
             return;
         }
-
-
-//    send(tid_subject_manager, CMD_PUT_KEY2SLOT, xapian_metadata_doc_id, data);
     }
 
     private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
@@ -800,7 +820,7 @@ public class IndexerContext
             slot              = cast(int)key2slot.length + 1;
             key2slot[ field ] = slot;
             store__key2slot();
-//        send (key2slot_accumulator, PUT, data);
+            log.trace("create new slot %s=%d", field, slot);
         }
 
         return slot;

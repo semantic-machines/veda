@@ -69,6 +69,7 @@ cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
+  rdfs:label "Система Optiflow"@ru ;
 .
 
 cfg:VedaSystemAccount
@@ -220,11 +221,23 @@ cfg:Permission_6
 
 ##################### EVENT HANDLERS #####################
 
+cfg:Event_0
+  rdf:type v-s:Event1 ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "test event";
+  rdfs:comment "test event";
+  v-s:script """
+var res = query (ticket, "'rdf:type' == 'v-s:Event'");
+log_trace("res=", res);
+  """ ;
+.
+
 cfg:Event_1
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup";
-  rdfs:comment "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup";
+  rdfs:label "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup" ;
+  rdfs:comment "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -248,8 +261,7 @@ var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourc
     'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_1')
   };
 put_individual(ticket, membership, _event_id);
-
-//print('cfg:Event_1', uri);
+//log_trace(uri);
 
   """ ;
 .
@@ -322,7 +334,7 @@ cfg:Event_3
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт создает журнал документа" ;
   rdfs:comment "Скрипт создает журнал документа" ;
-  v-s:filter v-s:Journaling, v-s:AutomaticallyVersioned ;
+  v-s:triggerByType v-s:Journaling, v-s:AutomaticallyVersioned ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -333,6 +345,8 @@ cfg:Event_3
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
  */
+
+if (user_uri == 'cfg:VedaSystem') return; // #245
 
 //print('super_classes > '+toJson(super_classes));
 
@@ -373,6 +387,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     var journal_uri = getJournalUri(document['@']);
     var exist_journal = get_individual(ticket, journal_uri);
 //  print('+J5');
+    var user = get_individual(ticket, user_uri);
     if (exist_journal)
     {
 //    print('+J6');
@@ -400,10 +415,8 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
                 type: _Uri
             }];
         }
-
-    var user = get_individual(ticket, user_uri);
-
-    if (user['v-s:hasAppointment']) {
+  
+        if (user['v-s:hasAppointment']) {
           journal_record['v-s:actor'] = user['v-s:hasAppointment']
         }
 
@@ -425,7 +438,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
                 data: document['@'],
                 type: _Uri
             }],
-            'v-s:actor': [
+            'v-s:actor': user['v-s:hasAppointment']?user['v-s:hasAppointment']:[
             {
                 data: user_uri,
                 type: _Uri
@@ -446,7 +459,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
             data: 'v-s:DocumentCreated',
             type: _Uri
         }];
-        journal_record['v-s:actor'] = [
+        journal_record['v-s:actor'] = user['v-s:hasAppointment']?user['v-s:hasAppointment']:[
         {
             data: user_uri,
             type: _Uri
@@ -463,10 +476,10 @@ cfg:Event_4
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
   rdfs:comment "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
-  v-s:filter v-s:Organization ;
-  v-s:filter v-s:Department ;
-  v-s:filter v-s:Position ;
-  v-s:filter v-s:Appointment ;
+  v-s:triggerByType v-s:Organization ;
+  v-s:triggerByType v-s:Department ;
+  v-s:triggerByType v-s:Position ;
+  v-s:triggerByType v-s:Appointment ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -532,7 +545,7 @@ cfg:Event_5
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
   rdfs:comment "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
-  v-s:filter v-s:Person ;
+  v-s:triggerByType v-s:Person ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -572,24 +585,20 @@ cfg:Event_6
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
   rdfs:comment "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
-  v-s:filter rdf:Property ;
-  v-s:filter rdfs:Class ;
-  v-s:filter rdfs:Datatype ;
-  v-s:filter owl:Class ;
-  v-s:filter owl:Ontology ;
-  v-s:filter owl:DatatypeProperty ;
-  v-s:filter owl:ObjectProperty ;
-  v-s:filter owl:Restriction ;
-  v-s:filter v-s:ClassModel ;
-  v-s:filter v-ui:ClassTemplate ;
-  v-s:filter v-ui:PropertySpecification ;
-  v-s:filter v-ui:IntegerPropertySpecification ;
-  v-s:filter v-ui:DecimalPropertySpecification ;
-  v-s:filter v-ui:DatetimePropertySpecification ;
-  v-s:filter v-ui:StringPropertySpecification ;
-  v-s:filter v-ui:BooleanPropertySpecification ;
-  v-s:filter v-ui:ObjectPropertySpecification ;
-  v-s:filter v-s:Bundle ;
+  v-s:triggerByType rdf:Property ;
+  v-s:triggerByType rdfs:Class ;
+  v-s:triggerByType rdfs:Datatype ;
+  v-s:triggerByType owl:Class ;
+  v-s:triggerByType owl:Ontology ;
+  v-s:triggerByType owl:DatatypeProperty ;
+  v-s:triggerByType owl:ObjectProperty ;
+  v-s:triggerByType owl:Restriction ;
+  v-s:triggerByType v-s:ClassModel ;
+  v-s:triggerByType v-ui:ClassTemplate ;
+  v-s:triggerByType v-ui:PropertySpecification ;
+  v-s:triggerByType v-ui:DatatypePropertySpecification ;
+  v-s:triggerByType v-ui:ObjectPropertySpecification ;
+  v-s:triggerByType v-s:Bundle ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -634,7 +643,7 @@ cfg:Event_7
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
   rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
-  v-s:filter v-s:ClassAuthorized ;
+  v-s:triggerByType v-s:ClassAuthorized ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -690,7 +699,7 @@ cfg:Event_8
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
   rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
-  v-s:filter rdfs:Class ;
+  v-s:triggerByType rdfs:Class ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -784,7 +793,7 @@ cfg:Event_9
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает вложенные индивиды в группу своего родителя." ;
   rdfs:comment "Скрипт включает вложенные индивиды в группу своего родителя." ;
-  v-s:filter v-s:Embedded ;
+  v-s:triggerByType v-s:Embedded ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -841,8 +850,8 @@ cfg:Event_10
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
   rdfs:comment "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
-  v-s:filter v-s:Journal ;
-  v-s:filter v-s:JournalRecord ;
+  v-s:triggerByType v-s:Journal ;
+  v-s:triggerByType v-s:JournalRecord ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -888,10 +897,10 @@ cfg:Event_11
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
   rdfs:comment "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
-  v-s:filter v-wf:Process ;
-  v-s:filter v-wf:WorkItem ;
-  v-s:filter v-wf:WorkOrder ;
-  v-s:filter v-wf:DecisionForm ;
+  v-s:triggerByType v-wf:Process ;
+  v-s:triggerByType v-wf:WorkItem ;
+  v-s:triggerByType v-wf:WorkOrder ;
+  v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -935,7 +944,7 @@ cfg:Event_12
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает процесс в группу журнала документа." ;
   rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
-  v-s:filter v-s:ProcessStarted ;
+  v-s:triggerByType v-s:ProcessStarted ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -975,9 +984,9 @@ put_individual (ticket, membership, _event_id);
 cfg:Event_13
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Пусто." ;
-  rdfs:comment "Пусто." ;
-  v-s:filter v-s:ManuallyVersioned ;
+  rdfs:label "Manually create version" ;
+  rdfs:comment "Manually create version" ;
+  v-s:triggerByType v-s:ManuallyVersioned ;
   v-s:script """
   if ((document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
     && document['v-s:triggerVersionCreation'][0].data == true) || !prev_state) {
@@ -993,7 +1002,7 @@ cfg:Event_14
   v-s:author cfg:VedaSystem ;
   rdfs:label "Пусто." ;
   rdfs:comment "Пусто." ;
-  v-s:filter v-s:Versioned ;
+  v-s:triggerByType v-s:Versioned ;
   v-s:disabled true ;
   v-s:script """
   """ ;
@@ -1004,7 +1013,7 @@ cfg:Event_15
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки связей документов" ;
   rdfs:comment "Скрипт обработки связей документов" ;
-  v-s:filter v-s:Link ;
+  v-s:triggerByType v-s:Link ;
   v-s:script """
   var linkUri = document["@"],
       linkToUri = getUri(document["v-s:to"]),
@@ -1053,11 +1062,12 @@ cfg:Event_16
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки обратных ссылок" ;
   rdfs:comment "Скрипт обработки обратных ссылок" ;
-  v-s:filter v-s:BackwardLink ;
+  v-s:triggerByType v-s:BackwardLink ;
   v-s:script """
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      omitGroup = getFirstValue(document["v-s:omitBackwardTargetGroup"]),
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
       backwardTarget = get_individual(ticket, backwardTargetUri),
       backwardTarget_original = JSON.stringify(backwardTarget);
@@ -1093,7 +1103,90 @@ cfg:Event_16
   }
   if (JSON.stringify(backwardTarget).length !== backwardTarget_original.length) {
     put_individual(ticket, backwardTarget, _event_id);
-    put_individual(ticket, membership, _event_id);
+    if (!omitGroup) {
+      put_individual(ticket, membership, _event_id);
+    }
   }
+  """ ;
+.
+
+cfg:Event_Hourly_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт запускается раз в час" ;
+  v-s:triggerByUid cfg:hourly ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+print("[cfg:Event_Hourly_1] ************************** START **************************");
+print("[cfg:Event_Hourly_1] *************************** END ***************************");
+  """ ;
+.
+cfg:Event_Daily_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт запускается раз в день" ;
+  v-s:triggerByUid cfg:daily ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+print("[cfg:Event_Daily_1] ************************** START **************************");
+print("[cfg:Event_Daily_1] *************************** END ***************************");
+  """ ;
+.
+cfg:Event_Weekly_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт запускается раз в неделю" ;
+  v-s:triggerByUid cfg:weekly ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+print("[cfg:Event_Weekly_1] ************************** START **************************");
+print("[cfg:Event_Weekly_1] *************************** END ***************************");
+  """ ;
+.
+cfg:Event_Monthly_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт запускается раз в месяц" ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:triggerByUid cfg:monthly ;
+  v-s:script """
+print("[cfg:Event_Monthly_1] ************************** START **************************");
+print("[cfg:Event_Monthly_1] *************************** END ***************************");
+  """ ;
+.
+cfg:Event_Yearly_1
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт запускается раз в год" ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:triggerByUid cfg:yearly ;
+  v-s:script """
+print("[cfg:Event_Yearly_1] ************************** START **************************");
+print("[cfg:Event_Yearly_1] *************************** END ***************************");
+  """ ;
+.
+cfg:Event_Notify_Task
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт уведомления о новой задаче" ;
+  v-s:triggerByType v-wf:UserTaskForm ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+var task_id = document["@"],
+    to = getUri(document["v-wf:to"]);
+//print("cfg:Event_17", "caught", "task", task_id, "to", to);
+  """ ;
+.
+cfg:Event_Notify_Comment
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт уведомления о новом комментарии" ;
+  v-s:triggerByType v-s:Comment ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+var comment_id = document["@"],
+    comment_target = getUri(document["v-s:backwardTarget"]);
+    stakeholder = getUri(comment_target["v-s:author"]);
+//print("cfg:Event_18", "caught", "comment", comment_id, "target", comment_target);
   """ ;
 .

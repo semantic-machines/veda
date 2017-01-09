@@ -26,7 +26,7 @@ public void set_g_process_name(string new_data)
     process_name = new_data;
 }
 
-long     max_size_of_individual = 1024 * 64;
+long     max_size_of_individual = 1024 * 512;
 
 string[] access_list_predicates = [ "v-s:canCreate", "v-s:canRead", "v-s:canUpdate", "v-s:canDelete" ];
 
@@ -38,14 +38,11 @@ enum CNAME : byte
     LAST_UPDATE_TIME = 3
 }
 
-alias immutable(int)[]   const_int_array;
-alias immutable(long)[]  const_long_array;
-alias                    Tid[ string ] Tid2Name;
-alias immutable Tid2Name Tids;
+alias immutable(long)[] const_long_array;
 
-const byte               asObject = 0;
-const byte               asArray  = 1;
-const byte               asString = 2;
+const byte              asObject = 0;
+const byte              asArray  = 1;
+const byte              asString = 2;
 
 interface Outer
 {
@@ -73,10 +70,14 @@ const string   queue_db_path       = "./data/queue";
 const string   onto_path           = "./ontology";
 const string   xapian_info_path    = "./data/xapian-info";
 const string   module_info_path    = "./data/module-info";
+const string   trails_path         = "./data/trails";
+const string   logs_path           = "./logs";
 
 const string[] paths_list          =
-[ attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path,
-  xapian_info_path, module_info_path ];
+[
+    logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path,
+    xapian_info_path, module_info_path, trails_path
+];
 
 private string[ string ] _xapian_search_db_path;
 public string get_xapiab_db_path(string db_name)

@@ -142,6 +142,20 @@ public class Logger
                 fmt = разметка сообщения
                 args = выводимые переменные
      */
+    public void tracec(Char, A ...) (in Char[] fmt, A args)
+    {
+        init_tid_logger();
+        auto writer = appender!string();
+        formattedWrite(writer, fmt, args);
+        send(tid_logger, 'C', log_name, ext, src, writer.data);
+    }
+
+    /**
+        Записать информацию в лог файл и на консоль.
+       Params:
+                fmt = разметка сообщения
+                args = выводимые переменные
+     */
     public void trace_console(Char, A ...) (in Char[] fmt, A args)
     {
         init_tid_logger();
@@ -203,7 +217,7 @@ private class LoggerQueue
 
         auto       writer = appender!string();
 
-        formattedWrite(writer, "%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, dt.year, dt.month, dt.day, dt.hour, dt.minute,
+        formattedWrite(writer, "logs/%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", trace_logfilename, dt.year, dt.month, dt.day, dt.hour, dt.minute,
                        dt.second,
                        fsec,
                        ext);

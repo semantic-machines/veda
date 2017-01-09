@@ -1,5 +1,6 @@
 // Pagination plugin
-(function( $ ){
+"use strict";
+(function( $ ) {
   $.fn.pager = function (options) {
     var opts = $.extend({
       pages: 10,
@@ -10,7 +11,7 @@
       }
     }, options);
     return this.each(function() {
-      pager = $(this);
+      var pager = $(this);
       var update = opts.pages <= 20 ? function (page) {
         pager.empty();
         for (var i = 1; i <= opts.pages; i++) {

@@ -6,21 +6,12 @@ var webdriver = require('selenium-webdriver'),
 function check(driver, count) {
     driver.findElement({id:'menu'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
-    driver.wait
-    (
-        webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Drafts"]'})),
-        basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `drafts` button inside menu");});
+    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Drafts"]', basic.FAST_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Drafts"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `drafts` button");});
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElements({css:'div[id="drafts"] span[typeof="v-s:Person"'}).then(function(elements_arr){
+    driver.findElements({css:'div[id="drafts"] span[typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
-            driver.wait
-            (
-                webdriver.until.elementIsVisible(driver.findElement({css: 'div[id="drafts"] span[typeof="v-s:Person"]'})),
-                basic.FAST_OPERATION
-            ).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `drafts` elements");});
             if (count == "true") {
                 driver.findElement({css: 'div[id="drafts"] span[typeof="v-s:Person"]'}).click()
                     .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on selected draft");});
@@ -45,7 +36,6 @@ basic.getDrivers().forEach(function(drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    //Создаем Черновик
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
     driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}).isEnabled().then(function (flag) {
         assert(!flag);
@@ -56,15 +46,9 @@ basic.getDrivers().forEach(function(drv) {
     driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).sendKeys(firstName)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:firstName for preson");});
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#draft')[0].scrollIntoView(true);");
-    driver.wait
-    (
-        webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#draft'})),
-        basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'draft' button");});
-    driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#draft'}).click()
+    basic.isEnabled(driver, '#draft', basic.FAST_OPERATION);
+    driver.findElement({css:'#draft'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'draft' button");});
-
-    driver.sleep(basic.FAST_OPERATION);
     driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
         assert(txt == firstName);
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems that person is not saved properly/FN");});
@@ -76,15 +60,11 @@ basic.getDrivers().forEach(function(drv) {
     check(driver, "true");
     //Досоздаем черновик
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#edit')[0].scrollIntoView(true);");
-    driver.wait
-    (
-        webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#edit'})),
-        basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'edit' button");});
-    driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#edit'}).click()
+    basic.isEnabled(driver, '#edit');
+    driver.findElement({css:'#edit'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'edit' button");});
     driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys('Пупкин')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for preson");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for person");});
     var now = new Date();
     driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
@@ -93,18 +73,9 @@ basic.getDrivers().forEach(function(drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click last name control for person");});
     //Сохраняем его как нормальный документ
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
-    // Документ становится возможно сохранить
-    driver.wait
-    (
-        webdriver.until.elementIsEnabled(driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'})),
-        basic.FAST_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find save button");});
-
-    // Нажимаем сохранить
-    driver.findElement({css:'div[typeof="v-s:Person"] > div.panel > div.panel-footer > button#save'}).click()
+    basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
+    driver.findElement({css:'#save'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
-
-    //Проверяем, что его нет в черновиках
     check(driver, "false");
 
     driver.quit();

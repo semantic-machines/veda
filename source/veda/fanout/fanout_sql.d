@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(P_MODULE.fanout_sql, "127.0.0.1", 8091, new Logger("veda-core-fanout-sql", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_sql), new Logger("veda-core-fanout-sql", "log", ""));
 
     p_fanout.run();
 }
@@ -27,9 +27,9 @@ class FanoutProcess : VedaModule
     Mysql  mysql_conn;
     string database_name;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
+    this(string _module_name, Logger log)
     {
-        super(_module_name, _host, _port, log);
+        super(_module_name, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
@@ -69,14 +69,28 @@ class FanoutProcess : VedaModule
         return null;
     }
 
+    override bool open()
+    {
+        connect_to_mysql(context);
+        return true;
+    }
 
     override bool configure()
     {
         log.trace("use configuration: %s", node);
-
-        connect_to_mysql(context);
-
         return true;
+    }
+
+    override bool close()
+    {
+        if (mysql_conn !is null)
+            mysql_conn.close();
+        return true;
+    }
+
+    override void event_of_change(string uri)
+    {
+        configure();
     }
 
     bool[ string ] isExistsTable;
@@ -244,7 +258,7 @@ class FanoutProcess : VedaModule
                 }
                 else if (rs.type == DataType.Decimal)
                 {
-                    sql_type = "DECIMAL (10,2)";
+                    sql_type = "DECIMAL (14,4)";
                 }
                 else if (rs.type == DataType.String)
                 {
@@ -261,14 +275,14 @@ class FanoutProcess : VedaModule
                 }
 
                 mysql_conn.query(
-                                 "CREATE TABLE `veda_db`.`" ~ predicate ~ "` ("
-                                 "`ID` BIGINT NOT NULL AUTO_INCREMENT, "
-                                 "`doc_id` CHAR(128) NOT NULL, "
-                                 "`doc_type` CHAR(128) NOT NULL, "
-                                 "`created` DATETIME NULL, "
-                                 "`value` " ~ sql_type ~ " NULL, "
-                                 "`lang` CHAR(2) NULL, "
-                                 " PRIMARY KEY (`ID`), "
+                                 "CREATE TABLE `veda_db`.`" ~ predicate ~ "` (" ~
+                                 "`ID` BIGINT NOT NULL AUTO_INCREMENT, " ~
+                                 "`doc_id` CHAR(128) NOT NULL, " ~
+                                 "`doc_type` CHAR(128) NOT NULL, " ~
+                                 "`created` DATETIME NULL, " ~
+                                 "`value` " ~ sql_type ~ " NULL, " ~
+                                 "`lang` CHAR(2) NULL, " ~
+                                 " PRIMARY KEY (`ID`), " ~
                                  " INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) " ~ sql_value_index ~
                                  ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
                 isExistsTable[ predicate ] = true;
@@ -299,8 +313,10 @@ class FanoutProcess : VedaModule
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri);
+                log.trace("connect_to_mysql:connection: %s=[%s]", gate.uri, connection);
+                subscribe_on_prefetch(gate.uri);
 
-                Resource   transport = connection.getFirstResource("v-s:transport");
+                Resource transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)
                 {
                     if (transport.data() == "mysql")

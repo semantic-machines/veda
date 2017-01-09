@@ -9,7 +9,7 @@
 <http://semantic-machines.com/veda/veda-individual-ProjectPhaseKind>
   rdf:type owl:Ontology ;
   rdfs:label "Veda ontology. individual - ProjectPhaseKind"@en ;
-  rdfs:label "Онтология Веды. Записи справочника Вид фады проекта"@ru ;
+  rdfs:label "Онтология Veda. Записи справочника Вид фады проекта"@ru ;
   v-s:loadPriority 10 ;
 .
 

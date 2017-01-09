@@ -129,11 +129,6 @@ v-s:Send
   rdfs:label "Отправить"@ru ;
   rdfs:label "Send"@en ;
 .
-v-s:SendTask
-  rdf:type v-s:Bundle ;
-  rdfs:label "Выдать задачу"@ru ;
-  rdfs:label "Send task"@en ;
-.
 v-s:Next
   rdf:type v-s:Bundle ;
   rdfs:label "Далее"@ru ;
@@ -249,6 +244,11 @@ v-s:SendInstruction
   rdfs:label "Выдать поручение"@ru ;
   rdfs:label "Send instruction"@en ;
 .
+v-s:SendTask
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выдать задачу"@ru ;
+  rdfs:label "Send task"@en ;
+.
 v-s:SendComplex
   rdf:type v-s:Bundle ;
   rdfs:label "Отправить по комплексному маршруту"@ru ;
@@ -303,4 +303,19 @@ v-s:Attention
   rdf:type v-s:Bundle ;
   rdfs:label "Внимание!"@ru ;
   rdfs:label "Attention!"@en ;
+.
+v-s:HeadOrganization
+  rdf:type v-s:Bundle ;
+  rdfs:label "Головная организация"@ru ;
+  rdfs:label "Head organization"@en ;
+.
+v-s:StartTypingBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Начните ввод и выберите значение"@ru ;
+  rdfs:label "Start typing and select value"@en ;
+.
+v-s:SelectValueBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выберите значение"@ru ;
+  rdfs:label "Select value"@en ;
 .

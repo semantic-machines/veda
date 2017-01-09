@@ -40,7 +40,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     riot.route( function (hash) {
       if ( !hash ) { return welcome.present("#main"); }
       if ( hash.indexOf("#/") < 0 ) { return; }
-      var hash_tokens = hash.slice(2).split("/");
+      var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
       var page = hash_tokens[0];
       var params = hash_tokens.slice(1);
       page ? veda.load(page, params) : welcome.present("#main");
@@ -65,10 +65,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
       hash = Sha256.hash(password),
       authResult;
     try {
-      errorMsg.addClass("hidden");
       authResult = veda.login(login, hash);
-      veda.trigger("login:success", authResult);
     } catch (ex1) {
+      authResult = undefined;
       if (ntlm) {
         var params = {
           type: "POST",
@@ -82,12 +81,18 @@ veda.Module(function AppPresenter(veda) { "use strict";
         try {
           authResult = $.ajax(params);
           authResult = JSON.parse( authResult.responseText );
-          veda.trigger("login:success", authResult);
-          return;
-        } catch (ex2) {}
+        } catch (ex2) {
+          authResult = undefined;
+        }
       }
-      errorMsg.removeClass("hidden");
-      veda.trigger("login:failed");
+    } finally {
+      if (authResult) {
+        errorMsg.addClass("hidden");
+        veda.trigger("login:success", authResult);
+      } else {
+        errorMsg.removeClass("hidden");
+        veda.trigger("login:failed");
+      }
     }
   });
 

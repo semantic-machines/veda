@@ -2,18 +2,16 @@
 
 # берет новые исходники из github, но не собирает
 
-DMD_VER=2.071.2
-DUB_VER=1.0.0
+DMD_VER=2.072.2
+DUB_VER=1.1.1
+GO_VER=go1.7.4
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
     wget http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
     sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
     rm dmd_$DMD_VER-0_amd64.deb
-
-    # Patch DMD
-    sudo cp ./qa/patch_dmd_$DMD_VER/concurrency.d /usr/include/dmd/phobos/std/concurrency.d
-    sudo cp ./qa/patch_dmd_$DMD_VER/concurrency.d ${HOME}/dmd2/src/phobos/std/concurrency.d
+    rm -r ~/.dub
 fi
 
 # Get right version of DUB
@@ -27,7 +25,6 @@ fi
 
 # Get other dependencies
 LIB_NAME[1]="libevent-pthreads-2.0-5"
-LIB_NAME[2]="libraptor2-dev"
 LIB_NAME[3]="libevent-dev"
 LIB_NAME[4]="libssl-dev"
 LIB_NAME[5]="libmysqlclient-dev"
@@ -40,6 +37,28 @@ LIB_NAME[11]="automake"
 
 LIB_OK="Status: install ok installed"
 F_UL=0
+
+# install golang and dependency
+if ! go version | grep $GO_VER ; then    
+    mkdir tmp
+    cd tmp
+    wget https://storage.googleapis.com/golang/go1.7.4.linux-amd64.tar.gz
+    tar -xvf go1.7.4.linux-amd64.tar.gz
+    sudo rm -r /usr/local/go
+    sudo rm /usr/bin/go
+    sudo rm /usr/bin/gofmt
+    sudo mv go /usr/local
+    export GOROOT=/usr/local/go
+    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    go version
+    cd ..
+fi
+
+export GOPATH=$HOME/go
+go get github.com/gorilla/websocket
+go get github.com/divan/expvarmon
+cp -a ./source/golang-third-party/cbor $GOPATH/src
+ls $HOME/go 
 
 for i in "${LIB_NAME[@]}"; do
 
@@ -61,10 +80,10 @@ if ! ldconfig -p | grep libwebsockets; then
 
     # make libwebsockets dependency
     mkdir tmp
-    wget https://github.com/warmcat/libwebsockets/archive/v2.0.1.tar.gz -P tmp
+    wget https://github.com/warmcat/libwebsockets/archive/v2.0.3.tar.gz -P tmp
     cd tmp
-    tar -xvzf v2.0.1.tar.gz
-    cd libwebsockets-2.0.1
+    tar -xvzf v2.0.3.tar.gz
+    cd libwebsockets-2.0.3
     mkdir build
     cd build
     cmake ..
@@ -89,6 +108,54 @@ if ! ldconfig -p | grep libnanomsg; then
     cd build
     cmake ..
     make
+    sudo make install
+    sudo ldconfig
+    cd ..
+    cd ..
+    cd ..
+
+fi
+
+if ! ldconfig -p | grep libtraildb; then
+
+    sudo apt-get install libarchive-dev pkg-config
+    sudo apt-get remove libjudydebian1
+    sudo apt-get remove libjudy-dev
+
+    mkdir tmp
+    cd tmp
+
+    wget https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudy-dev_1.0.5-5_amd64.deb \
+     https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudydebian1_1.0.5-5_amd64.deb
+    sudo dpkg -i libjudy-dev_1.0.5-5_amd64.deb libjudydebian1_1.0.5-5_amd64.deb
+
+
+    wget https://github.com/traildb/traildb/archive/0.5.tar.gz -P tmp
+    cd tmp
+    tar -xvzf 0.5.tar.gz
+
+    cd traildb-0.5
+    ./waf configure
+    ./waf build
+    sudo ./waf install
+    sudo ldconfig
+    cd ..
+    cd ..
+    cd ..
+fi
+
+if ! ldconfig -p | grep libraptor2; then
+
+    mkdir tmp
+    cd tmp
+
+    wget http://download.librdf.org/source/raptor2-2.0.15.tar.gz -P tmp
+    cd tmp
+    tar -xvzf raptor2-2.0.15.tar.gz
+
+    cd raptor2-2.0.15
+    ./configure
+    ./make
     sudo make install
     sudo ldconfig
     cd ..

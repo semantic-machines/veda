@@ -31,7 +31,7 @@ veda.Module(function (veda) { "use strict";
 
     self.on("individual:propertyModified", function (property_uri) {
       if (property_uri === "v-s:defaultAppointment") {
-        if (self["v-s:defaultAppointment"][0].id === veda.appointment.id) return;
+        if ( veda.appointment && veda.appointment.id === self["v-s:defaultAppointment"][0].id ) { return; }
         self.save();
         location.reload();
       }

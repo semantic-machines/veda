@@ -8,7 +8,7 @@ private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.bind.xapian_d_header;
-private import veda.core.common.context, veda.util.tools, veda.veda.ft_indexer.xapian_indexer;
+private import veda.core.common.context, veda.util.tools, veda.ft_indexer.xapian_indexer;
 private import veda.vmodule.vmodule;
 
 // ////// Logger ///////////////////////////////////////////
@@ -27,7 +27,7 @@ void main(char[][] args)
     Thread.sleep(dur!("seconds")(1));
     process_name = "fulltext_indexer";
 
-    auto p_module = new FTIndexerProcess(P_MODULE.fulltext_indexer, "127.0.0.1", 8091,  new Logger("veda-core-fulltext_indexer", "log", ""));
+    auto p_module = new FTIndexerProcess(text(P_MODULE.fulltext_indexer), new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }
@@ -38,9 +38,9 @@ class FTIndexerProcess : VedaModule
 
     long           last_update_time = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger log)
+    this(string _module_name, Logger log)
     {
-        super(_module_name, _host, _port, log);
+        super(_module_name, log);
     }
 
     override Context create_context()
@@ -89,17 +89,29 @@ class FTIndexerProcess : VedaModule
         {
             prepare_all();
         }
-        
-        //log.trace("@3");
+    }
+
+    override bool open()
+    {
+        ictx.thread_name = process_name;
+        ictx.init(&sticket, context);
+        return true;
     }
 
     override bool configure()
     {
-        //writeln("@ configure B");
-        ictx.thread_name = process_name;
-        ictx.init();
-
-        //writeln("@ configure E");
         return true;
+    }
+
+    override bool close()
+    {
+        if (ictx !is null)
+            ictx.close();
+        return true;
+    }
+
+    override void event_of_change(string uri)
+    {
+        configure();
     }
 }

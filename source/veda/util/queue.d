@@ -152,7 +152,7 @@ class Consumer
         std.file.remove(file_name_info_pop);
     }
 
-    private bool put_info()
+    private bool put_info(bool is_sync_data)
     {
         if (!queue.isReady || !isReady)
             return false;
@@ -161,7 +161,9 @@ class Consumer
         {
             ff_info_pop_w.seek(0);
             ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
-            ff_info_pop_w.flush();
+
+            if (is_sync_data)
+                ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
@@ -242,8 +244,6 @@ class Consumer
             log.trace("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
             return null;
         }
-//        writeln("@queue=", this);
-//        writeln("@header=", header);
 
         if (header.msg_length >= buff.length)
         {
@@ -253,8 +253,7 @@ class Consumer
 
         if (header.msg_length < buff.length)
         {
-            last_read_msg = buff[ 0..header.msg_length ];
-            last_read_msg = queue.ff_queue_r.rawRead(last_read_msg);
+            last_read_msg = queue.ff_queue_r.rawRead(buff[ 0..header.msg_length ]).dup;
             if (last_read_msg.length < header.msg_length)
             {
                 log.trace("pop:invalid msg: msg.length < header.msg_length : %s", text(header));
@@ -268,20 +267,25 @@ class Consumer
         }
 
         return cast(string)last_read_msg;
-//return null;
     }
 
-    public bool commit()
+    public void sync()
+    {
+        ff_info_pop_w.flush();
+    }
+
+    public bool commit_and_next(bool is_sync_data)
     {
         if (!queue.isReady || !isReady)
         {
-            log.trace("ERR! queue:commit:!queue.isReady || !isReady");
+            log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
             return false;
         }
 
         if (count_popped >= queue.count_pushed)
         {
-            log.trace("ERR! queue:commit:count_popped(%d) >= queue.count_pushed(%d)", count_popped, queue.count_pushed);
+            log.trace("ERR! queue[%s][%s]:commit_and_next:count_popped(%d) >= queue.count_pushed(%d)", queue.name, name, count_popped,
+                      queue.count_pushed);
             return false;
         }
 
@@ -306,7 +310,7 @@ class Consumer
         count_popped++;
         first_element += header.length + header.msg_length;
 
-        return put_info();
+        return put_info(is_sync_data);
     }
 
     void toString(scope void delegate(const(char)[]) sink) const
@@ -353,7 +357,7 @@ class Queue
 
         file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
         file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-		file_name_lock 		= queue_db_path ~ "/" ~ name ~ "_queue.lock";
+        file_name_lock      = queue_db_path ~ "/" ~ name ~ "_queue.lock";
     }
 
     ~this()
@@ -370,10 +374,10 @@ class Queue
 //      sink (", count_popped=" ~ text(count_popped));
     }
 
-	public static bool is_lock (string _queue_name)
-	{
-	    return (exists(queue_db_path ~ "/" ~ _queue_name ~ "_queue.lock"));		
-	}
+    public static bool is_lock(string _queue_name)
+    {
+        return(exists(queue_db_path ~ "/" ~ _queue_name ~ "_queue.lock"));
+    }
 
     public void remove()
     {
@@ -579,10 +583,10 @@ class Queue
     public void push(string msg, QMessageType type = QMessageType.STRING)
     {
         if (!isReady || mode == Mode.R)
-        {	
-        	log.trace ("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text (isReady), text (mode));
+        {
+            log.trace("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text(isReady), text(mode));
             return;
-        }    
+        }
 
         count_pushed++;
         put_msg(msg, type);

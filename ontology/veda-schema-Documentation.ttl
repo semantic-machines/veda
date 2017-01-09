@@ -17,7 +17,7 @@
 #---------------------------------------------------------
 v-s:Letter
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
@@ -39,7 +39,7 @@ v-s:OutcomingLetter
 #---------------------------------------------------------
 v-s:NormativeDocument
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
 .
@@ -53,7 +53,7 @@ v-s:hasRequiremen
 #---------------------------------------------------------
 v-s:NormativeDocumentRequirement
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Normative document requirement"@en ;
   rdfs:label "Нормативный документ"@ru ;
@@ -65,18 +65,11 @@ v-s:checkQuestion
   rdfs:range xsd:string ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
-#---------------------------------------------------------
-v-s:Comment
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Comment"@en ;
-  rdfs:label "Комментарий"@ru ;
-.
+
 #---------------------------------------------------------
 v-s:Risk
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
@@ -85,7 +78,7 @@ v-s:Risk
 .
 v-s:consequence
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Consequence"@en ;
+  rdfs:label "Implication"@en ;
   rdfs:label "Последствия"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Risk ;
@@ -101,7 +94,7 @@ v-s:possibleLossAmount
 #---------------------------------------------------------
 v-s:Observation
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
@@ -140,10 +133,34 @@ v-s:isPositiveObservation
   rdfs:domain v-s:Observation ;
 .
 
+v-s:effectsDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Effects description"@en ;
+  rdfs:label "Описание последствий"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:observationInitiator
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оbservation initiator"@en ;
+  rdfs:label "Кто обнаружил"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+v-s:observationCircumstances
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Observation circumstances"@en ;
+  rdfs:label "Как было обнаружено?"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Observation ;
+.
+
+
+
 #---------------------------------------------------------
 v-s:WorkReport
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
@@ -155,9 +172,9 @@ v-s:WorkReport
 # ------------------------------------------------------------
 v-s:Request
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Embedded ;
+#  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Registered ;
@@ -166,4 +183,58 @@ v-s:Request
   rdfs:subClassOf v-s:Controlled ;
   rdfs:label "Request"@en ;
   rdfs:label "Запрос"@ru ;
+.
+
+#---------------------------------------------------------
+v-s:RegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Regulatory document"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
+.
+
+#---------------------------------------------------------
+v-s:MaintainedObject
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Request ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:label "Maintained Object"@en ;
+  rdfs:label "Обслуживаемый объект"@ru ;
+.
+
+#---------------------------------------------------------
+v-s:UnitOfMeasure
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:label "Unit of measure"@en ;
+  rdfs:label "Единицы измерения"@ru ;
+.
+
+#---------------------------------------------------------
+v-s:LocalRegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Local Regulatory document"@en ;
+  rdfs:label "Локальный нормативный документ"@ru ;
+.
+# v-s:hasDocumentKind
+# v-s:registrationNumber
+
+v-s:hasVersionOfLocalRegulatoryDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Versions of documents"@en ;
+  rdfs:label "Версии документов"@ru ;
+  rdfs:range v-s:VersionOfLocalRegulatoryDocument ;
+  rdfs:domain v-s:LocalRegulatoryDocument ;
+.
+
+#---------------------------------------------------------
+v-s:VersionOfLocalRegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:LocalRegulatoryDocument ;
+  rdfs:label "Verions of local regulatory document"@en ;
+  rdfs:label "Версия локального нормативного документа"@ru ;
 .

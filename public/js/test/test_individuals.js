@@ -229,9 +229,9 @@ for (i = 0; i < 1; i++)
             test_success_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
             test_fail_read(ticket_user2, new_test_doc1['@'], new_test_doc1);
 
-			res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+	    res = remove_individual (ticket_user1.id, new_test_doc1['@']);
             wait_module(condition, res.op_id);
-            wait_module(acl_manager, res.op_id);
+            //wait_module(acl_manager, res.op_id);
 
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
@@ -557,8 +557,8 @@ for (i = 0; i < 1; i++)
 
             wait_module(fulltext_indexer, res.op_id);
             wait_module(subject_manager, res.op_id);
-            wait_module(acl_manager, res.op_id);
-            wait_module(condition, res.op_id);
+            //wait_module(acl_manager, res.op_id);
+            //wait_module(condition, res.op_id);
 
             var data = query(ticket_user1.id, test_data_uid, undefined, undefined, true);
             ok(compare(data.length, 2));
@@ -642,8 +642,8 @@ for (i = 0; i < 1; i++)
 
             wait_module(fulltext_indexer, res.op_id);
             wait_module(subject_manager, res.op_id);
-            wait_module(acl_manager, res.op_id);
-            wait_module(condition, res.op_id);
+            //wait_module(acl_manager, res.op_id);
+            //wait_module(condition, res.op_id);
 
             var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true);
             ok(compare(data.length, 4));

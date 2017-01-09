@@ -1,3 +1,4 @@
+#define _GLIBCXX_USE_CXX11_ABI 0
 #ifndef CBOR_H
 #define CBOR_H
 

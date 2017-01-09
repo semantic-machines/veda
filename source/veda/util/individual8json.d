@@ -1,6 +1,6 @@
 module veda.util.individual8json;
 
-import std.conv, std.stdio, std.json, std.datetime;
+import std.conv, std.stdio, std.json, std.datetime, std.string;
 import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
 static LANG[ string ] Lang;
@@ -63,28 +63,6 @@ public float getFloat(ref JSONValue src, string key)
         return res.floating();
 
     return 0;
-}
-
-JSONValue individual_to_json(immutable(Individual)individual)
-{
-//    writeln ("\nINDIVIDUAL->:", individual);
-    JSONValue json;
-
-    json[ "@" ] = individual.uri;
-    foreach (property_name, property_values; individual.resources)
-    {
-        JSONValue[] jsonVals;
-
-        foreach (property_value; property_values)
-            jsonVals ~= resource_to_json(cast(Resource)property_value);
-
-        JSONValue resources_json;
-        resources_json.array = jsonVals;
-
-        json[ property_name ] = resources_json;
-    }
-//    writeln ("->JSON:", json);
-    return json;
 }
 
 JSONValue individual_to_json(Individual individual)
@@ -250,7 +228,14 @@ Resource json_to_resource(JSONValue resource_json)
         else if (type == DataType.Datetime)
         {
             string val = resource_json.getString("data");
-            long   tm  = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+
+            long   tm;
+
+            if (val.indexOf('-') >= 1)
+                tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+            else
+                tm = to!long (val);
+
             resource = tm;
         }
 

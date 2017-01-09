@@ -20,7 +20,7 @@
 
 v-ft:FunctionTasks
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
 .
@@ -56,21 +56,21 @@ v-ft:Inbox
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
   v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$2')"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
   v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$2')"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
   v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;
-  v-ft:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
   rdf:type v-s:Bundle ;
@@ -83,12 +83,24 @@ v-ft:FunctionTasksTemplate
   rdfs:label "Шаблон для класса v-ft:FunctionInbox"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
   v-ui:template """
+<script>
+  $("#box-tabs", template)
+    .find("a")
+    .filter(function () { return this.hash.substr(2) === individual.id; })
+    .parent()
+    .addClass("active");
+  //# sourceURL=v-ft:FunctionTasksTemplate_pre
+</script>
 <div class="container-fluid">
   <br>
-  <ul class="nav nav-tabs nav-right" role="tablist">
-    <li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
     <li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
+    <li role="presentation"><a href="#/v-ft:Completed" about="v-ft:Completed" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Outbox" about="v-ft:Outbox" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Inbox" about="v-ft:Inbox" property="rdfs:label"></a></li>
   </ul>
+  <br>
   <table class="table table-condensed table-bordered table-striped">
     <thead>
       <tr>
@@ -168,7 +180,7 @@ v-ft:FunctionTasksTemplate
       cnt.empty();
       pager.empty();
 
-      var sortBy = dir = "";
+      var sortBy = "", dir = "";
       if ( tasks.hasValue("v-fs:sortOrder") ) {
         var t = tasks["v-fs:sortOrder"][0].split(" ");
         sortBy = t[0]; dir = t[1];
@@ -189,14 +201,15 @@ v-ft:FunctionTasksTemplate
         tasks.page = Math.floor(tasks.count / veda.user.displayedElements) + 1 * (tasks.count % veda.user.displayedElements ? 1 : 0) - 1;
       }
 
-      for (var i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
-        (function (i) {
-          setTimeout(function () {
-            var _tmpl = tmpl.replace("###", i+1);
-            var result = new veda.IndividualModel( tasks.result[i] );
-            result.present(cnt, _tmpl);
-          }, 0);
-        }(i));
+      for (var result, _tmpl, i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
+        result = new veda.IndividualModel( tasks.result[i] );
+        if (individual.id === "v-ft:Inbox" && result.hasValue("v-wf:takenDecision") && result.isSync()) {
+          tasks.result.splice(i--, 1);
+          continue;
+        } else {
+          _tmpl = tmpl.replace("###", i+1);
+          result.present(cnt, _tmpl);
+        }
       }
 
       // Show pager

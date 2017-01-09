@@ -5,12 +5,12 @@ module veda.core.storage.lmdb_storage;
 
 private
 {
-    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid;
+    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.bind.lmdb_header, veda.onto.individual;
-    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define,
-           veda.core.storage.binlog_tools;
-           
-    alias core.thread.Thread core_thread;       
+    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define;
+    import veda.core.storage.binlog_tools;
+
+    alias core.thread.Thread core_thread;
 }
 
 /// Режим работы хранилища
@@ -44,19 +44,21 @@ public class LmdbStorage : Storage
     MDB_env             *env;
     public const string summ_hash_this_db_id;
     private BigInt      summ_hash_this_db;
-    private DBMode      mode;
+    protected DBMode    mode;
     private string      _path;
     string              db_name;
     string              parent_thread_name;
     long                last_op_id;
     long                committed_last_op_id;
-    Logger				log; 
-    bool				db_is_opened;
+    Logger              log;
+    bool                db_is_opened;
+    int                 max_count_record_in_memory = 10_000;
+    byte[ string ]      records_in_memory;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
     {
-    	log = _log;    	
+        log                  = _log;
         _path                = _path_;
         db_name              = _path[ (lastIndexOf(path, '/') + 1)..$ ];
         summ_hash_this_db_id = "summ_hash_this_db";
@@ -82,9 +84,9 @@ public class LmdbStorage : Storage
 
     public Result backup(string backup_id)
     {
-    	if (db_is_opened == false)
-		    open_db();	
-    	
+        if (db_is_opened == false)
+            open_db();
+
         string backup_path    = dbs_backup ~ "/" ~ backup_id;
         string backup_db_name = dbs_backup ~ "/" ~ backup_id ~ "/" ~ db_name;
 
@@ -133,6 +135,9 @@ public class LmdbStorage : Storage
             flush(1);
         mdb_env_close(env);
         db_is_open[ _path ] = false;
+        records_in_memory.clear;
+        GC.collect();
+
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
     }
 
@@ -142,13 +147,13 @@ public class LmdbStorage : Storage
         {
             close_db();
             open_db();
-	      	log.trace ("reopen_db %s, mode=%s, thread:%s, last_op_id=%d",  _path, text(mode), core_thread.getThis().name, last_op_id);
+            log.trace("reopen_db %s, mode=%s, thread:%s, last_op_id=%d", _path, text(mode), core_thread.getThis().name, last_op_id);
         }
     }
 
     public void open_db()
     {
-      //log.trace ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
+        //log.trace ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
         if (db_is_open.get(_path, false) == true)
         {
@@ -189,7 +194,7 @@ public class LmdbStorage : Storage
 
                     try
                     {
-                        last_op_id = to!long (dataff[ 1 ]);
+                        last_op_id           = to!long (dataff[ 1 ]);
                         committed_last_op_id = last_op_id;
                     }
                     catch (Throwable tr) {}
@@ -236,12 +241,12 @@ public class LmdbStorage : Storage
 
     public ResultCode put(string in_key, string in_value, long op_id)
     {
-    	if (db_is_opened == false)
-		    open_db();	    	
-    	
-    	if (op_id > 0)
-	    	last_op_id = op_id;
-    	
+        if (db_is_opened == false)
+            open_db();
+
+        if (op_id > 0)
+            last_op_id = op_id;
+
         try
         {
             string _key  = in_key.dup;
@@ -330,9 +335,9 @@ public class LmdbStorage : Storage
 
     public ResultCode remove(string in_key)
     {
-    	if (db_is_opened == false)
-		    open_db();	
-    	
+        if (db_is_opened == false)
+            open_db();
+
         try
         {
             string _key = in_key.dup;
@@ -419,13 +424,13 @@ public class LmdbStorage : Storage
     public void flush(int force)
     {
         try
-        {		
-	        //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
-			if (mode == DBMode.RW && last_op_id > committed_last_op_id)
-			{
-	 			put (summ_hash_this_db_id, "0," ~ text (last_op_id), -1);
-	 			committed_last_op_id = last_op_id;
-			}	
+        {
+            //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
+            if (mode == DBMode.RW && last_op_id > committed_last_op_id)
+            {
+                put(summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
+                committed_last_op_id = last_op_id;
+            }
 
             int rc = mdb_env_sync(env, force);
 
@@ -453,11 +458,11 @@ public class LmdbStorage : Storage
 
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
-    	if (db_is_opened == false)
-		    open_db();	
-    	
-    	last_op_id = op_id;
-    	
+        if (db_is_opened == false)
+            open_db();
+
+        last_op_id = op_id;
+
         try
         {
 //                                      StopWatch sw; sw.start;
@@ -532,7 +537,7 @@ public class LmdbStorage : Storage
                     throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
                 }
             }
-*/
+ */
             rc = mdb_txn_commit(txn);
 
             if (rc == MDB_MAP_FULL)
@@ -569,9 +574,9 @@ public class LmdbStorage : Storage
 
     public long count_entries()
     {
-    	if (db_is_opened == false)
-		    open_db();	
-    	
+        if (db_is_opened == false)
+            open_db();
+
         long count = -1;
         int  rc;
 
@@ -641,11 +646,13 @@ public class LmdbStorage : Storage
             return false;
     }
 
-    public string find(string uri, bool return_value = true)
+    public string find(string _uri, bool return_value = true)
     {
-    	if (db_is_opened == false)
-		    open_db();	
-    	
+        string uri = _uri.idup;
+
+        if (db_is_opened == false)
+            open_db();
+
         if (uri is null || uri.length < 2)
             return null;
 
@@ -734,7 +741,21 @@ public class LmdbStorage : Storage
         }
 
         if (str !is null)
-            return str.dup;
+        {
+            string res = str.dup;
+
+            if (mode == DBMode.R)
+            {
+                records_in_memory[ uri ] = 1;
+
+                if (records_in_memory.length > max_count_record_in_memory)
+                {
+                	log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    reopen_db();
+                }
+            }
+            return res;
+        }
         else
             return str;
     }
@@ -756,9 +777,9 @@ public class LmdbStorage : Storage
 
     public long dump_to_binlog()
     {
-    	if (db_is_opened == false)
-		    open_db();	
-    	
+        if (db_is_opened == false)
+            open_db();
+
         int    size_bin_log     = 0;
         int    max_size_bin_log = 10_000_000;
 

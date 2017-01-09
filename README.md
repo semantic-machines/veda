@@ -15,8 +15,9 @@
   - Integrated LMDB database library. Key-value memory mapped storage (http://symas.com/mdb).
   - Integrated Xapian search engine library. Used for data indexing & querying (http://xapian.org).
   - Integrated V8 javascript engine library. Used for workflow execution engine and other server-side logic (https://code.google.com/p/v8).
-  - Vibe - high-level declarative REST and web application framework (http://vibed.org).
+  - Vibe.d - high-level declarative REST and web application framework (http://vibed.org).
   - nanomsg
+  - websockets    
 
 **4. Client components**
   - Bootstrap HTML, CSS, and JS framework for developing responsive, mobile first web applications (http://getbootstrap.com).
@@ -26,7 +27,7 @@
   - Various visualization libraries & plugins.
 
 ## II. System requirements
-  - OS - Ubuntu 12.04 LTS 64-Bit, 14.04 LTS 64-Bit
+  - OS - Ubuntu 12.04 LTS 64-Bit, 14.04 LTS 64-Bit, 16.04 LTS 64-Bit
   - RAM - 1Gb
 
 ## III. How to install and run
@@ -37,7 +38,7 @@ $ sudo control-install.sh
 ```
 **2. Build & start veda**
 ```sh
-$ dub
+$ build.sh
 ```
 **3. Start/stop veda as daemon once built**
 ```sh

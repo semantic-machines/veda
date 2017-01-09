@@ -8,9 +8,11 @@ struct ScriptInfo
 {
     string id;
     string str_script;
-    bool[ string ] filters;
+    bool[ string ] trigger_by_type;
+    bool[ string ] trigger_by_uid;
     bool[ string ] dependency;
     Script compiled_script;
+    string run_at;
 }
 
 void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scripts_order, Individual ss, ScriptVM script_vm, string vars_env)
@@ -38,14 +40,14 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             return;
 
         string str_script =
-            "var ticket = get_env_str_var ('$ticket');"
+            "try { var ticket = get_env_str_var ('$ticket');"
             ~ "var document = get_individual (ticket, '$document');"
             ~ "if (document) {"
             ~ "var _script_id = '" ~ ss.uri ~ "';"
             ~ vars_env
             ~ "script();"
             ~ "};"
-            ~ "function script() {" ~ scripts_text ~ "};"
+            ~ "function script() {" ~ scripts_text ~ "}; } catch (e) { log_trace (e); }"
         ;
         try
         {
@@ -53,16 +55,29 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             script.id         = ss.uri;
             script.str_script = str_script;
 
+            script.run_at = ss.getFirstLiteral("v-s:runAt");
+
+            if (script.run_at is null)
+                script.run_at = "main";
+
+            if (script.run_at != g_vm_id)
+                return;
+
             script.compiled_script = script_vm.compile(script.str_script);
             if (trace_msg[ 310 ] == 1)
                 log.trace("#compile event script.id=%s, text=%s", script.id, script.str_script);
 
             //writeln("scripts_text:", scripts_text);
 
-            Resources filters = ss.getResources(veda_schema__filter);
+            Resources trigger_by_type = ss.getResources("v-s:triggerByType");
 
-            foreach (filter; filters)
-                script.filters[ filter.uri ] = true;
+            foreach (filter; trigger_by_type)
+                script.trigger_by_type[ filter.uri ] = true;
+
+            Resources trigger_by_uid = ss.getResources("v-s:triggerByUid");
+
+            foreach (filter; trigger_by_uid)
+                script.trigger_by_uid[ filter.uri ] = true;
 
             Resources dependency = ss.getResources("v-s:dependency");
             foreach (dp; dependency)
@@ -127,12 +142,12 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
         }
         catch (Exception ex)
         {
-            log.trace_log_and_console("error:compile event script :%s", ex.msg);
+            log.trace("error:compile event script :%s", ex.msg);
         }
     }
     catch (Exception ex)
     {
-        log.trace_log_and_console("error:load event script :%s", ex.msg);
+        log.trace("error:load event script :%s", ex.msg);
     }
     finally
     {

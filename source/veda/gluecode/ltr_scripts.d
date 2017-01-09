@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(P_MODULE.ltr_scripts, "127.0.0.1", 8091, new Logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(text(P_MODULE.ltr_scripts), new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -96,7 +96,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = new PThreadContext("cfg:standart_node", "ltr_scripts", P_MODULE.ltr_scripts, log, parent_url);
+    context = new PThreadContext("cfg:standart_node", "ltr_scripts", log, parent_url);
 
 
     vars_for_codelet_script =
@@ -173,6 +173,10 @@ private void ltrs_thread(string parent_url)
                                        writeln("ltrs:Queue not open :", queue);
                                }
                            },
+                           (OwnerTerminated ot)
+                           {
+                               return;
+                           },
                            (Variant v) { writeln("ltrs_thread::Received some other type.", v); });
             // обработка элементов очередей согласно приоритетам
             yield();
@@ -204,7 +208,7 @@ private void ltrs_thread(string parent_url)
                         {
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_cbor);
 
-                            bool res = task.consumer.commit();
+                            bool res = task.consumer.commit_and_next(true);
                             if (res == false)
                             {
                                 writeln("Queue commit fail !!!!");
@@ -289,7 +293,7 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
 
     if (script.compiled_script !is null)
     {
-        if (script.filters.length > 0 && isFiltred(&script, rdfType.keys, onto) == false)
+        if (is_filter_pass(&script, indv.uri, rdfType.keys, onto) == false)
             return ResultCode.OK;
 
         try
@@ -321,9 +325,9 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(P_MODULE _module_name, string _host, ushort _port, Logger _log)
+    this(string _module_name, Logger _log)
     {
-        super(_module_name, _host, _port, _log);
+        super(_module_name, _log);
     }
 
     override void thread_id()
@@ -352,7 +356,6 @@ class ScriptProcess : VedaModule
             return ResultCode.OK;
 
         string queue_id = randomUUID().toString();
-
         context.unload_subject_storage(queue_id);
 
         start_script(new_bin, queue_id);
@@ -363,6 +366,21 @@ class ScriptProcess : VedaModule
     override bool configure()
     {
         return true;
+    }
+
+    override bool close()
+    {
+        return true;
+    }
+
+    override bool open()
+    {
+        return true;
+    }
+
+    override void event_of_change(string uri)
+    {
+        configure();
     }
 }
 

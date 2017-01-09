@@ -50,7 +50,7 @@
     </div>
 
     <!-- Notification alerts -->
-    <div id="notification-container" style="width:20%; max-height: 40%; position:fixed; bottom:10px; right:10px;z-index:99999; overflow:hidden"></div>
+    <div id="notification-container" style="width:25%; max-height: 40%; position:fixed; bottom:10px; right:10px;z-index:99999; overflow:hidden"></div>
 
     <!-- Templates -->
 
@@ -145,7 +145,10 @@
     <!-- Drafts template -->
     <script type="html/template" id="drafts-template">
       <div id="drafts" class="container-fluid">
-        <h3 id="drafts-title"></h3>
+        <ul class="nav nav-tabs nav-right" role="tablist">
+          <li class="pull-left"><h2 id="drafts-title"></h2></li>
+        </ul>
+        <br>
         <ol id="drafts-list"></ol>
         <button id="delete-all" class="btn btn-default"></button>
       </div>
@@ -284,11 +287,8 @@
       <div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
-            <!--div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
-            </div-->
             <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
@@ -305,10 +305,11 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-              <button type="button" class="btn btn-default pull-left" id="cancel" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-link pull-left" id="follow">Подробнее</button>
             </div>
           </div>
         </div>
@@ -320,10 +321,7 @@
       <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
-            <!--div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title" id="myModalLabel">Поиск объекта</h4>
-            </div-->
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <div class="modal-body">
             </div>
             <div class="modal-footer">
@@ -341,6 +339,7 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
           </div>
         </div>
@@ -351,21 +350,21 @@
 
     <!-- Link control template -->
     <script type="html/template" id="link-control-template">
-      <div id="scrollable-typeahead">
+      <div class="scrollable-typeahead">
         <div class="input-group">
-          <span class="input-group-addon btn btn-default" id="fullsearch">
+          <div class="input-group-addon btn btn-default" id="fullsearch">
             <i class="glyphicon glyphicon-search"></i>
-          </span>
-          <span class="input-group-addon btn btn-default" id="tree">
+          </div>
+          <div class="input-group-addon btn btn-default" id="tree">
             <i class="fa fa-sitemap"></i>
-          </span>
+          </div>
           <input type="text" class="form-control" id="fulltext"/>
-          <span class="input-group-addon btn btn-default" id="dropdown">
+          <div class="input-group-addon btn btn-default" id="dropdown">
             <i class="caret"></i>
-          </span>
-          <span class="input-group-addon btn btn-default" id="create">
+          </div>
+          <div class="input-group-addon btn btn-default" id="create">
             <i class="glyphicon glyphicon-plus"></i>
-          </span>
+          </div>
         </div>
       </div>
     </script>
@@ -388,7 +387,7 @@
     <script type="html/template" id="multilingual-string-control-template">
       <div>
         <div class="input-group">
-          <span class="input-group-addon"><small class="language-tag"></small></span>
+          <div class="input-group-addon"><small class="language-tag"></small></div>
           <input type="text" class="form-control" lang="" />
         </div>
       </div>
@@ -398,7 +397,7 @@
     <script type="html/template" id="multilingual-text-control-template">
       <div>
         <div class="input-group">
-          <span class="input-group-addon"><small class="language-tag"></small></span>
+          <div class="input-group-addon"><small class="language-tag"></small></div>
           <textarea class="form-control" lang="" rows="1" />
         </div>
       </div>
@@ -414,18 +413,16 @@
     <!-- Datetime control template -->
     <script type="html/template" id="datetime-control-template">
       <div class="input-group date">
-        <span class="input-group-addon btn btn-default">
+        <div class="input-group-addon btn btn-default">
           <span class="glyphicon glyphicon-time"></span>
-        </span>
+        </div>
         <input type="text" class="form-control" />
       </div>
     </script>
 
     <!-- Integer control template -->
     <script type="html/template" id="integer-control-template">
-      <!--div class="input-group"-->
       <div>
-        <!--span class="input-group-addon btn btn-default"><strong>#</strong></span-->
         <input type="text" class="form-control" placeholder="#" />
       </div>
     </script>
@@ -433,32 +430,22 @@
     <!-- Numeration control template -->
     <script type="html/template" id="numeration-control-template">
       <div class="input-group">
-        <span class="get-numeration-value input-group-addon btn btn-default" id="fullsearch">
+        <div class="get-numeration-value input-group-addon btn btn-default" id="fullsearch">
           <i class="glyphicon glyphicon-retweet"></i>
-        </span>
+        </div>
         <input type="text" class="form-control" />
       </div>
     </script>
 
     <!-- Decimal control template -->
     <script type="html/template" id="decimal-control-template">
-      <!--div class="input-group"-->
       <div>
-        <!--span class="input-group-addon btn btn-default"><strong>#.#</strong></span-->
         <input type="text" class="form-control" placeholder="#.#" />
       </div>
     </script>
 
     <!-- Boolean control template -->
     <script type="html/template" id="boolean-control-template">
-      <div class="input-group">
-        <span class="input-group-addon btn btn-default"><i class="glyphicon glyphicon-ok"></i></span>
-        <input type="text" class="form-control" />
-      </div>
-    </script>
-
-    <!-- Boolean checkbox control template -->
-    <script type="html/template" id="boolean-checkbox-control-template">
       <span>
         <input type="checkbox" />
       </span>
@@ -468,7 +455,7 @@
     <script type="html/template" id="select-control-template">
       <div>
         <select class="form-control">
-          <option value="">...</option>
+          <option></option>
         </select>
       </div>
     </script>
@@ -478,7 +465,7 @@
       <div>
         <div class="checkbox">
           <label>
-            <input type="checkbox" bound />
+            <input type="checkbox" />
           </label>
         </div>
       </div>
@@ -489,7 +476,7 @@
       <div>
         <div class="radio">
           <label>
-            <input type="radio" bound />
+            <input type="radio" />
           </label>
         </div>
       </div>
@@ -734,6 +721,7 @@
 
     <!-- Veda browser & server -->
     <script type="text/javascript" src="/js/common/lib/riot.js"></script>
+    <script type="text/javascript" src="/js/common/lib/promiz.min.js"></script>
     <script type="text/javascript" src="/js/common/util.js"></script>
     <script type="text/javascript" src="/js/common/veda_spa.js"></script>
     <script type="text/javascript" src="/js/common/app_model.js"></script>
@@ -771,6 +759,12 @@
     <script type="text/javascript">
       $(function(){
         veda.Module({/* configuration object */});
+      });
+    </script>
+    <script type="text/javascript">
+      $("body").on("click", ".modal #follow", function () {
+        var uri = $(this).closest(".modal").find("[resource]").attr("resource");
+        riot.route("#/" + uri);
       });
     </script>
     <script>

@@ -29,11 +29,10 @@ basic.getDrivers().forEach(function (drv) {
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
-
-    driver.sleep(basic.FAST_OPERATION);
+    basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
     driver.findElement({css:'.workflow-canvas-wrapper'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
-    driver.sleep(basic.FAST_OPERATION);
+    basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
 
     //Создание и удаление коннектора между двумя элементами
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
@@ -54,14 +53,11 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'state-task'");});
     del(driver);
     check(driver, '.state-task');
-    driver.sleep(basic.FAST_OPERATION);
 
     driver.findElement({css:'.create-condition'}).click()
         .thenCatch(function(e) {basic.errorHandler(e, "Cannot click add condition");})
     driver.findElement({css:'.state-condition'}).click()
         .thenCatch(function(e) {basic.errorHandler(e, "Cannot click 'state-condition'");})
-    driver.sleep(basic.FAST_OPERATION);
-
     var a = " ", b = "";
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {a = state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
@@ -70,12 +66,10 @@ basic.getDrivers().forEach(function (drv) {
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-out');
-    driver.sleep(basic.FAST_OPERATION);
 
     driver.findElement({css:'.zoom-in'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
     equal(a, b, 'zoom-in');
-    driver.sleep(basic.FAST_OPERATION);
 
     driver.findElement({css:'.zoom-out'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
@@ -86,7 +80,6 @@ basic.getDrivers().forEach(function (drv) {
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-default');
-    driver.sleep(basic.FAST_OPERATION);
 
     driver.findElement({css:'button[id="full-width"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'full-width' button");});
@@ -106,8 +99,6 @@ basic.getDrivers().forEach(function (drv) {
             process.exit(1);
         }
     });
-
-    driver.sleep(basic.FAST_OPERATION);
 
     driver.quit();
 })

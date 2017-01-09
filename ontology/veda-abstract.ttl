@@ -3,6 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 <http://semantic-machines.com/veda/veda-abstract>
   rdf:type owl:Ontology ;
@@ -16,8 +17,6 @@
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Thing"@en ;
   rdfs:label "Любая сущность"@ru ;
 .
@@ -32,7 +31,7 @@ v-s:owner
   rdf:type owl:ObjectProperty ;
   rdfs:label "Owner"@en ;
   rdfs:label "Владелец"@ru ;
-  rdfs:range v-s:Person ;
+  rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Thing ;
 .
 v-s:author
@@ -105,6 +104,20 @@ v-s:deleted
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
+v-s:lockedInOrigin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Locked in origin"@en ;
+  rdfs:label "Заблокирован во внешней системе"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:deletedInOrigin
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Deleted in origin"@en ;
+  rdfs:label "Удален во внешней системе"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:title
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Name"@en ;
@@ -149,7 +162,7 @@ v-s:summary
 .
 v-s:reason
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Reason"@en ;
+  rdfs:label "Root cause"@en ;
   rdfs:label "Причина"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
@@ -160,6 +173,14 @@ v-s:attachment
   rdfs:label "Вложение"@ru ;
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
+.
+v-s:scanAttachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "ScanAttachment"@en ;
+  rdfs:label "Сканированный вариант документа"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ;
+  rdfs:subPropertyOf v-s:attachment ;
 .
 v-s:hasClassifiedAttachment
   rdf:type owl:ObjectProperty ;
@@ -231,6 +252,50 @@ v-s:origin
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
 .
+v-s:isDefinedBy
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Is defined by"@en ;
+  rdfs:label "Определено"@ru ;
+  rdfs:range v-s:RegulatoryDocument ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:specialOpinion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Special opinion"@en ;
+  rdfs:label "Особое мнение"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:hasDocumentKind
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Document kind"@en ;
+  rdfs:label "Вид документа"@ru ;
+  rdfs:range v-s:DocumentKind ;
+  rdfs:domain v-s:Thing ;
+.
+v-s:valid
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:label "Valid"@en ;
+  rdfs:label "Действительно"@ru ;
+  rdfs:range xsd:boolean ;
+.
+### -------------------------------------------------------
+v-s:UserThing
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
+  rdfs:label "User thing"@en ;
+  rdfs:label "Любая пльзовательская сущность"@ru ;
+.
+### -------------------------------------------------------
+v-s:SystemThing
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Thing ;
+  rdfs:label "System thing"@en ;
+  rdfs:label "Любая системная сущность"@ru ;
+.
 ### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
@@ -289,14 +354,14 @@ v-s:dateToPlan
 .
 v-s:dateFromFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date start fact"@en ;
+  rdfs:label "Date start actual"@en ;
   rdfs:label "Дата начала фактическая"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
 v-s:dateToFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date finish fact"@en ;
+  rdfs:label "Date finish actual"@en ;
   rdfs:label "Дата окончания фактическая"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
@@ -387,6 +452,15 @@ v-s:customer
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
+  rdfs:comment "Заказчик организация" ;
+.
+v-s:customerContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Customer"@en ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:comment "Заказчик контрагент" ;
 .
 v-s:supplier
   rdf:type owl:ObjectProperty ;
@@ -395,6 +469,78 @@ v-s:supplier
   rdfs:range v-s:Appointment ;
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Contractual ;
+  rdfs:comment "Исполнитель организация" ;
+.
+v-s:supplierContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Supplier"@en ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:comment "Исполнитель контрагент" ;
+.
+v-s:hasContractor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contractor"@en ;
+  rdfs:label "Контрагент"@ru ;
+  rdfs:range v-s:Contractor ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasObligationKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Obligation kind"@en ;
+  rdfs:label "Вид обязательств"@ru ;
+  rdfs:range v-s:Sector ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contract"@en ;
+  rdfs:label "Контракт"@ru ;
+  rdfs:range v-s:Contract ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasPaymentConditions
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Payment Conditions"@en ;
+  rdfs:label "Условия платежа"@ru ;
+  rdfs:range v-s:PaymentConditions ;
+.
+v-s:hasDeliveryConditions
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Delivery Conditions"@en ;
+  rdfs:label "Условия поставки"@ru ;
+  rdfs:range v-s:DeliveryConditions ;
+.
+v-s:hasContractScope
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contract scope"@en ;
+  rdfs:label "Характер контракта"@ru ;
+  rdfs:range v-s:ContractScope ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasContractObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Contract object"@en ;
+  rdfs:label "Объект контракта"@ru ;
+  rdfs:range v-s:MaterialGroup ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:isCreditor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Creditor indicator"@en ;
+  rdfs:label "Индикатор кредитора"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:isDebitor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Debitor indicator"@en ;
+  rdfs:label "Индикатор дебитора"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Contractual ;
 .
 
 ### -------------------------------------------------------
@@ -402,7 +548,7 @@ v-s:Controlled
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Controlled thing"@en ;
-  rdfs:label "Контрактная сущность"@ru ;
+  rdfs:label "Контролируемая сущность"@ru ;
 .
 v-s:controller
   rdf:type owl:ObjectProperty ;
@@ -439,6 +585,15 @@ v-s:checkedProcess
   rdfs:range v-s:Process ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:PScheckedRequirement_Controlled
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Controlled ;
+  v-ui:forProperty v-s:checkedRequirement ;
+  rdfs:label "v-s:checkedRequirement property specification for v-s:Controlled class"@en ;
+  rdfs:label "Спецификация свойства v-s:checkedRequirement для класса v-s:Controlled"@ru ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
 v-s:checkedRequirement
   rdf:type owl:ObjectProperty ;
   rdfs:label "Checked requirement"@en ;
@@ -466,6 +621,13 @@ v-s:responsibleOrganization
   rdfs:label "Ответственная организация"@ru ;
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Controlled ;
+.
+v-s:financialOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Financial organization"@en ;
+  rdfs:label "Финансовая организация"@ru ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Financial ;
 .
 v-s:responsibleProcess
   rdf:type owl:ObjectProperty ;
@@ -498,7 +660,7 @@ v-s:Registered
 v-s:registrationDate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:label "Дата регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -512,7 +674,7 @@ v-s:registrationNumber
 v-s:registrationDateIn
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:label "Дата регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -526,7 +688,7 @@ v-s:registrationNumberIn
 v-s:registrationDateOut
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата составления или регистрации документа"@ru ;
+  rdfs:label "Дата регистрации документа"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -567,6 +729,40 @@ v-s:recipient
   rdfs:label "Получатель"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:mailbox
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "Mailbox"@en ;
+  rdfs:comment "Адрес электронной почты"@ru ;
+  rdfs:label "Mailbox"@en ;
+  rdfs:label "Адрес эл. почты"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:fax
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "Fax"@en ;
+  rdfs:comment "Номер факса"@ru ;
+  rdfs:label "Fax"@en ;
+  rdfs:label "Номер факса"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:phone
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "Phone"@en ;
+  rdfs:comment "Номер телефона"@ru ;
+  rdfs:label "Phone"@en ;
+  rdfs:label "Номер телефона"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:contactInfo
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Contact Info"@en ;
+  rdfs:label "Контактная информация"@ru ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Deliverable2 ;
 .
 ### ------------------------------------------------------
@@ -628,18 +824,25 @@ v-s:sum
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:cost
+v-s:amount
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Cost"@en ;
-  rdfs:label "Цена"@ru ;
+  rdfs:label "Amount"@en ;
+  rdfs:label "Количество"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:hasCurrencyKind
+v-s:hasCurrency
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Currency kind"@en ;
+  rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
-  rdfs:range v-s:CurrencyKind ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasUnitOfMeasure
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Unit of measure"@en ;
+  rdfs:label "Единицы измерения"@ru ;
+  rdfs:range v-s:UnitOfMeasure ;
   rdfs:domain v-s:Measurable ;
 .
 ### ------------------------------------------------------
@@ -655,4 +858,104 @@ v-s:hasClassifierOKVED
   rdfs:label "Код ОКВЭД"@ru ;
   rdfs:range v-s:ClassifierOKVED ;
   rdfs:domain v-s:ClassifiedRus ;
+.
+v-s:hasClassifierCountry
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Country"@en ;
+  rdfs:label "Страна"@ru ;
+  rdfs:range v-s:ClassifierCountry ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
+v-s:hasClassifierLegalForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "ClassifierLegalForm"@en ;
+  rdfs:label "Организационно-правовая форма"@ru ;
+  rdfs:range v-s:ClassifierLegalForm ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
+### ------------------------------------------------------------
+v-s:Maintained
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Maintained thing"@en ;
+  rdfs:label "Обслуживаемая сущность"@ru ;
+.
+v-s:hasMaintainedObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Object TORO"@en ;
+  rdfs:label "Объект ТОРО"@ru ;
+  rdfs:range v-s:MaintainedObject ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:eliminatingTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Eliminating time"@en ;
+  rdfs:label "Время устранения"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:downtime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Downtime"@en ;
+  rdfs:label "Время простоя"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:hasMaintenanceKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Equipment shutdown kind"@en ;
+  rdfs:label "Вид останова оборудования"@ru ;
+  rdfs:range v-s:MaintenanceKind ;
+  rdfs:domain v-s:Maintained ;
+.
+
+### ------------------------------------------------------------
+v-s:Financial
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Financial thing"@en ;
+  rdfs:label "Финансовая сущность"@ru ;
+.
+v-s:expectedValueOfContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Expected value of contract"@en ;
+  rdfs:label "Ожидаемая сумма контракта"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+v-s:hasBudgetCategory
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Financial ;
+  rdfs:label "Budget category"@en ;
+  rdfs:label "Категория бюджета"@ru ;
+  rdfs:range v-s:BudgetCategory ;
+.
+v-s:hasPrice
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Price"@en ;
+  rdfs:label "Стоимость"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+v-s:prepayment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Prepayment"@en ;
+  rdfs:label "Авансовый платеж"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+
+### ------------------------------------------------------------
+v-s:Projectable
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Projectable thing"@en ;
+  rdfs:label "Проектируемая сущность"@ru ;
+.
+v-s:hasProject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Проект"@ru ;
+  rdfs:label "Project"@en ;
+  rdfs:domain v-s:Projectable ;
+  rdfs:range v-s:Initiative ;
 .
