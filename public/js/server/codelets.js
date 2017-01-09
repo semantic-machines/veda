@@ -34,9 +34,13 @@ function change_rights_actor(process, task, rightset, actor)
     
     	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
-//print ("@JS executor=", toJson (executor));
+	    if (!executor)
+	    {
+		print ("@JS executor undefined, actor=", process.getLocalVariable (actor));
+	    }
+
     	    if (executor)
-            	addRight(ticket, rset, getUri (executor), getUri (doc_id));
+            	addRight(ticket, rset, getUri (executor), getUri (doc_id));	    
 
             var instanceOf = getUri(process['v-wf:instanceOf']);
 
