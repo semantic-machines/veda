@@ -967,14 +967,14 @@ class PThreadContext : Context
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit)
     {
-    	SearchResult sr;
+        SearchResult sr;
 
-            if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
-                query_str = "'*' == '" ~ query_str ~ "'";
+        if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
+            query_str = "'*' == '" ~ query_str ~ "'";
 
-            _vql.get(ticket, query_str, sort_str, db_str, top, limit, sr);            
-            
-            return sr;
+        sr = _vql.get(ticket, query_str, sort_str, db_str, top, limit);
+
+        return sr;
     }
 
     public Individual get_individual(Ticket *ticket, string uri)

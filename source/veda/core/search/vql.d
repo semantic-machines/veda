@@ -90,15 +90,16 @@ class VQL
         }
         dg = &collect_subject;
 
-        res_count = xr.get(ticket, filter, freturn, sort, top, limit, dg, inner_get);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, top, limit, dg, inner_get);
+        res_count = sr.size;
 
         return res_count;
     }
 
-    public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
-                   ref SearchResult sr, bool inner_get = false)
+    public SearchResult get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
+                            bool inner_get = false)
     {
-        int                       res_count;
+        SearchResult              sr;
 
         void delegate(string uri) dg;
         void collect_subject(string uri)
@@ -112,9 +113,15 @@ class VQL
         }
         dg = &collect_subject;
 
-        res_count = xr.get(ticket, filter, freturn, sort, top, limit, dg, inner_get);
+        SearchResult sr1 = xr.get(ticket, filter, freturn, sort, top, limit, dg, inner_get);
 
-        return res_count;
+        if (sr1.result_code == ResultCode.OK)
+        {
+            sr.cursor_pos = sr1.cursor_pos;
+            return sr;
+        }
+
+        return sr1;
     }
 
     public int get(Ticket *ticket, string query_str, ref Individual[] res, bool inner_get = false)
@@ -214,7 +221,8 @@ class VQL
             }
             dg = &collect_subject;
 
-            res_count = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, top, limit, dg, inner_get);
+            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, top, limit, dg, inner_get);
+            res_count = sr.size;
         }
 
 //          sw.stop();

@@ -15,8 +15,8 @@ protected byte err;
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 interface SearchReader
 {
-    public int get(Ticket *ticket, string str_query, string str_sort, string db_names, int top, int limit,
-                   void delegate(string uri) add_out_element, bool inner_get);
+    public SearchResult get(Ticket *ticket, string str_query, string str_sort, string db_names, int top, int limit,
+                            void delegate(string uri) add_out_element, bool inner_get);
 
     public void reopen_db();
 }
@@ -90,15 +90,17 @@ class XapianReader : SearchReader
     }
 
 
-    public int get(Ticket *ticket, string str_query, string str_sort, string _db_names, int top, int limit,
-                   void delegate(string uri) add_out_element, bool inner_get)
+    public SearchResult get(Ticket *ticket, string str_query, string str_sort, string _db_names, int top, int limit,
+                            void delegate(string uri) add_out_element, bool inner_get)
     {
+        SearchResult sr;
+
         int[ string ] key2slot = context.get_key2slot();
 
         if (key2slot == (int[ string ]).init)
-            return 0;
+            return sr;
 
-        //writeln ("@key2slot=", key2slot);
+        //log.trace ("@key2slot=%s", key2slot);
 
         XapianQuery query;
         TTA         tta = parse_expr(str_query);
@@ -106,7 +108,8 @@ class XapianReader : SearchReader
         if (tta is null)
         {
             log.trace("fail parse query (phase 1) [%s], tta is null", str_query);
-            return 0;
+            sr.result_code = ResultCode.Bad_Request;
+            return sr;
         }
 
         string[] db_names;
@@ -179,7 +182,8 @@ class XapianReader : SearchReader
             catch (Throwable tr)
             {
                 log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
-                return 0;
+                sr.result_code = ResultCode.Bad_Request;
+                return sr;
             }
 
             if (state < 0)
@@ -199,7 +203,7 @@ class XapianReader : SearchReader
         }
 
         if (opened_db.keys.length == 0)
-            return 0;
+            return sr;
 
         if (trace_msg[ 323 ] == 1)
             log.trace("[Q:%X] xapian query [%s]", cast(void *)str_query, xpnvql.get_query_description(query));
@@ -211,23 +215,21 @@ class XapianReader : SearchReader
             if (err < 0)
             {
                 log.trace("ERR! xapian_reader:get err=%s", get_xapian_err_msg(err));
-                return 0;
+                sr.result_code = ResultCode.Bad_Request;
+                return sr;
             }
 
             XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot);
 
             xapian_enquire.set_query(query, &err);
             if (sorter !is null)
-            {
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
-            }
 
-            state = -1;
-            while (state < 0)
+            while (sr.result_code != ResultCode.OK)
             {
-                state = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, top, limit, add_out_element,
-                                                                     context);
-                if (state < 0)
+                sr = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, top, limit, add_out_element,
+                                                                  context);
+                if (sr.result_code != ResultCode.OK)
                 {
                     add_out_element(null); // reset previous collected data
                     attempt_count++;
@@ -240,27 +242,21 @@ class XapianReader : SearchReader
                 }
             }
 
-            int read_count = 0;
-
-            if (state > 0)
-                read_count = state;
-
-            if (state < 0)
+            if (sr.result_code != ResultCode.OK)
                 log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d, query=[%s]",
                           cast(void *)str_query, attempt_count, str_query);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);
             destroy_MultiValueKeyMaker(sorter);
-
-            return read_count;
         }
         else
         {
+            sr.result_code = ResultCode.Bad_Request;
             log.trace("invalid query [%s]", str_query);
         }
 
-        return 0;
+        return sr;
     }
 
 ////////////////////////////////////////////////////////

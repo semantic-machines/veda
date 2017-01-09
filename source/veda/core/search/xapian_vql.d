@@ -613,13 +613,15 @@ class XapianVQL
         }
     }
 
-    public int exec_xapian_query_and_queue_authorize(Ticket *ticket,
-                                                     XapianEnquire xapian_enquire,
-                                                     int top,
-                                                     int limit,
-                                                     void delegate(string uri) add_out_element,
-                                                     Context context)
+    public SearchResult exec_xapian_query_and_queue_authorize(Ticket *ticket,
+                                                              XapianEnquire xapian_enquire,
+                                                              int top,
+                                                              int limit,
+                                                              void delegate(string uri) add_out_element,
+                                                              Context context)
     {
+        SearchResult sr;
+
         if (top == 0)
             top = 10000;
 
@@ -637,7 +639,8 @@ class XapianVQL
         if (ticket is null)
         {
             log.trace("exec_xapian_query_and_queue_authorize:ticket is null");
-            return -1;
+            sr.result_code = ResultCode.Ticket_not_found;
+            return sr;
         }
 
         //writeln (cast(void*)xapian_enquire, " count_authorize=", count_authorize);
@@ -645,7 +648,9 @@ class XapianVQL
         if (err < 0)
         {
             log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
-            return err;
+            sr.result_code = ResultCode.Forbidden;
+            sr.err         = err;
+            return sr;
         }
 
         if (trace_msg[ 200 ] == 1)
@@ -660,7 +665,10 @@ class XapianVQL
             while (it.is_next(&err) == true)
             {
                 if (err < 0)
-                    return err;
+                {
+                    sr.err = err;
+                    return sr;
+                }
 
                 char *data_str;
                 uint *data_len;
@@ -668,7 +676,8 @@ class XapianVQL
                 if (err < 0)
                 {
                     log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%d)", err);
-                    return err;
+                    sr.err = err;
+                    return sr;
                 }
 
                 string subject_id = data_str[ 0..*data_len ].idup;
@@ -706,7 +715,10 @@ class XapianVQL
             destroy_MSet(matches);
         }
 
-        return read_count;
+        sr.size        = read_count;
+        sr.result_code = ResultCode.OK;
+
+        return sr;
     }
 
     string get_query_description(XapianQuery query)
