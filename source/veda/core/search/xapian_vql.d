@@ -648,16 +648,17 @@ class XapianVQL
         if (err < 0)
         {
             log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
-            sr.result_code = ResultCode.Forbidden;
-            sr.err         = err;
+            sr.result_code = ResultCode.Internal_Server_Error;
+//            sr.err         = err;
             return sr;
         }
 
-        if (trace_msg[ 200 ] == 1)
-            log.trace("found =%d, @matches =%d", matches.get_matches_estimated(&err), matches.size(&err));
+        int processed = 0;
 
         if (matches !is null)
         {
+            sr.estimated = matches.get_matches_estimated(&err);
+
             XapianMSetIterator it = matches.iterator(&err);
 
             bool               acl_db_reopen = true;
@@ -666,7 +667,9 @@ class XapianVQL
             {
                 if (err < 0)
                 {
-                    sr.err = err;
+                    sr.result_code = ResultCode.Internal_Server_Error;
+                    log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%d)", err);
+//                    sr.err = err;
                     return sr;
                 }
 
@@ -675,10 +678,13 @@ class XapianVQL
                 it.get_document_data(&data_str, &data_len, &err);
                 if (err < 0)
                 {
+                    sr.result_code = ResultCode.Internal_Server_Error;
                     log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%d)", err);
-                    sr.err = err;
+//                    sr.err = err;
                     return sr;
                 }
+
+                processed++;
 
                 string subject_id = data_str[ 0..*data_len ].idup;
 
@@ -715,7 +721,8 @@ class XapianVQL
             destroy_MSet(matches);
         }
 
-        sr.size        = read_count;
+        sr.processed   = processed;
+        sr.count       = read_count;
         sr.result_code = ResultCode.OK;
 
         return sr;

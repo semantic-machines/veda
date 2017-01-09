@@ -91,7 +91,7 @@ class VQL
         dg = &collect_subject;
 
         SearchResult sr = xr.get(ticket, filter, freturn, sort, top, limit, dg, inner_get);
-        res_count = sr.size;
+        res_count = sr.count;
 
         return res_count;
     }
@@ -106,10 +106,10 @@ class VQL
         {
             if (uri is null)
             {
-                sr.data = sr.data.init;
+                sr.result = sr.result.init;
                 return;
             }
-            sr.data ~= uri;
+            sr.result ~= uri;
         }
         dg = &collect_subject;
 
@@ -117,7 +117,7 @@ class VQL
 
         if (sr1.result_code == ResultCode.OK)
         {
-            sr.cursor_pos = sr1.cursor_pos;
+            sr.cursor = sr1.cursor;
             return sr;
         }
 
@@ -222,7 +222,7 @@ class VQL
             dg = &collect_subject;
 
             SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, top, limit, dg, inner_get);
-            res_count = sr.size;
+            res_count = sr.count;
         }
 
 //          sw.stop();

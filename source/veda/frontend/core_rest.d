@@ -653,7 +653,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, top, limit);
 			
-            return sr.data;
+            return sr.result;
         }
         finally
         {
@@ -665,7 +665,7 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
-            trail(_ticket, ticket.user_uri, "query", jreq, text(sr.data), rc, timestamp);
+            trail(_ticket, ticket.user_uri, "query", jreq, text(sr.result), rc, timestamp);
         }
     }
 

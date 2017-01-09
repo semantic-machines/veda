@@ -185,11 +185,12 @@ public struct Ticket
 
 public struct SearchResult
 {
-    string[]   data;
-    int        size;
-    long       cursor_pos;
+    string[]   result;
+    int        count;
+    int        estimated;
+    int        processed;
+    long       cursor;
     ResultCode result_code = ResultCode.Not_Ready;
-    byte       err;
 }
 
 interface Storage
