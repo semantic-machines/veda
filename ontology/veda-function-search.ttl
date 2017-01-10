@@ -319,7 +319,7 @@ v-fs:FulltextRequestModel
   self.q = q;
   self.search = function (qq, ss) {
     self.trigger("beforeSearch");
-    self.result = query(veda.ticket, qq ? qq : q, ss ? ss : sort, databases, reopen);
+    self.result = query(veda.ticket, qq ? qq : q, ss ? ss : sort, databases, reopen).result;
     self.count = self.result.length;
     self.trigger("afterSearch", self.result);
     return self.result;
@@ -634,7 +634,7 @@ v-fs:AttributiveRequestModel
   self.q = q;
   self.search = function () {
     self.trigger("beforeSearch");
-    self.result = query(veda.ticket, q, sort, databases, reopen);
+    self.result = query(veda.ticket, q, sort, databases, reopen).result;
     self.count = self.result.length;
     self.trigger("afterSearch");
     return self.result;
@@ -1281,7 +1281,7 @@ v-fs:AttributiveSearchTemplate
         veda.ticket,
         queryString,
         sort
-      );
+      ).result;
     }
     renderResult();
   }

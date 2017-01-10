@@ -1502,6 +1502,11 @@ if (doc) {
       routes['instruction2'][simple+'visible'] = [true];
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
+      routes['coordination1'][simple+'participant'] = [
+                   new veda.IndividualModel("td:AndreyBychin-Analyst2")]
+      routes['coordination1'][simple+'visible'] = [true];
+  }
 
   stages.forEach(function(stage) {
     var routeid = complex+stage;
@@ -1710,6 +1715,46 @@ s-wf:ComplexRouteTest_Template
             </button>
             <ul class="dropdown-menu" id="standard-tasks">
             </ul>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
+        </div>
+    </div>
+</div>
+<script>
+    $('#send.action', template).on('click', function () {
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+    });
+</script>
+""" ;
+.
+
+s-wf:ComplexRouteTest2
+    rdf:type rdfs:Class ;
+	rdfs:subClassOf v-s:Journaling ;
+    rdfs:label "Тестовый шаблон комплексного маршурута 2"@ru;
+    rdfs:label "Complex route test template 2"@en;
+    rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteTest2_Template
+    rdfs:isDefinedBy s-wf: ;
+    rdf:type v-ui:ClassTemplate ;
+    rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута 2"@ru;
+    rdfs:label "Template for Complex route test template 2"@en;
+    v-ui:forClass s-wf:ComplexRouteTest2 ;
+    v-ui:template """
+<div class="container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <span about="s-wf:ComplexRouteTest2" property="rdfs:label" />
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="#/@"><span property="@">ID</span></a>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>

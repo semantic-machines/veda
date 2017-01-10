@@ -416,7 +416,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         Ticket   *ticket = g_context.get_ticket(ticket_id);
 
         string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit).result;
         res = text(icb);
 
         if (icb !is null)

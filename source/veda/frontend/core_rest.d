@@ -94,9 +94,6 @@ interface VedaStorageRest_API {
     @path("flush") @method(HTTPMethod.GET)
     void flush(int module_id, long wait_op_id);
 
-    @path("restart") @method(HTTPMethod.GET)
-    OpResult restart(string ticket);
-
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
@@ -107,7 +104,7 @@ interface VedaStorageRest_API {
     long count_individuals();
 
     @path("query") @method(HTTPMethod.GET)
-    string[] query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
+    SearchResult query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
                    int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
@@ -561,38 +558,6 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult restart(string _ticket)
-    {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
-
-        OpResult   res;
-        Ticket     *ticket = context.get_ticket(_ticket);
-        ResultCode rc;
-
-        try
-        {
-            if (ticket.result != ResultCode.OK)
-                throw new HTTPStatusException(ticket.result);
-
-            rc = ticket.result;
-
-            if (rc == ResultCode.OK)
-            {
-                shutdown(-1);
-            }
-
-            if (res.result != ResultCode.OK)
-                throw new HTTPStatusException(res.result);
-
-            return res;
-        }
-        finally
-        {
-            trail(_ticket, ticket.user_uri, "restart", Json.emptyObject, text(res), res.result, timestamp);
-        }
-    }
-
-
     void set_trace(int idx, bool state)
     {
         context.set_trace(idx, state);
@@ -669,12 +634,12 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    string[] query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
+    SearchResult query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int top = 10000,
                    int limit = 10000)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
 
-        string[]   res;
+		SearchResult sr;
         Ticket     *ticket;
         ResultCode rc;
 
@@ -686,9 +651,9 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            res = context.get_individuals_ids_via_query(ticket, _query, sort, databases, top, limit);
-
-            return res;
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, 0, top, limit);
+			
+            return sr;
         }
         finally
         {
@@ -700,7 +665,7 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
-            trail(_ticket, ticket.user_uri, "query", jreq, text(res), rc, timestamp);
+            trail(_ticket, ticket.user_uri, "query", jreq, text(sr.result), rc, timestamp);
         }
     }
 

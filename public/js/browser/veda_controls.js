@@ -612,7 +612,7 @@
       options = spec["v-ui:optionValue"];
     } else if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-      var queryResult = query(veda.ticket, queryPrefix);
+      var queryResult = query(veda.ticket, queryPrefix).result;
       if (queryResult.length) {
         var individuals = get_individuals(veda.ticket, queryResult);
         options = individuals.map(function (json) {
@@ -1304,7 +1304,7 @@
           queryString = queryPrefix;
         }
         var limit = opts.limit || 0,
-            queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ),
+            queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ).result,
             result = [],
             getList = queryResult.filter( function (uri, index) {
               return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
