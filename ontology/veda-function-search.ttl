@@ -319,7 +319,7 @@ v-fs:FulltextRequestModel
   self.q = q;
   self.search = function (qq, ss) {
     self.trigger("beforeSearch");
-    self.result = query(veda.ticket, qq ? qq : q, ss ? ss : sort, databases, reopen);
+    self.result = query(veda.ticket, qq ? qq : q, ss ? ss : sort, databases, reopen).result;
     self.count = self.result.length;
     self.trigger("afterSearch", self.result);
     return self.result;
@@ -355,7 +355,7 @@ v-fs:FulltextRequestTemplate
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs nav-right" role="tablist">
-    <li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+    <li class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
     <li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
     <li role="presentation"><a href="#mgmt-ft" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-ft" role="tab" data-toggle="tab"></a></li>
     <li role="presentation"><a id="results-pill-ft" href="#results-ft" aria-controls="results-ft" role="tab" data-toggle="tab"><span href="#params-ft" about="v-fs:Results" property="rdfs:label"></span> <span class="badge" id="results-count">0</span></a></li>
@@ -634,7 +634,7 @@ v-fs:AttributiveRequestModel
   self.q = q;
   self.search = function () {
     self.trigger("beforeSearch");
-    self.result = query(veda.ticket, q, sort, databases, reopen);
+    self.result = query(veda.ticket, q, sort, databases, reopen).result;
     self.count = self.result.length;
     self.trigger("afterSearch");
     return self.result;
@@ -654,7 +654,7 @@ v-fs:AttributiveRequestTemplate
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs nav-right" role="tablist">
-    <li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
+    <li class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
     <li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li>
     <li role="presentation"><a id="xls" href="#xls"><i class="fa fa-table fa-lg"></i></a></li>
     <li role="presentation"><a href="#mgmt-at" about="v-fs:RequestMgmt" property="rdfs:label" aria-controls="mgmt-at" role="tab" data-toggle="tab"></a></li>
@@ -1281,7 +1281,7 @@ v-fs:AttributiveSearchTemplate
         veda.ticket,
         queryString,
         sort
-      );
+      ).result;
     }
     renderResult();
   }

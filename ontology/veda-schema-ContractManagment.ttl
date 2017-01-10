@@ -153,6 +153,7 @@ v-s:Contract
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Projectable ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Enumerated ;
   rdfs:label "Contract"@en ;

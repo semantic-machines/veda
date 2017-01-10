@@ -145,7 +145,10 @@
     <!-- Drafts template -->
     <script type="html/template" id="drafts-template">
       <div id="drafts" class="container-fluid">
-        <h3 id="drafts-title"></h3>
+        <ul class="nav nav-tabs nav-right" role="tablist">
+          <li class="pull-left"><h2 id="drafts-title"></h2></li>
+        </ul>
+        <br>
         <ol id="drafts-list"></ol>
         <button id="delete-all" class="btn btn-default"></button>
       </div>
@@ -718,6 +721,7 @@
 
     <!-- Veda browser & server -->
     <script type="text/javascript" src="/js/common/lib/riot.js"></script>
+    <script type="text/javascript" src="/js/common/lib/promiz.min.js"></script>
     <script type="text/javascript" src="/js/common/util.js"></script>
     <script type="text/javascript" src="/js/common/veda_spa.js"></script>
     <script type="text/javascript" src="/js/common/app_model.js"></script>

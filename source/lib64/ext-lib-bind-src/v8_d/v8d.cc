@@ -1,3 +1,5 @@
+#define _GLIBCXX_USE_CXX11_ABI 0
+
 #include "v8.h"
 #include <assert.h>
 #include <iostream>
@@ -495,7 +497,7 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
     int                   limit = 100000;
 
     _Buff                 *res  = query(cticket, _ticket.length(), cquery, _query.length(), csort, sort_len, cdatabases, databases_len, top, limit);
-    v8::Handle<v8::Array> arr_1 = v8::Array::New(isolate, 1);
+    v8::Handle<v8::Array> arr_1 = v8::Array::New(isolate, 0);
 
     if (res != NULL)
     {
@@ -503,8 +505,6 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
 
         if (data.length() > 5)
         {
-            //std::cout << "@c:query, res= " << data << std::endl;
-
             std::string::size_type prev_pos = 1, pos = 1;
             std::string            el;
 
@@ -512,12 +512,19 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
             while ((pos = data.find(',', pos)) != std::string::npos)
             {
                 el = prepare_str_list_element(data, prev_pos, pos);
-                arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
-                i++;
+				if (el.length() > 2)
+				{
+            	    arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+            	    i++;
+				}
                 prev_pos = ++pos;
             }
             el = prepare_str_list_element(data, prev_pos, data.length() - 1);
-            arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+	    
+	    	if (el.length() > 2)
+	    	{
+        		arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+	   		}
         }
     }
     args.GetReturnValue().Set(arr_1);

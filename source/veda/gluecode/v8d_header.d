@@ -85,17 +85,17 @@ void set_g_prev_state(string prev_state)
 
 void set_g_super_classes(string[] indv_types, Onto onto)
 {
-    Classes super_classes;
+    Names super_classes;
 
     foreach (indv_type; indv_types)
     {
-        if (super_classes == Classes.init)
+        if (super_classes == Names.init)
         {
             super_classes = onto.get_super_classes(indv_type);
         }
         else
         {
-            Classes i_super_classes = onto.get_super_classes(indv_type);
+            Names i_super_classes = onto.get_super_classes(indv_type);
             foreach (i_super_class; i_super_classes.keys)
             {
                 if (super_classes.get(i_super_class, false) == false)
@@ -416,7 +416,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         Ticket   *ticket = g_context.get_ticket(ticket_id);
 
         string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, top, limit);
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit).result;
         res = text(icb);
 
         if (icb !is null)

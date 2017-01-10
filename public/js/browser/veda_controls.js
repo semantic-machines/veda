@@ -612,7 +612,7 @@
       options = spec["v-ui:optionValue"];
     } else if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-      var queryResult = query(veda.ticket, queryPrefix);
+      var queryResult = query(veda.ticket, queryPrefix).result;
       if (queryResult.length) {
         var individuals = get_individuals(veda.ticket, queryResult);
         options = individuals.map(function (json) {
@@ -893,15 +893,14 @@
   };
 
   // SOURCE CODE CONTROL
-  // supports only one-way binding (editor -> individual) except initial value
   $.fn.veda_source = function (options) {
     var self = this,
-      opts = $.extend( {}, $.fn.veda_source.defaults, options ),
-      control = $(opts.template),
-      individual = opts.individual,
-      property_uri = opts.property_uri,
-      fscreen = $("#full-screen", control),
-      editorEl = control.get(0);
+        opts = $.extend( {}, $.fn.veda_source.defaults, options ),
+        control = $(opts.template),
+        individual = opts.individual,
+        property_uri = opts.property_uri,
+        fscreen = $("#full-screen", control),
+        editorEl = control.get(0);
 
     opts.value = individual.hasValue(property_uri) ? individual[property_uri][0].toString() : "";
     opts.change = function (value) {
@@ -936,13 +935,28 @@
       var value = opts.parser( editor.doc.getValue() );
       opts.change(value);
     });
+    function handler(property_modified, values) {
+      if (property_modified === property_uri) {
+        var doc = editor.getDoc();
+        var value = doc.getValue();
+        if (!values.length || values[0].toString() !== value) {
+          var cursor = doc.getCursor();
+          doc.setValue( values.length ? values[0].toString() : "" );
+          doc.setCursor(cursor);
+        }
+      }
+    }
+    individual.on("individual:propertyModified", handler );
+    this.on("remove", function () {
+      individual.off("individual:propertyModified", handler);
+    });
 
     fscreen.click(function () {
       var body = $("body"),
-          all = $("body > *"),
-        parent = control.parent(),
-        wrapper = $("<div class='fs-wrapper'></div>"),
-        cm = $(".CodeMirror", control);
+          all = $("body > *:not(script)"),
+          parent = control.parent(),
+          wrapper = $("<div class='fs-wrapper'></div>"),
+          cm = $(".CodeMirror", control);
       if ( !parent.hasClass("fs-wrapper") ) {
         control.wrap( wrapper );
         cm.addClass("CodeMirror-fs");
@@ -961,6 +975,7 @@
       fscreen.toggleClass("glyphicon-resize-full glyphicon-resize-small");
       editor.refresh();
     });
+
     this.append(control);
     return this;
   }
@@ -1289,7 +1304,7 @@
           queryString = queryPrefix;
         }
         var limit = opts.limit || 0,
-            queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ),
+            queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ).result,
             result = [],
             getList = queryResult.filter( function (uri, index) {
               return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );

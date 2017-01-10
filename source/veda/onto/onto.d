@@ -14,23 +14,34 @@ private
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
-alias bool[ string ] Classes;
+alias bool[ string ] Names;
+
+// bi-directional access to hierarchical elements
+private class Bdathe
+{
+    private Names[ string ] el_2_super_els;
+    private Names[ string ] el_2_sub_els;
+    private bool[ string ]  orphans;
+    private bool[string] els;
+}
 
 class Onto
 {
     private Context context;
-    Logger log;
+    Logger          log;
     public int      reload_count = 0;
 
     private         Individual[ string ] individuals;
-    private         Classes[ string ] class2superclasses;
-    private         Classes[ string ] class2subclasses;
-    private         bool[ string ]    orphans;
+
+    private Bdathe  _class;
+    private Bdathe  _property;
 
     public this(Context _context)
     {
-        context = _context;
-        log = context.get_logger();
+        context   = _context;
+        log       = context.get_logger();
+        _class    = new Bdathe();
+        _property = new Bdathe();
     }
 
     Individual[ string ] get_individuals()
@@ -38,21 +49,31 @@ class Onto
         return individuals;
     }
 
-    public Classes get_super_classes(string _class_uri)
+    public Names get_super_classes(string _class_uri)
     {
-        return class2superclasses.get(_class_uri, null);
+        return _class.el_2_super_els.get(_class_uri, null);
     }
 
-    public Classes get_sub_classes(string _class_uri)
+    public Names get_sub_classes(string _class_uri)
     {
-        return class2subclasses.get(_class_uri, null);
+        return _class.el_2_sub_els.get(_class_uri, null);
+    }
+
+    public Names get_sub_properies(string _uri)
+    {
+        return _property.el_2_sub_els.get(_uri, null);
+    }
+
+    public string[] get_properies()
+    {
+        return _property.els.keys;
     }
 
     public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
     {
         foreach (_subclass_uri; _subclasses_uri)
         {
-            Classes subclasses = class2subclasses.get(_subclass_uri, null);
+            Names subclasses = _class.el_2_sub_els.get(_subclass_uri, null);
 
             if (subclasses !is null)
             {
@@ -82,96 +103,119 @@ class Onto
                                                                        "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
                                                                        true, 10000, 10000);
 
-        //if (trace_msg[ 20 ] == 1)
         log.trace_log_and_console("[%s] load onto, count individuals: %d", context.get_name, l_individuals.length);
 
         foreach (indv; l_individuals)
-        {
             individuals[ indv.uri ] = indv;
-        }
 
         foreach (indv; l_individuals)
-        {
-            update_class_in_hierarchy(indv);
-        }
-
-        //foreach (key, value; class2subclasses)
-        //{
-        //    writeln("@ class=", key, ", subclasses=", value);
-        //}
+            update_onto_hierarchy(indv);
 
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto..Ok", context.get_name);
     }
 
-    public void update_class_in_hierarchy(ref Individual indv, bool replace = false)
+    public void update_onto_hierarchy(ref Individual indv, bool replace = false)
     {
         //log.trace ("@1#update_class_in_hierarchy[%s] replace=%s", indv.uri, text (replace));
+        string type_uri = indv.uri;
+        Names  icl;
+        bool   is_class = false;
+        bool   is_prop  = false;
 
-        if (replace == true && indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
-            individuals[ indv.uri ] = indv;
-
-        if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
+        if (indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
         {
             if (replace == true)
                 individuals[ indv.uri ] = indv;
-
-            string  type_uri = indv.uri;
-
-            Classes icl;
-
-            if (replace == false)
-                icl = class2superclasses.get(type_uri, null);
+            else
+                icl = _property.el_2_super_els.get(type_uri, null);
 
             if (icl is null)
-                _update_class(type_uri);
+                _update_element(type_uri, _property, "rdfs:subPropertyOf");
+
+			_property.els [indv.uri] = true;
+			
+            is_prop = true;
+        }
+        else if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
+        {
+            if (replace == true)
+                individuals[ indv.uri ] = indv;
+            else
+                icl = _class.el_2_super_els.get(type_uri, null);
+
+            if (icl is null)
+                _update_element(type_uri, _class, rdfs__subClassOf);
+
+			//_class.els [indv.uri] = true;
+
+            is_class = true;
         }
 
         // если этот класс числится в осиротевших ссылках, найти в подклассах где он упоминается и так-же обновить.
-        if (orphans.get(indv.uri, false) == true)
+        if (is_class && _class.orphans.get(indv.uri, false) == true)
         {
-            Classes nuscs = class2subclasses.get(indv.uri, null);
+            Names nuscs = _class.el_2_sub_els.get(indv.uri, null);
 
             foreach (cl; nuscs.keys)
             {
-                _update_class(cl);
-                orphans[ cl ] = false;
+                 _update_element(cl, _class, rdfs__subClassOf);
+                _class.orphans[ cl ] = false;
+            }
+
+            //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
+        }
+		else
+        if (is_prop && _property.orphans.get(indv.uri, false) == true)
+        {
+            Names nuscs = _property.el_2_sub_els.get(indv.uri, null);
+
+            foreach (cl; nuscs.keys)
+            {
+                _update_element(cl, _property, "rdfs:subPropertyOf");
+                _property.orphans[ cl ] = false;
             }
 
             //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
         }
     }
 
-    private void _update_class(string type_uri)
+    private void _update_element(string type_uri, Bdathe elh, string parent_predicate)
     {
-        //                  writeln ("@b1 update_class_in_hierarchy, uri=", indv.uri);
-        Classes superclasses = Classes.init;
+        // writeln ("@b1 update_element_in_hierarchy, uri=", indv.uri);
+        Names superelementes = Names.init;
 
-        prepare_superclasses(superclasses, individuals, type_uri);
-        class2superclasses[ type_uri ] = superclasses;
+        prepare_superelements(parent_predicate, elh, superelementes, individuals, type_uri);
+        elh.el_2_super_els[ type_uri ] = superelementes;
 
-        foreach (classz; superclasses.keys)
+        foreach (elementz; superelementes.keys)
         {
-            if (individuals.get(classz, Individual.init) == Individual.init)
-                orphans[ classz ] = true;
+            if (individuals.get(elementz, Individual.init) == Individual.init)
+            {
+                elh.orphans[ elementz ] = true;
+                elh.els.remove (elementz);
+            }
 
-            Classes subclasses = class2subclasses.get(classz, Classes.init);
-            subclasses[ type_uri ]     = true;
-            class2subclasses[ classz ] = subclasses;
+            Names subelementes = elh.el_2_sub_els.get(elementz, Names.init);
+            subelementes[ type_uri ]     = true;
+            elh.el_2_sub_els[ elementz ] = subelementes;
         }
     }
 
-    private void prepare_superclasses(ref Classes superclasses, ref Individual[ string ] classes, string look_cl, int level = 0)
+    private void prepare_superelements(string parent_predicate, Bdathe elh,
+                                       ref Names superelementes, ref Individual[ string ] elementes, string look_cl,
+                                       int level = 0)
     {
-        //log.trace ("#1 prepare_superclasses=%s", look_cl);
+        //log.trace ("#1 prepare_superelementes=%s", look_cl);
 
-        Individual ii = classes.get(look_cl, Individual.init);
+        Individual ii = elementes.get(look_cl, Individual.init);
 
-        Resource[] list = ii.getResources(rdfs__subClassOf);
-        foreach (classz; list)
+        Resource[] list = ii.getResources(parent_predicate);
+        foreach (elementz; list)
         {
-            superclasses[ classz.uri ] = true;
-            prepare_superclasses(superclasses, classes, classz.uri, level + 1);
+            superelementes[ elementz.uri ] = true;
+            prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
         }
     }
 }
+

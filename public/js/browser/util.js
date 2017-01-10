@@ -81,7 +81,7 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.toTTL = function (individualList, callback) {
-    var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'"),
+    var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'").result,
         all_prefixes = {},
         prefixes = {},
         triples = [],
@@ -350,7 +350,7 @@ veda.Module(function Util(veda) { "use strict";
       veda.Util.showModal(startForm, undefined, 'edit');
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
-      var results = query(veda.ticket, "'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '" + individual["rdf:type"][0].id + "'");
+      var results = query(veda.ticket, "'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '" + individual["rdf:type"][0].id + "'").result;
       if ( results.length === 0 ) {
         $("#send.action", template).remove();
         $("#edit.action", template).remove();

@@ -120,7 +120,7 @@ class VedaModule
             context = new PThreadContext("cfg:standart_node", process_name, log, main_module_url);
 
         if (node == Individual.init)
-            node = context.getConfiguration();
+            node = context.get_configuration();
 
         cache_of_indv = new Cache!(string, string)(1000, "individuals");
 
@@ -392,7 +392,7 @@ class VedaModule
             if (onto is null)
                 onto = context.get_onto();
 
-            onto.update_class_in_hierarchy(new_indv, true);
+            onto.update_onto_hierarchy(new_indv, true);
 
             cache_of_indv.put(new_indv.uri, new_bin);
 

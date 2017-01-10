@@ -1,7 +1,7 @@
 /**
  * @class veda.IndividualModel
  *
- * This class is used to manipulate with individuals.
+ * This class is used to manipulate individuals.
  */
 veda.Module(function (veda) { "use strict";
 
@@ -14,7 +14,7 @@ veda.Module(function (veda) { "use strict";
    * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
    * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
    */
-  veda.IndividualModel = function (uri, container, template, mode, cache, init) {
+  veda.IndividualModel = function (uri, container, template, mode, cache, init, async) {
 
     var self = riot.observable(this);
 
@@ -26,25 +26,18 @@ veda.Module(function (veda) { "use strict";
       cache     = uri.cache;
       init      = uri.init;
       uri       = uri.uri;
+      async     = uri.async;
     }
 
     // Define Model functions
     this._ = {};
     this._.cache = typeof cache !== "undefined" ? cache : true;
     this._.init = typeof init !== "undefined" ? init : true;
+    this._.async = typeof async !== "undefined" ? async : false;
     this._.isNew = false;
     this._.isSync = false;
     this.properties = {};
     this._.filtered = {};
-
-    if (!uri) {
-      this._.isNew = true;
-      var id = veda.Util.genUri();
-      this.properties["@"] = id;
-      if (this._.cache && veda.cache) {
-        veda.cache[id] = this;
-      }
-    }
 
     function typeHandler (property_uri, values) {
       if (property_uri === "rdf:type") {
@@ -183,8 +176,6 @@ veda.Module(function (veda) { "use strict";
       return this.properties["@"];
     },
     set: function (value) {
-      this._.isNew = false;
-      this._.isSync = false;
       this.properties["@"] = value;
       this.trigger("individual:idChanged", value);
     }
@@ -237,31 +228,33 @@ veda.Module(function (veda) { "use strict";
    * @param {String} uri individual uri
    */
   proto.load = function (uri) {
-    var self = this;
-    self.trigger("individual:beforeLoad");
+    this.trigger("individual:beforeLoad");
     if (typeof uri === "string") {
-      self.id = uri;
-      if (self._.cache && veda.cache[uri]) {
-        self.trigger("individual:afterLoad", veda.cache[uri]);
+      this.id = uri;
+      if (this._.cache && veda.cache[uri]) {
+        this.trigger("individual:afterLoad", veda.cache[uri]);
         return veda.cache[uri];
       }
       try {
-        self._.isNew = false;
-        self._.isSync = true;
-        self.properties = get_individual(veda.ticket, uri);
+        this._.isNew = false;
+        this._.isSync = true;
+        if (this._.async) {
+        } else {
+          this.properties = get_individual(veda.ticket, uri);
+        }
       } catch (e) {
         if (e.status === 422) {
-          self._.isNew = true;
-          self._.isSync = false;
-          self.properties = {
+          this._.isNew = true;
+          this._.isSync = false;
+          this.properties = {
             "@": uri,
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
           };
         } else if (e.status === 472) {
-          self._.isNew = false;
-          self._.isSync = false;
-          self.properties = {
+          this._.isNew = false;
+          this._.isSync = false;
+          this.properties = {
             "@": uri,
             "rdfs:label": [
               {type: "String", data: "No rights", lang: "EN"},
@@ -270,9 +263,9 @@ veda.Module(function (veda) { "use strict";
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
           };
         } else {
-          self._.isNew = false;
-          self._.isSync = false;
-          self.properties = {
+          this._.isNew = false;
+          this._.isSync = false;
+          this.properties = {
             "@": uri,
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
@@ -280,13 +273,17 @@ veda.Module(function (veda) { "use strict";
         }
       }
     } else if (typeof uri === "object") {
-      self._.isNew = false;
-      self._.isSync = true;
-      self.properties = uri;
+      this._.isNew = false;
+      this._.isSync = true;
+      this.properties = uri;
+    } else if (typeof uri === "undefined") {
+      this._.isNew = true;
+      this._.isSync = false;
+      this.id = veda.Util.genUri();
     }
-    if (self._.cache) veda.cache[self.id] = self;
-    if (self._.init) self.init();
-    self.trigger("individual:afterLoad", self);
+    if (this._.cache) veda.cache[this.id] = this;
+    if (this._.init) this.init();
+    this.trigger("individual:afterLoad", this);
     return this;
   };
 

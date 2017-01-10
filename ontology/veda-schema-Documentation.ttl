@@ -217,6 +217,10 @@ v-s:UnitOfMeasure
 v-s:LocalRegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:BackwardLink ;  
+  rdfs:subClassOf v-s:Registered ;    
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Local Regulatory document"@en ;
   rdfs:label "Локальный нормативный документ"@ru ;
 .
@@ -235,6 +239,52 @@ v-s:hasVersionOfLocalRegulatoryDocument
 v-s:VersionOfLocalRegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:LocalRegulatoryDocument ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Verions of local regulatory document"@en ;
   rdfs:label "Версия локального нормативного документа"@ru ;
+.
+v-s:hasDescriptionOfChange
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Description of changes"@en ;
+  rdfs:label "Описание изменений"@ru ;
+  rdfs:range v-s:DescriptionOfChange ;
+  rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
+.
+v-s:hasAddendum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Addendum local regulatory document"@en ;
+  rdfs:label "Приложение ЛНД"@ru ;
+  rdfs:range v-s:Addendum ;
+  rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
+.
+#---------------------------------------------------------
+v-s:DescriptionOfChange
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Description of changes"@en ;
+  rdfs:label "Описание изменений"@ru ;
+.
+v-s:asis
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "As is"@en ;
+  rdfs:label "Было"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:DescriptionOfChange ;
+.
+v-s:tobe
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "To be"@en ;
+  rdfs:label "Стало"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:DescriptionOfChange ;
+.
+
+#---------------------------------------------------------
+v-s:Addendum
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Addendum local regulatory document"@en ;
+  rdfs:label "Приложение ЛНД"@ru ;
 .

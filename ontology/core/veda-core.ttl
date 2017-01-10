@@ -125,6 +125,7 @@ v-s:Bundle
 .
 
 # ------------------------------------------------------------
+
 v-s:Account
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -132,7 +133,11 @@ v-s:Account
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
 .
-#v-s:mailbox
+
+v-s:usesCredential
+  rdf:type owl:Class ;
+  rdfs:label "Credential" ;
+.
 
 v-s:login
   rdf:type owl:DatatypeProperty ;
@@ -141,13 +146,22 @@ v-s:login
   rdfs:label "Логин"@ru ;
   rdfs:range xsd:string ;
 .
+
 v-s:password
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Account ;
+  rdfs:domain v-s:Account, v-s:Credential;
   rdfs:label "Password"@en ;
   rdfs:label "Пароль"@ru ;
   rdfs:range xsd:string ;
 .
+
+v-s:usesCredential
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Account;
+  rdfs:label "uses credential" ;
+  rdfs:range v-s:Credential ;
+.
+
 # ------------------------------------------------------------
 v-s:Codelet
   rdf:type owl:Class ;

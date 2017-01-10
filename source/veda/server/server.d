@@ -149,7 +149,7 @@ class VedaServer : WSClient
 
             core_context = new PThreadContext(node_id, "core_context", log);
             sticket      = core_context.sys_ticket();
-            node         = core_context.getConfiguration();
+            node         = core_context.get_configuration();
             if (node.getStatus() == ResultCode.OK)
                 log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 

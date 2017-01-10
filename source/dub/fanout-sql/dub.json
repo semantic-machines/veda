@@ -3,10 +3,9 @@
 	"description": "veda-fanout-sql",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.0", 
-		"mysql-d": "0.3.2",
-		"smtp": "~master",
-		"d-nanomsg": "~>0.1.2"
+		"backtrace-d": "0.1.2", 
+		"mysql-d": "0.3.3",
+		"d-nanomsg": "0.2.0"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",

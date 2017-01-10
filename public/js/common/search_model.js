@@ -66,7 +66,7 @@ veda.Module(function (veda) { "use strict";
 
       self.fullQuery = q;
 
-      var results = query(veda.ticket, q, self.sort, databases, reopen);
+      var results = query(veda.ticket, q, self.sort, databases, reopen).result;
 
       var t2 = Date.now();
       self.query_time = t2 - t1;

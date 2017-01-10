@@ -25,7 +25,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         individual["rdf:type"].map( function (_class) {
           return _class.specsByProps;
         })
-      )
+        )
     );
 
     var toRender = [];
@@ -39,8 +39,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
           var pre = $("<pre>"),
-            json = individual.properties,
-            ordered = {};
+              json = individual.properties,
+              ordered = {};
           Object.keys(json).sort().forEach(function(key) {
             ordered[key] = json[key];
           });
@@ -232,11 +232,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     // Actions
     var $edit = $("#edit.action", wrapper),
-      $save = $("#save.action", wrapper),
-      $draft = $("#draft.action", wrapper),
-      $showRights = $("#rightsOrigin.action", wrapper),
-      $cancel = $("#cancel.action", wrapper),
-      $delete = $("#delete.action", wrapper);
+        $save = $("#save.action", wrapper),
+        $draft = $("#draft.action", wrapper),
+        $showRights = $("#rightsOrigin.action", wrapper),
+        $cancel = $("#cancel.action", wrapper),
+        $delete = $("#delete.action", wrapper);
 
     // Check rights to manage buttons
     // Update
@@ -336,9 +336,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function modeHandler (e) {
       mode = e.type;
       mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
-      mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
-      mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
-      true;
+          mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
+              mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
+                  true;
       template.attr("data-mode", mode);
       e.stopPropagation();
     }
@@ -378,6 +378,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'].join(" "))+'</a>'
       }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:SendTask')['rdfs:label'].join(" "))+'</a>'
+      }));
     });
 
     // Process RDFa compliant template
@@ -399,8 +404,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var props_ctrls = {};
     $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
       var propertyContainer = $(this),
-        property_uri = propertyContainer.attr("property"),
-        spec = specs[property_uri];
+          property_uri = propertyContainer.attr("property"),
+          spec = specs[property_uri];
       if (property_uri === "@") {
         propertyContainer.text(individual.id);
         return;
@@ -449,16 +454,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     // Related resources & about resources
     rels.map( function () {
-    //$("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
+      //$("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
       var relContainer = $(this),
-        about = relContainer.attr("about"),
-        rel_uri = relContainer.attr("rel"),
-        isEmbedded = relContainer.attr("data-embedded") === "true",
-        spec = specs[rel_uri],
-        rel_inline_template = relContainer.html().trim(),
-        rel_template_uri = relContainer.attr("data-template"),
-        relTemplate,
-        isAbout;
+          about = relContainer.attr("about"),
+          rel_uri = relContainer.attr("rel"),
+          isEmbedded = relContainer.attr("data-embedded") === "true",
+          spec = specs[rel_uri],
+          rel_inline_template = relContainer.html().trim(),
+          rel_template_uri = relContainer.attr("data-template"),
+          relTemplate,
+          isAbout;
 
       var sortableOptions = {
         delay: 150,
@@ -498,14 +503,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           relContainer.sortable("enable");
           var property = new veda.IndividualModel(rel_uri);
           if ( isEmbedded
-             && spec
-             && spec["v-ui:minCardinality"][0] >= 1
-             && !individual.hasValue(rel_uri)
-             && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
+              && spec
+              && spec["v-ui:minCardinality"][0] >= 1
+              && !individual.hasValue(rel_uri)
+              && !(property.hasValue("rdfs:range") && property["rdfs:range"][0].id === "v-s:File")
           ) {
             var valueType = spec && spec.hasValue("v-ui:rangeRestriction") ?
-              spec["v-ui:rangeRestriction"] : property.hasValue("rdfs:range") ?
-              property["rdfs:range"]        : [];
+                spec["v-ui:rangeRestriction"] : property.hasValue("rdfs:range") ?
+                property["rdfs:range"]        : [];
             var emptyValue = new veda.IndividualModel();
             if ( valueType.length ) {
               emptyValue["rdf:type"] = valueType;
@@ -573,9 +578,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         if (doc_rel_uri === rel_uri && mode === "edit") {
           values.map(function (value) {
             if (
-              value.id !== about.id // prevent self parent
-              && rel_uri !== "v-s:parent" // prevent circular parent
-              && !value.hasValue("v-s:parent") // do not change parent
+                value.id !== about.id // prevent self parent
+                && rel_uri !== "v-s:parent" // prevent circular parent
+                && !value.hasValue("v-s:parent") // do not change parent
             ) {
               value["v-s:parent"] = [about];
             }
@@ -588,10 +593,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // About resource
     $("[about]:not([rel]):not([property])", wrapper).map( function () {
       var aboutContainer = $(this),
-        about_template_uri = aboutContainer.attr("data-template"),
-        about_inline_template = aboutContainer.children(),
-        isEmbedded = aboutContainer.attr("data-embedded") === "true",
-        about, aboutTemplate;
+          about_template_uri = aboutContainer.attr("data-template"),
+          about_inline_template = aboutContainer.children(),
+          isEmbedded = aboutContainer.attr("data-embedded") === "true",
+          about, aboutTemplate;
       if ( about_template_uri ) {
         var templateIndividual = new veda.IndividualModel( about_template_uri );
         aboutTemplate = $( templateIndividual["v-ui:template"][0].toString() );
@@ -617,8 +622,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // About resource property
     $("[about][property]:not([rel] *):not([about] *)", wrapper).map( function () {
       var propertyContainer = $(this),
-        property_uri = propertyContainer.attr("property"),
-        about;
+          property_uri = propertyContainer.attr("property"),
+          about;
       if (propertyContainer.attr("about") === "@") {
         about = individual;
         propertyContainer.attr("about", about.id);
@@ -678,9 +683,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           return acc && validation[property_uri].state;
         }, true);
         validation.state = validation.state && embedded.reduce(function (acc, template) {
-          var embeddedValidation = template.data("validation");
-          return embeddedValidation ? acc && embeddedValidation.state : acc;
-        }, true);
+              var embeddedValidation = template.data("validation");
+              return embeddedValidation ? acc && embeddedValidation.state : acc;
+            }, true);
         template.trigger("internal-validated");
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded
@@ -738,11 +743,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
 
       var control = $(this),
-        property_uri = control.attr("property"),
-        property = new veda.IndividualModel(property_uri),
-        type = control.attr("data-type") || property["rdfs:range"][0].id,
-        spec = specs[property_uri],
-        controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_generic;
+          property_uri = control.attr("property"),
+          property = new veda.IndividualModel(property_uri),
+          type = control.attr("data-type") || property["rdfs:range"][0].id,
+          spec = specs[property_uri],
+          controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_generic;
 
       //control.removeAttr("property");
 
@@ -804,10 +809,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     $("veda-control[rel]:not([rel] *):not([about] *)", wrapper).map( function () {
 
       var control = $(this),
-        rel_uri = control.attr("rel"),
-        spec = specs[rel_uri],
-        rel = new veda.IndividualModel(rel_uri),
-        controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_link;
+          rel_uri = control.attr("rel"),
+          spec = specs[rel_uri],
+          rel = new veda.IndividualModel(rel_uri),
+          controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_link;
 
       //control.removeAttr("rel");
 
@@ -1009,13 +1014,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // cardinality check
     if (spec.hasValue("v-ui:minCardinality")) {
       var minCardinalityState = (values.length >= spec["v-ui:minCardinality"][0] &&
-        // filter empty values
-        values.length === values.filter(function(item) {
-          return (
+      // filter empty values
+      values.length === values.filter(function(item) {
+        return (
             typeof item === "boolean" ? true :
-            typeof item === "number" ? true : !!item
-          ) ;
-        }).length);
+                typeof item === "number" ? true : !!item
+        ) ;
+      }).length);
       result.state = result.state && minCardinalityState;
       if (!minCardinalityState) {
         result.cause.push("v-ui:minCardinality");
@@ -1023,14 +1028,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     if (spec.hasValue("v-ui:maxCardinality")) {
       var maxCardinalityState = (
-        values.length <= spec["v-ui:maxCardinality"][0] &&
-        // filter empty values
-        values.length === values.filter(function(item) {
-          return (
-            typeof item === "boolean" ? true :
-            typeof item === "number" ? true : !!item
-          ) ;
-        }).length
+          values.length <= spec["v-ui:maxCardinality"][0] &&
+          // filter empty values
+          values.length === values.filter(function(item) {
+            return (
+                typeof item === "boolean" ? true :
+                    typeof item === "number" ? true : !!item
+            ) ;
+          }).length
       );
       result.state = result.state && maxCardinalityState;
       if (!maxCardinalityState) {
@@ -1039,52 +1044,52 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     // check each value
     result = result && values.reduce(function (result, value) {
-      // regexp check
-      if (spec.hasValue("v-ui:regexp")) {
-        var regexp = new RegExp(spec["v-ui:regexp"][0]);
-        var regexpState = regexp.test(value.toString());
-        result.state = result.state && regexpState;
-        if (!regexpState) {
-          result.cause.push("v-ui:regexp");
-        }
-      }
-      // range check
-      switch (spec["rdf:type"][0].id) {
-        case "v-ui:DatatypePropertySpecification" :
-          if (spec.hasValue("v-ui:minValue")) {
-            var minValueState = (value >= spec["v-ui:minValue"][0]);
-            result.state = result.state && minValueState;
-            if (!minValueState) {
-              result.cause.push("v-ui:minValue");
+          // regexp check
+          if (spec.hasValue("v-ui:regexp")) {
+            var regexp = new RegExp(spec["v-ui:regexp"][0]);
+            var regexpState = regexp.test(value.toString());
+            result.state = result.state && regexpState;
+            if (!regexpState) {
+              result.cause.push("v-ui:regexp");
             }
           }
-          if (spec.hasValue("v-ui:maxValue")) {
-            var maxValueState = (value <= spec["v-ui:maxValue"][0]);
-            result.state = result.state && maxValueState;
-            if (!maxValueState) {
-              result.cause.push("v-ui:maxValue");
-            }
+          // range check
+          switch (spec["rdf:type"][0].id) {
+            case "v-ui:DatatypePropertySpecification" :
+              if (spec.hasValue("v-ui:minValue")) {
+                var minValueState = (value >= spec["v-ui:minValue"][0]);
+                result.state = result.state && minValueState;
+                if (!minValueState) {
+                  result.cause.push("v-ui:minValue");
+                }
+              }
+              if (spec.hasValue("v-ui:maxValue")) {
+                var maxValueState = (value <= spec["v-ui:maxValue"][0]);
+                result.state = result.state && maxValueState;
+                if (!maxValueState) {
+                  result.cause.push("v-ui:maxValue");
+                }
+              }
+              if (spec.hasValue("v-ui:minLength")) {
+                var minLengthState = (value.toString().length >= spec["v-ui:minLength"][0]);
+                result.state = result.state && minLengthState;
+                if (!minLengthState) {
+                  result.cause.push("v-ui:minLength");
+                }
+              }
+              if (spec.hasValue("v-ui:maxLength")) {
+                var maxLengthState = (value.toString().length <= spec["v-ui:maxLength"][0]);
+                result.state = result.state && maxLengthState;
+                if (!maxLengthState) {
+                  result.cause.push("v-ui:maxLength");
+                }
+              }
+              break;
+            case "v-ui:ObjectPropertySpecification" :
+              break;
           }
-          if (spec.hasValue("v-ui:minLength")) {
-            var minLengthState = (value.toString().length >= spec["v-ui:minLength"][0]);
-            result.state = result.state && minLengthState;
-            if (!minLengthState) {
-              result.cause.push("v-ui:minLength");
-            }
-          }
-          if (spec.hasValue("v-ui:maxLength")) {
-            var maxLengthState = (value.toString().length <= spec["v-ui:maxLength"][0]);
-            result.state = result.state && maxLengthState;
-            if (!maxLengthState) {
-              result.cause.push("v-ui:maxLength");
-            }
-          }
-          break;
-        case "v-ui:ObjectPropertySpecification" :
-          break;
-      }
-      return result;
-    }, result);
+          return result;
+        }, result);
     return result;
   }
 
@@ -1097,93 +1102,93 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     if (_class) {
       properties = _class.domainProperties;
       $(".className", template).append (
-        $("<span/>", {"about": _class.id, "property": "rdfs:label"})
+          $("<span/>", {"about": _class.id, "property": "rdfs:label"})
       );
     } else {
       properties = individual.properties;
     }
     $(".properties", template).append (
-      Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
+        Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
 
-        if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
+          if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
 
-        var property = new veda.IndividualModel(property_uri);
+          var property = new veda.IndividualModel(property_uri);
 
-        var result = $("<div/>").append( propTmpl );
-        $(".name", result).append (
-          $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-        );
+          var result = $("<div/>").append( propTmpl );
+          $(".name", result).append (
+              $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
+          );
 
-        var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
+          var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
 
-        switch ( range ) {
-          case "rdfs:Literal":
-          case "xsd:string":
-            if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
+          switch ( range ) {
+            case "rdfs:Literal":
+            case "xsd:string":
+              if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
+                $(".value", result).append (
+                    "<veda-control property='" + property_uri + "' data-type='source'></veda-control>"
+                );
+              } else {
+                $(".value", result).append (
+                    "<div property='" + property_uri + "' class='view -edit -search'/>" +
+                    "<veda-control property='" + property_uri + "' data-type='multilingualText' class='-view edit search'></veda-control>"
+                );
+              }
+              break;
+            case "xsd:integer":
+            case "xsd:nonNegativeInteger":
               $(".value", result).append (
-                "<veda-control property='" + property_uri + "' data-type='source'></veda-control>"
+                  "<div property='" + property_uri + "' />" +
+                  "<veda-control property='" + property_uri + "' data-type='integer' class='-view edit search'></veda-control>"
               );
-            } else {
+              break;
+            case "xsd:decimal":
               $(".value", result).append (
-                "<div property='" + property_uri + "' class='view -edit -search'/>" +
-                "<veda-control property='" + property_uri + "' data-type='multilingualText' class='-view edit search'></veda-control>"
+                  "<div property='" + property_uri + "' />" +
+                  "<veda-control property='" + property_uri + "' data-type='decimal' class='-view edit search'></veda-control>"
               );
-            }
-            break;
-          case "xsd:integer":
-          case "xsd:nonNegativeInteger":
-            $(".value", result).append (
-              "<div property='" + property_uri + "' />" +
-              "<veda-control property='" + property_uri + "' data-type='integer' class='-view edit search'></veda-control>"
-            );
-            break;
-          case "xsd:decimal":
-            $(".value", result).append (
-              "<div property='" + property_uri + "' />" +
-              "<veda-control property='" + property_uri + "' data-type='decimal' class='-view edit search'></veda-control>"
-            );
-            break;
-          case "xsd:dateTime":
-            $(".value", result).append (
-              "<div property='" + property_uri + "' />" +
-              "<veda-control property='" + property_uri + "' data-type='dateTime' class='-view edit search'></veda-control>"
-            );
-            break;
-          case "xsd:boolean":
-            $(".name", result).empty();
-            $(".value", result).append (
-              "<div class='checkbox'>" +
-                "<label>" +
+              break;
+            case "xsd:dateTime":
+              $(".value", result).append (
+                  "<div property='" + property_uri + "' />" +
+                  "<veda-control property='" + property_uri + "' data-type='dateTime' class='-view edit search'></veda-control>"
+              );
+              break;
+            case "xsd:boolean":
+              $(".name", result).empty();
+              $(".value", result).append (
+                  "<div class='checkbox'>" +
+                  "<label>" +
                   "<veda-control property='" + property_uri + "' data-type='boolean'></veda-control>" +
                   "<em about='" + property_uri + "' property='rdfs:label' class='text-muted'></em>" +
-                "</label>" +
-              "</div>"
-            );
-            break;
-          case "rdfs:Resource":
-            $(".value", result).append (
-              "<div property='" + property_uri + "' />" +
-              "<veda-control property='" + property_uri + "' data-type='generic' class='-view edit search'></veda-control>"
-            );
-            break;
-          default:
-            if (property_uri === "v-s:attachment") {
-              $(".value", result).append (
-                "<div rel='" + property_uri + "' data-template='v-ui:FileTemplateWithComment' data-embedded='true' />" +
-                "<veda-control rel='" + property_uri + "' data-type='file' class='-view edit -search'></veda-control>"
+                  "</label>" +
+                  "</div>"
               );
-            } else {
+              break;
+            case "rdfs:Resource":
               $(".value", result).append (
-                "<div rel='" + property_uri + "' data-template='v-ui:ClassNameLabelLinkTemplate' />" +
-                "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
+                  "<div property='" + property_uri + "' />" +
+                  "<veda-control property='" + property_uri + "' data-type='generic' class='-view edit search'></veda-control>"
               );
-            }
-            break;
-        }
-        if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
+              break;
+            default:
+              if (property_uri === "v-s:attachment") {
+                $(".value", result).append (
+                    "<div rel='" + property_uri + "' data-template='v-ui:FileTemplateWithComment' data-embedded='true' />" +
+                    "<veda-control rel='" + property_uri + "' data-type='file' class='-view edit -search'></veda-control>"
+                );
+              } else {
+                $(".value", result).append (
+                    "<div rel='" + property_uri + "' data-template='v-ui:ClassNameLabelLinkTemplate' />" +
+                    "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
+                );
+              }
+              break;
+          }
+          if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
 
-        return result;
-      })
+          return result;
+        })
     );
     return template;
   }

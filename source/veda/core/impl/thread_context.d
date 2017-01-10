@@ -182,10 +182,10 @@ class PThreadContext : Context
         return _acl_indexes;
     }
 
-	public string get_config_uri ()
-	{
-		return node_id;
-	}
+    public string get_config_uri()
+    {
+        return node_id;
+    }
 
     this(string _node_id, string context_name, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
@@ -218,7 +218,7 @@ class PThreadContext : Context
 //        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
 //        is_traced_module[ P_MODULE.scripts ]          = true;
 
-        getConfiguration();
+        get_configuration();
 
         _vql = new VQL(this);
 
@@ -332,7 +332,7 @@ class PThreadContext : Context
         return ticket;
     }
 
-    public Individual getConfiguration()
+    public Individual get_configuration()
     {
         if (node == Individual.init && node_id !is null)
         {
@@ -702,22 +702,45 @@ class PThreadContext : Context
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket;
-            Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            Individual[] candidate_users = this.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;
                 if (user_id is null)
                     continue;
 
-                Resources pass = user.resources.get(veda_schema__password, _empty_Resources);
-                if (pass.length > 0 && pass[ 0 ] == password)
+                string pass;
+                string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+                if (usesCredential_uri !is null)
+                {
+                    log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
+                    Individual i_usesCredential = this.get_individual(&sticket, usesCredential_uri);
+                    pass = i_usesCredential.getFirstLiteral("v-s:password");
+                }
+                else
+                {
+                    pass = user.getFirstLiteral("v-s:password");
+
+                    Individual i_usesCredential;
+                    i_usesCredential.uri = user.uri ~ "-crdt";
+                    i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
+                    i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
+                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", false, true);
+                    log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
+                    user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
+                    user.removeResource("v-s:password");
+                    op_res = this.put_individual(&sticket, user.uri, user, false, "", false, true);
+                    log.trace("authenticate: update user[%s], res=%s", user, op_res);
+                }
+
+                if (pass !is null && pass == password)
                 {
                     ticket = create_new_ticket(user_id);
                     return ticket;
                 }
             }
 
-            log.trace("fail authenticate, login=[%s] password=[%s]", login, password);
+            log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
 
             ticket.result = ResultCode.Authentication_Failed;
 
@@ -741,10 +764,10 @@ class PThreadContext : Context
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
 
-        return get_ticket(systicket_id);
+        return get_ticket(systicket_id, true);
     }
 
-    public Ticket *get_ticket(string ticket_id)
+    public Ticket *get_ticket(string ticket_id, bool is_systicket = false)
     {
         //StopWatch sw; sw.start;
 
@@ -806,10 +829,9 @@ class PThreadContext : Context
                     log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
 
                 SysTime now = Clock.currTime();
-                if (now.stdTime >= tt.end_time)
+                if (now.stdTime >= tt.end_time && !is_systicket)
                 {
-                    if (trace_msg[ T_API_110 ] == 1)
-                        log.trace("тикет просрочен, id=%s", ticket_id);
+                    log.trace("ticket expired, ticket=[%s], user=[%s]", tt.id, tt.user_uri);
 
                     if (ticket_id == "guest")
                     {
@@ -819,6 +841,7 @@ class PThreadContext : Context
                     else
                     {
                         tt        = new Ticket;
+                        tt.id     = "?";
                         tt.result = ResultCode.Ticket_expired;
                     }
                     return tt;
@@ -829,7 +852,7 @@ class PThreadContext : Context
                 }
 
                 if (trace_msg[ T_API_120 ] == 1)
-                    log.trace("тикет, %s", *tt);
+                    log.trace("ticket: %s", *tt);
             }
             return tt;
         }
@@ -942,47 +965,37 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, trace_group);
     }
 
-    public string[] get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int top, int limit)
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit)
     {
-        //StopWatch sw; sw.start;
+        SearchResult sr;
 
-        try
-        {
-            if (query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0)
-            {
-            }
-            else
-            {
-                query_str = "'*' == '" ~ query_str ~ "'";
-            }
+        if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
+            query_str = "'*' == '" ~ query_str ~ "'";
 
-            string[] res;
-            _vql.get(ticket, query_str, sort_str, db_str, top, limit, res);
-            return res;
-        }
-        finally
-        {
-//            stat(CMD_GET, sw);
-        }
+        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit);
+
+        return sr;
     }
 
     public Individual get_individual(Ticket *ticket, string uri)
     {
-        //       StopWatch sw; sw.start;
+        Individual individual = Individual.init;
+
+        if (ticket is null)
+        {
+            log.trace("get_individual, uri=%s, ticket is null", uri);
+            return individual;
+        }
 
         if (trace_msg[ T_API_150 ] == 1)
         {
             if (ticket !is null)
                 log.trace("get_individual, uri=%s, ticket=%s", uri, ticket.id);
-            else
-                log.trace("get_individual, uri=%s, ticket=null", uri);
         }
 
         try
         {
-            Individual individual = Individual.init;
-
-            string     individual_as_cbor = get_from_individual_storage(uri);
+            string individual_as_cbor = get_from_individual_storage(uri);
             if (individual_as_cbor !is null && individual_as_cbor.length > 1)
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
@@ -998,7 +1011,7 @@ class PThreadContext : Context
                 else
                 {
                     if (trace_msg[ T_API_160 ] == 1)
-                        log.trace("get_individual, not authorized, uri=%s", uri);
+                        log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
                     individual.setStatus(ResultCode.Not_Authorized);
                 }
             }
@@ -1063,13 +1076,17 @@ class PThreadContext : Context
 
         rs = ResultCode.Unprocessable_Entity;
 
+        if (ticket is null)
+        {
+            rs = ResultCode.Ticket_not_found;
+            log.trace("get_individual as cbor, uri=%s, ticket is null", uri);
+            return null;
+        }
 
         if (trace_msg[ T_API_180 ] == 1)
         {
             if (ticket !is null)
-                log.trace("get_individual as cbor, uri=%s, ticket=%s", uri, ticket.id);
-            else
-                log.trace("get_individual as cbor, uri=%s, ticket=null", uri);
+                log.trace("get_individual as cbor, uri=[%s], ticket=[%s]", uri, ticket.id);
         }
 
         try
@@ -1091,7 +1108,7 @@ class PThreadContext : Context
             else
             {
                 if (trace_msg[ T_API_190 ] == 1)
-                    log.trace("get_individual as cbor, not authorized, uri=%s", uri);
+                    log.trace("get_individual as cbor, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
                 rs = ResultCode.Not_Authorized;
             }
 

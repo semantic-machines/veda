@@ -3,8 +3,8 @@
 	"description": "veda-ttlreader",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.0", 
-                "d-nanomsg": "0.1.2",
+		"backtrace-d": "0.1.2", 
+                "d-nanomsg": "0.2.0",
                 "libasync": "0.8.2"
 	},
         "versions": ["isModule"],

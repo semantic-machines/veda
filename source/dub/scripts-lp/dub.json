@@ -3,8 +3,8 @@
 	"description": "veda-scripts-lp",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.0", 
-		"d-nanomsg": "0.1.2"
+		"backtrace-d": "0.1.2", 
+		"d-nanomsg": "0.2.0"
 	},
         "versions": ["libV8", "isModule"],
         "license": "LGPL v3",
