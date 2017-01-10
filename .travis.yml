@@ -50,7 +50,7 @@ script:
   - node ./qa/testPerson.js
   - node ./qa/testDrafts.js
   - node ./qa/testDeleteAndRecovery.js
-  - node ./qa/testRights.js
+#  - node ./qa/testRights.js
   - node ./qa/testComment.js
   - node ./qa/testJournal.js
   - node ./qa/testAttachment.js
