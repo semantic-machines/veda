@@ -662,6 +662,7 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "sort" ]      = sort;
             jreq[ "databases" ] = databases;
             jreq[ "reopen" ]    = reopen;
+            jreq[ "from" ]       = from;
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
