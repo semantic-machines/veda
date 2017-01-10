@@ -196,7 +196,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params, async);
   }
 
-  window.query = function (ticket, q, sort, databases, reopen, top, limit, async) {
+  window.query = function (ticket, q, sort, databases, reopen, top, limit, async, from) {
     var params = {
       type: "GET",
       url: "query",
@@ -206,6 +206,7 @@ veda.Module(function Backend(veda) { "use strict";
         "sort": sort || null,
         "databases" : databases || null,
         "reopen" : reopen || false,
+	"from"	: from || 0,
         "top" : top || 0,
         "limit" : limit || 1000
       }

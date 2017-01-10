@@ -9,7 +9,7 @@ then
 fi
 ./update-version-ttl.sh
 
-if [ -z $1 ] || [ $1 == "ccus" ] ; then
+if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
     echo make start VEDA-CCUS
     if [ -z $GOROOT ]; then
