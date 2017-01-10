@@ -137,10 +137,6 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 		if control == control_None {
 			msg = <-cc_prepare_in
-
-			if msg != "T" {
-				log.Printf("ws[%s]:preparer, recv msg=[%s]", pc.ws.RemoteAddr(), msg)
-			}
 		}
 
 		if len(msg) == 0 {
@@ -153,7 +149,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 		}
 
 		if msg[0] != 'T' {
-			log.Printf("ws[%s]:receive msg %s", pc.ws.RemoteAddr(), msg)
+			log.Printf("ws[%s]:preparer:RECEIVE [%s]", pc.ws.RemoteAddr(), msg)
 		}
 
 		if len(msg) > 3 {
@@ -363,7 +359,7 @@ func (pc *ccusConn) receiver() {
 					break
 				}
 			} else {
-				log.Printf("ws[%s]:reciever:SEND: msg=[%s]", pc.ws.RemoteAddr(), msg)
+				log.Printf("ws[%s]:reciever:SEND [%s]", pc.ws.RemoteAddr(), msg)
 			}
 		}
 	}
