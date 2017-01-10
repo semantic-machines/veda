@@ -69,7 +69,7 @@ func (pc *ccusConn) get_list_of_changes() string {
 			i_count := g_count
 
 			if len(res) == 0 {
-				res = res + i_uid + "=" + strconv.Itoa(i_count)
+				res = i_uid + "=" + strconv.Itoa(i_count)
 			} else {
 				res = res + "," + i_uid + "=" + strconv.Itoa(i_count)
 			}
@@ -111,10 +111,10 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 	pc.cc_out = make(chan updateInfo)
 
 	defer func() {
-        if r := recover(); r != nil {
-            log.Println("Recovered in preparer", r)
-        }
-    }()
+		if r := recover(); r != nil {
+			log.Println("Recovered in preparer", r)
+		}
+	}()
 
 	for {
 		var control int
@@ -137,7 +137,10 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 
 		if control == control_None {
 			msg = <-cc_prepare_in
-			//log.Printf("ws[%s]:preparer, recv msg=[%s]", pc.ws.RemoteAddr(), msg)
+
+			if msg != "T" {
+				log.Printf("ws[%s]:preparer, recv msg=[%s]", pc.ws.RemoteAddr(), msg)
+			}
 		}
 
 		if len(msg) == 0 {
@@ -201,8 +204,8 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 		} else if msg[0] == '=' {
 			// get current status
 			res := pc.get_list_of_subscribe()
-
 			cc_prepare_out <- "=" + res
+
 		} else if len(msg) == 2 && msg[0] == '-' && msg[1] == '*' {
 			// unsubscribe all
 
@@ -235,11 +238,9 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 							g_count := pc.get_counter_4_uid(uid)
 							if uid_counter < g_count {
 								res := pc.get_list_of_subscribe()
-
 								cc_prepare_out <- res
 								last_check_opid = pc.get_last_opid()
 							}
-
 						}
 					}
 				} else if len(expr) == 1 {
