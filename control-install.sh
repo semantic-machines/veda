@@ -149,11 +149,12 @@ if ! ldconfig -p | grep libraptor2; then
     mkdir tmp
     cd tmp
 
-    wget http://download.librdf.org/source/raptor2-2.0.15.tar.gz -P tmp
+    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P tmp
     cd tmp
-    tar -xvzf raptor2-2.0.15.tar.gz
+    tar -xvzf raptor2_2_0_15.tar.gz
 
-    cd raptor2-2.0.15
+    cd raptor-raptor2_2_0_15
+    ./autogen.sh
     ./configure
     ./make
     sudo make install
