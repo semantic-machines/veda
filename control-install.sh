@@ -57,7 +57,9 @@ if ! go version | grep $GO_VER ; then
     cd ..
 fi
 
-export GOPATH=$HOME/go
+#export GOPATH=$HOME/go
+echo 'export GOPATH=$HOME/go'  >> ~/.bashrc
+source ~/.bashrc
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
 cp -a ./source/golang-third-party/cbor $GOPATH/src
