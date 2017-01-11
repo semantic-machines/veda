@@ -146,6 +146,7 @@ fi
 
 if ! ldconfig -p | grep libraptor2; then
 
+    sudo apt-get install libxml2-dev
     mkdir tmp
     cd tmp
 
@@ -163,3 +164,4 @@ if ! ldconfig -p | grep libraptor2; then
     cd ..
 
 fi
+
