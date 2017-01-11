@@ -48,8 +48,11 @@ if ! go version | grep $GO_VER ; then
     sudo rm /usr/bin/go
     sudo rm /usr/bin/gofmt
     sudo mv go /usr/local
-    export GOROOT=/usr/local/go
-    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    #export GOROOT=/usr/local/go
+    #export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
+    echo 'export GOROOT=/usr/local/go'  >> ~/.bashrc
+    echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin'  >> ~/.bashrc
+    source ~/.bashrc
     go version
     cd ..
 fi
