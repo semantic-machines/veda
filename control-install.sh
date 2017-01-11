@@ -156,7 +156,7 @@ if ! ldconfig -p | grep libraptor2; then
     tar -xvzf raptor2_2_0_15.tar.gz
 
     cd raptor-raptor2_2_0_15
-    ./autogen.sh
+    ./autogen.sh --disable-gtk-doc
     ./configure
     ./make
     sudo make install
