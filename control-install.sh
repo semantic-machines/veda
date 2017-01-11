@@ -146,6 +146,8 @@ fi
 
 if ! ldconfig -p | grep libraptor2; then
 
+    sudo apt-get install gtk-doc-tools
+
     mkdir tmp
     cd tmp
 
