@@ -740,7 +740,11 @@ v-ui:IconModalTemplate
       var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
       $(".action", tmpl).remove();
       $(".well.well-sm", tmpl).remove();
-      $(".btn.btn-success", tmpl).remove();
+      $(".btn", tmpl).remove();
+
+      /*if($("div", tmpl).is("#prop-tabs",tmpl)){
+        $("#prop-tabs", tmpl).remove();
+      };*/
       $("[about][data-template='v-ui:IconModalTemplate']", tmpl).empty().removeAttr("data-template").append("<a href='#/@' class='glyphicon glyphicon-search'></a>");
 
       individual.present(cntr, tmpl, newMode);
