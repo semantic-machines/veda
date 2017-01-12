@@ -150,8 +150,8 @@ function get_type_of_docId(task)
 function is_in_docflow_and_set_if_true(task)
 {
     
-    // remove next line 
-//    return [get_new_variable('result', newUri(false))];
+// # 285
+    return [get_new_variable('result', newUri(false))];
     
     try
     {
