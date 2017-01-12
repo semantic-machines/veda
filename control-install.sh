@@ -151,16 +151,19 @@ fi
 
 if ! ldconfig -p | grep libraptor2; then
 
+    sudo apt-get install gtk-doc-tools
     sudo apt-get install libxml2-dev
+
     mkdir tmp
     cd tmp
 
-    wget http://download.librdf.org/source/raptor2-2.0.15.tar.gz -P tmp
+    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P tmp
     cd tmp
-    tar -xvzf raptor2-2.0.15.tar.gz
+    tar -xvzf raptor2_2_0_15.tar.gz
 
-    cd raptor2-2.0.15
-    ./configure
+    cd raptor-raptor2_2_0_15
+    autoreconf -i
+    ./autogen.sh
     ./make
     sudo make install
     sudo ldconfig
@@ -169,4 +172,3 @@ if ! ldconfig -p | grep libraptor2; then
     cd ..
 
 fi
-
