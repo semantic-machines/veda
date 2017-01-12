@@ -104,12 +104,8 @@ Json resource_to_json(Resource resource)
     }
     else if (resource.type == DataType.Datetime)
     {
-//	writeln ("@v #r->j #1 resource.get!long=", resource.get!long);
-
         SysTime st = SysTime(unixTimeToStdTime(resource.get!long), UTC());
         resource_json[ "data" ] = st.toISOExtString();
-
-//	writeln ("@v #r->j #2 val=", st.toISOExtString());
     }
     else
         resource_json[ "data" ] = Json.undefined;

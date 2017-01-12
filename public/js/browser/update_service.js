@@ -26,13 +26,27 @@ veda.Module(function UpdateService(veda) { "use strict";
         connectDelay = 10000,
         maxConnectDelay = 60000,
         list = {},
-        delta = {};
+        delta = {},
+        ready;
+
+    this.ready = function () {
+      return !!ready;
+    }
+    this.start = function () {
+      console.log("update service started");
+      return ready = true;
+    }
+    this.stop = function () {
+      console.log("update service stopped");
+      return ready = false;
+    }
 
     this.list = function () {
       return list;
     }
 
     this.synchronize = function() {
+      if (!self.ready()) { return }
       clearInterval(msgInterval);
       msgInterval = undefined;
       list = {};
@@ -44,6 +58,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.subscribe = function(uri) {
+      if (!self.ready()) { return }
       if (!uri) { return }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
@@ -65,6 +80,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.unsubscribe = function (uri) {
+      if (!self.ready()) { return }
       if (uri === "*" || !uri) {
         clearInterval(msgInterval);
         msgInterval = undefined;
@@ -170,6 +186,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function messageHandler(event) {
+      if (!self.ready()) { return }
       var msg = event.data,
           uris;
       //console.log("server -> client:", msg);

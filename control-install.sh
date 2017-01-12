@@ -49,12 +49,17 @@ if ! go version | grep $GO_VER ; then
     sudo rm /usr/bin/gofmt
     sudo mv go /usr/local
     export GOROOT=/usr/local/go
-    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
+    echo 'export GOROOT=/usr/local/go'  >> ~/.bashrc
+    echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin'  >> ~/.bashrc
+    source ~/.bashrc
     go version
     cd ..
 fi
 
 export GOPATH=$HOME/go
+echo 'export GOPATH=$HOME/go'  >> ~/.bashrc
+source ~/.bashrc
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
 cp -a ./source/golang-third-party/cbor $GOPATH/src
@@ -146,15 +151,19 @@ fi
 
 if ! ldconfig -p | grep libraptor2; then
 
+    sudo apt-get install gtk-doc-tools
+    sudo apt-get install libxml2-dev
+
     mkdir tmp
     cd tmp
 
-    wget http://download.librdf.org/source/raptor2-2.0.15.tar.gz -P tmp
+    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P tmp
     cd tmp
-    tar -xvzf raptor2-2.0.15.tar.gz
+    tar -xvzf raptor2_2_0_15.tar.gz
 
-    cd raptor2-2.0.15
-    ./configure
+    cd raptor-raptor2_2_0_15
+    autoreconf -i
+    ./autogen.sh
     ./make
     sudo make install
     sudo ldconfig
