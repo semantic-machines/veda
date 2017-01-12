@@ -735,7 +735,13 @@ v-ui:IconModalTemplate
     if (parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.attr("data-mode");
     }
-    individual.present(cntr, undefined, newMode);
+
+    var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+    $(".action", tmpl).remove();
+    $(".well.well-sm", tmpl).remove();
+
+    individual.present(cntr, tmpl, newMode);
+
     individual.one("individual:beforeReset", function () {
       $modal.modal("hide");
     });
@@ -745,6 +751,7 @@ v-ui:IconModalTemplate
     template.on("remove", function () {
       $modal.modal("hide").remove();
     });
+
   });
   //# sourceURL=v-ui:IconModalTemplate
 </script>
