@@ -164,7 +164,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 					}
 				}
 				pc.ready = true
-				//log.Printf("ws[%s] send #1", pc.ws.RemoteAddr()); 
+				//log.Printf("ws[%s] send #1", pc.ws.RemoteAddr());
 				cc_prepare_out <- ""
 				continue
 			}
@@ -180,20 +180,20 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 				uid := msg_parts[0][1:len(msg_parts[0])]
 				update_counter, err := strconv.Atoi(msg_parts[1])
 				if err != nil {
-					//log.Printf("ws[%s] send #2", pc.ws.RemoteAddr()); 
+					//log.Printf("ws[%s] send #2", pc.ws.RemoteAddr());
 					cc_prepare_out <- ""
 					continue
 				}
 				opid, err := strconv.Atoi(msg_parts[2])
 				if err != nil {
-					//log.Printf("ws[%s] send #3", pc.ws.RemoteAddr()); 
+					//log.Printf("ws[%s] send #3", pc.ws.RemoteAddr());
 					cc_prepare_out <- ""
 					continue
 				}
 				new_info := updateInfo{uid, opid, update_counter, nil}
 				//log.Printf("ws[%s] @2 ni=%s", ni)
 				pc.cc_in <- new_info
-				//log.Printf("ws[%s] send #4", pc.ws.RemoteAddr()); 
+				//log.Printf("ws[%s] send #4", pc.ws.RemoteAddr());
 				cc_prepare_out <- ""
 
 			} else {
@@ -212,9 +212,9 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			pc.count_2_uid = make(map[string]int)
 
 		} else if len(msg) > 3 {
-			
-			res := "?";
-			
+
+			res := ""
+
 			// subscribe
 			msg_parts := strings.Split(msg, ",")
 
@@ -233,7 +233,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 						if uid_info[0] == '+' {
 							uid_counter, err := strconv.Atoi(expr[1])
 							if err != nil {
-								//log.Printf("ws[%s] send #5", pc.ws.RemoteAddr()); 
+								//log.Printf("ws[%s] send #5", pc.ws.RemoteAddr());
 								cc_prepare_out <- ""
 								continue
 							}
@@ -259,7 +259,7 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 				}
 				//log.Printf("ws[%s]uid_info=%s", pc.ws.RemoteAddr(), uid_info)
 			}
-			//log.Printf("ws[%s] send #6 %s", pc.ws.RemoteAddr(), res); 
+			//log.Printf("ws[%s] send #6 %s", pc.ws.RemoteAddr(), res);
 			cc_prepare_out <- res
 
 		}
