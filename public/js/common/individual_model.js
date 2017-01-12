@@ -14,7 +14,7 @@ veda.Module(function (veda) { "use strict";
    * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
    * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
    */
-  veda.IndividualModel = function (uri, container, template, mode, cache, init, async) {
+  veda.IndividualModel = function (uri, container, template, mode, cache, init) {
 
     var self = riot.observable(this);
 
@@ -26,14 +26,12 @@ veda.Module(function (veda) { "use strict";
       cache     = uri.cache;
       init      = uri.init;
       uri       = uri.uri;
-      async     = uri.async;
     }
 
     // Define Model functions
     this._ = {};
     this._.cache = typeof cache !== "undefined" ? cache : true;
     this._.init = typeof init !== "undefined" ? init : true;
-    this._.async = typeof async !== "undefined" ? async : false;
     this._.isNew = false;
     this._.isSync = false;
     this.properties = {};
@@ -238,10 +236,7 @@ veda.Module(function (veda) { "use strict";
       try {
         this._.isNew = false;
         this._.isSync = true;
-        if (this._.async) {
-        } else {
-          this.properties = get_individual(veda.ticket, uri);
-        }
+        this.properties = get_individual(veda.ticket, uri);
       } catch (e) {
         if (e.status === 422) {
           this._.isNew = true;
