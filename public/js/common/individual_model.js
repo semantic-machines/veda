@@ -288,9 +288,9 @@ veda.Module(function (veda) { "use strict";
    */
   proto.save = function(parent) {
     var self = this;
-    self.trigger("individual:beforeSave");
     // Do not save individual to server if nothing changed
     if (self._.isSync) return;
+    self.trigger("individual:beforeSave");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
