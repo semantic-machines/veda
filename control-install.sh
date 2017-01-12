@@ -153,6 +153,7 @@ if ! ldconfig -p | grep libraptor2; then
 
     sudo apt-get install gtk-doc-tools
     sudo apt-get install libxml2-dev
+    sudo apt-get remove libraptor2-0
 
     mkdir tmp
     cd tmp
