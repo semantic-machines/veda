@@ -736,11 +736,23 @@ v-ui:IconModalTemplate
       newMode = parentTmpl.attr("data-mode");
     }
 
-    var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-    $(".action", tmpl).remove();
-    $(".well.well-sm", tmpl).remove();
+    if (newMode === "view") {
+      var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+      $(".action", tmpl).remove();
+      $(".well.well-sm", tmpl).remove();
+      $(".btn.btn-success", tmpl).remove();
+      $("[about][data-template='v-ui:IconModalTemplate']", tmpl).empty().removeAttr("data-template").append("<a href='#/@' class='glyphicon glyphicon-search'></a>");
 
-    individual.present(cntr, tmpl, newMode);
+      individual.present(cntr, tmpl, newMode);
+
+      setTimeout(function () {
+        $("a", tmpl)
+          .removeAttr("href")
+          .css("color", "inherit");
+      }, 100);
+    } else {
+      individual.present(cntr, tmpl, newMode);
+    }
 
     individual.one("individual:beforeReset", function () {
       $modal.modal("hide");
