@@ -1920,7 +1920,7 @@ d:a7441b96b-5bd5-38cf-649b-0c3880d57840
 
 d:9b9354e19fb24d74a71ab476100bf3e9
   a v-s:Sector;
-  rdfs:label "Техническое обслуживание и ремонт технологического оборудования"^^xsd:string;
+  rdfs:label "Технологическое обслуживание оборудования"^^xsd:string;
 .
 d:2ae4749b19b14d6fb136c14ffe09f61a
   a v-s:Sector;
