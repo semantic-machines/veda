@@ -123,9 +123,9 @@ fi
 
 if ! ldconfig -p | grep libtraildb; then
 
-    sudo apt-get install libarchive-dev pkg-config
-    sudo apt-get remove libjudydebian1
-    sudo apt-get remove libjudy-dev
+    sudo apt-get install -y libarchive-dev pkg-config
+    sudo apt-get remove -y libjudydebian1
+    sudo apt-get remove -y libjudy-dev
 
     mkdir tmp
     cd tmp
@@ -149,13 +149,13 @@ if ! ldconfig -p | grep libtraildb; then
     cd ..
 fi
 
-sudo apt-get remove libraptor2-0
+sudo apt-get remove -y libraptor2-0
 if ! ldconfig -p | grep libraptor2; then
 
-    sudo apt-get install gtk-doc-tools
-    sudo apt-get install libxml2-dev
-    sudo apt-get install flex
-    sudo apt-get install bison
+    sudo apt-get install -y gtk-doc-tools
+    sudo apt-get install -y libxml2-dev
+    sudo apt-get install -y flex
+    sudo apt-get install -y bison
 
     mkdir tmp
     cd tmp
