@@ -38,7 +38,7 @@ veda.Module(function Backend(veda) { "use strict";
     }
   }
 
-  // Deferred only version
+  // Deferred (promise) only version
   /*function call_server(params, async) {
     if( typeof async !== "undefined" ) {
       params.async = async;
@@ -57,6 +57,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.flush = function (params) {
+    return window.flush(params.module_id, params.wait_op_id, params.async);
+  }
 
   window.get_rights = function (ticket, uri, async) {
     var params = {
@@ -68,6 +71,9 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params, async);
+  }
+  veda.get_rights = function (params) {
+    return window.get_rights(params.ticket, params.uri, params.async);
   }
 
   window.get_rights_origin = function (ticket, uri, async) {
@@ -81,6 +87,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.get_rights_origin = function (params) {
+    return window.get_rights_origin(params.ticket, params.uri, params.async);
+  }
 
   window.get_membership = function (ticket, uri, async) {
     var params = {
@@ -92,6 +101,9 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params, async);
+  }
+  veda.get_membership = function (params) {
+    return window.get_membership(params.ticket, params.uri, params.async);
   }
 
   window.authenticate = function (login, password, async) {
@@ -105,6 +117,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.authenticate = function (params) {
+    return window.authenticate(params.login, params.password, params.async);
+  }
 
   window.get_ticket_trusted = function (ticket, login, async) {
     var params = {
@@ -117,6 +132,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.get_ticket_trusted = function (params) {
+    return window.get_ticket_trusted(params.ticket, params.login, params.async);
+  }
 
   window.is_ticket_valid = function (ticket, async) {
     var params = {
@@ -127,6 +145,9 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params, async);
+  }
+  veda.is_ticket_valid = function (ticket, async) {
+    return window.is_ticket_valid(params.ticket, params.async);
   }
 
   window.get_operation_state = function (module_id, wait_op_id, async) {
@@ -140,6 +161,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.get_operation_state = function (params) {
+    return window.get_operation_state(params.module_id, params.wait_op_id, params.async);
+  }
 
   window.wait_module = function (module_id, op_id, async) {
     var timeout = 1;
@@ -152,6 +176,9 @@ veda.Module(function Backend(veda) { "use strict";
       timeout += 1;
     }
   }
+  veda.wait_module = function (params) {
+    return window.wait_module(params.module_id, params.op_id, params.async);
+  }
 
   window.restart = function (ticket, async) {
     var params = {
@@ -162,6 +189,9 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params, async);
+  }
+  veda.restart = function (params) {
+    return window.restart (params.ticket, params.async);
   }
 
   window.backup = function (to_binlog, async) {
@@ -174,6 +204,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.backup = function (params) {
+    return window.backup(params.to_binlog, params.async);
+  }
 
   window.count_individuals = function (async) {
     var params = {
@@ -182,6 +215,9 @@ veda.Module(function Backend(veda) { "use strict";
       data: {}
     };
     return call_server(params, async);
+  }
+  veda.count_individuals = function (params) {
+    return window.count_individuals(params.async);
   }
 
   window.set_trace = function (idx, state, async) {
@@ -195,23 +231,29 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.set_trace = function (params) {
+    return window.set_trace(params.idx, params.state, params.async);
+  }
 
-  window.query = function (ticket, q, sort, databases, reopen, top, limit, async, from) {
+  window.query = function (ticket, query, sort, databases, reopen, top, limit, from, async) {
     var params = {
       type: "GET",
       url: "query",
       data: {
         "ticket": ticket,
-        "query": q,
+        "query": query,
         "sort": sort || null,
         "databases" : databases || null,
         "reopen" : reopen || false,
-	"from"	: from || 0,
         "top" : top || 0,
-        "limit" : limit || 1000
+        "limit" : limit || 1000,
+        "from"  : from || 0
       }
     };
     return call_server(params, async);
+  }
+  veda.query = function (params) {
+    return window.query(params.ticket, params.query, params.sort, params.databases, params.reopen, params.top, params.limit, params.from, params.async);
   }
 
   window.get_individual = function (ticket, uri, reopen, async) {
@@ -226,6 +268,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.get_individual = function (params) {
+    return window.get_individual(params.ticket, params.uri, params.reopen, params.async);
+  }
 
   window.get_individuals = function (ticket, uris, async) {
     var params = {
@@ -238,6 +283,9 @@ veda.Module(function Backend(veda) { "use strict";
       contentType: "application/json"
     };
     return call_server(params, async);
+  }
+  veda.get_individuals = function (params) {
+    return window.get_individuals(params.ticket, params.uris, params.async);
   }
 
 //////////////////////////
@@ -256,6 +304,9 @@ veda.Module(function Backend(veda) { "use strict";
       contentType: "application/json"
     };
     return call_server(params, async);
+  }
+  veda.remove_individual = function (params) {
+    return window.remove_individual(params.ticket, params.uri, params.prepare_events, params.event_id, params.transaction_id, params.async);
   }
 
   window.put_individual = function (ticket, individual, prepare_events, event_id, transaction_id, async) {
@@ -278,6 +329,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.put_individual = function (params) {
+    return window.put_individual(params.ticket, params.individual, params.prepare_events, params.event_id, params.transaction_id, params.async);
+  }
 
   window.add_to_individual = function (ticket, individual, prepare_events, event_id, transaction_id, async) {
     var params = {
@@ -293,6 +347,9 @@ veda.Module(function Backend(veda) { "use strict";
       contentType: "application/json"
     };
     return call_server(params, async);
+  }
+  veda.add_to_individual = function (params) {
+    return window.add_to_individual(params.ticket, params.individual, params.prepare_events, params.event_id, params.transaction_id, params.async);
   }
 
   window.set_in_individual = function (ticket, individual, prepare_events, event_id, transaction_id, async) {
@@ -310,6 +367,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.set_in_individual = function (params) {
+    return window.set_in_individual(params.ticket, params.individual, params.prepare_events, params.event_id, params.transaction_id, params.async);
+  }
 
   window.remove_from_individual = function (ticket, individual, prepare_events, event_id, transaction_id, async) {
     var params = {
@@ -326,6 +386,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.remove_from_individual = function (params) {
+    return window.remove_from_individual(params.ticket, params.individual, params.prepare_events, params.event_id, params.transaction_id, params.async);
+  }
 
 /////////////////////////////////////////
 
@@ -341,6 +404,9 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params, async);
   }
+  veda.get_property_value = function (params) {
+    return window.get_property_value(params.ticket, params.uri, params.property_uri, params.async);
+  }
 
   window.execute_script = function (script, async) {
     var params = {
@@ -352,6 +418,9 @@ veda.Module(function Backend(veda) { "use strict";
       contentType: "application/json"
     };
     return call_server(params, async);
+  }
+  veda.execute_script = function (params) {
+    return window.execute_script(params.script, params.async);
   }
 
 });
