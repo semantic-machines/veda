@@ -1395,6 +1395,16 @@ if (doc) {
           routes['review'][simple+'editable'] = [false];
           routes['review'][simple+'deadlineDays'] = [10];
           routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
+
+          if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest') 
+            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
+            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
+            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
+              routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:3faff975-440f-4499-98c5-eb5eaf4fb04a")]; // Специалист по ведению кредиторов
+              routes['examination'][simple+'visible'] = [true];
+              routes['examination'][simple+'editable'] = [false];
+              routes['examination'][simple+'deadlineDays'] = [10];
+          }
         }
       }
       if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {

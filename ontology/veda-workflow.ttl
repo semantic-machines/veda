@@ -2444,7 +2444,8 @@ v-ui:WorkItemStartedEventTemplate
   <hr class="margin-sm">
   <div class="row">
   <div class="col-md-3 col-sm-3 event-type">
-    <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong></a>
+    <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>
+    <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
   </div>
   <div class="col-md-7 col-sm-6 event-desc">
     <div property="rdfs:label"></div>
@@ -2489,7 +2490,8 @@ v-ui:DecisionFormStartedEventTemplate
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
-      <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong></a>
+      <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>
+      <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
       <div property="rdfs:label"></div>

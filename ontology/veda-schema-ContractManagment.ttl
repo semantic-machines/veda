@@ -314,7 +314,6 @@ v-s:ContractorTemplate
     <div about="@" rel="v-s:linkedOrganization" data-template="v-ui:LabelLinkTemplate"></div>
     <hr class="view -edit -search">
 
-
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
     <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
@@ -340,7 +339,7 @@ v-s:ContractorTemplate
     <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
 
     <hr class="view -edit -search">
-    <br>
+
     <div class="checkbox">
       <label>
         <veda-control property="v-s:lockedInOrigin" data-type="boolean"></veda-control>
@@ -365,6 +364,12 @@ v-s:ContractorTemplate
         <em about="v-s:isDebitor" property="rdfs:label"></em>
       </label>
     </div>
+
+    <hr class="view -edit -search">
+
+    <em about="mnd-s:hasLockedInOriginReason" property="rdfs:label"></em>
+    <div rel="mnd-s:hasLockedInOriginReason" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+    <veda-control data-type="link" rel="mnd-s:hasLockedInOriginReason" class="-view edit search fulltext dropdown"></veda-control>
 
     <hr class="view -edit -search">
 
