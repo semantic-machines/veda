@@ -720,8 +720,9 @@ v-ui:IconModalTemplate
   template.on("click", function (e) {
     e.preventDefault();
     var modal = $("#individual-modal-template").html();
-    var $modal = $(modal).modal();
+    var $modal = $(modal).modal({"show": false});
     $("body").append($modal);
+    $modal.modal("show");
     var cntr = $(".modal-body", $modal);
     var ok = $("#ok", $modal);
     cntr.on("valid", function () {
@@ -735,29 +736,7 @@ v-ui:IconModalTemplate
     if (parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.attr("data-mode");
     }
-
-    if (newMode === "view") {
-      var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-      $(".action", tmpl).remove();
-      $(".well.well-sm", tmpl).remove();
-      $(".btn", tmpl).remove();
-
-      /*if($("div", tmpl).is("#prop-tabs",tmpl)){
-        $("#prop-tabs", tmpl).remove();
-      };*/
-      $("[about][data-template='v-ui:IconModalTemplate']", tmpl).empty().removeAttr("data-template").append("<a href='#/@' class='glyphicon glyphicon-search'></a>");
-
-      individual.present(cntr, tmpl, newMode);
-
-      setTimeout(function () {
-        $("a", tmpl)
-          .removeAttr("href")
-          .css("color", "inherit");
-      }, 100);
-    } else {
-      individual.present(cntr, tmpl, newMode);
-    }
-
+    individual.present(cntr, undefined, newMode);
     individual.one("individual:beforeReset", function () {
       $modal.modal("hide");
     });
@@ -767,7 +746,6 @@ v-ui:IconModalTemplate
     template.on("remove", function () {
       $modal.modal("hide").remove();
     });
-
   });
   //# sourceURL=v-ui:IconModalTemplate
 </script>
@@ -1457,7 +1435,7 @@ v-ui:DocumentEventTemplate
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".start-process", template).addClass('text-danger');
-      $(".start-process", template).css('text-decoration','line-through');
+      $(".start-process > .glyphicon-minus-sign", template).show();
     }
   }
   if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-wf:ProcessStopped') {
@@ -1469,7 +1447,11 @@ v-ui:DocumentEventTemplate
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
-      <a id="exp" class="start-process" href="#" style="display:none"><span class="glyphicon glyphicon-chevron-down"></span> <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong></a>
+      <span class="start-process" href="#" style="display:none">
+        <a href="#" id="exp"><span class="glyphicon glyphicon-chevron-down"></span></a>
+        <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
+        <span class="glyphicon glyphicon-minus-sign" style="display:none;"></span>
+      </span>
       <span class="non-start-process" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-3 col-sm-6 event-desc">
@@ -1489,9 +1471,8 @@ v-ui:DocumentEventTemplate
       </div>
       <div rel="v-wf:onProcess">
         <div>
-          <span about="rdf:type" property="rdfs:label"></span>:
-          <em about="@" data-template="v-ui:LabelLinkTemplate"></em>
-          <a class="stop-process glyphicon glyphicon-remove" style="display:none"></a>
+          <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
+          <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
         </div>
       </div>
     </div>
@@ -1510,11 +1491,12 @@ v-ui:DocumentEventTemplate
         if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
           process['v-wf:isStopped'] = [ true ];
           process.save();
+          $(this).remove();
         }
       });
     }
     if (process.hasValue("v-wf:isStopped", true)) {
-      $(".start-process", template).trigger("click");
+      $(".start-process > #exp", template).trigger("click");
     }
   }
   //# sourceURL=v-ui:DocumentEventTemplateAfter
