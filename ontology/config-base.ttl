@@ -335,6 +335,7 @@ cfg:Event_3
   rdfs:label "Скрипт создает журнал документа" ;
   rdfs:comment "Скрипт создает журнал документа" ;
   v-s:triggerByType v-s:Journaling, v-s:AutomaticallyVersioned ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
