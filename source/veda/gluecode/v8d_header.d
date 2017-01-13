@@ -138,7 +138,7 @@ struct TransactionItem
             if (code < 0)
             {
                 rc = ResultCode.Unprocessable_Entity;
-                log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
+                log.trace("ERR! v8d:transaction:cbor2individual [%s]", indv_serl);
                 return;
             }
             else
@@ -167,7 +167,7 @@ struct TransactionItem
                 if (prev_indv.getStatus() == ResultCode.OK)
                     indv = *indv_apply_cmd(cmd, &prev_indv, &indv);
                 else
-                    log.trace("g_context.get_individual[%s] fail=%s", indv.uri, prev_indv.getStatus());
+                    log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", cmd, indv.uri, prev_indv.getStatus());
             }
         }
     }
