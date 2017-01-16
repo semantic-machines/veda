@@ -342,6 +342,12 @@ v-s:ContractorTemplate
 
     <div class="checkbox">
       <label>
+        <veda-control property="v-s:locked" data-type="boolean"></veda-control>
+        <em about="v-s:locked" property="rdfs:label"></em>
+      </label>
+    </div>
+    <div class="checkbox">
+      <label>
         <veda-control property="v-s:lockedInOrigin" data-type="boolean"></veda-control>
         <em about="v-s:lockedInOrigin" property="rdfs:label"></em>
       </label>
