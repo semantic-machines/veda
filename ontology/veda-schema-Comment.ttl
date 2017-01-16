@@ -145,6 +145,9 @@ v-s:SingleCommentTemplate
       <em about="v-s:attachment" property="rdfs:label">Вложение</em>
       <div rel="v-s:attachment" data-template="v-ui:FileTemplate" data-embedded="true"></div>
       <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search"></veda-control>
+      <em about="v-s:linkedObject" property="rdfs:label">Вложение</em>
+      <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
       <br>
       <button class="btn btn-primary action view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
       <button class="btn btn-success action -view edit -search" id="save">Ok</button>
@@ -173,10 +176,12 @@ v-s:RecursiveCommentTemplate
       buttons.remove();
     }
   }
-
-   ;
   if (!individual.rights.hasValue("v-s:canUpdate", true)) {
     $("#edit-comment", template).remove();
+  }
+
+  if ( !individual.hasValue("v-s:linkedObject") ) {
+    $(".linked-object", template).remove();
   }
   //# sourceURL=v-s:RecursiveCommentTemplate
 </script>
@@ -209,6 +214,10 @@ v-s:RecursiveCommentTemplate
         <span property="rdfs:label"></span>
       </div>
       <div rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
+      <div class="linked-object">
+        <em about="v-s:linkedObject" property="rdfs:label"></em>
+        <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      </div>
       <small>
         <a href="#" id="reply" class="action" about="v-s:Reply" property="rdfs:label"></a>
         &nbsp;
