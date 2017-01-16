@@ -288,7 +288,7 @@ v-s:AccountingDoc
   rdfs:label "Первичный документ"@ru ;
 .
 
-# ------------------------------------------------------------
+#------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;
@@ -321,6 +321,50 @@ v-s:ContractorTemplate
     <em about="v-s:shortLabel" property="rdfs:label"></em>
     <div property="v-s:shortLabel" class="view -edit -search"></div>
     <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+
+
+     <em about="mnd-s:hasContractorLock" property="rdfs:label"></em>
+     <table class="table table-condensed table-bordered">
+       <thead>
+         <tr class="active">
+           <th width="20%" about="v-s:dateFrom" property="rdfs:label"></th>
+           <th width="20%" about="v-s:dateTo" property="rdfs:label"></th>
+           <th width="60%" about="mnd-s:hasLockedReason" property="rdfs:label"></th>
+         </tr>
+       </thead>
+       <tbody rel="mnd-s:hasContractorLock" data-embedded="true">
+         <tr>
+           <td>
+             <div property="v-s:dateFrom" class="view -edit search"> </div>
+             <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+           </td>
+           <td>
+             <div property="v-s:dateTo" class="view -edit search"> </div>
+             <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+           </td>
+           <td>
+             <div property="mnd-s:hasLockedReason" class="view -edit -search"></div>
+             <veda-control data-type="link" rel="mnd-s:hasLockedReason" class="-view edit search fulltext dropdown"></veda-control>
+           </td>
+         </tr>
+       </tbody>
+     </table>
+     <veda-control rel="mnd-s:hasContractorLock" data-type="link" class="-view edit -search create"></veda-control>
+     <br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <hr class="view -edit -search">
 
