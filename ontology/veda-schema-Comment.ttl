@@ -23,6 +23,18 @@ v-s:Comment
   rdfs:label "Комментарий "@ru ;
 .
 
+#-- Спецификации --
+
+v-s:PsLinkedObjectForComment
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Comment;
+  v-ui:forProperty v-s:linkedObject ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "v-s:linkedObject property specification for v-s:Comment class"@en ;
+  rdfs:label "Спецификация свойства v-s:linkedObject для класса v-s:Comment"@ru ;
+.
+
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
 v-s:Comment_BaseUser
   rdf:type v-s:Group ;
@@ -165,27 +177,26 @@ v-s:RecursiveCommentTemplate
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
 <script>
-  var buttons = $("#edit-comment, #delete", template);
   individual.on("individual:propertyModified", handler);
   template.one("remove", function () {
     individual.off("individual:propertyModified", handler);
   });
   handler("v-s:hasComment", individual["v-s:hasComment"]);
+  handler("v-s:linkedObject", individual["v-s:linkedObject"]);
   function handler (property_uri, values) {
-    if (property_uri === "v-s:hasComment" && values.length) {
-      buttons.remove();
+    if (property_uri === "v-s:hasComment") {
+      values.length ? $("#edit-comment, #delete", template).hide() : $("#edit-comment, #delete", template).show();
+    }
+    if (property_uri === "v-s:linkedObject") {
+      values.length ? $(".linked-object", template).show() : $(".linked-object", template).hide();
     }
   }
   if (!individual.rights.hasValue("v-s:canUpdate", true)) {
     $("#edit-comment", template).remove();
   }
-
-  if ( !individual.hasValue("v-s:linkedObject") ) {
-    $(".linked-object", template).remove();
-  }
   //# sourceURL=v-s:RecursiveCommentTemplate
 </script>
-<div class="media">
+<div class="media" style="overflow:initial;">
   <div class="media-left" rel="v-s:creator">
     <div about="@" rel="v-s:employee">
       <script>
@@ -197,7 +208,7 @@ v-s:RecursiveCommentTemplate
       </div>
     </div>
   </div>
-  <div class="media-body">
+  <div class="media-body" style="overflow:initial;">
     <div id="comment-content">
       <div>
         <span rel="v-s:creator">
@@ -216,7 +227,9 @@ v-s:RecursiveCommentTemplate
       <div rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
       <div class="linked-object">
         <em about="v-s:linkedObject" property="rdfs:label"></em>
-        <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+        <ul rel="v-s:linkedObject">
+          <li about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></li>
+        </ul>
       </div>
       <small>
         <a href="#" id="reply" class="action" about="v-s:Reply" property="rdfs:label"></a>

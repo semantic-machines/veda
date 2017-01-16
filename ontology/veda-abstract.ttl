@@ -207,8 +207,8 @@ v-s:linkedObject
   rdf:type owl:ObjectProperty ;
   rdfs:label "Linked object"@en ;
   rdfs:label "Связанный объект"@ru ;
-  rdfs:range v-s:Thing ;
-  rdfs:domain v-s:Thing ;
+  rdfs:range v-s:UserThing ;
+  rdfs:domain v-s:UserThing ;
 .
 v-s:tag
   rdf:type owl:DatatypeProperty ;
