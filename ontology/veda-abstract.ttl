@@ -203,6 +203,13 @@ v-s:hasLink
   rdfs:range v-s:Link ;
   rdfs:domain v-s:Thing ;
 .
+v-s:linkedObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Linked object"@en ;
+  rdfs:label "Связанный объект"@ru ;
+  rdfs:range v-s:Thing ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:tag
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Tags"@en ;
