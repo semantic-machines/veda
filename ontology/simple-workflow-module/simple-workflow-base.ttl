@@ -866,10 +866,17 @@ if (doc) {
         routes['coordination1'][simple+'deadlineDays'] = [5];  
         routes['coordination1'][simple+'comment'] = [new String('Сальдо расчетов, наличие просроченной задолженности')];   
 
-// Согласование2 - все люди, вычисленные ниже, редактируемое с комментом "Информация о контракте"
-// Найти все Контракты и Допы, у которых поле v-s:supplier = текущий документ / v-s:backwardTarget (Досье) / v-s:backwardTarget (Организация)
-// У этих Контрактов и Допов собрать всех людей из поля mnd-s:supportSpecialistOfContract
-        routes['coordination2'][simple+'participant'] = []; // TODO
+        if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:backwardTarget')) {
+          var squery = "( 'rdf:type' == 'mnd-s:Contract' || 'rdf:type' == 'mnd-s:AdditionalAgreement' ) && 'v-s:supplier' == '"+doc['v-s:backwardTarget'][0]['v-s:backwardTarget'][0].id+"'";
+          console.log(squery);
+          var s = new veda.SearchModel(squery, null);
+          Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
+            var obj = new veda.IndividualModel(res_id);
+            if (obj.hasValue('mnd-s:supportSpecialistOfContract')) {		
+              routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat([new veda.IndividualModel(obj['mnd-s:supportSpecialistOfContract'][0].id)]);
+            }
+          }); 
+        }
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
         routes['coordination2'][simple+'deadlineDays'] = [5];  
