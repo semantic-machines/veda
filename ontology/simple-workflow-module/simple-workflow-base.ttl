@@ -855,26 +855,102 @@ if (doc) {
   }
 //---------------------------------------------------------------------------------------------------------------------------Запрос на согласование контрагента
   if (doc['rdf:type'][0].id === "mnd-s:ContractorCategoryRequest") {
-    routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:dc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
-    routes['coordination1'][simple+'visible'] = [true];
-    routes['coordination1'][simple+'editable'] = [false];
-    routes['coordination1'][simple+'deadlineDays'] = [5];
 
-    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:39bd6fed-fad3-453e-bca4-e8ebd0e3cc73")];
-    routes['coordination2'][simple+'visible'] = [true];
-    routes['coordination2'][simple+'editable'] = [false];
-    routes['coordination2'][simple+'deadlineDays'] = [5];
+    if (doc.hasValue('mnd-s:hasContractorInteractionCategory') && doc['mnd-s:hasContractorInteractionCategory'][0].id == 'd:a188a7057-11d1-ce95-4e3c-3c4712b754f0') {
+      // Блокировка
+      if (doc.hasValue('mnd-s:contractorRiskDecisionToAccept') && doc['mnd-s:contractorRiskDecisionToAccept'][0] == false) {
+        // НЕ оценка рисков
+        routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70006692")]; // глав бух
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+        routes['coordination1'][simple+'deadlineDays'] = [5];  
+        routes['coordination1'][simple+'comment'] = [new String('Сальдо расчетов, наличие просроченной задолженности')];   
 
-    routes['coordination3'][simple+'visible'] = [true];
-    routes['coordination3'][simple+'editable'] = [true];
-    routes['coordination3'][simple+'deadlineDays'] = [10];
+        if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:backwardTarget')) {
+          var squery = "( 'rdf:type' == 'mnd-s:Contract' || 'rdf:type' == 'mnd-s:AdditionalAgreement' ) && 'v-s:supplier' == '"+doc['v-s:backwardTarget'][0]['v-s:backwardTarget'][0].id+"'";
+          console.log(squery);
+          var s = new veda.SearchModel(squery, null);
+          Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
+            var obj = new veda.IndividualModel(res_id);
+            if (obj.hasValue('mnd-s:supportSpecialistOfContract')) {		
+              routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat([new veda.IndividualModel(obj['mnd-s:supportSpecialistOfContract'][0].id)]);
+            }
+          }); 
+        }
+        routes['coordination2'][simple+'visible'] = [true];
+        routes['coordination2'][simple+'editable'] = [true];
+        routes['coordination2'][simple+'deadlineDays'] = [5];  
+        routes['coordination2'][simple+'comment'] = [new String('Информация о контракте')];   
 
-    if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
-      routes['examination'][simple+'participant'] = veda.user['v-s:hasAppointment'];
-      routes['examination'][simple+'visible'] = [true];
-      routes['examination'][simple+'editable'] = [false];
-      routes['examination'][simple+'deadlineDays'] = [10];
-      routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+        routes['coordination3'][simple+'participant'] = [new veda.IndividualModel("d:aaf889b74-6caa-8b21-5404-c6a9f91f8666")]; // ПУ
+        routes['coordination3'][simple+'visible'] = [true];
+        routes['coordination3'][simple+'editable'] = [true];
+        routes['coordination3'][simple+'deadlineDays'] = [5];  
+        routes['coordination3'][simple+'comment'] = [new String('Заключение о возможности блокировки')];   
+      } else {
+        // Оценка рисков
+        routes['instruction'][simple+'participant'] = [
+          new veda.IndividualModel("d:mondi_position_71015289"), // Фин директор
+          new veda.IndividualModel("d:mondi_position_71020115")]; // Начальник УЗ
+        routes['instruction'][simple+'visible'] = [true];
+        routes['instruction'][simple+'editable'] = [true];
+        routes['instruction'][simple+'deadlineDays'] = [5];
+
+        if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
+          routes['instruction2'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+          routes['instruction2'][simple+'visible'] = [true];
+          routes['instruction2'][simple+'editable'] = [true];
+          routes['instruction2'][simple+'deadlineDays'] = [5];
+          routes['instruction2'][simple+'comment'] = [new String('Оценка рисков произведена')];
+        }        	
+      }
+    } else {
+      if (doc.hasValue('mnd-s:contractorRiskDecisionToAccept') && doc['mnd-s:contractorRiskDecisionToAccept'][0] == false) {
+        // НЕ оценка рисков
+        routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:dc50f0d3-0d1b-4505-874a-09c5a9c7333f")];
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [false];
+        routes['coordination1'][simple+'deadlineDays'] = [5];
+
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:39bd6fed-fad3-453e-bca4-e8ebd0e3cc73")];
+        routes['coordination2'][simple+'visible'] = [true];
+        routes['coordination2'][simple+'editable'] = [false];
+        routes['coordination2'][simple+'deadlineDays'] = [5];
+
+        routes['coordination3'][simple+'visible'] = [true];
+        routes['coordination3'][simple+'editable'] = [true];
+        routes['coordination3'][simple+'deadlineDays'] = [10];
+
+        if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
+          routes['examination'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+          routes['examination'][simple+'visible'] = [true];
+          routes['examination'][simple+'editable'] = [false];
+          routes['examination'][simple+'deadlineDays'] = [10];
+          routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+        }
+      } else {
+        // Оценка рисков
+        routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:aaf889b74-6caa-8b21-5404-c6a9f91f8666")]; // ПУ
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+        routes['coordination1'][simple+'deadlineDays'] = [5];  
+        routes['coordination1'][simple+'comment'] = [new String('Заключение о возможности блокировки')];   
+
+        routes['instruction'][simple+'participant'] = [
+          new veda.IndividualModel("d:mondi_position_71015289"), // Фин директор
+          new veda.IndividualModel("d:mondi_position_71020115")]; // Начальник УЗ
+        routes['instruction'][simple+'visible'] = [true];
+        routes['instruction'][simple+'editable'] = [true];
+        routes['instruction'][simple+'deadlineDays'] = [5];
+        
+        if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
+          routes['instruction2'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+          routes['instruction2'][simple+'visible'] = [true];
+          routes['instruction2'][simple+'editable'] = [true];
+          routes['instruction2'][simple+'deadlineDays'] = [5];
+          routes['instruction2'][simple+'comment'] = [new String('Оценка рисков произведена')];
+        }
+      }
     }
   }
 //---------------------------------------------------------------------------------------------------------------------Заявка на создание/изменение контрагента

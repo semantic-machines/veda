@@ -111,6 +111,13 @@ v-s:lockedInOrigin
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
+v-s:locked
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Locked"@en ;
+  rdfs:label "Заблокирован"@ru ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:deletedInOrigin
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Deleted in origin"@en ;
@@ -195,6 +202,13 @@ v-s:hasLink
   rdfs:label "Связанный объект"@ru ;
   rdfs:range v-s:Link ;
   rdfs:domain v-s:Thing ;
+.
+v-s:linkedObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Linked object"@en ;
+  rdfs:label "Связанный объект"@ru ;
+  rdfs:range v-s:UserThing ;
+  rdfs:domain v-s:UserThing ;
 .
 v-s:tag
   rdf:type owl:DatatypeProperty ;
