@@ -2254,7 +2254,7 @@ s-wf:UserTaskFormTemplate
 <script>
   var isMine = (
     veda.appointment
-    && veda.appointment["v-s:occupation"].length
+    && veda.appointment.hasValue("v-s:occupation")
     && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id
   ) || veda.user && veda.user.id === individual["v-wf:to"][0].id ;
 
