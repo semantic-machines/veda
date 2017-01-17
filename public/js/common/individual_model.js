@@ -346,9 +346,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.update = function () {
     var self = this;
-    if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
-    }
     if (!this._.isNew) {
       this._.filtered = {};
       var original;
@@ -374,6 +371,9 @@ veda.Module(function (veda) { "use strict";
       });
       self._.isNew = false;
       self._.isSync = true;
+    }
+    if ( this.hasValue("v-s:isDraft", true) ) {
+      veda.drafts.remove(this.id);
     }
   };
 

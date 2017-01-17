@@ -633,6 +633,7 @@ td > #rel-actions {
   top: 0px;
   right:0px;
   z-index: 99;
+  opacity: 0.75;
 }
 .sortable-placeholder {
   outline: 3px dashed #aaa!important;
