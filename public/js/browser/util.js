@@ -523,6 +523,9 @@ veda.Module(function Util(veda) { "use strict";
     $("body").append(modal);
     var container = $(".modal-body", modal);
     individual.present(container, template, mode);
+    $(".action#cancel", modal).click(function () {
+      modal.modal("hide").remove();
+    });
     return modal;
   }
 
