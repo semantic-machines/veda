@@ -114,12 +114,14 @@ if ! ldconfig -p | grep libnanomsg; then
     cmake ..
     make
     sudo make install
-    cd ..
-    cd ..
-    cd ..
 
-    sudo echo '/usr/local/lib/x86_64-linux-gnu' >> etc/ld.so.conf
+    echo '/usr/local/lib/x86_64-linux-gnu' > x86_64-linux-gnu-local.conf
+    sudo cp x86_64-linux-gnu-local.conf /etc/ld.so.conf.d/x86_64-linux-gnu-local.conf
     sudo ldconfig
+
+    cd ..
+    cd ..
+    cd ..
 
 fi
 
