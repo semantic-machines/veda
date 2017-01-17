@@ -59,6 +59,7 @@ script:
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
   - node ./qa/testNetComplexRoute.js
+  - node ./qa/testRepeatComplexRoute.js
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
