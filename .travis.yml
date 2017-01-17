@@ -45,9 +45,8 @@ before_script:
   - cat $PWD/logs/veda-scripts-main-stderr.log
   - cat $PWD/logs/veda-server-stderr.log
   - cat $PWD/logs/veda-ttlreader-stderr.log
-
-veda-webserver-stderr.log 
- - cat $PWD/veda_s.log
+  - cat $PWD/logs/veda-webserver-stderr.log 
+  - cat $PWD/veda_s.log
   - cat $PWD/logs/veda-core-server_*.log          
 
 # Run API & integration test
