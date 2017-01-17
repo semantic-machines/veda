@@ -154,6 +154,7 @@ if ! ldconfig -p | grep libtraildb; then
 fi
 
 sudo apt-get remove -y libraptor2-0
+ldconfig -p | grep libraptor2
 if ! ldconfig -p | grep libraptor2; then
 
     sudo apt-get install -y gtk-doc-tools
@@ -164,8 +165,7 @@ if ! ldconfig -p | grep libraptor2; then
     mkdir tmp
     cd tmp
 
-    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P tmp
-    cd tmp
+    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P .
     tar -xvzf raptor2_2_0_15.tar.gz
 
     cd raptor-raptor2_2_0_15
