@@ -121,10 +121,10 @@ veda.Module(function Util(veda) { "use strict";
       });
       Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
         if (property_uri === "@" || property_uri === "rdf:type") { return; }
-        var triple = {};
-        triple.subject = type_triple.subject;
-        triple.predicate = prefixer(property_uri);
         individual.properties[property_uri].map(function (item) {
+          var triple = {};
+          triple.subject = type_triple.subject;
+          triple.predicate = prefixer(property_uri);
           var value = item.data,
               type = item.type,
               lang = item.lang;
