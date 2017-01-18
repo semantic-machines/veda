@@ -380,8 +380,9 @@ v-s:OrganizationTemplate
     $("#add-subsidiary", template).remove();
   }
 
-// Validation
+  var prevTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
 
+  // Validation
   template.on("validate", function () {
     var result = {},
         regexp;
@@ -403,7 +404,9 @@ v-s:OrganizationTemplate
         cause: ["v-ui:regexp"]
       }
       // Check unique
-      if ( result["v-s:taxId"].state ) {
+      var newTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
+      if ( result["v-s:taxId"].state && newTaxId !== prevTaxId ) {
+        prevTaxId = newTaxId;
         var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").result;
         result["v-s:taxId"] = {
           state: (!tmp.length || tmp[0] === individual.id),
@@ -425,8 +428,6 @@ v-s:OrganizationTemplate
         cause: ["v-ui:regexp"]
       }
     }
-
-
     template.trigger("validated", result);
   });
 
