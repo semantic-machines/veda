@@ -292,14 +292,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
     var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
 
-    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:label"].join(" ");
+    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:comment"].join(" ");
     var draftLabel = null;
     function isDraftHandler(property_uri) {
       if (property_uri === "v-s:isDraft") {
         // If individual is draft
         if ( individual.hasValue("v-s:isDraft", true) ) {
           if ( !template.parent().closest("[resource='" + individual.id + "']").length && !draftLabel ) {
-            draftLabel = $("<div class='label label-primary label-draft'></div>").text(Draft);
+            draftLabel = $("<div class='label label-default label-draft'></div>").text(Draft);
             if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
               var cell = template.children().last();
               cell.css("position", "relative").append(draftLabel);

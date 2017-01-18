@@ -631,9 +631,9 @@ td > #rel-actions {
   display: block;
   position: absolute;
   top: 0px;
-  right:0px;
+  left:0px;
   z-index: 99;
-  opacity: 0.75;
+  opacity: 0.7;
 }
 .sortable-placeholder {
   outline: 3px dashed #aaa!important;
@@ -652,6 +652,13 @@ tbody .sortable-placeholder {
 
 .affix {
   top: 20px;
+}
+
+button.close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 100;
 }
 
 /* [BEGIN] NET EDITOR */

@@ -9,7 +9,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     var tmpl = $(template);
     var ol = $("#drafts-list", tmpl);
     var deleteAllBtn = $("#delete-all", tmpl).click( function () {
-      if ( confirm ("Вы уверены? / Are you sure?") ) {
+      if ( veda.drafts.length && confirm("Вы уверены? / Are you sure?") ) {
         ol.empty();
         veda.drafts.clear();
       }
@@ -38,6 +38,12 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
       renderDraftsTree(tree.root, ol, linkTmpl);
     }
 
+    tmpl.on("click", ".remove-draft", function (e) {
+      e.stopPropagation();
+      var uri = $(this).parent().find("[resource]").attr("resource");
+      veda.drafts.remove(uri);
+    });
+
     function renderDraftsTree(list, el, tmpl) {
       if (!list || !list.length) return;
       list.map(function (uri) {
@@ -45,6 +51,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
         if (draft) {
           var li = $("<li>").appendTo(el);
           draft.present(li, tmpl);
+          li.append("<button class='remove-draft btn btn-sm btn-link glyphicon glyphicon-remove' style='margin-top:-5px'></button>");
           var ul = $("<ul>").appendTo(el);
           renderDraftsTree(tree[uri], ul, labelTmpl);
         }
@@ -54,6 +61,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 
   veda.on("update:drafts", function (drafts) {
     $("#drafts-counter").text(drafts.length);
+    if (location.hash === "#/drafts") { veda.trigger("load:drafts") }
   });
 
   // Включим позже
