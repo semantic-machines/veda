@@ -996,6 +996,40 @@ svg.process-path-highlight path
 
 /* TABS END */
 
+/* PANEL HORIZONTAL */
+.panel-horizontal {
+  display: table;
+  width: auto;
+}
+.panel-horizontal > .panel-body {
+  display: table-cell;
+  width: 100%;
+}
+.panel-horizontal > .panel-heading {
+  display: table-cell;
+  white-space:nowrap;
+  vertical-align: middle;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-right-width: 1px;
+  border-right-color: inherit!important;
+  border-right-style: solid;
+  border-bottom: none;
+}
+.panel-horizontal > .panel-footer {
+  display: table-cell;
+  white-space:nowrap;
+  vertical-align: middle;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left-width: 1px;
+  border-left-color: inherit!important;
+  border-left-style: solid;
+  border-top: none;
+}
+
 /* Fullcalendar BEGIN */
 .fc a[data-goto], .fc a[data-goto]:hover {color: inherit;}
 .fc-event.fc-default, .fc-default .fc-event-dot {background-color: #777; color:white; border-color:white; font-size:80%;}
