@@ -6,7 +6,7 @@ var basic = require('./basic.js'),
 function findUp(driver) {
     return driver.findElements({css:'a[property="rdfs:label"]'}).then(function (result) {
         return result[3];
-    })
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find any task");});
 }
 
 function clickUp(element) {
@@ -31,6 +31,7 @@ function open(driver) {
     basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
+    driver.sleep(1000);
 }
 
 function openMsg(driver, number, commentValue, chooseValue) {
@@ -48,7 +49,7 @@ function openMsg(driver, number, commentValue, chooseValue) {
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
     driver.findElement({id:'send'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Send' button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Ok' button");});
     welcome(driver);
 }
 
@@ -79,16 +80,16 @@ module.exports = {
         basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
         driver.findElement({id:'submit'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Submit/Отправить' button");});
         driver.findElement({css:'span[rel="v-wf:isProcess"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'экземпляр маршрута :Комплексный маршрут' button");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'экземпляр маршрута: Комплексный маршрут' button");});
         driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'.glyphicon-share-alt'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-share-alt'");});
         for (var i = 0; i < element.length; i++) {
             driver.findElements({css:'div[id="'+ element[i] +'"][colored-to="'+ color[i] +'"]'}).then(function (result) {
                 assert.equal(count, result.length);
-            }).thenCatch(function (e) {basic.errorHandler(e, "Seems " + element[i] + " is not" + color[i] + "/routeStatus is wrong");});
+            }).thenCatch(function (e) {basic.errorHandler(e, "Seems route status is wrong");});
         }
         welcome(driver);
         basic.logout(driver);

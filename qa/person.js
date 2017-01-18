@@ -20,22 +20,22 @@ module.exports = {
 
     // Заполняем обязательные поля
     driver.findElement({css:'div[id="object-container"] [property="rdfs:label"] + veda-control input'}).sendKeys(lastName + " " + firstName + " " + middleName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfs:label for person");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' for person");});
     driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).sendKeys(lastName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:lastName for person");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:lastName' for person");});
     driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).sendKeys(firstName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:firstName for person");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:firstName' for person");});
     driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys(middleName)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for person");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:middleName' for person");});
 
     driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).click()
-      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click v-s:birthday for person");});
+      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'v-s:birthday' for person");});
     driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).clear();
     driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(date)
-      .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person");});
+      .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:birthday' for person");});
 
     driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click middle name control for person");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'middle name control' for person");});
 
     //basic.chooseFromDropdown(driver, 'v-s:hasAccount', 'karpovrt', 'karpovrt');
 
@@ -49,7 +49,7 @@ module.exports = {
     basic.isEnabled(driver, '#save', basic.FAST_OPERATION);
     // Нажимаем сохранить
     driver.findElement({css:'#save'}).click()
-      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
+      .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Save/Сохранить' button");});
 /*
     driver.findElement({css:'div[id="object-container"] > [typeof="v-s:Person"]'}).getAttribute('resource').then(function (individualId) {
       basic.openPage(driver, drv, '#/'+individualId);

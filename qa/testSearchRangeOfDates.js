@@ -35,11 +35,13 @@ basic.getDrivers().forEach(function (drv) {
     person.createPerson(driver, drv, 'Range', 'Of', 'DatesO', '02.12.2015');
     person.createPerson(driver, drv, 'Range', 'Of', 'DatesO', '12.07.2016');
     var now = new Date();
-    person.createPerson(driver, drv, 'Range', 'Of', 'DatesO', ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
+    person.createPerson(driver, drv, 'Range', 'Of', 'DatesO',
+        ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
     search(driver, "'v-s:birthday' == [2014-01-01T00:00:00, 2014-01-01T23:59:59] && 'v-s:middleName' == 'DatesO'", 1);
     search(driver, "'v-s:birthday' == [2014-01-01T00:00:00, 2015-12-02T23:59:59] && 'v-s:middleName' == 'DatesO'", 2);
     search(driver, "'v-s:birthday' == [2014-01-01T00:00:00, 2016-07-12T23:59:59] && 'v-s:middleName' == 'DatesO'", 3);
-    search(driver, "'v-s:birthday' == [2014-01-01T00:00:00, " +  now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-'+ ('0' + now.getDate()).slice(-2) + "T23:59:59] && 'v-s:middleName' == 'DatesO'", 4);
+    search(driver, "'v-s:birthday' == [2014-01-01T00:00:00, " +  now.getFullYear() + '-' +
+        ('0' + (now.getMonth() + 1)).slice(-2) + '-'+ ('0' + now.getDate()).slice(-2) + "T23:59:59] && 'v-s:middleName' == 'DatesO'", 4);
 
     driver.quit();
 });

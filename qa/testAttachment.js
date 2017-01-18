@@ -24,7 +24,7 @@ basic.getDrivers().forEach(function (drv) {
     //var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this file");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this '" + filePath + "' file");});
     basic.isVisible(driver, 'div[rel="v-s:attachment"]', basic.FAST_OPERATION);
 
     driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
@@ -48,7 +48,7 @@ basic.getDrivers().forEach(function (drv) {
 
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this file");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this '" + filePath + "' file");});
     basic.isVisible(driver, 'div[rel="v-s:attachment"]', basic.FAST_OPERATION);
 
     driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
