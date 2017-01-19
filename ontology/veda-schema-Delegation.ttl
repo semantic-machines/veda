@@ -407,7 +407,6 @@ cfg:Event_Delegation
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByType v-s:RequestDelegation ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 var request_uri = document["@"],
     request_type = getUri(document["rdf:type"]),
@@ -512,7 +511,6 @@ cfg:Event_ProcessAllDelegated
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByUid cfg:daily ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 // Process allDelegated list
 var now = new Date(), allDelegated = get_individual(ticket, "cfg:AllDelegatedAppointments");

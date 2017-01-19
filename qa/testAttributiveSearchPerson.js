@@ -21,7 +21,7 @@ function search(driver, templateName, somethingUnique, count) {
     }
     driver.executeScript("document.querySelector('#find').scrollIntoView(true);");
     driver.findElement({css:'#find'}).click()
-       .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Find` button");});
+       .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Find/Найти` button");});
     driver.wait
     (
         function () {
@@ -58,8 +58,10 @@ basic.getDrivers().forEach(function (drv) {
         middle += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     var now = new Date();
-    person.createPerson(driver, drv, 'a' + last, first + 'bcc', 'T' + middle, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
-    person.createPerson(driver, drv, last + 'b', first + 'cbb', middle + 'Q', ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
+    person.createPerson(driver, drv, 'a' + last, first + 'bcc', 'T' + middle,
+        ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
+    person.createPerson(driver, drv, last + 'b', first + 'cbb', middle + 'Q',
+        ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 
     // Открываем Аттрибутивный поиск
     driver.findElement({css:'li[id="menu"]'}).click()

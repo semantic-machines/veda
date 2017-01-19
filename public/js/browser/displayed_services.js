@@ -32,7 +32,7 @@ veda.Module(function DisplayedServices(veda) { "use strict";
   }
 
   // Re-read strings in individuals on language switch
-
+  /*
   veda.on("individual:loaded", languageWatch);
 
   function languageWatch(individual) {
@@ -58,5 +58,5 @@ veda.Module(function DisplayedServices(veda) { "use strict";
       }
     }
   }
-
+  */
 });

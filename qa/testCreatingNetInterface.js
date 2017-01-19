@@ -13,7 +13,7 @@ function check(driver, element) {
             console.trace("Seems "+ element +" has not deleted");
             process.exit(1);
         }
-    });
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find any "+ element);});
 }
 
 function equal(a, b, button) {
@@ -43,26 +43,26 @@ basic.getDrivers().forEach(function (drv) {
 
     // //Создание задачи, клонирование и удаление
     driver.findElement({css:'.create-task'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click add task");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'create-task' button");});
     driver.findElement({css:'.state-task'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'state-task'");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'state-task' button");});
     driver.findElement({css:'.copy-net-element'}).click()
-        .thenCatch(function(e){basic.errorHandler(e, "Cannot click 'copy-net-element'");});
+        .thenCatch(function(e){basic.errorHandler(e, "Cannot click on 'copy-net-element' button");});
     del(driver);
     driver.findElement({css:'.state-task'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'state-task'");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'state-task' button");});
     del(driver);
     check(driver, '.state-task');
 
     driver.findElement({css:'.create-condition'}).click()
-        .thenCatch(function(e) {basic.errorHandler(e, "Cannot click add condition");})
+        .thenCatch(function(e) {basic.errorHandler(e, "Cannot click 'create-condition' button");});
     driver.findElement({css:'.state-condition'}).click()
-        .thenCatch(function(e) {basic.errorHandler(e, "Cannot click 'state-condition'");})
+        .thenCatch(function(e) {basic.errorHandler(e, "Cannot click 'state-condition' button");});
     var a = " ", b = "";
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {a = state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     driver.findElement({css:'.zoom-out'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-out' button");});
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-out');
@@ -72,11 +72,11 @@ basic.getDrivers().forEach(function (drv) {
     equal(a, b, 'zoom-in');
 
     driver.findElement({css:'.zoom-out'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-out' button");});
     driver.findElement({css:'.zoom-out'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-out' button");});
     driver.findElement({css:'.zoom-default'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-default' button");});
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-default');
@@ -91,7 +91,7 @@ basic.getDrivers().forEach(function (drv) {
     });
 
     driver.findElement({css:'#workflow-save-button'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click save net");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save net' button");});
     driver.sleep(basic.SLOW_OPERATION);
     driver.findElements({css:'h4[about="v-fc:ChooseType"]'}).then(function(elements_arr) {
         if (elements_arr.length > 0) {
@@ -101,4 +101,4 @@ basic.getDrivers().forEach(function (drv) {
     });
 
     driver.quit();
-})
+});

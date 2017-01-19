@@ -476,10 +476,10 @@
     var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
         $this = $(this);
     init();
-    veda.on("language:changed", init);
+    /*veda.on("language:changed", init);
     $this.one("remove", function () {
       veda.off("language:changed", init);
-    });
+    });*/
     function init() {
       $this.empty();
       $this.append( veda_multilingual.call($this, opts) );
@@ -495,10 +495,10 @@
     var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
       $this = $(this);
     init();
-    veda.on("language:changed", init);
+    /*veda.on("language:changed", init);
     $this.one("remove", function () {
       veda.off("language:changed", init);
-    });
+    });*/
     function init() {
       $this.empty();
       var control = veda_multilingual.call($this, opts);

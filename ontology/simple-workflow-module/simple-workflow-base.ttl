@@ -803,7 +803,7 @@ if (doc) {
     routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
   }
-	
+
   routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
   routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
@@ -863,8 +863,8 @@ if (doc) {
         routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70006692")]; // глав бух
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
-        routes['coordination1'][simple+'deadlineDays'] = [5];  
-        routes['coordination1'][simple+'comment'] = [new String('Сальдо расчетов, наличие просроченной задолженности')];   
+        routes['coordination1'][simple+'deadlineDays'] = [5];
+        routes['coordination1'][simple+'comment'] = [new String('Сальдо расчетов, наличие просроченной задолженности')];
 
         if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:backwardTarget')) {
           var squery = "( 'rdf:type' == 'mnd-s:Contract' || 'rdf:type' == 'mnd-s:AdditionalAgreement' ) && 'v-s:supplier' == '"+doc['v-s:backwardTarget'][0]['v-s:backwardTarget'][0].id+"'";
@@ -872,21 +872,21 @@ if (doc) {
           var s = new veda.SearchModel(squery, null);
           Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
             var obj = new veda.IndividualModel(res_id);
-            if (obj.hasValue('mnd-s:supportSpecialistOfContract')) {		
+            if (obj.hasValue('mnd-s:supportSpecialistOfContract')) {
               routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat([new veda.IndividualModel(obj['mnd-s:supportSpecialistOfContract'][0].id)]);
             }
-          }); 
+          });
         }
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
-        routes['coordination2'][simple+'deadlineDays'] = [5];  
-        routes['coordination2'][simple+'comment'] = [new String('Информация о контракте')];   
+        routes['coordination2'][simple+'deadlineDays'] = [5];
+        routes['coordination2'][simple+'comment'] = [new String('Информация о контракте')];
 
         routes['coordination3'][simple+'participant'] = [new veda.IndividualModel("d:aaf889b74-6caa-8b21-5404-c6a9f91f8666")]; // ПУ
         routes['coordination3'][simple+'visible'] = [true];
         routes['coordination3'][simple+'editable'] = [true];
-        routes['coordination3'][simple+'deadlineDays'] = [5];  
-        routes['coordination3'][simple+'comment'] = [new String('Заключение о возможности блокировки')];   
+        routes['coordination3'][simple+'deadlineDays'] = [5];
+        routes['coordination3'][simple+'comment'] = [new String('Заключение о возможности блокировки')];
       } else {
         // Оценка рисков
         routes['instruction'][simple+'participant'] = [
@@ -902,7 +902,7 @@ if (doc) {
           routes['instruction2'][simple+'editable'] = [true];
           routes['instruction2'][simple+'deadlineDays'] = [5];
           routes['instruction2'][simple+'comment'] = [new String('Оценка рисков произведена')];
-        }        	
+        }
       }
     } else {
       if (doc.hasValue('mnd-s:contractorRiskDecisionToAccept') && doc['mnd-s:contractorRiskDecisionToAccept'][0] == false) {
@@ -933,8 +933,8 @@ if (doc) {
         routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:aaf889b74-6caa-8b21-5404-c6a9f91f8666")]; // ПУ
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
-        routes['coordination1'][simple+'deadlineDays'] = [5];  
-        routes['coordination1'][simple+'comment'] = [new String('Заключение о возможности блокировки')];   
+        routes['coordination1'][simple+'deadlineDays'] = [5];
+        routes['coordination1'][simple+'comment'] = [new String('Заключение о возможности блокировки')];
 
         routes['instruction'][simple+'participant'] = [
           new veda.IndividualModel("d:mondi_position_71015289"), // Фин директор
@@ -942,7 +942,7 @@ if (doc) {
         routes['instruction'][simple+'visible'] = [true];
         routes['instruction'][simple+'editable'] = [true];
         routes['instruction'][simple+'deadlineDays'] = [5];
-        
+
         if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
           routes['instruction2'][simple+'participant'] = veda.user['v-s:hasAppointment'];
           routes['instruction2'][simple+'visible'] = [true];
@@ -960,7 +960,7 @@ if (doc) {
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'deadlineDays'] = [10];
   }
-  
+
 //--------------------------------------------------------------------------------Претензия-------
   if (doc['rdf:type'][0].id === "mnd-s:Claim") {
     routes['informing'][simple+'visible'] = [true];
@@ -980,17 +980,17 @@ if (doc) {
     routes['review'][simple+'visible'] = [true];
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
-  }      
+  }
 //-------------------------------------------------------------------------------------------------------------------------------------------Заявка на контракт
   function objectOrParent(doc, objectId) {
-    return doc.hasValue('v-s:hasContractObject') && 
-      (doc['v-s:hasContractObject'][0].id == objectId 
+    return doc.hasValue('v-s:hasContractObject') &&
+      (doc['v-s:hasContractObject'][0].id == objectId
         || (doc['v-s:hasContractObject'][0].hasValue('v-s:hasParentLink') && doc['v-s:hasContractObject'][0]['v-s:hasParentLink'][0].id == objectId));
   }
- 
+
   function algorithm1(doc) {
      if ( objectOrParent(doc, 'd:379cc929f78f4a4e84f36a9f3830d846')
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00064586_71020091")]; // Байлендер
      }
      if ( objectOrParent(doc, 'd:5af63e5bbeb54c4a86c2bc72fb4208a5') // (целлюлоза)
@@ -1000,16 +1000,16 @@ if (doc) {
        || objectOrParent(doc, 'd:61c11dd2137e4916a94eab49ac88565b') // (Крахмал)
        || objectOrParent(doc, 'd:d63df9806ea84691a4587f65cc73a65b') // (Наполнитель)
        || objectOrParent(doc, 'd:1b89d9d556804828818399207ddf1114') // (Пигменты покровные)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069193_71025072")]; // Фаина Николаева : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:43e7ae6b17d34fcd9e58613be049df91') // (Вода)
        || objectOrParent(doc, 'd:e0de239b29c34ec3afaf25b0554893cb') // (Энергия)
        || objectOrParent(doc, 'd:dd56fab4a4f444cd925ee1c99c2fb8ac') // (Топливо)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00009317_71025075")]; // Ирина Константинова : Менеджер по закупке
      }
-     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') // 
+     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') //
        || objectOrParent(doc, 'd:b98840ca4b8f47c2b32a12cc01906208') // (краски)
        || objectOrParent(doc, 'd:89e8c38865c54b4eaffc5df506fca683') // (краски 2)
        || objectOrParent(doc, 'd:ed715abf1d80407588efa47ba3c75179') // (краски 3)
@@ -1019,42 +1019,42 @@ if (doc) {
        || objectOrParent(doc, 'd:a8f18e17ce7647788e8b27e712c5ee39') // (силиконы)
        || objectOrParent(doc, 'd:7230749746e943fdb610626e763742fb') // (Standard PE)
        || objectOrParent(doc, 'd:0ff1b5be8bd849f08ca2bf4ed53b7a16') // (клеи)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069224_71024982")]; // Татьяна Румянцева : Руководитель гр.
      }
      if ( objectOrParent(doc, 'd:c7613d1b104d4ffa86a14ee795cdd792') // (Материалы горюче-смазочные)
        || objectOrParent(doc, 'd:987c0881a6464112b1a25c25b4b3b67e') // (Электрика, электроника)
        || objectOrParent(doc, 'd:e04858bc7da54cc9a6b7d44f8ce76731') // (Механика)
        || objectOrParent(doc, 'd:ca2c0746e181466da8999722c98d4c0f') // (Материалы строительные)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069396_71022854")]; // Константин Филяев : Руководитель группы
      }
      if ( objectOrParent(doc, 'd:916b0a3222d144128b3bfc05a690ccd0') // (Расходные материалы)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00061450_71018045")]; // Сергей Валуев : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:6aa0a08ef0fc4aeca55e3f283dc2a9fd') // (Технические услуги)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00061636_71022863")]; // Татьяна Банина : Руководитель группы
      }
      if ( objectOrParent(doc, 'd:b3e9e60c3ecb4ca98ab31179d162815f') // (Косвенные расходы)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00066898_71024981")]; // Роман Мамаев : Руководитель группы
      }
      if ( objectOrParent(doc, 'd:0c350969f2b8449c93594ee767cb27ef') // (Транспорт)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00018845_71018024")]; // Ольга Пономарева : Начальник отдела
-     }     
+     }
      if ( objectOrParent(doc, 'd:0c2031235b5248819f19dbd1cdebb307') // (CAPEX)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
-     }                   
+     }
      return [];
   }
-  
+
   function algorithm2(doc) {
      if ( objectOrParent(doc, 'd:379cc929f78f4a4e84f36a9f3830d846')
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00064586_71020091")]; // Байлендер
      }
      if ( objectOrParent(doc, 'd:5af63e5bbeb54c4a86c2bc72fb4208a5') // (целлюлоза)
@@ -1064,16 +1064,16 @@ if (doc) {
        || objectOrParent(doc, 'd:61c11dd2137e4916a94eab49ac88565b') // (Крахмал)
        || objectOrParent(doc, 'd:d63df9806ea84691a4587f65cc73a65b') // (Наполнитель)
        || objectOrParent(doc, 'd:1b89d9d556804828818399207ddf1114') // (Пигменты покровные)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069193_71025072")]; // Фаина Николаева : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:43e7ae6b17d34fcd9e58613be049df91') // (Вода)
        || objectOrParent(doc, 'd:e0de239b29c34ec3afaf25b0554893cb') // (Энергия)
        || objectOrParent(doc, 'd:dd56fab4a4f444cd925ee1c99c2fb8ac') // (Топливо)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069193_71025072")]; // Фаина Николаева : Начальник отдела
      }
-     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') // 
+     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') //
        || objectOrParent(doc, 'd:b98840ca4b8f47c2b32a12cc01906208') // (краски)
        || objectOrParent(doc, 'd:89e8c38865c54b4eaffc5df506fca683') // (краски 2)
        || objectOrParent(doc, 'd:ed715abf1d80407588efa47ba3c75179') // (краски 3)
@@ -1083,39 +1083,39 @@ if (doc) {
        || objectOrParent(doc, 'd:a8f18e17ce7647788e8b27e712c5ee39') // (силиконы)
        || objectOrParent(doc, 'd:7230749746e943fdb610626e763742fb') // (Standard PE)
        || objectOrParent(doc, 'd:0ff1b5be8bd849f08ca2bf4ed53b7a16') // (клеи)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069224_71024982")]; // Татьяна Румянцева : Руководитель гр.
      }
      if ( objectOrParent(doc, 'd:c7613d1b104d4ffa86a14ee795cdd792') // (Материалы горюче-смазочные)
        || objectOrParent(doc, 'd:987c0881a6464112b1a25c25b4b3b67e') // (Электрика, электроника)
        || objectOrParent(doc, 'd:e04858bc7da54cc9a6b7d44f8ce76731') // (Механика)
        || objectOrParent(doc, 'd:ca2c0746e181466da8999722c98d4c0f') // (Материалы строительные)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00018845_71018024")]; // Ольга Пономарева : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:916b0a3222d144128b3bfc05a690ccd0') // (Расходные материалы)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00061450_71018045")]; // Сергей Валуев : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:6aa0a08ef0fc4aeca55e3f283dc2a9fd') // (Технические услуги)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00061450_71018045")]; // Сергей Валуев : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:b3e9e60c3ecb4ca98ab31179d162815f') // (Косвенные расходы)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00018845_71018024")]; // Ольга Пономарева : Начальник отдела
      }
      if ( objectOrParent(doc, 'd:0c350969f2b8449c93594ee767cb27ef') // (Транспорт)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00018845_71018024")]; // Ольга Пономарева : Начальник отдела
-     }     
+     }
      if ( objectOrParent(doc, 'd:0c2031235b5248819f19dbd1cdebb307') // (CAPEX)
-       ) { 
+       ) {
        return [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
      }
      return [];
   }
-  
+
   if (doc['rdf:type'][0].id === "mnd-s:ContractRequest") {
    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
     // Закупка
@@ -1154,7 +1154,7 @@ if (doc) {
         routes['review'][simple+'visible'] = [true];
         routes['review'][simple+'editable'] = [true];
         routes['review'][simple+'deadlineDays'] = [10];
-        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];        
+        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
       } else {
         // Стратегия: Безальтернативная основа
 
@@ -1174,7 +1174,7 @@ if (doc) {
         routes['review'][simple+'visible'] = [true];
         routes['review'][simple+'editable'] = [true];
         routes['review'][simple+'deadlineDays'] = [10];
-        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];        
+        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
       }
     } else if (doc.hasValue('v-s:hasBudgetCategory') && doc['v-s:hasBudgetCategory'][0].id == 'd:a193b366b-aaeb-c1f2-b101-89c95b10a6c8') {
         // OPEX
@@ -1194,7 +1194,7 @@ if (doc) {
         routes['review'][simple+'editable'] = [true];
         routes['review'][simple+'deadlineDays'] = [10];
         routes['review'][simple+'comment'] = [new String('Рассмотреть заявку')];
-        
+
         routes['examination'][simple+'participant'] = algorithm2(doc); //АЛГО2
         routes['examination'][simple+'visible'] = [true];
         routes['examination'][simple+'editable'] = [true];
@@ -1214,22 +1214,22 @@ if (doc) {
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
       routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
-      
-      if (doc.hasValue('v-s:hasContractObject') && 
+
+      if (doc.hasValue('v-s:hasContractObject') &&
           (doc['v-s:hasContractObject'][0].id == 'd:e0de239b29c34ec3afaf25b0554893cb' || // Энергия
             (doc['v-s:hasContractObject'][0].hasValue('v-s:hasParentLink') && doc['v-s:hasContractObject'][0]['v-s:hasParentLink'][0].id == 'd:e0de239b29c34ec3afaf25b0554893cb'))) {
-      	routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068274_71018042")]; // Владимир Басанко : Ведущий инженер
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068274_71018042")]; // Владимир Басанко : Ведущий инженер
       } else if ((doc.hasValue('v-s:hasObligationKind') && doc['v-s:hasObligationKind'][0].id == 'd:1b0d368c502f4e4db36f0e6cf9513b16') // Аренда
                  || (doc.hasValue('v-s:hasContractObject') && doc['v-s:hasContractObject'][0].hasValue('v-s:hasParentLink') &&  doc['v-s:hasContractObject'][0]['v-s:hasParentLink'][0].id == 'd:1b0d368c502f4e4db36f0e6cf9513b16' )) {
-      	routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00064646_71018047")]; // Евгений Ротанов : Ведущий инженер
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00064646_71018047")]; // Евгений Ротанов : Ведущий инженер
       } else {
-      	routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00000931_71024418")]; // Ольга Трошина : Инженер
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00000931_71024418")]; // Ольга Трошина : Инженер
       }
       routes['instruction'][simple+'visible'] = [true];
       routes['instruction'][simple+'editable'] = [true];
       routes['instruction'][simple+'deadlineDays'] = [10];
       routes['instruction'][simple+'comment'] = [new String('Рассмотреть заявку')];
-      
+
       routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00057948_71018986")]; // Игорь Наумов : начальник отдела спец. Продаж
       routes['examination'][simple+'visible'] = [true];
       routes['examination'][simple+'editable'] = [true];
@@ -1239,10 +1239,10 @@ if (doc) {
   }
 //--------------------------------------------------------------------------------------------------------------------------------Выполнение заявки на контракт
   if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
-    if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") { 
+    if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") {
       // Закупка
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasBudgetCategory') && doc['v-s:backwardTarget'][0]['v-s:hasBudgetCategory'][0].id == "d:a193b366b-aaeb-c1f2-b101-89c95b10a6c8") {
-        // OPEX              
+        // OPEX
         if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:hasStrategyOfChoice') && doc['v-s:backwardTarget'][0]['mnd-s:hasStrategyOfChoice'][0].id == "d:a7a1e835a-b23b-8465-cecd-a261a31f78fe") {
           // Тендер
           routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
@@ -1250,17 +1250,17 @@ if (doc) {
           routes['coordination1'][simple+'editable'] = [true];
           routes['coordination1'][simple+'deadlineDays'] = [10];
           routes['coordination1'][simple+'comment'] = [new String('Согласовать список участников тендера')];
-          
+
           if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:hasStrategyOfChoice')  && doc['v-s:backwardTarget'][0]['mnd-s:hasStrategyOfChoice'][0].hasValue('v-s:sum')
               && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0]['v-s:sum'][0] > 7000000) {
-	         // TODO: сделать неудаляемым
-	        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
-	        routes['coordination2'][simple+'visible'] = [true];
-	        routes['coordination2'][simple+'editable'] = [true];
-	        routes['coordination2'][simple+'deadlineDays'] = [10];
-	        routes['coordination2'][simple+'comment'] = [new String('Согласовать список участников тендера у директора по направлению')];
+            // TODO: сделать неудаляемым
+            routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
+            routes['coordination2'][simple+'visible'] = [true];
+            routes['coordination2'][simple+'editable'] = [true];
+            routes['coordination2'][simple+'deadlineDays'] = [10];
+            routes['coordination2'][simple+'comment'] = [new String('Согласовать список участников тендера у директора по направлению')];
           }
-          
+
           if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
             routes['coordination3'][simple+'participant'] = veda.user['v-s:hasAppointment']; // Заявитель
             routes['coordination3'][simple+'visible'] = [true];
@@ -1268,13 +1268,13 @@ if (doc) {
             routes['coordination3'][simple+'deadlineDays'] = [10];
             routes['coordination3'][simple+'comment'] = [new String('Провести тендер')];
           }
-             
-          routes['coordination4'][simple+'participant'] = [];                              
+
+          routes['coordination4'][simple+'participant'] = [];
           if (doc['v-s:backwardTarget'][0].hasValue('v-s:initiator')) {
             var dep = new veda.IndividualModel(doc['v-s:backwardTarget'][0]['v-s:initiator'][0].id);
             if (dep.hasValue('v-s:hasChief')) {
              routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
-            }            
+            }
           }
           if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
              routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00048762_71013780")); // Андрей Скрябин - Главный механик
@@ -1289,28 +1289,28 @@ if (doc) {
           routes['coordination4'][simple+'editable'] = [true];
           routes['coordination4'][simple+'deadlineDays'] = [10];
           routes['coordination4'][simple+'comment'] = [new String('Согласовать результаты тендера')];
-          
+
           routes['coordination5'][simple+'participant'] = algorithm2(doc); //АЛГО2
           routes['coordination5'][simple+'visible'] = [true];
           routes['coordination5'][simple+'editable'] = [true];
           routes['coordination5'][simple+'deadlineDays'] = [10];
           routes['coordination5'][simple+'comment'] = [new String('Согласовать результаты тендера')];
-          
+
           routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
           routes['sign'][simple+'visible'] = [true];
-	      routes['sign'][simple+'editable'] = [true];
-	      routes['sign'][simple+'deadlineDays'] = [10];
-	      routes['sign'][simple+'comment'] = [new String('СУтвердить результаты тендера')];
-	      
-          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum') 
+          routes['sign'][simple+'editable'] = [true];
+          routes['sign'][simple+'deadlineDays'] = [10];
+          routes['sign'][simple+'comment'] = [new String('СУтвердить результаты тендера')];
+
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum')
               && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] > 7000000) {
-	         // TODO: сделать неудаляемым
-	        routes['approval'][simple+'visible'] = [true];
-	        routes['approval'][simple+'editable'] = [true];
-	        routes['approval'][simple+'deadlineDays'] = [10];
-	        routes['approval'][simple+'comment'] = [new String('Согласовать список участников тендера у директора по направлению')];
+            // TODO: сделать неудаляемым
+            routes['approval'][simple+'visible'] = [true];
+            routes['approval'][simple+'editable'] = [true];
+            routes['approval'][simple+'deadlineDays'] = [10];
+            routes['approval'][simple+'comment'] = [new String('Согласовать список участников тендера у директора по направлению')];
           }
-          
+
           if (veda.user && veda.user.hasValue('v-s:hasAppointment')) {
             routes['instruction'][simple+'participant'] = veda.user['v-s:hasAppointment'];
             routes['instruction'][simple+'visible'] = [true];
@@ -1318,8 +1318,8 @@ if (doc) {
             routes['instruction'][simple+'deadlineDays'] = [10];
             routes['instruction'][simple+'comment'] = [new String('Согласование завершено')];
           }
-          
-          routes['coordination4'][simple+'participant'] = [];                              
+
+          routes['coordination4'][simple+'participant'] = [];
           if (doc['v-s:backwardTarget'][0].hasValue('v-s:initiator')) {
             var dep = new veda.IndividualModel(doc['v-s:backwardTarget'][0]['v-s:initiator'][0].id);
             if (dep.hasValue('v-s:hasChief')) {
@@ -1329,11 +1329,11 @@ if (doc) {
               routes['examination'][simple+'editable'] = [false];
               routes['examination'][simple+'deadlineDays'] = [10];
               routes['examination'][simple+'comment'] = [new String('Ознакомиться с результатами тендера')];
-            }            
+            }
           }
         } else {
           // Не тендер
-          routes['coordination1'][simple+'participant'] = [];                              
+          routes['coordination1'][simple+'participant'] = [];
           if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
              routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00048762_71013780")); // Андрей Скрябин - Главный механик
           }
@@ -1343,7 +1343,7 @@ if (doc) {
           if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
              routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_appointment_00025753_71000234")); // Юрий Исаев:гл. метролог
           }
-          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum') 
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum')
             && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] > 700000) {
             if (doc['v-s:backwardTarget'][0].hasValue('v-s:initiator')) {
               var dep = new veda.IndividualModel(doc['v-s:backwardTarget'][0]['v-s:initiator'][0].id);
@@ -1356,34 +1356,34 @@ if (doc) {
           routes['coordination1'][simple+'editable'] = [true];
           routes['coordination1'][simple+'deadlineDays'] = [10];
           routes['coordination1'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];
-          
-          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum') 
+
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum')
             && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] > 700000) {
             if (doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] < 7000000) {
               routes['coordination2'][simple+'participant'] = algorithm2(doc); //АЛГО2
             } else {
-          	  routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления              
-            }              
+              routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
+            }
           }
           routes['coordination2'][simple+'visible'] = [true];
           routes['coordination2'][simple+'editable'] = [true];
           routes['coordination2'][simple+'deadlineDays'] = [10];
           routes['coordination2'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];
-          
-          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum') 
+
+          if (doc['v-s:backwardTarget'][0].hasValue('mnd-s:expectedValueOfContract') && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract'][0].hasValue('v-s:sum')
             && doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] > 700000) {
             if (doc['v-s:backwardTarget'][0]['mnd-s:expectedValueOfContract']['v-s:sum'][0] < 7000000) {
-          	  routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления              
+              routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
             } else {
-	          routes['approval'][simple+'comment'] = [new String('Утвердить директором по направлению')];
-            }              
+            routes['approval'][simple+'comment'] = [new String('Утвердить директором по направлению')];
+            }
           }
           routes['approval'][simple+'visible'] = [true];
-	      routes['approval'][simple+'editable'] = [true];
-	      routes['approval'][simple+'deadlineDays'] = [10];
+          routes['approval'][simple+'editable'] = [true];
+          routes['approval'][simple+'deadlineDays'] = [10];
         }
       }
-    }    
+    }
   }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт
   if (doc['rdf:type'][0].id === "mnd-s:Contract") {
@@ -1472,7 +1472,7 @@ if (doc) {
           routes['review'][simple+'deadlineDays'] = [10];
           routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
 
-          if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest') 
+          if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
             && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
             && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
             && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
@@ -1619,11 +1619,7 @@ $('#save_and_start_process', template).on('click', function () {
   });
   veda.Util.send(individual, template);
 });
-$('#back', template).on('click', function () {
-  doc.present('#main', undefined, 'view');
-});
-
-  //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
+//# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
 <div class="container-fluid">
   <div class="panel panel-default">
@@ -1729,7 +1725,7 @@ $('#back', template).on('click', function () {
     </div>
     <div class="panel-footer">
       <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
-      <button type="button" class="action btn btn-default" id="back" about="v-s:Cancel" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
     </div>
   </div>
 </div>
@@ -1816,20 +1812,20 @@ s-wf:ComplexRouteTest_Template
 .
 
 s-wf:ComplexRouteTest2
-    rdf:type rdfs:Class ;
-	rdfs:subClassOf v-s:Journaling ;
-    rdfs:label "Тестовый шаблон комплексного маршурута 2"@ru;
-    rdfs:label "Complex route test template 2"@en;
-    rdfs:isDefinedBy s-wf: ;
+  rdf:type rdfs:Class ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Тестовый шаблон комплексного маршурута 2"@ru;
+  rdfs:label "Complex route test template 2"@en;
+  rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:ComplexRouteTest2_Template
-    rdfs:isDefinedBy s-wf: ;
-    rdf:type v-ui:ClassTemplate ;
-    rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута 2"@ru;
-    rdfs:label "Template for Complex route test template 2"@en;
-    v-ui:forClass s-wf:ComplexRouteTest2 ;
-    v-ui:template """
+  rdfs:isDefinedBy s-wf: ;
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута 2"@ru;
+  rdfs:label "Template for Complex route test template 2"@en;
+  v-ui:forClass s-wf:ComplexRouteTest2 ;
+  v-ui:template """
 <div class="container-fluid">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -2256,7 +2252,11 @@ s-wf:UserTaskFormTemplate
   <div about="@" rel="v-wf:onDocument" class="view edit -search"></div>
 </div>
 <script>
-  if (!individual.hasValue("v-wf:takenDecision") || !individual.isSync()) {
+  var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
+            || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
+            || (veda.user && veda.user.id === individual["v-wf:to"][0].id);
+  var isOpen = !individual.hasValue("v-wf:takenDecision") || !individual.isSync();
+  if (isMine && isOpen) {
     $(".radio.decision input", template).first().prop("checked", true).change();
     template.trigger("edit");
   } else {

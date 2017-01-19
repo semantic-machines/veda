@@ -11,6 +11,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
     }
   }
 
+  //Reload when user changes preferred language
+  veda.on("language:changed", function () {
+    location.reload();
+  });
+
   // Prevent empty links routing
   $("body").on("click", "[href='']", function (e) {
     e.preventDefault();

@@ -42,9 +42,9 @@ basic.getDrivers().forEach(function(drv){
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
     driver.executeScript("document.querySelector('strong[about=\"rdfs:label\"]').scrollIntoView(true);");
     driver.findElement({css:'veda-control[data-type="multilingualString"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click label field");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'rdfs:label' field");});
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill label field");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
     clickButton(driver, "save");
     check(driver, 1);
 
