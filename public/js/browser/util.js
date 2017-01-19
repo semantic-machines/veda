@@ -4,6 +4,15 @@ veda.Module(function Util(veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
+  veda.Util.clearStorage = function () {
+    if ( typeof localStorage !== "undefined" ) {
+      delete localStorage["ontology"];
+      delete localStorage["user_uri"];
+      delete localStorage["end_time"];
+      delete localStorage["ticket"];
+    }
+  }
+
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
     if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
