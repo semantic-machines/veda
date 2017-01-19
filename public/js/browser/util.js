@@ -121,10 +121,10 @@ veda.Module(function Util(veda) { "use strict";
       });
       Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
         if (property_uri === "@" || property_uri === "rdf:type") { return; }
-        var triple = {};
-        triple.subject = type_triple.subject;
-        triple.predicate = prefixer(property_uri);
         individual.properties[property_uri].map(function (item) {
+          var triple = {};
+          triple.subject = type_triple.subject;
+          triple.predicate = prefixer(property_uri);
           var value = item.data,
               type = item.type,
               lang = item.lang;
@@ -345,7 +345,7 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.send = function (individual, template, transformId, modal) {
     if ( transformId ) {
-      if (!individual.isSync) template.trigger('save');
+      if ( !individual.isSync() ) template.trigger('save');
       var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
       veda.Util.showModal(startForm, undefined, 'edit');
     } else {
@@ -523,6 +523,9 @@ veda.Module(function Util(veda) { "use strict";
     $("body").append(modal);
     var container = $(".modal-body", modal);
     individual.present(container, template, mode);
+    $(".action#cancel", modal).click(function () {
+      modal.modal("hide").remove();
+    });
     return modal;
   }
 

@@ -29,6 +29,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
     driver.findElement({id:'submit'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'submit' button");});
+    driver.sleep(basic.FAST_OPERATION);
     driver.findElement({css:'a[typeof="s-wf:ComplexRouteTest2"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on document id");});
     driver.findElement({id:'send'}).click()

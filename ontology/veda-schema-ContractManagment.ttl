@@ -76,6 +76,7 @@ v-s:Price
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
 .
@@ -287,7 +288,7 @@ v-s:AccountingDoc
   rdfs:label "Первичный документ"@ru ;
 .
 
-# ------------------------------------------------------------
+#------------------------------------------------------------
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;
@@ -312,7 +313,6 @@ v-s:ContractorTemplate
     <em about="v-s:linkedOrganization" property="rdfs:label"></em>
     <div about="@" rel="v-s:linkedOrganization" data-template="v-ui:LabelLinkTemplate"></div>
     <hr class="view -edit -search">
-
 
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
@@ -339,6 +339,40 @@ v-s:ContractorTemplate
     <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
 
     <hr class="view -edit -search">
+
+    <div class="checkbox">
+      <label>
+        <veda-control property="v-s:locked" data-type="boolean"></veda-control>
+        <em about="v-s:locked" property="rdfs:label"></em>
+      </label>
+    </div>
+    <em about="mnd-s:hasContractorLock" property="rdfs:label"></em>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="active">
+          <th width="60%" about="mnd-s:hasLockedReason" property="rdfs:label"></th>
+          <th width="20%" about="v-s:dateFrom" property="rdfs:label"></th>
+          <th width="20%" about="v-s:dateTo" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="mnd-s:hasContractorLock" data-embedded="true">
+        <tr>
+         <td>
+            <div property="mnd-s:hasLockedReason" class="view -edit -search"></div>
+            <veda-control data-type="link" rel="mnd-s:hasLockedReason" class="-view edit search fulltext dropdown"></veda-control>
+          </td>
+          <td>
+            <div property="v-s:dateFrom" class="view -edit search"> </div>
+            <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+          </td>
+          <td>
+            <div property="v-s:dateTo" class="view -edit search"> </div>
+            <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <veda-control rel="mnd-s:hasContractorLock" data-type="link" class="-view edit -search create"></veda-control>
     <br>
     <div class="checkbox">
       <label>

@@ -8,7 +8,7 @@ function toJson(x)
 
 function hasValue(doc, prop, val)
 {
-    var any = !!(doc[prop] && doc[prop].length);
+    var any = !!(doc && doc[prop] && doc[prop].length);
     if (!val) return any;
     return !!(any && doc[prop].filter(function(i)
     {

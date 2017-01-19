@@ -292,40 +292,45 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
     var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
 
-    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:label"].join(" ");
-    var draftLabel;
+    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:comment"].join(" ");
+    var draftLabel = null;
     function isDraftHandler(property_uri) {
       if (property_uri === "v-s:isDraft") {
         // If individual is draft
-        if ( individual.hasValue("v-s:isDraft", true) && !template.parent().closest("[resource='" + individual.id + "']").length ) {
-          draftLabel = $("<div class='label label-danger label-draft'></div>").text(Draft);
-          if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
-            var cell = template.children().last();
-            cell.css("position", "relative").append(draftLabel);
-          } else {
-            template.css("position", "relative");
-            // It is important to append buttons skipping script element in template!
-            template.not("script").append(draftLabel);
+        if ( individual.hasValue("v-s:isDraft", true) ) {
+          if ( !template.parent().closest("[resource='" + individual.id + "']").length && !draftLabel ) {
+            draftLabel = $("<div class='label label-default label-draft'></div>").text(Draft);
+            if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
+              var cell = template.children().last();
+              cell.css("position", "relative").append(draftLabel);
+            } else {
+              template.css("position", "relative");
+              // It is important to append buttons skipping script element in template!
+              template.not("script").append(draftLabel);
+            }
+            //Rename "Edit" -> "Continue edit"
+            $edit.text(ContinueEdit);
+            //Rename "Cancel" -> "Delete draft"
+            $cancel.text(DeleteDraft);
           }
-          //Rename "Edit" -> "Continue edit"
-          $edit.text(ContinueEdit);
-          //Rename "Cancel" -> "Delete draft"
-          $cancel.text(DeleteDraft);
         } else {
           if (draftLabel) {
             draftLabel.remove();
+            draftLabel = null;
           }
           //Rename "Continue edit" -> Edit"
           $edit.text(Edit);
           //Rename "Delete draft" -> "Cancel"
           $cancel.text(Cancel);
         }
+      } else {
+        individual.draft();
       }
     }
     individual.on("individual:propertyModified", isDraftHandler);
     template.on("remove", function () {
-      draftLabel = null;
       individual.off("individual:propertyModified", isDraftHandler);
+      draftLabel = null;
     });
 
     setTimeout( function () {
@@ -645,13 +650,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       template.one("remove", function () {
         about.off("individual:propertyModified", propertyModifiedHandler);
       });
-      veda.on("language:changed", langWatch);
+      /*veda.on("language:changed", langWatch);
       template.one("remove", function () {
         veda.off("language:changed", langWatch);
       });
       function langWatch () {
         propertyModifiedHandler(property_uri);
-      }
+      }*/
       var updateService = new veda.UpdateService();
       updateService.subscribe(about.id);
       template.one("remove", function () {

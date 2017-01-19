@@ -690,18 +690,24 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, 
             };
 
             if (parent_journal_uri)
+	    {
+		create_new_journal(ticket, parent_journal_uri, null, "", is_trace)
                 new_journal['v-s:parentJournal'] = newUri(parent_journal_uri);
+	    }
 
             if (label)
                 new_journal['rdfs:label'] = label;
-                
-            if (is_trace)    
+
+            if (is_trace)
                 new_journal['v-wf:isTrace'] = newBool(true);
-				
 
             put_individual(ticket, new_journal, _event_id);
-            //print ("@@@ create new journal, =", toJson (new_journal))
+            //print ("create_new_journal, new_journal=", toJson (new_journal), ", ticket=", ticket);
         }
+	else
+	{
+            //print ("create_new_journal, journal already exists, exists_journal=", toJson (exists_journal), ", ticket=", ticket);
+	}
 
         return new_journal_uri;
     }

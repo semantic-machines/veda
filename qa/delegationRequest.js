@@ -4,7 +4,7 @@ var webdriver = require('selenium-webdriver'),
 function findUp(driver) {
     return driver.findElements({css:'.glyphicon-chevron-up'}).then(function (result) {
         return result[1];
-    })
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'glyphicon-chevron-up' button");});
 }
 
 function clickUp(element) {
@@ -22,7 +22,7 @@ module.exports = {
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Аналитик' position")})
 
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).sendKeys(valueToSearch)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute rel=v-s:delegate ");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute 'rel=v-s:delegate'");});
         driver.sleep(basic.FAST_OPERATION);
         driver.wait
         (
@@ -53,7 +53,7 @@ module.exports = {
         driver.findElement({css:'veda-control[property="v-s:dateFrom"] input[type="text"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'dateFrom' input");});
         driver.findElement({css:'veda-control[property="v-s:dateTo"] input[type="text"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'dateFrom' input");});
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'dateTo' input");});
         driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");

@@ -10,6 +10,12 @@ veda.Module(function DisplayedServices(veda) { "use strict";
 
   var updateService = new veda.UpdateService();
 
+  veda.on("started", function () {
+    updateService.start();
+  }).on("logout", function () {
+    updateService.stop();
+  });
+
   veda.on("individual:loaded", updateWatch);
 
   function updateWatch(individual) {
@@ -26,7 +32,7 @@ veda.Module(function DisplayedServices(veda) { "use strict";
   }
 
   // Re-read strings in individuals on language switch
-
+  /*
   veda.on("individual:loaded", languageWatch);
 
   function languageWatch(individual) {
@@ -52,5 +58,5 @@ veda.Module(function DisplayedServices(veda) { "use strict";
       }
     }
   }
-
+  */
 });

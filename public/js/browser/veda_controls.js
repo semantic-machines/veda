@@ -476,10 +476,10 @@
     var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
         $this = $(this);
     init();
-    veda.on("language:changed", init);
+    /*veda.on("language:changed", init);
     $this.one("remove", function () {
       veda.off("language:changed", init);
-    });
+    });*/
     function init() {
       $this.empty();
       $this.append( veda_multilingual.call($this, opts) );
@@ -495,10 +495,10 @@
     var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
       $this = $(this);
     init();
-    veda.on("language:changed", init);
+    /*veda.on("language:changed", init);
     $this.one("remove", function () {
       veda.off("language:changed", init);
-    });
+    });*/
     function init() {
       $this.empty();
       var control = veda_multilingual.call($this, opts);
@@ -1193,7 +1193,6 @@
 
     // Create feature
     if ( this.hasClass("create") || this.hasClass("full") ) {
-      var container = this.parent();
       var inModal = this.hasClass("create-modal");
       create.click( function () {
         var newVal = createValue();
@@ -1203,15 +1202,16 @@
           var ok = $("#ok", $modal).click(function () {
             select(newVal);
           });
-          $modal.modal();
-          container.append($modal);
+          $modal.modal({"show": false});
+          $("body").append($modal);
+          $modal.modal("show");
           var cntr = $(".modal-body", $modal);
           newVal.one("individual:beforeReset", function () {
-            $modal.modal("hide");
+            $modal.modal("hide").remove();
           });
           newVal.one("individual:afterSave", function () {
             select(newVal);
-            $modal.modal("hide");
+            $modal.modal("hide").remove();
           });
           newVal.present(cntr, undefined, "edit");
           var template = cntr.children().first();

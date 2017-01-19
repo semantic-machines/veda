@@ -158,6 +158,8 @@ v-s:Draft
   rdf:type v-s:Bundle ;
   rdfs:label "Черновик"@ru ;
   rdfs:label "Draft"@en ;
+  rdfs:comment "ч"@ru ;
+  rdfs:comment "d"@en ;
 .
 v-s:ToDraft
   rdf:type v-s:Bundle ;

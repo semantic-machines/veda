@@ -415,7 +415,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
                 type: _Uri
             }];
         }
-  
+
         if (user['v-s:hasAppointment']) {
           journal_record['v-s:actor'] = user['v-s:hasAppointment']
         }
@@ -1115,7 +1115,6 @@ cfg:Event_Hourly_1
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в час" ;
   v-s:triggerByUid cfg:hourly ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 print("[cfg:Event_Hourly_1] ************************** START **************************");
 print("[cfg:Event_Hourly_1] *************************** END ***************************");
@@ -1126,7 +1125,6 @@ cfg:Event_Daily_1
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в день" ;
   v-s:triggerByUid cfg:daily ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 print("[cfg:Event_Daily_1] ************************** START **************************");
 print("[cfg:Event_Daily_1] *************************** END ***************************");
@@ -1137,7 +1135,6 @@ cfg:Event_Weekly_1
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в неделю" ;
   v-s:triggerByUid cfg:weekly ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 print("[cfg:Event_Weekly_1] ************************** START **************************");
 print("[cfg:Event_Weekly_1] *************************** END ***************************");
@@ -1147,7 +1144,6 @@ cfg:Event_Monthly_1
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в месяц" ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:triggerByUid cfg:monthly ;
   v-s:script """
 print("[cfg:Event_Monthly_1] ************************** START **************************");
@@ -1158,7 +1154,6 @@ cfg:Event_Yearly_1
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в год" ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:triggerByUid cfg:yearly ;
   v-s:script """
 print("[cfg:Event_Yearly_1] ************************** START **************************");
@@ -1170,7 +1165,6 @@ cfg:Event_Notify_Task
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт уведомления о новой задаче" ;
   v-s:triggerByType v-wf:UserTaskForm ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 var task_id = document["@"],
     to = getUri(document["v-wf:to"]);
@@ -1182,7 +1176,6 @@ cfg:Event_Notify_Comment
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт уведомления о новом комментарии" ;
   v-s:triggerByType v-s:Comment ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 var comment_id = document["@"],
     comment_target = getUri(document["v-s:backwardTarget"]);

@@ -42,9 +42,9 @@ basic.getDrivers().forEach(function(drv) {
     }).thenCatch(function (e) {basic.errorHandler(e, "Save button must be inactive");});
     var lastName = 'Draft';
     driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).sendKeys(lastName)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:lastName for preson");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:lastName' for person");});
     driver.findElement({css:'[property="v-s:firstName"] + veda-control input'}).sendKeys(firstName)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:firstName for preson");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:firstName' for person");});
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#draft')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#draft', basic.FAST_OPERATION);
     driver.findElement({css:'#draft'}).click()
@@ -64,18 +64,18 @@ basic.getDrivers().forEach(function(drv) {
     driver.findElement({css:'#edit'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'edit' button");});
     driver.findElement({css:'[property="v-s:middleName"] + veda-control input'}).sendKeys('Пупкин')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:middleName for person");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:middleName' for person");});
     var now = new Date();
     driver.findElement({css:'[property="v-s:birthday"] + veda-control input'}).sendKeys(
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2))
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill v-s:birthday for person");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:birthday' for person");});
     driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click last name control for person");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'last name control' for person");});
     //Сохраняем его как нормальный документ
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > div.panel > div.panel-footer > button#save')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
     driver.findElement({css:'#save'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on save button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save' button");});
     check(driver, "false");
 
     driver.quit();

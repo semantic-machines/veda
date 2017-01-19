@@ -50,8 +50,12 @@ basic.getDrivers().forEach (function (drv) {
     driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys('Персона');
     search(driver, timeStamp, 0);
     person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
-    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
+    driver.sleep(basic.FAST_OPERATION);
+    driver.findElement({id:'menu'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
+    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
+    driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
     basic.logout(driver);
 
     //Проверка наличия созданного документа пользователем с меньшими правами

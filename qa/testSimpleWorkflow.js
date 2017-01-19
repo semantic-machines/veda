@@ -54,20 +54,20 @@ basic.getDrivers().forEach (function (drv) {
 
 	createNet.startNet(driver, timeStamp);
 	driver.findElement({css:'.create-task'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click add task");});
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'create-task' button");});
 	driver.findElement({css:'.state-task'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'state-task'");});
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'state-task' button");});
 	driver.executeScript("document.querySelector('span[about=\"v-wf:startDecisionTransform\"]').scrollIntoView(true);");
 	driver.findElement({css:'span[about="v-wf:startDecisionTransform"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'v-wf:startDecisionTransform' field ");});
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'v-wf:startDecisionTransform' field ");});
 	driver.findElement({css:'veda-control[class="VCstartDecisionTransform fulltext dropdown create properties-editor"]'}).click()
-	 	.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCstartDecisionTransform' field ");});
+	 	.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'VCstartDecisionTransform' field ");});
 	createNet.chooseFromDropdown(driver, 'VCstartDecisionTransform', timeStamp + 1, timeStamp + 1);
 	driver.executeScript("document.querySelector('span[about=\"v-wf:executor\"]').scrollIntoView(true);");
 	driver.findElement({css:'span[about="v-wf:executor"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'v-wf:executor' field ");});
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'v-wf:executor' field ");});
 	driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click 'VCexecutor' field ");});
+		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'VCexecutor' field ");});
 	createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик');
 	createNet.connectNet(driver, 'true');
 	createNet.saveNet(driver);
