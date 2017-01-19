@@ -231,7 +231,7 @@ veda.Module(function Util(veda) { "use strict";
     var flat = flattenIndividual(individual.properties);
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
-        if (property_uri === "@") { return }
+        if (property_uri === "@" || property_uri === "v-s:isDraft") { return }
         var values = flat[property_uri];
         var oneProp;
         switch (values[0].type) {

@@ -324,7 +324,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           $cancel.text(Cancel);
         }
       } else {
-        individual.draft();
+        if (mode === "edit") {
+          individual.draft();
+        }
       }
     }
     individual.on("individual:propertyModified", isDraftHandler);
