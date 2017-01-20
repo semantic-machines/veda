@@ -38,16 +38,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
-          var pre = $("<pre>"),
-              cntr = $("<div class='container-fluid'></div>"),
+          var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
+              pre = $("pre", cntr),
               json = individual.properties,
               ordered = {};
-          cntr.append(pre);
+          $("a#json", cntr).addClass("disabled");
           Object.keys(json).sort().forEach(function(key) {
             ordered[key] = json[key];
           });
           json = JSON.stringify(ordered, null, 2);
-          var formatted = json.replace(/(\w+\-*\w+\:\w*)/gi, "<a class='text-muted' href='#/$1'>$1</a>");
+          var formatted = json.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
           pre.html(formatted);
           container.append(cntr);
           container.show("fade", 250);
@@ -55,10 +55,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         } else if (template === "ttl") {
           var list = new veda.IndividualListModel(individual);
           veda.Util.toTTL(list, function (error, result) {
-            var formatted = result.replace(/(\w+\-*\w+\:\w*)/gi, "<a class='text-muted' href='#/$1'>$1</a>");
-            var pre = $("<pre>").html(formatted);
-            var cntr = $("<div class='container-fluid'></div>");
-            cntr.append(pre);
+            var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
+                pre = $("pre", cntr),
+                formatted = result.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+            $("a#ttl", cntr).addClass("disabled");
+            pre.html(formatted);
             container.html(cntr);
             container.show("fade", 250);
           });

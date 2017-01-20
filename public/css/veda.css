@@ -138,6 +138,9 @@ footer {
 .text-muted {
   color: #707070;
 }
+.text-black {
+  color: #000;
+}
 label .has-error + * {
   color: #a94442;
 }
