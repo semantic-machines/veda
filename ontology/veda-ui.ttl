@@ -719,24 +719,43 @@ v-ui:IconModalTemplate
 <script>
   template.on("click", function (e) {
     e.preventDefault();
-    var modal = $("#individual-modal-template").html();
+    var newMode = "view";
+
+    var parentTmpl = template.parent().closest("[resource]");
+    if (parentTmpl.attr("resource") === individual.id) {
+      newMode = parentTmpl.attr("data-mode");
+    }
+
+    var modal="";
+
+    if(newMode==="view") {
+      modal = $("#notification-modal-template").html();
+    } else if (newMode==="edit") {
+      modal = $("#individual-modal-template").html();
+    }
+
     var $modal = $(modal).modal({"show": false});
     $("body").append($modal);
     $modal.modal("show");
     var cntr = $(".modal-body", $modal);
     var ok = $("#ok", $modal);
+    //var cancel = $("#cancel", $modal);
     cntr.on("valid", function () {
       ok.removeAttr("disabled");
     });
     cntr.on("invalid", function () {
       ok.attr("disabled", "disabled");
     });
-    var newMode = "view";
-    var parentTmpl = template.parent().closest("[resource]");
-    if (parentTmpl.attr("resource") === individual.id) {
-      newMode = parentTmpl.attr("data-mode");
+    var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+
+    if (newMode === "edit") {
+      $(".action", tmpl).remove();
+     individual.present(cntr, tmpl, newMode);
+    } else {
+      $("#cancel", tmpl).addClass("viev").removeClass("-view");
+      individual.present(cntr, tmpl, newMode);
     }
-    individual.present(cntr, undefined, newMode);
+
     individual.one("individual:beforeReset", function () {
       $modal.modal("hide");
     });
