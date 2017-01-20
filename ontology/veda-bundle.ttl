@@ -236,15 +236,15 @@ v-s:DocumentIsVersion
   rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
   rdfs:label "Document expired. New version of this document exists."@en ;
 .
-v-s:SendQuestion
+v-s:Question
   rdf:type v-s:Bundle ;
-  rdfs:label "Задать вопрос"@ru ;
-  rdfs:label "Send question"@en ;
+  rdfs:label "Вопрос"@ru ;
+  rdfs:label "Question"@en ;
 .
-v-s:SendInstruction
+v-s:Introduction
   rdf:type v-s:Bundle ;
-  rdfs:label "Выдать поручение"@ru ;
-  rdfs:label "Send instruction"@en ;
+  rdfs:label "На ознакомление"@ru ;
+  rdfs:label "Introduction"@en ;
 .
 v-s:SendTask
   rdf:type v-s:Bundle ;

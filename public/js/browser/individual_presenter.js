@@ -378,17 +378,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       stask.append($('<li/>', {
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'].join(" "))+'</a>'
+        html: '<a>'+(new veda.IndividualModel('v-s:Question')['rdfs:label'].join(" "))+'</a>'
       }));
       stask.append($('<li/>', {
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'].join(" "))+'</a>'
+        html: '<a>'+(new veda.IndividualModel('v-s:Instruction')['rdfs:label'].join(" "))+'</a>'
       }));
       stask.append($('<li/>', {
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendTask')['rdfs:label'].join(" "))+'</a>'
+        html: '<a>'+(new veda.IndividualModel('v-s:Introduction')['rdfs:label'].join(" "))+'</a>'
       }));
     });
 
