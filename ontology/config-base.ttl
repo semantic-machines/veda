@@ -839,9 +839,23 @@ if (!membership) {
   }
 }
 put_individual (ticket, membership, _event_id);
-
 //print('cfg:Event_9', uri);
 
+// Delete embedded tree
+if (doc_deleted) {
+  Object.keys(document).map(function (property_uri) {
+    if (property_uri === "@") { return }
+    document[property_uri].map(function (value) {
+      if (value.type !== _Uri) { return }
+      var embedded = get_individual(ticket, value.data);
+      if (embedded && hasValue(embedded, "v-s:parent", {data: doc_uri, type: _Uri}) && !hasValue(embedded, "v-s:deleted", {data: true, type: _Boolean}) ) {
+        embedded["v-s:deleted"] = newBool(true);
+        put_individual (ticket, embedded, _event_id);
+        //print("embedded deleted:", embedded["@"]);
+      }
+    });
+  });
+}
   """ ;
 .
 
