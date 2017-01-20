@@ -50,13 +50,13 @@
     </div>
 
     <!-- Notification alerts -->
-    <div id="notification-container" style="width:25%; max-height: 40%; position:fixed; bottom:10px; right:10px;z-index:99999; overflow:hidden"></div>
+    <div id="notification-container"></div>
 
     <!-- Templates -->
 
     <!-- Notification alert -->
     <script type="html/template" id="notification-template">
-      <div class="alert alert-dismissible fade in" role="alert" style="display:none">
+      <div class="alert alert-notify alert-dismissible fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <p class="msg"><strong class="msg-icon"></strong> <strong class="msg-status"></strong> <span class="msg-description"></span></p>
       </div>
