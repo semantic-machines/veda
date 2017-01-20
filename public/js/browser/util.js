@@ -107,15 +107,20 @@ veda.Module(function Util(veda) { "use strict";
     });
 
     function prefixer(uri) {
-      var colonIndex = uri.indexOf(":"),
-          prefix = uri.substring(0, colonIndex);
-      if ( !prefixes[prefix] ) {
-        prefixes[prefix] = all_prefixes[prefix];
-      }
-      if ( colonIndex === uri.length-1 ) {
-        return prefixes[prefix];
-      } else {
-        return N3.Util.expandPrefixedName(uri, prefixes);
+      try {
+        var colonIndex = uri.indexOf(":"),
+            prefix = uri.substring(0, colonIndex);
+        if ( !prefixes[prefix] ) {
+          prefixes[prefix] = all_prefixes[prefix];
+        }
+        if ( colonIndex === uri.length-1 ) {
+          return prefixes[prefix];
+        } else {
+          return N3.Util.expandPrefixedName(uri, prefixes);
+        }
+      } catch (error) {
+        veda.trigger("danger", {status: "TTL:", description: error.message});
+        return uri;
       }
     }
 
