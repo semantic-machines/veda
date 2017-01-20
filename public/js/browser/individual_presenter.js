@@ -39,21 +39,27 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
           var pre = $("<pre>"),
+              cntr = $("<div class='container-fluid'></div>"),
               json = individual.properties,
               ordered = {};
+          cntr.append(pre);
           Object.keys(json).sort().forEach(function(key) {
             ordered[key] = json[key];
           });
           json = JSON.stringify(ordered, null, 2);
-          pre.text(json);
-          container.html(pre);
+          var formatted = json.replace(/(\w+\-*\w+\:\w*)/gi, "<a class='text-muted' href='#/$1'>$1</a>");
+          pre.html(formatted);
+          container.append(cntr);
           container.show("fade", 250);
           return;
         } else if (template === "ttl") {
           var list = new veda.IndividualListModel(individual);
           veda.Util.toTTL(list, function (error, result) {
-            var ttl = $("<div class='container-fluid'></div>").append( $("<pre></pre>").text(result) );
-            container.html(ttl);
+            var formatted = result.replace(/(\w+\-*\w+\:\w*)/gi, "<a class='text-muted' href='#/$1'>$1</a>");
+            var pre = $("<pre>").html(formatted);
+            var cntr = $("<div class='container-fluid'></div>");
+            cntr.append(pre);
+            container.html(cntr);
             container.show("fade", 250);
           });
           return;
