@@ -979,6 +979,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       btnRemove.click(function () {
         individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
+        if ( value.is("v-s:Embedded") ) { value.delete(); }
       }).mouseenter(function () {
         valTemplate.addClass("red-outline");
       }).mouseleave(function () {
