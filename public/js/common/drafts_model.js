@@ -39,7 +39,7 @@ veda.Module(function (veda) { "use strict";
       var draft = self._[key];
       if ( draft ) {
         var individual = new veda.IndividualModel( draft.individual );
-        self.set(individual.id, individual, draft.parent);
+        self.set(individual.id, individual);
       }
     });
   };
@@ -50,15 +50,13 @@ veda.Module(function (veda) { "use strict";
     return this[uri] ? this[uri].individual : undefined;
   };
 
-  proto.set = function (uri, individual, parent) {
+  proto.set = function (uri, individual) {
     this[uri] = {
       individual: individual,
-      parent: parent
     }
     individual["v-s:isDraft"] = [ true ];
     this._[uri] = {
       individual: individual.toJson(),
-      parent: parent
     }
     storage.drafts = JSON.stringify(this._);
     veda.trigger("update:drafts", this);
