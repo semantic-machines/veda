@@ -316,10 +316,11 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
-               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+
             </div>
           </div>
         </div>
@@ -349,8 +350,8 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
-              <button id="follow" class="close" style="margin-right: 15px;;"><small><small><small class="glyphicon glyphicon-resize-full"></small></small></small></button>
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <button class="close" style="margin-right:20px;" data-dismiss="modal"><span id="follow" class="fa fa-window-maximize"></span></button>
+              <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
             </div>
           </div>
         </div>
@@ -776,8 +777,10 @@
       // Bootstrap multiple modals fix
       // origin: http://stackoverflow.com/questions/19305821/multiple-modals-overlay
       $(document).on("click", ".modal #follow", function () {
-        var uri = $(this).closest(".modal").find("[resource]").attr("resource");
-        riot.route("#/" + uri);
+        var resource = $(this).closest(".modal").find("[resource]");
+        var uri = resource.attr("resource");
+        var mode = resource.attr("data-mode");
+        riot.route("#/" + uri + "///" + mode);
       });
       $(document).on({
         'show.bs.modal': function () {
