@@ -111,8 +111,10 @@ veda.Module(function (veda) { "use strict";
         if (this._.filtered[property_uri] && this._.filtered[property_uri].length) {
           serialized = serialized.concat( this._.filtered[property_uri] );
         }
-        this.properties[property_uri] = serialized;
-        this.trigger("individual:propertyModified", property_uri, notNull);
+        if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
+          this.properties[property_uri] = serialized;
+          this.trigger("individual:propertyModified", property_uri, notNull);
+        }
       },
       configurable: false,
       enumerable: false
@@ -286,7 +288,7 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Save current individual to database (with validation and adding new version)
    */
-  proto.save = function(parent) {
+  proto.save = function() {
     var self = this;
     // Do not save individual to server if nothing changed
     if (self._.isSync) return;
@@ -306,7 +308,7 @@ veda.Module(function (veda) { "use strict";
       put_individual(veda.ticket, this.properties);
     } catch (e) {
       if (e.status !== 472) {
-        this.draft(parent);
+        this.draft();
       } else {
         console.log("Нет прав на создание или изменение объекта / No rights to create or modify object\n" + this.id + " (" + this.toString() + ")");
       }
@@ -322,9 +324,9 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Save current individual without validation and without adding new version
    */
-  proto.draft = function(parent) {
+  proto.draft = function() {
     this.trigger("individual:beforeDraft");
-    veda.drafts.set(this.id, this, parent);
+    veda.drafts.set(this.id, this);
     this.trigger("individual:afterDraft");
     return this;
   }
@@ -379,14 +381,14 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Mark current individual as deleted in database (add v-s:deleted property)
    */
-  proto.delete = function (parent) {
+  proto.delete = function () {
     this.trigger("individual:beforeDelete");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     if ( !this.isNew() ) {
       this["v-s:deleted"] = [ true ];
-      this.save(parent);
+      this.save();
     }
     this.trigger("individual:afterDelete");
     return this;
@@ -396,13 +398,13 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Recover current individual in database (remove v-s:deleted property)
    */
-  proto.recover = function (parent) {
+  proto.recover = function () {
     this.trigger("individual:beforeRecover");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];
-    this.save(parent);
+    this.save();
     this.trigger("individual:afterRecover");
     return this;
   };

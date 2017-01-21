@@ -30,6 +30,7 @@
       self.cache = {};
       self.ontology = {};
       self.drafts = {};
+      self.status = "logout";
       self.trigger("logout");
     };
 
@@ -58,6 +59,7 @@
       self.ontology = new veda.OntologyModel();
       self.drafts = new veda.DraftsModel();
       self.user = new veda.UserModel(self.user_uri);
+      self.status = "started";
       self.trigger("started");
     };
 
