@@ -298,7 +298,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           if ( !template.parent().closest("[resource='" + individual.id + "']").length && !draftLabel ) {
             draftLabel = $("<div class='label label-default label-draft'></div>").text(Draft);
             if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
-              var cell = template.children().last();
+              var cell = template.children().first();
               cell.css("position", "relative").append(draftLabel);
             } else {
               template.css("position", "relative");

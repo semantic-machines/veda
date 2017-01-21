@@ -38,7 +38,7 @@ veda.Module(function (veda) { "use strict";
     Object.keys(self._).map(function (key) {
       var draft = self._[key];
       if ( draft ) {
-        var individual = new veda.IndividualModel( draft.individual );
+        var individual = new veda.IndividualModel( draft );
         self.set(individual.id, individual);
       }
     });
@@ -47,17 +47,13 @@ veda.Module(function (veda) { "use strict";
   var proto = veda.DraftsModel.prototype;
 
   proto.get = function (uri) {
-    return this[uri] ? this[uri].individual : undefined;
+    return this[uri];
   };
 
   proto.set = function (uri, individual) {
-    this[uri] = {
-      individual: individual,
-    }
+    this[uri] = individual;
     individual["v-s:isDraft"] = [ true ];
-    this._[uri] = {
-      individual: individual.toJson(),
-    }
+    this._[uri] = individual.toJson();
     storage.drafts = JSON.stringify(this._);
     veda.trigger("update:drafts", this);
     return this;
