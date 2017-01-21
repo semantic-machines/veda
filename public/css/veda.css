@@ -138,6 +138,9 @@ footer {
 .text-muted {
   color: #707070;
 }
+.text-black {
+  color: #000;
+}
 label .has-error + * {
   color: #a94442;
 }
@@ -659,6 +662,24 @@ button.close {
   top: 15px;
   right: 15px;
   z-index: 100;
+  font-size: 14px;
+}
+
+/* Notifications */
+#notification-container {
+  width: 25%;
+  max-height: 40%;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 99999;
+  overflow: hidden;
+}
+.alert-notify {
+  display: inline-block;
+  float: right;
+  white-space: nowrap;
+  display: none;
 }
 
 .sidebar {

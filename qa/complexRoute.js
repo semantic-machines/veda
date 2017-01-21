@@ -81,6 +81,7 @@ module.exports = {
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
         driver.findElement({id:'submit'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Submit/Отправить' button");});
+        basic.isVisible(driver, 'span[rel="v-wf:isProcess"]', basic.FAST_OPERATION);
         driver.findElement({css:'span[rel="v-wf:isProcess"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'экземпляр маршрута: Комплексный маршрут' button");});
         driver.sleep(basic.FAST_OPERATION);

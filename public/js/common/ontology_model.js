@@ -11,8 +11,6 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
-  if (!storage.ontology) storage.clear();
-
   /* owl:Thing && rdfs:Resource domain properties */
   var stopList = [
     //"rdf:type",

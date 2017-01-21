@@ -1213,7 +1213,9 @@
             select(newVal);
             $modal.modal("hide").remove();
           });
-          newVal.present(cntr, undefined, "edit");
+          var tmpl = newVal["rdf:type"][0].template ? $( newVal["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+           $(".action", tmpl).remove();
+          newVal.present(cntr, tmpl, "edit");
           var template = cntr.children().first();
           template.on("internal-validated", function () {
             var validation = template.data("validation");
