@@ -151,24 +151,28 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var embedded = [];
 
     // Trigger same events for embedded templates
-    function syncEmbedded (e) {
+    function syncEmbedded (e, parent) {
       embedded.map(function (item) {
-        item.trigger(e.type);
+        item.trigger(e.type, individual.id);
       });
       e.stopPropagation();
     }
     template.on("view edit search save cancel delete recover draft", syncEmbedded);
 
     // Define handlers
-    function saveHandler (e) {
-      individual.save();
+    function saveHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.save();
+      }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
 
-    function draftHandler (e) {
-      individual.draft();
+    function draftHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.draft();
+      }
       template.trigger("view");
       e.stopPropagation();
     }
@@ -180,9 +184,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("showRights", showRightsHandler);
 
-    function cancelHandler (e) {
+    function cancelHandler (e, parent) {
       template.trigger("view");
-      individual.reset();
+      if (parent !== individual.id) {
+        individual.reset();
+      }
       e.stopPropagation();
     }
     template.on("cancel", cancelHandler);
@@ -215,14 +221,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       individual.off("individual:afterDelete", afterDeleteHandler);
     });
 
-    function deleteHandler (e) {
-      individual.delete();
+    function deleteHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.delete();
+      }
       e.stopPropagation();
     }
     template.on("delete", deleteHandler);
 
-    function recoverHandler (e) {
-      individual.recover();
+    function recoverHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.recover();
+      }
       e.stopPropagation();
     }
     template.on("recover", recoverHandler);
