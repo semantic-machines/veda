@@ -111,8 +111,10 @@ veda.Module(function (veda) { "use strict";
         if (this._.filtered[property_uri] && this._.filtered[property_uri].length) {
           serialized = serialized.concat( this._.filtered[property_uri] );
         }
-        this.properties[property_uri] = serialized;
-        this.trigger("individual:propertyModified", property_uri, notNull);
+        if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
+          this.properties[property_uri] = serialized;
+          this.trigger("individual:propertyModified", property_uri, notNull);
+        }
       },
       configurable: false,
       enumerable: false
