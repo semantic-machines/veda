@@ -141,6 +141,42 @@ v-s:SimpleNumeration
 v-s:YearNumeration8
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация 4+4 (год+номер) в пределах класса и года"@ru ;
+  rdfs:label "Numeration 4+4 (year+number) with class as scope"@en ;
+  v-s:numerationScope """
+(function (ticket, individual)
+{
+    if (!individual['rdf:type']) return '';
+  return "numeration-scope_"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
+})
+""" ;
+  v-s:numerationGetNextValue """
+(function getNextValue(ticket, scope) {
+  return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+})
+""" ;
+.
+v-s:YearNumeration2_4
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация 2+4 (год+номер) в пределах класса и года"@ru ;
+  rdfs:label "Numeration 2+4 (year+number) with class as scope"@en ;
+  v-s:numerationScope """
+(function (ticket, individual)
+{
+    if (!individual['rdf:type']) return '';
+  return "numeration-scope_"+(new Date()).getFullYear()+((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_');
+})
+""" ;
+  v-s:numerationGetNextValue """
+(function getNextValue(ticket, scope) {
+  return getNextValueSimple(ticket, scope, (parseInt(date.getFullYear().toString().substr(2,2), 10))*10000+1);
+})
+""" ;
+.
+v-s:YearNumeration2_6
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
   rdfs:label "Нумерация 2+6 (год+номер) в пределах класса и года"@ru ;
   rdfs:label "Numeration 2+6 (year+number) with class as scope"@en ;
   v-s:numerationScope """
@@ -152,7 +188,7 @@ v-s:YearNumeration8
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+  return getNextValueSimple(ticket, scope, (parseInt(date.getFullYear().toString().substr(2,2), 10))*1000000+1);
 })
 """ ;
 .
