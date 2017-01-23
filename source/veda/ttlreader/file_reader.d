@@ -8,7 +8,7 @@ import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
-import veda.util.container, veda.util.cbor, veda.core.util.utils, veda.common.logger, veda.util.cbor8individual, veda.util.raptor2individual;
+import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
        veda.core.common.know_predicates,
        veda.core.common.log_msg;
