@@ -184,17 +184,27 @@ v-df:TaskRouteStartForm
   rdfs:label "Выдать задачу"@ru ;
   rdfs:comment "Задача выдать задачу"@ru ;
 .
+v-df:DistributionRouteStartForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:StartForm ;
+  rdfs:isDefinedBy v-df: ;
+  rdfs:label "Distribution"@en ;
+  rdfs:label "Рассылка"@ru ;
+  rdfs:comment "Задача рассылка"@ru ;
+.
 
 v-s:hasAppointment
   rdfs:domain v-df:QuestionRouteStartForm ;
   rdfs:domain v-df:InstructionRouteStartForm ;
   rdfs:domain v-df:TaskRouteStartForm ;
+  rdfs:domain v-df:DistributionRouteStartForm ;
 .
 v-df:PsStartForm_hasAppointmentTo
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forClass v-df:TaskRouteStartForm ;
+  v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
   v-ui:maxCardinality 10 ;
   v-ui:minCardinality 0 ;
@@ -209,12 +219,14 @@ v-s:dateTo
   rdfs:domain v-df:QuestionRouteStartForm ;
   rdfs:domain v-df:InstructionRouteStartForm ;
   rdfs:domain v-df:TaskRouteStartForm ;
+  rdfs:domain v-df:DistributionRouteStartForm ;
 .
 v-df:PsStartForm_dateTo
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forClass v-df:TaskRouteStartForm ;
+  v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-s:dateTo ;
   v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
@@ -227,6 +239,7 @@ v-s:count
   rdfs:domain v-df:QuestionRouteStartForm ;
   rdfs:domain v-df:InstructionRouteStartForm ;
   rdfs:domain v-df:TaskRouteStartForm ;
+  rdfs:domain v-df:DistributionRouteStartForm ;
 .
 v-df:PsCountForStartForm
   rdf:type v-ui:DatatypePropertySpecification ;
@@ -235,6 +248,7 @@ v-df:PsCountForStartForm
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forClass v-df:TaskRouteStartForm ;
+  v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-s:count ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -245,12 +259,14 @@ v-wf:processedDocument
   rdfs:domain v-df:QuestionRouteStartForm ;
   rdfs:domain v-df:InstructionRouteStartForm ;
   rdfs:domain v-df:TaskRouteStartForm ;
+  rdfs:domain v-df:DistributionRouteStartForm ;
 .
 v-df:PsStartForm_processedDocument
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forClass v-df:TaskRouteStartForm ;
+  v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-wf:processedDocument ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -264,6 +280,7 @@ v-df:PsStartForm_comment
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
   v-ui:forClass v-df:TaskRouteStartForm ;
+  v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty rdfs:comment ;
   rdfs:label "Спецификация к свойству комментарий для QuestionRouteStartForm"@ru ;
   rdfs:label "Spec for comment for QuestionRouteStartFormclass"@en ;
@@ -436,6 +453,61 @@ v-df:TaskRouteStartFormTemplate
     }
   });
   //# sourceURL=v-df:TaskRouteStartFormTemplate
+</script>
+""" ;
+.
+
+
+v-df:DistributionRouteStartFormTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-df:DistributionRouteStartForm ;
+  rdfs:label "DistributionRouteStartForm template"@en ;
+  rdfs:label "Шаблон формы задачи рассылка"@ru ;
+  v-ui:template """
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+    <h3><span about="v-df:DistributionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
+    </div>
+  </div>
+  <em about="v-wf:processedDocument" property="rdfs:label"></em>
+  <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:responsible" property="rdfs:label"></em>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:dateTo" property="rdfs:label"></em>
+      <div property="v-s:dateTo" class="view -edit -search"></div>
+      <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <em about="v-s:count" property="rdfs:label"></em>
+      <div property="v-s:count" class="view -edit -search"></div>
+      <veda-control property="v-s:count" data-type="integer" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <div property="rdfs:comment" class="view -edit -search"></div>
+  <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
+  <br>
+  <div class="well well-sm">
+    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
+</div>
+<script>
+  $("#cancel", template).click(function () {
+    var modal = template.closest(".modal");
+    if (modal.length) {
+      modal.modal("hide");
+    } else {
+      window.history.back();
+    }
+  });
+  //# sourceURL=v-df:DistributionRouteStartFormTemplate
 </script>
 """ ;
 .
@@ -689,6 +761,86 @@ v-df:rul_TaskTransform7
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putString ('v-wf:variableValue', 'Ответить на задачу')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
+.
+
+
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ РАССЫЛКА В СЕТЬ --
+v-df:DistributionRouteStartFormToNet
+  rdfs:label "Трансформация из СтФ Рассылка в стандартную сеть процесса"^^xsd:string;
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-df:rul_DistributionTransform0 ;
+  v-wf:transformRule v-df:rul_DistributionTransform1 ;
+  v-wf:transformRule v-df:rul_DistributionTransform2 ;
+  v-wf:transformRule v-df:rul_DistributionTransform3 ;
+  v-wf:transformRule v-df:rul_DistributionTransform4 ;
+  v-wf:transformRule v-df:rul_DistributionTransform5 ;
+  v-wf:transformRule v-df:rul_DistributionTransform6_0 ;
+  v-wf:transformRule v-df:rul_DistributionTransform6_3 ;
+  v-wf:transformRule v-df:rul_DistributionTransform7 ;
+  rdfs:isDefinedBy v-df: ;
+.
+v-df:rul_DistributionTransform0
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'startForm_id')";
+.
+v-df:rul_DistributionTransform1
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'docId')";
+.
+v-df:rul_DistributionTransform2
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
+.
+v-df:rul_DistributionTransform3
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('rdfs:comment')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_comment')";
+.
+v-df:rul_DistributionTransform4
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:dateTo')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_date_to')";
+.
+v-df:rul_DistributionTransform5
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:creator')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'initiator')";
+.
+v-df:rul_DistributionTransform6_0
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionConfirm')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
+.
+v-df:rul_DistributionTransform6_3
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 's-wf:UserTaskForm')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'decision_form_type')";
+.
+v-df:rul_DistributionTransform7
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putString ('v-wf:variableValue', 'Рассылка')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
 .
 
@@ -1129,6 +1281,14 @@ v-wf:taskRouteStartFormLinkRule
   v-s:hasTransformation v-wf:taskRouteStartForm;
   v-s:isRoute "true"^^xsd:boolean;
 .
+v-wf:distributionRouteStartFormLinkRule
+  rdf:type v-s:DocumentLinkRules;
+  rdfs:label "Рассылка"@ru ;
+  rdfs:label "Distribution"@en ;
+  v-s:classTo v-df:DistributionRouteStartForm;
+  v-s:hasTransformation v-wf:distributionRouteStartForm;
+  v-s:isRoute "true"^^xsd:boolean;
+.
 
 v-wf:permission_on_simple_routes_start_from
   rdf:type v-s:PermissionStatement ;
@@ -1223,6 +1383,36 @@ v-wf:rule3task
   rdf:type v-wf:Rule ;
   v-wf:aggregate "putUri ('rdf:type', 'v-df:TaskRouteStartForm')" ;
   v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:TaskRouteStartFormToNet')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping "1";
+.
+
+v-wf:distributionRouteStartForm
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-wf:rule1distribution ;
+  v-wf:transformRule v-wf:rule2distribution ;
+  v-wf:transformRule v-wf:rule3distribution ;
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:rule1distribution
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping "1";
+.
+v-wf:rule2distribution
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping "1";
+.
+v-wf:rule3distribution
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-df:DistributionRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:DistributionRouteStartFormToNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
