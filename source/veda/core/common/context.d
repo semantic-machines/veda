@@ -193,6 +193,19 @@ public struct SearchResult
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
+/// Результат
+public enum Result
+{
+    /// OK
+    Ok,
+
+    /// Ошибка
+    Err,
+
+    /// Ничего
+    Nothing
+}
+
 interface Storage
 {
     public ResultCode put(string in_key, string in_value, long op_id);

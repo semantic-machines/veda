@@ -23,19 +23,6 @@ enum DBMode
     RW = false
 }
 
-/// Результат
-public enum Result
-{
-    /// OK
-    Ok,
-
-    /// Ошибка
-    Err,
-
-    /// Ничего
-    Nothing
-}
-
 public bool[ string ] db_is_open;
 
 /// key-value хранилище на lmdb
