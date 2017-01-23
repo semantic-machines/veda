@@ -747,21 +747,6 @@ public class LmdbStorage : Storage
             return str;
     }
 
-    public Individual find_individual(string uri)
-    {
-        Individual ind;
-        string     str = find(uri);
-
-        if (str !is null)
-        {
-            if (cbor2individual(&ind, str) < 0)
-            {
-                log.trace("ERR! invalid individual=", uri);
-            }
-        }
-        return ind;
-    }
-
     public long dump_to_binlog()
     {
         if (db_is_opened == false)
