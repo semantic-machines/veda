@@ -86,8 +86,8 @@ class PThreadContext : Context
 
     private               string[ string ] prefix_map;
 
-    private LmdbStorage   inividuals_storage_r;
-    private LmdbStorage   tickets_storage_r;
+    private Storage   inividuals_storage_r;
+    private Storage   tickets_storage_r;
     private VQL           _vql;
 
     private long          local_last_update_time;

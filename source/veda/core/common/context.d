@@ -199,6 +199,9 @@ interface Storage
     public string find(string uri, bool return_value = true);
     public int get_of_cursor(bool delegate(string key, string value) prepare);
     public long count_entries();
+    public void reopen_db();
+    public void close_db();
+    public long dump_to_binlog();
 }
 
 interface ScriptVM
