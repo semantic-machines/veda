@@ -134,7 +134,7 @@ v-s:Account
   rdfs:label "Учетная запись"@ru ;
 .
 
-v-s:usesCredential
+v-s:Credential
   rdf:type owl:Class ;
   rdfs:label "Credential" ;
 .
