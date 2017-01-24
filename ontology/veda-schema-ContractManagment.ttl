@@ -18,7 +18,7 @@
 v-s:Contractor
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Organization ;
+#  rdfs:subClassOf v-s:Organization ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;

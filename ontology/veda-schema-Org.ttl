@@ -74,6 +74,7 @@ v-s:taxId
   rdfs:label "ИНН"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
+  rdfs:domain v-s:Contractor ;
 .
 v-s:taxRegistrationCause
   rdf:type owl:DatatypeProperty ;
