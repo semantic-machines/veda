@@ -442,7 +442,11 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
 
         //writeln ("@p:v8d read_individual, uri=[", uri, "],  ticket=[", ticket, "]");
 
-        if (uri == "$document")
+		if (uri == "undefined")
+		{
+			return null;
+		}	
+        else if (uri == "$document")
         {
             return &g_document;
         }
