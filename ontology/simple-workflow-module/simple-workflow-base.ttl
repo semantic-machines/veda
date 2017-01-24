@@ -1519,6 +1519,141 @@ if (doc) {
       }
     }
   }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------Дополнительное соглашение
+  if (doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") {
+    if (doc.hasValue('v-s:hasDocumentKind') && doc['v-s:hasDocumentKind'][0].id == 'd:074d6f4add1b4aebaf1cf7bc0332eb3d') {
+      // Заказ Спецификация. Разовая закупка
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+
+      routes['sign'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель по контракту
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'deadlineDays'] = [10];
+
+      routes['approval'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель по контракту
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [true];
+      routes['approval'][simple+'deadlineDays'] = [10];
+      routes['approval'][simple+'comment'] = [new String('Подписать у контрагента')];
+
+      routes['review'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; // Регистратор документов СЛПК
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'deadlineDays'] = [10];
+      routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
+    }
+    if (doc.hasValue('v-s:hasDocumentKind') && doc['v-s:hasDocumentKind'][0].id == 'd:fbf562d8a6a04d72b1034f7f7e4d21de') {
+      // Контракт
+      if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+        // Контракт о закупке
+        if (doc.hasValue('v-s:hasBudgetCategory') && (
+          doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+          // CAPEX
+          routes['informing'][simple+'participant'] = [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")]; // Специалист ОУП
+
+          routes['coordination1'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+          if (doc.hasValue('v-s:responsibleDepartment')) {
+            var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
+            if (dep.hasValue('v-s:hasChief')) {
+            routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
+            }
+          }
+          routes['coordination1'][simple+'visible'] = [true];
+          routes['coordination1'][simple+'editable'] = [false];
+          routes['coordination1'][simple+'deadlineDays'] = [10];
+
+          // TODO добавить людей
+          routes['coordination2'][simple+'visible'] = [true];
+          routes['coordination2'][simple+'editable'] = [true];
+          routes['coordination2'][simple+'deadlineDays'] = [10];
+
+          routes['coordination3'][simple+'participant'] = [
+            new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa"), // Главный бухгалтер
+            new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")]; // Юрисконсульт
+          routes['coordination3'][simple+'visible'] = [true];
+          routes['coordination3'][simple+'deadlineDays'] = [10];
+          if (!doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination')) {
+            // Упрощенное согласование
+            routes['coordination3'][simple+'editable'] = [true];
+          } else {
+            routes['coordination3'][simple+'editable'] = [false];
+          }
+
+          routes['coordination4'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+          routes['coordination4'][simple+'visible'] = [true];
+          routes['coordination4'][simple+'editable'] = [true];
+          routes['coordination4'][simple+'deadlineDays'] = [2];
+          routes['coordination4'][simple+'comment'] = [new String('Согласовать с Контрагентом текcт Контракта и подготовить документы к подписанию')];
+
+          routes['sign'][simple+'visible'] = [true];
+          routes['sign'][simple+'editable'] = [true];
+          routes['sign'][simple+'deadlineDays'] = [10];
+
+          routes['approval'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+          routes['approval'][simple+'visible'] = [true];
+          routes['approval'][simple+'editable'] = [false];
+          routes['approval'][simple+'deadlineDays'] = [10];
+          routes['approval'][simple+'comment'] = [new String('Поставить отметку о подписании контрагентом')];
+
+          routes['review'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; // Регистратор документов СЛПК
+          routes['review'][simple+'visible'] = [true];
+          routes['review'][simple+'editable'] = [false];
+          routes['review'][simple+'deadlineDays'] = [10];
+          routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
+
+          if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
+            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
+            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
+            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
+              routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:3faff975-440f-4499-98c5-eb5eaf4fb04a")]; // Специалист по ведению кредиторов
+              routes['examination'][simple+'visible'] = [true];
+              routes['examination'][simple+'editable'] = [false];
+              routes['examination'][simple+'deadlineDays'] = [10];
+          }
+        }
+      }
+      if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
+        // Контракт о продаже
+          routes['coordination1'][simple+'visible'] = [true];
+          routes['coordination1'][simple+'editable'] = [true];
+          routes['coordination1'][simple+'deadlineDays'] = [10];
+
+          routes['coordination2'][simple+'visible'] = [true];
+          routes['coordination2'][simple+'editable'] = [true];
+          routes['coordination2'][simple+'deadlineDays'] = [10];
+
+          routes['coordination3'][simple+'visible'] = [true];
+          routes['coordination3'][simple+'editable'] = [true];
+          routes['coordination3'][simple+'deadlineDays'] = [10];
+
+          routes['coordination4'][simple+'participant'] = [
+            new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa"), // Главный бухгалтер
+            new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")]; // Юрисконсульт
+          routes['coordination4'][simple+'visible'] = [true];
+          routes['coordination4'][simple+'editable'] = [true];
+          routes['coordination4'][simple+'deadlineDays'] = [10];
+
+          routes['approval'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+          routes['approval'][simple+'visible'] = [true];
+          routes['approval'][simple+'editable'] = [false];
+          routes['approval'][simple+'deadlineDays'] = [10];
+          routes['approval'][simple+'comment'] = [new String('Поставить отметку о подписании контрагентом')];
+
+          routes['review'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+          routes['review'][simple+'visible'] = [true];
+          routes['review'][simple+'editable'] = [false];
+          routes['review'][simple+'deadlineDays'] = [10];
+          routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
+
+      }
+    }
+  }
 //----------------------------------------------------------------------------------------------------------------------------------Заявка на cброс сточных вод
   if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
     // #COORDINATION1---------------------------------------------------------------------------------------------------------------------------------------
