@@ -403,7 +403,7 @@ class PThreadContext : Context
 
     public string get_from_individual_storage(string uri)
     {
-        //writeln ("@ get_individual_as_cbor, uri=", uri);
+        //writeln ("@ get_individual_as_binobj, uri=", uri);
         string res;
 
         if (inividuals_storage_r !is null)

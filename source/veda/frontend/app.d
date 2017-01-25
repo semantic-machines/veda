@@ -2,7 +2,7 @@ import std.conv, std.stdio, std.file, core.runtime, core.thread;
 import vibe.d;
 import properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
-import veda.frontend.core_rest, veda.frontend.cbor8vjson, veda.frontend.individual8vjson;
+import veda.frontend.core_rest, veda.frontend.individual8vjson;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
 
