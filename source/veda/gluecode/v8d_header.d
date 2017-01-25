@@ -266,10 +266,10 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 }
 
 //чтение неправильное после операции add set
-extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                        int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
@@ -282,10 +282,10 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
         return ti.rc;
 }
 
-extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
@@ -299,10 +299,10 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
         return ti.rc;
 }
 
-extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
@@ -316,11 +316,11 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
         return ti.rc;
 }
 
-extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                                int _event_id_length)
 {
     TransactionItem *ti =
-        new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+        new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                             cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
