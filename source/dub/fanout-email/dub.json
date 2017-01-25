@@ -12,6 +12,7 @@
 	"sourcePaths":[
 	    "../../veda/common", 
 	    "../../veda/onto",  
+	    "../../veda/onto/bj8individual",  
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/az", 
@@ -26,12 +27,9 @@
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",
  	"../../veda/core/util/utils.d",
-        "../../veda/util/individual8json.d",
         "../../veda/util/tools.d",
         "../../veda/util/queue.d",
         "../../veda/util/container.d",
-        "../../veda/util/cbor.d",
-        "../../veda/util/cbor8individual.d",
         "../../veda/util/module_info.d",
         "../../veda/fanout/fanout_email.d"
 	],
