@@ -516,7 +516,7 @@ void dump(char *data, int count)
     for (int i = 0; i < count; i++)
         res ~= "[" ~ text(cast(uint)data[ i ]) ~ "]";
 
-    writeln("@d dump cbor=", res);
+    writeln("@d dump binobj=", res);
 }
 
 // //////////////////////////  call C from D //////////////////////////////////////////

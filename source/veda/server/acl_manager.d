@@ -8,8 +8,8 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
-           veda.core.common.know_predicates, veda.core.common.log_msg, veda.util.cbor8individual;
-    import veda.core.util.utils, veda.util.cbor, veda.common.logger, veda.util.module_info;
+           veda.core.common.know_predicates, veda.core.common.log_msg;
+    import veda.core.util.utils, veda.common.logger, veda.util.module_info;
     import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
 }
 
@@ -131,14 +131,14 @@ void acl_manager(string thread_name, string db_path)
                             try
                             {
                                 Individual new_ind;
-                                if (cbor2individual(&new_ind, new_state) < 0)
+                                if (new_ind.deserialize(new_state) < 0)
                                 {
                                     log.trace("ERR! invalid individual: [%s] op_id=%d", new_state, op_id);
                                     return;
                                 }
 
                                 Individual prev_ind;
-                                if (prev_state !is null && cbor2individual(&prev_ind, prev_state) < 0)
+                                if (prev_state !is null && prev_ind.deserialize(prev_state) < 0)
                                 {
                                     log.trace("ERR! invalid individual: [%s] op_id=%d", prev_state, op_id);
                                     return;

@@ -9,7 +9,7 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json, std.regex;
     import veda.bind.xapian_d_header;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.individual8json;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.util.individual8json;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.common.log_msg, veda.util.module_info;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
@@ -412,7 +412,7 @@ class PThreadContext : Context
             res = get_from_individual_storage_thread(uri);
 
         if (res !is null && res.length < 10)
-            log.trace_log_and_console("ERR! get_individual_from_storage, found invalid CBOR, uri=%s", uri);
+            log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
 
         return res;
     }
@@ -591,12 +591,12 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
         // store ticket
-        string ss_as_cbor = individual2cbor(&new_ticket);
+        string ss_as_binobj = new_ticket.serialize();
 
         version (isServer)
         {
             long       op_id;
-            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_cbor, -1, null, false, op_id);
+            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -799,7 +799,7 @@ class PThreadContext : Context
                     tt = new Ticket;
                     Individual ticket;
 
-                    if (cbor2individual(&ticket, ticket_str) > 0)
+                    if (ticket.deserialize(ticket_str) > 0)
                     {
                         subject2Ticket(ticket, tt);
                         tt.result               = ResultCode.OK;
@@ -995,17 +995,17 @@ class PThreadContext : Context
 
         try
         {
-            string individual_as_cbor = get_from_individual_storage(uri);
-            if (individual_as_cbor !is null && individual_as_cbor.length > 1)
+            string individual_as_binobj = get_from_individual_storage(uri);
+            if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
                 {
-                    if (cbor2individual(&individual, individual_as_cbor) > 0)
+                    if (individual.deserialize(individual_as_binobj) > 0)
                         individual.setStatus(ResultCode.OK);
                     else
                     {
                         individual.setStatus(ResultCode.Unprocessable_Entity);
-                        writeln("ERR!: invalid cbor: [", individual_as_cbor, "] ", uri);
+                        writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
                     }
                 }
                 else
@@ -1018,7 +1018,7 @@ class PThreadContext : Context
             else
             {
                 individual.setStatus(ResultCode.Unprocessable_Entity);
-                //writeln ("ERR!: empty cbor: [", individual_as_cbor, "] ", uri);
+                //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
             }
 
             return individual;
@@ -1044,11 +1044,11 @@ class PThreadContext : Context
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
                 {
                     Individual individual         = Individual.init;
-                    string     individual_as_cbor = get_from_individual_storage(uri);
+                    string     individual_as_binobj = get_from_individual_storage(uri);
 
-                    if (individual_as_cbor !is null && individual_as_cbor.length > 1)
+                    if (individual_as_binobj !is null && individual_as_binobj.length > 1)
                     {
-                        if (cbor2individual(&individual, individual_as_cbor) > 0)
+                        if (individual.deserialize(individual_as_binobj) > 0)
                             res ~= individual;
                         else
                         {
@@ -1069,7 +1069,7 @@ class PThreadContext : Context
         }
     }
 
-    public string get_individual_as_cbor(Ticket *ticket, string uri, out ResultCode rs)
+    public string get_individual_as_binobj(Ticket *ticket, string uri, out ResultCode rs)
     {
         string    res;
         StopWatch sw; sw.start;
@@ -1079,36 +1079,36 @@ class PThreadContext : Context
         if (ticket is null)
         {
             rs = ResultCode.Ticket_not_found;
-            log.trace("get_individual as cbor, uri=%s, ticket is null", uri);
+            log.trace("get_individual as binobj, uri=%s, ticket is null", uri);
             return null;
         }
 
         if (trace_msg[ T_API_180 ] == 1)
         {
             if (ticket !is null)
-                log.trace("get_individual as cbor, uri=[%s], ticket=[%s]", uri, ticket.id);
+                log.trace("get_individual as binobj, uri=[%s], ticket=[%s]", uri, ticket.id);
         }
 
         try
         {
             if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
             {
-                string individual_as_cbor = get_from_individual_storage(uri);
+                string individual_as_binobj = get_from_individual_storage(uri);
 
-                if (individual_as_cbor !is null && individual_as_cbor.length > 1)
+                if (individual_as_binobj !is null && individual_as_binobj.length > 1)
                 {
-                    res = individual_as_cbor;
+                    res = individual_as_binobj;
                     rs  = ResultCode.OK;
                 }
                 else
                 {
-                    //writeln ("ERR!: empty cbor: ", uri);
+                    //writeln ("ERR!: empty binobj: ", uri);
                 }
             }
             else
             {
                 if (trace_msg[ T_API_190 ] == 1)
-                    log.trace("get_individual as cbor, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
+                    log.trace("get_individual as binobj, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
                 rs = ResultCode.Not_Authorized;
             }
 
@@ -1118,7 +1118,7 @@ class PThreadContext : Context
         {
             stat(CMD_GET, sw);
             if (trace_msg[ T_API_200 ] == 1)
-                log.trace("get_individual as cbor: end, uri=%s", uri);
+                log.trace("get_individual as binobj: end, uri=%s", uri);
         }
     }
 
@@ -1140,7 +1140,7 @@ class PThreadContext : Context
             prev_state = get_from_individual_storage_thread(uri);
             if (prev_state !is null)
             {
-                int code = cbor2individual(&prev_indv, prev_state);
+                int code = prev_indv.deserialize(prev_state);
                 if (code < 0)
                 {
                     log.trace("ERR! store_individual: invalid prev_state [%s]", prev_state);
@@ -1316,7 +1316,7 @@ class PThreadContext : Context
                 if (prev_state !is null)
                 {
                     ev = EVENT.UPDATE;
-                    int code = cbor2individual(&prev_indv, prev_state);
+                    int code = prev_indv.deserialize(prev_state);
                     if (code < 0)
                     {
                         log.trace("ERR! store_individual: invalid prev_state [%s]", prev_state);
@@ -1373,7 +1373,7 @@ class PThreadContext : Context
                 update_counter++;
                 indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
-                string new_state = individual2cbor(indv);
+                string new_state = indv.serialize();
 
                 if (new_state.length > max_size_of_individual)
                 {

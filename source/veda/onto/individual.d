@@ -45,6 +45,11 @@ public struct Individual
 		return cbor2individual (&this, bin);
 	}
 
+	string serialize ()
+	{
+		return individual2cbor (&this);
+	}
+
     Individual dup()
     {
         resources.rehash();
