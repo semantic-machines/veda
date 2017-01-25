@@ -10,7 +10,7 @@ private
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule;
     import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
@@ -139,7 +139,7 @@ private void ltrs_thread(string parent_url)
                                if (cmd == CMD_START)
                                {
                                    Individual indv;
-                                   if (cbor2individual(&indv, inst_of_codelet) < 0)
+                                   if (indv.deserialize(inst_of_codelet) < 0)
                                        return;
 
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
@@ -245,7 +245,7 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
         return ResultCode.OK;
 
     Individual indv;
-    if (cbor2individual(&indv, msg) < 0)
+    if (indv.deserialize(msg) < 0)
     {
         writeln("ERR msg=", msg);
         return ResultCode.OK;

@@ -174,15 +174,15 @@ v-df:InstructionRouteStartForm
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Instruction document"@en ;
   rdfs:label "Исполнить поручение"@ru ;
-  rdfs:comment "Задача bcgjkybnm gjhextybt"@ru ;
+  rdfs:comment "Задача исполнить поручение"@ru ;
 .
 v-df:TaskRouteStartForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:StartForm ;
   rdfs:isDefinedBy v-df: ;
-  rdfs:label "Task document"@en ;
-  rdfs:label "Выдать задачу"@ru ;
-  rdfs:comment "Задача выдать задачу"@ru ;
+  rdfs:label "Introduction"@en ;
+  rdfs:label "На ознакомление"@ru ;
+  rdfs:comment "Задача ознакомиться"@ru ;
 .
 v-df:DistributionRouteStartForm
   rdf:type owl:Class ;
@@ -407,7 +407,7 @@ v-df:TaskRouteStartFormTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-df:TaskRouteStartForm ;
   rdfs:label "TaskRouteStartForm template"@en ;
-  rdfs:label "Шаблон формы задачи выдать задачу"@ru ;
+  rdfs:label "Шаблон формы задачи ознакомиться"@ru ;
   v-ui:template """
 <div class="container">
   <div class="row">
@@ -685,9 +685,9 @@ v-df:rul_InstructionTransform8
   v-wf:aggregate  "putString ('v-wf:variableName', 'controller')";
 .
 
-# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ВЫДАТЬ ЗАДАЧУ В СЕТЬ --
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ОЗНАКОМИТЬСЯ В СЕТЬ --
 v-df:TaskRouteStartFormToNet
-  rdfs:label "Трансформация из СтФ Выдать задачу в стандартную сеть процесса"^^xsd:string;
+  rdfs:label "Трансформация из СтФ Ознакомиться в стандартную сеть процесса"^^xsd:string;
   rdf:type v-wf:Transform ;
   v-wf:transformRule v-df:rul_TaskTransform0 ;
   v-wf:transformRule v-df:rul_TaskTransform1 ;
@@ -760,7 +760,7 @@ v-df:rul_TaskTransform7
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putString ('v-wf:variableValue', 'Ответить на задачу')";
+  v-wf:aggregate  "putString ('v-wf:variableValue', 'Ознакомиться')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
 .
 
@@ -1275,10 +1275,10 @@ v-wf:instructionRouteStartFormLinkRule
 .
 v-wf:taskRouteStartFormLinkRule
   rdf:type v-s:DocumentLinkRules;
-  rdfs:label "Выдать задачу"@ru ;
-  rdfs:label "Send a task"@en ;
+  rdfs:label "Ознакомиться"@ru ;
+  rdfs:label "Introduction"@en ;
   v-s:classTo v-df:TaskRouteStartForm;
-  v-s:hasTransformation v-wf:taskRouteStartForm;
+  v-s:hasTransformation v-wf:TaskRouteStartForm;
   v-s:isRoute "true"^^xsd:boolean;
 .
 v-wf:distributionRouteStartFormLinkRule

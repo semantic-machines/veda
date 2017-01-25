@@ -747,7 +747,7 @@ class VedaStorageRest : VedaStorageRest_API
                         context.reopen_ro_subject_storage_db();
                     }
 
-                    string cb = context.get_individual_as_cbor(ticket, uri, rc);
+                    string cb = context.get_individual_as_binobj(ticket, uri, rc);
 
                     if (rc == ResultCode.OK)
                     {
