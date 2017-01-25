@@ -349,7 +349,7 @@ v-l:Clear
   rdf:type v-l:Menu ;
   rdfs:label "Clear data"@en ;
   rdfs:label "Очистить данные"@ru ;
-  v-l:staticLink "javascript:location.reload(localStorage.clear())"^^xsd:string ;
+  v-l:staticLink "javascript:location.reload(veda.Util.clearStorage())"^^xsd:string ;
 .
 v-l:Exit
   rdf:type v-l:Menu ;

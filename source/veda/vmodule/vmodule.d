@@ -6,7 +6,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
     import kaleidic.nanomsg.nano;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
-    import veda.common.logger, veda.util.cbor, veda.util.cbor8individual, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
@@ -262,7 +262,7 @@ class VedaModule
             }
 
             Individual imm;
-            if (data !is null && cbor2individual(&imm, data) < 0)
+            if (data !is null && imm.deserialize(data) < 0)
             {
                 log.trace("ERR! invalid individual:[%s]", data);
                 continue;
@@ -274,7 +274,7 @@ class VedaModule
             {
                 log.trace("prefetch: found change in config [%s]", uri);
                 string new_bin = imm.getFirstLiteral("new_state");
-                if (new_bin !is null && cbor2individual(&node, new_bin) < 0)
+                if (new_bin !is null && node.deserialize(new_bin) < 0)
                 {
                     log.trace("ERR! invalid individual:[%s]", new_bin);
                 }
@@ -358,7 +358,7 @@ class VedaModule
             count_readed++;
 
             Individual imm;
-            if (data !is null && cbor2individual(&imm, data) < 0)
+            if (data !is null && imm.deserialize(data) < 0)
             {
                 log.trace("ERR! invalid individual:[%s]", data);
                 continue;
@@ -372,7 +372,7 @@ class VedaModule
             op_id = imm.getFirstInteger("op_id");
 
             Individual prev_indv, new_indv;
-            if (new_bin !is null && cbor2individual(&new_indv, new_bin) < 0)
+            if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
             {
                 log.trace("ERR! invalid individual:[%s]", new_bin);
             }
@@ -380,7 +380,7 @@ class VedaModule
             {
 //                log.trace("@read from queue new_indv.uri=%s, op_id=%s", new_indv.uri, op_id);
 
-                if (prev_bin !is null && cbor2individual(&prev_indv, prev_bin) < 0)
+                if (prev_bin !is null && prev_indv.deserialize(prev_bin) < 0)
                 {
                     log.trace("ERR! invalid individual:[%s]", prev_bin);
                 }

@@ -5,7 +5,7 @@ module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -134,11 +134,11 @@ struct TransactionItem
         }
         else
         {
-            int code = cbor2individual(&indv, indv_serl);
+            int code = indv.deserialize(indv_serl);
             if (code < 0)
             {
                 rc = ResultCode.Unprocessable_Entity;
-                log.trace("ERR! v8d:transaction:cbor2individual [%s]", indv_serl);
+                log.trace("ERR! v8d:transaction:deserialize [%s]", indv_serl);
                 return;
             }
             else
@@ -266,10 +266,10 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 }
 
 //чтение неправильное после операции add set
-extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                        int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
@@ -282,10 +282,10 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
         return ti.rc;
 }
 
-extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
@@ -299,10 +299,10 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
         return ti.rc;
 }
 
-extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
@@ -316,11 +316,11 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
         return ti.rc;
 }
 
-extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                                int _event_id_length)
 {
     TransactionItem *ti =
-        new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_cbor[ 0.._cbor_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+        new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                             cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
@@ -442,7 +442,11 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
 
         //writeln ("@p:v8d read_individual, uri=[", uri, "],  ticket=[", ticket, "]");
 
-        if (uri == "$document")
+		if (uri == "undefined")
+		{
+			return null;
+		}	
+        else if (uri == "$document")
         {
             return &g_document;
         }
@@ -512,7 +516,7 @@ void dump(char *data, int count)
     for (int i = 0; i < count; i++)
         res ~= "[" ~ text(cast(uint)data[ i ]) ~ "]";
 
-    writeln("@d dump cbor=", res);
+    writeln("@d dump binobj=", res);
 }
 
 // //////////////////////////  call C from D //////////////////////////////////////////

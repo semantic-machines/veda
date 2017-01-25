@@ -713,6 +713,13 @@ v-s:registrationNumberOut
   rdfs:range xsd:string ;
   rdfs:domain v-s:Registered ;
 .
+v-s:registrationNumberAdd
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Registration number additional"@en ;
+  rdfs:label "Регистрационный номер дополнительный"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Registered ;
+.
 
 ### -------------------------------------------------------
 v-s:Deliverable2

@@ -4,6 +4,15 @@ veda.Module(function Util(veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
+  veda.Util.clearStorage = function () {
+    if ( typeof localStorage !== "undefined" ) {
+      delete localStorage["ontology"];
+      delete localStorage["user_uri"];
+      delete localStorage["end_time"];
+      delete localStorage["ticket"];
+    }
+  }
+
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
     if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
@@ -98,15 +107,20 @@ veda.Module(function Util(veda) { "use strict";
     });
 
     function prefixer(uri) {
-      var colonIndex = uri.indexOf(":"),
-          prefix = uri.substring(0, colonIndex);
-      if ( !prefixes[prefix] ) {
-        prefixes[prefix] = all_prefixes[prefix];
-      }
-      if ( colonIndex === uri.length-1 ) {
-        return prefixes[prefix];
-      } else {
-        return N3.Util.expandPrefixedName(uri, prefixes);
+      try {
+        var colonIndex = uri.indexOf(":"),
+            prefix = uri.substring(0, colonIndex);
+        if ( !prefixes[prefix] ) {
+          prefixes[prefix] = all_prefixes[prefix];
+        }
+        if ( colonIndex === uri.length-1 ) {
+          return prefixes[prefix];
+        } else {
+          return N3.Util.expandPrefixedName(uri, prefixes);
+        }
+      } catch (error) {
+        veda.trigger("danger", {status: "TTL:", description: error.message});
+        return uri;
       }
     }
 
@@ -142,7 +156,7 @@ veda.Module(function Util(veda) { "use strict";
               triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
               break;
             case "Datetime":
-              triple.object = '"' + value.toISOString() + '"^^' + prefixer("xsd:dateTime");
+              triple.object = '"' + ( value instanceof Date ? value.toISOString() : value ) + '"^^' + prefixer("xsd:dateTime");
               break;
             case "Uri":
               triple.object = prefixer(value);
@@ -222,7 +236,7 @@ veda.Module(function Util(veda) { "use strict";
     var flat = flattenIndividual(individual.properties);
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
-        if (property_uri === "@") { return }
+        if (property_uri === "@" || property_uri === "v-s:isDraft") { return }
         var values = flat[property_uri];
         var oneProp;
         switch (values[0].type) {

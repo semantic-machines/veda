@@ -43,3 +43,8 @@ d:currency_ruusd
     a v-s:Currency;
     v-s:shortLabel "RUUSD"^^xsd:string;
     rdfs:label "Условная единица USD"^^xsd:string.
+
+d:currency_rugbp
+    a v-s:Currency;
+    v-s:shortLabel "RUGBP"^^xsd:string;
+    rdfs:label "Условная единица GBP"^^xsd:string.

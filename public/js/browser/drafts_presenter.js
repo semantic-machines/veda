@@ -28,7 +28,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     if (veda.drafts.length) {
       Object.keys(veda.drafts).map(function (uri) {
         var draft = veda.drafts[uri],
-          parent = draft.parent;
+          parent = draft.hasValue("v-s:parent") && draft["v-s:parent"][0].id;
         if ( parent && veda.drafts[parent] ) {
           tree[parent] ? tree[parent].push(uri) : tree[parent] = [uri];
         } else {
@@ -41,7 +41,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     tmpl.on("click", ".remove-draft", function (e) {
       e.stopPropagation();
       var uri = $(this).parent().find("[resource]").attr("resource");
-      veda.drafts.remove(uri);
+      if ( confirm("Вы уверены? / Are you sure?") ) { veda.drafts.remove(uri) }
     });
 
     function renderDraftsTree(list, el, tmpl) {
@@ -61,7 +61,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 
   veda.on("update:drafts", function (drafts) {
     $("#drafts-counter").text(drafts.length);
-    if (location.hash === "#/drafts") { veda.trigger("load:drafts") }
+    if (location.hash === "#/drafts" && veda.status === "started") { veda.trigger("load:drafts") }
   });
 
   // Включим позже
@@ -69,7 +69,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
   /*$(window).unload(function() {
     Object.keys(veda.drafts).map(function (uri) {
       var draft = veda.drafts[uri],
-          parent = draft.parent;
+          parent = draft.hasValue("v-s:parent") && draft["v-s:parent"][0].id;
       if ( parent && !veda.drafts[parent] ) {
         veda.drafts.remove(uri);
       }

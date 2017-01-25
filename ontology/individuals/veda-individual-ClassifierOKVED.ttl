@@ -4215,3 +4215,19 @@ d:cc6f80b8625b43d6b52acfab6c8787c9
   v-s:description "74.30.9"^^xsd:string;
   rdfs:label "Деятельность по техническому контролю, испытаниям и анализу прочая"^^xsd:string;
 .
+d:f0889540602c43bd8c7f601ab7a87133
+  a v-s:ClassifierOKVED;
+  v-s:updateCounter "2"^^xsd:integer;
+  v-s:hasParentLink d:6b4da2bb7129443d842efcdb0bbf322d;
+  v-s:registrationNumber "71.20.1"^^xsd:string;
+  v-s:description "74.30.1"^^xsd:string;
+  rdfs:label "Испытания и анализ состава и чистоты материалов и веществ: анализ химических и биологических свойств материалов и веществ	испытания и анализ в области гигиены питания, включая ветеринарный контроль и контроль за производством продуктов питания"^^xsd:string;
+.
+d:adc7fb24adae47569fdb9c871b31f803
+  a v-s:ClassifierOKVED;
+  v-s:updateCounter "2"^^xsd:integer;
+  v-s:hasParentLink d:6b4da2bb7129443d842efcdb0bbf322d;
+  v-s:registrationNumber "71.20.3"^^xsd:string;
+  v-s:description "74.30.3"^^xsd:string;
+  rdfs:label "Испытания и анализ физико-механических свойств материалов и веществ"^^xsd:string;
+.

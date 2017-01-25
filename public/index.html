@@ -50,13 +50,13 @@
     </div>
 
     <!-- Notification alerts -->
-    <div id="notification-container" style="width:25%; max-height: 40%; position:fixed; bottom:10px; right:10px;z-index:99999; overflow:hidden"></div>
+    <div id="notification-container"></div>
 
     <!-- Templates -->
 
     <!-- Notification alert -->
     <script type="html/template" id="notification-template">
-      <div class="alert alert-dismissible fade in" role="alert" style="display:none">
+      <div class="alert alert-notify alert-dismissible fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <p class="msg"><strong class="msg-icon"></strong> <strong class="msg-status"></strong> <span class="msg-description"></span></p>
       </div>
@@ -109,6 +109,17 @@
         <hr />
         <p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
         <pre id="result" bound>{result}</pre>
+      </div>
+    </script>
+
+    <!-- TTL template -->
+    <script type="html/template" id="ttl-template">
+      <div class="container-fluid">
+        <pre></pre>
+        <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
+        <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
+        <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
+        <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
       </div>
     </script>
 
@@ -301,15 +312,14 @@
 
     <!-- Individual modal -->
     <script type="html/template" id="individual-modal-template">
-      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
+      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-              <button type="button" class="btn btn-link pull-left" id="follow">Подробнее</button>
             </div>
           </div>
         </div>
@@ -321,7 +331,7 @@
       <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <div class="modal-body">
             </div>
             <div class="modal-footer">
@@ -339,7 +349,8 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <button class="close" style="margin-right:20px;" data-dismiss="modal"><span id="follow" class="fa fa-window-maximize"></span></button>
+              <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
             </div>
           </div>
         </div>
@@ -765,8 +776,10 @@
       // Bootstrap multiple modals fix
       // origin: http://stackoverflow.com/questions/19305821/multiple-modals-overlay
       $(document).on("click", ".modal #follow", function () {
-        var uri = $(this).closest(".modal").find("[resource]").attr("resource");
-        riot.route("#/" + uri);
+        var resource = $(this).closest(".modal").find("[resource]");
+        var uri = resource.attr("resource");
+        var mode = resource.attr("data-mode");
+        riot.route("#/" + uri + "///" + mode);
       });
       $(document).on({
         'show.bs.modal': function () {

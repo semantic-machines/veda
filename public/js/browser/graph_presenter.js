@@ -54,6 +54,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
       Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
         if(property_uri === "@") { return }
         var values = individual[property_uri];
+        if (!values) return;
         values.map(function (value) {
           if (value instanceof veda.IndividualModel && value.id != individual.id) {
             addNode(value);
@@ -170,11 +171,11 @@ veda.Module(function GraphPresenter(veda) { "use strict";
       modalTitle.text(nodes.get(id).label);
       var doc = new veda.IndividualModel(id)
       doc.present(modalBody);
-      modal.on('hidden.bs.modal', function (e) {
-        modal.remove();
+      modal.on("remove", function (e) {
+        modal.modal("hide");
       });
       modal.modal();
-      $("body").append(modal);
+      $("#main").append(modal);
     }
 
     var root = new veda.IndividualModel(uri);

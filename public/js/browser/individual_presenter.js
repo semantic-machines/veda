@@ -38,22 +38,29 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
-          var pre = $("<pre>"),
+          var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
+              pre = $("pre", cntr),
               json = individual.properties,
               ordered = {};
+          $("a#json", cntr).addClass("disabled");
           Object.keys(json).sort().forEach(function(key) {
             ordered[key] = json[key];
           });
           json = JSON.stringify(ordered, null, 2);
-          pre.text(json);
-          container.html(pre);
+          var formatted = json.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
+          pre.html(formatted);
+          container.append(cntr);
           container.show("fade", 250);
           return;
         } else if (template === "ttl") {
           var list = new veda.IndividualListModel(individual);
           veda.Util.toTTL(list, function (error, result) {
-            var ttl = $("<div class='container-fluid'></div>").append( $("<pre></pre>").text(result) );
-            container.html(ttl);
+            var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
+                pre = $("pre", cntr),
+                formatted = result.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+            $("a#ttl", cntr).addClass("disabled");
+            pre.html(formatted);
+            container.html(cntr);
             container.show("fade", 250);
           });
           return;
@@ -155,7 +162,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // Define handlers
     function saveHandler (e, parent) {
       if (parent !== individual.id) {
-        individual.save(parent);
+        individual.save();
       }
       template.trigger("view");
       e.stopPropagation();
@@ -164,7 +171,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     function draftHandler (e, parent) {
       if (parent !== individual.id) {
-        individual.draft(parent);
+        individual.draft();
       }
       template.trigger("view");
       e.stopPropagation();
@@ -216,7 +223,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     function deleteHandler (e, parent) {
       if (parent !== individual.id) {
-        individual.delete(parent);
+        individual.delete();
       }
       e.stopPropagation();
     }
@@ -224,7 +231,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     function recoverHandler (e, parent) {
       if (parent !== individual.id) {
-        individual.recover(parent);
+        individual.recover();
       }
       e.stopPropagation();
     }
@@ -301,7 +308,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           if ( !template.parent().closest("[resource='" + individual.id + "']").length && !draftLabel ) {
             draftLabel = $("<div class='label label-default label-draft'></div>").text(Draft);
             if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
-              var cell = template.children().last();
+              var cell = template.children().first();
               cell.css("position", "relative").append(draftLabel);
             } else {
               template.css("position", "relative");
@@ -324,7 +331,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           $cancel.text(Cancel);
         }
       } else {
-        individual.draft();
+        if (mode === "edit") {
+          individual.draft();
+        }
       }
     }
     individual.on("individual:propertyModified", isDraftHandler);
@@ -376,17 +385,22 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       stask.append($('<li/>', {
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendQuestion')['rdfs:label'].join(" "))+'</a>'
+        html: '<a>'+(new veda.IndividualModel('v-s:Question')['rdfs:label'].join(" "))+'</a>'
       }));
       stask.append($('<li/>', {
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendInstruction')['rdfs:label'].join(" "))+'</a>'
+        html: '<a>'+(new veda.IndividualModel('v-s:Instruction')['rdfs:label'].join(" "))+'</a>'
       }));
       stask.append($('<li/>', {
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:SendTask')['rdfs:label'].join(" "))+'</a>'
+        html: '<a>'+(new veda.IndividualModel('v-s:Introduction')['rdfs:label'].join(" "))+'</a>'
+      }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:Distribution')['rdfs:label'].join(" "))+'</a>'
       }));
     });
 
@@ -977,6 +991,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       btnRemove.click(function () {
         individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
+        if ( value.is("v-s:Embedded") ) { value.delete(); }
       }).mouseenter(function () {
         valTemplate.addClass("red-outline");
       }).mouseleave(function () {
