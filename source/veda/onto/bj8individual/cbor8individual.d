@@ -6,10 +6,10 @@
    Authors: Valeriy Bushenev
  */
 
-module veda.util.cbor8individual;
+module veda.onto.bj8individual.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
-private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.util.cbor;
+private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.onto.bj8individual.cbor;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 
