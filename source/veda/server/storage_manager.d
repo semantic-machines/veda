@@ -6,7 +6,7 @@ module veda.server.storage_manager;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
-    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.util.queue;
+    import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
            veda.onto.resource;
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
@@ -42,10 +42,10 @@ struct TransactionItem
         ticket_id = _ticket_id;
         event_id  = _event_id;
 
-        int code = cbor2individual(&indv, indv_serl);
+        int code = indv.deserialize(indv_serl);
         if (code < 0)
         {
-            log.trace("ERR:v8d:transaction:cbor2individual [%s]", indv_serl);
+            log.trace("ERR:v8d:transaction:deserialize [%s]", indv_serl);
         }
     }
 }
@@ -504,10 +504,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             //writeln ("*imm=[", imm, "]");
 
-                                            string cbor = individual2cbor(&imm);
-                                            //writeln("*cbor.length=", cbor.length);
+                                            string binobj = imm.serialize();
+                                            //writeln("*binobj.length=", binobj.length);
 
-                                            individual_queue.push(cbor);
+                                            individual_queue.push(binobj);
 //                                          string msg_to_modules = indv_uri ~ ";" ~ text(update_counter) ~ ";" ~ text (op_id) ~ "\0";
                                             string msg_to_modules = format("#%s;%d;%d", indv_uri, update_counter, op_id);
 

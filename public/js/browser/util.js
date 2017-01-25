@@ -156,7 +156,7 @@ veda.Module(function Util(veda) { "use strict";
               triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
               break;
             case "Datetime":
-              triple.object = '"' + value.toISOString() + '"^^' + prefixer("xsd:dateTime");
+              triple.object = '"' + ( value instanceof Date ? value.toISOString() : value ) + '"^^' + prefixer("xsd:dateTime");
               break;
             case "Uri":
               triple.object = prefixer(value);

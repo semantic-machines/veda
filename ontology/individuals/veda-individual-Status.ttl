@@ -139,3 +139,19 @@ v-s:StatusExecuted
   rdfs:label "Executed"@en ;
   rdfs:label "Исполнено"@ru ;
 .
+v-s:StatusAcceptedOnBalance
+  rdf:type v-s:Status ;
+  rdfs:label "Accepted on balance"@en ;
+  rdfs:label "Введен в ОС"@ru ;
+.
+v-s:StatusRemovedFromBalancee
+  rdf:type v-s:Status ;
+  rdfs:label "Removed from the balance"@en ;
+  rdfs:label "Снято с балланса"@ru ;
+.
+
+v-s:StatusDecisionExpected
+  rdf:type v-s:Status ;
+  rdfs:label "Decision expected"@en ;
+  rdfs:label "Ожидает решения по реализации"@ru ;
+.

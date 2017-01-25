@@ -667,8 +667,8 @@ button.close {
 
 /* Notifications */
 #notification-container {
-  width: 25%;
-  max-height: 40%;
+  max-width: 50%;
+  max-height: 50%;
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -676,8 +676,7 @@ button.close {
   overflow: hidden;
 }
 .alert-notify {
-  display: inline-block;
-  float: right;
+  display: block;
   white-space: nowrap;
   display: none;
 }

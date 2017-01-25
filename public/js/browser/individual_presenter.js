@@ -47,7 +47,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             ordered[key] = json[key];
           });
           json = JSON.stringify(ordered, null, 2);
-          var formatted = json.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+          var formatted = json.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
           pre.html(formatted);
           container.append(cntr);
           container.show("fade", 250);
@@ -396,6 +396,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:Introduction')['rdfs:label'].join(" "))+'</a>'
+      }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:Distribution')['rdfs:label'].join(" "))+'</a>'
       }));
     });
 

@@ -7,7 +7,7 @@ private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.bind.lmdb_header, veda.onto.individual;
-    import veda.common.logger, veda.core.util.utils, veda.util.cbor, veda.util.cbor8individual, veda.core.common.context, veda.core.common.define;
+    import veda.common.logger, veda.core.util.utils, veda.core.common.context, veda.core.common.define;
     import veda.core.storage.binlog_tools;
 
     alias core.thread.Thread core_thread;
@@ -21,19 +21,6 @@ enum DBMode
 
     /// чтение/запись
     RW = false
-}
-
-/// Результат
-public enum Result
-{
-    /// OK
-    Ok,
-
-    /// Ошибка
-    Err,
-
-    /// Ничего
-    Nothing
 }
 
 public bool[ string ] db_is_open;
@@ -758,21 +745,6 @@ public class LmdbStorage : Storage
         }
         else
             return str;
-    }
-
-    public Individual find_individual(string uri)
-    {
-        Individual ind;
-        string     str = find(uri);
-
-        if (str !is null)
-        {
-            if (cbor2individual(&ind, str) < 0)
-            {
-                log.trace("ERR! invalid individual=", uri);
-            }
-        }
-        return ind;
     }
 
     public long dump_to_binlog()
