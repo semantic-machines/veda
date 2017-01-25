@@ -62,7 +62,7 @@ private struct Task
 {
     Consumer   consumer;
     Individual executed_script;
-    string     executed_script_cbor;
+    string     executed_script_binobj;
     string     codelet_id;
 }
 
@@ -206,7 +206,7 @@ private void ltrs_thread(string parent_url)
                         //writeln ("@ data from queue=", data);
                         if (data !is null)
                         {
-                            execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_cbor);
+                            execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);
                             if (res == false)
@@ -237,11 +237,11 @@ private void ltrs_thread(string parent_url)
     }
 }
 
-ResultCode execute_script(string user_uri, string msg, string script_uri, string executed_script_cbor)
+ResultCode execute_script(string user_uri, string msg, string script_uri, string executed_script_binobj)
 {
     if (msg is null || msg.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
-        executed_script_cbor is null || executed_script_cbor.length <= 3)
+        executed_script_binobj is null || executed_script_binobj.length <= 3)
         return ResultCode.OK;
 
     Individual indv;
@@ -261,8 +261,8 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
     g_document.data   = cast(char *)msg;
     g_document.length = cast(int)msg.length;
 
-    g_execute_script.data   = cast(char *)executed_script_cbor;
-    g_execute_script.length = cast(int)executed_script_cbor.length;
+    g_execute_script.data   = cast(char *)executed_script_binobj;
+    g_execute_script.length = cast(int)executed_script_binobj.length;
 
     if (user_uri !is null)
     {

@@ -1,7 +1,7 @@
 /**
  * CBOR общее
  */
-module veda.util.cbor;
+module veda.onto.bj8individual.cbor;
 
 private
 {

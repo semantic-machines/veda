@@ -15,6 +15,7 @@
 	"sourcePaths":[
             "../../veda/common",
             "../../veda/onto",
+            "../../veda/onto/bj8individual",
             "../../veda/util",
             "../../veda/core/impl",
             "../../veda/core/az",

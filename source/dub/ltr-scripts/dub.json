@@ -11,6 +11,7 @@
 	"sourcePaths":[
 	    "../../veda/common", 
 	    "../../veda/onto",  
+            "../../veda/onto/bj8individual",
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/az", 
@@ -29,12 +30,9 @@
         "../../lib64/libv8d.a", 
 	"../../lib64/libxapiand.a",
 	"../../veda/core/util/utils.d",
-        "../../veda/util/individual8json.d",
         "../../veda/util/tools.d",
         "../../veda/util/queue.d",
         "../../veda/util/container.d",
-        "../../veda/util/cbor.d",
-        "../../veda/util/cbor8individual.d",
         "../../veda/util/module_info.d"
 	],
 	"libs":["nanomsg"],
