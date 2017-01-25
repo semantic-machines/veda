@@ -5,7 +5,7 @@ module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.util.cbor8individual, veda.core.util.utils;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -134,11 +134,11 @@ struct TransactionItem
         }
         else
         {
-            int code = cbor2individual(&indv, indv_serl);
+            int code = indv.deserialize(indv_serl);
             if (code < 0)
             {
                 rc = ResultCode.Unprocessable_Entity;
-                log.trace("ERR! v8d:transaction:cbor2individual [%s]", indv_serl);
+                log.trace("ERR! v8d:transaction:deserialize [%s]", indv_serl);
                 return;
             }
             else
