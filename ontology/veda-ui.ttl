@@ -744,6 +744,7 @@ v-ui:IconModalTemplate
     ok.attr("disabled", "disabled");
     });
     var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+    tmpl.removeClass("container").addClass("container-fluid");
 
     if (newMode === "edit") {
       $(".action", tmpl).remove();
