@@ -1277,13 +1277,19 @@ v-fs:AttributiveSearchTemplate
     if ( self.hasValue("v-fs:fulltextQuery") ) { queryString.push( self["v-fs:fulltextQuery"][0] ) }
     queryString = queryString.join(" && ");
     if ( queryString ) {
-      self.result = query (
-        veda.ticket,
-        queryString,
-        sort
-      ).result;
+      query({
+        ticket: veda.ticket,
+        query: queryString,
+        sort: sort,
+        top: undefined,
+        limit: undefined,
+        from: undefined,
+        async: true
+      }).then(function (results) {
+        self.result = results.result;
+        renderResult();
+      });
     }
-    renderResult();
   }
 
   // Export to Spreadsheet
