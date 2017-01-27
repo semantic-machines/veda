@@ -79,22 +79,25 @@ this.print = function () {
 }
 var output = "";
 var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
-try {
-  eval(script);
-} catch (ex) {
-  print(ex);
+if (script) {
+  script = new Function (script);
+  try {
+    script();
+  } catch (ex) {
+    print(ex);
+  }
+  document["v-s:scriptOutput"] = [{
+    data: output,
+    lang: "NONE",
+    type: _String
+  }];
+  document["v-s:lastRun"] = [{
+    data: new Date(),
+    type: _Datetime
+  }];
+  delete document["v-s:toBeRun"];
+  put_individual(ticket, document, _event_id);
 }
-document["v-s:scriptOutput"] = [{
-  data: output,
-  lang: "NONE",
-  type: _String
-}];
-document["v-s:lastRun"] = [{
-  data: new Date(),
-  type: _Datetime
-}];
-delete document["v-s:toBeRun"];
-put_individual(ticket, document, _event_id);
 
 // restore global print()
 this.print = console_print;
@@ -161,14 +164,13 @@ v-s:UserScriptTemplate
 
   <div class="-view -edit search" about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
 
-  <br>
-
   <div class="view edit -search">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
     <button type="button" class="action btn btn-success -view edit -search save" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="action btn btn-danger view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search pull-right" id="clear" about="v-s:Clear" property="rdfs:label"/>
   </div>
 
 </div>
@@ -176,6 +178,9 @@ v-s:UserScriptTemplate
   $(".action#run", template).click(function () {
     individual["v-s:toBeRun"] = [ true ];
     individual.save();
+  });
+  $(".action#clear", template).click(function () {
+    individual["v-s:scriptOutput"] = [ ];
   });
 </script>
   """
