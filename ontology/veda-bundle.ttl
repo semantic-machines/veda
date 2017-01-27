@@ -326,3 +326,8 @@ v-s:SelectValueBundle
   rdfs:label "Выберите значение"@ru ;
   rdfs:label "Select value"@en ;
 .
+v-s:DecisionBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Решение"@ru ;
+  rdfs:label "Decision"@en ;
+.

@@ -190,7 +190,7 @@ v-df:DistributionRouteStartForm
   rdfs:isDefinedBy v-df: ;
   rdfs:label "Distribution"@en ;
   rdfs:label "Рассылка"@ru ;
-  rdfs:comment "Задача рассылка"@ru ;
+  rdfs:comment "Задача рассылки"@ru ;
 .
 
 v-s:hasAppointment
@@ -402,7 +402,7 @@ v-df:InstructionRouteStartFormTemplate
 </script>
 """ ;
 .
-
+# -- ШАБЛОН ФОРМЫ ЗАДАЧИ ОЗНАКОМИТЬСЯ --
 v-df:TaskRouteStartFormTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-df:TaskRouteStartForm ;
@@ -457,12 +457,12 @@ v-df:TaskRouteStartFormTemplate
 """ ;
 .
 
-
+# -- ШАБЛОН ФОРМЫ ЗАДАЧИ РАССЫЛКИ --
 v-df:DistributionRouteStartFormTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-df:DistributionRouteStartForm ;
   rdfs:label "DistributionRouteStartForm template"@en ;
-  rdfs:label "Шаблон формы задачи рассылка"@ru ;
+  rdfs:label "Шаблон формы задачи рассылки"@ru ;
   v-ui:template """
 <div class="container">
   <div class="row">
@@ -1278,7 +1278,7 @@ v-wf:taskRouteStartFormLinkRule
   rdfs:label "Ознакомиться"@ru ;
   rdfs:label "Introduction"@en ;
   v-s:classTo v-df:TaskRouteStartForm;
-  v-s:hasTransformation v-wf:TaskRouteStartForm;
+  v-s:hasTransformation v-wf:taskRouteStartForm;
   v-s:isRoute "true"^^xsd:boolean;
 .
 v-wf:distributionRouteStartFormLinkRule
