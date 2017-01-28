@@ -1132,17 +1132,22 @@ v-fs:AttributiveSearchTemplate
     <br>
     <div class="search-form"></div>
     <br>
+    <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <button class="btn btn-default xls"><i class="fa fa-table fa-lg"></i></button>
+  </div>
+  <br>
+  <div id="results" class="hidden">
     <hr>
     <h3><span class="search-result-label" about="v-fs:Results" property="rdfs:label"></span> <span class="result-count"></span></h3>
-  </div>
-  <div class="search-result table-responsive"></div>
-  <div class="not-found alert alert-warning hidden">
-    <strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
-  </div>
-  <div class="text-center">
-    <ul class="pagination" id="pager"></ul>
+    <br>
+    <div class="search-result table-responsive"></div>
+    <div class="not-found alert alert-warning hidden">
+      <strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+    </div>
+    <div class="text-center">
+      <ul class="pagination" id="pager"></ul>
+    </div>
   </div>
 </div>
 <script>
@@ -1158,6 +1163,10 @@ v-fs:AttributiveSearchTemplate
 
   self.page = self.page || 0;
   self.result = self.result || [];
+  self.pageSize = veda.user.displayedElements || 10;
+  self.estimated = self.estimated || 0;
+  self.top = self.pageSize * 2;
+  self.cursor = self.cursor || 0;
 
   // Render search form
   if ( searchBlank ) {
@@ -1167,15 +1176,28 @@ v-fs:AttributiveSearchTemplate
     $("#params", template).remove();
   }
 
-  if (self.result.length) {
-    renderResult();
-  } else {
-    search();
+  if (self.result.length) { renderResult(); }
+  //else { search(); }
+
+  function toggleSpin(el) {
+    var $el = $(el);
+    var hasSpinner = $el.children(".fa-spinner");
+    if ( hasSpinner.length ) {
+      $el.removeClass("disabled");
+      hasSpinner.remove();
+    } else {
+      $el.addClass("disabled");
+      $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
+    }
   }
 
   // Search button handler
   searchButton.click(function () {
-    search();
+    var $this = $(this);
+    toggleSpin($this);
+    search().then(function () {
+      toggleSpin($this);
+    });
   });
 
   // Manage sort
@@ -1201,13 +1223,18 @@ v-fs:AttributiveSearchTemplate
       var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
       $this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
       self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
-      search();
+      toggleSpin($this);
+      search().then(function () {
+        toggleSpin($this);
+      });
     });
   });
 
   // Render result
   function renderResult() {
-
+    
+    $("#results", template).removeClass("hidden");
+    
     scrollToResults();
 
     resultContainer.empty();
@@ -1221,39 +1248,43 @@ v-fs:AttributiveSearchTemplate
 
     // Prefetch search results alltogether
     var prefetch = [];
-    for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements; i++) {
+    for (var i = self.page * self.pageSize; i < (self.page + 1) * self.pageSize; i++) {
       if ( self.result[i] && !veda.cache[ self.result[i] ] ) {
         prefetch.push( self.result[i] );
       }
     }
-    if (prefetch.length) {
-      get_individuals(veda.ticket, prefetch).map(function (json) {
+    
+    get_individuals({
+      ticket: veda.ticket,
+      uris: prefetch,
+      async: true
+    }).then(function (prefetched) {
+      prefetched.map(function (json) {
         var fetched = new veda.IndividualModel(json);
       });
-    }
-
-    // Render each result
-    for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements; i++) {
-      //setTimeout(function (i) {
+      
+      // Render each result
+      for (var i = self.page * self.pageSize; i < (self.page + 1) * self.pageSize; i++) {
         var tmpl = resultTemplate.replace("###", i + 1),
             uri = self.result[i],
             item = new veda.IndividualModel(uri);
         item.present(resultContainer, tmpl);
-      //}, 0, i);
-    }
+      }
+    });
 
     // Show pager
     var pagerOptions = {
-      pages: Math.floor(self.result.length / veda.user.displayedElements) + 1 * (self.result.length % veda.user.displayedElements ? 1 : 0),
+      pages: Math.floor(self.result.length / self.pageSize) + 1 * (self.result.length % self.pageSize ? 1 : 0),
       active: self.page + 1,
-      neighbours: 3,
+      neighbours: 4,
       click: function (page) {
         if (page - 1 === self.page) return false;
         self.page = page - 1;
         renderResult();
       }
     };
-    $("#pager", template).pager(pagerOptions);
+    //$("#pager", template).pager(pagerOptions);
+    $("#pager", template).pagerPN(pagerOptions);
 
     $(".result-count", template).text("(" + self.result.length + ")");
   }
@@ -1277,7 +1308,7 @@ v-fs:AttributiveSearchTemplate
     if ( self.hasValue("v-fs:fulltextQuery") ) { queryString.push( self["v-fs:fulltextQuery"][0] ) }
     queryString = queryString.join(" && ");
     if ( queryString ) {
-      query({
+      return query({
         ticket: veda.ticket,
         query: queryString,
         sort: sort,
@@ -1287,8 +1318,12 @@ v-fs:AttributiveSearchTemplate
         async: true
       }).then(function (results) {
         self.result = results.result;
+        self.estimated = results.estimated;
+        self.cursor = results.cursor;
         renderResult();
       });
+    } else {
+      return Promise.resolve();
     }
   }
 
