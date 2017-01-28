@@ -645,7 +645,7 @@ class XapianVQL
         }
 
         //writeln (cast(void*)xapian_enquire, " count_authorize=", count_authorize);
-        XapianMSet matches = xapian_enquire.get_mset(0, limit, &err);
+        XapianMSet matches = xapian_enquire.get_mset(from, limit, &err);
         if (err < 0)
         {
             log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
@@ -725,6 +725,7 @@ class XapianVQL
         sr.processed   = processed;
         sr.count       = read_count;
         sr.result_code = ResultCode.OK;
+        sr.cursor = from + processed;
 
         return sr;
     }

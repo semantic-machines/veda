@@ -30,8 +30,8 @@ _Buff      g_ticket;
 
 _Buff      tmp_individual;
 
-_Buff      g_script_result;
-_Buff      g_script_out;
+//_Buff      g_script_result;
+//_Buff      g_script_out;
 
 ResultCode g_last_result;
 Cache!(string, string) g_cache_of_indv;
@@ -498,7 +498,11 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
                     return &tmp_individual;
                 }
                 else
+                {
+                    tmp_individual.data   = cast(char *)"";
+                    tmp_individual.length = cast(int)0;
                     return null;
+                }    
             }
             return null;
         }
@@ -594,14 +598,14 @@ ScriptVM get_ScriptVM(Context ctx)
                 g_context = ctx;
                 log       = ctx.get_logger();
 
-                string g_str_script_result = new char[ 1024 * 64 ];
-                string g_str_script_out    = new char[ 1024 * 64 ];
+                //string g_str_script_result = new char[ 1024 * 64 ];
+                //string g_str_script_out    = new char[ 1024 * 64 ];
 
-                g_script_result.data           = cast(char *)g_str_script_result;
-                g_script_result.allocated_size = cast(int)g_str_script_result.length;
+                //g_script_result.data           = cast(char *)g_str_script_result;
+                //g_script_result.allocated_size = cast(int)g_str_script_result.length;
 
-                g_script_out.data           = cast(char *)g_str_script_out;
-                g_script_out.allocated_size = cast(int)g_str_script_out.length;
+                //g_script_out.data           = cast(char *)g_str_script_out;
+                //g_script_out.allocated_size = cast(int)g_str_script_out.length;
 
                 reload_ext_scripts();
             }

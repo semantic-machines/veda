@@ -727,7 +727,13 @@ v-ui:IconModalTemplate
     }
     var modal;
     if(newMode==="view") {
-      modal = $("#notification-modal-template").html();
+      if (!individual.rights.hasValue("v-s:canUpdate", true)) {
+        modal = $("#individual-modal-template").html();
+      }
+      else if(individual.rights.hasValue("v-s:canUpdate", true)) {
+        modal = $("#notification-modal-template").html();
+      }
+
     } else if (newMode==="edit") {
       modal = $("#individual-modal-template").html();
     }
@@ -744,6 +750,7 @@ v-ui:IconModalTemplate
     ok.attr("disabled", "disabled");
     });
     var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+    tmpl.removeClass("container").addClass("container-fluid");
 
     if (newMode === "edit") {
       $(".action", tmpl).remove();

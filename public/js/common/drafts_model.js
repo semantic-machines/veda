@@ -40,7 +40,7 @@ veda.Module(function (veda) { "use strict";
       if ( draft ) {
         var individual;
         if (draft.individual) {
-          individual = new veda.IndividualModel( draft.individual );  
+          individual = new veda.IndividualModel( draft.individual );
         } else {
           individual = new veda.IndividualModel( draft );
         }
@@ -87,8 +87,16 @@ veda.Module(function (veda) { "use strict";
   proto.clear = function () {
     var self = this;
     Object.keys(this).map(function (uri) {
-      self.remove(uri);
+      if ( typeof self[uri] === "object" ) {
+        var individual = self.get(uri);
+        individual["v-s:isDraft"] = [];
+        individual.isSync(true);
+        delete self[uri];
+        delete self._[uri];
+      }
     });
+    storage.drafts = JSON.stringify(this._);
+    veda.trigger("update:drafts", this);
     return this;
   };
 
