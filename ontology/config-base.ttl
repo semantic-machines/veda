@@ -1192,7 +1192,7 @@ cfg:Event_Notify_Comment
   v-s:triggerByType v-s:Comment ;
   v-s:script """
 var comment_id = document["@"],
-    comment_target = getUri(document["v-s:backwardTarget"]);
+    comment_target = getUri(document["v-s:backwardTarget"]),
     stakeholder = getUri(comment_target["v-s:author"]);
 //print("cfg:Event_18", "caught", "comment", comment_id, "target", comment_target);
   """ ;
