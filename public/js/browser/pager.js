@@ -44,4 +44,48 @@
       update(opts.active);
     });
   };
+  
+  $.fn.pagerPN = function (options) {
+    var opts = $.extend({
+      pageSize: 10,
+      pages: 1,
+      active: 1,
+      neighbours: 2,
+      click: function (page) {
+        console.log("page:",  page);
+      }
+    }, options);
+    return this.each(function() {
+      var pager = $(this);
+      var update = function (page) {
+        pager.empty();
+        var next = opts.pages - page >= opts.neighbours ? opts.neighbours : opts.pages - page;
+        var prev = page > opts.neighbours ? opts.neighbours : page - 1;
+        $("<li class='active'><a href=''>" + page + "</a></li>").data("page", page).appendTo(pager);
+        for (var n = 1; n <= next; n++) {
+          $("<li><a href=''>" + (page + n) + "</a></li>").data("page", page + n).appendTo(pager);
+        }
+        for (var p = 1; p <= prev; p++) {
+          $("<li><a href=''>" + (page - p) + "</a></li>").data("page", page - p).prependTo(pager);
+        }
+        var forward = page + 1 <= opts.pages ? page + 1 : page;
+        var back = page - 1 > 0 ? page - 1 : page ;
+        $("<li><a href=''><span class='glyphicon glyphicon-backward'></span> <span>" + (new veda.IndividualModel("v-s:Back")) + "</span></a></li>")
+          .data("page", page - 1 > 0 ? page - 1 : 1)
+          .addClass(back === page ? "disabled" : "")
+          .prependTo(pager);
+        $("<li><a href=''><span>" + (new veda.IndividualModel("v-s:Forward")) + "</span> <span class='glyphicon glyphicon-forward'></span></a></li>")
+          .data("page", page + 1 < opts.pages ? page + 1 : opts.pages)
+          .addClass(forward === page ? "disabled" : "")
+          .appendTo(pager);
+        pager.children().click( function (e) {
+          e.preventDefault();
+          var page = $(this).data("page");
+          update(page);
+          opts.click(page);
+        });
+      }
+      update(opts.active);
+    });
+  };
 })(jQuery );
