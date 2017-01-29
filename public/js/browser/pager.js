@@ -57,11 +57,10 @@
     }, options);
     return this.each(function() {
       var pager = $(this);
-      pager.empty();
       var update = function (page) {
+        pager.empty();
         var next = opts.pages - page >= opts.neighbours ? opts.neighbours : opts.pages - page;
         var prev = page > opts.neighbours ? opts.neighbours : page - 1;
-        pager.empty();
         $("<li class='active'><a href=''>" + page + "</a></li>").data("page", page).appendTo(pager);
         for (var n = 1; n <= next; n++) {
           $("<li><a href=''>" + (page + n) + "</a></li>").data("page", page + n).appendTo(pager);

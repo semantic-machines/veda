@@ -1179,18 +1179,6 @@ v-fs:AttributiveSearchTemplate
   if (self.result.length) { renderResult(); }
   //else { search(); }
 
-  function toggleSpin(el) {
-    var $el = $(el);
-    var hasSpinner = $el.children(".fa-spinner");
-    if ( hasSpinner.length ) {
-      $el.removeClass("disabled");
-      hasSpinner.remove();
-    } else {
-      $el.addClass("disabled");
-      $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
-    }
-  }
-
   // Search button handler
   searchButton.click(function () {
     var $this = $(this);
@@ -1287,6 +1275,18 @@ v-fs:AttributiveSearchTemplate
     $("#pager", template).pagerPN(pagerOptions);
 
     $(".result-count", template).text("(" + self.result.length + ")");
+  }
+
+  function toggleSpin(el) {
+    var $el = $(el);
+    var hasSpinner = $el.children(".fa-spinner");
+    if ( hasSpinner.length ) {
+      $el.removeClass("disabled");
+      hasSpinner.remove();
+    } else {
+      $el.addClass("disabled");
+      $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
+    }
   }
 
   // Scroll to results
