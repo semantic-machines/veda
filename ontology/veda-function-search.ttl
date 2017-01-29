@@ -198,6 +198,16 @@ v-fs:NothingFound
   rdfs:label "Nothing found for your request. Please refine the query."@en ;
   rdfs:label "По Вашему запросу ничего не найдено. Пожалуйста, уточните запрос."@ru ;
 .
+v-fs:MoreResults
+  rdf:type v-s:Bundle ;
+  rdfs:label "More results"@en ;
+  rdfs:label "Еще результаты"@ru ;
+.
+v-fs:NoMoreResults
+  rdf:type v-s:Bundle ;
+  rdfs:label "All results loaded"@en ;
+  rdfs:label "Все результаты загружены"@ru ;
+.
 v-fs:SetResultsTable
   rdf:type v-s:Bundle ;
   rdfs:label "Set results table"@en ;
@@ -1114,7 +1124,7 @@ v-fs:AttributiveSearchTemplate
 <script>
   var self = individual,
       searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() : undefined,
-      searchResultContainer = $(".search-result", template);
+      searchResultContainer = $("#search-result", template);
   if ( searchResultTemplate ) {
     searchResultContainer.append( $(searchResultTemplate) );
     var resultContainer = $(".result-container", template);
@@ -1130,7 +1140,7 @@ v-fs:AttributiveSearchTemplate
     <hr>
     <h3 about="v-fs:Params" property="rdfs:label"></h3>
     <br>
-    <div class="search-form"></div>
+    <div id="search-form"></div>
     <br>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
@@ -1141,32 +1151,37 @@ v-fs:AttributiveSearchTemplate
     <hr>
     <h3><span class="search-result-label" about="v-fs:Results" property="rdfs:label"></span> <span class="result-count"></span></h3>
     <br>
-    <div class="search-result table-responsive"></div>
+    <div id="search-result" class="search-result table-responsive"></div>
     <div class="not-found alert alert-warning hidden">
       <strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
     </div>
     <div class="text-center">
-      <ul class="pagination" id="pager"></ul>
+      <button id="more-results" class="btn btn-primary" about="v-fs:MoreResults" property="rdfs:label"></button>
+    </div>
+    <div id="no-more-results" class="alert alert-success hidden">
+      <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
     </div>
   </div>
 </div>
 <script>
   var self = individual,
-      searchBlankContainer = $(".search-form", template),
-      searchResultContainer = $(".search-result", template),
+      searchBlankContainer = $("#search-form", template),
+      searchResultContainer = $("#search-result", template),
       searchButton = $(".search-button", template),
+      moreResults = $("#more-results", template),
+      noMoreResults = $("#no-more-results", template),
       searchBlank = self.hasValue("v-fs:searchBlank") ? self["v-fs:searchBlank"][0] : undefined ,
       searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined ,
       resultContainer = $(".result-container", template),
       resultTemplate = individual.resultTemplate,
       notFound = $(".not-found", template);
 
-  self.page = self.page || 0;
-  self.result = self.result || [];
-  self.pageSize = veda.user.displayedElements || 10;
-  self.estimated = self.estimated || 0;
-  self.top = self.pageSize * 2;
   self.cursor = self.cursor || 0;
+  self.top = veda.user.displayedElements || 10;
+  self.limit = self.limit || 1000;
+  self.estimated = self.estimated || 0;
+  self.result = self.result || [];
+  self.scroll = self.scroll || 0;
 
   // Render search form
   if ( searchBlank ) {
@@ -1176,17 +1191,56 @@ v-fs:AttributiveSearchTemplate
     $("#params", template).remove();
   }
 
-  if (self.result.length) { renderResult(); }
-  //else { search(); }
+  // Show results on load if they are available (e.g. if we came back)
+  if (self.result.length) {
+    renderResult(self.result).then(function () {
+      scrollTo(self.scroll);
+    });
+  }
+  // Search on load
+  /*else {
+    search().then(function () {
+      scrollTo( $(".search-result-label").offset().top - 10 );
+    });
+  }*/
+
+  // Remember scroll position
+  template.one("remove", function () {
+    self.scroll = $(window).scrollTop();
+  });
 
   // Search button handler
   searchButton.click(function () {
     var $this = $(this);
     toggleSpin($this);
     search().then(function () {
+      scrollTo( $(".search-result-label").offset().top - 10 );
       toggleSpin($this);
     });
   });
+
+  // More results button handler
+  moreResults.click(function () {
+    var $this = $(this);
+    toggleSpin($this);
+    setTimeout(function () {
+      search(self.cursor).then(function () {
+        toggleSpin($this);
+      });
+    }, 500);
+  });
+
+
+  // Auto load more results when page bottom reached
+  $(window).on("scroll", reachedBottom);
+  template.one("remove", function () {
+    $(window).off("scroll", reachedBottom);
+  });
+  function reachedBottom() {
+    if( $(window).scrollTop() + $(window).height() === $(document).height() && moreResults.is(":visible") ) {
+      moreResults.click();
+    }
+  }
 
   // Manage sort
   var sortBy = "", dir = "";
@@ -1213,36 +1267,35 @@ v-fs:AttributiveSearchTemplate
       self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
       toggleSpin($this);
       search().then(function () {
+        scrollTo( $(".search-result-label").offset().top - 10 );
         toggleSpin($this);
       });
     });
   });
 
   // Render result
-  function renderResult() {
-    
-    $("#results", template).removeClass("hidden");
-    
-    scrollToResults();
+  function renderResult(result) {
 
-    resultContainer.empty();
+    $(".result-count", template).text("(" + self.result.length + ")");
+    $("#results", template).removeClass("hidden");
 
     // Toggle "not found" alert
     if (self.result.length) {
       notFound.addClass("hidden");
     } else {
       notFound.removeClass("hidden");
+      noMoreResults.addClass("hidden");
     }
 
-    // Prefetch search results alltogether
+    // Prefetch new search results alltogether
     var prefetch = [];
-    for (var i = self.page * self.pageSize; i < (self.page + 1) * self.pageSize; i++) {
-      if ( self.result[i] && !veda.cache[ self.result[i] ] ) {
-        prefetch.push( self.result[i] );
+    result.map(function (uri) {
+      if ( !veda.cache[uri] ) {
+        prefetch.push( uri );
       }
-    }
-    
-    get_individuals({
+    });
+
+    return get_individuals({
       ticket: veda.ticket,
       uris: prefetch,
       async: true
@@ -1250,33 +1303,20 @@ v-fs:AttributiveSearchTemplate
       prefetched.map(function (json) {
         var fetched = new veda.IndividualModel(json);
       });
-      
+
+      var total = self.result.length;
+      var sub_total = result.length;
       // Render each result
-      for (var i = self.page * self.pageSize; i < (self.page + 1) * self.pageSize; i++) {
-        var tmpl = resultTemplate.replace("###", i + 1),
-            uri = self.result[i],
+      result.map(function (uri, i) {
+        var tmpl = resultTemplate.replace("###", total - sub_total + i + 1),
             item = new veda.IndividualModel(uri);
         item.present(resultContainer, tmpl);
-      }
+      });
     });
 
-    // Show pager
-    var pagerOptions = {
-      pages: Math.floor(self.result.length / self.pageSize) + 1 * (self.result.length % self.pageSize ? 1 : 0),
-      active: self.page + 1,
-      neighbours: 4,
-      click: function (page) {
-        if (page - 1 === self.page) return false;
-        self.page = page - 1;
-        renderResult();
-      }
-    };
-    //$("#pager", template).pager(pagerOptions);
-    $("#pager", template).pagerPN(pagerOptions);
-
-    $(".result-count", template).text("(" + self.result.length + ")");
   }
 
+  // Spinner
   function toggleSpin(el) {
     var $el = $(el);
     var hasSpinner = $el.children(".fa-spinner");
@@ -1289,19 +1329,23 @@ v-fs:AttributiveSearchTemplate
     }
   }
 
-  // Scroll to results
-  function scrollToResults() {
-    var offset = $(".search-result-label").offset();
-    offset.top -= 10;
+  // Scroll to position
+  function scrollTo(position) {
     $('html, body').animate({
-      scrollTop: offset.top
+      scrollTop: position
     });
   }
 
   //Search
-  function search() {
-    self.page = 0;
-    self.result = [];
+  function search(cursor) {
+    if (cursor > 0) {
+      self.cursor = cursor;
+    } else {
+      self.cursor = 0;
+      self.result = [];
+      resultContainer.empty();
+      moreResults.removeClass("hidden");
+    }
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
     var queryString = [];
     if ( searchBlank ) { queryString.push( veda.Util.queryFromIndividual(searchBlank.object) ) }
@@ -1312,18 +1356,25 @@ v-fs:AttributiveSearchTemplate
         ticket: veda.ticket,
         query: queryString,
         sort: sort,
-        top: undefined,
-        limit: undefined,
-        from: undefined,
+        top: self.top,
+        limit: self.limit,
+        from: self.cursor,
         async: true
       }).then(function (results) {
-        self.result = results.result;
+        self.result = self.result.concat(results.result);
         self.estimated = results.estimated;
         self.cursor = results.cursor;
-        renderResult();
+        if (results.result.length < self.top) {
+          moreResults.addClass("hidden");
+          noMoreResults.removeClass("hidden");
+        } else {
+          moreResults.removeClass("hidden");
+          noMoreResults.addClass("hidden");
+        }
+        renderResult(results.result);
       });
     } else {
-      return Promise.resolve();
+      return Promise.resolve(self.result);
     }
   }
 

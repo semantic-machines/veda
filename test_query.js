@@ -22,6 +22,8 @@ createMeetings(user, 9, 3);
 createMeetings(admin, 12, 9);
 createMeetings(user, 21, 5);
 createMeetings(admin, 26, 5);
+createMeetings(user, 31, 10);
+createMeetings(admin, 41, 10);
 
 setTimeout(mkQueries, 3000);
 
