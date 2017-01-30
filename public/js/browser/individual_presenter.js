@@ -353,7 +353,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
               mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
                   true;
-      template.attr("data-mode", mode);
+      template.data("mode", mode);
       e.stopPropagation();
     }
     template.on("view edit search", modeHandler);
