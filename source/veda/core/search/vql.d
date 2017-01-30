@@ -90,14 +90,14 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get, null);
         res_count = sr.count;
 
         return res_count;
     }
 
     public SearchResult get(Ticket *ticket, string filter, string freturn, string sort, int from, int top, int limit,
-                            void delegate(string uri) add_element_event,
+                            void delegate(string uri) prepare_element_event,
                             bool inner_get = false)
     {
         string[]                  res;
@@ -114,7 +114,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get, prepare_element_event);
 
         if (sr.result_code == ResultCode.OK)
             sr.result = res;
@@ -194,7 +194,7 @@ class VQL
             }
             dg = &collect_subject;
 
-            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get);
+            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get, null);
             res_count = sr.count;
         }
 

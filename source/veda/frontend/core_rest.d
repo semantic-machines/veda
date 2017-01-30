@@ -643,9 +643,16 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket       *ticket;
         ResultCode   rc;
 
+        int          count = 0;
+
         void prepare_element(string uri)
         {
-            vibe.core.core.yield();
+ //           if (count > 100)
+//            {
+                vibe.core.core.yield();
+//                count = 0;
+//            }
+//            count++;
         }
 
         try

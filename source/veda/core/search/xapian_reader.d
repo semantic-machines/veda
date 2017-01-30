@@ -16,7 +16,7 @@ protected byte err;
 interface SearchReader
 {
     public SearchResult get(Ticket *ticket, string str_query, string str_sort, string db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, bool inner_get);
+                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event);
 
     public void reopen_db();
 }
@@ -91,7 +91,7 @@ class XapianReader : SearchReader
 
 
     public SearchResult get(Ticket *ticket, string str_query, string str_sort, string _db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, bool inner_get)
+                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event)
     {
         SearchResult sr;
 
@@ -219,16 +219,25 @@ class XapianReader : SearchReader
                 return sr;
             }
 
+	        if (prepare_element_event !is null)
+	            prepare_element_event("");
+
             XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot);
+
+	        if (prepare_element_event !is null)
+	            prepare_element_event("");
 
             xapian_enquire.set_query(query, &err);
             if (sorter !is null)
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
 
+	        if (prepare_element_event !is null)
+	            prepare_element_event("");
+
             while (sr.result_code != ResultCode.OK)
             {
                 sr = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, from, top, limit, add_out_element,
-                                                                  context);
+                                                                  context, prepare_element_event);
                 if (sr.result_code != ResultCode.OK)
                 {
                     add_out_element(null); // reset previous collected data
