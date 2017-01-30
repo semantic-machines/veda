@@ -1086,44 +1086,15 @@ private OpResult parseOpResult(string str)
 private Task wsc_server_task;
 
 //////////////////////////////////////  WS
-
-void handleWebSocketConnection(scope WebSocket socket)
+void connectToWS ()
 {
-    const(HTTPServerRequest)hsr = socket.request();
-    log.trace("WS spawn socket connection [%s]", text(hsr.clientAddress));
-
-    string module_name;
-
-    try
-    {
-        while (true)
-        {
-            if (!socket.connected)
-                break;
-
-            string   inital_message = socket.receiveText();
-            string[] kv             = inital_message.split('=');
-
-            if (kv.length == 2)
-            {
-                if (kv[ 0 ] == "module-name")
-                {
-                    module_name = kv[ 1 ];
-
-                    log.trace("@module_name=%s", module_name);
-
-                    if (module_name == "server")
-                    {
-                        wsc_server_task = Task.getThis();
-                    }
-                }
-            }
-
-            if (module_name !is null)
-            {
-                log.trace("create channel [%s]", module_name);
-
-                while (true)
+  auto ws_url = URL("ws://127.0.0.1:8091/ws");
+  auto ws = connectWebSocket(ws_url);
+  log.trace("WebSocket connected");
+  
+	wsc_server_task = Task.getThis();
+  
+  while (true)
                 {
                     Json msg;
                     Task result_task_to;
@@ -1137,20 +1108,13 @@ void handleWebSocketConnection(scope WebSocket socket)
                                                   );
 
                     //log.trace("sending '%s'", msg);
-                    socket.send(msg.toString());
+                    ws.send(msg.toString());
                     //log.trace("Ok");
-                    string resp = socket.receiveText();
+                    string resp = ws.receiveText();
                     //log.trace("recv '%s'", resp);
                     vibe.core.concurrency.send(result_task_to, resp);
                     //log.trace("send to task ok");
                 }
-            }
-        }
-    }
-    catch (Throwable tr)
-    {
-        log.trace("ERR! on ws channel [%s] ex=%s", module_name, tr.msg);
-    }
-
-    log.trace("ws channel [%s] is closed", module_name);
+  //logFatal("Connection lost!");
+  
 }

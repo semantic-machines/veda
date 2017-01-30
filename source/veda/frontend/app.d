@@ -117,8 +117,7 @@ shared static this()
     short http_port = 0;
     short ws_port = 0;
     
-    readOption("http_port", &http_port, "The listen http port");
-    readOption("ws_port", &ws_port, "The listen ws port");    
+    readOption("http_port", &http_port, "The listen http port");  
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
@@ -217,18 +216,18 @@ shared static this()
                 if (transport.data() == "http")
                 {
                     http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                    is_exist_listener = start_http_listener(context, http_port, 8091);
+                    is_exist_listener = start_http_listener(context, http_port);
                 }
             }
         }
     }
     else
     {
-        is_exist_listener = start_http_listener(context, http_port, ws_port);
+        is_exist_listener = start_http_listener(context, http_port);
     }
 }
 
-bool start_http_listener(Context context, ushort http_port, short ws_port)
+bool start_http_listener(Context context, ushort http_port)
 {
     try
     {
@@ -290,12 +289,7 @@ bool start_http_listener(Context context, ushort http_port, short ws_port)
 
         log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 
-        router.get("/ws", handleWebSockets(&handleWebSocketConnection));
-        settings               = new HTTPServerSettings;
-        settings.port          = ws_port;
-        settings.bindAddresses = [ "127.0.0.1" ];
-        listenHTTP(settings, router);
-        log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
+	    runTask(() => connectToWS());
 
         return true;
     }
@@ -305,6 +299,7 @@ bool start_http_listener(Context context, ushort http_port, short ws_port)
     }
     return false;
 }
+
 
 import veda.util.raptor2individual;
 
