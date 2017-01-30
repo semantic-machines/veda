@@ -57,7 +57,7 @@ extern (C) void handleTermination2(int _signal)
     Runtime.terminate();
 }
 
-Context g_context;
+Context l_context;
 
 void main(char[][] args)
 {
@@ -91,13 +91,8 @@ void main(char[][] args)
     foreach (key, value; tids)
         register(text(key), value);
 
-    VedaServer veda_server = new VedaServer("127.0.0.1", 8091, log);
-    veda_server.init(null);
-    g_context = veda_server.core_context;
-
-    log.trace("start ws channel");
-    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
-    log.trace("stop ws channel");
+	spawn (&ws_interface, cast(short)8091);
+	//spawn (&ws_interface, cast(short)8092);
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -110,6 +105,14 @@ void main(char[][] args)
     exit(P_MODULE.ticket_manager);
 
     thread_term();
+}
+
+private void ws_interface (short ws_port)
+{
+    log.trace("start ws channel");
+    VedaServer veda_server = new VedaServer("127.0.0.1", ws_port, log);
+    veda_server.init(null);
+    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);	
 }
 
 void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
@@ -128,7 +131,7 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 
     if (rc == ResultCode.OK)
     {
-        res = g_context.execute(cast(string)msg);
+        res = l_context.execute(cast(string)msg);
     }
     else
     {
@@ -173,7 +176,9 @@ class VedaServer : WSClient
 
             Ticket     sticket;
 
-            core_context = new PThreadContext(node_id, "core_context", log);
+            core_context = new PThreadContext(node_id, "core_context-" ~ text (port), log);
+		    l_context = core_context;           
+            
             sticket      = core_context.sys_ticket();
             node         = core_context.get_configuration();
             if (node.getStatus() == ResultCode.OK)
