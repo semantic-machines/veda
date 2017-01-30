@@ -75,7 +75,7 @@ class WSClient
         protocol[ 0 ].rx_buffer_size        = max_size_packet;
         protocol[ 0 ].id                    = 0;
 
-        info.port      = 8091;//CONTEXT_PORT_NO_LISTEN;
+        info.port      = 8091; //CONTEXT_PORT_NO_LISTEN;
         info.protocols = &protocol[ 0 ];
 //    info.extensions = lws_get_internal_extensions();
         info.gid     = -1;
@@ -115,7 +115,11 @@ class WSClient
                                                                                                                                                    lws
                                                                                                                                                    *
                                                                                                                                                    wsi,
-                                                                                                                                                   char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+                                                                                                                                                   char
+                                                                                                                                                   []
+                                                                                                                                                   msg,
+                                                                                                                                                   ResultCode
+                                                                                                                                                   rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
         ev_LWS_CALLBACK_GET_THREAD_ID    = _ev_LWS_CALLBACK_GET_THREAD_ID;
         ev_LWS_CALLBACK_CLIENT_RECEIVE   = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
@@ -141,9 +145,9 @@ class WSClient
                     // send module name
                     //if (connection_flag && f1 == false)
                     //{
-                        //websocket_write(wsi, handshake);
-                        //lws_callback_on_writable(wsi);
-                        //f1 = true;
+                    //websocket_write(wsi, handshake);
+                    //lws_callback_on_writable(wsi);
+                    //f1 = true;
                     //}
                     ev_LWS_CALLBACK_GET_THREAD_ID(wsi);
                 }
@@ -195,8 +199,8 @@ long last_check_time;
 
 extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
 {
-	//if (reason != lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID)
-	//    writeln ("@@reason=", reason);
+    //if (reason != lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID)
+    //    writeln ("@@reason=", reason);
 
     switch (reason)
     {
@@ -221,7 +225,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         connection_flag = 0;
         break;
 
-	case lws_callback_reasons.LWS_CALLBACK_RECEIVE:
+    case lws_callback_reasons.LWS_CALLBACK_RECEIVE:
         writeln("[CP] LWS_CALLBACK_RECEIVE");
         ResultCode rc;
 

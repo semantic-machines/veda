@@ -66,7 +66,8 @@ void main(char[][] args)
     string node_id = null;
 
     tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, individuals_db_path, node_id);
-    wait_starting_thread(P_MODULE.subject_manager, tids);
+    if (wait_starting_thread(P_MODULE.subject_manager, tids) == false)
+        return;
 
     tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, tickets_db_path, node_id);
     wait_starting_thread(P_MODULE.ticket_manager, tids);
@@ -91,8 +92,8 @@ void main(char[][] args)
     foreach (key, value; tids)
         register(text(key), value);
 
-	spawn (&ws_interface, cast(short)8091);
-	//spawn (&ws_interface, cast(short)8092);
+    spawn(&ws_interface, cast(short)8091);
+    //spawn (&ws_interface, cast(short)8092);
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -107,12 +108,12 @@ void main(char[][] args)
     thread_term();
 }
 
-private void ws_interface (short ws_port)
+private void ws_interface(short ws_port)
 {
     log.trace("start ws channel");
     VedaServer veda_server = new VedaServer("127.0.0.1", ws_port, log);
     veda_server.init(null);
-    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);	
+    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
 }
 
 void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
@@ -176,11 +177,11 @@ class VedaServer : WSClient
 
             Ticket     sticket;
 
-            core_context = new PThreadContext(node_id, "core_context-" ~ text (port), log);
-		    l_context = core_context;           
-            
-            sticket      = core_context.sys_ticket();
-            node         = core_context.get_configuration();
+            core_context = new PThreadContext(node_id, "core_context-" ~ text(port), log);
+            l_context    = core_context;
+
+            sticket = core_context.sys_ticket();
+            node    = core_context.get_configuration();
             if (node.getStatus() == ResultCode.OK)
                 log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
