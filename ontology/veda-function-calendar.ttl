@@ -116,7 +116,7 @@ v-cal:FunctionCalendarTemplate
   rdfs:label "Шаблон для класса v-cal:FunctionCalendar"@ru ;
   v-ui:forClass v-cal:FunctionCalendar ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container">
   <br>
   <div id="fullcalendar"></div>
 </div>
@@ -150,7 +150,7 @@ v-cal:FunctionCalendarTemplate
     height: function () {
       var top = fullCalendar.offset().top;
       var bottom = container.next().offset().top;
-      return (bottom - top - 20);
+      return (bottom - top - 30);
     }
   };
   var fullCalendar = $('#fullcalendar', template);
