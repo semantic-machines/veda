@@ -1826,13 +1826,13 @@ td:PersonTemplate1
     </div>
   </div>
   <br>
-  <!--button type="button" class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /-->
-  <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
-  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
-  <button type="button" class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
-  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-  <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
-  <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
+  <!--button class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /-->
+  <button class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+  <button class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+  <button class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
+  <button class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+  <button class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+  <!--button class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
   <div about="@" data-template="v-ui:LinkTemplate" data-embedded="true"></div>
   <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
