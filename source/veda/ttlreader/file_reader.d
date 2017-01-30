@@ -71,7 +71,7 @@ void main(char[][] args)
     Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
     sticket = context.sys_ticket();
 
-    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000).result;
+    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -88,7 +88,7 @@ void main(char[][] args)
             context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
         }
 
-        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000).result;
+        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);

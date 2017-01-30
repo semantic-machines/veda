@@ -725,7 +725,7 @@ class XapianVQL
         sr.processed   = processed;
         sr.count       = read_count;
         sr.result_code = ResultCode.OK;
-        sr.cursor = from + processed;
+        sr.cursor      = from + processed;
 
         return sr;
     }

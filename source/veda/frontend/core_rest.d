@@ -105,7 +105,7 @@ interface VedaStorageRest_API {
 
     @path("query") @method(HTTPMethod.GET)
     SearchResult query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
-                   int limit = 10000);
+                       int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -144,11 +144,11 @@ extern (C) void handleTerminationR(int _signal)
 {
 //    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
 
-	if (tdb_cons !is null)
-	{
-	    log.trace("flush trail db");
-	    tdb_cons.finalize();
-	}    
+    if (tdb_cons !is null)
+    {
+        log.trace("flush trail db");
+        tdb_cons.finalize();
+    }
 
     writefln("!SYS: veda.app.rest: caught signal: %s", text(_signal));
 
@@ -158,7 +158,7 @@ extern (C) void handleTerminationR(int _signal)
 
     thread_term();
     Runtime.terminate();
-        
+
 //    kill(getpid(), SIGKILL);
 //    exit(_signal);
 }
@@ -635,13 +635,18 @@ class VedaStorageRest : VedaStorageRest_API
     }
 
     SearchResult query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
-                   int limit = 10000)
+                       int limit = 10000)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong        timestamp = Clock.currTime().stdTime() / 10;
 
-		SearchResult sr;
-        Ticket     *ticket;
-        ResultCode rc;
+        SearchResult sr;
+        Ticket       *ticket;
+        ResultCode   rc;
+
+        void prepare_element(string uri)
+        {
+            vibe.core.core.yield();
+        }
 
         try
         {
@@ -651,8 +656,8 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit);
-			
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, &prepare_element);
+
             return sr;
         }
         finally
@@ -662,7 +667,7 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "sort" ]      = sort;
             jreq[ "databases" ] = databases;
             jreq[ "reopen" ]    = reopen;
-            jreq[ "from" ]       = from;
+            jreq[ "from" ]      = from;
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
@@ -926,7 +931,7 @@ class VedaStorageRest : VedaStorageRest_API
 private TrailDBConstructor tdb_cons;
 private bool               is_trail     = true;
 private long               count_trails = 0;
-private TrailDB exist_trail;
+private TrailDB            exist_trail;
 
 void trail(string ticket_id, string user_id, string action, Json args, string result, ResultCode result_code, ulong start_time)
 {
@@ -935,8 +940,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 
     try
     {
-        ulong    timestamp = Clock.currTime().stdTime() / 10;
-    	
+        ulong timestamp = Clock.currTime().stdTime() / 10;
+
         if (tdb_cons is null)
         {
             //try
@@ -953,17 +958,18 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
             log.trace("open trail db");
 
             tdb_cons =
-                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ text(timestamp), [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
-                
+                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ text(timestamp),
+                                       [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
+
             //if (exist_trail !is null)
             //{
             //    log.trace("append to exist trail db");
             //    tdb_cons.append(exist_trail);
             //    log.trace("merge is ok");
-            //}                
+            //}
         }
 
-        RawUuid  uuid      = randomUUID().data;
+        RawUuid  uuid = randomUUID().data;
 
         string[] vals;
 
