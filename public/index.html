@@ -42,10 +42,12 @@
   </head>
   <body>
     <div id="app"></div>
-    <div id="login-container" class="hidden" style="background-color:#eee"></div>
+
+    <!-- Login form -->
+    <div id="login-container" class="hidden"></div>
 
     <!-- App loading indicator -->
-    <div class="container text-center hidden" id="app-load-indicator" style="margin: 20% auto">
+    <div class="text-center hidden" id="app-load-indicator" >
       <h4><i class="fa fa-cog fa-spin fa-lg text-primary"></i> <strong>Загрузка приложения / Application loading</strong></h4>
     </div>
 
@@ -64,24 +66,18 @@
 
     <!-- Login -->
     <script type="html/template" id="login-template">
-      <div class="container" id="login-form">
-        <div class="row">
-          <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
-            <form role="form" id="credentials">
-              <h3>Войдите / Sign in</h3>
-              <input id="login" required="required" placeholder="login" type="text" name="login" class="form-control" autofocus="autofocus"/>
-              <input id="password" required="required" placeholder="password" type="password" name="password" class="form-control"/>
-              <br>
-              <button type="submit" id="submit" class="btn btn-primary btn-block">Войти / Sign in</button>
-              <br>
-              <div id="login-error" class="hidden">
-                <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
-                <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
-              </div>
-            </form>
-          </div>
+      <form role="form" id="credentials">
+        <h3>Войдите / Sign in</h3>
+        <input class="form-control input-lg" id="login" required="required" placeholder="login" type="text" name="login" autofocus="autofocus"/>
+        <input class="form-control input-lg" id="password" required="required" placeholder="password" type="password" name="password"/>
+        <br>
+        <button type="submit" id="submit" class="btn btn-lg btn-primary btn-block">Войти / Sign in</button>
+        <br>
+        <div id="login-error" class="hidden">
+          <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
+          <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
         </div>
-      </div>
+      </form>
     </script>
 
     <!-- Console template -->
@@ -156,10 +152,8 @@
     <!-- Drafts template -->
     <script type="html/template" id="drafts-template">
       <div id="drafts" class="container">
-        <ul class="nav nav-tabs nav-right" role="tablist">
-          <li class="pull-left"><h2 id="drafts-title"></h2></li>
-        </ul>
-        <br>
+        <h2 id="drafts-title"></h2>
+        <hr>
         <ol id="drafts-list"></ol>
         <button id="delete-all" class="btn btn-default"></button>
       </div>
