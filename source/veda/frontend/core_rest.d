@@ -647,9 +647,9 @@ class VedaStorageRest : VedaStorageRest_API
 
         void prepare_element(string uri)
         {
- //           if (count > 100)
+            //           if (count > 100)
 //            {
-                vibe.core.core.yield();
+            vibe.core.core.yield();
 //                count = 0;
 //            }
 //            count++;

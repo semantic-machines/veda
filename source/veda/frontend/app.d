@@ -114,6 +114,12 @@ HTTPListener[ ushort ] listener_2_port;
 
 shared static this()
 {
+    short http_port = 0;
+    short ws_port = 0;
+    
+    readOption("http_port", &http_port, "The listen http port");
+    readOption("ws_port", &ws_port, "The listen ws port");    
+
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
         registerMemoryErrorHandler();
@@ -134,14 +140,6 @@ shared static this()
     string node_id;
     node_id = properties.as!(string)("node_id");
 
-//    veda.core.common.context.Context core_context;
-
-//    core_context = veda.core.srv.server.init_core(node_id);
-//    if (core_context is null)
-//    {
-//        log.trace("ERR! Veda core has not been initialized");
-//        return;
-//    }
     veda.core.common.context.Context context;
 
     context = new PThreadContext(node_id, "frontend", log, "127.0.0.1:8088/ws");
@@ -206,24 +204,31 @@ shared static this()
 
     //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-    Resources listeners = node.resources.get("v-s:listener", Resources.init);
-    foreach (listener_uri; listeners)
+    if (http_port == 0)
     {
-        Individual connection = get_individual(&sticket, listener_uri.uri);
-
-        Resource   transport = connection.getFirstResource("v-s:transport");
-        if (transport != Resource.init)
+        Resources listeners = node.resources.get("v-s:listener", Resources.init);
+        foreach (listener_uri; listeners)
         {
-            if (transport.data() == "http")
+            Individual connection = get_individual(&sticket, listener_uri.uri);
+
+            Resource   transport = connection.getFirstResource("v-s:transport");
+            if (transport != Resource.init)
             {
-                ushort http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                is_exist_listener = start_http_listener(context, http_port);
+                if (transport.data() == "http")
+                {
+                    http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
+                    is_exist_listener = start_http_listener(context, http_port, 8091);
+                }
             }
         }
     }
+    else
+    {
+        is_exist_listener = start_http_listener(context, http_port, ws_port);
+    }
 }
 
-bool start_http_listener(Context context, ushort http_port)
+bool start_http_listener(Context context, ushort http_port, short ws_port)
 {
     try
     {
@@ -233,7 +238,6 @@ bool start_http_listener(Context context, ushort http_port)
 
         settings.port           = http_port;
         settings.maxRequestSize = 1024 * 1024 * 1000;
-        //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
         //settings.bindAddresses = ["127.0.0.1"];
         settings.errorPageHandler = toDelegate(&view_error);
         //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
@@ -288,18 +292,10 @@ bool start_http_listener(Context context, ushort http_port)
 
         router.get("/ws", handleWebSockets(&handleWebSocketConnection));
         settings               = new HTTPServerSettings;
-        settings.port          = 8091;
+        settings.port          = ws_port;
         settings.bindAddresses = [ "127.0.0.1" ];
         listenHTTP(settings, router);
         log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
-
-
-        //router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
-        //settings      = new HTTPServerSettings;
-        //settings.port = 8088;
-        //settings.bindAddresses = [ "127.0.0.1" ];
-        //listenHTTP(settings, router);
-        //log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
 
         return true;
     }
