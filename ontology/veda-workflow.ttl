@@ -522,7 +522,7 @@ v-wf:NetTemplate
   rdfs:label "Template for Net class"@en ;
   v-ui:forClass v-wf:Net ;
   v-ui:template """
-<div class="workflow-wrapper">
+<div class="workflow-wrapper container-fluid">
   <style>
     #main {
       margin-bottom: 0px;
@@ -636,7 +636,7 @@ v-wf:ProcessTemplate
   rdfs:label "Template for Process"@en ;
   v-ui:forClass v-wf:Process ;
   v-ui:template """
-<div class="workflow-wrapper">
+<div class="workflow-wrapper container-fluid">
   <style>
     #main {
       margin-bottom: 0px;

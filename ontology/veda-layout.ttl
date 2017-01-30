@@ -78,7 +78,7 @@ v-l:MainPageTemplate
 
   <div id="main"></div>
 
-  <nav class="navbar-fixed-bottom">
+  <nav id="copyright" class="navbar-fixed-bottom">
     <div class="container">
       <div class="pull-left">
         <span><span property="v-s:appBuildVersion"></span>/ <span property="v-s:appBuildDate"></span></span>&nbsp;

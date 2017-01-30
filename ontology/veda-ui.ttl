@@ -1372,7 +1372,7 @@ v-ui:JournalTemplate
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 </script>
-<div class="container-fluid journal">
+<div class="container journal">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
@@ -1394,25 +1394,21 @@ v-ui:JournalTemplate
       </h4>
     </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-3 col-sm-3">
-          <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
-        </div>
-        <div class="col-md-7 col-sm-6">
-          <strong about="v-s:description" property="rdfs:label"></strong>
-        </div>
-        <div class="col-md-2 col-sm-3 text-right">
-          <strong about="v-s:created" property="rdfs:label"></strong>
-        </div>
+  <div class="well well-sm">
+    <div class="row">
+      <div class="col-md-3 col-sm-3">
+        <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
+      </div>
+      <div class="col-md-7 col-sm-6">
+        <strong about="v-s:description" property="rdfs:label"></strong>
+      </div>
+      <div class="col-md-2 col-sm-3 text-right">
+        <strong about="v-s:created" property="rdfs:label"></strong>
       </div>
     </div>
-    <div class="panel-body">
-      <div id="records">
-        <div rel="v-s:childRecord"></div>
-      </div>
-    </div>
+  </div>
+  <div id="records">
+    <div rel="v-s:childRecord"></div>
   </div>
 </div>
   """ ;
@@ -1772,104 +1768,72 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-<script>
-  /*template.on("validate", validate);
-  function validate() {
-    var result = {
-      "rdfs:label": {
-        state: individual["rdfs:label"].reduce(
-          function (acc, value) {
-            return acc && (value.length > 5);
-          }
-        , true),
-        cause: ["v-ui:minLength"]
-      }
-    }
-    template.trigger("validated", result);
-  }
-  //# sourceURL=td:PersonTemplate1*/
-</script>
 <div class="container">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-6">
-          <span about="v-s:Person" property="rdfs:label">Персона</span>
-        </div>
-        <div class="col-md-6 text-right">
-          <a href="#/@"><span property="@">ID</span></a>
-          <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
-        </div>
-      </div>
+  <div class="text-right">
+    <a href="#/@"><span property="@">ID</span></a>
+    <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+      <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
+      <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
     </div>
-    <div class="panel-body">
+    <div class="col-md-10">
       <div class="row">
-        <div class="col-md-2">
-          <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
-          <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
-        </div>
-        <div class="col-md-10">
-          <div class="row">
-            <div class="col-md-12">
-              <h3>
-                <span property="rdfs:label"></span>
-                <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-              </h3>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-3">
-              <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-              <div property="v-s:lastName"></div>
-              <veda-control property="v-s:lastName" data-type="string" class="-view edit search"></veda-control>
-            </div>
-            <div class="col-md-3">
-              <em about="v-s:firstName" property="rdfs:label">Имя</em>
-              <div property="v-s:firstName"></div>
-              <veda-control property="v-s:firstName" data-type="string" class="-view edit search"></veda-control>
-            </div>
-            <div class="col-md-3">
-              <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-              <div property="v-s:middleName"></div>
-              <veda-control property="v-s:middleName" data-type="string" class="-view edit search"></veda-control>
-            </div>
-              <div class="col-md-3">
-              <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-              <div property="v-s:birthday"></div>
-              <veda-control property="v-s:birthday" data-type="dateTime" class="-view edit search"></veda-control>
-            </div>
-          </div>
+        <div class="col-md-12">
+          <h3>
+            <span property="rdfs:label"></span>
+            <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+          </h3>
         </div>
       </div>
-      <hr />
       <div class="row">
-        <div class="col-md-6">
-          <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1"></div>
-          <!--div rel="v-s:hasAccount" data-template="td:AccountTemplate1"></div>
-          <veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+        <div class="col-md-3">
+          <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
+          <div property="v-s:lastName"></div>
+          <veda-control property="v-s:lastName" data-type="string" class="-view edit search"></veda-control>
         </div>
-        <div class="col-md-6">
-          <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1"></div>
-          <!--div rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1" data-embedded="true"></div>
-          <veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
-          <br />
-          <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1"></div>
-          <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+        <div class="col-md-3">
+          <em about="v-s:firstName" property="rdfs:label">Имя</em>
+          <div property="v-s:firstName"></div>
+          <veda-control property="v-s:firstName" data-type="string" class="-view edit search"></veda-control>
+        </div>
+        <div class="col-md-3">
+          <em about="v-s:middleName" property="rdfs:label">Отчество</em>
+          <div property="v-s:middleName"></div>
+          <veda-control property="v-s:middleName" data-type="string" class="-view edit search"></veda-control>
+        </div>
+          <div class="col-md-3">
+          <em about="v-s:birthday" property="rdfs:label">День рождения</em>
+          <div property="v-s:birthday"></div>
+          <veda-control property="v-s:birthday" data-type="dateTime" class="-view edit search"></veda-control>
         </div>
       </div>
-    </div>
-    <div class="panel-footer">
-      <!--button type="button" class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /-->
-      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
-      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
-      <button type="button" class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
-      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-      <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
-      <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
     </div>
   </div>
-  <div about="@" data-template="v-ui:LinkTemplate" data-embedded="true"></div>
+  <hr />
+  <div class="row">
+    <div class="col-md-6">
+      <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1"></div>
+      <!--veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+    </div>
+    <div class="col-md-6">
+      <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1"></div>
+      <!--veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+      <br>
+      <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1"></div>
+      <!--veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+    </div>
+  </div>
   <br>
+  <!--button type="button" class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /-->
+  <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+  <button type="button" class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
+  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
+  <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
+  <!--button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
+  <div about="@" data-template="v-ui:LinkTemplate" data-embedded="true"></div>
   <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
 
@@ -1888,48 +1852,46 @@ td:AppointmentTemplate1
   rdfs:label "Шаблон Назначения"@ru ;
   rdfs:label "Appointment template"@en ;
   v-ui:template """
-  <div class="container-fluid">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-          <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
-          </div>
-          <div class="col-md-6 text-right">
-            <a href="#/@"><span property="@">ID</span></a>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-6">
+        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
         </div>
+        <div class="col-md-6 text-right">
+          <a href="#/@"><span property="@">ID</span></a>
       </div>
-      </div>
-      <div class="panel-body">
-        <h3 property="rdfs:label"></h3>
-        <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-        <div class="row">
-          <div class="col-md-6">
-            <em about="v-s:employee" property="rdfs:label"></em>
-            <div rel="v-s:employee" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-            <veda-control rel="v-s:employee" data-type="link" class="-view edit search fullsearch fulltext full"></veda-control>
-          </div>
-          <div class="col-md-6">
-            <em about="v-s:occupation" property="rdfs:label"></em>
-            <div rel="v-s:occupation" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-            <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <em about="v-s:parentUnit" property="rdfs:label"></em>
-            <div rel="v-s:parentUnit" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-            <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-          </div>
-        </div>
-      </div>
-      <!--div class="panel-footer">
-        <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label">Редактировать</button>
-        <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
-        <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label">Отмена</button>
-        <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label">Удалить</button>
-      </div-->
     </div>
+    </div>
+    <div class="panel-body">
+      <h3 property="rdfs:label"></h3>
+      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+      <div class="row">
+        <div class="col-md-6">
+          <em about="v-s:employee" property="rdfs:label"></em>
+          <div rel="v-s:employee" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fullsearch fulltext full"></veda-control>
+        </div>
+        <div class="col-md-6">
+          <em about="v-s:occupation" property="rdfs:label"></em>
+          <div rel="v-s:occupation" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <em about="v-s:parentUnit" property="rdfs:label"></em>
+          <div rel="v-s:parentUnit" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+        </div>
+      </div>
+    </div>
+    <!--div class="panel-footer">
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label">Редактировать</button>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label">Отмена</button>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label">Удалить</button>
+    </div-->
   </div>
   """ ;
 .
@@ -1952,44 +1914,42 @@ td:AccountTemplate1
   rdfs:label "Account template"@en ;
   v-ui:forClass v-s:Account ;
   v-ui:template """
-  <div class="container-fluid">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <div class="col-md-6">
-          <span about="v-s:Account" property="rdfs:label">Имя класса</span>
-          </div>
-          <div class="col-md-6 text-right">
-            <a href="#/@"><span property="@">ID</span></a>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-md-6">
+        <span about="v-s:Account" property="rdfs:label">Имя класса</span>
         </div>
+        <div class="col-md-6 text-right">
+          <a href="#/@"><span property="@">ID</span></a>
       </div>
-      </div>
-      <div class="panel-body">
-        <h3 property="rdfs:label"></h3>
-        <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-        <div class="row">
-            <div class="col-md-12">
-               <em about="v-s:owner" property="rdfs:label">Владелец</em>
-               <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
-               <veda-control rel="v-s:owner" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-            </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col-md-6">
-               <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
-               <div property="v-s:mailbox"></div>
-               <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-6">
-               <em about="v-s:login" property="rdfs:label">Логин</em>
-               <div property="v-s:login"></div>
-               <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
-        </div>
-        </div>
-      </div>
-        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
     </div>
+    </div>
+    <div class="panel-body">
+      <h3 property="rdfs:label"></h3>
+      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+      <div class="row">
+          <div class="col-md-12">
+             <em about="v-s:owner" property="rdfs:label">Владелец</em>
+             <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
+             <veda-control rel="v-s:owner" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+          </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-md-6">
+             <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
+             <div property="v-s:mailbox"></div>
+             <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
+        </div>
+        <div class="col-md-6">
+             <em about="v-s:login" property="rdfs:label">Логин</em>
+             <div property="v-s:login"></div>
+             <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
+      </div>
+      </div>
+    </div>
+      <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
   </div>
   """ ;
 .
@@ -2009,7 +1969,6 @@ td:PreferencesTemplate1
   rdfs:label "Шаблон для класса Предпочтения"@ru ;
   rdfs:label "Template for Preferences class"@en ;
   v-ui:template """
-<div class="container-fluid">
   <div class="panel panel-default">
     <div class="panel-heading">
     <div class="row">
@@ -2046,7 +2005,6 @@ td:PreferencesTemplate1
     <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
     </div-->
   </div>
-</div>
   """ ;
 .
 td:PropertySpecification5

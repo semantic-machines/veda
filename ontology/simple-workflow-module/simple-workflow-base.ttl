@@ -2332,58 +2332,52 @@ s-wf:UserTaskFormTemplate
 </script>
 <div>
   <div class="container">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <span about="s-wf:UserTaskForm" property="rdfs:label"></span>
+    <h2 about="@" property="rdfs:label"></h2>
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-wf:from" property="rdfs:label"></em>
+        <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
       </div>
-      <div class="panel-body">
-        <h3 about="@" property="rdfs:label"></h3>
-        <div class="row">
-          <div class="col-md-3">
-            <em about="v-wf:from" property="rdfs:label"></em>
-            <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
-          </div>
-          <div class="col-md-3">
-             <em about="v-wf:to" property="rdfs:label"></em>
-             <div about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
-          </div>
-          <div class="col-md-3">
-            <em about="v-s:description" property="rdfs:label"></em>
-            <div about="@" property="v-s:description"></div>
-          </div>
-          <div class="col-md-3">
-            <em about="v-wf:dateGiven" property="rdfs:label"></em>
-            <div about="@" property="v-wf:dateGiven"></div>
-          </div>
-        </div>
-        <hr />
-        <em about="v-wf:takenDecision" property="rdfs:label"></em>
-        <div class="radio decision">
-          <label>
-            <input type="radio" name="decisionRadios">
-          </label>
-        </div>
-        <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
+      <div class="col-md-3">
+         <em about="v-wf:to" property="rdfs:label"></em>
+         <div about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
       </div>
-
-      <div class="panel-footer">
-        <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
-        <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-  <!--  Добавить кнопку Выдать задачу
-        <div class="btn-group dropup">
-          <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
-            <span about="v-s:SendTask" property="rdfs:label"> </span>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" id="standard-tasks">
-          </ul>
-        </div>
-  -->
-        <!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
-        <!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
+      <div class="col-md-3">
+        <em about="v-s:description" property="rdfs:label"></em>
+        <div about="@" property="v-s:description"></div>
+      </div>
+      <div class="col-md-3">
+        <em about="v-wf:dateGiven" property="rdfs:label"></em>
+        <div about="@" property="v-wf:dateGiven"></div>
       </div>
     </div>
+    <hr />
+    <em about="v-wf:takenDecision" property="rdfs:label"></em>
+    <div class="radio decision">
+      <label>
+        <input type="radio" name="decisionRadios">
+      </label>
+    </div>
+    <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
+    <br>
+    <div>
+      <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+      <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+<!--  Добавить кнопку Выдать задачу
+      <div class="btn-group dropup">
+        <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
+          <span about="v-s:SendTask" property="rdfs:label"> </span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" id="standard-tasks">
+        </ul>
+      </div>
+-->
+      <!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
+      <!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
+    </div>
   </div>
+  <br>
   <div about="@" rel="v-wf:onDocument" class="view edit -search"></div>
 </div>
 <script>
@@ -2399,8 +2393,8 @@ s-wf:UserTaskFormTemplate
   }
   $("#cancel, #send", template).click( function (e) {
     e.stopPropagation();
-    //window.history.back();
-    riot.route("#/v-ft:Inbox");
+    window.history.back();
+    //riot.route("#/v-ft:Inbox");
   });
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>

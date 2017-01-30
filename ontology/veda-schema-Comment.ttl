@@ -72,8 +72,8 @@ v-s:CommentsTemplate
   rdfs:label "Шаблон для отображения комментариев"@ru ;
   v-ui:template """
 <div>
+  <hr>
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
-  <hr class="margin-sm">
   <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
   <br>

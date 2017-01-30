@@ -45,7 +45,7 @@
     <div id="login-container" class="hidden" style="background-color:#eee"></div>
 
     <!-- App loading indicator -->
-    <div class="container-fluid text-center hidden" id="app-load-indicator" style="margin: 20% auto">
+    <div class="container text-center hidden" id="app-load-indicator" style="margin: 20% auto">
       <h4><i class="fa fa-cog fa-spin fa-lg text-primary"></i> <strong>Загрузка приложения / Application loading</strong></h4>
     </div>
 
@@ -64,7 +64,7 @@
 
     <!-- Login -->
     <script type="html/template" id="login-template">
-      <div class="container-fluid" id="login-form">
+      <div class="container" id="login-form">
         <div class="row">
           <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
             <form role="form" id="credentials">
@@ -86,7 +86,7 @@
 
     <!-- Console template -->
     <script type="html/template" id="console-template">
-      <div class="container-fluid" id="console">
+      <div class="container" id="console">
         <h3>Консоль JavaScript</h3>
         <form role="form">
           <div class="form-group row">
@@ -114,7 +114,7 @@
 
     <!-- TTL template -->
     <script type="html/template" id="ttl-template">
-      <div class="container-fluid">
+      <div class="container">
         <pre></pre>
         <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
         <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
@@ -126,7 +126,7 @@
     <!-- Individual template -->
     <script type="html/template" id="individual-template">
       <span id="individual-label"></span>
-      <div class="container-fluid" id="individual-properties"></div>
+      <div class="container" id="individual-properties"></div>
       <br/>
     </script>
 
@@ -167,7 +167,7 @@
 
     <!-- Search template -->
     <script type="html/template" id="search-template">
-      <div class="container-fluid">
+      <div class="container">
         <div role="tabpanel" id="search-tab-panel-{id}">
           <!-- Nav tabs -->
           <ul class="nav nav-pills" role="tablist">
@@ -194,7 +194,7 @@
             <div role="tabpanel" class="tab-pane active" id="params-{id}">
               <div id="search">
                 <div class="well">
-                  <div class="container-fluid">
+                  <div class="container">
                     <form role="form" class="form-horizontal">
                       <div class="input-group">
                         <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
@@ -212,7 +212,7 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="results-{id}">
-              <div class="container-fluid" id="search-results" style="display: none">
+              <div class="container" id="search-results" style="display: none">
                 <div id="search-features" class="form-inline">
                   <div class="checkbox">
                     <label>
@@ -820,7 +820,7 @@
     </script>
 
 
-    <!--div class="container-fluid">
+    <!--div class="container">
       <div>Regex</div>
       <input class="form-control" type="text" id="re-regex"></input>
       <div>Replacer function</div>
