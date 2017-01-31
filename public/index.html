@@ -187,18 +187,14 @@
           <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="params-{id}">
               <div id="search">
-                <div class="well">
-                  <div class="container">
-                    <form role="form" class="form-horizontal">
-                      <div class="input-group">
-                        <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-                        <span class="input-group-btn" id="q-actions">
-                          <button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
-                        </span>
-                      </div>
-                    </form>
+                <form role="form" class="form-horizontal">
+                  <div class="input-group">
+                    <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+                    <span class="input-group-btn" id="q-actions">
+                      <button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
+                    </span>
                   </div>
-                </div>
+                </form>
               </div>
               <div class="alert alert-warning not-found" style="display: none">
                 <strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
@@ -206,7 +202,7 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="results-{id}">
-              <div class="container" id="search-results" style="display: none">
+              <div id="search-results" style="display: none">
                 <div id="search-features" class="form-inline">
                   <div class="checkbox">
                     <label>
@@ -235,12 +231,11 @@
 
     <!-- Selected actions -->
     <script type="html/template" id="selected-actions-template">
-      <div class="well well-sm" id="selected-actions">
+      <div id="selected-actions">
         <button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
         <button id="update" class="btn btn-default">Обновить</button>
         <button id="delete" class="btn btn-link">Удалить</button>
       </div>
-      <br>
     </script>
 
     <!-- Checkbox for search -->
@@ -555,21 +550,20 @@
         <hr style="margin: 10px 0px"/>
         <div class="properties"></div>
         <br>
-        <div class="well well-sm">
-          <div class="btn-group dropup">
-            <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <span about="v-s:Send" property="rdfs:label"></span>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" id="standard-tasks"></ul>
-          </div>
-          <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-          <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-          <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-          <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-          <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
-          <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+        <br>
+        <div class="btn-group dropup">
+          <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span about="v-s:Send" property="rdfs:label"></span>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" id="standard-tasks"></ul>
         </div>
+        <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+        <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+        <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+        <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
+        <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
       </div>
     </script>
     <script type="html/template" id="generic-property-template">
