@@ -585,8 +585,49 @@ v-s:OrganizationTemplate
     <em about="v-s:HeadOrganization" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
     <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+        <hr class="view -edit -search">
+
+    <em about="mnd-s:hasContractorCreateChangeRequest" property="rdfs:label"></em>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="view -edit -search active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="mnd-s:hasThemeOfContractorCreateChangeRequest" property="rdfs:label"></th>
+          <th about="v-s:hasContractor" property="rdfs:label"></th>
+          <th about="v-s:description" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="mnd-s:hasContractorCreateChangeRequest" data-embedded="true">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+            <veda-control rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-type="link" class="-view edit search"></div>
+          </td>
+          <td>
+            <div rel="v-s:hasContractor" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+            <veda-control rel="v-s:hasContractor" data-type="link" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:description" class="view -edit -search"></div>
+            <veda-control property="v-s:description"  data-type="string" class="-view edit search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="view -edit -search">
+      <button class="btn btn-success pull-left" id="add-ContractorCreateChangeRequest">
+        <span class="glyphicon glyphicon-zoom-in"></span>
+        <span about="mnd-s:ContractorCreateChangeRequest" property="rdfs:label"></span>
+      </button>
+    </div>
+    <br>
+
   </div>
+
+  <br>
   <hr>
+
   <div id="systemProperties">
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   </div><!--#systemProperties-->
@@ -643,6 +684,30 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
     subsidiary.one("individual:afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+  $("#add-ContractorCreateChangeRequest", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal();
+    modal.appendTo(template);
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequest"),
+        request = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequestTemplate");
+    request["rdf:type"] = [_class];
+    request.present(cntr, tmpl, "edit");
+    request["v-s:backwardTarget"] = [individual];
+    request["rdfs:label"] =  individual["rdfs:label"];
+    request["v-s:backwardProperty"] = [new veda.IndividualModel("mnd-s:hasContractorCreateChangeRequest")];
+    request["mnd-s:additionalContractorProfile"] = [ individual["rdfs:label"].join(" ") + " " + veda.Util.formatDate(new Date()) ];
+    request["v-s:hasContractor"]= individual["v-s:hasContractor"];
+  request.one("individual:beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    request.one("individual:afterSave", function () {
       modal.modal("hide").remove();
     });
   });

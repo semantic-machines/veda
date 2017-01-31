@@ -715,9 +715,10 @@ v-ui:IconModalTemplate
 
     var parentTmpl = template.parent().closest("[resource]");
     if (parentTmpl.attr("resource") === individual.id) {
-      newMode = parentTmpl.attr("data-mode");
+      newMode = parentTmpl.data("mode");
     }
     var modal;
+
     if(newMode==="view") {
       if (!individual.rights.hasValue("v-s:canUpdate", true)) {
         modal = $("#individual-modal-template").html();
