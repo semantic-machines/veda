@@ -9,12 +9,12 @@ var webdriver = require('selenium-webdriver'),
     //SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://live.semantic-machines.com:8080/':'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
-  console.trace(e);
+  console.trace(e, e.stack);
   process.exit(1);
 });
 
 function errrorHandlerFunction(e, message) {
-  console.trace(message, e.message);
+  console.trace(message, e.message, e.stack);
   process.exit(1);
 }
 
