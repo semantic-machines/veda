@@ -2915,9 +2915,8 @@ v-wf:FlowTemplateEmbedded
   rdfs:label "Шаблон для класса Поток (встроенный шаблон)"@ru ;
   rdfs:label "Template for Flow class (embedded template)"@en ;
   v-ui:template """
-<div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
+<div class="panel panel-default">
+  <div class="panel-heading">
     <div class="row">
       <div class="col-md-3">
         <span about="v-wf:flowsInto" property="rdfs:label"> :
@@ -2926,8 +2925,8 @@ v-wf:FlowTemplateEmbedded
         <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
       </div>
     </div>
-    </div>
-    <div class="panel-body">
+  </div>
+  <div class="panel-body">
     <div class="row">
       <div class="col-md-4">
         <span about="rdfs:label" property="rdfs:label"></span> :
@@ -2938,12 +2937,11 @@ v-wf:FlowTemplateEmbedded
         <veda-control data-type="source" mode="javascript" property="v-wf:predicate"></veda-control>
       </div>
     </div>
-    </div>
   </div>
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
-  $(this).height(40);
+    $(this).height(40);
   });
 </script>
 """.

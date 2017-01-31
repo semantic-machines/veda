@@ -591,54 +591,46 @@ v-ui:PsForClassSpec
 
 v-ui:ResourceTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса -Ресурс-"@ru ;
-  rdfs:label "Template for -Resource- class"@en ;
+  rdfs:label "Шаблон для класса Ресурс"@ru ;
+  rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <div class="row">
-      <div class="col-md-4 className">
-      <span about="rdfs:Resource" property="rdfs:label"></span></div>
-      <div class="col-md-8 text-right">
-        <a href="#/@"><span property="@"></span></a>
-      </div>
+<div class="container">
+  <div class="clearfix">
+    <h3 class="pull-left" about="@" property="rdf:type"></h3>
+    <a class="pull-right" href="#/@"><span property="@"></span></a>
+  </div>
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-2 col-xs-5 text-right">
+      <strong>@</strong>
+    </div>
+    <div class="col-md-10 col-xs-7">
+      <span property="@"></span>
     </div>
   </div>
-  <div class="panel-body">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-3 col-xs-5 text-right">
-          <em about="rdf:type" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-9 col-xs-7">
-          <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
-          <veda-control rel="rdf:type" data-type="link" data-template="v-ui:LabelTemplate" class="-view edit search fulltext dropdown"></veda-control>
-        </div>
-      </div>
-      <hr class="margin-sm">
-      <div class="row">
-        <div class="col-md-3 col-xs-5 text-right">
-          <em about="rdfs:label" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-9 col-xs-7">
-          <span property="rdfs:label"></span>
-          <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
-        </div>
-      </div>
-      <hr class="margin-sm">
-      <div class="row">
-        <div class="col-md-3 col-xs-5 text-right">
-          <em about="rdfs:comment" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-9 col-xs-7">
-          <div property="rdfs:comment"></div>
-          <veda-control property="rdfs:comment" class="-view edit search" data-type="multilingualString"></veda-control>
-        </div>
-      </div>
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-2 col-xs-5 text-right">
+      <strong about="rdfs:label" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-10 col-xs-7">
+      <span property="rdfs:label"></span>
+      <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
     </div>
   </div>
-  <div class="panel-footer">
+  <hr class="margin-sm">
+  <div class="row">
+    <div class="col-md-2 col-xs-5 text-right">
+      <strong about="rdfs:comment" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-10 col-xs-7">
+      <div property="rdfs:comment"></div>
+      <veda-control property="rdfs:comment" class="-view edit search" data-type="multilingualString"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
@@ -1036,95 +1028,87 @@ v-ui:TestUITemplate
   rdfs:label "Test UI template"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:template """
-<div class="container-fluid">
-  <div class="panel panel-warning">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-4">
-          <span about="v-ui:TestUIClass" property="rdfs:label"></span>
-        </div>
-        <div class="col-md-8 text-right">
-          <a href="#/@"><span property="@"></span></a>
-        </div>
-      </div>
-    </div>
-    <div class="panel-body">
-      <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
-      <h3 property="rdfs:label"></h3>
-      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-      <br class="-view edit search">
-      <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-      <div><em property="rdfs:comment"></em></div>
-      <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
-      <br class="-view edit search">
+<div class="container">
+  <div class="clearfix">
+    <h2 class="pull-left" about="@" property="rdf:type"></h2>
+    <a class="pull-right" href="#/@"><span property="@"></span></a>
+  </div>
 
-      <div class="checkbox">
-        <label>
-          <veda-control property="v-ui:testBoolean" data-type="boolean"></veda-control>
-          <em about="v-ui:testBoolean" property="rdfs:label"></em>
-        </label>
-      </div>
-      <hr>
+  <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
+  <h3 property="rdfs:label"></h3>
+  <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+  <br class="-view edit search">
+  <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+  <div><em property="rdfs:comment"></em></div>
+  <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
+  <br class="-view edit search">
 
-      <em about="v-ui:testString" property="rdfs:label"></em>
-      <div property="v-ui:testString"></div>
-      <veda-control property="v-ui:testString" data-type="string" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="multilingualString" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="text" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="multilingualText" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="select" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="checkbox" class="view edit search"></veda-control>
-      <veda-control property="v-ui:testString" data-type="radio" class="view edit search"></veda-control>
-      <hr>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-ui:testBoolean" data-type="boolean"></veda-control>
+      <em about="v-ui:testBoolean" property="rdfs:label"></em>
+    </label>
+  </div>
+  <hr>
 
-      <em about="v-ui:testInteger" property="rdfs:label"></em>
-      <div property="v-ui:testInteger"></div>
-      <veda-control property="v-ui:testInteger" data-type="integer" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="select" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="checkbox"></veda-control>
-      <veda-control property="v-ui:testInteger" data-type="radio"></veda-control>
-      <hr>
+  <em about="v-ui:testString" property="rdfs:label"></em>
+  <div property="v-ui:testString"></div>
+  <veda-control property="v-ui:testString" data-type="string" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="multilingualString" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="text" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="multilingualText" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="select" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="checkbox" class="view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="radio" class="view edit search"></veda-control>
+  <hr>
 
-      <em about="v-ui:testDecimal" property="rdfs:label"></em>
-      <div property="v-ui:testDecimal"></div>
-      <veda-control property="v-ui:testDecimal" data-type="decimal" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDecimal" data-type="select" class="-view edit search"></veda-control>
-      <hr>
+  <em about="v-ui:testInteger" property="rdfs:label"></em>
+  <div property="v-ui:testInteger"></div>
+  <veda-control property="v-ui:testInteger" data-type="integer" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testInteger" data-type="select" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testInteger" data-type="checkbox"></veda-control>
+  <veda-control property="v-ui:testInteger" data-type="radio"></veda-control>
+  <hr>
 
-      <em about="v-ui:testDatetime" property="rdfs:label"></em>
-      <div property="v-ui:testDatetime" class="view -edit -search"></div>
-      <veda-control property="v-ui:testDatetime" data-type="dateTime" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDatetime" data-type="select" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDatetime" data-type="checkbox" class="-view edit search"></veda-control>
-      <veda-control property="v-ui:testDatetime" data-type="radio" class="-view edit search"></veda-control>
-      <hr>
+  <em about="v-ui:testDecimal" property="rdfs:label"></em>
+  <div property="v-ui:testDecimal"></div>
+  <veda-control property="v-ui:testDecimal" data-type="decimal" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testDecimal" data-type="select" class="-view edit search"></veda-control>
+  <hr>
 
-      <em about="v-ui:testLink" property="rdfs:label"></em>
-      <div rel="v-ui:testLink" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-      <veda-control rel="v-ui:testLink" data-type="link" class="-view edit search full"></veda-control>
-      <veda-control rel="v-ui:testLink" data-type="checkbox"></veda-control>
-      <veda-control rel="v-ui:testLink" data-type="radio"></veda-control>
-      <veda-control rel="v-ui:testLink" data-type="select" class="-view edit search"></veda-control>
+  <em about="v-ui:testDatetime" property="rdfs:label"></em>
+  <div property="v-ui:testDatetime" class="view -edit -search"></div>
+  <veda-control property="v-ui:testDatetime" data-type="dateTime" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testDatetime" data-type="select" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testDatetime" data-type="checkbox" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testDatetime" data-type="radio" class="-view edit search"></veda-control>
+  <hr>
 
-      <!--hr>
-      <em about="v-ui:template" property="rdfs:label"></em>
-      <veda-control property="v-ui:template" data-type="source"></veda-control>
-      <hr>
-      <em about="v-s:script" property="rdfs:label"></em>
-      <veda-control property="v-s:script" data-type="source"></veda-control-->
+  <em about="v-ui:testLink" property="rdfs:label"></em>
+  <div rel="v-ui:testLink" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+  <veda-control rel="v-ui:testLink" data-type="link" class="-view edit search full"></veda-control>
+  <veda-control rel="v-ui:testLink" data-type="checkbox"></veda-control>
+  <veda-control rel="v-ui:testLink" data-type="radio"></veda-control>
+  <veda-control rel="v-ui:testLink" data-type="select" class="-view edit search"></veda-control>
 
-      <hr>
-      <em about="v-ui:testFile" property="rdfs:label"></em>
-      <div rel="v-ui:testFile" data-template="v-ui:FileTemplate" class="view edit -search"></div>
-      <br>
-      <veda-control rel="v-ui:testFile" data-type="file" class="-view edit -search"></veda-control>
-    </div>
-    <div class="panel-footer">
-      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    </div>
+  <!--hr>
+  <em about="v-ui:template" property="rdfs:label"></em>
+  <veda-control property="v-ui:template" data-type="source"></veda-control>
+  <hr>
+  <em about="v-s:script" property="rdfs:label"></em>
+  <veda-control property="v-s:script" data-type="source"></veda-control-->
+
+  <hr>
+  <em about="v-ui:testFile" property="rdfs:label"></em>
+  <div rel="v-ui:testFile" data-template="v-ui:FileTemplate" class="view edit -search"></div>
+  <br>
+  <veda-control rel="v-ui:testFile" data-type="file" class="-view edit -search"></veda-control>
+
+  <div class="actions">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
 </div>
   """ ;

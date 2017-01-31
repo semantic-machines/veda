@@ -476,8 +476,6 @@ v-s:DocumentLinkRulesTemplate
   <div class="container-fluid">
     <h3 property="v-s:displayName" class="view edit search"></h3>
     <br>
-    <div class="panel panel-default">
-      <div class="panel-body">
     <div class="row">
       <div class="col-md-3">
       <em about="v-s:classFrom" property="rdfs:label"></em>
@@ -495,7 +493,6 @@ v-s:DocumentLinkRulesTemplate
       <veda-control rel="v-s:hasTransformation" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
       </div>
       <div class="col-md-3">
-
       </div>
     </div>
     <div class="row">
@@ -522,8 +519,6 @@ v-s:DocumentLinkRulesTemplate
       <veda-control property="v-s:isClone" data-type="boolean"></veda-control>
       <em about="v-s:isClone" property="rdfs:label"></em>
       </div>
-    </div>
-  </div>
     </div>
     <br><br>
     <div class="actions">
