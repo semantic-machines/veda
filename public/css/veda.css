@@ -14,7 +14,11 @@ body {
   border: none!important;
 }
 
-.container-fluid .container, .container .container-fluid, .container-fluid .container-fluid {
+.container-fluid .container,
+.container .container-fluid,
+.container-fluid .container-fluid,
+.modal .container,
+.modal .container-fluid {
   border: none!important;
 }
 
@@ -133,7 +137,6 @@ footer {
 }
 #copyright {
   margin:0px;
-  padding:1px;
   font-size: 0.8em;
 }
 #copyright .container-fluid, #copyright .container {
