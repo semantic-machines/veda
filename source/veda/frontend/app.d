@@ -115,9 +115,9 @@ HTTPListener[ ushort ] listener_2_port;
 shared static this()
 {
     short http_port = 0;
-    short ws_port = 0;
-    
-    readOption("http_port", &http_port, "The listen http port");  
+    short ws_port   = 0;
+
+    readOption("http_port", &http_port, "The listen http port");
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
@@ -215,7 +215,7 @@ shared static this()
             {
                 if (transport.data() == "http")
                 {
-                    http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
+                    http_port         = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
                     is_exist_listener = start_http_listener(context, http_port);
                 }
             }
@@ -287,9 +287,9 @@ bool start_http_listener(Context context, ushort http_port)
         HTTPListener listener = listenHTTP(settings, router);
         listener_2_port[ http_port ] = listener;
 
-        log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+        log.tracec("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 
-	    runTask(() => connectToWS());
+        runTask(() = > connectToWS());
 
         return true;
     }

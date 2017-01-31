@@ -663,7 +663,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null);//&prepare_element);
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null); //&prepare_element);
 
             return sr;
         }
@@ -1086,35 +1086,47 @@ private OpResult parseOpResult(string str)
 private Task wsc_server_task;
 
 //////////////////////////////////////  WS
-void connectToWS ()
+void connectToWS()
 {
-  auto ws_url = URL("ws://127.0.0.1:8091/ws");
-  auto ws = connectWebSocket(ws_url);
-  log.trace("WebSocket connected");
-  
-	wsc_server_task = Task.getThis();
-  
-  while (true)
-                {
-                    Json msg;
-                    Task result_task_to;
+    WebSocket ws;
 
-                    vibe.core.concurrency.receive(
-                                                  (Json _msg, Task _to)
-                                                  {
-                                                      msg = _msg;
-                                                      result_task_to = _to;
-                                                  }
-                                                  );
+    while (ws is null)
+    {
+        try
+        {
+            auto ws_url = URL("ws://127.0.0.1:8091/ws");
+            ws = connectWebSocket(ws_url);
 
-                    //log.trace("sending '%s'", msg);
-                    ws.send(msg.toString());
-                    //log.trace("Ok");
-                    string resp = ws.receiveText();
-                    //log.trace("recv '%s'", resp);
-                    vibe.core.concurrency.send(result_task_to, resp);
-                    //log.trace("send to task ok");
-                }
-  //logFatal("Connection lost!");
-  
+            log.tracec("WebSocket connected to %s", ws_url);
+        } catch (Throwable tr)
+        {
+            log.tracec("ERR! %s", tr.msg);
+            core.thread.Thread.sleep(dur!("seconds")(10));
+        }
+    }
+
+    wsc_server_task = Task.getThis();
+
+    while (true)
+    {
+        Json msg;
+        Task result_task_to;
+
+        vibe.core.concurrency.receive(
+                                      (Json _msg, Task _to)
+                                      {
+                                          msg = _msg;
+                                          result_task_to = _to;
+                                      }
+                                      );
+
+        //log.trace("sending '%s'", msg);
+        ws.send(msg.toString());
+        //log.trace("Ok");
+        string resp = ws.receiveText();
+        //log.trace("recv '%s'", resp);
+        vibe.core.concurrency.send(result_task_to, resp);
+        //log.trace("send to task ok");
+    }
+    //logFatal("Connection lost!");
 }
