@@ -1160,7 +1160,7 @@ v-fs:AttributiveSearchTemplate
       <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
     </div>
     <div class="text-center">
-      <button id="more-results" style="margin-bottom:30%" class="btn btn-primary" about="v-fs:MoreResults" property="rdfs:label"></button>
+      <button id="more-results" style="margin-bottom:15%" class="btn btn-primary" about="v-fs:MoreResults" property="rdfs:label"></button>
     </div>
   </div>
 </div>
@@ -1213,6 +1213,8 @@ v-fs:AttributiveSearchTemplate
   // Search button handler
   searchButton.click(function () {
     var $this = $(this);
+    // Reset top
+    self.top = veda.user.displayedElements || 10;
     toggleSpin($this);
     search().then(function () {
       scrollTo( $(".search-result-label").offset().top - 10 );
@@ -1275,7 +1277,7 @@ v-fs:AttributiveSearchTemplate
   });
 
   // Render result
-  function renderResult(result) {
+  function renderResult(resultDelta) {
 
     $(".result-count", template).text("(" + self.result.length + ")");
     $("#results", template).removeClass("hidden");
@@ -1285,12 +1287,22 @@ v-fs:AttributiveSearchTemplate
       notFound.addClass("hidden");
     } else {
       notFound.removeClass("hidden");
+    }
+
+    if (self.cursor === self.estimated && self.estimated > 0) {
+      moreResults.addClass("hidden");
+      noMoreResults.removeClass("hidden");
+    } else if (self.cursor < self.estimated && self.estimated > 0) {
+      moreResults.removeClass("hidden");
+      noMoreResults.addClass("hidden");
+    } else {
+      moreResults.addClass("hidden");
       noMoreResults.addClass("hidden");
     }
 
     // Prefetch new search results alltogether
     var prefetch = [];
-    result.map(function (uri) {
+    resultDelta.map(function (uri) {
       if ( !veda.cache[uri] ) {
         prefetch.push( uri );
       }
@@ -1306,10 +1318,10 @@ v-fs:AttributiveSearchTemplate
       });
 
       var total = self.result.length;
-      var sub_total = result.length;
+      var delta = resultDelta.length;
       // Render each result
-      result.map(function (uri, i) {
-        var tmpl = resultTemplate.replace("###", total - sub_total + i + 1),
+      resultDelta.map(function (uri, i) {
+        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
             item = new veda.IndividualModel(uri);
         item.present(resultContainer, tmpl);
       });
@@ -1337,7 +1349,7 @@ v-fs:AttributiveSearchTemplate
     });
   }
 
-  //Search
+  // Search
   function search(cursor) {
     if (cursor > 0) {
       self.cursor = cursor;
@@ -1365,12 +1377,9 @@ v-fs:AttributiveSearchTemplate
         self.result = self.result.concat(results.result);
         self.estimated = results.estimated;
         self.cursor = results.cursor;
-        if (results.result.length < self.top) {
-          moreResults.addClass("hidden");
-          noMoreResults.removeClass("hidden");
-        } else {
-          moreResults.removeClass("hidden");
-          noMoreResults.addClass("hidden");
+        if (self.cursor === self.estimated) {
+          // Set top to results length to allow sorting of the whole list
+          self.top = self.result.length;
         }
         renderResult(results.result);
       });
