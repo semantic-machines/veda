@@ -130,9 +130,9 @@ void main(char[][] args)
 
     string[] modules =
     [
-        "veda", "veda-ccus", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main",
+        "veda", "veda-ccus", "veda-server", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main",
         "veda-scripts-lp",
-        "veda-ft-indexer", "veda-ltr-scripts"
+        "veda-ft-indexer", "veda-ltr-scripts", "veda-webserver"
     ];
     int[][ string ] command_2_pid;
 
