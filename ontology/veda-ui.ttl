@@ -568,7 +568,7 @@ v-ui:ClassTemplateTemplate
   <br>
   <veda-control property="v-ui:template" data-type="source"></veda-control>
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
@@ -753,7 +753,7 @@ v-ui:IconModalTemplate
     tmpl.removeClass("container").addClass("container-fluid");
 
     if (newMode === "edit") {
-      $(".action", tmpl).remove();
+      $(".actions", tmpl).remove();
       individual.present(cntr, tmpl, newMode);
     } else {
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
@@ -877,12 +877,8 @@ v-ui:SavedSearchTemplate
   <div>
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label"></div>
-    <div class="row">
-      <div class="col-md-12">
-           <em about="v-s:query" property="rdfs:label"></em>
-           <div property="v-s:query"></div>
-      </div>
-    </div>
+    <em about="v-s:query" property="rdfs:label"></em>
+    <div property="v-s:query"></div>
     <br/>
     <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
     <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
@@ -1779,14 +1775,10 @@ td:PersonTemplate1
       <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
     </div>
     <div class="col-md-10">
-      <div class="row">
-        <div class="col-md-12">
-          <h3>
-            <span property="rdfs:label"></span>
-            <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-          </h3>
-        </div>
-      </div>
+      <h3>
+        <span property="rdfs:label"></span>
+        <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+      </h3>
       <div class="row">
         <div class="col-md-3">
           <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
@@ -1928,13 +1920,9 @@ td:AccountTemplate1
     <div class="panel-body">
       <h3 property="rdfs:label"></h3>
       <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-      <div class="row">
-          <div class="col-md-12">
-             <em about="v-s:owner" property="rdfs:label">Владелец</em>
-             <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
-             <veda-control rel="v-s:owner" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-          </div>
-      </div>
+      <em about="v-s:owner" property="rdfs:label">Владелец</em>
+      <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
+      <veda-control rel="v-s:owner" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
       <br />
       <div class="row">
         <div class="col-md-6">

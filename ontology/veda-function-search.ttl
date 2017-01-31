@@ -1450,28 +1450,26 @@ v-fs:TestBlankTemplate
   rdfs:label "Шаблон бланка поиска персоны"@ru ;
   rdfs:label "Person search blank template"@en ;
   v-ui:template """
-<div class="well">
-  <div class="row">
-    <div class="col-md-3">
-      <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-      <veda-control property="v-s:lastName" data-type="string"></veda-control>
-      <div property="v-s:lastName"></div>
-    </div>
-    <div class="col-md-3">
-      <em about="v-s:firstName" property="rdfs:label">Имя</em>
-      <veda-control property="v-s:firstName" data-type="string"></veda-control>
-      <div property="v-s:firstName"></div>
-    </div>
-    <div class="col-md-3">
-      <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-      <veda-control property="v-s:middleName" data-type="string"></veda-control>
-      <div property="v-s:middleName"></div>
-    </div>
-    <div class="col-md-3">
-      <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-      <veda-control property="v-s:birthday" data-type="dateTime"></veda-control>
-      <div property="v-s:birthday"></div>
-    </div>
+<div class="row">
+  <div class="col-md-3">
+    <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
+    <veda-control property="v-s:lastName" data-type="string"></veda-control>
+    <div property="v-s:lastName"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:firstName" property="rdfs:label">Имя</em>
+    <veda-control property="v-s:firstName" data-type="string"></veda-control>
+    <div property="v-s:firstName"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:middleName" property="rdfs:label">Отчество</em>
+    <veda-control property="v-s:middleName" data-type="string"></veda-control>
+    <div property="v-s:middleName"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:birthday" property="rdfs:label">День рождения</em>
+    <veda-control property="v-s:birthday" data-type="dateTime"></veda-control>
+    <div property="v-s:birthday"></div>
   </div>
 </div>
   """ ;

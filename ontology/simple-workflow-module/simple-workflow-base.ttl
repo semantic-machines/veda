@@ -658,22 +658,14 @@ s-wf:SimpleRouteStartFormMinimal_Template
   <div>
     <div class="panel panel-default">
       <div class="panel-body">
-        <div class="row">
-          <div class="col-md-12">
-      <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
-      <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
-          <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
-          </div>
-        </div>
-        <br />
-        <div class="row">
-          <div class="col-md-12">
-      <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
-      <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
-          <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
-          </div>
-        </div>
-        <br />
+        <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
+        <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
+        <br>
+        <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
+        <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+        <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+        <br>
       </div>
     </div>
   </div>
@@ -729,13 +721,9 @@ s-wf:SimpleRouteStartFormFull_Template
         </div>
       </div>
       <br />
-      <div class="row">
-        <div class="col-md-12">
-          <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
-          <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
-          <veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
-        </div>
-      </div>
+      <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
+      <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
+      <veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
     </div>
   </div>
 </div>
@@ -1401,7 +1389,7 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
         doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
-        routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71023848")); // Руководитель гр CAPEX ОТЗ      
+        routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71023848")); // Руководитель гр CAPEX ОТЗ
     } else {
       if (doc.hasValue('v-s:responsibleDepartment')) {
         var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
@@ -1435,7 +1423,7 @@ if (doc) {
       }
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
         routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
-      }      
+      }
     } else {
       if (doc.hasValue('v-s:responsibleDepartment')) {
         var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
@@ -1483,9 +1471,9 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
           routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
-        }        
+        }
       }
-    } 
+    }
     if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
         routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
@@ -1507,7 +1495,7 @@ if (doc) {
           routes['coordination5'][simple+'participant'] = routes['coordination5'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71021843")); // Нач УриР
         }
       }
-    } 
+    }
 
  // СОГЛАСОВАНИЕ 6
 
