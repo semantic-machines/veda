@@ -663,7 +663,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, &prepare_element);
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null);//&prepare_element);
 
             return sr;
         }
