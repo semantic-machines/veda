@@ -33,9 +33,7 @@ s-wf:net_complex_route a v-wf:Net;
     s-wf:crf_dr_to_i,
     s-wf:cr_informing_task,
 	s-wf:cr_introduction,
-	s-wf:cr_introduction2,
 	s-wf:crf_i_to_intro,
-	s-wf:crf_i_to_intro2,
     s-wf:crf_i_to_c1,
     s-wf:cr_c1,
     s-wf:crf_c1_to_c2,
@@ -145,7 +143,7 @@ s-wf:cr_decrease_rights a v-wf:Task;
   v-wf:locationX "0"^^xsd:integer;
   v-wf:locationY "350"^^xsd:integer;
   v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:hasFlow s-wf:crf_dr_to_i, s-wf:crf_i_to_intro2;
+  v-wf:hasFlow s-wf:crf_dr_to_i;
   v-wf:executor s-wf:codelet_down_right;
   rdfs:label "Понизить права"^^xsd:string;
   v-wf:completedMapping s-wf:map_get_rights;
@@ -170,7 +168,7 @@ s-wf:cr_informing_task a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "150"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
-  v-wf:split v-wf:XOR;
+  v-wf:split v-wf:OR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:subNet s-wf:NotificationNet;
@@ -192,19 +190,6 @@ s-wf:cr_introduction a v-wf:Task;
   rdfs:label "Ознакомление"^^xsd:string;
 .
 
-s-wf:cr_introduction2 a v-wf:Task;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:locationX "0"^^xsd:integer;
-  v-wf:locationY "100"^^xsd:integer;
-  v-wf:split v-wf:XOR;
-  v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:subNet s-wf:InterlayerNet;
-  v-wf:executor s-wf:executor_coordination1 ;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
-  rdfs:label "Ознакомление2"^^xsd:string;
-.
-
 s-wf:crf_i_to_intro a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:belongsTo s-wf:net_complex_route;
@@ -212,13 +197,6 @@ s-wf:crf_i_to_intro a v-wf:Flow;
   v-wf:predicate "true"^^xsd:string;
 .
 
-s-wf:crf_i_to_intro2 a v-wf:Flow;
-  rdfs:isDefinedBy s-wfc: ;
-  v-wf:belongsTo s-wf:net_complex_route;
-  v-wf:flowsInto s-wf:cr_introduction2;
-  v-wf:predicate "true"^^xsd:string;
-.
-  
 s-wf:cr_c1 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "300"^^xsd:integer;
