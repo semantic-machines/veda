@@ -261,7 +261,7 @@ module.exports = {
     }).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
 
     // Проверяем что тип появился на экране
-    if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net') {
+    if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net' || templateRdfType === 'v-s:Person') {
       driver.wait
       (
         webdriver.until.elementIsVisible(driver.findElement({css:'div[typeof="'+templateRdfType+'"]'})),
