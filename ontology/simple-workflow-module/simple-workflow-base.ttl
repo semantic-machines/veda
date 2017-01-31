@@ -1387,11 +1387,139 @@ if (doc) {
   }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт
   if (doc['rdf:type'][0].id === "mnd-s:Contract") {
+
+ // СОГЛАСОВАНИЕ 1
+
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('mnd-s:supportSpecialistOfContract') && doc['mnd-s:supportSpecialistOfContract']) {
+      routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(doc['mnd-s:supportSpecialistOfContract']); // Исполнитель по контракту
+    }
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && doc.hasValue('v-s:hasBudgetCategory') && (
+        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+        routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71023848")); // Руководитель гр CAPEX ОТЗ      
+    } else {
+      if (doc.hasValue('v-s:responsibleDepartment')) {
+        var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
+        if (dep.hasValue('v-s:hasChief')) {
+          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения
+        }
+      }
+    }
+
+ // СОГЛАСОВАНИЕ 2
+
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && doc.hasValue('v-s:hasBudgetCategory') && (
+      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+      if (doc.hasValue('mnd-s:hasContractRequest')) {
+        var cr = new veda.IndividualModel(doc['mnd-s:hasContractRequest'][0].id);
+        if (cr.hasValue('v-s:author')) {
+          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(cr["v-s:author"]); // Автор заявки на контракт
+        }
+      }
+      if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
+      }
+      if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
+      }
+      if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
+      }      
+    } else {
+      if (doc.hasValue('v-s:responsibleDepartment')) {
+        var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
+        if (dep.hasValue('v-s:hasChief')) {
+          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель подразделения-заказчика
+        }
+      }
+    }
+    if (doc.hasValue('v-s:supplier') && doc['v-s:suppli(v-s:supplierContractor не заполнено и v-s:supplier er'][0].id == 'd:org_RU1121003135') {
+      routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020138")); // Гл инженер УЛО (Навратил С)
+      routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71025127")); // Зам директора УЛО (Кухоткин)
+    }
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && !doc.hasValue('v-s:supplierContractor') && !doc.hasValue('v-s:supplier')) {
+      routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017956")); // Нач УПБ
+    }
+
+ // СОГЛАСОВАНИЕ 3
+
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && doc.hasValue('v-s:hasBudgetCategory') && (
+      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625') && doc.hasValue('mnd-s:hasContractDirection') && doc['mnd-s:hasContractDirection'][0].id == 'd:d4cf39d06aec4a9aafcd4663f7996125') {
+      routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71005342")); // Нач ОТО
+      routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71014233")); // Нач Казнач отд
+    }
+    if (!doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination') && doc.hasValue('v-s:hasContractScope') && doc['v-s:hasContractScope'][0].id == 'd:f1ef19aec63145dcbc9cac8087682efd') {
+      routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")); // ПУ. Согласование контрактов
+      routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa")); // Бух. Согласование контрактов
+    }
+
+ // СОГЛАСОВАНИЕ 4
+
+    routes['coordination4'][simple+'visible'] = [true];
+    routes['coordination4'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+      if (doc.hasValue('v-s:hasBudgetCategory') && (
+        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+        if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
+          routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
+        }        
+      }
+    } 
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+      if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
+        routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
+      }
+    }
+
+ // СОГЛАСОВАНИЕ 5
+
+    routes['coordination5'][simple+'visible'] = [true];
+    routes['coordination5'][simple+'editable'] = [true];
+    routes['coordination5'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+      if (doc.hasValue('v-s:hasBudgetCategory') && (
+        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+        if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
+          routes['coordination5'][simple+'participant'] = routes['coordination5'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71021843")); // Нач УриР
+        }
+      }
+    } 
+
+ // СОГЛАСОВАНИЕ 6
+
+    routes['coordination6'][simple+'visible'] = [true];
+    routes['coordination6'][simple+'editable'] = [true];
+    routes['coordination6'][simple+'deadlineDays'] = [10];
+    routes['coordination6'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+    routes['coordination6'][simple+'comment'] = [new String('Согласовать с Контрагентом текcт Контракта и подготовить документы к подписанию')];
+
+/*
     if (doc.hasValue('v-s:hasDocumentKind') && doc['v-s:hasDocumentKind'][0].id == 'd:fecef6b8058549cfb0203b55bd2425de') {
       // Заказ Спецификация. Разовая закупка
-      routes['coordination1'][simple+'visible'] = [true];
-      routes['coordination1'][simple+'editable'] = [true];
-      routes['coordination1'][simple+'deadlineDays'] = [10];
 
       routes['sign'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель по контракту
       routes['sign'][simple+'visible'] = [true];
@@ -1518,6 +1646,7 @@ if (doc) {
 
       }
     }
+*/
   }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------Дополнительное соглашение
