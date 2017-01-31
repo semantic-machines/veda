@@ -1873,7 +1873,7 @@ $('#save_and_start_process', template).on('click', function () {
 });
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
-<div class="container-fluid">
+<div class="container">
   <div class="panel panel-default">
     <div class="panel-heading">
       <div class="row">
@@ -2030,7 +2030,7 @@ s-wf:ComplexRouteTest_Template
     rdfs:label "Template for Complex route test template"@en;
     v-ui:forClass s-wf:ComplexRouteTest ;
     v-ui:template """
-<div class="container-fluid">
+<div class="container">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -2078,7 +2078,7 @@ s-wf:ComplexRouteTest2_Template
   rdfs:label "Template for Complex route test template 2"@en;
   v-ui:forClass s-wf:ComplexRouteTest2 ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">

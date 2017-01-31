@@ -553,7 +553,7 @@ v-ui:ClassTemplateTemplate
   rdfs:label "Template for -Class template- class"@en ;
   v-ui:forClass v-ui:ClassTemplate ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container">
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
   <h3><span property="rdfs:label"></span> <span class="badge" property="@"></span></h3>
   <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
