@@ -8,7 +8,7 @@ module.exports = {
    */
   createPerson: function (driver, drv, lastName, firstName, middleName, date) {
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
-
+    driver.sleep(basic.FAST_OPERATION);
     // Документ нельзя создать или отправить пока не заполнены обязательные поля
     driver.findElement({css:'div[typeof="v-s:Person"] > button#save.action'}).isEnabled().then(function (flag) {
       assert(!flag);
