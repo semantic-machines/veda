@@ -1160,7 +1160,7 @@ v-fs:AttributiveSearchTemplate
       <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
     </div>
     <div class="text-center">
-      <button id="more-results" style="margin-bottom:15%" class="btn btn-primary" about="v-fs:MoreResults" property="rdfs:label"></button>
+      <button id="more-results" style="margin-bottom:15%" class="btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
     </div>
   </div>
 </div>
@@ -1282,21 +1282,18 @@ v-fs:AttributiveSearchTemplate
     $(".result-count", template).text("(" + self.result.length + ")");
     $("#results", template).removeClass("hidden");
 
-    // Toggle "not found" alert
+    // Toggle "more results" button & "no more results" alert
+    if (self.cursor === self.estimated) {
+      moreResults.addClass("hidden");
+      noMoreResults.removeClass("hidden");
+    } else {
+      moreResults.removeClass("hidden");
+    }
+    // Toggle "not found" alert & "no more results" alert
     if (self.result.length) {
       notFound.addClass("hidden");
     } else {
       notFound.removeClass("hidden");
-    }
-
-    if (self.cursor === self.estimated && self.estimated > 0) {
-      moreResults.addClass("hidden");
-      noMoreResults.removeClass("hidden");
-    } else if (self.cursor < self.estimated && self.estimated > 0) {
-      moreResults.removeClass("hidden");
-      noMoreResults.addClass("hidden");
-    } else {
-      moreResults.addClass("hidden");
       noMoreResults.addClass("hidden");
     }
 
@@ -1357,7 +1354,6 @@ v-fs:AttributiveSearchTemplate
       self.cursor = 0;
       self.result = [];
       resultContainer.empty();
-      moreResults.removeClass("hidden");
     }
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
     var queryString = [];
