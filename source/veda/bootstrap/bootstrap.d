@@ -133,7 +133,7 @@ void main(string[] args)
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
                              {
                                  syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no, "Set frontend, example: --frontend=8081,8082");
+                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no, "Set frontend ports, example: --http_ports=8081,8082");
                              });
     }
     catch (ArgumentParserException ex)
