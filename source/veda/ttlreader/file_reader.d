@@ -187,6 +187,7 @@ void main(char[][] args)
 //                        processed(files, context);
                         if (_files.length > 0)
                         {
+							Thread.sleep(dur!("seconds")(3));                        	
                             processed(_files, context);
                         }
 /*
