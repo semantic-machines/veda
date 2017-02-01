@@ -46,8 +46,8 @@ function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
     driver.findElement({css:'textarea[class="form-control"]'}).sendKeys(somethingUnique)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot input comment");});
-    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"][class=\"mode-edit\"] button[id=\"save\"]').scrollIntoView(true);");
-    driver.findElement({css:'div[typeof="v-s:Comment"][class="mode-edit"] button[id="save"]'}).click()
+    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
+    driver.findElement({css:'div[typeof="v-s:Comment"] button[id="save"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click  on 'save' button");});
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("location.reload();");

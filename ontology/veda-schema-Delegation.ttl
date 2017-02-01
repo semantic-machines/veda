@@ -116,7 +116,7 @@ v-s:RequestDelegationTemplate
     $("#delegator-value", template).removeClass("edit").addClass("-edit");
     $("#position-control", template).removeClass("-edit").addClass("edit");
   } else if ( !individual.isNew() && !individual.hasValue("v-s:creator", veda.appointment) && !individual.hasValue("v-s:creator", veda.user) ) {
-    $("#buttons", template).remove();
+    $(".actions", template).remove();
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
@@ -172,7 +172,7 @@ v-s:RequestDelegationTemplate
     </ul>
   </div>
   <br>
-  <div id="buttons" class="well well-sm view edit -search">
+  <div class="actions view edit -search">
     <!-- BUTTONS -->
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />

@@ -75,7 +75,7 @@ class WSClient
         protocol[ 0 ].rx_buffer_size        = max_size_packet;
         protocol[ 0 ].id                    = 0;
 
-        info.port      = CONTEXT_PORT_NO_LISTEN;
+        info.port      = 8091; //CONTEXT_PORT_NO_LISTEN;
         info.protocols = &protocol[ 0 ];
 //    info.extensions = lws_get_internal_extensions();
         info.gid     = -1;
@@ -115,7 +115,11 @@ class WSClient
                                                                                                                                                    lws
                                                                                                                                                    *
                                                                                                                                                    wsi,
-                                                                                                                                                   char[] msg, ResultCode rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+                                                                                                                                                   char
+                                                                                                                                                   []
+                                                                                                                                                   msg,
+                                                                                                                                                   ResultCode
+                                                                                                                                                   rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
         ev_LWS_CALLBACK_GET_THREAD_ID    = _ev_LWS_CALLBACK_GET_THREAD_ID;
         ev_LWS_CALLBACK_CLIENT_RECEIVE   = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
@@ -139,12 +143,12 @@ class WSClient
                     lws_service(ws_context, 50);
 
                     // send module name
-                    if (connection_flag && f1 == false)
-                    {
-                        websocket_write(wsi, handshake);
-                        lws_callback_on_writable(wsi);
-                        f1 = true;
-                    }
+                    //if (connection_flag && f1 == false)
+                    //{
+                    //websocket_write(wsi, handshake);
+                    //lws_callback_on_writable(wsi);
+                    //f1 = true;
+                    //}
                     ev_LWS_CALLBACK_GET_THREAD_ID(wsi);
                 }
 
@@ -195,7 +199,8 @@ long last_check_time;
 
 extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason, void *user, void *_in, size_t len)
 {
-    //writeln ("@@reason=", reason);
+    //if (reason != lws_callback_reasons.LWS_CALLBACK_GET_THREAD_ID)
+    //    writeln ("@@reason=", reason);
 
     switch (reason)
     {
@@ -204,23 +209,43 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_ESTABLISHED:
-        //writeln("[CP]Connect with server success.");
+        writeln("[CP] LWS_CALLBACK_CLIENT_ESTABLISHED");
         connection_flag = 1;
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-        _log.trace("[CP] Connect with server error.");
-        destroy_flag    = 1;
+        _log.trace("[CP] LWS_CALLBACK_CLIENT_CONNECTION_ERROR");
+        //destroy_flag    = 1;
         connection_flag = 0;
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLOSED:
         writeln("[CP] LWS_CALLBACK_CLOSED");
-        destroy_flag    = 1;
+        //destroy_flag    = 1;
         connection_flag = 0;
         break;
 
+    case lws_callback_reasons.LWS_CALLBACK_RECEIVE:
+        writeln("[CP] LWS_CALLBACK_RECEIVE");
+        ResultCode rc;
+
+        if (len >= max_size_packet)
+        {
+            rc = ResultCode.Size_too_large;
+            ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, null, rc);
+        }
+        else
+        {
+            byte[] bmsg = (cast(byte *)_in)[ 0..len ];
+            char[] msg  = cast(char[])bmsg;
+            //writefln ("msg[%d]=%s", len, msg);
+            rc = ResultCode.OK;
+            ev_LWS_CALLBACK_CLIENT_RECEIVE(wsi, msg, rc);
+        }
+        break;
+
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_RECEIVE:
+        //writeln("[CP] LWS_CALLBACK_CLIENT_RECEIVE");
 
         ResultCode rc;
 
@@ -241,6 +266,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_CLIENT_WRITEABLE:
+        writeln("[CP] LWS_CALLBACK_CLIENT_WRITEABLE");
         //writefln("[%s:%d%s] On writeable is called.", host, port, ws_path);
         //websocket_write(wsi, "test msg-count=" ~ text(msg_count));
         //msg_count++;

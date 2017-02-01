@@ -28,6 +28,37 @@ v-s:OrganizationUnit
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
 .
+v-s:OrganizationUnitModel
+  rdf:type v-s:ClassModel ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:forClass v-s:OrgGroup ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forClass v-s:Subsidiary ;
+  v-ui:forClass v-s:Department ;
+  v-ui:forClass v-s:Position ;
+  v-ui:forClass v-s:Appointment ;
+  rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
+  rdfs:comment "Модель для класса v-s:OrganizationUnit"@ru ;
+  rdfs:label "Organization unit model"@en ;
+  rdfs:label "Модель организационной единицы"@ru ;
+  v-s:script """
+/**
+ * @method
+ * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+ * @return {boolean}.
+ */
+this.isSubUnitOf = function (unit) {
+  var self = this;
+  if (typeof unit.valueOf() === "string") {
+    unit = new veda.IndividualModel( unit.valueOf() );
+  }
+  if (!this.hasValue("v-s:parentUnit")) return false;
+  return this["v-s:parentUnit"].reduce(function (state, item) {
+    return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
+  }, false);
+};
+  """ ;
+.
 v-s:childUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
@@ -585,13 +616,54 @@ v-s:OrganizationTemplate
     <em about="v-s:HeadOrganization" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
     <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
+        <hr class="view -edit -search">
+
+    <em about="mnd-s:hasContractorCreateChangeRequest" property="rdfs:label"></em>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="view -edit -search active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></th>
+          <th about="mnd-s:hasThemeOfContractorCreateChangeRequest" property="rdfs:label"></th>
+          <th about="v-s:hasContractor" property="rdfs:label"></th>
+          <th about="v-s:description" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="mnd-s:hasContractorCreateChangeRequest" data-embedded="true">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+            <veda-control rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-type="link" class="-view edit search"></div>
+          </td>
+          <td>
+            <div rel="v-s:hasContractor" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+            <veda-control rel="v-s:hasContractor" data-type="link" class="-view edit search"></div>
+          </td>
+          <td>
+            <div property="v-s:description" class="view -edit -search"></div>
+            <veda-control property="v-s:description"  data-type="string" class="-view edit search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="view -edit -search">
+      <button class="btn btn-success pull-left" id="add-ContractorCreateChangeRequest">
+        <span class="glyphicon glyphicon-zoom-in"></span>
+        <span about="mnd-s:ContractorCreateChangeRequest" property="rdfs:label"></span>
+      </button>
+    </div>
+    <br>
+
   </div>
+
+  <br>
   <hr>
+
   <div id="systemProperties">
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   </div><!--#systemProperties-->
   <br>
-  <div class="well well-sm action">
+  <div class="actions">
     <!-- BUTTONS -->
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
@@ -643,6 +715,30 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
     subsidiary.one("individual:afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+  $("#add-ContractorCreateChangeRequest", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal();
+    modal.appendTo(template);
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequest"),
+        request = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequestTemplate");
+    request["rdf:type"] = [_class];
+    request.present(cntr, tmpl, "edit");
+    request["v-s:backwardTarget"] = [individual];
+    request["rdfs:label"] =  individual["rdfs:label"];
+    request["v-s:backwardProperty"] = [new veda.IndividualModel("mnd-s:hasContractorCreateChangeRequest")];
+    request["mnd-s:additionalContractorProfile"] = [ individual["rdfs:label"].join(" ") + " " + veda.Util.formatDate(new Date()) ];
+    request["v-s:hasContractor"]= individual["v-s:hasContractor"];
+  request.one("individual:beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    request.one("individual:afterSave", function () {
       modal.modal("hide").remove();
     });
   });
@@ -712,7 +808,7 @@ v-s:SubsidiaryTemplate
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   </div><!--#systemProperties-->
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <!-- BUTTONS -->
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
@@ -788,7 +884,7 @@ v-s:DepartmentTemplate
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   </div><!--#systemProperties-->
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <!-- BUTTONS -->
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />

@@ -135,7 +135,7 @@ v-s:PersonalAspectTemplate
   rdfs:label "Template for Personal aspect class"@en ;
   v-ui:forClass v-s:PersonalAspect ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container">
   <div class="row">
     <div class="col-md-2">
       <div about="@" rel="v-s:owner">
@@ -312,7 +312,7 @@ v-s:PersonalAspectTemplate
     </div>
   </div>
 
-  <div class="well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>

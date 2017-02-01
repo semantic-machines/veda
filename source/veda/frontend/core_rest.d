@@ -105,7 +105,7 @@ interface VedaStorageRest_API {
 
     @path("query") @method(HTTPMethod.GET)
     SearchResult query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
-                   int limit = 10000);
+                       int limit = 10000);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -144,11 +144,11 @@ extern (C) void handleTerminationR(int _signal)
 {
 //    log.trace("!SYS: veda.app: caught signal: %s", text(_signal));
 
-	if (tdb_cons !is null)
-	{
-	    log.trace("flush trail db");
-	    tdb_cons.finalize();
-	}    
+    if (tdb_cons !is null)
+    {
+        log.trace("flush trail db");
+        tdb_cons.finalize();
+    }
 
     writefln("!SYS: veda.app.rest: caught signal: %s", text(_signal));
 
@@ -158,7 +158,7 @@ extern (C) void handleTerminationR(int _signal)
 
     thread_term();
     Runtime.terminate();
-        
+
 //    kill(getpid(), SIGKILL);
 //    exit(_signal);
 }
@@ -635,13 +635,25 @@ class VedaStorageRest : VedaStorageRest_API
     }
 
     SearchResult query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
-                   int limit = 10000)
+                       int limit = 10000)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong        timestamp = Clock.currTime().stdTime() / 10;
 
-		SearchResult sr;
-        Ticket     *ticket;
-        ResultCode rc;
+        SearchResult sr;
+        Ticket       *ticket;
+        ResultCode   rc;
+
+        int          count = 0;
+
+        void prepare_element(string uri)
+        {
+            //           if (count > 100)
+//            {
+            vibe.core.core.yield();
+//                count = 0;
+//            }
+//            count++;
+        }
 
         try
         {
@@ -651,8 +663,8 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit);
-			
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null); //&prepare_element);
+
             return sr;
         }
         finally
@@ -662,7 +674,7 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "sort" ]      = sort;
             jreq[ "databases" ] = databases;
             jreq[ "reopen" ]    = reopen;
-            jreq[ "from" ]       = from;
+            jreq[ "from" ]      = from;
             jreq[ "top" ]       = top;
             jreq[ "limit" ]     = limit;
 
@@ -926,7 +938,7 @@ class VedaStorageRest : VedaStorageRest_API
 private TrailDBConstructor tdb_cons;
 private bool               is_trail     = true;
 private long               count_trails = 0;
-private TrailDB exist_trail;
+private TrailDB            exist_trail;
 
 void trail(string ticket_id, string user_id, string action, Json args, string result, ResultCode result_code, ulong start_time)
 {
@@ -935,8 +947,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 
     try
     {
-        ulong    timestamp = Clock.currTime().stdTime() / 10;
-    	
+        ulong timestamp = Clock.currTime().stdTime() / 10;
+
         if (tdb_cons is null)
         {
             //try
@@ -953,17 +965,18 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
             log.trace("open trail db");
 
             tdb_cons =
-                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ text(timestamp), [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
-                
+                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ text(timestamp),
+                                       [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
+
             //if (exist_trail !is null)
             //{
             //    log.trace("append to exist trail db");
             //    tdb_cons.append(exist_trail);
             //    log.trace("merge is ok");
-            //}                
+            //}
         }
 
-        RawUuid  uuid      = randomUUID().data;
+        RawUuid  uuid = randomUUID().data;
 
         string[] vals;
 
@@ -1073,71 +1086,47 @@ private OpResult parseOpResult(string str)
 private Task wsc_server_task;
 
 //////////////////////////////////////  WS
-
-void handleWebSocketConnection(scope WebSocket socket)
+void connectToWS()
 {
-    const(HTTPServerRequest)hsr = socket.request();
-    log.trace("WS spawn socket connection [%s]", text(hsr.clientAddress));
+    WebSocket ws;
 
-    string module_name;
-
-    try
+    while (ws is null)
     {
-        while (true)
+        try
         {
-            if (!socket.connected)
-                break;
+            auto ws_url = URL("ws://127.0.0.1:8091/ws");
+            ws = connectWebSocket(ws_url);
 
-            string   inital_message = socket.receiveText();
-            string[] kv             = inital_message.split('=');
-
-            if (kv.length == 2)
-            {
-                if (kv[ 0 ] == "module-name")
-                {
-                    module_name = kv[ 1 ];
-
-                    log.trace("@module_name=%s", module_name);
-
-                    if (module_name == "server")
-                    {
-                        wsc_server_task = Task.getThis();
-                    }
-                }
-            }
-
-            if (module_name !is null)
-            {
-                log.trace("create channel [%s]", module_name);
-
-                while (true)
-                {
-                    Json msg;
-                    Task result_task_to;
-
-                    vibe.core.concurrency.receive(
-                                                  (Json _msg, Task _to)
-                                                  {
-                                                      msg = _msg;
-                                                      result_task_to = _to;
-                                                  }
-                                                  );
-
-                    //log.trace("sending '%s'", msg);
-                    socket.send(msg.toString());
-                    //log.trace("Ok");
-                    string resp = socket.receiveText();
-                    //log.trace("recv '%s'", resp);
-                    vibe.core.concurrency.send(result_task_to, resp);
-                    //log.trace("send to task ok");
-                }
-            }
+            log.tracec("WebSocket connected to %s", ws_url);
+        } catch (Throwable tr)
+        {
+            log.tracec("ERR! %s", tr.msg);
+            core.thread.Thread.sleep(dur!("seconds")(10));
         }
     }
-    catch (Throwable tr)
-    {
-        log.trace("ERR! on ws channel [%s] ex=%s", module_name, tr.msg);
-    }
 
-    log.trace("ws channel [%s] is closed", module_name);
+    wsc_server_task = Task.getThis();
+
+    while (true)
+    {
+        Json msg;
+        Task result_task_to;
+
+        vibe.core.concurrency.receive(
+                                      (Json _msg, Task _to)
+                                      {
+                                          msg = _msg;
+                                          result_task_to = _to;
+                                      }
+                                      );
+
+        //log.trace("sending '%s'", msg);
+        ws.send(msg.toString());
+        //log.trace("Ok");
+        string resp = ws.receiveText();
+        //log.trace("recv '%s'", resp);
+        vibe.core.concurrency.send(result_task_to, resp);
+        //log.trace("send to task ok");
+    }
+    //logFatal("Connection lost!");
 }

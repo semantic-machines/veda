@@ -95,7 +95,7 @@ v-fc:FunctionCreateTemplate
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container">
   <h3 property="rdfs:label"></h3>
   <hr>
   <div class="row">
@@ -234,7 +234,7 @@ v-fc:BlankTemplate
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<div role="tabpanel" class="container-fluid">
+<div role="tabpanel" class="container">
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs nav-right hidden-print" role="tablist">

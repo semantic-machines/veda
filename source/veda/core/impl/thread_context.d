@@ -86,8 +86,8 @@ class PThreadContext : Context
 
     private               string[ string ] prefix_map;
 
-    private Storage   inividuals_storage_r;
-    private Storage   tickets_storage_r;
+    private Storage       inividuals_storage_r;
+    private Storage       tickets_storage_r;
     private VQL           _vql;
 
     private long          local_last_update_time;
@@ -965,14 +965,15 @@ class PThreadContext : Context
         acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, trace_group);
     }
 
-    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit)
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
+                                                      void delegate(string uri) prepare_element_event)
     {
         SearchResult sr;
 
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit);
+        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event);
 
         return sr;
     }
@@ -1043,7 +1044,7 @@ class PThreadContext : Context
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
                 {
-                    Individual individual         = Individual.init;
+                    Individual individual           = Individual.init;
                     string     individual_as_binobj = get_from_individual_storage(uri);
 
                     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
