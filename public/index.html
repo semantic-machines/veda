@@ -109,7 +109,7 @@
     <!-- TTL template -->
     <script type="html/template" id="ttl-template">
       <div class="container">
-        <pre></pre>
+        <pre style="border:none;background-color:#fff;"></pre>
         <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
         <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
         <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
@@ -556,12 +556,20 @@
           </button>
           <ul class="dropdown-menu" id="standard-tasks"></ul>
         </div>
-        <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-        <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-        <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-        <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-        <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
-        <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+        <div class="actions pull-left">
+          <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
+          <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+          <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
+          <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+        </div>
+        <div class="pull-right">
+          <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
+          <a id="generic" class="btn btn-default disabled" href="#/@//generic">GENERIC</a>
+          <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
+          <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
+        </div>
       </div>
     </script>
     <script type="html/template" id="generic-property-template">
