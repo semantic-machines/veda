@@ -1415,14 +1415,16 @@ if (doc) {
           routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(cr["v-s:author"]); // Автор заявки на контракт
         }
       }
-      if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
-        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
-      }
-      if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
-        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
-      }
-      if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
-        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
+      if (doc.hasValue('v-s:backwardTarget')) {
+        if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') && doc['v-s:backwardTarget'][0]['v-s:hasSector'][0].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
+        }
+        if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') && doc['v-s:backwardTarget'][0]['v-s:hasSector'][0].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
+        }
+        if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasSector') && doc['v-s:backwardTarget'][0]['v-s:hasSector'][0].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
+        }
       }
     } else {
       if (doc.hasValue('v-s:responsibleDepartment')) {
@@ -1432,7 +1434,7 @@ if (doc) {
         }
       }
     }
-    if (doc.hasValue('v-s:supplier') && doc['v-s:suppli(v-s:supplierContractor не заполнено и v-s:supplier er'][0].id == 'd:org_RU1121003135') {
+    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020138")); // Гл инженер УЛО (Навратил С)
       routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71025127")); // Зам директора УЛО (Кухоткин)
     }
@@ -1535,7 +1537,7 @@ if (doc) {
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'deadlineDays'] = [10];
     routes['approval'][simple+'comment'] = [new String('Подписать у контрагента')];
-    routes['approval'][simple+'participant'] = routes['sign'][simple+'participant'].concat(doc['mnd-s:executorSpecialistOfContract']); // Исполнитель по контракту
+    routes['approval'][simple+'participant'] = routes['approval'][simple+'participant'].concat(doc['mnd-s:executorSpecialistOfContract']); // Исполнитель по контракту
 
  // РАССМОТРЕНИЕ
 
