@@ -655,20 +655,14 @@ s-wf:SimpleRouteStartFormMinimal_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
-        <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
-        <br>
-        <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
-        <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
-        <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
-        <br>
-      </div>
-    </div>
-  </div>
+<div style="min-height:300px">
+  <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
+  <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+  <veda-control data-type="text" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+</div>
   """ ;
 .
 
@@ -678,23 +672,17 @@ s-wf:SimpleRouteStartFormShort_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-body">
-    <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-      <div class="row">
-        <div class="col-md-6">
-      <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
-        <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
-        </div>
-        <div class="col-md-6">
-        </div>
-      </div>
-      </div>
-    </div>
-    <br />
-  </div>
+<div style="min-height:300px">
+  <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
+  <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+  <veda-control data-type="text" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+  <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+</div>
   """ ;
 .
 
@@ -704,28 +692,28 @@ s-wf:SimpleRouteStartFormFull_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div class="subroot">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-      <div class="row">
-        <div class="col-md-6">
-          <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-          <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
-          <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
-        </div>
-        <div class="col-md-6">
-          <strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
-          <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
-          <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
-        </div>
-      </div>
-      <br />
-      <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
-      <veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
+<div style="min-height:300px">
+  <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
+  <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+  <veda-control data-type="text" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></em>
+      <div property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+      <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+    </div>
+    <div class="col-md-6">
+      <em about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></em>
+      <div property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
+      <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
     </div>
   </div>
+  <em about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext"></veda-control>
 </div>
   """ ;
 .
@@ -1472,9 +1460,9 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
           routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
-        }        
+        }
       }
-    } 
+    }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
         routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
@@ -1544,7 +1532,7 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
           routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
-        }        
+        }
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 700000) {
           routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020115")); // Нач УЗ
         }
@@ -1564,12 +1552,12 @@ if (doc) {
             routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020115")); // Нач УЗ
           }
         }
-      }    
+      }
     }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
-      }      
+      }
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 700000) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_70006692")); // Гл Бухгалтер
       }
@@ -1624,7 +1612,8 @@ if (doc) {
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71021843')); // Нач УриР
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71024461')); // Нач ОКС УриР
     }
-    if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
+
+    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
@@ -1980,8 +1969,8 @@ if (doc) {
       $('.'+stage, template).hide();
     }
     if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-      $('.'+stage+' > div', template).attr('about', '@');
-      $('.'+stage+' > div', template).removeAttr('data-embedded');
+      $('.'+stage, template).attr('about', '@');
+      $('.'+stage, template).removeAttr('data-embedded');
       $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]', template).remove();
       sub.save();
     }
@@ -2000,112 +1989,172 @@ $('#save_and_start_process', template).on('click', function () {
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
 <div class="container">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-6">
-        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
-        </div>
-        <div class="col-md-6 text-right">
-          <a href="#/@"><span property="@">ID</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="panel-body">
+  <h2 about="s-wf:ComplexRouteStartForm" property="rdfs:label"></h2>
+  <br>
 <!--
-      <div class="row">
-          <div class="col-md-4">
-             <em about="v-wf:processInitiator" property="rdfs:label"></em>
-             <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:processedDocument" property="rdfs:label"></em>
-             <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:forNet" property="rdfs:label"></em>
-             <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:isProcess" property="rdfs:label"></em>
-             <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:useTransformation" property="rdfs:label"></em>
-             <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-      </div>
-      <hr />
--->
-      <div class="row">
-          <div class="col-md-4 informing">
-             <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination1">
-             <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination2">
-             <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination3">
-             <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination4">
-             <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination5">
-             <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination6">
-             <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 sign">
-             <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 approval">
-             <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 review">
-             <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 examination">
-             <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 instruction">
-             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 instruction2">
-             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 instruction3">
-             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 distribution">
-             <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-      </div>
-      <hr />
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-wf:processInitiator" property="rdfs:label"></em>
+      <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
     </div>
-    <div class="panel-footer">
-      <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
-      <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <div class="col-md-4">
+      <em about="v-wf:processedDocument" property="rdfs:label"></em>
+      <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    </div>
+    <div class="col-md-4">
+      <em about="v-wf:forNet" property="rdfs:label"></em>
+      <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    </div>
+    <div class="col-md-4">
+      <em about="v-wf:isProcess" property="rdfs:label"></em>
+      <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    </div>
+    <div class="col-md-4">
+      <em about="v-wf:useTransformation" property="rdfs:label"></em>
+      <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     </div>
   </div>
+  <hr />
+-->
+
+  <div class="row">
+    <div class="col-md-4 informing" rel="s-wf:ComplexRouteStartForm_informing" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-embedded="true" data-template="s-wf:SimpleRouteStartFormMinimal_Template"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 coordination1" rel="s-wf:ComplexRouteStartForm_coordination1" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 coordination2" rel="s-wf:ComplexRouteStartForm_coordination2" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 coordination4" rel="s-wf:ComplexRouteStartForm_coordination4" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 coordination5" rel="s-wf:ComplexRouteStartForm_coordination5" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 coordination6" rel="s-wf:ComplexRouteStartForm_coordination6" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 sign" rel="s-wf:ComplexRouteStartForm_sign" data-embedded="true">
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 approval" rel="s-wf:ComplexRouteStartForm_approval" data-embedded="true">
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 review" rel="s-wf:ComplexRouteStartForm_review" data-embedded="true">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 instruction" rel="s-wf:ComplexRouteStartForm_instruction" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 instruction2" rel="s-wf:ComplexRouteStartForm_instruction2" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 instruction3" rel="s-wf:ComplexRouteStartForm_instruction3" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 examination" rel="s-wf:ComplexRouteStartForm_examination" data-embedded="true">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-4 distribution" rel="s-wf:ComplexRouteStartForm_distribution" data-embedded="true">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="actions">
+    <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+  </div>
+
 </div>
 <script>
 /*
