@@ -14,11 +14,12 @@ veda.common.logger.Logger _log;
 veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "REST");
+        _log = new veda.common.logger.Logger("veda-core-webserver-" ~ text(http_port), "log", "REST");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
 
+short               http_port = 8080;
 
 public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
