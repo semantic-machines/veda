@@ -204,7 +204,7 @@ shared static this()
 
     //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-    if (http_port == 0)
+    if (opt_http_port == 0)
     {
         Resources listeners = node.resources.get("v-s:listener", Resources.init);
         foreach (listener_uri; listeners)
