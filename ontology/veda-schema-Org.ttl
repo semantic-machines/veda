@@ -28,6 +28,37 @@ v-s:OrganizationUnit
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
 .
+v-s:OrganizationUnitModel
+  rdf:type v-s:ClassModel ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:forClass v-s:OrgGroup ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forClass v-s:Subsidiary ;
+  v-ui:forClass v-s:Department ;
+  v-ui:forClass v-s:Position ;
+  v-ui:forClass v-s:Appointment ;
+  rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
+  rdfs:comment "Модель для класса v-s:OrganizationUnit"@ru ;
+  rdfs:label "Organization unit model"@en ;
+  rdfs:label "Модель организационной единицы"@ru ;
+  v-s:script """
+/**
+ * @method
+ * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+ * @return {boolean}.
+ */
+this.isSubUnitOf = function (unit) {
+  var self = this;
+  if (typeof unit.valueOf() === "string") {
+    unit = new veda.IndividualModel( unit.valueOf() );
+  }
+  if (!this.hasValue("v-s:parentUnit")) return false;
+  return this["v-s:parentUnit"].reduce(function (state, item) {
+    return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
+  }, false);
+};
+  """ ;
+.
 v-s:childUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
