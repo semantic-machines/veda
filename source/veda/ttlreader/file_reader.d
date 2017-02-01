@@ -51,7 +51,6 @@ void main(char[][] args)
 {
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
-
     foreach (arg; args)
     {
         if (arg == "remove-ontology")
@@ -72,8 +71,7 @@ void main(char[][] args)
     Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
     sticket = context.sys_ticket();
 
-    string[] uris =
-        context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null).result;
+    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -103,12 +101,12 @@ void main(char[][] args)
 
         while (true)
         {
-            core.thread.Thread.sleep(dur!("seconds")(1));
+	        core.thread.Thread.sleep(dur!("seconds")(1));
 
             long cur_opid;
 
             cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
-            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);
+            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);                        
             if (cur_opid >= res.op_id)
                 complete_ft = true;
 
@@ -173,21 +171,18 @@ void main(char[][] args)
 
                         foreach (i; 0 .. cnt)
                         {
-                            if (changes[ i ].event == DWFileEvent.MODIFIED || changes[ i ].event == DWFileEvent.CREATED)
-                            {
-                                string file_name = changes[ i ].path.dup;
+                            string file_name = changes[ i ].path.dup;
 
-                                if (file_name.indexOf(".#") > 0)
-                                    continue;
+                            if (file_name.indexOf(".#") > 0)
+                                continue;
 
-                                _files ~= file_name;
-                            }
+                            _files ~= file_name;
                         }
 
 //                        processed(files, context);
                         if (_files.length > 0)
                         {
-							Thread.sleep(dur!("seconds")(3));                        	
+                            Thread.sleep(dur!("seconds")(3));
                             processed(_files, context);
                         }
 /*
