@@ -1116,7 +1116,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   function genericTemplate (individual, _class) {
     // Construct generic template
     var propTmpl = $("#generic-property-template").html();
-    var template = $("<div/>").append( $("#generic-class-template").html() );
+    var template = $($("#generic-class-template").html());
     var properties;
 
     if (_class) {
