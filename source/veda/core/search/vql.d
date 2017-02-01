@@ -90,13 +90,14 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get, null);
         res_count = sr.count;
 
         return res_count;
     }
 
     public SearchResult get(Ticket *ticket, string filter, string freturn, string sort, int from, int top, int limit,
+                            void delegate(string uri) prepare_element_event,
                             bool inner_get = false)
     {
         string[]                  res;
@@ -113,7 +114,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get, prepare_element_event);
 
         if (sr.result_code == ResultCode.OK)
             sr.result = res;
@@ -123,13 +124,6 @@ class VQL
 
     public int get(Ticket *ticket, string query_str, ref Individual[] res, bool inner_get = false)
     {
-        //		if (ticket !is null)
-        //		writeln ("userId=", ticket.userId);
-
-        //		writeln ("@ query_str=", query_str);
-        //		StopWatch sw;
-        //		sw.start();
-
         split_on_section(query_str);
         int top = 10000;
         try
@@ -153,29 +147,11 @@ class VQL
         int type_source = XAPIAN;
         if (found_sections[ SOURCE ] == "xapian")
             type_source = XAPIAN;
-        else if (found_sections[ SOURCE ] == "lmdb")
-            type_source = LMDB;
-
-//        OI  from_search_point = null;
-
-//        if (from_search_points.size > 0)
-//            from_search_point = from_search_points.items[ 0 ];
-
-        //writeln ("found_sections[SOURCE]=", found_sections[SOURCE]);
 
         string dummy;
         double d_dummy;
         int    res_count;
 
-//        if (type_source == LMDB)
-//        {
-//            if (found_sections[ FILTER ] !is null)
-//            {
-//                TTA tta = parse_expr(found_sections[ FILTER ]);
-//                transform_and_execute_vql_to_lmdb(tta, "", dummy, dummy, d_dummy, 0, res, context);
-//            }
-//        }
-//        else
         if (type_source == XAPIAN)
         {
             void delegate(string uri) dg;
@@ -218,34 +194,12 @@ class VQL
             }
             dg = &collect_subject;
 
-            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get);
+            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get, null);
             res_count = sr.count;
         }
 
-//          sw.stop();
-//          long t = cast(long) sw.peek().usecs;
-//          writeln("execute:", t, " µs");
-
         return res_count;
     }
-
-/*
-    private void remove_predicates(Subject ss, ref string[ string ] fields)
-    {
-        if (ss is null || ("*" in fields) !is null)
-            return;
-
-        // TODO возможно не оптимальная фильтрация
-        foreach (pp; ss.getPredicates)
-        {
-   //			writeln ("pp=", pp);
-            if ((pp.predicate in fields) is null)
-            {
-                pp.count_objects = 0;
-            }
-        }
-    }
- */
 
     private void split_on_section(string query)
     {

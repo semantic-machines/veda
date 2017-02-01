@@ -72,8 +72,8 @@ v-s:CommentsTemplate
   rdfs:label "Шаблон для отображения комментариев"@ru ;
   v-ui:template """
 <div>
+  <hr>
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
-  <hr class="margin-sm">
   <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
   <br>
@@ -147,25 +147,22 @@ v-s:SingleCommentTemplate
   rdfs:label "Template for v-s:Comment class"@en ;
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
-<div>
-  <br>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <em about="rdfs:comment" property="rdfs:label"></em>
-      <div property="rdfs:label" class="view -edit -search"></div>
-      <veda-control data-type="text" rows="3" property="rdfs:label" class="-view edit -search"></veda-control>
-      <em about="v-s:attachment" property="rdfs:label">Вложение</em>
-      <div rel="v-s:attachment" data-template="v-ui:FileTemplate" data-embedded="true"></div>
-      <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search"></veda-control>
-      <em about="v-s:linkedObject" property="rdfs:label">Вложение</em>
-      <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-      <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
-      <br>
-      <button class="btn btn-primary action view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-      <button class="btn btn-success action -view edit -search" id="save">Ok</button>
-      <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-      <button class="btn btn-link action view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-    </div>
+<div class="panel panel-default" style="margin-top: 20px">
+  <div class="panel-body">
+    <em about="rdfs:comment" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="rdfs:label" class="-view edit -search"></veda-control>
+    <em about="v-s:attachment" property="rdfs:label">Вложение</em>
+    <div rel="v-s:attachment" data-template="v-ui:FileTemplate" data-embedded="true"></div>
+    <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search"></veda-control>
+    <em about="v-s:linkedObject" property="rdfs:label">Вложение</em>
+    <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
+    <br>
+    <button class="btn btn-primary action view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+    <button class="btn btn-success action -view edit -search" id="save">Ok</button>
+    <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <button class="btn btn-link action view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
   </div>
 </div>
   """ ;

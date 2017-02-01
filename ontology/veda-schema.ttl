@@ -473,11 +473,9 @@ v-s:DocumentLinkRulesTemplate
   rdfs:label "Template for DocumentLinkRules"@en ;
   v-ui:forClass v-s:DocumentLinkRules ;
   v-ui:template """
-  <div class="container-fluid">
+  <div class="container">
     <h3 property="v-s:displayName" class="view edit search"></h3>
     <br>
-    <div class="panel panel-default">
-      <div class="panel-body">
     <div class="row">
       <div class="col-md-3">
       <em about="v-s:classFrom" property="rdfs:label"></em>
@@ -495,7 +493,6 @@ v-s:DocumentLinkRulesTemplate
       <veda-control rel="v-s:hasTransformation" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
       </div>
       <div class="col-md-3">
-
       </div>
     </div>
     <div class="row">
@@ -523,10 +520,8 @@ v-s:DocumentLinkRulesTemplate
       <em about="v-s:isClone" property="rdfs:label"></em>
       </div>
     </div>
-  </div>
-    </div>
     <br><br>
-    <div class="well well-sm">
+    <div class="actions">
       <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
       <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
       <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>

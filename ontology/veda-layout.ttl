@@ -35,7 +35,7 @@ v-l:MainPageTemplate
   v-ui:template """
 <div class="page">
   <nav role="navigation" class="navbar navbar-veda">
-    <div class="container-fluid">
+    <div class="container">
       <div class="navbar-header">
         <button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
           <span class="glyphicon glyphicon-menu-hamburger"></span>
@@ -78,19 +78,21 @@ v-l:MainPageTemplate
 
   <div id="main"></div>
 
-  <nav style="min-height:12px;" class="navbar navbar-fixed-bottom" id="copyright">
-    <footer>
-      <div class="container-fluid clearfix" style="background-color: white; border-top: 1px solid lightgray">
-        <div class="pull-left">
-          <a href="http://www.semantic-machines.com">© <span about="v-l:SemanticMachines" property="rdfs:label"></span>.</a>
-          <span about="v-l:License" property="rdfs:label"></span>
-          <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
-        </div>
-        <div class="pull-right text-muted" about="v-s:vedaInfo">
-          <span><span property="v-s:appBuildVersion"></span>/ <span property="v-s:appBuildDate"></span></span>
-        </div>
+  <nav id="copyright" class="navbar-fixed-bottom">
+    <div class="container">
+      <div class="pull-left">
+        <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
       </div>
-    </footer>
+      <div class="pull-right text-muted" about="v-s:vedaInfo">
+        <a href="http://www.semantic-machines.com">
+          © <span about="v-l:SemanticMachines" property="rdfs:label"></span>.
+        </a>
+        <span about="v-l:License" property="rdfs:label"></span>
+        <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
+          GPLv3.
+        </a>
+      </div>
+    </div>
   </nav>
 </div>
 <script>

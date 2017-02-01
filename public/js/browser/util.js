@@ -125,19 +125,21 @@ veda.Module(function Util(veda) { "use strict";
     }
 
     individualList.each(function (individual) {
-      var type_triple = {};
-      type_triple.subject = prefixer(individual.id);
-      // rdf:type first!
-      type_triple.predicate = prefixer("rdf:type");
+      var subject = prefixer(individual.id);
+      // Type first
       individual.properties["rdf:type"].map(function (value) {
+        var type_triple = {};
+        type_triple.subject = subject;
+        type_triple.predicate = prefixer("rdf:type");
         type_triple.object = prefixer(value.data);
         triples.push(type_triple);
       });
-      Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
+      // Other properties
+      Object.getOwnPropertyNames(individual.properties).sort().map(function (property_uri) {
         if (property_uri === "@" || property_uri === "rdf:type") { return; }
         individual.properties[property_uri].map(function (item) {
           var triple = {};
-          triple.subject = type_triple.subject;
+          triple.subject = subject;
           triple.predicate = prefixer(property_uri);
           var value = item.data,
               type = item.type,

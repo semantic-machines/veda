@@ -239,12 +239,12 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbStorage                  storage                        = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
-    int                          size_bin_log                   = 0;
-    int                          max_size_bin_log               = 10_000_000;
-    string                       bin_log_name                   = get_new_binlog_name(db_path);
-    long                         last_reopen_rw_op_id 			= 0;
-    int                          max_count_updates              = 10_000;
+    LmdbStorage                  storage              = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+    int                          size_bin_log         = 0;
+    int                          max_size_bin_log     = 10_000_000;
+    string                       bin_log_name         = get_new_binlog_name(db_path);
+    long                         last_reopen_rw_op_id = 0;
+    int                          max_count_updates    = 10_000;
 
     long                         op_id           = storage.last_op_id;
     long                         committed_op_id = 0;
@@ -272,12 +272,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             }
         }
 
-        // SEND ready
-        receive((Tid tid_response_reciever)
-                {
-                    send(tid_response_reciever, true);
-                });
-
         string last_backup_id = "---";
 
         bool   is_freeze = false;
@@ -286,9 +280,22 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
         if (!module_info.is_ready)
         {
-            log.trace("thread [%s] terminated", process_name);
+            writefln("thread [%s] terminated", process_name);
+            // SEND ready
+            receive((Tid tid_response_reciever)
+                    {
+                        send(tid_response_reciever, false);
+                    });
+            core.thread.Thread.sleep(dur!("seconds")(1));
+
             return;
         }
+
+        // SEND ready
+        receive((Tid tid_response_reciever)
+                {
+                    send(tid_response_reciever, true);
+                });
 
         while (is_exit == false)
         {

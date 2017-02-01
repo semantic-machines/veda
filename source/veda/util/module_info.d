@@ -37,20 +37,27 @@ class ModuleInfoFile
 
     this(string _module_name, Logger _log, OPEN_MODE _mode)
     {
-        module_name    = _module_name;
-        fn_module_info = module_info_path ~ "/" ~ module_name ~ "_info";
-        log            = _log;
-        mode           = _mode;
-
-        _is_ready = true;
-
-        if (mode == OPEN_MODE.WRITER || mode == OPEN_MODE.READER_WRITER)
+        try
         {
-            if (exists(fn_module_info ~ ".lock"))
+            module_name    = _module_name;
+            fn_module_info = module_info_path ~ "/" ~ module_name ~ "_info";
+            log            = _log;
+            mode           = _mode;
+
+            _is_ready = true;
+
+            if (mode == OPEN_MODE.WRITER || mode == OPEN_MODE.READER_WRITER)
             {
-                log.trace("Veda not started: component [%s] already open, or not deleted lock file", fn_module_info);
-                _is_ready = false;
+                if (exists(fn_module_info ~ ".lock"))
+                {
+                    log.trace("Veda not started: component [%s] already open, or not deleted lock file", fn_module_info);
+                    _is_ready = false;
+                }
             }
+        }
+        catch (Throwable tr)
+        {
+            _is_ready = false;
         }
     }
 

@@ -1,6 +1,7 @@
 module veda.bootstrap;
 
 import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal, std.file;
+import commando;
 
 struct ProcessInfo
 {
@@ -112,7 +113,7 @@ bool kill_prev_instance(ref string[] modules, ref int[][ string ] command_2_pid)
     return is_found_modules;
 }
 
-void main(char[][] args)
+void main(string[] args)
 {
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
@@ -125,14 +126,36 @@ void main(char[][] args)
             need_reload_ontology = true;
     }
 
+    string webserver_ports_str = "";
+
+    try
+    {
+        ArgumentParser.parse(args, (ArgumentSyntax syntax)
+                             {
+                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
+                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no, "Set frontend ports, example: --http_ports=8081,8082");
+                             });
+    }
+    catch (ArgumentParserException ex)
+    {
+        stderr.writefln(ex.msg);
+        return;
+    }
+
+    string[] webserver_ports = webserver_ports_str.split(',');
+
+    if (webserver_ports.length > 0)
+    {
+        writefln("use options http_ports=%s", webserver_ports);
+    }
+
     string[ string ] env;
     int      exit_code;
 
     string[] modules =
     [
-        "veda", "veda-ccus", "veda-server", "veda-webserver", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main",
-        "veda-scripts-lp",
-        "veda-ft-indexer", "veda-ltr-scripts"
+        "veda", "veda-ccus", "veda-server", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main",
+        "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts"
     ];
     int[][ string ] command_2_pid;
 
@@ -211,6 +234,41 @@ void main(char[][] args)
                 server_pid = _pid;
             }
         }
+    }
+
+
+    if (webserver_ports.length > 0)
+    {
+        foreach (port; webserver_ports)
+        {
+            string[] sargs;
+
+            string   ml = "veda-webserver";
+            sargs = [ "./" ~ ml, "--http_port=" ~ port ];
+
+            auto _logFile = File("logs/" ~ ml ~ port ~ "-stderr.log", "w");
+            writeln("start " ~ ml);
+
+            auto _pid = spawnProcess(sargs,
+                                     std.stdio.stdin,
+                                     std.stdio.stdout,
+                                     _logFile, env, Config.suppressConsole);
+        }
+    }
+    else
+    {
+        string[] sargs;
+
+        string   ml = "veda-webserver";
+        sargs = [ "./" ~ ml ];
+
+        auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
+        writeln("start " ~ ml);
+
+        auto _pid = spawnProcess(sargs,
+                                 std.stdio.stdin,
+                                 std.stdio.stdout,
+                                 _logFile, env, Config.suppressConsole);
     }
 
     exit_code = wait(server_pid);

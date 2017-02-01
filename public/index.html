@@ -42,10 +42,12 @@
   </head>
   <body>
     <div id="app"></div>
-    <div id="login-container" class="hidden" style="background-color:#eee"></div>
+
+    <!-- Login form -->
+    <div id="login-container" class="hidden"></div>
 
     <!-- App loading indicator -->
-    <div class="container-fluid text-center hidden" id="app-load-indicator" style="margin: 20% auto">
+    <div class="text-center hidden" id="app-load-indicator" >
       <h4><i class="fa fa-cog fa-spin fa-lg text-primary"></i> <strong>Загрузка приложения / Application loading</strong></h4>
     </div>
 
@@ -64,36 +66,28 @@
 
     <!-- Login -->
     <script type="html/template" id="login-template">
-      <div class="container-fluid" id="login-form">
-        <div class="row">
-          <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
-            <form role="form" id="credentials">
-              <h3>Войдите / Sign in</h3>
-              <input id="login" required="required" placeholder="login" type="text" name="login" class="form-control" autofocus="autofocus"/>
-              <input id="password" required="required" placeholder="password" type="password" name="password" class="form-control"/>
-              <br>
-              <button type="submit" id="submit" class="btn btn-primary btn-block">Войти / Sign in</button>
-              <br>
-              <div id="login-error" class="hidden">
-                <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
-                <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
-              </div>
-            </form>
-          </div>
+      <form role="form" id="credentials">
+        <h3>Войдите / Sign in</h3>
+        <input class="form-control input-lg" id="login" required="required" placeholder="login" type="text" name="login" autofocus="autofocus"/>
+        <input class="form-control input-lg" id="password" required="required" placeholder="password" type="password" name="password"/>
+        <br>
+        <button type="submit" id="submit" class="btn btn-lg btn-primary btn-block">Войти / Sign in</button>
+        <br>
+        <div id="login-error" class="hidden">
+          <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
+          <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
         </div>
-      </div>
+      </form>
     </script>
 
     <!-- Console template -->
     <script type="html/template" id="console-template">
-      <div class="container-fluid" id="console">
+      <div class="container" id="console">
         <h3>Консоль JavaScript</h3>
         <form role="form">
-          <div class="form-group row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-              <label for="script">Скрипт</label>
-              <textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
-            </div>
+          <div class="form-group">
+            <label for="script">Скрипт</label>
+            <textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
           </div>
           <div class="form-group row">
             <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
@@ -114,8 +108,8 @@
 
     <!-- TTL template -->
     <script type="html/template" id="ttl-template">
-      <div class="container-fluid">
-        <pre></pre>
+      <div class="container">
+        <pre style="border:none;background-color:#fff;"></pre>
         <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
         <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
         <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
@@ -126,7 +120,7 @@
     <!-- Individual template -->
     <script type="html/template" id="individual-template">
       <span id="individual-label"></span>
-      <div class="container-fluid" id="individual-properties"></div>
+      <div class="container" id="individual-properties"></div>
       <br/>
     </script>
 
@@ -155,11 +149,9 @@
 
     <!-- Drafts template -->
     <script type="html/template" id="drafts-template">
-      <div id="drafts" class="container-fluid">
-        <ul class="nav nav-tabs nav-right" role="tablist">
-          <li class="pull-left"><h2 id="drafts-title"></h2></li>
-        </ul>
-        <br>
+      <div id="drafts" class="container">
+        <h2 id="drafts-title"></h2>
+        <hr>
         <ol id="drafts-list"></ol>
         <button id="delete-all" class="btn btn-default"></button>
       </div>
@@ -167,7 +159,7 @@
 
     <!-- Search template -->
     <script type="html/template" id="search-template">
-      <div class="container-fluid">
+      <div class="container">
         <div role="tabpanel" id="search-tab-panel-{id}">
           <!-- Nav tabs -->
           <ul class="nav nav-pills" role="tablist">
@@ -193,18 +185,14 @@
           <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="params-{id}">
               <div id="search">
-                <div class="well">
-                  <div class="container-fluid">
-                    <form role="form" class="form-horizontal">
-                      <div class="input-group">
-                        <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-                        <span class="input-group-btn" id="q-actions">
-                          <button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
-                        </span>
-                      </div>
-                    </form>
+                <form role="form" class="form-horizontal">
+                  <div class="input-group">
+                    <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
+                    <span class="input-group-btn" id="q-actions">
+                      <button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
+                    </span>
                   </div>
-                </div>
+                </form>
               </div>
               <div class="alert alert-warning not-found" style="display: none">
                 <strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
@@ -212,7 +200,7 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="results-{id}">
-              <div class="container-fluid" id="search-results" style="display: none">
+              <div id="search-results" style="display: none">
                 <div id="search-features" class="form-inline">
                   <div class="checkbox">
                     <label>
@@ -241,12 +229,11 @@
 
     <!-- Selected actions -->
     <script type="html/template" id="selected-actions-template">
-      <div class="well well-sm" id="selected-actions">
+      <div id="selected-actions">
         <button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
         <button id="update" class="btn btn-default">Обновить</button>
         <button id="delete" class="btn btn-link">Удалить</button>
       </div>
-      <br>
     </script>
 
     <!-- Checkbox for search -->
@@ -561,20 +548,27 @@
         <hr style="margin: 10px 0px"/>
         <div class="properties"></div>
         <br>
-        <div class="well well-sm">
-          <div class="btn-group dropup">
-            <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <span about="v-s:Send" property="rdfs:label"></span>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" id="standard-tasks"></ul>
-          </div>
+        <br>
+        <div class="btn-group dropup">
+          <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span about="v-s:Send" property="rdfs:label"></span>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" id="standard-tasks"></ul>
+        </div>
+        <div class="actions pull-left">
           <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
           <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
           <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
           <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
           <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
           <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+        </div>
+        <div class="pull-right">
+          <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
+          <a id="generic" class="btn btn-default disabled" href="#/@//generic">GENERIC</a>
+          <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
+          <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
         </div>
       </div>
     </script>
@@ -820,7 +814,7 @@
     </script>
 
 
-    <!--div class="container-fluid">
+    <!--div class="container">
       <div>Regex</div>
       <input class="form-control" type="text" id="re-regex"></input>
       <div>Replacer function</div>
