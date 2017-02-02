@@ -401,6 +401,7 @@ s-wf:ComplexRouteStartForm
 
 s-wf:SimpleRouteStartForm
   rdf:type rdfs:Class ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-wf:StartForm ;
   rdfs:label "Стартовая форма сети Простой маршрут"@ru ;
   rdfs:label "Simple route start form"@en ;
@@ -1510,7 +1511,7 @@ if (doc) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018870")); // Директор по производству
       }
       if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003202")) {
-        routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017819")); // Директор по ЛО 
+        routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017819")); // Директор по ЛО
       }
       if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50002528")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71019086")); // Директор по перс
@@ -1596,7 +1597,7 @@ if (doc) {
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:47ba4b3a-da9a-412f-bd42-b11b0c847229')); // ПУ Регистратор контрактов
     if (doc.hasValue('mnd-s:hasContractDirection') && doc['mnd-s:hasContractDirection'][0].id == 'd:d4cf39d06aec4a9aafcd4663f7996125') {
       if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-        routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:4ec5dead-aab6-4789-bdd1-94e036ae4a16')); // Специалист ОТО имп       
+        routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:4ec5dead-aab6-4789-bdd1-94e036ae4a16')); // Специалист ОТО имп
       }
       if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
         routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:SYK-CCDG_position')); // Специалист ОТО эксп
@@ -1989,6 +1990,11 @@ $('#save_and_start_process', template).on('click', function () {
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
 <div class="container">
+  <style scoped>
+    .col-md-6 {
+      min-height: 0px;
+    }
+  </style>
   <h2 about="s-wf:ComplexRouteStartForm" property="rdfs:label"></h2>
   <br>
 <!--
@@ -2018,7 +2024,7 @@ $('#save_and_start_process', template).on('click', function () {
 -->
 
   <div class="row">
-    <div class="col-md-4 informing" rel="s-wf:ComplexRouteStartForm_informing" data-embedded="true">
+    <div class="col-md-6 informing" rel="s-wf:ComplexRouteStartForm_informing" data-embedded="true">
       <div class="panel panel-info">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></h3>
@@ -2026,9 +2032,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-embedded="true" data-template="s-wf:SimpleRouteStartFormMinimal_Template"></div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 coordination1" rel="s-wf:ComplexRouteStartForm_coordination1" data-embedded="true">
+    <div class="col-md-6 coordination1" rel="s-wf:ComplexRouteStartForm_coordination1" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></h3>
@@ -2036,7 +2040,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 coordination2" rel="s-wf:ComplexRouteStartForm_coordination2" data-embedded="true">
+    <div class="col-md-6 coordination2" rel="s-wf:ComplexRouteStartForm_coordination2" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></h3>
@@ -2044,7 +2048,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
+    <div class="col-md-6 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></h3>
@@ -2052,9 +2056,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 coordination4" rel="s-wf:ComplexRouteStartForm_coordination4" data-embedded="true">
+    <div class="col-md-6 coordination4" rel="s-wf:ComplexRouteStartForm_coordination4" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></h3>
@@ -2062,7 +2064,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 coordination5" rel="s-wf:ComplexRouteStartForm_coordination5" data-embedded="true">
+    <div class="col-md-6 coordination5" rel="s-wf:ComplexRouteStartForm_coordination5" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></h3>
@@ -2070,7 +2072,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 coordination6" rel="s-wf:ComplexRouteStartForm_coordination6" data-embedded="true">
+    <div class="col-md-6 coordination6" rel="s-wf:ComplexRouteStartForm_coordination6" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></h3>
@@ -2078,9 +2080,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 sign" rel="s-wf:ComplexRouteStartForm_sign" data-embedded="true">
+    <div class="col-md-6 sign" rel="s-wf:ComplexRouteStartForm_sign" data-embedded="true">
       <div class="panel panel-warning">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></h3>
@@ -2088,7 +2088,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 approval" rel="s-wf:ComplexRouteStartForm_approval" data-embedded="true">
+    <div class="col-md-6 approval" rel="s-wf:ComplexRouteStartForm_approval" data-embedded="true">
       <div class="panel panel-warning">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></h3>
@@ -2096,17 +2096,15 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 review" rel="s-wf:ComplexRouteStartForm_review" data-embedded="true">
-      <div class="panel panel-primary">
+    <div class="col-md-6 review" rel="s-wf:ComplexRouteStartForm_review" data-embedded="true">
+      <div class="panel panel-info">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></h3>
         </div>
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 instruction" rel="s-wf:ComplexRouteStartForm_instruction" data-embedded="true">
+    <div class="col-md-6 instruction" rel="s-wf:ComplexRouteStartForm_instruction" data-embedded="true">
       <div class="panel panel-info">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
@@ -2114,7 +2112,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 instruction2" rel="s-wf:ComplexRouteStartForm_instruction2" data-embedded="true">
+    <div class="col-md-6 instruction2" rel="s-wf:ComplexRouteStartForm_instruction2" data-embedded="true">
       <div class="panel panel-info">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
@@ -2122,7 +2120,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 instruction3" rel="s-wf:ComplexRouteStartForm_instruction3" data-embedded="true">
+    <div class="col-md-6 instruction3" rel="s-wf:ComplexRouteStartForm_instruction3" data-embedded="true">
       <div class="panel panel-info">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
@@ -2130,9 +2128,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 examination" rel="s-wf:ComplexRouteStartForm_examination" data-embedded="true">
+    <div class="col-md-6 examination" rel="s-wf:ComplexRouteStartForm_examination" data-embedded="true">
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></h3>
@@ -2140,7 +2136,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-4 distribution" rel="s-wf:ComplexRouteStartForm_distribution" data-embedded="true">
+    <div class="col-md-6 distribution" rel="s-wf:ComplexRouteStartForm_distribution" data-embedded="true">
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></h3>
@@ -2675,7 +2671,8 @@ s-wf:UserTaskFormTemplate
 <script>
   var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
             || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
-            || (veda.user && veda.user.id === individual["v-wf:to"][0].id);
+            || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
+            || individual.rights.hasValue("v-s:canUpdate", true);
   var isOpen = !individual.hasValue("v-wf:takenDecision") || !individual.isSync();
   if (isMine && isOpen) {
     $(".radio.decision input", template).first().prop("checked", true).change();
