@@ -2,6 +2,8 @@
 "use strict";
 ;(function( $ ) {
 
+  var defaultDelay = 750;
+
   // INPUT CONTROLS
 
   // Generic literal input behaviour
@@ -11,62 +13,52 @@
       input = $(".form-control", control),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
-      isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true),
+      isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true),
       property_uri = opts.property_uri,
-      individual = opts.individual;
+      individual = opts.individual,
+      timeout;
 
-    input.attr("placeholder", placeholder);
+    input.attr("placeholder", placeholder)
+      .on("change focusout", function () {
+        var value = opts.parser( this.value, this );
+        change(value);
+      })
+      .keyup( function (e) {
+        if (!isSingle) { return; }
+        if (timeout) { clearTimeout(timeout); }
+        timeout = setTimeout(keyupHandler, defaultDelay, e);
+      });
 
-    function singleValueHandler (doc_property_uri, values) {
-      if (doc_property_uri === property_uri) {
-        input.val( veda.Util.formatValue(values[0]) );
-      }
-    }
+    individual.on("individual:propertyModified", handler);
+    control.one("remove", function () {
+      individual.off("individual:propertyModified", handler);
+    });
+    handler(property_uri);
 
-    var change = function (value) {
-      individual[property_uri] = individual[property_uri].concat(value);
-      input.val("");
-    }
-
-    if (isSingle) {
-      change = function (value) {
-        individual[property_uri] = [value];
-      };
-      if ( individual.hasValue(property_uri) ) {
+    function handler (doc_property_uri) {
+      if (doc_property_uri === property_uri && isSingle) {
         input.val( veda.Util.formatValue(individual[property_uri][0]) );
       }
-      individual.on("individual:propertyModified", singleValueHandler);
-      control.one("remove", function () {
-        individual.off("individual:propertyModified", singleValueHandler);
-      });
     }
-
-    input.on("change focusout", function () {
-      var value = opts.parser( this.value, this );
-      change(value);
-    });
-
-    if (isSingle) {
-      input.keyup( function (e) {
-        individual.off("individual:propertyModified", singleValueHandler);
-        if (e.which !== 188 && e.which !== 190 && e.which !== 110 ) {
-          if (this.value !== $(this).data("previousValue")) {
-            $(this).data("previousValue", this.value);
-            $(this).change();
-          }
-        }
-        individual.on("individual:propertyModified", singleValueHandler);
-      });
+    function change (value) {
+      if (isSingle) {
+        individual[property_uri] = [value];
+      } else {
+        individual[property_uri] = individual[property_uri].concat(value);
+        input.val("");
+      }
     }
-
-    if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
-        title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
-        container: control,
-        trigger: "focus",
-        animation: false
-      });
+    function keyupHandler (e) {
+      var input = $(e.target);
+      if (
+        e.which !== 188
+        && e.which !== 190
+        && e.which !== 110
+        && input.val() !== input.data("prev")
+      ) {
+        input.data("prev", input.val());
+        input.change();
+      }
     }
 
     this.on("veda_focus", function (e) {
@@ -82,6 +74,17 @@
       if (!value) return input.val();
       return input.val( veda.Util.formatValue(value) );
     }
+
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "focus",
+        animation: false
+      });
+    }
+
     return control;
   };
   veda_literal_input.defaults = {
@@ -198,7 +201,7 @@
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       property_uri = opts.property_uri,
       individual = opts.individual,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       input = $("input", control),
       change;
 
@@ -335,7 +338,7 @@
     format: "HH:mm"
   };
 
-  // Time control
+  // Date-Time control
   $.fn.veda_dateTime = function( options ) {
     var opts = $.extend( {}, $.fn.veda_dateTime.defaults, options ),
       control = veda_dateTime.call(this, opts);
@@ -365,7 +368,8 @@
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "";
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      timeout;
 
     Object.keys(veda.user.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
@@ -380,21 +384,40 @@
     });
 
     var input = control.find(".form-control");
-    input.attr("placeholder", placeholder);
+    input.attr("placeholder", placeholder)
+      .on("change focusout", function () {
+        var value = opts.parser( this.value, this );
+        change(value);
+      })
+      .keyup( function (e) {
+        if (timeout) { clearTimeout(timeout); }
+        timeout = setTimeout(keyupHandler, defaultDelay, e);
+      });
 
-    var change = function (value) {
+    individual.on("individual:propertyModified", handler);
+    control.one("remove", function () {
+      individual.off("individual:propertyModified", handler);
+    });
+
+    function keyupHandler (e) {
+      var input = $(e.target);
+      if (
+        e.which !== 188
+        && e.which !== 190
+        && e.which !== 110
+        && input.val() !== input.data("prev")
+      ) {
+        input.data("prev", input.val());
+        input.change();
+      }
+    }
+    function change (value) {
       var filtered = individual[property_uri].filter(function (item) {
         if ( !item.language ) { item.language = veda.user.defaultLanguage; }
         return item.language !== value.language ;
       });
       individual[property_uri] = value.length ? filtered.concat(value) : filtered;
     }
-
-    input.on("change focusout", function () {
-      var value = opts.parser( this.value, this );
-      change(value);
-    });
-
     function handler (doc_property_uri, values) {
       if (doc_property_uri === property_uri) {
         input.each(function () {
@@ -408,22 +431,6 @@
         });
       }
     }
-
-    individual.on("individual:propertyModified", handler);
-    control.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
-    });
-
-    input.keyup( function (e) {
-      individual.off("individual:propertyModified", handler);
-      if (e.which !== 188 && e.which !== 190 && e.which !== 110 ) {
-        if (this.value !== $(this).data("previousValue")) {
-          $(this).data("previousValue", this.value);
-          $(this).change();
-        }
-      }
-      individual.on("individual:propertyModified", handler);
-    });
 
     this.on("veda_focus", function (e, value) {
       input.each(function () {
@@ -599,7 +606,7 @@
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       select = $("select", control),
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
@@ -818,7 +825,7 @@
       control = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       property_uri = opts.property_uri,
       individual = opts.individual,
       input = $(".form-control", control),
@@ -1025,7 +1032,7 @@
         rel_uri = opts.rel_uri,
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
         range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
-        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
         acceptedFileType = spec && spec.hasValue("v-ui:acceptedFileType") ? spec["v-ui:acceptedFileType"][0].valueOf() : undefined,
         maxFileSize = spec && spec.hasValue("v-ui:maxFileSize") ? spec["v-ui:maxFileSize"][0] : undefined;
 
@@ -1090,7 +1097,7 @@
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.rel_uri,
-        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
         id = veda.Util.guid();
       form.attr("target", id);
       iframe.attr("id", id).attr("name", id).attr("src", "javascript:void(0);");
@@ -1150,7 +1157,7 @@
       selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
       displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ],
       rel_uri = opts.rel_uri,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] == 1 : true,
+      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       create = $("#create", control),
       dropdown = $("#dropdown", control),
       fulltext = $("#fulltext", control),
@@ -1290,11 +1297,11 @@
 
       fulltext.attr("placeholder", placeholder);
 
-      var timeout, delay = 1000;
+      var timeout;
 
       var dataSource = function (input, callback) {
         if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(mkQuery, input ? delay : 0, input, callback);
+        timeout = setTimeout(mkQuery, input ? defaultDelay : 0, input, callback);
       }
 
       var mkQuery = function (input, callback) {
@@ -1433,7 +1440,7 @@
   };
   $.fn.veda_link.defaults = {
     template: $("#link-control-template").html(),
-    limit: 100
+    limit: 50
   };
 
 })( jQuery );
