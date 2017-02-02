@@ -1591,8 +1591,8 @@ if (doc) {
     routes['examination'][simple+'editable'] = [false];
     routes['examination'][simple+'deadlineDays'] = [10];
     routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом для дальнейшей работы')];
-    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('mnd-s:executorSpecialistOfContract')); // Исполнитель по контракту
-    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('mnd-s:supportSpecialistOfContract')); // Специалист по сопровождению
+    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['mnd-s:executorSpecialistOfContract']); // Исполнитель по контракту
+    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['mnd-s:supportSpecialistOfContract']); // Специалист по сопровождению
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:47ba4b3a-da9a-412f-bd42-b11b0c847229')); // ПУ Регистратор контрактов
     if (doc.hasValue('mnd-s:hasContractDirection') && doc['mnd-s:hasContractDirection'][0].id == 'd:d4cf39d06aec4a9aafcd4663f7996125') {
       if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
