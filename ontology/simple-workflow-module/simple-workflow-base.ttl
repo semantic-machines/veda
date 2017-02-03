@@ -932,10 +932,23 @@ if (doc) {
   }
 //---------------------------------------------------------------------------------------------------------------------Заявка на создание/изменение контрагента
   if (doc['rdf:type'][0].id === "mnd-s:ContractorCreateChangeRequest") {
-    routes['approval'][simple+'participant'] = [new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')]; // Специалист УЗ по ведению кредиторов
-    routes['approval'][simple+'visible'] = [true];
-    routes['approval'][simple+'editable'] = [true];
-    routes['approval'][simple+'deadlineDays'] = [10];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['instruction'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('mnd-s:hasThemeOfContractorCreateChangeRequest')) {
+      if (doc['mnd-s:hasThemeOfContractorCreateChangeRequest'][0].id == 'd:74cb9e0342034039820a56c35d855dcb' || doc['mnd-s:hasThemeOfContractorCreateChangeRequest'][0].id == 'd:a46ef0cc2-295d-0cdd-cd7c-09634a7769fa') {
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:946589f6-44a6-4c84-96d7-e6f55eb6a76f')]; // (Специалист по ведению дебиторов)
+      } else if (doc['mnd-s:hasThemeOfContractorCreateChangeRequest'][0].id == 'd:a75ec9bc7-601f-584c-3064-8b3f63de7806') {
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')]; // (Специалист по ведению кредитора)
+      } else {
+        if (doc.hasValue('v-s:isDebitor') && doc['v-s:isDebitor'][0] == true) {
+          routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:946589f6-44a6-4c84-96d7-e6f55eb6a76f')]; // (Специалист по ведению дебиторов)
+        }
+        if (doc.hasValue('v-s:isCreditor') && doc['v-s:isCreditor'][0] == true) {
+          routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')]; // (Специалист по ведению кредитора)
+        }
+      }
+    }
   }
 
 //--------------------------------------------------------------------------------Претензия-------
