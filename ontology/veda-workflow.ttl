@@ -1588,7 +1588,7 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<div></div>
+<div class="hidden"></div>
 <script>
   individual.one("individual:beforeSave", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
