@@ -772,8 +772,12 @@
       $(document).on("click", ".modal #follow", function () {
         var resource = $(this).closest(".modal").find("[resource]");
         var uri = resource.attr("resource");
-        var mode = resource.attr("data-mode");
-        riot.route("#/" + uri + "///" + mode);
+        var mode = resource.data("mode");
+        if (mode) {
+          riot.route("#/" + uri + "///" + mode);
+        } else {
+          riot.route("#/" + uri);
+        }
       });
       $(document).on({
         'show.bs.modal': function () {
