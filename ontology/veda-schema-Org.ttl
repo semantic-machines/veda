@@ -467,7 +467,7 @@ v-s:OrganizationTemplate
 
   //# sourceURL=v-s:OrganizationTemplate_pre
 </script>
-<div class="container">
+<div class="container sheet">
   <h2>
     <span about="v-s:Organization" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
@@ -754,7 +754,7 @@ v-s:SubsidiaryTemplate
   rdfs:label "Template for v-s:Subsidiary class"@en ;
   rdfs:label "Шаблон для класса v-s:Subsidiary"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h2>
     <span about="v-s:Subsidiary" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
@@ -826,7 +826,7 @@ v-s:DepartmentTemplate
   rdfs:label "Template for v-s:Department class"@en ;
   rdfs:label "Шаблон для класса v-s:Department"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h2>
     <span about="v-s:Department" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>

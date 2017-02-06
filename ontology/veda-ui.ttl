@@ -553,7 +553,7 @@ v-ui:ClassTemplateTemplate
   rdfs:label "Template for -Class template- class"@en ;
   v-ui:forClass v-ui:ClassTemplate ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
   <h3><span property="rdfs:label"></span> <span class="badge" property="@"></span></h3>
   <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
@@ -595,7 +595,7 @@ v-ui:ResourceTemplate
   rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="clearfix">
     <h3 class="pull-left" about="@" property="rdf:type"></h3>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
@@ -1029,7 +1029,7 @@ v-ui:TestUITemplate
   rdfs:label "Test UI template"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="clearfix">
     <h2 class="pull-left" about="@" property="rdf:type"></h2>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
@@ -1353,7 +1353,7 @@ v-ui:JournalTemplate
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 </script>
-<div class="container journal">
+<div class="container journal sheet">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
@@ -1749,7 +1749,7 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="text-right">
     <a href="#/@"><span property="@">ID</span></a>
     <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>

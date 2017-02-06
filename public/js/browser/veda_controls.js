@@ -13,39 +13,37 @@
       input = $(".form-control", control),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
-      isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true),
       property_uri = opts.property_uri,
       individual = opts.individual,
       timeout;
 
+    control.isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
+
     input.attr("placeholder", placeholder)
-      .on("change focusout", function () {
-        var value = opts.parser( this.value, this );
-        change(value);
-      })
+      .on("change focusout", changeHandler)
       .keyup( function (e) {
-        if (!isSingle) { return; }
+        if (!control.isSingle) { return; }
         if (timeout) { clearTimeout(timeout); }
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
 
-    individual.on("individual:propertyModified", handler);
+    individual.on("individual:propertyModified", modifiedHandler);
     control.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("individual:propertyModified", modifiedHandler);
     });
-    handler(property_uri);
+    modifiedHandler(property_uri);
 
-    function handler (doc_property_uri) {
-      if (doc_property_uri === property_uri && isSingle) {
+    function modifiedHandler (doc_property_uri) {
+      if (doc_property_uri === property_uri && control.isSingle) {
         input.val( veda.Util.formatValue(individual[property_uri][0]) );
       }
     }
-    function change (value) {
-      if (isSingle) {
+    function changeHandler (e) {
+      var value = opts.parser(this.value);
+      if (control.isSingle) {
         individual[property_uri] = [value];
       } else {
         individual[property_uri] = individual[property_uri].concat(value);
-        input.val("");
       }
     }
     function keyupHandler (e) {
@@ -126,7 +124,6 @@
   $.fn.veda_string = function( options ) {
     var opts = $.extend( {}, $.fn.veda_string.defaults, options ),
       control = veda_literal_input.call(this, opts);
-
     this.append(control);
     return this;
   };
@@ -166,6 +163,12 @@
   $.fn.veda_integer = function( options ) {
     var opts = $.extend( {}, $.fn.veda_integer.defaults, options ),
       control = veda_literal_input.call(this, opts);
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+      if (e.type === "search") {
+        control.isSingle = false;
+      }
+    });
     this.append(control);
     return this;
   };
@@ -181,6 +184,12 @@
   $.fn.veda_decimal = function( options ) {
     var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
       control = veda_literal_input.call(this, opts);
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+      if (e.type === "search") {
+        control.isSingle = false;
+      }
+    });
     this.append(control);
     return this;
   };

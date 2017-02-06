@@ -95,7 +95,7 @@ v-fc:FunctionCreateTemplate
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3 property="rdfs:label"></h3>
   <hr>
   <div class="row">

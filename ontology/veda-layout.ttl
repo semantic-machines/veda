@@ -78,20 +78,18 @@ v-l:MainPageTemplate
 
   <div id="main"></div>
 
-  <nav id="copyright" class="navbar-fixed-bottom">
-    <div class="container">
-      <div class="pull-left">
-        <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
-      </div>
-      <div class="pull-right text-muted" about="v-s:vedaInfo">
-        <a href="http://www.semantic-machines.com">
-          © <span about="v-l:SemanticMachines" property="rdfs:label"></span>.
-        </a>
-        <span about="v-l:License" property="rdfs:label"></span>
-        <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
-          GPLv3.
-        </a>
-      </div>
+  <nav id="copyright" class="navbar-fixed-bottom container">
+    <div class="pull-left">
+      <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
+    </div>
+    <div class="pull-right text-muted" about="v-s:vedaInfo">
+      <a href="http://www.semantic-machines.com">
+        © <span about="v-l:SemanticMachines" property="rdfs:label"></span>.
+      </a>
+      <span about="v-l:License" property="rdfs:label"></span>
+      <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
+        GPLv3.
+      </a>
     </div>
   </nav>
 </div>
@@ -212,7 +210,7 @@ v-l:WelcomeAspectTemplate
   rdfs:label "Template for Welcome aspect class"@en ;
   v-ui:forClass v-l:WelcomeAspect ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container-fluid sheet">
   <div class="jumbotron">
     <div class="row">
       <div class="col-md-7">

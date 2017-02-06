@@ -135,7 +135,7 @@ v-s:PersonalAspectTemplate
   rdfs:label "Template for Personal aspect class"@en ;
   v-ui:forClass v-s:PersonalAspect ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="row">
     <div class="col-md-2">
       <div about="@" rel="v-s:owner">

@@ -7,6 +7,20 @@ body {
   padding-top: 74px;*/
 }
 
+/* Sheets */
+
+.sheet {
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  padding: 15px;
+}
+
+.sheet .sheet,
+.modal .sheet {
+  border: none!important;
+}
+
 /* Containers */
 
 .container .container {
@@ -14,6 +28,7 @@ body {
   border: none!important;
 }
 
+/*
 .container-fluid .container,
 .container .container-fluid,
 .container-fluid .container-fluid,
@@ -35,7 +50,7 @@ nav .container-fluid, nav .container {
   padding-bottom: 0!important;
   background-color: transparent;
   border: none!important;
-}
+}*/
 
 /* Gray tooltip */
 .tooltip-inner {
@@ -136,14 +151,13 @@ footer {
   box-shadow: none;
 }
 #copyright {
-  margin:0px;
   font-size: 0.8em;
-}
-#copyright .container-fluid, #copyright .container {
   background-color: #fff;
   border-top: 1px solid #ddd!important;
   border-left: 1px solid #ddd!important;
   border-right: 1px solid #ddd!important;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
 }

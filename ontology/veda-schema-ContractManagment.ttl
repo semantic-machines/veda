@@ -330,7 +330,7 @@ v-s:ContractorTemplate
   rdfs:label "Template for v-s:Contractor class"@en ;
   rdfs:label "Шаблон для класса v-s:Contractor"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h2>
     <span about="v-s:Contractor" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
@@ -466,7 +466,7 @@ v-s:CurrencyExchangeRateTemplate
   rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
   rdfs:label "Шаблон для класса v-s:CurrencyExchangeRate"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h2>
     <span about="v-s:CurrencyExchangeRate" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
@@ -504,11 +504,11 @@ v-s:CurrencyExchangeRateTemplate
       <strong>=</strong>
     </div>
     <div class="col-md-2">
-      <div property="v-s:rate" class="view -edit -search"></div>
+      <div property="v-s:rate" class="view -edit search"></div>
       <veda-control data-type="decimal" property="v-s:rate" class="-view edit search"></veda-control>
     </div>
     <div class="col-md-2">
-      <div property="v-s:date" class="view -edit -search"></div>
+      <div property="v-s:date" class="view -edit search"></div>
       <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
     </div>
   </div>

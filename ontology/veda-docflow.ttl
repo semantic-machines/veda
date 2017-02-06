@@ -83,7 +83,7 @@ v-df:ApprovalTaskTemplate
   rdfs:label "Approval task template"@en ;
   rdfs:label "Шаблон формы задачи утверждения"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <br>
   <div class="row">
@@ -283,7 +283,7 @@ v-df:QuestionRouteStartFormTemplate
   rdfs:label "QuestionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи задать вопрос"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -334,7 +334,7 @@ v-df:InstructionRouteStartFormTemplate
   rdfs:label "InstructionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи исполнить поручение"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -388,7 +388,7 @@ v-df:TaskRouteStartFormTemplate
   rdfs:label "TaskRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи ознакомиться"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:TaskRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -439,7 +439,7 @@ v-df:DistributionRouteStartFormTemplate
   rdfs:label "DistributionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи рассылки"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:DistributionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>

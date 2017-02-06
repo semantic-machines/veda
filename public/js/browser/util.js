@@ -239,29 +239,22 @@ veda.Module(function Util(veda) { "use strict";
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
         if (property_uri === "@" || property_uri === "v-s:isDraft") { return }
-        var values = flat[property_uri];
+        var values = flat[property_uri].sort(function compare(a, b) {
+          return a.data < b.data ? - 1 : a.data === b.data ? 0 : 1;
+        });
         var oneProp;
         switch (values[0].type) {
           case "Integer":
           case "Decimal":
-            oneProp =
-              values.length === 1 ? "'" + property_uri + "'==[" + values[0].data + "," + values[0].data + "]" :
-              values.length > 1 ? "'" + property_uri + "'==[" + values[0].data + "," + values[values.length-1].data + "]" :
-              undefined;
+            oneProp = "'" + property_uri + "'==[" + values[0].data + "," + values[values.length-1].data + "]";
             break;
           // Date
           case "Datetime":
-              var start = values[0].data.substring(0,10)+"T00:00:00",
-                  end;
-              if (values.length === 1) {
-                end = "9999-12-31T23:59:59";
-                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
-              } else if (values.length > 1) {
-                end = values[values.length-1].data.substring(0,10)+"T23:59:59";
-                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
-              } else {
-                oneProp = undefined;
-              }
+            var start = new Date(values[0].data);
+            var end = new Date(values[values.length-1].data);
+            start.setHours(0,0,0,0);
+            end.setHours(23,59,59,999);
+            oneProp = "'" + property_uri + "'==[" + start.toISOString() + "," + end.toISOString() + "]";
             break;
           case "Boolean":
             oneProp = values
@@ -301,7 +294,7 @@ veda.Module(function Util(veda) { "use strict";
         }
         return oneProp ? "(" + oneProp + ")" : undefined;
       })
-      .filter(function(item){return !!item;})
+      .filter(function(item){return typeof item !== undefined;})
       .join("&&");
     query = allProps ? "(" + allProps + ")" : undefined;
     return query;

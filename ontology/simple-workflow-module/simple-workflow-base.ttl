@@ -2002,7 +2002,7 @@ $('#save_and_start_process', template).on('click', function () {
 });
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
-<div class="container">
+<div class="container sheet">
   <style scoped>
     .col-md-6 {
       min-height: 0px;
@@ -2214,7 +2214,7 @@ s-wf:ComplexRouteTest_Template
     rdfs:label "Template for Complex route test template"@en;
     v-ui:forClass s-wf:ComplexRouteTest ;
     v-ui:template """
-<div class="container">
+<div class="container sheet">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -2262,7 +2262,7 @@ s-wf:ComplexRouteTest2_Template
   rdfs:label "Template for Complex route test template 2"@en;
   v-ui:forClass s-wf:ComplexRouteTest2 ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -2631,8 +2631,8 @@ s-wf:UserTaskFormTemplate
   }
   //# sourceURL=s-wf:UserTaskFormTemplate_pre
 </script>
-<div>
-  <div class="container">
+<div class="container">
+  <div class="sheet">
     <h2 about="@" property="rdfs:label"></h2>
     <div class="row">
       <div class="col-md-3">
@@ -2661,21 +2661,18 @@ s-wf:UserTaskFormTemplate
     </div>
     <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
     <br>
-    <div>
+    <div class="actions">
       <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
       <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-<!--  Добавить кнопку Выдать задачу
-      <div class="btn-group dropup">
+      <!--Добавить кнопку Выдать задачу-->
+      <!--div class="btn-group dropup">
         <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
           <span about="v-s:SendTask" property="rdfs:label"> </span>
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" id="standard-tasks">
         </ul>
-      </div>
--->
-      <!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
-      <!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
+      </div-->
     </div>
   </div>
   <br>
