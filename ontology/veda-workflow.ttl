@@ -599,7 +599,7 @@ v-wf:NetTemplate
 
 <script>
 var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
   fullWidth = $("#full-width", template),
   icon = $("span", fullWidth),
   propsCol = $("#props-col", template),
@@ -686,7 +686,7 @@ v-wf:ProcessTemplate
 
 <script>
 var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
   fullWidth = $("#full-width", template),
   icon = $("span", fullWidth),
   propsCol = $("#props-col", template),

@@ -2676,7 +2676,7 @@ s-wf:UserTaskFormTemplate
     </div>
   </div>
   <br>
-  <div about="@" rel="v-wf:onDocument" class="view edit -search"></div>
+  <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
   var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)

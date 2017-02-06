@@ -21,7 +21,15 @@ body {
   border: none!important;
 }
 
-/* Containers */
+.container .sheet {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.container-fluid .sheet, .container-fluid.sheet {
+  margin-left: 15px;
+  margin-right: 15px;
+}
 
 .container .container {
   width: inherit;
