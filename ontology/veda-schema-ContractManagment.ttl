@@ -180,6 +180,10 @@ v-s:PShasPriceCost
 
 v-s:Contract
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Financial ;
   rdfs:subClassOf v-s:ClassifiedRus ;
@@ -188,10 +192,7 @@ v-s:Contract
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Projectable ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:subClassOf v-s:Enumerated ;
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
@@ -201,6 +202,14 @@ v-s:hasContractSpecification
   rdfs:label "Детализация контракта"@ru ;
   rdfs:range v-s:ContractSpecification ;
   rdfs:domain v-s:Contractual ;
+.
+# ------------------------------------------------------------
+v-s:AdditionalAgreement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Contract ;
+  rdfs:subClassOf v-s:BackwardLink;
+  rdfs:label "Additional agreement"@en ;
+  rdfs:label "Дополнительное соглашение"@ru ;
 .
 # ------------------------------------------------------------
 v-s:ContractRequest
@@ -279,6 +288,7 @@ v-s:DeliveryConditions
 # ------------------------------------------------------------
 v-s:ContractPassport
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;

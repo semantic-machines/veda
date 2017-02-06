@@ -202,6 +202,7 @@ v-s:RegulatoryDocument
 #---------------------------------------------------------
 v-s:MaintainedObject
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Request ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
