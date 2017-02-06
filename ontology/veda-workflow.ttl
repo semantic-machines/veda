@@ -566,10 +566,10 @@ v-wf:NetTemplate
                 </button>
               </div>
               <div class="btn-group">
-                <button id="workflow-save-button" type="button" class="btn btn-sm btn-default" style="float:right;">
+                <button id="workflow-save-button" type="button" class="btn btn-sm btn-default">
                   <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                 </button>
-                <button id="workflow-export-ttl" type="button" class="btn btn-sm btn-default" style="float:right;">
+                <button id="workflow-export-ttl" type="button" class="btn btn-sm btn-default">
                   <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                 </button>
               </div>
@@ -651,6 +651,19 @@ v-wf:ProcessTemplate
           </div>
           <div class="col-md-8">
             <div class="btn-toolbar pull-right">
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-default zoom-in">
+                  <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-default zoom-default">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-default zoom-out">
+                  <span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+                </button>
+              </div>
+
               <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-default process-refresh">
                   <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
