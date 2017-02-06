@@ -150,8 +150,9 @@ function get_type_of_docId(task)
 function is_in_docflow_and_set_if_true(task)
 {
     
-// # 285
-    return [get_new_variable('result', newUri(false))];
+// # 322
+//// # 285
+//    return [get_new_variable('result', newUri(false))];
     
     try
     {
@@ -177,7 +178,10 @@ function is_in_docflow_and_set_if_true(task)
 
                     if (in_doc_flow)
                     {
-                        res = true;
+// # 322
+//                        res = true;
+                        res = false;
+
                     }
                     else
                     {
