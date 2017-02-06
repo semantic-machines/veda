@@ -347,6 +347,7 @@ veda.Module(function (veda) { "use strict";
    * Update current individual with values from database & merge with local changes
    */
   proto.update = function () {
+    this.trigger("individual:beforeUpdate");
     var self = this;
     if (!this._.isNew) {
       this._.filtered = {};
@@ -375,6 +376,8 @@ veda.Module(function (veda) { "use strict";
       self._.isSync = true;
     }
     veda.drafts.remove(this.id);
+    this.trigger("individual:afterUpdate");
+    return this;
   };
 
   /**
