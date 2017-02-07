@@ -106,18 +106,53 @@ v-s:PsRate_CurrencyExchangeRate
   rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
 .
 
+v-s:hasCurrencyExchangeRatePurpose
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Purpose"@en ;
+  rdfs:label "Назначение"@ru ;
+  rdfs:range v-s:CurrencyExchangeRatePurpose ;
+  rdfs:domain  v-s:CurrencyExchangeRate;
+.
+
+v-s:CurrencyExchangeRatePurpose
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Currency exchange rate purpose"@en ;
+  rdfs:label "Назначение курса обмена валюты"@ru ;
+.
+
+v-s:PsRate_CurrencyExchangeRate
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
+  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
+.
+
 # ------------------------------------------------------------
 v-s:Price
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
 .
 # v-s:sum
 # v-s:hasCurrency
+# v-s:sumRuble
+# v-s:date
 
+v-s:sumRuble
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Sum in rubles"@en ;
+  rdfs:label "Сумма в рублях"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Price ;
+.
 v-s:PSsumPrice
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Price ;
@@ -483,11 +518,11 @@ v-s:CurrencyExchangeRateTemplate
   </h2>
   <hr class="margin-sm">
   <div class="row text-center">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <em about="v-s:hasCurrency" property="rdfs:label"></em>
     </div>
     <div class="col-md-1"></div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <em about="v-s:hasCurrency" property="rdfs:label"></em>
     </div>
     <div class="col-md-1"></div>
@@ -497,16 +532,19 @@ v-s:CurrencyExchangeRateTemplate
     <div class="col-md-2">
       <em about="v-s:date" property="rdfs:label"></em>
     </div>
+    <div class="col-md-2">
+      <em about="v-s:hasCurrencyExchangeRatePurpose" property="rdfs:label"></em>
+    </div>
   </div>
   <div class="row text-center">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div rel="v-s:hasCurrencySource" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
       <veda-control data-type="select" rel="v-s:hasCurrencySource" class="-view edit search"></veda-control>
     </div>
     <div class="col-md-1">
       <strong>/</strong>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div rel="v-s:hasCurrencyTarget" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
       <veda-control data-type="select" rel="v-s:hasCurrencyTarget" class="-view edit search"></veda-control>
     </div>
@@ -520,6 +558,10 @@ v-s:CurrencyExchangeRateTemplate
     <div class="col-md-2">
       <div property="v-s:date" class="view -edit search"></div>
       <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencyExchangeRatePurpose" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+      <veda-control data-type="link" rel="v-s:hasCurrencyExchangeRatePurpose" class="-view edit search fulltext dropdown"></veda-control>
     </div>
   </div>
   <!-- BUTTONS -->
