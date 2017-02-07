@@ -23,15 +23,17 @@ function check(driver, count) {
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of elements is wrong, expected: " + count);});
 }
 
-function clickButton(driver, selector) {
-    driver.executeScript("document.querySelector('" + selector + "')[0].scrollIntoView(true);");
+function clickButton(driver, button) {
+    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
+    driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
-        webdriver.until.elementIsEnabled(driver.findElement({css: selector})),
+        webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
         basic.SLOW_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + selector + " element");});
-    driver.findElement({css: selector}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + selector +  " element");});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
+    driver.findElement({css:'button[id="'+ button +'"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
+    driver.sleep(basic.FAST_OPERATION);
 }
 
 basic.getDrivers().forEach(function(drv){
@@ -45,13 +47,14 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'rdfs:label' field");});
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
-    clickButton(driver, "[typeof=\"v-wf:StartForm\"] button.action#save");
+    driver.sleep(basic.FAST_OPERATION);
+    clickButton(driver, "save");
     driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
         .thenCatch(function (e) {bssic.errorHandler(e, "Cannot click on 'StartForm' button");});
-    clickButton(driver, "[typeof=\"v-wf:StartForm\"] button.action#delete");
+    clickButton(driver, "delete");
     driver.switchTo().alert().accept();
     check(driver, 0);
 
@@ -63,7 +66,7 @@ basic.getDrivers().forEach(function(drv){
     driver.findElement({css:'#q'}).sendKeys("'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'")
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
 
-    clickButton(driver, "#search-submit");
+    clickButton(driver, "search-submit");
 
     driver.findElement({css:'span[id="individual-label"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'individual-label'");});
