@@ -46,6 +46,7 @@ basic.getDrivers().forEach(function(drv){
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
     clickButton(driver, "[typeof=\"v-wf:StartForm\"] button.action#save");
+    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
