@@ -184,7 +184,7 @@ s-wf:cr_introduction a v-wf:Task;
   v-wf:split v-wf:XOR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:subNet s-wf:InterlayerNet;
-  v-wf:executor s-wf:executor_coordination1 ;
+  v-wf:executor s-wf:executor_introduction ;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   rdfs:label "Ознакомление"^^xsd:string;
@@ -769,6 +769,12 @@ s-wf:executor_informing
   rdf:type v-wf:ExecutorDefinition ;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_informing'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
+.
+
+s-wf:executor_introduction
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_introduction'}])" ;
 .
 
 s-wf:executor_coordination1

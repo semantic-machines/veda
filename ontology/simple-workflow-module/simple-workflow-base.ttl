@@ -515,6 +515,15 @@ s-wf:ComplexRouteStartForm_informing
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:ComplexRouteStartForm_introduction
+  rdf:type rdf:Property ;
+  rdfs:label "Ознакомление"@ru ;
+  rdfs:label "Introduction"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:ComplexRouteStartForm_coordination1
   rdf:type rdf:Property ;
   rdfs:label "Согласование 1 уровня"@ru ;
@@ -769,6 +778,7 @@ s-wf:ComplexRouteStartForm_Template
 <script>
 var stages = [ // Default values fill
   'informing',
+  'introduction',
   'coordination1',
   'coordination2',
   'coordination3',
@@ -1724,6 +1734,9 @@ if (doc) {
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
+      routes['introduction'][simple+'participant'] = [
+                     new veda.IndividualModel("td:AndreyBychin-Analyst2")]
+      routes['introduction'][simple+'visible'] = [true];
       routes['coordination1'][simple+'participant'] = [
                    new veda.IndividualModel("td:AndreyBychin-Analyst2")]
       routes['coordination1'][simple+'visible'] = [true];
@@ -1799,6 +1812,14 @@ $('#save_and_start_process', template).on('click', function () {
              <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
           </div>
+          <div class="col-md-6 introduction" rel="s-wf:ComplexRouteStartForm_introduction" data-embedded="true">
+             <div class="panel panel-success">
+                <div class="panel-heading">
+                   <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_introduction" property="rdfs:label"></h3>
+                </div>
+                <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+             </div>
+           </div>
           <div class="col-md-4 coordination1">
              <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
              <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
