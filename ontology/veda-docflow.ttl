@@ -194,7 +194,7 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
   v-ui:maxCardinality 10 ;
-  v-ui:minCardinality 0 ;
+  v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
   v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
