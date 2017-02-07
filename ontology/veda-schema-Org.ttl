@@ -437,8 +437,8 @@ v-s:OrganizationTemplate
       }
       // Check unique
       var newTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
-      if ( result["v-s:taxId"].state && newTaxId !== prevTaxId ) {
-        prevTaxId = newTaxId;
+      if ( prevTaxId !== newTaxId ) { prevTaxId = newTaxId; }
+      if ( result["v-s:taxId"].state ) {
         var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").result;
         result["v-s:taxId"] = {
           state: (!tmp.length || tmp[0] === individual.id),
