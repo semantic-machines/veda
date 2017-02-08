@@ -1266,6 +1266,8 @@ v-wf:permission_on_simple_routes_start_from
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:permissionObject v-df:QuestionRouteStartForm ;
   v-s:permissionObject v-df:InstructionRouteStartForm ;
+  v-s:permissionObject v-df:TaskRouteStartForm ;
+  v-s:permissionObject v-df:DistributionRouteStartForm ;
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
