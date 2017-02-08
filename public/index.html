@@ -80,32 +80,6 @@
       </form>
     </script>
 
-    <!-- Console template -->
-    <script type="html/template" id="console-template">
-      <div class="container sheet" id="console">
-        <h3>Консоль JavaScript</h3>
-        <form role="form">
-          <div class="form-group">
-            <label for="script">Скрипт</label>
-            <textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
-          </div>
-          <div class="form-group row">
-            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-              <select class="form-control" id="runat" bound>
-                <option value="browser">Браузер</option>
-                <option value="server">Сервер</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-success" id="run">Выполнить!</button>
-            <button type="reset" class="btn" id="reset">Сброс</button>
-          </div>
-        </form>
-        <hr />
-        <p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
-        <pre id="result" bound>{result}</pre>
-      </div>
-    </script>
-
     <!-- TTL template -->
     <script type="html/template" id="ttl-template">
       <div class="container sheet">
@@ -730,7 +704,6 @@
     <script type="text/javascript" src="/js/common/util.js"></script>
     <script type="text/javascript" src="/js/common/veda_spa.js"></script>
     <script type="text/javascript" src="/js/common/app_model.js"></script>
-    <script type="text/javascript" src="/js/common/console_model.js"></script>
     <script type="text/javascript" src="/js/common/individual_model.js"></script>
     <script type="text/javascript" src="/js/common/individual_list_model.js"></script>
     <script type="text/javascript" src="/js/common/search_result_model.js"></script>
@@ -742,7 +715,6 @@
     <!-- Veda browser only -->
     <script type="text/javascript" src="/js/browser/backend.js"></script>
     <script type="text/javascript" src="/js/browser/util.js"></script>
-    <script type="text/javascript" src="/js/browser/console_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/veda_controls.js"></script>
     <script type="text/javascript" src="/js/browser/pager.js"></script>
     <script type="text/javascript" src="/js/browser/individual_actions.js"></script>
