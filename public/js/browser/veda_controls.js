@@ -35,7 +35,11 @@
 
     function modifiedHandler (doc_property_uri) {
       if (doc_property_uri === property_uri && control.isSingle) {
+        var start = input.prop("selectionStart");
+        var end = input.prop("selectionEnd");
         input.val( veda.Util.formatValue(individual[property_uri][0]) );
+        input.prop("selectionStart", start);
+        input.prop("selectionEnd", end);
       }
     }
     function changeHandler (e) {
@@ -436,7 +440,11 @@
             if ( !item.language ) { item.language = veda.user.defaultLanguage; }
             return item.language === lang;
           })[0];
+          var start = this.selectionStart;
+          var end = this.selectionEnd;
           this.value = value || "";
+          this.selectionStart = start;
+          this.selectionEnd = end;
         });
       }
     }
