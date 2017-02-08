@@ -927,6 +927,10 @@ svg.process-path-highlight path
 
 /* TABS BEGIN */
 
+#prop-tabs {
+  max-width:250px;
+}
+
 .tabs-below, .tabs-right, .tabs-left {
   background-color: #fff;
 }
