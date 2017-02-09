@@ -715,7 +715,14 @@ unittest
 
     indv_B.deserialize(ti1.binobj);
 
-    assert(new_indv_A.compare(indv_B));
+	bool comapre_res = new_indv_A.compare(indv_B);
+
+	if (comapre_res == false)
+	{
+		writefln ("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
+	}
+
+    assert(comapre_res);
 
     writeln("unittest [V8: store subject from script] Ok");
 }
