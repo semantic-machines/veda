@@ -269,7 +269,7 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                        int _event_id_length)
 {
-    writeln("@V8:put_individual");
+   // writeln("@V8:put_individual");
     TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
@@ -359,7 +359,7 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
 
 extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
 {
-    writeln("@V8: get_env_str_var");
+    //writeln("@V8: get_env_str_var");
     try
     {
         string var_name = cast(string)_var_name[ 0.._var_name_length ];
@@ -445,7 +445,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
     {
         string uri = cast(string)_uri[ 0.._uri_length ];
 
-        writeln("@p:v8d read_individual, uri=[", uri, "],  ticket=[", _ticket[ 0.._ticket_length ], "]");
+        //writeln("@p:v8d read_individual, uri=[", uri, "],  ticket=[", _ticket[ 0.._ticket_length ], "]");
 
         if (uri == "undefined")
         {
