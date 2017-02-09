@@ -786,7 +786,7 @@ if (doc) {
   });
 
   // DEFAULT
-  routes['introduction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected')]")];
+  routes['introduction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined')]")];
   routes['introduction'][simple+'task_label'] = veda.Util.mlstring("Ознакомление", "Introduction");
   for (var i = 1; i <= 6; i++) {
     routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
