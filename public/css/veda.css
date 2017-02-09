@@ -621,7 +621,7 @@ veda-control {
 }
 .value-holder {
   margin-right: 10px;
-  display: inline-block;
+  display: block;
   white-space: pre-line;
 }
 
