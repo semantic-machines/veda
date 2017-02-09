@@ -13,7 +13,7 @@ body {
   background-color: #fff;
   border-radius: 4px;
   border: 1px solid #ddd;
-  padding: 15px;
+  padding: 20px;
 }
 
 .sheet .sheet,
@@ -102,6 +102,11 @@ em {
   font-style: normal;
   display: block;
 }
+
+hr.black {
+  border-top: 1px solid #233333;
+}
+
 .checkbox > label > em {
   margin: 0px;
 }
@@ -227,6 +232,7 @@ textarea {
 }
 .no-border {
   border: none;
+  box-shadow: none;
 }
 .deleted *:not(.btn) {
   text-decoration: line-through!important;
