@@ -903,7 +903,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
     propertyContainer.empty();
     individual[property_uri].map( function (value, i) {
-      var valueHolder = $("<span class='value-holder'/>");
+      var valueHolder = $("<span class='value-holder'></span>");
       propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
       var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
       var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");

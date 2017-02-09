@@ -35,11 +35,19 @@
 
     function modifiedHandler (doc_property_uri) {
       if (doc_property_uri === property_uri && control.isSingle) {
-        var start = input.prop("selectionStart");
-        var end = input.prop("selectionEnd");
-        input.val( veda.Util.formatValue(individual[property_uri][0]) );
-        input.prop("selectionStart", start);
-        input.prop("selectionEnd", end);
+        var field = input[0];
+        var value = veda.Util.formatValue( individual[property_uri][0] );
+        value = typeof value !== "undefined" ? value : "";
+        try {
+          var start = field.selectionStart;
+          var end = field.selectionEnd;
+          field.value = value;
+          field.selectionStart = start;
+          field.selectionEnd = end;
+        } catch (ex) {
+          field.value = value;
+          console.log("selectionStart/End error:", property_uri, value, typeof value);
+        }
       }
     }
     function changeHandler (e) {
@@ -440,11 +448,17 @@
             if ( !item.language ) { item.language = veda.user.defaultLanguage; }
             return item.language === lang;
           })[0];
-          var start = this.selectionStart;
-          var end = this.selectionEnd;
-          this.value = value || "";
-          this.selectionStart = start;
-          this.selectionEnd = end;
+          value = typeof value !== "undefined" ? value : "";
+          try {
+            var start = this.selectionStart;
+            var end = this.selectionEnd;
+            this.value = value;
+            this.selectionStart = start;
+            this.selectionEnd = end;
+          } catch (ex) {
+            this.value = value;
+            console.log("selectionStart/End error:", property_uri, value, typeof value);
+          }
         });
       }
     }
