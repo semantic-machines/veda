@@ -372,7 +372,7 @@ class PThreadContext : Context
         }
 
         //writeln ("@p ### uri=", uri, " ", request_acess);
-        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, this, is_check_for_reload, null, null);
+        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, is_check_for_reload, null, null);
 
         //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
         return request_acess == res;
@@ -496,56 +496,6 @@ class PThreadContext : Context
             load_info.stat(command_type, sw);
     }
 
-    int _timeout = 10;
-
-//    long ft_local_count;
-//    long ft_local_time_check = 0;
-//    public bool ft_check_for_reload(void delegate() load)
-//    {
-//        return _check_for_reload(ft_local_time_check, ft_local_count, &get_count_indexed, load);
-//    }
-
-    //long acl_local_count;
-    //long acl_local_time_check = 0;
-    long last_committed_op_id_acl_manager = 0;
-    public bool acl_check_for_reload(void delegate() load)
-    {
-        MInfo mi = get_info(P_MODULE.acl_preparer);
-
-        //log.trace ("acl_check_for_reload #1, last_committed_op_id_acl_manager=%d, mi=%s", last_committed_op_id_acl_manager, mi);
-        if (last_committed_op_id_acl_manager < mi.committed_op_id)
-        {
-            last_committed_op_id_acl_manager = mi.committed_op_id;
-            //log.trace ("acl_check_for_reload #2, last_committed_op_id_acl_manager=%d", last_committed_op_id_acl_manager);
-            return true;
-        }
-        return false;
-        //return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
-    }
-/*
-    public bool _check_for_reload(ref long local_time_check, ref long local_count, long function() get_now_count, void delegate() load)
-    {
-        long now = Clock.currStdTime() / 10000000;
-
-   //        log.trace ("@ft_check_for_reload: #1");
-
-        if (now - local_time_check > _timeout)
-        {
-            long count_now = get_now_count();
-            //log.trace("@_check_for_reload:count_now=%d, local_count=%d", count_now, local_count);
-
-            local_time_check = now;
-            if (count_now > local_count)
-            {
-                //log.trace("__check_for_reload:execute reload");
-                local_count = count_now;
-                load();
-                return true;
-            }
-        }
-        return false;
-    }
- */
     // *************************************************** external api *********************************** //
 
     // /////////////////////////////////////////////////////// TICKET //////////////////////////////////////////////
@@ -950,19 +900,19 @@ class PThreadContext : Context
 
     public ubyte get_rights(Ticket *ticket, string uri)
     {
-        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, null);
+        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, null);
     }
 
     public void get_rights_origin_from_acl(Ticket *ticket, string uri,
                                            void delegate(string resource_group, string subject_group, string right) trace_acl)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, trace_acl, null);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null);
     }
 
     public void get_membership_from_acl(Ticket *ticket, string uri,
                                         void delegate(string resource_group) trace_group)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, this, true, null, trace_group);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, trace_group);
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
@@ -999,7 +949,7 @@ class PThreadContext : Context
             string individual_as_binobj = get_from_individual_storage(uri);
             if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
                 {
                     if (individual.deserialize(individual_as_binobj) > 0)
                         individual.setStatus(ResultCode.OK);
@@ -1042,7 +992,7 @@ class PThreadContext : Context
 
             foreach (uri; uris)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
                 {
                     Individual individual           = Individual.init;
                     string     individual_as_binobj = get_from_individual_storage(uri);
@@ -1092,7 +1042,7 @@ class PThreadContext : Context
 
         try
         {
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, this, true, null, null) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
             {
                 string individual_as_binobj = get_from_individual_storage(uri);
 
@@ -1328,7 +1278,7 @@ class PThreadContext : Context
                     if (is_api_request)
                     {
                         // для обновляемого индивида проверим доступность бита Update
-                        if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, this, true, null, null) != Access.can_update)
+                        if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null) != Access.can_update)
                         {
                             res.result = ResultCode.Not_Authorized;
                             return res;
@@ -1354,7 +1304,7 @@ class PThreadContext : Context
                     {
                         if (rr.info == NEW_TYPE)
                         {
-                            if (acl_indexes.authorize(key, ticket, Access.can_create, this, true, null, null) != Access.can_create)
+                            if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null) != Access.can_create)
                             {
                                 res.result = ResultCode.Not_Authorized;
                                 return res;

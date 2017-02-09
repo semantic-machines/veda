@@ -598,13 +598,17 @@ class Queue
 
 unittest
 {
-    veda.core.queue.Queue    queue = new veda.core.queue.Queue("queue1", new Logger("test", "log", "QUEUE"));
+	import std.datetime;
+	
+	Logger log = new Logger("test", "log", "QUEUE");
+	
+    Queue    queue = new Queue("queue1", Mode.RW, log);
     queue.open(Mode.RW);
-    veda.core.queue.Consumer cs = new veda.core.queue.Consumer(queue, "consumer1", new Logger("test", "log", "QUEUE"));
+    Consumer cs = new Consumer(queue, "consumer1", log);
     cs.open();
 
-    if (level == 0)
-        freeze();
+    //if (level == 0)
+    //    freeze();
 
     bool      result = false;
 
@@ -621,7 +625,7 @@ unittest
         return true;
     }
 
-    this.inividuals_storage.get_of_cursor(&pp);
+    //inividuals_storage.get_of_cursor(&pp);
 
     sw.stop();
     int t = cast(int)sw.peek().msecs;
@@ -645,4 +649,5 @@ unittest
     log.trace("read from queue:  %d, time: %d, cps=%s", count, t, text(count / (t / 1000.0)));
 
     queue.close();
+        
 }
