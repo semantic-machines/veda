@@ -405,7 +405,26 @@ unittest
 	import veda.core.az.right_set;
 	
 	Logger log = new Logger("test", "log", "ACL");
-	Authorization storage = new Authorization(".tmp/az", DBMode.RW, "test", log);
+	
+	
+	
+	Authorization storage = new Authorization("tmp/az", DBMode.RW, "test", log);
+	
+    try
+    {
+         mkdir("./tmp");
+    }
+    catch (Exception ex)
+    {
+    }
+
+    try
+    {
+         mkdir("./tmp/az");
+    }
+    catch (Exception ex)
+    {
+    }
 	
 	assert (storage !is null);
 	
@@ -429,8 +448,15 @@ unittest
 	
 	ticket.user_uri = user_uri;
 	
-	storage.authorize(indv_uri, &ticket, Access.can_read, false, null, null);
+	ubyte res = storage.authorize(indv_uri, &ticket, Access.can_read, false, null, null);	
+	assert (res == Access.can_read);
 	
+	ubyte res1 = storage.authorize(indv_uri, &ticket, Access.can_update, false, null, null);	
+	assert (res1 != Access.can_update);
+
+	ubyte res2 = storage.authorize(indv_uri ~ "_1", &ticket, Access.can_update, false, null, null);	
+	assert (res2 != Access.can_update);
+
 	writeln("unittest [Authorization] Ok");
 }
 
