@@ -644,10 +644,15 @@
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
+      source = this.attr("data-source") || undefined,
       options;
 
     if (spec && spec.hasValue("v-ui:optionValue")) {
       options = spec["v-ui:optionValue"];
+    } else if (source) {
+      source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        return options = eval(match);
+      });
     } else if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
       var queryResult = query(veda.ticket, queryPrefix).result;
@@ -725,10 +730,15 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
+      source = this.attr("data-source") || undefined,
       options;
 
     if (spec && spec.hasValue("v-ui:optionValue")) {
       options = spec["v-ui:optionValue"];
+    } else if (source) {
+      source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        return options = eval(match);
+      });
     } else if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
       var queryResult = query(veda.ticket, queryPrefix).result;
@@ -811,10 +821,15 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
+      source = this.attr("data-source") || undefined,
       options;
 
     if (spec && spec.hasValue("v-ui:optionValue")) {
       options = spec["v-ui:optionValue"];
+    } else if (source) {
+      source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        return options = eval(match);
+      });
     } else if (queryPrefix) {
       queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
       var queryResult = query(veda.ticket, queryPrefix).result;
@@ -1379,7 +1394,12 @@
           queryString = queryPrefix;
         }
         var limit = opts.limit || 0,
-            queryResult = query(veda.ticket, queryString, sort, null, null, limit, limit ).result,
+            queryResult = query({
+              ticket: veda.ticket,
+              query: queryString,
+              sort: sort,
+              limit: limit
+            }).result,
             result = [],
             getList = queryResult.filter( function (uri, index) {
               return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
@@ -1505,7 +1525,7 @@
   };
   $.fn.veda_link.defaults = {
     template: $("#link-control-template").html(),
-    limit: 50
+    limit: 100
   };
 
 })( jQuery );
