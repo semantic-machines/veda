@@ -43,8 +43,8 @@ class Authorization : LmdbStorage
     }
 
     ubyte authorize(string _uri, Ticket *ticket, ubyte request_access, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                                                string subject_group,
-                                                                                                                                string right)
+                                                                                                               string subject_group,
+                                                                                                               string right)
                     trace_acl,
                     void delegate(string resource_group) trace_group
                     )
@@ -369,50 +369,50 @@ class Authorization : LmdbStorage
     }
 }
 
-    private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
-    private MInfo get_info(P_MODULE module_id)
+private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
+private MInfo get_info(P_MODULE module_id)
+{
+    ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
+
+    if (mdif is null)
     {
-        ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
-
-        if (mdif is null)
-        {
-            mdif                            = new ModuleInfoFile(text(module_id), log, OPEN_MODE.READER);
-            info_r__2__pmodule[ module_id ] = mdif;
-        }
-        MInfo info = mdif.get_info();
-        return info;
+        mdif                            = new ModuleInfoFile(text(module_id), log, OPEN_MODE.READER);
+        info_r__2__pmodule[ module_id ] = mdif;
     }
+    MInfo info = mdif.get_info();
+    return info;
+}
 
-    int _timeout = 10;                                                                             
-    long last_committed_op_id_acl_manager = 0;
-    public bool acl_check_for_reload(void delegate() load)
+int  _timeout                         = 10;
+long last_committed_op_id_acl_manager = 0;
+public bool acl_check_for_reload(void delegate() load)
+{
+    MInfo mi = get_info(P_MODULE.acl_preparer);
+
+    //log.trace ("acl_check_for_reload #1, last_committed_op_id_acl_manager=%d, mi=%s", last_committed_op_id_acl_manager, mi);
+    if (last_committed_op_id_acl_manager < mi.committed_op_id)
     {
-        MInfo mi = get_info(P_MODULE.acl_preparer);
-
-        //log.trace ("acl_check_for_reload #1, last_committed_op_id_acl_manager=%d, mi=%s", last_committed_op_id_acl_manager, mi);
-        if (last_committed_op_id_acl_manager < mi.committed_op_id)
-        {
-            last_committed_op_id_acl_manager = mi.committed_op_id;
-            //log.trace ("acl_check_for_reload #2, last_committed_op_id_acl_manager=%d", last_committed_op_id_acl_manager);
-            return true;
-        }
-        return false;
-        //return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
+        last_committed_op_id_acl_manager = mi.committed_op_id;
+        //log.trace ("acl_check_for_reload #2, last_committed_op_id_acl_manager=%d", last_committed_op_id_acl_manager);
+        return true;
     }
+    return false;
+    //return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
+}
 
 unittest
 {
-	import veda.core.az.right_set;
-	
-	Logger log = new Logger("test", "log", "ACL");
-	
-	
-	
-	Authorization storage = new Authorization("tmp/az", DBMode.RW, "test", log);
-	
+    import veda.core.az.right_set;
+
+    Logger log = new Logger("test", "log", "ACL");
+
+
+
+    Authorization storage = new Authorization("tmp/az", DBMode.RW, "test", log);
+
     try
     {
-         mkdir("./tmp");
+        mkdir("./tmp");
     }
     catch (Exception ex)
     {
@@ -420,43 +420,59 @@ unittest
 
     try
     {
-         mkdir("./tmp/az");
+        mkdir("./tmp/az");
     }
     catch (Exception ex)
     {
     }
-	
-	assert (storage !is null);
-	
-	Individual new_ind;
-	Individual prev_ind;
-	long op_id = 0;
-	
-	string user_uri = "d:user1";
-	string indv_uri = "d:indv1";
-	
-	new_ind.addResource("rdf:type", Resource (DataType.Uri, "v-s:PermissionStatement"));
-	new_ind.addResource("v-s:canRead", Resource (true));
-	new_ind.addResource("v-s:permissionObject", Resource (DataType.Uri, indv_uri));
-	new_ind.addResource("v-s:permissionSubject", Resource (DataType.Uri, user_uri));
-	
-	prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
-	
-	storage.flush(1);
-	
-	Ticket ticket;
-	
-	ticket.user_uri = user_uri;
-	
-	ubyte res = storage.authorize(indv_uri, &ticket, Access.can_read, false, null, null);	
-	assert (res == Access.can_read);
-	
-	ubyte res1 = storage.authorize(indv_uri, &ticket, Access.can_update, false, null, null);	
-	assert (res1 != Access.can_update);
 
-	ubyte res2 = storage.authorize(indv_uri ~ "_1", &ticket, Access.can_update, false, null, null);	
-	assert (res2 != Access.can_update);
+    assert(storage !is null);
 
-	writeln("unittest [Authorization] Ok");
+    Individual new_ind;
+    Individual prev_ind;
+    long       op_id = 0;
+
+    string     user_uri = "d:user1";
+    string     indv_uri = "d:indv1";
+
+    new_ind.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
+    new_ind.addResource("v-s:canRead", Resource(true));
+    new_ind.addResource("v-s:permissionObject", Resource(DataType.Uri, indv_uri));
+    new_ind.addResource("v-s:permissionSubject", Resource(DataType.Uri, user_uri));
+
+    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
+
+    storage.flush(1);
+
+    Ticket ticket;
+
+    ticket.user_uri = user_uri;
+
+    ubyte res = storage.authorize(indv_uri, &ticket, Access.can_read, false, null, null);
+    assert(res == Access.can_read);
+
+    ubyte res1 = storage.authorize(indv_uri, &ticket, Access.can_update, false, null, null);
+    assert(res1 != Access.can_update);
+
+    ubyte res2 = storage.authorize(indv_uri ~ "_1", &ticket, Access.can_update, false, null, null);
+    assert(res2 != Access.can_update);
+
+    try
+    {
+        rmdir("./tmp/az");
+    }
+    catch (Exception ex)
+    {
+    }
+
+    try
+    {
+        rmdir("./tmp");
+    }
+    catch (Exception ex)
+    {
+    }
+
+    writeln("unittest [Authorization: store permission] Ok");
 }
 
