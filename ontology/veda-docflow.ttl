@@ -83,75 +83,62 @@ v-df:ApprovalTaskTemplate
   rdfs:label "Approval task template"@en ;
   rdfs:label "Шаблон формы задачи утверждения"@ru ;
   v-ui:template """
-<div class="container-fluid">
-    <div class="panel panel-default">
-      <div class="panel-body">
-
-      <div class="row">
-        <div class="col-md-12">
-        <h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
-        </div>
-      </div>
-      <br>
-
-      <div class="row">
-        <div class="col-md-3">
-          <em about="v-wf:from" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-3">
-          <div rel="v-wf:from" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-          <veda-control rel="v-wf:from" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3">
-          <em about="v-wf:onDocument" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-3">
-          <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-          <veda-control rel="v-wf:onDocument" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3">
-          <em about="v-wf:dateGiven" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-3">
-          <div property="v-wf:dateGiven" class="view -edit -search"></div>
-          <veda-control property="v-wf:dateGiven" data-type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
-        </div>
-      </div>
-      <hr class="margin-sm">
-
-      <div class="row">
-        <div class="col-md-3">
-          <em about="v-df:approvalTask_decisionKind" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-3">
-          <veda-control property="v-df:approvalTask_decisionKind" data-type="radio"></veda-control>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-3">
-          <em about="v-wf:possibleDecisionClass" property="rdfs:label"></em>
-        </div>
-        <div class="col-md-3">
-          <veda-control rel="v-wf:possibleDecisionClass" data-type="radio"></veda-control>
-        </div>
-      </div>
-
-
-      <br><br>
-      <div class="well well-sm">
-        <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
-        <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-        <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-        <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-      </div>
-
+<div class="container sheet">
+  <h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
+  <br>
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-wf:from" property="rdfs:label"></em>
     </div>
+    <div class="col-md-3">
+      <div rel="v-wf:from" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control rel="v-wf:from" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-wf:onDocument" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-3">
+      <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control rel="v-wf:onDocument" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-wf:dateGiven" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-3">
+      <div property="v-wf:dateGiven" class="view -edit -search"></div>
+      <veda-control property="v-wf:dateGiven" data-type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
+    </div>
+  </div>
+  <hr class="margin-sm">
+
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-df:approvalTask_decisionKind" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-3">
+      <veda-control property="v-df:approvalTask_decisionKind" data-type="radio"></veda-control>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-wf:possibleDecisionClass" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-3">
+      <veda-control rel="v-wf:possibleDecisionClass" data-type="radio"></veda-control>
+    </div>
+  </div>
+  <br><br>
+  <div class="actions">
+    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
 </div>
 """ ;
@@ -207,7 +194,7 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
   v-ui:maxCardinality 10 ;
-  v-ui:minCardinality 0 ;
+  v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
   v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
@@ -296,12 +283,8 @@ v-df:QuestionRouteStartFormTemplate
   rdfs:label "QuestionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи задать вопрос"@ru ;
   v-ui:template """
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-    <h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
-    </div>
-  </div>
+<div class="container sheet">
+  <h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
@@ -325,7 +308,7 @@ v-df:QuestionRouteStartFormTemplate
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
@@ -351,12 +334,8 @@ v-df:InstructionRouteStartFormTemplate
   rdfs:label "InstructionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи исполнить поручение"@ru ;
   v-ui:template """
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-    <h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
-    </div>
-  </div>
+<div class="container sheet">
+  <h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
@@ -383,7 +362,7 @@ v-df:InstructionRouteStartFormTemplate
   <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
@@ -409,12 +388,8 @@ v-df:TaskRouteStartFormTemplate
   rdfs:label "TaskRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи ознакомиться"@ru ;
   v-ui:template """
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-    <h3><span about="v-df:TaskRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
-    </div>
-  </div>
+<div class="container sheet">
+  <h3><span about="v-df:TaskRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
@@ -438,7 +413,7 @@ v-df:TaskRouteStartFormTemplate
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
@@ -464,12 +439,8 @@ v-df:DistributionRouteStartFormTemplate
   rdfs:label "DistributionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи рассылки"@ru ;
   v-ui:template """
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-    <h3><span about="v-df:DistributionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
-    </div>
-  </div>
+<div class="container sheet">
+  <h3><span about="v-df:DistributionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
@@ -493,7 +464,7 @@ v-df:DistributionRouteStartFormTemplate
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
-  <div class="well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
@@ -890,7 +861,7 @@ v-df:DecisionTemplate2
 #  <div class="panel-body">
 #    <em about="v-s:responsible" property="rdfs:label"></em>
 #    <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-#    <veda-control rel="v-s:responsible" data-type="link" class="fulltext dropdown -view edit search"></veda-control>
+#    <veda-control rel="v-s:responsible" data-type="link" class="fulltext -view edit search"></veda-control>
 #    <br>
 #    <em about="v-s:description" property="rdfs:label"></em>
 #    <div property="v-s:description" class="view -edit -search"></div>
@@ -1157,7 +1128,7 @@ v-wf:DecisionRedirectTemplate
 <div>
   <em about="v-wf:to" property="rdfs:label"></em>
   <div rel="v-wf:to" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-  <veda-control rel="v-wf:to" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+  <veda-control rel="v-wf:to" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
@@ -1295,6 +1266,8 @@ v-wf:permission_on_simple_routes_start_from
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:permissionObject v-df:QuestionRouteStartForm ;
   v-s:permissionObject v-df:InstructionRouteStartForm ;
+  v-s:permissionObject v-df:TaskRouteStartForm ;
+  v-s:permissionObject v-df:DistributionRouteStartForm ;
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 

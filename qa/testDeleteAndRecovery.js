@@ -25,6 +25,7 @@ function check(driver, count) {
 
 function clickButton(driver, button) {
     driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
+    driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
         webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
@@ -32,11 +33,12 @@ function clickButton(driver, button) {
     ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
     driver.findElement({css:'button[id="'+ button +'"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
+    driver.sleep(basic.FAST_OPERATION);
 }
 
 basic.getDrivers().forEach(function(drv){
     var driver = basic.getDriver(drv);
-    
+
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
@@ -45,7 +47,9 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'rdfs:label' field");});
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
+    driver.sleep(basic.FAST_OPERATION);
     clickButton(driver, "save");
+    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
@@ -58,7 +62,7 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
     basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Search"]', basic.FAST_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` menu item");});
     driver.findElement({css:'#q'}).sendKeys("'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'")
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
 

@@ -21,9 +21,9 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver);
 
     complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4');
-    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0);
+    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 0);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');
-    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1);
+    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 0);
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
@@ -42,9 +42,9 @@ basic.getDrivers().forEach (function (drv) {
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
     complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4');
-    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0);
+    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 1);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');
-    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1);
+    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 1);
 
     driver.quit();
 });

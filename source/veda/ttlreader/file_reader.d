@@ -71,7 +71,7 @@ void main(char[][] args)
     Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
     sticket = context.sys_ticket();
 
-    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000).result;
+    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -88,7 +88,7 @@ void main(char[][] args)
             context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
         }
 
-        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000).result;
+        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
@@ -101,7 +101,7 @@ void main(char[][] args)
 
         while (true)
         {
-    	    core.thread.Thread.sleep(dur!("seconds")(1));
+	        core.thread.Thread.sleep(dur!("seconds")(1));
 
             long cur_opid;
 
@@ -120,8 +120,8 @@ void main(char[][] args)
             if (cur_opid >= res.op_id)
                 complete_subject = true;
 
-		    if (complete_subject && complete_script && complete_ft)
-				break;
+            if (complete_subject && complete_script && complete_ft)
+                break;
         }
 
         log.tracec("WARN: !!!! VEDA SYSTEM NEED RESTART");
@@ -182,6 +182,7 @@ void main(char[][] args)
 //                        processed(files, context);
                         if (_files.length > 0)
                         {
+                            Thread.sleep(dur!("seconds")(3));
                             processed(_files, context);
                         }
 /*
@@ -398,7 +399,7 @@ void processed(string[] changes, Context context)
 
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
                                 if (trace_msg[ 33 ] == 1)
-                                log.trace("file reader:store, uri=%s", indv.uri);
+                                    log.trace("file reader:store, uri=%s", indv.uri);
 
                                 if (res != ResultCode.OK)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));

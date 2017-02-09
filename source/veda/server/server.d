@@ -10,7 +10,8 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.server.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context;
-    import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json, veda.common.logger,
+    import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json,
+           veda.common.logger,
            veda.core.util.utils;
     import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_channel;
 }
@@ -56,19 +57,43 @@ extern (C) void handleTermination2(int _signal)
     Runtime.terminate();
 }
 
-Context g_context;
+Context l_context;
 
 void main(char[][] args)
 {
+    Tid[ P_MODULE ] tids;
     process_name = "server";
+    string node_id = null;
 
-    VedaServer veda_server = new VedaServer("127.0.0.1", 8091, log);
-    veda_server.init_core(null);
-    g_context = veda_server.core_context;
+    tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, individuals_db_path, node_id);
+    if (wait_starting_thread(P_MODULE.subject_manager, tids) == false)
+        return;
 
-    log.trace("start ws listener");
-    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
-    writefln("stop ws listener");
+    tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, tickets_db_path, node_id);
+    wait_starting_thread(P_MODULE.ticket_manager, tids);
+
+    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer), acl_indexes_db_path);
+    wait_starting_thread(P_MODULE.acl_preparer, tids);
+
+    tids[ P_MODULE.commiter ] =
+        spawn(&commiter, text(P_MODULE.commiter));
+    wait_starting_thread(P_MODULE.commiter, tids);
+
+    tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
+    wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
+
+    tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
+    wait_starting_thread(P_MODULE.n_channel, tids);
+
+    tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
+                                             tids[ P_MODULE.statistic_data_accumulator ]);
+    wait_starting_thread(P_MODULE.print_statistic, tids);
+
+    foreach (key, value; tids)
+        register(text(key), value);
+
+    spawn(&ws_interface, cast(short)8091);
+    //spawn (&ws_interface, cast(short)8092);
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -81,8 +106,14 @@ void main(char[][] args)
     exit(P_MODULE.ticket_manager);
 
     thread_term();
+}
 
-//    exit(P_MODULE.statistic_data_accumulator);
+private void ws_interface(short ws_port)
+{
+    log.trace("start ws channel");
+    VedaServer veda_server = new VedaServer("127.0.0.1", ws_port, log);
+    veda_server.init(null);
+    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
 }
 
 void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
@@ -101,7 +132,7 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 
     if (rc == ResultCode.OK)
     {
-        res = g_context.execute(cast(string)msg);
+        res = l_context.execute(cast(string)msg);
     }
     else
     {
@@ -129,7 +160,7 @@ class VedaServer : WSClient
         super(host, port, "/ws", "module-name=server", log);
     }
 
-    Context init_core(string node_id)
+    Context init(string node_id)
     {
         if (node_id is null || node_id.length < 2)
             node_id = "cfg:standart_node";
@@ -139,7 +170,6 @@ class VedaServer : WSClient
         Backtrace.install(stderr);
 
         io_msg = new Logger("pacahon", "io", "server");
-        Tid[ P_MODULE ] tids;
 
         try
         {
@@ -147,39 +177,15 @@ class VedaServer : WSClient
 
             Ticket     sticket;
 
-            core_context = new PThreadContext(node_id, "core_context", log);
-            sticket      = core_context.sys_ticket();
-            node         = core_context.get_configuration();
+            core_context = new PThreadContext(node_id, "core_context-" ~ text(port), log);
+            l_context    = core_context;
+
+            sticket = core_context.sys_ticket();
+            node    = core_context.get_configuration();
             if (node.getStatus() == ResultCode.OK)
                 log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
             log.trace("init core");
-
-            tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, individuals_db_path, node_id);
-            wait_starting_thread(P_MODULE.subject_manager, tids);
-
-            tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, tickets_db_path, node_id);
-            wait_starting_thread(P_MODULE.ticket_manager, tids);
-
-            tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer), acl_indexes_db_path);
-            wait_starting_thread(P_MODULE.acl_preparer, tids);
-
-            tids[ P_MODULE.commiter ] =
-                spawn(&commiter, text(P_MODULE.commiter));
-            wait_starting_thread(P_MODULE.commiter, tids);
-
-            tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
-            wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
-
-            tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
-            wait_starting_thread(P_MODULE.n_channel, tids);
-
-            tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
-                                                     tids[ P_MODULE.statistic_data_accumulator ]);
-            wait_starting_thread(P_MODULE.print_statistic, tids);
-
-            foreach (key, value; tids)
-                register(text(key), value);
 
             sticket = core_context.sys_ticket(true);
             string guest_ticket = core_context.get_ticket_from_storage("guest");
@@ -204,31 +210,27 @@ class VedaServer : WSClient
             return null;
         }
     }
+}
 
-    bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
-    {
-        bool res;
-        Tid  tid = tids[ tid_idx ];
+bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
+{
+    bool res;
+    Tid  tid = tids[ tid_idx ];
 
-        if (tid == Tid.init)
-            throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
+    if (tid == Tid.init)
+        throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
 
-        log.trace("START THREAD... : %s", text(tid_idx));
-        send(tid, thisTid);
-        receive((bool isReady)
-                {
-                    res = isReady;
-                    //if (trace_msg[ 50 ] == 1)
-                    log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
-                    if (res == false)
-                        log.trace("FAIL START THREAD: %s", text(tid_idx));
-                });
-        return res;
-    }
-
-    void shutdown_core()
-    {
-    }
+    log.trace("START THREAD... : %s", text(tid_idx));
+    send(tid, thisTid);
+    receive((bool isReady)
+            {
+                res = isReady;
+                //if (trace_msg[ 50 ] == 1)
+                log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
+                if (res == false)
+                    log.trace("FAIL START THREAD: %s", text(tid_idx));
+            });
+    return res;
 }
 
 public void exit(P_MODULE module_id)

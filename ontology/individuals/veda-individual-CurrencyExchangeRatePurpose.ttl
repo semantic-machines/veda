@@ -1,0 +1,20 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-UnitOfMeasure/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-CurrencyExchangeRatePurpose>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. individual - CurrencyExchangeRatePurpose"@en ;
+  rdfs:label "Онтология Veda. Записи справочника Назначение курса обмена валюты"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+v-s:CER_Purpose_current
+  rdf:type v-s:CurrencyExchangeRatePurpose ;
+  rdfs:label "Current rate"@en ;
+  rdfs:label "Текущий курс"@ru ;
+.

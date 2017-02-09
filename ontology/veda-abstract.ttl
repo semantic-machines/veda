@@ -514,6 +514,13 @@ v-s:hasContract
   rdfs:range v-s:Contract ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:hasAccountingDoc
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Accounting doc"@en ;
+  rdfs:label "Первичный документ"@ru ;
+  rdfs:range v-s:AccountingDoc ;
+  rdfs:domain v-s:Contractual ;
+.
 v-s:hasPaymentConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
@@ -834,7 +841,7 @@ v-s:count
 v-s:rate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Rate"@en ;
-  rdfs:label "Степень"@ru ;
+  rdfs:label "Ставка"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
@@ -856,6 +863,20 @@ v-s:hasCurrency
   rdf:type owl:ObjectProperty ;
   rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasCurrencySource
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Source currency"@en ;
+  rdfs:label "Исходная валюта"@ru ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasCurrencyTarget
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Target currency"@en ;
+  rdfs:label "Целевая валюта"@ru ;
   rdfs:range v-s:Currency ;
   rdfs:domain v-s:Measurable ;
 .
@@ -963,6 +984,13 @@ v-s:prepayment
   rdfs:label "Prepayment"@en ;
   rdfs:label "Авансовый платеж"@ru ;
   rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+v-s:transactionDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Transaction date of document"@en ;
+  rdfs:label "Дата проводки"@ru ;
+  rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Financial ;
 .
 

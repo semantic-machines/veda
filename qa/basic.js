@@ -9,12 +9,12 @@ var webdriver = require('selenium-webdriver'),
     //SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://live.semantic-machines.com:8080/':'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
-  console.trace(e);
+  console.trace(e, e.stack);
   process.exit(1);
 });
 
 function errrorHandlerFunction(e, message) {
-  console.trace(message, e.message);
+  console.trace(message, e.message, e.stack);
   process.exit(1);
 }
 
@@ -261,7 +261,7 @@ module.exports = {
     }).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
 
     // Проверяем что тип появился на экране
-    if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net') {
+    if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net' || templateRdfType === 'v-s:Person') {
       driver.wait
       (
         webdriver.until.elementIsVisible(driver.findElement({css:'div[typeof="'+templateRdfType+'"]'})),
