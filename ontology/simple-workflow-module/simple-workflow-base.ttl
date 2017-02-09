@@ -809,6 +809,8 @@ if (doc) {
   });
 
   // DEFAULT
+  routes['introduction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined'), newUri('v-wf:DecisionRejected')]")];
+  routes['introduction'][simple+'task_label'] = veda.Util.mlstring("Ознакомление", "Introduction");
   for (var i = 1; i <= 6; i++) {
     routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
@@ -1734,9 +1736,11 @@ if (doc) {
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
+  /*
       routes['introduction'][simple+'participant'] = [
                      new veda.IndividualModel("td:AndreyBychin-Analyst2")]
       routes['introduction'][simple+'visible'] = [true];
+  */
       routes['coordination1'][simple+'participant'] = [
                    new veda.IndividualModel("td:AndreyBychin-Analyst2")]
       routes['coordination1'][simple+'visible'] = [true];
