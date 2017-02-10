@@ -581,7 +581,7 @@ veda.Module(function Util(veda) { "use strict";
               return true; // Found
           } else {
               if (element.hasValue(['v-s:parentUnit'])) {
-                  return eda.Util.inSubHierarchy(root, element['v-s:parentUnit'][0]); // Check parent
+                  return veda.Util.inSubHierarchy(root, element['v-s:parentUnit'][0]); // Check parent
               } else {
                   return false; // No parent
               }
