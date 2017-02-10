@@ -324,26 +324,12 @@ unittest
     {
 		import std.datetime;
 		import veda.onto.lang;
+		import veda.util.tests_tools;
 		
-		Individual new_indv_A; 
-		
-		new_indv_A.uri = "test-individual";
-		
-        new_indv_A.addResource("v-s:isSuccess", Resource(true));
-        new_indv_A.addResource("v-s:infoOfExecuting", Resource("text(res))"));
-        new_indv_A.addResource("v-s:info1", Resource(DataType.Uri, "rdfs:label"));
-        new_indv_A.addResource("v-s:info2", Resource("русский текст", LANG.RU));
-        new_indv_A.addResource("v-s:info2", Resource("english text", LANG.EN));
-        new_indv_A.addResource("v-s:info2", Resource("none lang text", LANG.NONE));
-        new_indv_A.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-        new_indv_A.addResource("rdfs:label", Resource(1234));
-        new_indv_A.addResource("rdfs:label", Resource(decimal (cast(long)1234, cast(byte)25)));
-        new_indv_A.addResource("rdfs:label", Resource(false));
-        
+		Individual new_indv_A = generate_new_test_individual ();        
         string bin = new_indv_A.serialize ();
         
-		Individual new_indv_B; 
-        
+		Individual new_indv_B;         
         new_indv_B.deserialize (bin);
         
 		assert (new_indv_B.compare(new_indv_A));

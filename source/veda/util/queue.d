@@ -598,56 +598,61 @@ class Queue
 
 unittest
 {
-	import std.datetime;
-	
-	Logger log = new Logger("test", "log", "QUEUE");
-	
-    Queue    queue = new Queue("queue1", Mode.RW, log);
+    import std.datetime, std.uuid;
+    import veda.util.tests_tools;
+    import veda.onto.individual, veda.onto.resource;
+
+    Logger log = new Logger("test", "log", "QUEUE");
+
+    Queue  queue = new Queue("queue1" ~ randomUUID().toString(), Mode.RW, log);
     queue.open(Mode.RW);
+    assert(queue.isReady);
+
     Consumer cs = new Consumer(queue, "consumer1", log);
     cs.open();
 
-    //if (level == 0)
-    //    freeze();
+    assert(cs.isReady);
 
-    bool      result = false;
+    Individual new_indv_A1 = generate_new_test_individual();
+    string     binobj      = new_indv_A1.serialize();
+    queue.push(binobj);
 
-    int       count;
-    StopWatch sw;
+    Individual new_indv_A = generate_new_test_individual();
+    binobj = new_indv_A.serialize();
 
-    sw.start();
-    bool pp(string key, string value)
-    {
-        queue.push(value);
-        count++;
-        //if (count > 150)
-        //	return false;
-        return true;
-    }
+    queue.push(binobj);
+    queue.push(binobj);
+    queue.push(binobj);
 
-    //inividuals_storage.get_of_cursor(&pp);
+    string val = cs.pop();
+    val = cs.pop();
+    val = cs.pop();
 
-    sw.stop();
-    int t = cast(int)sw.peek().msecs;
+    Individual indv_B;
+    indv_B.deserialize(val);
 
-    log.trace("write to queue: %d, time: %d, cps=%s", count, t, text(count / (t / 1000.0)));
+    bool compare_res = new_indv_A.compare(indv_B);
+    if (compare_res == false)
+        writefln("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
 
-    sw.reset();
-    sw.start();
-    string val;
-    count = 0;
-    do
-    {
-        val = cs.pop();
-        //writeln ("@@@val=", val);
-        count++;
-    } while (val !is null);
+    assert(compare_res);
 
-    sw.stop();
-    t = cast(int)sw.peek().msecs;
+    val = cs.pop();
 
-    log.trace("read from queue:  %d, time: %d, cps=%s", count, t, text(count / (t / 1000.0)));
+    Individual indv_B1;
+    indv_B1.deserialize(val);
 
-    queue.close();
-        
+    compare_res = new_indv_A1.compare(indv_B1);
+    if (compare_res == false)
+        writefln("new_indv_A1 [%s] != indv_B [%s]", new_indv_A1, indv_B1);
+
+    assert(compare_res);
+
+    //queue.close();
+    //cs.close();
+
+    queue.remove();
+    cs.remove();
+
+    writeln("unittest [Queue] Ok");
 }

@@ -14,7 +14,8 @@
     	    "../../veda/util/module_info.d",
     	    "../../veda/util/queue.d",
     	    "../../veda/util/tools.d",
-	    "../../veda/util/container.d"
+	    "../../veda/util/container.d",
+    	    "../../veda/util/tests_tools.d"
 	],
 	"configurations": [
 	{
