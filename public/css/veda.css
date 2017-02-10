@@ -19,7 +19,7 @@ body {
 .sheet .sheet,
 .modal .sheet {
   border: none!important;
-  padding: 0!important;
+  /*padding: 0!important;*/
 }
 
 .container .sheet {
