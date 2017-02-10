@@ -187,7 +187,7 @@ class PThreadContext : Context
         return node_id;
     }
 
-    this(string _node_id, string context_name, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
+    this(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
     {
         log = _log;
 
@@ -1256,7 +1256,7 @@ class PThreadContext : Context
 
                     if ((prev_state is null ||
                          prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                        log.trace("ERR! store_individual: not read prev_state uri=[%s]", indv.uri);
+                        log.trace("ERR! store_individual, cmd=%s: not read prev_state uri=[%s]", text (cmd), indv.uri);
                 }
                 catch (Exception ex)
                 {

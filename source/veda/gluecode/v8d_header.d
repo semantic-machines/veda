@@ -676,7 +676,6 @@ unittest
     assert(ti1 !is null);
 
     Individual indv_B;
-
     indv_B.deserialize(ti1.binobj);
 
 	bool compare_res = new_indv_A.compare(indv_B);

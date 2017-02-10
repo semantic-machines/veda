@@ -119,7 +119,8 @@ class WSClient
                                                                                                                                                    []
                                                                                                                                                    msg,
                                                                                                                                                    ResultCode
-                                                                                                                                                   rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+                                                                                                                                                   rc)
+                _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
         ev_LWS_CALLBACK_GET_THREAD_ID    = _ev_LWS_CALLBACK_GET_THREAD_ID;
         ev_LWS_CALLBACK_CLIENT_RECEIVE   = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
