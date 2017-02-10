@@ -645,41 +645,8 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
       source = this.attr("data-source") || undefined,
+      template = this.attr("data-template") || undefined,
       options;
-
-    if (spec && spec.hasValue("v-ui:optionValue")) {
-      options = spec["v-ui:optionValue"];
-    } else if (source) {
-      source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-        return options = eval(match);
-      });
-    } else if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-      var queryResult = query(veda.ticket, queryPrefix).result;
-      if (queryResult.length) {
-        var individuals = get_individuals(veda.ticket, queryResult);
-        options = individuals.map(function (json) {
-          return new veda.IndividualModel(json);
-        });
-      }
-    } else {
-      options = [];
-    }
-
-    function populate() {
-      if (options.length) {
-        select.empty();
-        first_opt.text(placeholder).data("value", null).appendTo(select);
-        options.map(function (value, index) {
-          if (index >= 100) return;
-          var opt = first_opt.clone().appendTo(select);
-          opt.text( veda.Util.formatValue(value) ).data("value", value);
-          if ( isSingle && individual.hasValue(property_uri, value) ) {
-            opt.attr("selected", "true");
-          }
-        });
-      }
-    }
 
     populate();
 
@@ -691,25 +658,72 @@
       }
     });
 
-    function handler(doc_property_uri) {
-      if (doc_property_uri === property_uri) {
-        populate();
-      }
-    }
     individual.on("individual:propertyModified", handler);
     this.one("remove", function () {
       individual.off("individual:propertyModified", handler);
     });
 
+    if (template) {
+      this.removeAttr("data-template");
+    }
+
+    function renderValue (value) {
+      if (template) {
+        var individual = value;
+        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      } else {
+        return veda.Util.formatValue(value);
+      }
+    }
+
+    function populate() {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
+        options = spec["v-ui:optionValue"];
+      } else if (source) {
+        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          return options = eval(match);
+        });
+      } else if (queryPrefix) {
+        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        var queryResult = query(veda.ticket, queryPrefix).result;
+        if (queryResult.length) {
+          var individuals = get_individuals(veda.ticket, queryResult);
+          options = individuals.map(function (json) {
+            return new veda.IndividualModel(json);
+          });
+        }
+      } else {
+        options = [];
+      }
+      select.empty();
+      first_opt.text(placeholder).data("value", null).appendTo(select);
+      options.map(function (value, index) {
+        if (index >= 100) return;
+        var opt = first_opt.clone().appendTo(select);
+        opt.text( renderValue(value) ).data("value", value);
+        if ( isSingle && individual.hasValue(property_uri, value) ) {
+          opt.attr("selected", "true");
+        }
+      });
+    }
+
+    function handler(doc_property_uri) {
+      if (doc_property_uri === property_uri) {
+        populate();
+      }
+    }
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
-
     this.val = function (value) {
       if (!value) return $("select", this).val();
-      return $("select", this).val( veda.Util.formatValue(value) );
+      return $("select", this).val( renderValue(value) );
     }
-
+    this.populate = function () {
+      populate();
+      return this;
+    }
     this.append(control);
     return this;
   };
@@ -731,32 +745,52 @@
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
       source = this.attr("data-source") || undefined,
+      template = this.attr("data-template") || undefined,
       options;
 
-    if (spec && spec.hasValue("v-ui:optionValue")) {
-      options = spec["v-ui:optionValue"];
-    } else if (source) {
-      source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-        return options = eval(match);
-      });
-    } else if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-      var queryResult = query(veda.ticket, queryPrefix).result;
-      if (queryResult.length) {
-        var individuals = get_individuals(veda.ticket, queryResult);
-        options = individuals.map(function (json) {
-          return new veda.IndividualModel(json);
-        });
+    populate();
+
+    individual.on("individual:propertyModified", handler);
+    this.one("remove", function () {
+      individual.off("individual:propertyModified", handler);
+    });
+
+    if (template) {
+      this.removeAttr("data-template");
+    }
+
+    function renderValue (value) {
+      if (template) {
+        var individual = value;
+        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      } else {
+        return veda.Util.formatValue(value);
       }
-    } else {
-      options = [];
     }
 
     function populate() {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
+        options = spec["v-ui:optionValue"];
+      } else if (source) {
+        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          return options = eval(match);
+        });
+      } else if (queryPrefix) {
+        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        var queryResult = query(veda.ticket, queryPrefix).result;
+        if (queryResult.length) {
+          var individuals = get_individuals(veda.ticket, queryResult);
+          options = individuals.map(function (json) {
+            return new veda.IndividualModel(json);
+          });
+        }
+      } else {
+        options = [];
+      }
       control.empty();
       options.map(function (value) {
         var hld = holder.clone().appendTo(control);
-        var lbl = $("label", hld).append( veda.Util.formatValue(value) );
+        var lbl = $("label", hld).append( renderValue(value) );
         var chk = $("input", lbl).data("value", value);
         if ( individual.hasValue(property_uri, value) ) {
           chk.attr("checked", "true");
@@ -773,17 +807,11 @@
       });
     }
 
-    populate();
-
     function handler(doc_property_uri) {
       if (doc_property_uri === property_uri) {
         populate();
       }
     }
-    individual.on("individual:propertyModified", handler);
-    this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
-    });
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
@@ -798,6 +826,10 @@
 
     this.val = function (value) {
       if (!value) return $("input", this).map(function () { return this.value });
+      populate();
+      return this;
+    }
+    this.populate = function () {
       populate();
       return this;
     }
@@ -822,32 +854,52 @@
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
       source = this.attr("data-source") || undefined,
+      template = this.attr("data-template") || undefined,
       options;
 
-    if (spec && spec.hasValue("v-ui:optionValue")) {
-      options = spec["v-ui:optionValue"];
-    } else if (source) {
-      source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-        return options = eval(match);
-      });
-    } else if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-      var queryResult = query(veda.ticket, queryPrefix).result;
-      if (queryResult.length) {
-        var individuals = get_individuals(veda.ticket, queryResult);
-        options = individuals.map(function (json) {
-          return new veda.IndividualModel(json);
-        });
+    populate();
+
+    individual.on("individual:propertyModified", handler);
+    this.one("remove", function () {
+      individual.off("individual:propertyModified", handler);
+    });
+
+    if (template) {
+      this.removeAttr("data-template");
+    }
+
+    function renderValue (value) {
+      if (template) {
+        var individual = value;
+        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      } else {
+        return veda.Util.formatValue(value);
       }
-    } else {
-      options = [];
     }
 
     function populate() {
+      if (spec && spec.hasValue("v-ui:optionValue")) {
+        options = spec["v-ui:optionValue"];
+      } else if (source) {
+        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          return options = eval(match);
+        });
+      } else if (queryPrefix) {
+        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        var queryResult = query(veda.ticket, queryPrefix).result;
+        if (queryResult.length) {
+          var individuals = get_individuals(veda.ticket, queryResult);
+          options = individuals.map(function (json) {
+            return new veda.IndividualModel(json);
+          });
+        }
+      } else {
+        options = [];
+      }
       control.empty();
       options.map(function (value) {
         var hld = holder.clone().appendTo(control);
-        var lbl = $("label", hld).append( veda.Util.formatValue(value) );
+        var lbl = $("label", hld).append( renderValue(value) );
         var rad = $("input", lbl).data("value", value);
         if ( individual.hasValue(property_uri, value) ) {
           rad.attr("checked", "true");
@@ -864,17 +916,11 @@
       });
     }
 
-    populate();
-
     function handler(doc_property_uri) {
       if (doc_property_uri === property_uri) {
         populate();
       }
     }
-    individual.on("individual:propertyModified", handler);
-    this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
-    });
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
@@ -889,6 +935,10 @@
 
     this.val = function (value) {
       if (!value) return $("input", this).map(function () { return this.value });
+      populate();
+      return this;
+    }
+    this.populate = function () {
       populate();
       return this;
     }
