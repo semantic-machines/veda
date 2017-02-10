@@ -1,6 +1,6 @@
 module veda.util.tests_tools;
 
-import std.uuid, std.datetime;
+import std.uuid, std.datetime, std.file;
 import veda.onto.individual, veda.onto.resource, veda.common.type, veda.onto.lang;
 
 public Individual generate_new_test_individual()
@@ -21,4 +21,27 @@ public Individual generate_new_test_individual()
     new_indv_A.addResource("rdfs:label", Resource(false));
 
     return new_indv_A;
+}
+
+public string get_test_path ()
+{
+    try
+    {
+        mkdir("./tmp");
+    }
+    catch (Exception ex)
+    {
+    }
+
+    string path = "./tmp/" ~ randomUUID().toString();
+
+    try
+    {
+        mkdir(path);
+    }
+    catch (Exception ex)
+    {
+    }
+
+	return path;
 }

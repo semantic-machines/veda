@@ -178,8 +178,6 @@ TransactionItem *[] transaction_queue;
 
 public ResultCode commit()
 {
-    //if (transaction_buff.values.length > 0)
-    //	writeln ("@ script: commit #1");
 
     foreach (item; transaction_queue)
     {
@@ -194,28 +192,14 @@ public ResultCode commit()
         //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
         ResultCode rc;
-//        if (item.cmd == INDV_OP.PUT)
-//        {
         rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.ADD_IN)
-//        {
-//            rc = g_context.add_to_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.SET_IN)
-//        {
-//            rc = g_context.set_in_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.REMOVE_FROM)
-//        {
-//            rc = g_context.remove_from_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.REMOVE)
-//        {
-//            rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, ignore_freeze).result;
-//        }
 
-        if (rc != ResultCode.OK)
+        if (rc == ResultCode.No_Content)
+        {
+        	log.trace ("WARN!: Rejected attempt to save an empty object: %s", item.indv);
+        }
+
+        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
         {
             log.trace("FAIL COMMIT");
             return rc;
@@ -224,16 +208,8 @@ public ResultCode commit()
         //log.trace ("SUCCESS COMMIT");
     }
 
-
-
-    //if (transaction_buff.values.length > 0)
-    //	writeln ("@ script: commit #e");
-
     transaction_buff  = transaction_buff.init;
     transaction_queue = transaction_queue.init;
-
-    //if (transaction_buff.values.length > 0)
-    //	writeln ("@ script: commit #e1");
 
     return ResultCode.OK;
 }
@@ -655,11 +631,11 @@ unittest
     import veda.onto.lang;
 	import veda.util.tests_tools;    
 
-    ScriptVM script_vm;
-
     Logger   log = new Logger("test", "log", "V8");
 
     Context  ctx = new PThreadContext("", "test", log, "");
+
+    ScriptVM script_vm;
     script_vm = get_ScriptVM(ctx);
 
     assert(script_vm !is null);
@@ -691,12 +667,12 @@ unittest
 
     assert(script.compiled_script !is null);
 
-    TransactionItem *ti = transaction_buff.get("test-individual", null);
+    TransactionItem *ti = transaction_buff.get(new_indv_A.uri, null);
     assert(ti is null);
 
     script.compiled_script.run();
 
-    TransactionItem *ti1 = transaction_buff.get("test-individual", null);
+    TransactionItem *ti1 = transaction_buff.get(new_indv_A.uri, null);
     assert(ti1 !is null);
 
     Individual indv_B;

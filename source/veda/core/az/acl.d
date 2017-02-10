@@ -403,28 +403,22 @@ public bool acl_check_for_reload(void delegate() load)
 unittest
 {
     import veda.core.az.right_set;
+    import veda.util.tests_tools;
 
     Logger log = new Logger("test", "log", "ACL");
 
-
-
-    Authorization storage = new Authorization("tmp/az", DBMode.RW, "test", log);
-
+	string test_path = get_test_path ();
+	string az_path = test_path ~ "/az";
+	
     try
     {
-        mkdir("./tmp");
+        mkdir(az_path);
     }
     catch (Exception ex)
     {
     }
-
-    try
-    {
-        mkdir("./tmp/az");
-    }
-    catch (Exception ex)
-    {
-    }
+    
+    Authorization storage = new Authorization(az_path, DBMode.RW, "test", log);
 
     assert(storage !is null);
 
