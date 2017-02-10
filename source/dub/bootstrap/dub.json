@@ -15,6 +15,8 @@
     	    "../../veda/util/queue.d",
     	    "../../veda/util/tools.d",
 	    "../../veda/util/container.d",
+    	    "../../veda/onto/individual.d"
+    	    "../../veda/onto/resource.d"
     	    "../../veda/util/tests_tools.d"
 	],
 	"configurations": [
