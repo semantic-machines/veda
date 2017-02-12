@@ -1,11 +1,20 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js');
-
+/**
+ * Нажимает на кнопку delete
+ *@param driver
+*/
 function del(driver) {
     driver.findElement({css:'.delete-state'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'delete' button");});
     driver.switchTo().alert().accept();
 }
+
+/**
+ * Проверка нахождения элемента
+ *@param driver
+ *@param element - элемент
+*/
 
 function check(driver, element) {
     driver.findElements({css:''+element}).then(function(elements_arr){
@@ -16,12 +25,45 @@ function check(driver, element) {
     }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find any "+ element);});
 }
 
+/**
+ * Проверка состояни до и после нажатия кнопки
+ *@param a - состояние до нажатия кнопки
+ *@param b - состояние после нажатия кнопки
+ *@param button - кнопка
+*/
 function equal(a, b, button) {
     if(a == b) {
         console.trace("Seems " + button + " does not work");
         process.exit(1);
     }
 }
+
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Open create net document form;
+ * 3.Create flow from input to output -> Delete flow -> Check flow is no on canvas;
+ * 4.Create task1 -> Copy task1(task2) -> Delete task1 -> Delete task2 -> Check task is no on canvas; 
+ * 5.Create condition -> Check condition;
+ * 6.Default state(state1) -> Zoom-out(state2) -> Equal state1 & state2;
+ * 7.Zoom-in -> Zoom-in(state3) -> Equal state1 & state3;
+ * 8.Zoom-default(state4) -> Equal state3 & state4;
+ * 9.Full-width -> Check canvas in full-width;
+ * 10.Save net -> Check save;
+ * 11.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Открываем форму создания сети;
+ * 3.Соединяем стрелкой вход и выход -> удаляем стрелку -> Проверяем удалена ли она;
+ * 4.Создаем задачу1 -> Копируем ее(задача2) -> Удаляем задачу1 -> Удаляем задачу2 -> Проверяем, что задач нет;
+ * 5.Создаем состояние -> Проверяем создалось ли оно;
+ * 6.Обычное состояние(состояние1) -> Уменьшаем масштаб(состояние2) -> Проверяем, что они разные;
+ * 7.Увеличиваем масштаб -> Увеличиваем масштаб(состояние3) -> Проверяем, что состояние1 и состояние3 разные;
+ * 8.Обычное состояние(состояние4) -> Проверяем, что состояние4 и состояние3 разные;
+ * 9.Проверяем, что после нажатия, редактор стал во всю ширину.
+ * 10.Сохраняем сеть -> Проверяем сохранение;
+ * 11.Выход;
+*/
+
 
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
@@ -69,15 +111,15 @@ basic.getDrivers().forEach(function (drv) {
 
     driver.findElement({css:'.zoom-in'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
+    driver.findElement({css:'.zoom-in'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-in' button");});
+    driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-in');
 
-    driver.findElement({css:'.zoom-out'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-out' button");});
-    driver.findElement({css:'.zoom-out'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-out' button");});
     driver.findElement({css:'.zoom-default'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'zoom-default' button");});
-    driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
+    driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {a == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-default');
 
