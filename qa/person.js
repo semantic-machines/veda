@@ -3,9 +3,15 @@ var webdriver = require('selenium-webdriver'),
     assert = require('assert');
 
 module.exports = {
-  /**
-   * Создать Персону с указанием уникального значения в качестве отчества
-   */
+    /**
+     * Создать Персону с указанием уникального Имени, Фамилии, Отчества, Даты Рождения
+     * @param driver
+     * @param drv
+     * @param lastName - Фамилия
+     * @param firstName - Имя
+     * @param middleName - Отчество
+     * @param date - Дата рождения.
+     */
   createPerson: function (driver, drv, lastName, firstName, middleName, date) {
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
     //driver.sleep(basic.FAST_OPERATION);

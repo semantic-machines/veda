@@ -4,6 +4,14 @@ var webdriver = require('selenium-webdriver'),
   timeStamp = ''+Math.round(+new Date()/1000);
     assert = require('assert');
 
+/**
+ * Проверка количества всех элементов, созданыых элементов, обновленных элементов в журнале
+ *@param driver
+ *@param totalCount - необходимое количество всех элементов в журнале
+ *@param createCount - необходимое количество созданных элементов в журнале
+ *@param updateCount - необходимое количество обновленных элементов в журнале
+*/
+
 function assertCounts(driver, totalCount, createCount, updateCount) {
   //    Go to journal
   driver.wait
@@ -37,6 +45,11 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
   });
 }
 
+/**
+ * Обновление текущего значения shortLabel
+ *@param driver 
+ *@param key - значение, на которое необходимо поменять текущее shortLabel;
+*/
 
 function update(driver, key) {
   basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
@@ -53,6 +66,24 @@ function update(driver, key) {
   driver.findElement({id:'save'}).click()
     .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
 }
+
+/**
+ * 1.Open page -> Login(as karpovrt);
+ * 2.Create Action(fill label, responsible, shortLabel) -> Save;
+ * 3.Check journal -> Update shortLabel ->
+ * -> Check journal -> No update shortLabel ->
+ * -> Check journal -> Update shortLabel ->
+ * -> Check journal;
+ * 4.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем Мероприятие(заполняем label, responsible, shortLabel) -> Сохраняем;
+ * 3.Проверяем количество записей в журнале -> Изменяем shortLabel ->
+ * -> Проверяем количество записей в журнале -> Не изменяем shortlabel ->
+ * -> Проверяем количество записей в журнале -> Изменяем shortLabel ->
+ * -> Проверяем количество записей в журнале;
+ * 4.Выход;
+*/
 
 
 basic.getDrivers().forEach (function (drv) {

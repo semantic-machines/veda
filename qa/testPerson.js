@@ -3,6 +3,17 @@ var webdriver = require('selenium-webdriver'),
     person = require('./person.js'),
     timeStamp = ''+Math.round(+new Date()/1000);
 
+/**
+ * 1.Open Page -> Login(as karpovrt);
+ * 2.Create Person -> Open fullText search document form -> Search our person -> Check result -> Check result is right
+ * 3.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем Персону -> Открываем форму Полнотекстового поиска -> Ищем созданную персону -> Проверяем, что поиск дал результат ->
+ * -> Проверяем, что результат верный;
+ * 3.Конец;
+ */
+
 basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 	

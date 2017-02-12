@@ -135,6 +135,10 @@ module.exports = {
     ).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find user last name")});
   },
 
+    /**
+     * logout
+     * @param driver
+     */
   logout: function(driver) {
     driver.findElement({id:'menu'}).click()
       .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});
@@ -151,7 +155,12 @@ module.exports = {
     driver.findElement({css:'input[id="password"]'}).clear()
       .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'password' field");});
   },
-
+  /**
+   * Проверка элемента на видимость
+   * @param driver
+   * @param element - элемент который проверяем.
+   * @param time - промежуток времени, втечение которого проверяем.
+  */
   isVisible: function (driver, element, time) {
     driver.wait
     (
@@ -159,7 +168,12 @@ module.exports = {
       time
     ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems " + element +" is not visible");});
   },
-
+  /**
+   * Проверка кнопки на активность
+   * @param driver
+   * @param element - элемент который проверяем.
+   * @param time - промежуток времени, втечение которого проверяем.
+  */
   isEnabled: function (driver, element, time) {
     driver.wait
     (
