@@ -116,7 +116,7 @@ v-cal:FunctionCalendarTemplate
   rdfs:label "Шаблон для класса v-cal:FunctionCalendar"@ru ;
   v-ui:forClass v-cal:FunctionCalendar ;
   v-ui:template """
-<div class="container sheet">
+<div class="container-fluid sheet">
   <br>
   <div id="fullcalendar"></div>
 </div>

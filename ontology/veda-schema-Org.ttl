@@ -679,6 +679,9 @@ v-s:OrganizationTemplate
     modal.modal({"show": false});
     $("body").append(modal);
     modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
     var cntr = $(".modal-body", modal),
         _class = new veda.IndividualModel("v-s:ContractorProfile"),
         profile = new veda.IndividualModel(),
@@ -703,6 +706,9 @@ v-s:OrganizationTemplate
     modal.modal({"show": false});
     $("body").append(modal);
     modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
     var cntr = $(".modal-body", modal),
         _class = new veda.IndividualModel("v-s:Subsidiary"),
         subsidiary = new veda.IndividualModel(),
@@ -722,8 +728,12 @@ v-s:OrganizationTemplate
   $("#add-ContractorCreateChangeRequest", template).click(function () {
     var modal = $("#notification-modal-template").html();
     modal = $(modal);
-    modal.modal();
-    modal.appendTo(template);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
     var cntr = $(".modal-body", modal),
         _class = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequest"),
         request = new veda.IndividualModel(),
@@ -735,7 +745,7 @@ v-s:OrganizationTemplate
     request["v-s:backwardProperty"] = [new veda.IndividualModel("mnd-s:hasContractorCreateChangeRequest")];
     request["mnd-s:additionalContractorProfile"] = [ individual["rdfs:label"].join(" ") + " " + veda.Util.formatDate(new Date()) ];
     request["v-s:hasContractor"]= individual["v-s:hasContractor"];
-  request.one("individual:beforeReset", function () {
+    request.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
     });
     request.one("individual:afterSave", function () {

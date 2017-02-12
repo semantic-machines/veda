@@ -3,8 +3,6 @@ body {
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
   color: #233333;
   background-color: #f0f0f0;
-  /*background-color: #f0f2f0;
-  padding-top: 74px;*/
 }
 
 /* Sheets */
@@ -19,7 +17,6 @@ body {
 .sheet .sheet,
 .modal .sheet {
   border: none!important;
-  /*padding: 0!important;*/
 }
 
 .container .sheet {
@@ -34,32 +31,11 @@ body {
 
 .container .container {
   width: inherit;
-  border: none!important;
 }
 
-/*
-.container-fluid .container,
-.container .container-fluid,
-.container-fluid .container-fluid,
-.modal .container,
-.modal .container-fluid {
-  border: none!important;
+.modal .container {
+  width: inherit;
 }
-
-.container, .container-fluid {
-  background-color: #fff;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-
-nav .container-fluid, nav .container {
-  padding-top: 0!important;
-  padding-bottom: 0!important;
-  background-color: transparent;
-  border: none!important;
-}*/
 
 /* Gray tooltip */
 .tooltip-inner {

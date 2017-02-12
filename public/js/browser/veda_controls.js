@@ -1335,23 +1335,24 @@
         var newVal = createValue();
         if ( inModal ) {
           var modal = $("#individual-modal-template").html();
-          var $modal = $(modal);
-          var ok = $("#ok", $modal).click(function () {
+          modal = $(modal).modal({"show": false});
+          $("body").append(modal);
+          modal.modal("show");
+          create.one("remove", function () {
+            modal.modal("hide").remove();
+          });
+          var ok = $("#ok", modal).click(function () {
             select(newVal);
           });
-          $modal.modal({"show": false});
-          $("body").append($modal);
-          $modal.modal("show");
-          var cntr = $(".modal-body", $modal);
+          var cntr = $(".modal-body", modal);
           newVal.one("individual:beforeReset", function () {
-            $modal.modal("hide").remove();
+            modal.modal("hide").remove();
           });
           newVal.one("individual:afterSave", function () {
             select(newVal);
-            $modal.modal("hide").remove();
+            modal.modal("hide").remove();
           });
           var tmpl = newVal["rdf:type"][0].template ? $( newVal["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-          tmpl.removeClass("container").addClass("container-fluid");
           $(".action", tmpl).remove();
           newVal.present(cntr, tmpl, "edit");
           var template = cntr.children("[resource]");
