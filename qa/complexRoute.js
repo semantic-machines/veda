@@ -3,15 +3,15 @@ var basic = require('./basic.js'),
     assert = require('assert');
 
 
-function findUp(driver) {
-    return driver.findElements({css:'a[property="rdfs:label"]'}).then(function (result) {
-        return result[3];
-    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find any task");});
+function findUp(driver, element, number) {
+    return driver.findElements({css:'' + element + ''}).then(function (result) {
+        return result[number];
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + element);});
 }
 
 function clickUp(element) {
     element.click()
-        .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on task");});
+        .thenCatch(function (e) {basic.errorHandler(e,"Cannot click");});
 }
 
 function decision(driver, number) {
@@ -36,7 +36,7 @@ function open(driver) {
 
 function openMsg(driver, number, commentValue, chooseValue) {
     open(driver);
-    driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
+    driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
     decision(driver, number);
     if (commentValue === '+') {
         driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
@@ -76,14 +76,13 @@ module.exports = {
         basic.logout(driver);
     },
 
-    checkRouteStatus: function (driver, element, color, count) {
+    checkRouteStatus: function (driver, element, color, count, docNumber) {
         basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
         driver.findElement({id:'submit'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Submit/Отправить' button");});
         driver.sleep(basic.SLOW_OPERATION);
-        driver.findElement({css:'span[rel="v-wf:isProcess"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'экземпляр маршрута: Комплексный маршрут' button");});
+        driver.wait(findUp(driver, 'span[rel="v-wf:isProcess"]', docNumber), basic.FAST_OPERATION).then(clickUp);
         driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'.glyphicon-share-alt'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-share-alt'");});

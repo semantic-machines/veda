@@ -78,20 +78,18 @@ v-l:MainPageTemplate
 
   <div id="main"></div>
 
-  <nav id="copyright" class="navbar-fixed-bottom">
-    <div class="container">
-      <div class="pull-left">
-        <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
-      </div>
-      <div class="pull-right text-muted" about="v-s:vedaInfo">
-        <a href="http://www.semantic-machines.com">
-          © <span about="v-l:SemanticMachines" property="rdfs:label"></span>.
-        </a>
-        <span about="v-l:License" property="rdfs:label"></span>
-        <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
-          GPLv3.
-        </a>
-      </div>
+  <nav id="copyright" class="navbar-fixed-bottom container">
+    <div class="pull-left">
+      <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
+    </div>
+    <div class="pull-right text-muted" about="v-s:vedaInfo">
+      <a href="http://www.semantic-machines.com">
+        © <span about="v-l:SemanticMachines" property="rdfs:label"></span>.
+      </a>
+      <span about="v-l:License" property="rdfs:label"></span>
+      <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
+        GPLv3.
+      </a>
     </div>
   </nav>
 </div>
@@ -212,7 +210,7 @@ v-l:WelcomeAspectTemplate
   rdfs:label "Template for Welcome aspect class"@en ;
   v-ui:forClass v-l:WelcomeAspect ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container sheet">
   <div class="jumbotron">
     <div class="row">
       <div class="col-md-7">
@@ -275,7 +273,6 @@ v-l:MainMenu
   v-l:menuItem v-l:Search ;
   v-l:menuItem v-l:Divider ;
   v-l:menuItem v-l:Graph ;
-  v-l:menuItem v-l:Console ;
   v-l:menuItem v-l:Tests ;
   v-l:menuItem v-l:Divider ;
   v-l:menuItem v-l:Clear ;
@@ -334,12 +331,6 @@ v-l:Graph
   rdfs:label "Graph"@en ;
   rdfs:label "Граф"@ru ;
   v-l:staticLink "#/graph"^^xsd:string ;
-.
-v-l:Console
-  rdf:type v-l:Menu ;
-  rdfs:label "Console"@en ;
-  rdfs:label "Консоль"@ru ;
-  v-l:staticLink "#/console"^^xsd:string ;
 .
 v-l:Tests
   rdf:type v-l:Menu ;

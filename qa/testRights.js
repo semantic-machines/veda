@@ -5,7 +5,7 @@ var webdriver = require('selenium-webdriver'),
 
 /**
  * Поиск
- *
+ * @param driver
  * @param somethingUnique - имя шаблона, документ которого ищется
  * @param count - количество документов, ожидаемое по окончанию поиска
  */
@@ -27,8 +27,22 @@ function search(driver, somethingUnique, count) {
         basic.EXTRA_SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
 }
-
-
+/**
+ * 1.Open page -> Login(as karpovrt);
+ * 2.Create Person1 -> Open fulltext search document form -> Search Person1 -> result: 1 document;
+ * 3.Logout -> Login(as bychinat);
+ * 4.Search Person1 -> Result: 0 document;
+ * 5.Create Person2 -> Logout;
+ * 6.Login(as karpovrt) -> Search Person2 -> Result: 1 document
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем Персону1 -> Открываем форму полнотекстового поиска -> Проверяем, что находится созданная Персона1;
+ * 3.Выходим из системы -> Входим в систему под bychinat;
+ * 4.Ищем Персону1 -> Проверяем, что ничего не находится;
+ * 5.Cоздаем Персону2 -> Выходим из системы;
+ * 6.Входим в систему под karpovrt -> Ищем Персону2 -> Проверяем, что она находится;
+ * 7.Выход;
+*/
 
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);

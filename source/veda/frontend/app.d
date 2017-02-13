@@ -12,7 +12,7 @@ veda.common.logger.Logger _log;
 veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "frontend");
+        _log = new veda.common.logger.Logger("veda-core-webserver-" ~ text(http_port), "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -112,12 +112,13 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 
 HTTPListener[ ushort ] listener_2_port;
 
+short opt_http_port = 0;
+
 shared static this()
 {
-    short http_port = 0;
-    short ws_port   = 0;
-
-    readOption("http_port", &http_port, "The listen http port");
+    readOption("http_port", &opt_http_port, "The listen http port");
+    if (opt_http_port != 0)
+        http_port = opt_http_port;
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
@@ -141,7 +142,7 @@ shared static this()
 
     veda.core.common.context.Context context;
 
-    context = new PThreadContext(node_id, "frontend", log, "127.0.0.1:8088/ws");
+    context = new PThreadContext(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 
@@ -203,7 +204,7 @@ shared static this()
 
     //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-    if (http_port == 0)
+    if (opt_http_port == 0)
     {
         Resources listeners = node.resources.get("v-s:listener", Resources.init);
         foreach (listener_uri; listeners)
@@ -223,7 +224,7 @@ shared static this()
     }
     else
     {
-        is_exist_listener = start_http_listener(context, http_port);
+        is_exist_listener = start_http_listener(context, opt_http_port);
     }
 }
 

@@ -72,17 +72,87 @@ v-s:PsAttachmentForInternalAccountingDocument
 .
 
 # ------------------------------------------------------------
+
+v-s:CurrencyExchangeRate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Курс обмена валюты"@ru ;
+  rdfs:label "Currency exchange rate"@en ;
+.
+
+v-s:PsHasCurrency_CurrencyExchangeRate
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:hasCurrencySource ;
+  v-ui:forProperty v-s:hasCurrencyTarget ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
+  v-ui:placeholder "Select currency"@en ;
+  v-ui:placeholder "Выберите валюту"@ru ;
+  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
+  rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
+.
+v-s:PsRate_CurrencyExchangeRate
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:rate ;
+  v-ui:forProperty v-s:date ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
+  rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
+.
+
+v-s:hasCurrencyExchangeRatePurpose
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Purpose"@en ;
+  rdfs:label "Назначение"@ru ;
+  rdfs:range v-s:CurrencyExchangeRatePurpose ;
+  rdfs:domain  v-s:CurrencyExchangeRate;
+.
+
+v-s:CurrencyExchangeRatePurpose
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Currency exchange rate purpose"@en ;
+  rdfs:label "Назначение курса обмена валюты"@ru ;
+.
+
+v-s:PsRate_CurrencyExchangeRate
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
+  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
+.
+
+# ------------------------------------------------------------
 v-s:Price
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
 .
 # v-s:sum
 # v-s:hasCurrency
+# v-s:sumRuble
+# v-s:date
 
+v-s:sumRuble
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Sum in rubles"@en ;
+  rdfs:label "Сумма в рублях"@ru ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Price ;
+.
 v-s:PSsumPrice
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Price ;
@@ -145,6 +215,10 @@ v-s:PShasPriceCost
 
 v-s:Contract
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Financial ;
   rdfs:subClassOf v-s:ClassifiedRus ;
@@ -153,10 +227,7 @@ v-s:Contract
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Projectable ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:subClassOf v-s:Enumerated ;
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
@@ -166,6 +237,14 @@ v-s:hasContractSpecification
   rdfs:label "Детализация контракта"@ru ;
   rdfs:range v-s:ContractSpecification ;
   rdfs:domain v-s:Contractual ;
+.
+# ------------------------------------------------------------
+v-s:AdditionalAgreement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Contract ;
+  rdfs:subClassOf v-s:BackwardLink;
+  rdfs:label "Additional agreement"@en ;
+  rdfs:label "Дополнительное соглашение"@ru ;
 .
 # ------------------------------------------------------------
 v-s:ContractRequest
@@ -244,6 +323,7 @@ v-s:DeliveryConditions
 # ------------------------------------------------------------
 v-s:ContractPassport
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
@@ -295,7 +375,7 @@ v-s:ContractorTemplate
   rdfs:label "Template for v-s:Contractor class"@en ;
   rdfs:label "Шаблон для класса v-s:Contractor"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h2>
     <span about="v-s:Contractor" property="rdfs:label"></span>:
     <span about="@" property="rdfs:label"></span>
@@ -407,7 +487,7 @@ v-s:ContractorTemplate
         <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
       </a>
     </div>
-    <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext dropdown"></veda-control>
+    <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext"></veda-control>
   </div>
   <hr>
   <div id="systemProperties">
@@ -420,6 +500,76 @@ v-s:ContractorTemplate
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
+  </div>
+</div>
+  """ ;
+.
+
+v-s:CurrencyExchangeRateTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
+  rdfs:label "Шаблон для класса v-s:CurrencyExchangeRate"@ru ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:CurrencyExchangeRate" property="rdfs:label"></span>:
+    <span about="@" property="rdfs:label"></span>
+  </h2>
+  <hr class="margin-sm">
+  <div class="row text-center">
+    <div class="col-md-2">
+      <em about="v-s:hasCurrency" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-2">
+      <em about="v-s:hasCurrency" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-2">
+      <em about="v-s:rate" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-2">
+      <em about="v-s:date" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-2">
+      <em about="v-s:hasCurrencyExchangeRatePurpose" property="rdfs:label"></em>
+    </div>
+  </div>
+  <div class="row text-center">
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencySource" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control data-type="select" rel="v-s:hasCurrencySource" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-1">
+      <strong>/</strong>
+    </div>
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencyTarget" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control data-type="select" rel="v-s:hasCurrencyTarget" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-1">
+      <strong>=</strong>
+    </div>
+    <div class="col-md-2">
+      <div property="v-s:rate" class="view -edit search"></div>
+      <veda-control data-type="decimal" property="v-s:rate" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <div property="v-s:date" class="view -edit search"></div>
+      <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencyExchangeRatePurpose" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+      <veda-control data-type="link" rel="v-s:hasCurrencyExchangeRatePurpose" class="-view edit search fulltext dropdown"></veda-control>
+    </div>
+  </div>
+  <!-- BUTTONS -->
+  <div class="actions view edit -search">
+    <br>
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
   </div>
 </div>
   """ ;

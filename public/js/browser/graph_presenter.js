@@ -266,7 +266,7 @@ veda.Module(function GraphPresenter(veda) { "use strict";
     addNode(root);
     addOutLinks(root.id);
 
-    var height = ( $(window).height() - graph.offset().top - 70 ) + "px";
+    var height = ( $("#copyright").offset().top - graph.offset().top - 50 ) + "px";
     var options = {
       width: "100%",
       height: height,

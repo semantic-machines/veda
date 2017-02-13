@@ -1,7 +1,7 @@
 module veda.server.nanomsg_channel;
 
 import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.path, std.json;
-import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.onto.onto, veda.core.impl.thread_context;
+import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.onto.onto, veda.core.impl.thread_context, veda.core.common.define;
 import kaleidic.nanomsg.nano;
 
 // ////// Logger ///////////////////////////////////////////
@@ -40,7 +40,7 @@ void nanomsg_channel(string thread_name)
         log.trace("success bind to %s", url);
 
         if (context is null)
-            context = new PThreadContext("cfg:standart_node", thread_name, log, null);
+            context = new PThreadContext("cfg:standart_node", thread_name, individuals_db_path, log, null);
 
         // SEND ready
         receive((Tid tid_response_reciever)

@@ -18,7 +18,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var address = "ws://" + location.hostname + ":8088/ccus",
         socket,
-        msgInterval,
+        msgTimeout,
         msgDelay = 1000,
         connectTimeout,
         connectTries = 0,
@@ -33,11 +33,11 @@ veda.Module(function UpdateService(veda) { "use strict";
       return !!ready;
     }
     this.start = function () {
-      console.log("update service started");
+      //console.log("update service started");
       return ready = true;
     }
     this.stop = function () {
-      console.log("update service stopped");
+      //console.log("update service stopped");
       return ready = false;
     }
 
@@ -47,8 +47,9 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     this.synchronize = function() {
       if (!self.ready()) { return }
-      clearInterval(msgInterval);
-      msgInterval = undefined;
+      if (msgTimeout) {
+        msgTimeout = clearTimeout(msgTimeout);
+      }
       list = {};
       delta = {};
       if (socket && socket.readyState === 1) {
@@ -74,16 +75,17 @@ veda.Module(function UpdateService(veda) { "use strict";
         operation: "+",
         updateCounter: updateCounter
       };
-      if (!msgInterval) {
-        msgInterval = setInterval(pushDelta, msgDelay);
+      if (!msgTimeout) {
+        msgTimeout = setTimeout(pushDelta, msgDelay);
       }
     }
 
     this.unsubscribe = function (uri) {
       if (!self.ready()) { return }
       if (uri === "*" || !uri) {
-        clearInterval(msgInterval);
-        msgInterval = undefined;
+        if (msgTimeout) {
+          msgTimeout = clearTimeout(msgTimeout);
+        }
         list = {};
         delta = {};
         if (socket && socket.readyState === 1) {
@@ -98,8 +100,8 @@ veda.Module(function UpdateService(veda) { "use strict";
           delta[uri] = {
             operation: "-"
           };
-          if (!msgInterval) {
-            msgInterval = setInterval(pushDelta, msgDelay);
+          if (!msgTimeout) {
+            msgTimeout = setTimeout(pushDelta, msgDelay);
           }
         } else {
           --list[uri].subscribeCounter;
@@ -120,19 +122,18 @@ veda.Module(function UpdateService(veda) { "use strict";
           unsubscribe.push("-" + uri);
         }
       }
-      subscribeMsg = subscribe.join(",");
       unsubscribeMsg = unsubscribe.join(",");
-      delta = {};
-      if (socket && socket.readyState === 1 && subscribeMsg) {
-        socket.send(subscribeMsg);
-        //console.log("client -> server:", subscribeMsg);
-      }
+      subscribeMsg = subscribe.join(",");
       if (socket && socket.readyState === 1 && unsubscribeMsg) {
         socket.send(unsubscribeMsg);
         //console.log("client -> server:", unsubscribeMsg);
       }
-      clearInterval(msgInterval);
-      msgInterval = undefined;
+      if (socket && socket.readyState === 1 && subscribeMsg) {
+        socket.send(subscribeMsg);
+        //console.log("client -> server:", subscribeMsg);
+      }
+      delta = {};
+      msgTimeout = undefined;
     }
 
     socket = initSocket();
@@ -214,13 +215,9 @@ veda.Module(function UpdateService(veda) { "use strict";
 
           individual.update();
           updateCounter = individual["v-s:updateCounter"][0];
-          list[uri] = list[uri] ? {
-            subscribeCounter: list[uri].subscribeCounter,
-            updateCounter: updateCounter
-          } : {
-            subscribeCounter: 1,
-            updateCounter: updateCounter
-          };
+          if (list[uri]) {
+            list[uri].updateCounter = updateCounter;
+          }
         } catch (e) {
           //console.log("error: individual update service failed for id =", uri, e);
         }

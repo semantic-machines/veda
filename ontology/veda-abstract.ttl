@@ -841,7 +841,7 @@ v-s:count
 v-s:rate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Rate"@en ;
-  rdfs:label "Степень"@ru ;
+  rdfs:label "Ставка"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
@@ -863,6 +863,20 @@ v-s:hasCurrency
   rdf:type owl:ObjectProperty ;
   rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasCurrencySource
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Source currency"@en ;
+  rdfs:label "Исходная валюта"@ru ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasCurrencyTarget
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Target currency"@en ;
+  rdfs:label "Целевая валюта"@ru ;
   rdfs:range v-s:Currency ;
   rdfs:domain v-s:Measurable ;
 .

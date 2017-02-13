@@ -83,7 +83,7 @@ v-df:ApprovalTaskTemplate
   rdfs:label "Approval task template"@en ;
   rdfs:label "Шаблон формы задачи утверждения"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:ApprovalTask" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <br>
   <div class="row">
@@ -194,7 +194,7 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
   v-ui:maxCardinality 10 ;
-  v-ui:minCardinality 0 ;
+  v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
   v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
@@ -283,7 +283,7 @@ v-df:QuestionRouteStartFormTemplate
   rdfs:label "QuestionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи задать вопрос"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:QuestionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -334,7 +334,7 @@ v-df:InstructionRouteStartFormTemplate
   rdfs:label "InstructionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи исполнить поручение"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:InstructionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -388,7 +388,7 @@ v-df:TaskRouteStartFormTemplate
   rdfs:label "TaskRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи ознакомиться"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:TaskRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -439,7 +439,7 @@ v-df:DistributionRouteStartFormTemplate
   rdfs:label "DistributionRouteStartForm template"@en ;
   rdfs:label "Шаблон формы задачи рассылки"@ru ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3><span about="v-df:DistributionRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
   <em about="v-wf:processedDocument" property="rdfs:label"></em>
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
@@ -861,7 +861,7 @@ v-df:DecisionTemplate2
 #  <div class="panel-body">
 #    <em about="v-s:responsible" property="rdfs:label"></em>
 #    <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-#    <veda-control rel="v-s:responsible" data-type="link" class="fulltext dropdown -view edit search"></veda-control>
+#    <veda-control rel="v-s:responsible" data-type="link" class="fulltext -view edit search"></veda-control>
 #    <br>
 #    <em about="v-s:description" property="rdfs:label"></em>
 #    <div property="v-s:description" class="view -edit -search"></div>
@@ -1128,7 +1128,7 @@ v-wf:DecisionRedirectTemplate
 <div>
   <em about="v-wf:to" property="rdfs:label"></em>
   <div rel="v-wf:to" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-  <veda-control rel="v-wf:to" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+  <veda-control rel="v-wf:to" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
@@ -1266,6 +1266,8 @@ v-wf:permission_on_simple_routes_start_from
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:permissionObject v-df:QuestionRouteStartForm ;
   v-s:permissionObject v-df:InstructionRouteStartForm ;
+  v-s:permissionObject v-df:TaskRouteStartForm ;
+  v-s:permissionObject v-df:DistributionRouteStartForm ;
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 

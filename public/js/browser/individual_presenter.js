@@ -903,7 +903,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
     propertyContainer.empty();
     individual[property_uri].map( function (value, i) {
-      var valueHolder = $("<span class='value-holder'/>");
+      var valueHolder = $("<span class='value-holder'></span>");
       propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
       var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
       var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
@@ -991,7 +991,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       btnRemove.click(function () {
         individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
-        if ( value.is("v-s:Embedded") ) { value.delete(); }
+        if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", individual) ) {
+          value.delete();
+        }
       }).mouseenter(function () {
         valTemplate.addClass("red-outline");
       }).mouseleave(function () {
@@ -1116,7 +1118,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   function genericTemplate (individual, _class) {
     // Construct generic template
     var propTmpl = $("#generic-property-template").html();
-    var template = $("<div/>").append( $("#generic-class-template").html() );
+    var template = $($("#generic-class-template").html());
     var properties;
 
     if (_class) {

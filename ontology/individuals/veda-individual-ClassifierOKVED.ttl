@@ -4231,3 +4231,35 @@ d:adc7fb24adae47569fdb9c871b31f803
   v-s:description "74.30.3"^^xsd:string;
   rdfs:label "Испытания и анализ физико-механических свойств материалов и веществ"^^xsd:string;
 .
+d:a8a1fa57c-5476-f363-58a6-59aa6c80e58d 
+  a v-s:ClassifierOKVED;
+  v-s:updateCounter "2"^^xsd:integer;
+  v-s:hasParentLink d:e580a16e3f654befad3722f63cd621be;
+  v-s:description "51.55"^^xsd:string;
+  v-s:registrationNumber "46.75"^^xsd:string;
+  rdfs:label "Торговля оптовая химическими продуктами"^^xsd:string;
+.
+d:ac7466f23-994c-6eec-a122-4f4cb23fb989 
+  a v-s:ClassifierOKVED;
+  v-s:updateCounter "2"^^xsd:integer;
+  v-s:hasParentLink d:a8a1fa57c-5476-f363-58a6-59aa6c80e58d ;
+  v-s:description "51.55.3"^^xsd:string;
+  v-s:registrationNumber "46.75.2"^^xsd:string;
+  rdfs:label "Торговля оптовая промышленными химикатами"^^xsd:string;
+.
+d:aa94a4aa4-c1df-414c-0377-4e46b01457c6 
+  a v-s:ClassifierOKVED;
+  v-s:updateCounter "2"^^xsd:integer;
+  v-s:hasParentLink d:48c1991cc7964c1ba703080499d9fc2b;
+  v-s:description "52.21.2"^^xsd:string;
+  v-s:registrationNumber "63.21.2"^^xsd:string;
+  rdfs:label "Деятельность вспомогательная, связанная с автомобильным транспортом"^^xsd:string;
+.
+d:a76debaa9-b5de-2c95-ee1a-a9cc2007f7e7 
+  a v-s:ClassifierOKVED;
+  v-s:updateCounter "2"^^xsd:integer;
+  v-s:hasParentLink d:48c1991cc7964c1ba703080499d9fc2b;
+  v-s:description "52.29"^^xsd:string;
+  v-s:registrationNumber "63.40"^^xsd:string;
+  rdfs:label "Деятельность вспомогательная прочая, связанная с перевозками"^^xsd:string;
+.

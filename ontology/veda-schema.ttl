@@ -473,7 +473,7 @@ v-s:DocumentLinkRulesTemplate
   rdfs:label "Template for DocumentLinkRules"@en ;
   v-ui:forClass v-s:DocumentLinkRules ;
   v-ui:template """
-  <div class="container">
+  <div class="container sheet">
     <h3 property="v-s:displayName" class="view edit search"></h3>
     <br>
     <div class="row">
