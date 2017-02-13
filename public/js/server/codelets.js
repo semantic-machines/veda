@@ -18,7 +18,7 @@ function change_rights_actor(process, task, rightset, actor)
         var doc_id = process.getInputVariable('docId');
 //print ("@JS doc_id=", toJson (doc_id));
 //print ("@JS rightset=", toJson (rightset));
-        var rset = []; 
+        var rset = [];
         if (rightset[0].data.indexOf('r')>=0) {
             rset.push(can_read);
         }
@@ -30,17 +30,17 @@ function change_rights_actor(process, task, rightset, actor)
         {
             //print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
             //print ("@JS2 executor=", toJson(process.getExecutor()));
-    	    var executor = (process.getLocalVariable (actor))? process.getLocalVariable (actor) : process.getExecutor();
-    
-    	    executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
+          var executor = (process.getLocalVariable (actor))? process.getLocalVariable (actor) : process.getExecutor();
 
-	    if (!executor)
-	    {
-		print ("@JS executor undefined, actor=", process.getLocalVariable (actor));
-	    }
+          executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
 
-    	    if (executor)
-            	addRight(ticket, rset, getUri (executor), getUri (doc_id));	    
+      if (!executor)
+      {
+    print ("@JS executor undefined, actor=", process.getLocalVariable (actor));
+      }
+
+          if (executor)
+              addRight(ticket, rset, getUri (executor), getUri (doc_id));
 
             var instanceOf = getUri(process['v-wf:instanceOf']);
 
@@ -80,7 +80,7 @@ function complete_process(ticket, process, _event_id)
 
 function interrupt_process(ticket, process, _event_id)
 {
-    change_process_status(ticket, process, 'v-wf:Interrupted', _event_id);    
+    change_process_status(ticket, process, 'v-wf:Interrupted', _event_id);
 }
 
 function change_process_status(ticket, process, status, _event_id)
@@ -149,10 +149,11 @@ function get_type_of_docId(task)
 
 function is_in_docflow_and_set_if_true(task)
 {
-    
-// # 285
-    return [get_new_variable('result', newUri(false))];
-    
+
+// # 322
+//// # 285
+//    return [get_new_variable('result', newUri(false))];
+
     try
     {
         var res = false;
@@ -175,11 +176,14 @@ function is_in_docflow_and_set_if_true(task)
                     var in_doc_flow = get_individual(task.ticket, net_doc_id);
                     //print("[Z3Z] := "+toJson(in_doc_flow));
 
-                    if (in_doc_flow)
-                    {
-                        res = true;
-                    }
-                    else
+//                   if (in_doc_flow)
+//                   {
+// # 322
+//                        res = true;
+//                        res = false;
+//
+//                    }
+//                    else
                     {
                         var new_doc = {
                             '@': net_doc_id,
@@ -190,7 +194,7 @@ function is_in_docflow_and_set_if_true(task)
                             }]
                         };
                         put_individual(task.ticket, new_doc, _event_id);
-                        
+
                         var add_to_document = {
                             '@': doc_id[0].data,
                             'v-wf:isProcess': newUri(process['@'])
@@ -256,7 +260,7 @@ function add_value_to_document(process, task)
          print(e.stack);
      }
 }
- 
+
 function set_value_to_document(process, task)
 {
      try
@@ -289,8 +293,8 @@ function set_value_to_document(process, task)
      {
          print(e.stack);
      }
-} 
- 
+}
+
 function create_use_transformation(process, task)
 {
     try
@@ -443,7 +447,7 @@ function onto_rename(ticket, document, execute_script)
             if (is_update)
             {
                 put_individual(ticket, document, "");
-            	//print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+              //print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
             //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
             }
         }

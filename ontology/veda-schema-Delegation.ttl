@@ -120,21 +120,21 @@ v-s:RequestDelegationTemplate
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
-<div class="container">
+<div class="container sheet">
   <h2 about="v-s:RequestDelegation" property="rdfs:label"></h2>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegator" property="rdfs:label"></em>
       <div about="@" id="delegator-value" rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <div rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
-      <veda-control id="delegator-control" data-type="link" rel="v-s:delegator" class="-view -edit search fulltext dropdown"></veda-control>
+      <veda-control id="delegator-control" data-type="link" rel="v-s:delegator" class="-view -edit search fulltext"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegatedPosition" property="rdfs:label"></em>
       <div rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view edit search"></div>
-      <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext dropdown"></veda-control>
+      <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext"></veda-control>
       <div id="positions" class="-view edit -search">
         <div class="checkbox">
           <label>
@@ -149,7 +149,7 @@ v-s:RequestDelegationTemplate
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegate" property="rdfs:label"></em>
       <div rel="v-s:delegate" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-      <veda-control data-type="link" rel="v-s:delegate" class="-view edit search fulltext dropdown"></veda-control>
+      <veda-control data-type="link" rel="v-s:delegate" class="-view edit search fulltext"></veda-control>
     </div>
   </div>
   <div class="row">

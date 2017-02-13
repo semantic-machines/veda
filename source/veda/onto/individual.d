@@ -319,3 +319,22 @@ public struct Individual
         return this;
     }
 }
+
+unittest
+    {
+		import std.datetime;
+		import veda.onto.lang;
+		import veda.util.tests_tools;
+		
+		Individual new_indv_A = generate_new_test_individual ();        
+        string bin = new_indv_A.serialize ();
+        
+		Individual new_indv_B;         
+        new_indv_B.deserialize (bin);
+        
+		assert (new_indv_B.compare(new_indv_A));
+        new_indv_B.setResources("rdfs:label", [Resource(decimal (cast(long)122234, cast(byte)25))]);
+		assert (!new_indv_B.compare(new_indv_A));
+		
+		writeln("unittest [Individual serialize, deserialize] Ok");
+	}

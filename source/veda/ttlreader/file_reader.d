@@ -69,7 +69,7 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
+    Context context = new PThreadContext(process_name, "file_reader", individuals_db_path, log, parent_url);
     sticket = context.sys_ticket();
 
     string[] uris =
@@ -149,7 +149,8 @@ void main(char[][] args)
             }
         }
 
-        processed(files, context);
+        bool is_need_check_changes = !need_reload_ontology;
+        processed(files, context, is_need_check_changes);
     }
 
     // ? now variable [oFiles] is empty, reinit
@@ -173,22 +174,20 @@ void main(char[][] args)
 
                         foreach (i; 0 .. cnt)
                         {
-                            if (changes[ i ].event == DWFileEvent.MODIFIED || changes[ i ].event == DWFileEvent.CREATED)
-                            {
-                                string file_name = changes[ i ].path.dup;
+                            string file_name = changes[ i ].path.dup;
 
-                                if (file_name.indexOf(".#") > 0)
-                                    continue;
+                            if (file_name.indexOf(".#") > 0)
+                                continue;
 
-                                _files ~= file_name;
-                            }
+                            _files ~= file_name;
                         }
 
 //                        processed(files, context);
                         if (_files.length > 0)
                         {
-							Thread.sleep(dur!("seconds")(3));                        	
-                            processed(_files, context);
+                            Thread.sleep(dur!("seconds")(3));
+                            bool is_need_check_changes = !need_reload_ontology;
+                            processed(_files, context, is_need_check_changes);
                         }
 /*
                         if (_files.length > 0)
@@ -241,7 +240,7 @@ string digestFile(Hash) (string filename) if (isDigest!Hash)
     return str_res.dup;
 }
 
-Individual[ string ] check_and_read_changed(string[] changes, Context context)
+Individual[ string ] check_and_read_changed(string[] changes, Context context, bool is_check)
 {
     Individual[ string ] individuals;
     Individual *[ string ][ string ] individuals_2_filename;
@@ -257,23 +256,32 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
             string     file_uri       = "d:" ~ baseName(fname);
             Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
 
-            if (indv_ttrl_file is Individual.init)
+            if (!is_check)
             {
                 is_reload = true;
                 files_to_load ~= fname;
-                log.trace("file is new, %s", fname);
+                log.trace("file %s", fname);
             }
             else
             {
-                string new_hash = digestFile!MD5(fname);
-                string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
-
-                if (new_hash != old_hash)
+                if (indv_ttrl_file is Individual.init)
                 {
-                    log.trace("file is modifed (hash), %s", fname);
+                    is_reload = true;
+                    files_to_load ~= fname;
+                    log.trace("file is new, %s", fname);
                 }
-                files_to_load ~= fname;
-                is_reload = true;
+                else
+                {
+                    string new_hash = digestFile!MD5(fname);
+                    string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
+
+                    if (new_hash != old_hash)
+                    {
+                        log.trace("file is modifed (hash), %s", fname);
+                    }
+                    files_to_load ~= fname;
+                    is_reload = true;
+                }
             }
         }
     }
@@ -356,13 +364,13 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
     return individuals;
 }
 
-void processed(string[] changes, Context context)
+void processed(string[] changes, Context context, bool is_check_changes)
 {
     Ticket sticket = context.sys_ticket();
 
     log.trace("processed:find systicket [%s]", sticket.id);
 
-    Individual[ string ] individuals = check_and_read_changed(changes, context);
+    Individual[ string ] individuals = check_and_read_changed(changes, context, is_check_changes);
 
     log.trace("processed:check_and_read_changed, count individuals=[%d]", individuals.length);
 
@@ -394,7 +402,7 @@ void processed(string[] changes, Context context)
                         indv.removeResource("v-s:actualVersion");
 //                        log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
-                        if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
+                        if (indv_in_storage == Individual.init || is_check_changes == false || indv.compare(indv_in_storage) == false)
                         {
                             if (indv.getResources("rdf:type").length > 0)
                             {

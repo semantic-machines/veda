@@ -32,6 +32,7 @@
         "../../veda/bind/nano.d",
 	"../../veda/core/util/utils.d",
         "../../veda/bind/libraptor_header.d",
+            "../../veda/util/tests_tools.d",
 	"../../veda/util/raptor2individual.d"
 	],
 	"configurations": [

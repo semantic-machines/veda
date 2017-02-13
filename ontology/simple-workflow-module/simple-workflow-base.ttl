@@ -401,6 +401,7 @@ s-wf:ComplexRouteStartForm
 
 s-wf:SimpleRouteStartForm
   rdf:type rdfs:Class ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-wf:StartForm ;
   rdfs:label "Стартовая форма сети Простой маршрут"@ru ;
   rdfs:label "Simple route start form"@en ;
@@ -510,6 +511,15 @@ s-wf:ComplexRouteStartForm_informing
   rdf:type rdf:Property ;
   rdfs:label "Информирование"@ru ;
   rdfs:label "Informing"@en ;
+  rdfs:domain s-wf:ComplexRouteStartForm ;
+  rdfs:range s-wf:SimpleRouteStartForm ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:ComplexRouteStartForm_introduction
+  rdf:type rdf:Property ;
+  rdfs:label "Ознакомление"@ru ;
+  rdfs:label "Introduction"@en ;
   rdfs:domain s-wf:ComplexRouteStartForm ;
   rdfs:range s-wf:SimpleRouteStartForm ;
   rdfs:isDefinedBy s-wf: ;
@@ -655,20 +665,14 @@ s-wf:SimpleRouteStartFormMinimal_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <strong about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></strong>
-        <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search dropdown fulltext"></veda-control>
-        <br>
-        <strong about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></strong>
-        <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
-        <veda-control data-type="string" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
-        <br>
-      </div>
-    </div>
-  </div>
+<div style="min-height:300px">
+  <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
+  <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+  <veda-control data-type="text" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+</div>
   """ ;
 .
 
@@ -678,23 +682,17 @@ s-wf:SimpleRouteStartFormShort_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-  <div>
-    <div class="panel panel-default">
-      <div class="panel-body">
-    <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-      <div class="row">
-        <div class="col-md-6">
-      <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
-        <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
-        </div>
-        <div class="col-md-6">
-        </div>
-      </div>
-      </div>
-    </div>
-    <br />
-  </div>
+<div style="min-height:300px">
+  <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
+  <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+  <veda-control data-type="text" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+  <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+</div>
   """ ;
 .
 
@@ -704,28 +702,28 @@ s-wf:SimpleRouteStartFormFull_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div class="subroot">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div about="@" class="view edit -search" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-      <div class="row">
-        <div class="col-md-6">
-          <strong about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></strong>
-          <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
-          <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
-        </div>
-        <div class="col-md-6">
-          <strong about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></strong>
-          <div about="@" property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
-          <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
-        </div>
-      </div>
-      <br />
-      <strong about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></strong>
-      <div about="@" property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
-      <veda-control about="@" data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext dropdown"></veda-control>
+<div style="min-height:300px">
+  <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
+  <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
+  <em about="s-wf:SimpleRouteStartForm_comment" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_comment" class="view -edit -search"></div>
+  <veda-control data-type="text" property="s-wf:SimpleRouteStartForm_comment" class="-view edit -search"></veda-control>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="s-wf:SimpleRouteStartForm_deadlineDays" property="rdfs:label"></em>
+      <div property="s-wf:SimpleRouteStartForm_deadlineDays" class="view -edit -search"></div>
+      <veda-control data-type="integer" property="s-wf:SimpleRouteStartForm_deadlineDays" class="-view edit -search"></veda-control>
+    </div>
+    <div class="col-md-6">
+      <em about="s-wf:SimpleRouteStartForm_deadlineDate" property="rdfs:label"></em>
+      <div property="s-wf:SimpleRouteStartForm_deadlineDate" class="view -edit -search"></div>
+      <veda-control data-type="dateTime" property="s-wf:SimpleRouteStartForm_deadlineDate" class="-view edit -search"></veda-control>
     </div>
   </div>
+  <em about="s-wf:SimpleRouteStartForm_controller" property="rdfs:label"></em>
+  <div property="s-wf:SimpleRouteStartForm_controller" class="view -edit -search"></div>
+  <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_controller" class="-view edit -search fulltext"></veda-control>
 </div>
   """ ;
 .
@@ -757,6 +755,7 @@ s-wf:ComplexRouteStartForm_Template
 <script>
 var stages = [ // Default values fill
   'informing',
+  'introduction',
   'coordination1',
   'coordination2',
   'coordination3',
@@ -787,6 +786,8 @@ if (doc) {
   });
 
   // DEFAULT
+  routes['introduction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionExamined')]")];
+  routes['introduction'][simple+'task_label'] = veda.Util.mlstring("Ознакомление", "Introduction");
   for (var i = 1; i <= 6; i++) {
     routes['coordination'+i][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAgreed'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
     routes['coordination'+i][simple+'task_label'] = veda.Util.mlstring("Согласовать", "Coordinate");
@@ -943,10 +944,23 @@ if (doc) {
   }
 //---------------------------------------------------------------------------------------------------------------------Заявка на создание/изменение контрагента
   if (doc['rdf:type'][0].id === "mnd-s:ContractorCreateChangeRequest") {
-    routes['approval'][simple+'participant'] = [new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')]; // Специалист УЗ по ведению кредиторов
-    routes['approval'][simple+'visible'] = [true];
-    routes['approval'][simple+'editable'] = [true];
-    routes['approval'][simple+'deadlineDays'] = [10];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['instruction'][simple+'deadlineDays'] = [10];
+    if (doc.hasValue('mnd-s:hasThemeOfContractorCreateChangeRequest')) {
+      if (doc['mnd-s:hasThemeOfContractorCreateChangeRequest'][0].id == 'd:74cb9e0342034039820a56c35d855dcb' || doc['mnd-s:hasThemeOfContractorCreateChangeRequest'][0].id == 'd:a46ef0cc2-295d-0cdd-cd7c-09634a7769fa') {
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:946589f6-44a6-4c84-96d7-e6f55eb6a76f')]; // (Специалист по ведению дебиторов)
+      } else if (doc['mnd-s:hasThemeOfContractorCreateChangeRequest'][0].id == 'd:a75ec9bc7-601f-584c-3064-8b3f63de7806') {
+        routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')]; // (Специалист по ведению кредитора)
+      } else {
+        if (doc.hasValue('v-s:isDebitor') && doc['v-s:isDebitor'][0] == true) {
+          routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:946589f6-44a6-4c84-96d7-e6f55eb6a76f')]; // (Специалист по ведению дебиторов)
+        }
+        if (doc.hasValue('v-s:isCreditor') && doc['v-s:isCreditor'][0] == true) {
+          routes['instruction'][simple+'participant'] = [new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')]; // (Специалист по ведению кредитора)
+        }
+      }
+    }
   }
 
 //--------------------------------------------------------------------------------Претензия-------
@@ -1373,8 +1387,8 @@ if (doc) {
       }
     }
   }
-//-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт
-  if (doc['rdf:type'][0].id === "mnd-s:Contract") {
+//-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт / Дополнительное соглашение
+  if (doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") {
 
  // СОГЛАСОВАНИЕ 1
 
@@ -1415,28 +1429,27 @@ if (doc) {
           routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(cr["v-s:author"]); // Автор заявки на контракт
         }
       }
-      if (doc.hasValue('mnd-s:hasContractSpecification')) {
-        if (doc['mnd-s:hasContractSpecification'][0].hasValue('v-s:hasSector') && doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][0].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
-          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
-        }
-        if (doc['mnd-s:hasContractSpecification'][0].hasValue('v-s:hasSector') && doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][0].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
-          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
-        }
-        if (doc['mnd-s:hasContractSpecification'][0].hasValue('v-s:hasSector') && doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][0].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
-          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
-        }
-      }
-    } else {
-      if (doc.hasValue('v-s:responsibleDepartment')) {
-        var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
-        if (dep.hasValue('v-s:hasChief')) {
-          routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель подразделения-заказчика
-        }
+      if (doc.hasValue('mnd-s:hasContractSpecification') && doc['mnd-s:hasContractSpecification'][0].hasValue('v-s:hasSector')) {
+        var i = 0;
+        do {
+          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+            routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
+          }
+          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+            routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
+          }
+          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+            routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
+          }
+          i++;
+        } while (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i])
       }
     }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
-      routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020138")); // Гл инженер УЛО (Навратил С)
-      routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71025127")); // Зам директора УЛО (Кухоткин)
+      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003202")) {
+        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020138")); // Гл инженер УЛО (Навратил С)
+        routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71025127")); // Зам директора УЛО (Кухоткин)
+      }
     }
     if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && !doc.hasValue('v-s:supplierContractor') && !doc.hasValue('v-s:supplier')) {
       routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017956")); // Нач УПБ
@@ -1455,7 +1468,7 @@ if (doc) {
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71005342")); // Нач ОТО
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71014233")); // Нач Казнач отд
     }
-    if (!doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination') && doc.hasValue('v-s:hasContractScope') && doc['v-s:hasContractScope'][0].id == 'd:f1ef19aec63145dcbc9cac8087682efd') {
+    if (!doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination') && doc.hasValue('v-s:hasContractScope') && doc['v-s:hasContractScope'][0].id != 'd:f1ef19aec63145dcbc9cac8087682efd') {
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")); // ПУ. Согласование контрактов
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa")); // Бух. Согласование контрактов
     }
@@ -1473,9 +1486,9 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
           routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
-        }        
+        }
       }
-    } 
+    }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
         routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
@@ -1513,21 +1526,21 @@ if (doc) {
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [10];
     if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-      if (doc.hasValue('v-s:initiator') && new IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50001781")) {
+      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50001781")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017804")); // Технический директор
       }
-      if (doc.hasValue('v-s:initiator') && new IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50001780")) {
+      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50001780")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71015289")); // Финансовый директор
       }
-      if (doc.hasValue('v-s:initiator') && new IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003102")) {
+      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003102")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018870")); // Директор по производству
       }
-      if (doc.hasValue('v-s:initiator') && new IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003202")) {
-        routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017819")); // Директор по ЛО 
+      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003202")) {
+        routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017819")); // Директор по ЛО
       }
-
-      routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71019086")); // Директор по перс
-
+      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50002528")) {
+        routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71019086")); // Директор по перс
+      }
       if (doc.hasValue('mnd-s:hasCriterionOfContractApprovalNecessity')) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:21cb0985-e473-455c-b173-f61a208ebaf4")); // Холдинг
       }
@@ -1545,7 +1558,7 @@ if (doc) {
         doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
           routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
-        }        
+        }
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 700000) {
           routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020115")); // Нач УЗ
         }
@@ -1565,12 +1578,12 @@ if (doc) {
             routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020115")); // Нач УЗ
           }
         }
-      }    
+      }
     }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
-      }      
+      }
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 700000) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_70006692")); // Гл Бухгалтер
       }
@@ -1606,13 +1619,13 @@ if (doc) {
     routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом для дальнейшей работы')];
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['mnd-s:executorSpecialistOfContract']); // Исполнитель по контракту
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['mnd-s:supportSpecialistOfContract']); // Специалист по сопровождению
-    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:47ba4b3a-da9a-412f-bd42-b11b0c847229']); // ПУ Регистратор контрактов
+    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:47ba4b3a-da9a-412f-bd42-b11b0c847229')); // ПУ Регистратор контрактов
     if (doc.hasValue('mnd-s:hasContractDirection') && doc['mnd-s:hasContractDirection'][0].id == 'd:d4cf39d06aec4a9aafcd4663f7996125') {
       if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-        routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:4ec5dead-aab6-4789-bdd1-94e036ae4a16']); // Специалист ОТО имп       
+        routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:4ec5dead-aab6-4789-bdd1-94e036ae4a16')); // Специалист ОТО имп
       }
       if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
-        routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:SYK-CCDG_position']); // Специалист ОТО эксп
+        routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:SYK-CCDG_position')); // Специалист ОТО эксп
       }
     }
     if (doc.hasValue('v-s:hasBudgetCategory') && (
@@ -1620,16 +1633,17 @@ if (doc) {
       doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
       doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
       doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
-      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:ff670646-d509-4ff9-92f2-482c255441e8']); // Спец ОУП
-      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:554f8555-af9a-436d-ada9-09458614e878']); // Спец по ИЗ
-      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:mondi_position_71021843']); // Нач УриР
-      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:mondi_position_71024461']); // Нач ОКС УриР
+      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:ff670646-d509-4ff9-92f2-482c255441e8')); // Спец ОУП
+      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:554f8555-af9a-436d-ada9-09458614e878')); // Спец по ИЗ
+      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71021843')); // Нач УриР
+      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71024461')); // Нач ОКС УриР
     }
-    if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
+
+    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
-      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['d:3faff975-440f-4499-98c5-eb5eaf4fb04a']); // Специалист по ведению кредиторов
+      routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')); // Специалист по ведению кредиторов
     }
 
 /*
@@ -1715,7 +1729,7 @@ if (doc) {
           routes['review'][simple+'deadlineDays'] = [10];
           routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
 
-          if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
+          if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
             && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
             && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
             && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
@@ -1764,140 +1778,6 @@ if (doc) {
 */
   }
 
-//-----------------------------------------------------------------------------------------------------------------------------------------------------Дополнительное соглашение
-  if (doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") {
-    if (doc.hasValue('v-s:hasDocumentKind') && doc['v-s:hasDocumentKind'][0].id == 'd:074d6f4add1b4aebaf1cf7bc0332eb3d') {
-      // Заказ Спецификация. Разовая закупка
-      routes['coordination1'][simple+'visible'] = [true];
-      routes['coordination1'][simple+'editable'] = [true];
-      routes['coordination1'][simple+'deadlineDays'] = [10];
-
-      routes['sign'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель по контракту
-      routes['sign'][simple+'visible'] = [true];
-      routes['sign'][simple+'editable'] = [true];
-      routes['sign'][simple+'deadlineDays'] = [10];
-
-      routes['approval'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель по контракту
-      routes['approval'][simple+'visible'] = [true];
-      routes['approval'][simple+'editable'] = [true];
-      routes['approval'][simple+'deadlineDays'] = [10];
-      routes['approval'][simple+'comment'] = [new String('Подписать у контрагента')];
-
-      routes['review'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; // Регистратор документов СЛПК
-      routes['review'][simple+'visible'] = [true];
-      routes['review'][simple+'editable'] = [false];
-      routes['review'][simple+'deadlineDays'] = [10];
-      routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
-    }
-    if (doc.hasValue('v-s:hasDocumentKind') && doc['v-s:hasDocumentKind'][0].id == 'd:fbf562d8a6a04d72b1034f7f7e4d21de') {
-      // Контракт
-      if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-        // Контракт о закупке
-        if (doc.hasValue('v-s:hasBudgetCategory') && (
-          doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-          doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-          doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-          doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
-          // CAPEX
-          routes['informing'][simple+'participant'] = [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")]; // Специалист ОУП
-
-          routes['coordination1'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
-          if (doc.hasValue('v-s:responsibleDepartment')) {
-            var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
-            if (dep.hasValue('v-s:hasChief')) {
-            routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
-            }
-          }
-          routes['coordination1'][simple+'visible'] = [true];
-          routes['coordination1'][simple+'editable'] = [false];
-          routes['coordination1'][simple+'deadlineDays'] = [10];
-
-          // TODO добавить людей
-          routes['coordination2'][simple+'visible'] = [true];
-          routes['coordination2'][simple+'editable'] = [true];
-          routes['coordination2'][simple+'deadlineDays'] = [10];
-
-          routes['coordination3'][simple+'participant'] = [
-            new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa"), // Главный бухгалтер
-            new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")]; // Юрисконсульт
-          routes['coordination3'][simple+'visible'] = [true];
-          routes['coordination3'][simple+'deadlineDays'] = [10];
-          if (!doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination')) {
-            // Упрощенное согласование
-            routes['coordination3'][simple+'editable'] = [true];
-          } else {
-            routes['coordination3'][simple+'editable'] = [false];
-          }
-
-          routes['coordination4'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
-          routes['coordination4'][simple+'visible'] = [true];
-          routes['coordination4'][simple+'editable'] = [true];
-          routes['coordination4'][simple+'deadlineDays'] = [2];
-          routes['coordination4'][simple+'comment'] = [new String('Согласовать с Контрагентом текcт Контракта и подготовить документы к подписанию')];
-
-          routes['sign'][simple+'visible'] = [true];
-          routes['sign'][simple+'editable'] = [true];
-          routes['sign'][simple+'deadlineDays'] = [10];
-
-          routes['approval'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
-          routes['approval'][simple+'visible'] = [true];
-          routes['approval'][simple+'editable'] = [false];
-          routes['approval'][simple+'deadlineDays'] = [10];
-          routes['approval'][simple+'comment'] = [new String('Поставить отметку о подписании контрагентом')];
-
-          routes['review'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; // Регистратор документов СЛПК
-          routes['review'][simple+'visible'] = [true];
-          routes['review'][simple+'editable'] = [false];
-          routes['review'][simple+'deadlineDays'] = [10];
-          routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
-
-          if (doc['v-s:supplier'] && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
-            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
-            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
-            && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
-              routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:3faff975-440f-4499-98c5-eb5eaf4fb04a")]; // Специалист по ведению кредиторов
-              routes['examination'][simple+'visible'] = [true];
-              routes['examination'][simple+'editable'] = [false];
-              routes['examination'][simple+'deadlineDays'] = [10];
-          }
-        }
-      }
-      if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
-        // Контракт о продаже
-          routes['coordination1'][simple+'visible'] = [true];
-          routes['coordination1'][simple+'editable'] = [true];
-          routes['coordination1'][simple+'deadlineDays'] = [10];
-
-          routes['coordination2'][simple+'visible'] = [true];
-          routes['coordination2'][simple+'editable'] = [true];
-          routes['coordination2'][simple+'deadlineDays'] = [10];
-
-          routes['coordination3'][simple+'visible'] = [true];
-          routes['coordination3'][simple+'editable'] = [true];
-          routes['coordination3'][simple+'deadlineDays'] = [10];
-
-          routes['coordination4'][simple+'participant'] = [
-            new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa"), // Главный бухгалтер
-            new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")]; // Юрисконсульт
-          routes['coordination4'][simple+'visible'] = [true];
-          routes['coordination4'][simple+'editable'] = [true];
-          routes['coordination4'][simple+'deadlineDays'] = [10];
-
-          routes['approval'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
-          routes['approval'][simple+'visible'] = [true];
-          routes['approval'][simple+'editable'] = [false];
-          routes['approval'][simple+'deadlineDays'] = [10];
-          routes['approval'][simple+'comment'] = [new String('Поставить отметку о подписании контрагентом')];
-
-          routes['review'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
-          routes['review'][simple+'visible'] = [true];
-          routes['review'][simple+'editable'] = [false];
-          routes['review'][simple+'deadlineDays'] = [10];
-          routes['review'][simple+'comment'] = [new String('Оформить подписанный контракт')];
-
-      }
-    }
-  }
 //----------------------------------------------------------------------------------------------------------------------------------Заявка на cброс сточных вод
   if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
     // #COORDINATION1---------------------------------------------------------------------------------------------------------------------------------------
@@ -1968,6 +1848,11 @@ if (doc) {
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
+  /*
+      routes['introduction'][simple+'participant'] = [
+                     new veda.IndividualModel("td:AndreyBychin-Analyst2")]
+      routes['introduction'][simple+'visible'] = [true];
+  */
       routes['coordination1'][simple+'participant'] = [
                    new veda.IndividualModel("td:AndreyBychin-Analyst2")]
       routes['coordination1'][simple+'visible'] = [true];
@@ -1981,8 +1866,8 @@ if (doc) {
       $('.'+stage, template).hide();
     }
     if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-      $('.'+stage+' > div', template).attr('about', '@');
-      $('.'+stage+' > div', template).removeAttr('data-embedded');
+      $('.'+stage, template).attr('about', '@');
+      $('.'+stage, template).removeAttr('data-embedded');
       $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]', template).remove();
       sub.save();
     }
@@ -2000,113 +1885,176 @@ $('#save_and_start_process', template).on('click', function () {
 });
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
-<div class="container">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-6">
-        <span about="s-wf:ComplexRouteStartForm" property="rdfs:label" />
-        </div>
-        <div class="col-md-6 text-right">
-          <a href="#/@"><span property="@">ID</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="panel-body">
+<div class="container sheet">
+  <style scoped>
+    .col-md-6 {
+      min-height: 0px;
+    }
+  </style>
+  <h2 about="s-wf:ComplexRouteStartForm" property="rdfs:label"></h2>
+  <br>
 <!--
-      <div class="row">
-          <div class="col-md-4">
-             <em about="v-wf:processInitiator" property="rdfs:label"></em>
-             <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:processedDocument" property="rdfs:label"></em>
-             <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:forNet" property="rdfs:label"></em>
-             <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:isProcess" property="rdfs:label"></em>
-             <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-          <div class="col-md-4">
-             <em about="v-wf:useTransformation" property="rdfs:label"></em>
-             <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          </div>
-      </div>
-      <hr />
--->
-      <div class="row">
-          <div class="col-md-4 informing">
-             <em about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_informing" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination1">
-             <em about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination1" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination2">
-             <em about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination2" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination3">
-             <em about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination3" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination4">
-             <em about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination4" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination5">
-             <em about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination5" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 coordination6">
-             <em about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_coordination6" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 sign">
-             <em about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_sign" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 approval">
-             <em about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_approval" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 review">
-             <em about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_review" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 examination">
-             <em about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_examination" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 instruction">
-             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_instruction" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 instruction2">
-             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_instruction2" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 instruction3">
-             <em about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_instruction3" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
-          </div>
-          <div class="col-md-4 distribution">
-             <em about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></em>
-             <div rel="s-wf:ComplexRouteStartForm_distribution" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
-          </div>
-      </div>
-      <hr />
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-wf:processInitiator" property="rdfs:label"></em>
+      <div rel="v-wf:processInitiator" data-template="td:AppointmentTemplate2">td:AppointmentTemplate2</div>
     </div>
-    <div class="panel-footer">
-      <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
-      <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <div class="col-md-4">
+      <em about="v-wf:processedDocument" property="rdfs:label"></em>
+      <div rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    </div>
+    <div class="col-md-4">
+      <em about="v-wf:forNet" property="rdfs:label"></em>
+      <div rel="v-wf:forNet" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    </div>
+    <div class="col-md-4">
+      <em about="v-wf:isProcess" property="rdfs:label"></em>
+      <div rel="v-wf:isProcess" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    </div>
+    <div class="col-md-4">
+      <em about="v-wf:useTransformation" property="rdfs:label"></em>
+      <div rel="v-wf:useTransformation" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     </div>
   </div>
+  <hr />
+-->
+
+  <div class="row">
+    <div class="col-md-6 informing" rel="s-wf:ComplexRouteStartForm_informing" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_informing" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-embedded="true" data-template="s-wf:SimpleRouteStartFormMinimal_Template"></div>
+      </div>
+    </div>
+    <div class="col-md-6 coordination1" rel="s-wf:ComplexRouteStartForm_coordination1" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination1" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 coordination2" rel="s-wf:ComplexRouteStartForm_coordination2" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination2" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 introduction" rel="s-wf:ComplexRouteStartForm_introduction" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_introduction" property="rdfs:label"></h3>
+        </div>
+      <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+    </div>
+    </div>
+    <div class="col-md-6 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination3" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 coordination4" rel="s-wf:ComplexRouteStartForm_coordination4" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination4" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 coordination5" rel="s-wf:ComplexRouteStartForm_coordination5" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination5" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 coordination6" rel="s-wf:ComplexRouteStartForm_coordination6" data-embedded="true">
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_coordination6" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 sign" rel="s-wf:ComplexRouteStartForm_sign" data-embedded="true">
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_sign" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 approval" rel="s-wf:ComplexRouteStartForm_approval" data-embedded="true">
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_approval" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 review" rel="s-wf:ComplexRouteStartForm_review" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_review" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 instruction" rel="s-wf:ComplexRouteStartForm_instruction" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 instruction2" rel="s-wf:ComplexRouteStartForm_instruction2" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 instruction3" rel="s-wf:ComplexRouteStartForm_instruction3" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_instruction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormFull_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 examination" rel="s-wf:ComplexRouteStartForm_examination" data-embedded="true">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_examination" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+    <div class="col-md-6 distribution" rel="s-wf:ComplexRouteStartForm_distribution" data-embedded="true">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_distribution" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormMinimal_Template" data-embedded="true"></div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="actions">
+    <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+  </div>
+
 </div>
 <script>
 /*
@@ -2157,7 +2105,7 @@ s-wf:ComplexRouteTest_Template
     rdfs:label "Template for Complex route test template"@en;
     v-ui:forClass s-wf:ComplexRouteTest ;
     v-ui:template """
-<div class="container">
+<div class="container sheet">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -2205,7 +2153,7 @@ s-wf:ComplexRouteTest2_Template
   rdfs:label "Template for Complex route test template 2"@en;
   v-ui:forClass s-wf:ComplexRouteTest2 ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -2574,8 +2522,8 @@ s-wf:UserTaskFormTemplate
   }
   //# sourceURL=s-wf:UserTaskFormTemplate_pre
 </script>
-<div>
-  <div class="container">
+<div class="container">
+  <div class="sheet">
     <h2 about="@" property="rdfs:label"></h2>
     <div class="row">
       <div class="col-md-3">
@@ -2604,30 +2552,28 @@ s-wf:UserTaskFormTemplate
     </div>
     <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
     <br>
-    <div>
+    <div class="actions">
       <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
       <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-<!--  Добавить кнопку Выдать задачу
-      <div class="btn-group dropup">
+      <!--Добавить кнопку Выдать задачу-->
+      <!--div class="btn-group dropup">
         <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
           <span about="v-s:SendTask" property="rdfs:label"> </span>
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" id="standard-tasks">
         </ul>
-      </div>
--->
-      <!-- button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/ -->
-      <!-- button type="button" class="action btn btn-warning view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"/ -->
+      </div-->
     </div>
   </div>
   <br>
-  <div about="@" rel="v-wf:onDocument" class="view edit -search"></div>
+  <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
   var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
             || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
-            || (veda.user && veda.user.id === individual["v-wf:to"][0].id);
+            || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
+            || individual.rights.hasValue("v-s:canUpdate", true);
   var isOpen = !individual.hasValue("v-wf:takenDecision") || !individual.isSync();
   if (isMine && isOpen) {
     $(".radio.decision input", template).first().prop("checked", true).change();
@@ -3586,7 +3532,7 @@ s-wf:nc_oc
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_journal_to_4_PLV_actor, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
   v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;

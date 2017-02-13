@@ -2,6 +2,12 @@ var webdriver = require('selenium-webdriver'),
     timeStamp = ''+Math.round(+new Date()/1000),
     basic = require('./basic.js');
 
+/**
+ * Проверка элементов в результате поиска
+ * @param driver
+ * @param count - необходимое количество элементов
+ */
+
 function check(driver, count) {
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
     driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).clear();
@@ -23,8 +29,15 @@ function check(driver, count) {
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of elements is wrong, expected: " + count);});
 }
 
+/**
+ * Кликаем по кнопке
+ * @param driver
+ * @param button - кнопка, по которой необходимо кликнуть
+ */
+
 function clickButton(driver, button) {
     driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
+    driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
         webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
@@ -32,11 +45,30 @@ function clickButton(driver, button) {
     ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
     driver.findElement({css:'button[id="'+ button +'"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
+    driver.sleep(basic.FAST_OPERATION);
 }
+
+/**
+ * 1.Open page -> Login(as karpovrt);
+ * 2.Open create StartForm document form -> Change label -> Save StartForm; 
+ * 3.Search StartForm -> Open StartForm -> Delete StartForm;
+ * 4.Check, can't search StartForm; 
+ * 5.Search deleted StartForm with special commandline -> Recovery StarftForm ->
+ * -> Check, can search StartForm after recovery;
+ * 6.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Открываем форму создания Стартовой формы -> Вводим название -> Сохраняем;
+ * 3.Ищем созданную Стартовую форму -> Открываем ее -> Удаляем Стартовую форму;
+ * 4.Проверяем, что теперь созданную Стартовую форму не найти;
+ * 5.Вводим специальный запрос в поиске, чтобы найти удаленную Стартовую форму ->  Восстанавливаем ее ->
+ * -> Проверяем, что она появилась в поиске;
+ * 6.Выход;
+ */
 
 basic.getDrivers().forEach(function(drv){
     var driver = basic.getDriver(drv);
-    
+
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
@@ -45,7 +77,9 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'rdfs:label' field");});
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
+    driver.sleep(basic.FAST_OPERATION);
     clickButton(driver, "save");
+    driver.sleep(basic.FAST_OPERATION);
     check(driver, 1);
 
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
@@ -58,7 +92,7 @@ basic.getDrivers().forEach(function(drv){
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
     basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Search"]', basic.FAST_OPERATION);
     driver.findElement({css:'li[id="menu"] li[resource="v-l:Search"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` button");});
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `search` menu item");});
     driver.findElement({css:'#q'}).sendKeys("'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'")
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
 

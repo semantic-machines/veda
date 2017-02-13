@@ -91,7 +91,7 @@ v-ft:FunctionTasksTemplate
     .addClass("active");
   //# sourceURL=v-ft:FunctionTasksTemplate_pre
 </script>
-<div class="container">
+<div class="container sheet">
   <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>

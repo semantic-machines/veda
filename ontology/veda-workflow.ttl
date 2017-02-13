@@ -522,7 +522,7 @@ v-wf:NetTemplate
   rdfs:label "Template for Net class"@en ;
   v-ui:forClass v-wf:Net ;
   v-ui:template """
-<div class="workflow-wrapper container-fluid">
+<div class="workflow-wrapper container-fluid sheet">
   <style>
     #main {
       margin-bottom: 0px;
@@ -566,10 +566,10 @@ v-wf:NetTemplate
                 </button>
               </div>
               <div class="btn-group">
-                <button id="workflow-save-button" type="button" class="btn btn-sm btn-default" style="float:right;">
+                <button id="workflow-save-button" type="button" class="btn btn-sm btn-default">
                   <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                 </button>
-                <button id="workflow-export-ttl" type="button" class="btn btn-sm btn-default" style="float:right;">
+                <button id="workflow-export-ttl" type="button" class="btn btn-sm btn-default">
                   <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                 </button>
               </div>
@@ -599,7 +599,7 @@ v-wf:NetTemplate
 
 <script>
 var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
   fullWidth = $("#full-width", template),
   icon = $("span", fullWidth),
   propsCol = $("#props-col", template),
@@ -636,7 +636,7 @@ v-wf:ProcessTemplate
   rdfs:label "Template for Process"@en ;
   v-ui:forClass v-wf:Process ;
   v-ui:template """
-<div class="workflow-wrapper container-fluid">
+<div class="workflow-wrapper container-fluid sheet">
   <style>
     #main {
       margin-bottom: 0px;
@@ -651,6 +651,19 @@ v-wf:ProcessTemplate
           </div>
           <div class="col-md-8">
             <div class="btn-toolbar pull-right">
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-default zoom-in">
+                  <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-default zoom-default">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-default zoom-out">
+                  <span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+                </button>
+              </div>
+
               <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-default process-refresh">
                   <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
@@ -686,7 +699,7 @@ v-wf:ProcessTemplate
 
 <script>
 var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
   fullWidth = $("#full-width", template),
   icon = $("span", fullWidth),
   propsCol = $("#props-col", template),
@@ -1588,7 +1601,7 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<div></div>
+<div class="hidden"></div>
 <script>
   individual.one("individual:beforeSave", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {

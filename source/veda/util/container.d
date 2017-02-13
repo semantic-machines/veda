@@ -201,51 +201,33 @@ class Cache(T, K)
 
 unittest
 {
-    auto   cache = new Cache!(string, string)(3);
+    auto   cache = new Cache!(string, string)(3, "id1");
     string dx;
 
-    writeln("!1");
     cache.put("k1", "d1");
-    writeln("!2");
     dx = cache.get!string("k1");
-    cache.printMRU();
-    writeln("!3");
     assert(dx == "d1");
-    writeln("!4");
 
     cache.put("k2", "d2");
     dx = cache.get!string("k2");
-    cache.printMRU();
     assert(dx == "d2");
 
     dx = cache.get!string("k2");
-    cache.printMRU();
     dx = cache.get!string("k2");
-    cache.printMRU();
 
     cache.put("k3", "d3");
     dx = cache.get!string("k3");
-    cache.printMRU();
     dx = cache.get!string("k3");
-    cache.printMRU();
     dx = cache.get!string("k3");
-    cache.printMRU();
     dx = cache.get!string("k3");
-    cache.printMRU();
 
     dx = cache.get!string("k2");
-    cache.printMRU();
     dx = cache.get!string("k2");
-    cache.printMRU();
     dx = cache.get!string("k2");
-    cache.printMRU();
     dx = cache.get!string("k2");
-    cache.printMRU();
 
     cache.put("k4", "d4");
-    cache.printMRU();
     dx = cache.get!string("k1");
-    cache.printMRU();
     assert(dx != "d1");
 }
 

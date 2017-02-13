@@ -319,25 +319,25 @@ v-ui:SystemPropertiesTemplate
   <div class="row">
     <div class="col-md-3 col-xs-6">
       <em about="v-s:creator" property="rdfs:label"></em>
-      <veda-control data-type="link" rel="v-s:creator" class="-view -edit search fulltext dropdown"></veda-control>
+      <veda-control data-type="link" rel="v-s:creator" class="-view -edit search fulltext"></veda-control>
       <div about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <div rel="v-s:creator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:created" property="rdfs:label"></em>
-      <veda-control property="v-s:created" data-type="dateTime" class="-view -edit search"></veda-control>
+      <veda-control property="v-s:created" data-type="date" class="-view -edit search"></veda-control>
       <div about="@" property="v-s:created" class="view edit -search"></div>
       <div property="v-s:created" class="-view -edit search"></div>
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:lastEditor" property="rdfs:label"></em>
-      <veda-control data-type="link" rel="v-s:lastEditor" class="-view -edit search fulltext dropdown"></veda-control>
+      <veda-control data-type="link" rel="v-s:lastEditor" class="-view -edit search fulltext"></veda-control>
       <div about="@" rel="v-s:lastEditor" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <div rel="v-s:lastEditor" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:edited" property="rdfs:label"></em>
-      <veda-control data-type="dateTime" rel="v-s:edited" class="-view -edit search"></veda-control>
+      <veda-control data-type="date" property="v-s:edited" class="-view -edit search"></veda-control>
       <div about="@" property="v-s:edited" class="view edit -search"></div>
       <div property="v-s:edited" class="-view -edit search"></div>
     </div>
@@ -553,7 +553,7 @@ v-ui:ClassTemplateTemplate
   rdfs:label "Template for -Class template- class"@en ;
   v-ui:forClass v-ui:ClassTemplate ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
   <h3><span property="rdfs:label"></span> <span class="badge" property="@"></span></h3>
   <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
@@ -595,7 +595,7 @@ v-ui:ResourceTemplate
   rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="clearfix">
     <h3 class="pull-left" about="@" property="rdf:type"></h3>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
@@ -712,13 +712,11 @@ v-ui:IconModalTemplate
   template.on("click", function (e) {
     e.preventDefault();
     var newMode = "view";
-
     var parentTmpl = template.parent().closest("[resource]");
     if (parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.data("mode");
     }
     var modal;
-
     if(newMode==="view") {
       if (!individual.rights.hasValue("v-s:canUpdate", true)) {
         modal = $("#individual-modal-template").html();
@@ -726,16 +724,17 @@ v-ui:IconModalTemplate
       else if(individual.rights.hasValue("v-s:canUpdate", true)) {
         modal = $("#notification-modal-template").html();
       }
-
     } else if (newMode==="edit") {
       modal = $("#individual-modal-template").html();
     }
-
-    var $modal = $(modal).modal({"show": false});
-    $("body").append($modal);
-    $modal.modal("show");
-    var cntr = $(".modal-body", $modal);
-    var ok = $("#ok", $modal);
+    modal = $(modal).modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+    var cntr = $(".modal-body", modal);
+    var ok = $("#ok", modal);
     cntr.on("valid", function () {
       ok.removeAttr("disabled");
     });
@@ -743,7 +742,6 @@ v-ui:IconModalTemplate
     ok.attr("disabled", "disabled");
     });
     var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-    tmpl.removeClass("container").addClass("container-fluid");
 
     if (newMode === "edit") {
       $(".actions", tmpl).remove();
@@ -753,10 +751,10 @@ v-ui:IconModalTemplate
       individual.present(cntr, tmpl, newMode);
     }
     individual.one("individual:beforeReset", function () {
-      $modal.modal("hide");
+      modal.modal("hide").remove();
     });
     individual.one("individual:afterSave", function () {
-      $modal.modal("hide");
+      modal.modal("hide").remove();
     });
   });
   //# sourceURL=v-ui:IconModalTemplate
@@ -1029,7 +1027,7 @@ v-ui:TestUITemplate
   rdfs:label "Test UI template"@en ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="clearfix">
     <h2 class="pull-left" about="@" property="rdf:type"></h2>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
@@ -1353,7 +1351,7 @@ v-ui:JournalTemplate
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 </script>
-<div class="container journal">
+<div class="container journal sheet">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
@@ -1749,7 +1747,7 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <div class="text-right">
     <a href="#/@"><span property="@">ID</span></a>
     <a href="#/graph/@"><span class="glyphicon glyphicon-link"></span></a>

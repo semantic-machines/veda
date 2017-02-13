@@ -3,6 +3,12 @@ var webdriver = require('selenium-webdriver'),
     firstName = ''+Math.round(+new Date()/1000),
     assert = require('assert');
 
+/**
+ * Проверка черновиков
+ * @param driver
+ * @param count - количество черновиков, которое должно быть
+ */
+
 function check(driver, count) {
     driver.findElement({id:'menu'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
@@ -30,6 +36,21 @@ function check(driver, count) {
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems there is no `drafts` field");});
 }
 
+/**1.Open Page -> Login(as karpovrt);
+ * 2.Open create person document form -> Edit first and last name -> Save as draft -> Check data
+ * 3.Check number of drafts(must be 1);
+ * 4.Open draft -> Edit(add middle name and Date) -> Save as document;
+ * 5.Check number of drafts(must be 0);
+ * 6.Quit;
+ *
+ * 1.Открываем Страницу -> Заходим в систему под karpovrt;
+ * 2.Открываем форму создания Персоны -> Вводим Фамилию и Имя -> Отправляем в черновик -> Проверяем, правильно ли сохранилась
+ * персона в черновике;
+ * 3.Проверяем количество черновиков(должно быть 1);
+ * 4.Заходим в созданный черновик -> Редактируем его(Добавляем Отчество и Дату рождения) -> Сохраняем;
+ * 5.Проверяем, что черновиков 0;
+ * 6.Выход.
+ */
 
 
 basic.getDrivers().forEach(function(drv) {

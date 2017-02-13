@@ -965,8 +965,11 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 
             log.trace("open trail db");
 
+			string now = Clock.currTime().toISOExtString();
+		    now = now[ 0..indexOf(now, '.') + 4 ];
+
             tdb_cons =
-                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ text(timestamp),
+                new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ now,
                                        [ "ticket", "user_id", "action", "args", "result", "result_code", "duration" ]);
 
             //if (exist_trail !is null)

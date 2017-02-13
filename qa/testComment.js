@@ -13,6 +13,16 @@ function clickUp(element) {
         .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on delete button");});
 }
 
+/**
+ * Проверка кнопок Комментировать, Ответить, Редактировать, Удалить
+ * @param driver
+ * @param comment - количество кнопок Комментировать, которое должно быть;
+ * @param reply - количество кнопок Ответить, которое должно быть;
+ * @param edit - количество кнопок Редактировать, которое должно быть;
+ * @param del - количество кнопок Удалить, которое должно быть;
+*/
+
+
 function check(driver, comment, reply, edit, del) {
     driver.executeScript("document.querySelector('#comment-content').scrollIntoView(true);");
     var a;
@@ -42,6 +52,12 @@ function check(driver, comment, reply, edit, del) {
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'delete' buttons is wrong, expected: " + del);})
 }
 
+/**
+ * Создание комментария с указаным текстом
+ * @param driver 
+ * @param somethingUnique - текст, который будет в комментарии
+*/
+
 function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
     driver.findElement({css:'textarea[class="form-control"]'}).sendKeys(somethingUnique)
@@ -56,6 +72,20 @@ function comment(driver, somethingUnique) {
     driver.findElement({css:'div[id="comment-content"]'})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
 }
+
+/**
+ * 1.Open page -> Login(as kaprovrt);
+ * 2.Open Administrator2 profile -> Add comment -> Reply comment;
+ * 3.Check number of buttons -> Delet reply -> Check number of buttons;
+ * 4.Logout -> Login(as bychinat) -> Check number of buttons;
+ * 5.Quit;
+ *
+ * 1.Открываем страницу -> Заходим в систему под karpovrt;
+ * 2.Заходим в профиль Администратор2 -> Добавляем комментарий1 -> Отвечаем на комментарий1;
+ * 3.Проверяем количество кнопок -> Удаляем ответ -> Проверяем количество кнопок;
+ * 4.Выходим из системы -> Заходим в систему под bychinat -> Проверяем количество кнопок;
+ * 5.Выход;
+*/
 
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);

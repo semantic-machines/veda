@@ -234,7 +234,7 @@ v-fs:SearchTemplate
   rdfs:label "Шаблон класса поиск"@ru ;
   v-ui:forClass v-fs:FunctionSearch ;
   v-ui:template """
-  <div class="container">
+  <div class="container sheet">
     <h3 about="v-fs:Find" property="rdfs:label"></h3>
     <hr>
     <div class="row">
@@ -361,7 +361,7 @@ v-fs:FulltextRequestTemplate
   rdfs:label "Шаблон класса полнотекстовый запрос"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:template """
-<div role="tabpanel" class="container">
+<div role="tabpanel" class="container sheet">
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs nav-right" role="tablist">
@@ -660,7 +660,7 @@ v-fs:AttributiveRequestTemplate
   rdfs:label "Шаблон класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
-<div role="tabpanel" class="container">
+<div role="tabpanel" class="container sheet">
   <br>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs nav-right" role="tablist">
@@ -1134,12 +1134,10 @@ v-fs:AttributiveSearchTemplate
   }
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
-<div class="container">
-  <h2 about="@" property="rdfs:label"></h2>
+<div class="container sheet">
+  <!--h2 about="@" property="rdfs:label"></h2-->
   <div id="params">
-    <hr>
     <h3 about="v-fs:Params" property="rdfs:label"></h3>
-    <br>
     <div id="search-form"></div>
     <br>
     <br>

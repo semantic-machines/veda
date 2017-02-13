@@ -65,7 +65,13 @@ v-s:checkQuestion
   rdfs:range xsd:string ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
-
+v-s:hasNormativeDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Normative document"@en ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:range v-s:NormativeDocument ;
+  rdfs:domain v-s:NormativeDocumentRequirement ;
+.
 #---------------------------------------------------------
 v-s:Risk
   rdf:type owl:Class ;
@@ -196,6 +202,7 @@ v-s:RegulatoryDocument
 #---------------------------------------------------------
 v-s:MaintainedObject
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Request ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
