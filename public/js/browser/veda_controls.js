@@ -1331,7 +1331,8 @@
     // Create feature
     if ( this.hasClass("create") || this.hasClass("full") ) {
       var inModal = this.hasClass("create-modal");
-      create.click( function () {
+      create.click( function (e) {
+        e.stopPropagation();
         var newVal = createValue();
         if ( inModal ) {
           var modal = $("#individual-modal-template").html();
@@ -1341,9 +1342,20 @@
           create.one("remove", function () {
             modal.modal("hide").remove();
           });
-          var ok = $("#ok", modal).click(function () {
+          var ok = $("#ok", modal).click(function (e) {
             select(newVal);
+            $(document).off("keyup", escHandler);
           });
+          var close = $(".close", modal).click(function (e) {
+            newVal.delete();
+            $(document).off("keyup", escHandler);
+          });
+          var escHandler = function (e) {
+            if (e.keyCode === 27) {
+              close.click();
+            }
+          };
+          $(document).on("keyup", escHandler);
           var cntr = $(".modal-body", modal);
           newVal.one("individual:beforeReset", function () {
             modal.modal("hide").remove();
