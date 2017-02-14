@@ -14,6 +14,12 @@ function clickUp(element) {
 
 
 module.exports = {
+    /**
+     * Создание делегирования на должность Аналатика, вводом Персоны и Даты;
+     * @param driver
+     * @param valuteToSearch - Персона, которую надо искать для делегирования
+     * @param valuteToChoose - Персона, которую надо выбрать для делегирования
+    */
     createRequestDelegation: function (driver, valueToSearch, valueToChoose ) {
         basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser');
 

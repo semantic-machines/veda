@@ -4,6 +4,13 @@ var webdriver = require('selenium-webdriver'),
     delegationRequest = require('./delegationRequest.js'),
     timeStamp = ''+Math.round(+new Date()/1000);
 
+/**
+ * Поиск элементов
+ * @param driver
+ * @param somethingUnique - элемент
+ * @param count - количество, которое должно быть после поиска
+*/
+
 function check(driver, somethingUnique, count) {
     driver.findElement({id:'params-pill-ft'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-ft' button");});
@@ -21,6 +28,22 @@ function check(driver, somethingUnique, count) {
         basic.EXTRA_SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
 }
+
+/**
+ * 1.Open page -> login(as karpovrt)
+ * 2.Create person1 -> Logout
+ * 3.Login(as bychinat) -> Check number of persons(0) -> Logout;
+ * 4.Login(as kaprovrt) -> Create delegation request -> Logout;
+ * 5.Login(as bychinat) -> Check number of persons(1) -> Logout;
+ * 6.Quit;
+ * 
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем Персону1 -> Выходи из системы;
+ * 3.Входим в систему под bychinat -> Проверяем, что в поиске не ищется наша Персона1 -> Выходим из системы;
+ * 4.Входим в систему под karpovrt -> Создаем делегирование -> Выходим из системы;
+ * 5.Входим в систему под bychinat -> Проверяем, что после делегирования наша Персона1 ищется -> Выходим из системы;
+ * 6.Выход;
+*/
 
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);

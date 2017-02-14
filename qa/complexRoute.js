@@ -14,6 +14,11 @@ function clickUp(element) {
         .thenCatch(function (e) {basic.errorHandler(e,"Cannot click");});
 }
 
+/**
+ * Выбор необходимого решения
+ * @param driver
+ * @param number - номер решения
+*/
 function decision(driver, number) {
     driver.findElement({css:'div[class="radio decision"] input[value="' + number + '"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '" + number + "' decision");});
@@ -24,7 +29,10 @@ function welcome(driver) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
 }
 
-
+/**
+ * Открытие сообщений
+ * @param driver
+*/
 function open(driver) {
     driver.findElement({id:'menu'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
@@ -34,6 +42,13 @@ function open(driver) {
     driver.sleep(1000);
 }
 
+/**
+ * Ответ на сообщение, выбор решения, комментирование и выбор Персоны
+ * @param driver -
+ * @param number - номер решения
+ * @param commentValue - статус комментирования
+ * @param chooseValue - статус выбора Персоны
+*/
 function openMsg(driver, number, commentValue, chooseValue) {
     open(driver);
     driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
@@ -53,6 +68,11 @@ function openMsg(driver, number, commentValue, chooseValue) {
     welcome(driver);
 }
 
+/**
+ * Проверка сообщений
+ * @param driver
+ * @param count - количество сообщений, которое должно быть;
+*/
 function checkMsg(driver, count) {
     open(driver);
     driver.sleep(basic.FAST_OPERATION);
@@ -63,18 +83,46 @@ function checkMsg(driver, count) {
 }
 
 module.exports = {
+    /**
+     * Проверка сообщений
+     * @param driver 
+     * @param count - количество сообщений
+     * @param login       |
+     * @param password    | Данные для входа
+     * @param firstName   |
+     * @param lastName    |
+    */
     checkTask: function (driver, count, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
         checkMsg(driver, count);
         basic.logout(driver);
     },
 
+    /**
+     * Ответ на сообщение
+     * @param driver 
+     * @param decision - номер решения
+     * @param commentValue - статус комментирования
+     * @param chooseValue - статут выбора Персоны
+     * @param login       |
+     * @param password    | Данные для входа
+     * @param firstName   |
+     * @param lastName    |
+    */
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
         openMsg(driver, decision, commentValue, chooseValue);
         driver.sleep(basic.FAST_OPERATION);
         basic.logout(driver);
     },
+    /**
+     * Проверка статуса маршрута
+     * @param driver
+     * @param element - список элементов
+     * @param color - список цветов элементов
+     * @param count - количество элементов в данном состоянии
+     * @param docNumber - номер документа в поиске
+    */
 
     checkRouteStatus: function (driver, element, color, count, docNumber) {
         basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');

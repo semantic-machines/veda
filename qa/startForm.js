@@ -2,6 +2,12 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js');
 
 module.exports = {
+    /**
+     * Создание стартовой формы для сети со статусом документа оборота и проверка, что она запустилась
+     * @param driver 
+     * @param forNetValue - сеть, для которой создается стартовая форма
+     * @hasStatusWorkflow - статус документаоборота
+    */
     createStartForm: function (driver, forNetValue, hasStatusWorkflow) {
         // Create new start form
         basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');

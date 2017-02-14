@@ -3,6 +3,12 @@ var webdriver = require('selenium-webdriver'),
 	createNet = require('./createNet.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
 	startForm = require('./startForm.js');
+/**
+ * Нажатие на кнопку
+ * @param driver
+ * @param button - кнопка
+ * @param doctype - тип документа
+*/
 
 function clickButton(driver, button, doctype) {
 	driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
@@ -20,7 +26,20 @@ function put(driver, type, text) {
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill "+ type +" field");});
 }
 
-
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Create Rule1 -> Save Rule1 -> Create Transformation1 -> Save Tranformation1;
+ * 3.Create Net -> Create Task with executor, Rule1 and Transformation -> Connect net -> Save net -> Check net is working;
+ * 4.Logout -> login(as bychinat) -> Check messages(1);
+ * 5.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем Правило1 -> Сохраняем Правило1 -> Создаем трансформацию1 -> Сохраняем трансформацию1;
+ * 3.Создаем сеть -> Создаем задачу с исполнителем, правилом1 и трансформацией1 -> Соединяем сеть -> Сохраняем сеть ->
+ * -> Проверяем, что сеть работает;
+ * 4.Выходим из системы -> Входим в систему под bychinat -> Проверяем сообщения(1);
+ * 5.Выход;
+*/
 basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
 

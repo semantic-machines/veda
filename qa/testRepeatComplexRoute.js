@@ -1,7 +1,22 @@
 var basic = require('./basic.js'),
     complexRoute = require('./complexRoute.js'),
     assert = require('assert');
-
+/**
+ * 1.Open page -> login(as kaprovrt);
+ * 2.Open create Complex route test template 2 document form -> Send task to coordinator1 -> Logout;
+ * 3.Login(as bychinat) -> Check task numbers(as bychinat) -> Accept task(as bychinat) -> Logout; 
+ * 4.Login(as kaprovt) -> Search s-wf:ComplexrRouteStartForm -> Open our Complex route test template 2 -> Send task again;
+ * 5.Do p.3 again;
+ * 6.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Открываем форму создания Тестовый шаблон комплексного маршурута 2 -> Отправляем задачу Согласующему1 -> Выходим из системы;
+ * 3.Входим в систему под bychinat -> Проверяем количество задач -> Подтверждаем задачу -> Выходим из системы;
+ * 4.Входим в систему под karpovrt -> Ищем Стартовую форму комплексного маршрута -> Открываем наш тестовый шаблон комплексного маршрута 2 ->
+ * -> Посылаем задачу заново;
+ * 5.Делаем п.3 снова;
+ * 6.Quit;
+*/
 
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);

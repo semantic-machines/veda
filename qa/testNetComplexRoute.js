@@ -1,6 +1,44 @@
 var basic = require('./basic.js'),
     complexRoute = require('./complexRoute.js'),
     assert = require('assert');
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Open create Complex route test template document form -> Start route -> Logout;
+ * Coordination1:
+ * 3.Accept task(as kaprovrt) -> Accept task(as bychinat);
+ * Coordination2;
+ * 4.Accept task(as kaprovrt) -> Decline task(as bychinat) -> Go to coordination2(as karpovrt) -> Accept task(as bychinat) ->
+ * -> Accept task(as karpovrt);
+ * review, instruction, examination -> instruction2
+ * 5.Check task(as bychinat) -> Check task(as kaprovrt) -> Accept task(as bychinat) -> Check task(as karpovrt) ->
+ * -> Accept task(as bychinat) -> Check task(as kaprovrt) -> Accept task(as bychinat);
+ * Redirect -> not for me -> finalize -> rejected -> finalize -> achieved 
+ * 6.Check task(as kaprovrt) -> Accept task(as kaprovrt) -> Accept task(as bychinat) -> Accept task(as kaprovrt) -> 
+ * -> Accept task(as bychinat) -> Accept task(as kaprovrt) -> Accept task(as bychinat);
+ * Controller
+ * 7.Accept task(as kaprovrt) -> Accept task(as bychinat) -> Accept task(as bychinat) -> Accept task(as bychinat);
+ * 8.Quit;
+ *
+ * 1.Открываем страницу -> Входи в систему под karpovrt;
+ * 2.Открываем форму создания Тестовый шаблон комплексного маршурута -> Запускаем маршрут -> Выходим из системы;
+ * Согласование1
+ * 3.Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat);
+ * Согласование2
+ * 4.Отвечаем на задачу(под karpovrt) -> Отклоняем задачу(под bychinat) -> Переходим к согласованию2(под karpovrt) ->
+ * -> Отвечаем на задачу(под bychinat) -> Отвечаем на задачу(под kaprovrt);
+ * Рассмотрение, Поручение, Ознакомление -> Поручение 2;
+ * 5.Проверяем задачи(под bychinat) -> Проверяем задачи(под karpovrt) -> Отвечаем на задачу(под bychinat) -> 
+ * -> Проверяем задачи(под karpovrt) -> Отвечаем на задачу(под bychinat) -> Проверяем задачи(под karpovrt) ->
+ * -> Отвечаем на задачу(под bychinat) ;
+ * Перенаправить -> Не мне -> Доработать -> Не выполнено -> Доработать -> Выполнено
+ * 6.Проверяем задачи(под karpovrt) -> Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat) ->
+ * -> Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat) ->
+ * -> Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat);
+ * Контролирующий
+ * 7.Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat) ->
+ * -> Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat);
+ * 8.Выход
+*/
 
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);

@@ -44,6 +44,19 @@ function search(driver, templateName, somethingUnique, count) {
     }
 }
 
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Create Person1 -> Create Person2;
+ * 3.Open attributive search person form -> Search attributive requests and check results;
+ * 4.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под kaprovrt;
+ * 2.Создаем Персону1 -> Создаем Персону2;
+ * 3.Открываем аттрибутивную форму поиска -> Делаем запросы на поиск Персон по аттрибутам и проверяем верен ли результат;
+ * 4.Выход
+*/
+
+
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);

@@ -2,7 +2,13 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     startForm = require('./startForm.js');
 
-
+/**
+ * Поиск и выбор значение в аттрибуте
+ * @param driver
+ * @param type - аттрибут
+ * @param valueToSearch - значение, которое необходимо искать
+ * @param valueToChoose - значение, которое необходимо выбрать
+*/
 
 function choose(driver, type, valueToSearch, valueToChoose) {
     driver.findElement({css:'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input[id="fulltext"]'}).sendKeys(valueToSearch)
@@ -38,6 +44,11 @@ function choose(driver, type, valueToSearch, valueToChoose) {
 }
 
 module.exports = {
+    /**
+     * Открытие редактора создания сети и ввод ее названия
+     * @param driver
+     * @param timeStamp - название сети
+    */
     startNet: function (driver, timeStamp) {
         basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
         basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
@@ -49,11 +60,22 @@ module.exports = {
         driver.findElement({css:'#VClabel input'}).sendKeys(timeStamp)
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill rdfl:label in net properties");});
     },
-
+    /**
+     * Запуск функции choose 
+     * @param driver
+     * @param type - аттрибут
+     * @param valueToSearch - значение, которое нужно искать
+     * @param valueToChoose - значение, которое нужно выбрать
+    */
     chooseFromDropdown: function (driver, type, valueToSearch, valueToChoose) {
         choose(driver, type, valueToSearch, valueToChoose);
     },
-
+    /**
+     * Создание задачи с исполнителем
+     * @param driver
+     * @param toFind - исполнитель, которого нужно искать
+     * @param taskExecutor - исполнитель, которого нужно выбрать
+    */
     createTask: function(driver, toFind, taskExecutor) {
         driver.findElement({css:'.create-task'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'create-task' button");});
@@ -69,6 +91,11 @@ module.exports = {
         }
     },
 
+    /**
+     * Соединение элементов в сети
+     * @param driver
+     * @param hasTask - имеется ли задача в сети
+    */
     connectNet: function (driver, hasTask) {
         if (hasTask === "false") {
             new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}),
@@ -83,12 +110,24 @@ module.exports = {
 
     },
 
+    /**
+     * Сохранение сети
+     * @param driver
+    */
     saveNet: function(driver) {
         driver.findElement({css:'#workflow-save-button'}).click()
             .thenCatch(function (e) {basic.errorHandler(e, "Cannot click save net");});
         driver.sleep(basic.FAST_OPERATION);//+
     },
 
+    /**
+     * Проверка состояния сети после исполнения
+     * @param driver
+     * @param timeStamp - название сети
+     * @param input - состояние входа
+     * @param task - состояние задачи
+     * @param output - состояние выхода
+    */
     checkNet: function(driver, timeStamp, input, task, output) {
         startForm.createStartForm(driver, timeStamp, 'Ожидает отправки');
         driver.findElement({css:'.workflow-canvas-wrapper'}).click()

@@ -1,5 +1,17 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js');
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Create Report -> Attach file -> Save;
+ * 3.Open Report -> Edit -> Delete file -> Attach file again -> Save;
+ * 4.Quit;
+ *
+ * 1.Открывем граф Администратора -> Скачиваем ttl;
+ * 2.Создаем Отчет -> Прикрепляем файл -> Сохраняем;
+ * 3.Открываем Отчет -> Редактируем -> Убираем прикрепленный файл -> Прикрепляем заново файл -> Сохраняем;
+ * 4.Выход;
+*/
+
 
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);

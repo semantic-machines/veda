@@ -1,6 +1,17 @@
 var basic = require('./basic.js'),
     createNet = require('./createNet.js'),
     timeStamp = ''+Math.round(+new Date()/1000);
+/**
+ * 1.Open page -> login(as karpovrt); 
+ * 2.Create net -> Create task -> Connect input, task and output -> Save net;
+ * 3.Check net is working;
+ * 4.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем сеть -> Создаем задачу -> Соединяем вход, задачу и выход -> Сохраняем сеть;
+ * 3.Проверяем, что сеть работает;
+ * 4.Выход;
+*/
 
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);

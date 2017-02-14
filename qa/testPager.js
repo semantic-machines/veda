@@ -1,5 +1,10 @@
 var webdriver = require('selenium-webdriver'),
 	basic = require('./basic.js');
+/**
+ * Открываем вкладку из меню
+ *@param driver
+ *@param attr - вкладка
+*/
 
 function menu(driver, attr){
 	driver.findElement({id:"menu"}).click()
@@ -13,6 +18,10 @@ function menu(driver, attr){
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'search' button");});
 }
 
+/**
+ * Проверка pager
+ *@param driver
+*/
 function testPager(driver) {
 	driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
 
@@ -28,6 +37,18 @@ function testPager(driver) {
 		}
 	}).thenCatch(function (e) {basic.errorHandler(e, "Seems something is wrong");});
 }
+
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Open Search menu -> Search request -> Test pager;
+ * 3.Open Find menu -> Search request -> Test pager;
+ * 4.Quit;
+ *
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Открываем меню поиска -> Посылаем запрос -> Проверяем pager;
+ * 3.Открываем другое меню поиска -> Посылаем запрос -> Проверяем pager;
+ * 4.Выход;
+*/
 
 basic.getDrivers().forEach(function(drv) {
 	var driver = basic.getDriver(drv);

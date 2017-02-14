@@ -2,6 +2,13 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     person = require('./person.js');
 
+/**
+ * Проверка поиска
+ *@param driver 
+ *@param somethingUnique - поисковый запрос;
+ *@param count - количество элементов, которое должно быть в результате;
+*/
+
 function search(driver, somethingUnique, count) {
     driver.findElement({id:"menu"}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
@@ -24,6 +31,18 @@ function search(driver, somethingUnique, count) {
         basic.EXTRA_SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of elements is wrong, expected: " + count);});
 }
+
+/**
+ * 1.Open page -> login(as karpovrt);
+ * 2.Create Person1 -> Create Person2 -> Create Person3 -> Create Person4;
+ * 3.Search requests and cheking results;
+ * 4.Quit;
+ * 
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Создаем Персону1 -> Создаем Персону2 -> Создаем Персону3-> Создаем Персону4;
+ * 3.Поисковые запросы и проверка результатов;
+ * 4.Выход;
+*/
 
 
 basic.getDrivers().forEach(function (drv) {
