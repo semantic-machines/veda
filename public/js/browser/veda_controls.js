@@ -702,14 +702,18 @@
         var opt = first_opt.clone().appendTo(select);
         opt.text( renderValue(value) ).data("value", value);
         if ( isSingle && individual.hasValue(property_uri, value) ) {
-          opt.attr("selected", "true");
+          opt.prop("selected", true);
         }
       });
     }
 
     function handler(doc_property_uri) {
       if (doc_property_uri === property_uri) {
-        populate();
+        $("option", control).each(function () {
+          var value = $(this).data("value");
+          var hasValue = individual.hasValue(property_uri, value);
+          $(this).prop("selected", hasValue);
+        });
       }
     }
 
@@ -792,9 +796,8 @@
         var hld = holder.clone().appendTo(control);
         var lbl = $("label", hld).append( renderValue(value) );
         var chk = $("input", lbl).data("value", value);
-        if ( individual.hasValue(property_uri, value) ) {
-          chk.attr("checked", "true");
-        }
+        var hasValue = individual.hasValue(property_uri, value);
+        chk.prop("checked", hasValue);
         chk.change(function () {
           if ( chk.is(":checked") ) {
             individual[property_uri] = individual[property_uri].concat( chk.data("value") );
@@ -809,7 +812,11 @@
 
     function handler(doc_property_uri) {
       if (doc_property_uri === property_uri) {
-        populate();
+        $("input", control).each(function () {
+          var value = $(this).data("value");
+          var hasValue = individual.hasValue(property_uri, value);
+          $(this).prop("checked", hasValue);
+        });
       }
     }
 
@@ -901,9 +908,8 @@
         var hld = holder.clone().appendTo(control);
         var lbl = $("label", hld).append( renderValue(value) );
         var rad = $("input", lbl).data("value", value);
-        if ( individual.hasValue(property_uri, value) ) {
-          rad.attr("checked", "true");
-        }
+        var hasValue = individual.hasValue(property_uri, value);
+        rad.prop("checked", hasValue);
         rad.change(function () {
           if ( rad.is(":checked") ) {
             individual[property_uri] = [ rad.data("value") ];
@@ -918,7 +924,11 @@
 
     function handler(doc_property_uri) {
       if (doc_property_uri === property_uri) {
-        populate();
+        $("input", control).each(function () {
+          var value = $(this).data("value");
+          var hasValue = individual.hasValue(property_uri, value);
+          $(this).prop("checked", hasValue);
+        });
       }
     }
 
