@@ -621,7 +621,7 @@ v-s:OrganizationTemplate
     <em about="mnd-s:hasContractorCreateChangeRequest" property="rdfs:label"></em>
     <table class="table table-condensed table-bordered">
       <thead>
-        <tr class="view -edit -search active">
+        <tr class="view edit -search active">
           <th width="1%"><span class="glyphicon glyphicon-search"></th>
           <th about="mnd-s:hasThemeOfContractorCreateChangeRequest" property="rdfs:label"></th>
           <th about="v-s:hasContractor" property="rdfs:label"></th>
@@ -633,11 +633,11 @@ v-s:OrganizationTemplate
           <td about="@" data-template="v-ui:IconModalTemplate"></td>
           <td>
             <div rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-            <veda-control rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-type="link" class="-view edit search"></div>
+            <veda-control rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-type="link" class="-view edit search fulltext"></div>
           </td>
           <td>
             <div rel="v-s:hasContractor" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-            <veda-control rel="v-s:hasContractor" data-type="link" class="-view edit search"></div>
+            <veda-control rel="v-s:hasContractor" data-type="link" class="-view edit search fulltext"></div>
           </td>
           <td>
             <div property="v-s:description" class="view -edit -search"></div>
