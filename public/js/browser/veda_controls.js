@@ -126,9 +126,9 @@
         return false;
       } else {
         var individ = new veda.IndividualModel(input);
-        if ( individ.isSync() && !individ.isNew() ) { return ind; }
+        if ( individ.isSync() && !individ.isNew() ) { return individ; }
       }
-      return (input ? new String(input) : null);
+      return input || null;
     }
   };
 
