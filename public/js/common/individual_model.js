@@ -419,7 +419,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.hasValue = function (property_uri, value) {
     var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
-    if (typeof value !== "undefined") {
+    if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
         return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );

@@ -653,15 +653,19 @@
     populate();
 
     select.change(function () {
+      var value = $("option:selected", select).data("value");
       if (isSingle) {
-        individual[property_uri] = [ $("option:selected", select).data("value") ];
+        individual[property_uri] = [ value ];
       } else {
-        individual[property_uri] = individual[property_uri].concat( $("option:selected", select).data("value") );
+        if ( !individual.hasValue(property_uri, value) ) {
+          individual[property_uri] = individual[property_uri].concat( value );
+        }
+        $(this).children(":first").prop("selected", true);
       }
     });
 
     individual.on("individual:propertyModified", handler);
-    this.one("remove", function () {
+    control.one("remove", function () {
       individual.off("individual:propertyModified", handler);
     });
 
@@ -710,7 +714,7 @@
     }
 
     function handler(doc_property_uri) {
-      if (doc_property_uri === property_uri) {
+      if (doc_property_uri === property_uri && isSingle) {
         $("option", control).each(function () {
           var value = $(this).data("value");
           var hasValue = individual.hasValue(property_uri, value);

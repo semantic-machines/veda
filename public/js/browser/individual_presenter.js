@@ -93,19 +93,19 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if (template.first().is("script")) {
         pre_render_src = template.first().text();
-        pre_render = new Function("veda", "individual", "container", "template", "mode", "\"use strict\";" + pre_render_src);
+        pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
       }
       if (template.last().is("script")) {
         post_render_src = template.last().text();
-        post_render = new Function("veda", "individual", "container", "template", "mode", "\"use strict\";" + post_render_src);
+        post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
       }
       template = template.filter("*:not(script)");
 
       if (pre_render) {
-        pre_render(veda, individual, container, template, mode);
+        pre_render(veda, individual, container, template, mode, specs);
       }
 
-      template = renderTemplate (individual, container, template, specs, mode);
+      template = renderTemplate (individual, container, template, mode, specs);
       container.append(template);
       individual.trigger("individual:templateReady", template);
 
@@ -113,7 +113,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       setTimeout(function () {
         template.trigger(mode);
         if (post_render) {
-          post_render(veda, individual, container, template, mode);
+          post_render(veda, individual, container, template, mode, specs);
         }
       }, 0);
     });
@@ -121,7 +121,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     if (container.prop("id") === "main") { container.show("fade", 250); }
   });
 
-  function renderTemplate (individual, container, template, specs, mode) {
+  function renderTemplate (individual, container, template, mode, specs) {
 
     template.attr({
       "resource": individual.id,
