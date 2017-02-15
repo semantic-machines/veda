@@ -17,7 +17,7 @@
       individual = opts.individual,
       timeout;
 
-    control.isSingle = opts.isSingle || (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
+    control.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
 
     input.attr("placeholder", placeholder)
       .on("change focusout", changeHandler)
@@ -56,6 +56,7 @@
         individual[property_uri] = [value];
       } else {
         individual[property_uri] = individual[property_uri].concat(value);
+        this.value = "";
       }
     }
     function keyupHandler (e) {
@@ -113,9 +114,10 @@
   };
   $.fn.veda_generic.defaults = {
     template: $("#string-control-template").html(),
+    isSingle: false,
     parser: function (input) {
-      if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD"], true).isValid() ) {
-        return moment(input, "DD.MM.YYYY HH:mm").toDate();
+      if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
+        return moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).toDate();
       } else if ( !isNaN( parseFloat( input.split(" ").join("").split(",").join(".") ) ) ) {
         return parseFloat( input.split(" ").join("").split(",").join(".") );
       } else if ( !isNaN( parseInt( input.split(" ").join("").split(",").join("."), 10 ) ) ) {
