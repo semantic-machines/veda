@@ -251,6 +251,11 @@ v-s:Introduction
   rdfs:label "На ознакомление"@ru ;
   rdfs:label "Introduction"@en ;
 .
+v-s:Coordination
+  rdf:type v-s:Bundle ;
+  rdfs:label "На согласование"@ru ;
+  rdfs:label "Coordination"@en ;
+.
 v-s:SendTask
   rdf:type v-s:Bundle ;
   rdfs:label "Выдать задачу"@ru ;

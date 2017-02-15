@@ -402,6 +402,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         click: function() {veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:Distribution')['rdfs:label'].join(" "))+'</a>'
       }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:Coordination')['rdfs:label'].join(" "))+'</a>'
+      }));
     });
 
     // Process RDFa compliant template
