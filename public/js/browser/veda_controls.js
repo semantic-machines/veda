@@ -1413,8 +1413,9 @@
       (this.hasClass("tree") || this.hasClass("full"))
       && (root && (inProperty || outProperty))
     ) {
-      individual.treeConfig = {
+      var treeConfig = {
         root: root,
+        targetRel_uri: rel_uri,
         inProperty: inProperty,
         outProperty: outProperty,
         allowedClass: allowedClass,
@@ -1423,23 +1424,18 @@
         displayedProperty: displayedProperty
       };
       var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
-      var modal = $("#search-modal-template").html();
+      var modal = $("#individual-modal-template").html();
       tree.click(function () {
+        individual.treeConfig = treeConfig;
         var $modal = $(modal);
         var cntr = $(".modal-body", $modal);
         $modal.on('hidden.bs.modal', function (e) {
           $modal.remove();
+          delete individual.treeConfig;
         });
         $modal.modal();
         $("body").append($modal);
         individual.present(cntr, treeTmpl);
-
-        $("#ok", $modal).click( function (e) {
-          var selected = cntr.data("selected");
-          select( selected.map(function (uri) {
-            return new veda.IndividualModel(uri);
-          }) );
-        });
       });
     } else {
       tree.remove();
