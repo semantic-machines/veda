@@ -1,4 +1,4 @@
-#define _GLIBCXX_USE_CXX11_ABI 0
+#define _GLIBCXX_USE_CXX11_ABI    0
 
 #include "v8.h"
 #include <assert.h>
@@ -91,6 +91,21 @@ individual2jsobject(Individual *individual, Isolate *isolate)
     return js_map;
 }
 
+void double_to_mantissa_exponent(double inp, int64_t *mantissa, int64_t *exponent)
+{
+    double a     = trunc(inp);
+    int    power = 0;
+
+    while (inp - trunc(inp) != 0.0)
+    {
+        inp *= 10.0;
+        power--;
+    }
+
+    *mantissa = (int64_t)inp;
+    *exponent = power;
+}
+
 bool
 jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, string predicate)
 {
@@ -165,7 +180,15 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
     }
     else if (value->IsNumber())
     {
-        std::cout << "ERR! @v8:json->cbor (value->IsNumber() not implemented" << std::endl;
+        if (resource == NULL)
+            return false;
+
+        double dd = value->ToNumber()->Value();
+
+        resource->type = _Decimal;
+        double_to_mantissa_exponent(dd, &resource->decimal_mantissa_data, &resource->decimal_expanent_data);
+
+        return true;
     }
     else if (value->IsObject())
     {
@@ -257,13 +280,23 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
                 indv->resources[ predicate ] = values;
                 return true;
             }
+            else if (type == _Decimal)
+            {
+                vector<Resource> values = indv->resources[ predicate ];
+                Resource         rc;
+                rc.type = type;
+
+                float dd = v_data->ToNumber()->Value();
+
+                double_to_mantissa_exponent(dd, &rc.decimal_mantissa_data, &rc.decimal_expanent_data);
+
+                values.push_back(rc);
+                indv->resources[ predicate ] = values;
+                return true;
+            }
             else if (type == _Datetime)
             {
-//                v8::String::Utf8Value s1_1(v_data);
-//                std::string           std_s1_1 = std::string(*s1_1);
-
-                int64_t          value = (int64_t)(v_data->ToInteger()->Value() / 1000);
-//                std::cout << "@json->cbor #5, " << std_s1_1 << ", " << v_data->ToInteger()->Value() << ", " << value << std::endl;
+                int64_t          value  = (int64_t)(v_data->ToInteger()->Value() / 1000);
                 vector<Resource> values = indv->resources[ predicate ];
                 Resource         rc;
                 rc.type      = type;
@@ -512,19 +545,19 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
             while ((pos = data.find(',', pos)) != std::string::npos)
             {
                 el = prepare_str_list_element(data, prev_pos, pos);
-				if (el.length() > 2)
-				{
-            	    arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
-            	    i++;
-				}
+                if (el.length() > 2)
+                {
+                    arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+                    i++;
+                }
                 prev_pos = ++pos;
             }
             el = prepare_str_list_element(data, prev_pos, data.length() - 1);
-	    
-	    	if (el.length() > 2)
-	    	{
-        		arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
-	   		}
+
+            if (el.length() > 2)
+            {
+                arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+            }
         }
     }
     args.GetReturnValue().Set(arr_1);

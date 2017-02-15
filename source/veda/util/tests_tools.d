@@ -17,7 +17,7 @@ public Individual generate_new_test_individual()
     new_indv_A.addResource("v-s:info2", Resource("none lang text", LANG.NONE));
     new_indv_A.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
     new_indv_A.addResource("rdfs:label", Resource(1234));
-    //new_indv_A.addResource("rdfs:label", Resource(decimal (cast(long)1234, cast(byte)25))); ! TODO !
+    new_indv_A.addResource("rdfs:label", Resource(decimal (cast(long)1234, cast(byte)25)));
     new_indv_A.addResource("rdfs:label", Resource(false));
 
     return new_indv_A;
