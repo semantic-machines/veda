@@ -38,22 +38,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
-          var cntr = $( $("#json-ttl-template").html().replace(/@/g, individual.id) ),
+          var cntr = $( $("#json-template").html().replace(/@/g, individual.id) ),
               pre = $("pre", cntr),
-              json = individual.properties,
-              ordered = {};
+              json = individual.properties;
           $("a#json", cntr).addClass("disabled");
-          Object.keys(json).sort().forEach(function(key) {
-            ordered[key] = json[key];
-          });
-          json = JSON.stringify(ordered, null, 2);
-          var formatted = json.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
-          pre.html(formatted);
+          var formatted = format(json);
+          var anchorized = anchorize(formatted);
+          pre.html(anchorized);
           container.append(cntr);
-          container.show("fade", 250);
+          container.show("fade", 250, function () {
+            var height = $("#copyright").offset().top - container.offset().top - 120;
+            pre.css("height", height);
+          });
           $("#edit", cntr).click(function () {
             $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", true);
+            pre.prop("contenteditable", true).text(formatted);
+          });
+          $("#cancel", cntr).click(function () {
+            $(".actions *", cntr).toggleClass("hidden");
+            pre.prop("contenteditable", false).html(anchorized);
           });
           $("#save", cntr).click(function () {
             $(".actions *", cntr).toggleClass("hidden");
@@ -61,7 +64,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             var notify = new veda.Notify();
             var original = individual.properties;
             try {
-              json = JSON.parse( pre.text() );
+              formatted = pre.text();
+              anchorized = anchorize(formatted);
+              json = JSON.parse( formatted );
               individual.properties = json;
               individual.save(true);
               notify("success", {status: "", description: "Объект сохранен"});
@@ -71,39 +76,27 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             }
           });
           return;
+
+          function format(json) {
+            var ordered = {};
+            Object.keys(json).sort().forEach(function(key) {
+              ordered[key] = json[key];
+            });
+            return JSON.stringify(ordered, null, 2);
+          }
+          function anchorize(string) {
+            return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
+          }
         } else if (template === "ttl") {
           var list = new veda.IndividualListModel(individual);
-          veda.Util.toTTL(list, function (error, result) {
-            var cntr = $( $("#json-ttl-template").html().replace(/@/g, individual.id) ),
+          veda.Util.toTTL(list, function (error, ttl) {
+            var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
                 pre = $("pre", cntr),
-                formatted = result.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+                anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
             $("a#ttl", cntr).addClass("disabled");
-            pre.html(formatted);
+            pre.html(anchored);
             container.html(cntr);
             container.show("fade", 250);
-
-            /*$("#edit", cntr).click(function () {
-              $(".actions *", cntr).toggleClass("hidden");
-              pre.prop("contenteditable", true);
-            });
-            $("#save", cntr).click(function () {
-              $(".actions *", cntr).toggleClass("hidden");
-              pre.prop("contenteditable", false);
-              var notify = new veda.Notify();
-              var original = individual.properties;
-              try {
-                var ttl = pre.text();
-                var json = veda.Util.TTLtoJSON(ttl);
-                console.log(json);
-                individual.properties = json;
-                individual.save(true);
-                notify("success", {status: "", description: "Объект сохранен"});
-              } catch (e) {
-                individual.properties = original;
-                notify("danger", {status: "Ошибка", description: "Объект не сохранен"});
-              }
-            });*/
-
           });
           return;
         } else {

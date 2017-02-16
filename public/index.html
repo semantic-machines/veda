@@ -80,8 +80,8 @@
       </form>
     </script>
 
-    <!-- TTL template -->
-    <script type="html/template" id="json-ttl-template">
+    <!-- JSON template -->
+    <script type="html/template" id="json-template">
       <div class="container sheet">
         <pre style="border:none;background-color:#fff;"></pre>
         <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
@@ -91,7 +91,19 @@
         <div class="actions pull-right">
           <button id="edit" class="btn btn-primary">Edit</button>
           <button id="save" class="hidden btn btn-success">Save</button>
+          <button id="cancel" class="hidden btn btn-default">Cancel</button>
         </div>
+      </div>
+    </script>
+
+    <!-- TTL template -->
+    <script type="html/template" id="ttl-template">
+      <div class="container sheet">
+        <pre style="border:none;background-color:#fff;"></pre>
+        <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
+        <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
+        <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
+        <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
       </div>
     </script>
 
@@ -678,7 +690,7 @@
     <script type="text/javascript" src="/js/browser/lib/jsplumb.js"></script>
     <script type="text/javascript" src="/js/browser/lib/vis.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/bootstrap-contextmenu.js"></script>
-    <script type="text/javascript" src="/js/browser/lib/n3-browser.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/n3-browser.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/FileSaver.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
