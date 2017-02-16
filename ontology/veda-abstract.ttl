@@ -622,6 +622,13 @@ v-s:checkedRequirement
   rdfs:range v-s:NormativeDocumentRequirement ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:responsibleDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible. Description"@en ;
+  rdfs:label "Ответственный. Описание"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "Responsible"@en ;
