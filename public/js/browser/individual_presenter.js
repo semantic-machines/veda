@@ -77,14 +77,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           });
           return;
 
-          function format(json) {
+          var format = function (json) {
             var ordered = {};
             Object.keys(json).sort().forEach(function(key) {
               ordered[key] = json[key];
             });
             return JSON.stringify(ordered, null, 2);
           }
-          function anchorize(string) {
+          var anchorize = function (string) {
             return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
           }
         } else if (template === "ttl") {
