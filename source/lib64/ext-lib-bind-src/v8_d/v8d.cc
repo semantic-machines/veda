@@ -108,8 +108,7 @@ individual2jsobject(Individual *individual, Isolate *isolate)
             {
 				//std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_expanent_data=" << value.decimal_expanent_data << std::endl;
 
-				string ss = to_string(value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data));
-
+				//string ss = to_string(value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data));
                 //in_obj->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
 
                 in_obj->Set(f_data,
