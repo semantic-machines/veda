@@ -89,6 +89,20 @@ veda.Module(function Util(veda) { "use strict";
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
   };
 
+  veda.Util.TTLtoJSON = function (ttl) {
+    var parser = N3.Parser();
+    var triples = [];
+    var prefixes;
+    var result = parser.parse(ttl, function (error, triple, prefixez) {
+      if (triple) {
+        triples.push(triple);
+      } else {
+        prefixes = prefixez;
+      }
+    });
+    console.log('triples:', triples, 'prefixes:', prefixes);
+  }
+
   veda.Util.toTTL = function (individualList, callback) {
     var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'").result,
         all_prefixes = {},
