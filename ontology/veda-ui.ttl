@@ -527,6 +527,36 @@ v-ui:ImageAppointmentTemplate
 """ ;
 .
 
+v-ui:ImageAppointmentFixedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон персоны с иконкой фиксированного размера"@ru ;
+  rdfs:label "Person template with icon"@en ;
+  v-ui:template """
+<div class="panel panel-default" >
+  <div class="panel-body" style="padding:7px;">
+    <div class="row">
+      <div class="col-md-2">
+        <div about="@" rel="v-s:employee">
+          <script>
+            individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
+            //# sourceURL=v-ui:ImageAppointmentTemplate_pre
+          </script>
+          <div style="width:50px">
+            <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+            <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-10">
+        <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong><br>
+        <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
+      </div>
+    </div>
+  </div>
+</div>
+""" ;
+.
+
 v-ui:PersonAppointmentTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с выбором назначения"@ru ;
