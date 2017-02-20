@@ -1316,12 +1316,29 @@ v-fs:AttributiveSearchTemplate
       var delta = resultDelta.length;
       // Render each result
       resultDelta.map(function (uri, i) {
-        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
+        var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
             item = new veda.IndividualModel(uri);
         item.present(resultContainer, tmpl);
+        setTimeout(function () {
+          $("td", tmpl).each( function () {
+            var text = getText(this);
+            if (text && text.length > 100) {
+              this.textContent = text.substring(0, 100) + "...";
+            }
+          });
+          tmpl.show();
+        }, 0);
       });
     });
 
+  }
+
+  function getText(node) {
+    if (node.childNodes && node.childNodes.length) {
+      return [].map.call(node.childNodes, getText).join(" ");
+    } else {
+      return node.nodeValue;
+    }
   }
 
   // Spinner
