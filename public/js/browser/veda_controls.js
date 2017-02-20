@@ -1231,7 +1231,7 @@
               canvas.width = width;
               canvas.height = height;
               context.drawImage(img,0,0,width,height);
-              var thumbnail = canvas.toDataURL("image/png");
+              var thumbnail = canvas.toDataURL("image/jpeg", 0.7);
               uploadFile(thumbnail, function () {
                 var t = new veda.IndividualModel();
                 t["rdf:type"] = range;
