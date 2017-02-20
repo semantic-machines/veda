@@ -1175,12 +1175,38 @@
     }
     xhr.send(fd);
   }
+
+  function mkThumbnail (image, success) {
+    var cnvs1 = document.createElement("canvas"),
+        ctx1 = cnvs1.getContext("2d"),
+        cnvs2 = document.createElement("canvas"),
+        ctx2 = cnvs2.getContext("2d"),
+        reader = new FileReader(),
+        tHeight = 128;
+    reader.onload = function(event) {
+      var img = new Image();
+      img.onload = function() {
+        var ratio = tHeight / img.height;
+        var width = img.width * ratio >> 0;
+        var height = img.height * ratio >> 0;
+        cnvs1.width = width;
+        cnvs1.height = height;
+        cnvs2.width = img.width * 2;
+        cnvs2.height = img.height * 2;
+        ctx2.drawImage(img, 0, 0, img.width, img.height, 0, 0, width * 2, height * 2);
+        ctx1.drawImage(cnvs2, 0, 0, width * 2, height * 2, 0, 0, width, height);
+        var thumbnail = cnvs1.toDataURL("image/jpeg");
+        success(thumbnail);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(image);
+  }
+
   $.fn.veda_file = function( options ) {
     if (window.FormData) {
       var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
         control = $(opts.templateAJAX),
-        canvas = $("canvas", control)[0],
-        context = canvas.getContext("2d"),
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.rel_uri,
@@ -1208,48 +1234,44 @@
         f["v-s:fileUri"] = [ uri ];
         f["v-s:filePath"] = [ path ];
         f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
-        f.save();
-        files.push(f);
-        if (files.length === n) {
-          if (isSingle) {
-            individual[rel_uri] = files;
-          } else {
-            individual[rel_uri] = individual[rel_uri].concat(files);
-          }
-        }
-        indicatorSpinner.empty().hide();
-        indicatorPercentage.empty().hide();
-
         if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var img = new Image();
-            img.onload = function() {
-              var ratio = canvas.width / img.width;
-              var width = img.width * ratio >> 0;
-              var height = img.height * ratio >> 0;
-              canvas.width = width;
-              canvas.height = height;
-              context.drawImage(img,0,0,width,height);
-              var thumbnail = canvas.toDataURL("image/jpeg", 0.7);
-              uploadFile(thumbnail, function () {
-                var t = new veda.IndividualModel();
-                t["rdf:type"] = range;
-                t["v-s:fileName"] = [ "thumbnail-" + file.name ];
-                t["rdfs:label"] = [ "thumbnail-" + file.name ];
-                t["v-s:fileUri"] = [ uri ];
-                t["v-s:filePath"] = [ path ];
-                t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
-                t.save();
-                f["v-s:thumbnail"] = [ t ];
-                f.save();
-              });
-            };
-            img.src = event.target.result;
-          };
-          reader.readAsDataURL(file);
+          mkThumbnail(file, function (thumbnail) {
+            uploadFile(thumbnail, null, null, function (_, path, uri) {
+              var t = new veda.IndividualModel();
+              t["rdf:type"] = range;
+              t["v-s:fileName"] = [ "thumbnail-" + file.name ];
+              t["rdfs:label"] = [ "thumbnail-" + file.name ];
+              t["v-s:fileUri"] = [ uri ];
+              t["v-s:filePath"] = [ path ];
+              t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
+              t.save();
+              f["v-s:thumbnail"] = [ t ];
+              f.save();
+              files.push(f);
+              if (files.length === n) {
+                if (isSingle) {
+                  individual[rel_uri] = files;
+                } else {
+                  individual[rel_uri] = individual[rel_uri].concat(files);
+                }
+              }
+              indicatorSpinner.empty().hide();
+              indicatorPercentage.empty().hide();
+            });
+          });
+        } else {
+          f.save();
+          files.push(f);
+          if (files.length === n) {
+            if (isSingle) {
+              individual[rel_uri] = files;
+            } else {
+              individual[rel_uri] = individual[rel_uri].concat(files);
+            }
+          }
+          indicatorSpinner.empty().hide();
+          indicatorPercentage.empty().hide();
         }
-
       };
       var progress = function (progressEvent) {
         if (progressEvent.lengthComputable) {
