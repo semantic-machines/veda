@@ -1144,12 +1144,14 @@
 
   // FILE UPLOAD CONTROL
   function uploadFile(file, fileType, maxSize, success, progress) {
-    if (maxSize && file.size > maxSize * 1024 * 1024) {
-      return veda.trigger("danger", {description: "Файл слишком большой (> " + maxSize + " Mb)"});
-    }
-    var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
-    if (fileType && fileType.split(",").indexOf(ext) < 0) {
-      return veda.trigger("danger", {description: "Тип файла не разрешен (" + fileType + ")"});
+    if (file instanceof File) {
+      if (maxSize && file.size > maxSize * 1024 * 1024) {
+        return veda.trigger("danger", {description: "Файл слишком большой (> " + maxSize + " Mb)"});
+      }
+      var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
+      if (fileType && fileType.split(",").indexOf(ext) < 0) {
+        return veda.trigger("danger", {description: "Тип файла не разрешен (" + fileType + ")"});
+      }
     }
     var url = "/files",
         xhr = new XMLHttpRequest(),
@@ -1173,6 +1175,8 @@
     if (window.FormData) {
       var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
         control = $(opts.templateAJAX),
+        canvas = $("canvas", control)[0],
+        context = canvas.getContext("2d"),
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.rel_uri,
@@ -1211,6 +1215,38 @@
         }
         indicatorSpinner.empty().hide();
         indicatorPercentage.empty().hide();
+
+        if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
+          var reader = new FileReader();
+          reader.onload = function(event){
+            var img = new Image();
+            img.onload = function() {
+              var ratio = canvas.width / img.width;
+              var width = img.width * ratio >> 0;
+              var height = img.height * ratio >> 0;
+              canvas.width = width;
+              canvas.height = height;
+              context.drawImage(img,0,0,width,height);
+              var thumbnail = canvas.toDataURL("image/png");
+              uploadFile(thumbnail, function () {
+                var t = new veda.IndividualModel();
+                t["rdf:type"] = range;
+                t["v-s:fileName"] = [ "thumbnail-" + file.name ];
+                t["rdfs:label"] = [ "thumbnail-" + file.name ];
+                t["v-s:fileUri"] = [ uri ];
+                t["v-s:filePath"] = [ path ];
+                t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
+                t.save();
+                f["v-s:thumbnail"] = [ t ];
+                f.save();
+              });
+            }
+            img.src = event.target.result;
+          }
+          reader.readAsDataURL(file);
+        }
+
+
       };
       var progress = function (progressEvent) {
         if (progressEvent.lengthComputable) {
@@ -1224,7 +1260,7 @@
         files = [];
         n = this.files.length;
         for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-          uploadFile(file, acceptedFileType, maxFileSize, uploaded, progress)
+          uploadFile(file, acceptedFileType, maxFileSize, uploaded, progress);
         }
       });
       this.on("view edit search", function (e) {
