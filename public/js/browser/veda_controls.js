@@ -1222,7 +1222,7 @@
 
         if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
           var reader = new FileReader();
-          reader.onload = function(event){
+          reader.onload = function(event) {
             var img = new Image();
             img.onload = function() {
               var ratio = canvas.width / img.width;
@@ -1244,12 +1244,11 @@
                 f["v-s:thumbnail"] = [ t ];
                 f.save();
               });
-            }
+            };
             img.src = event.target.result;
-          }
+          };
           reader.readAsDataURL(file);
         }
-
 
       };
       var progress = function (progressEvent) {
