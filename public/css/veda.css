@@ -202,6 +202,9 @@ textarea {
 .margin-md {
   margin: 10px 0px;
 }
+.margin-lg {
+  margin: 15px 0px;
+}
 .no-padding {
   padding: 0px;
 }
@@ -210,6 +213,9 @@ textarea {
 }
 .padding-md {
   padding: 10px;
+}
+.padding-lg {
+  padding: 15px;
 }
 .no-border {
   border: none;
