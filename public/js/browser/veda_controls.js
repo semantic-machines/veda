@@ -1166,9 +1166,13 @@
         success(file, path, uri);
       }
     };
-    fd.append("file", file);
     fd.append("path", path);
     fd.append("uri", uri);
+    if (file instanceof File) {
+      fd.append("file", file);
+    } else {
+      fd.append("content", file);
+    }
     xhr.send(fd);
   }
   $.fn.veda_file = function( options ) {
