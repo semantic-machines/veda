@@ -1176,17 +1176,16 @@
     xhr.send(fd);
   }
 
-  function mkThumbnail (image, success) {
+  function resize (image, maxWidth, success) {
     var cnvs1 = document.createElement("canvas"),
         ctx1 = cnvs1.getContext("2d"),
         cnvs2 = document.createElement("canvas"),
         ctx2 = cnvs2.getContext("2d"),
-        reader = new FileReader(),
-        tHeight = 128;
+        reader = new FileReader();
     reader.onload = function(event) {
       var img = new Image();
       img.onload = function() {
-        var ratio = tHeight / img.height;
+        var ratio = maxWidth / img.width;
         var width = img.width * ratio >> 0;
         var height = img.height * ratio >> 0;
         cnvs1.width = width;
@@ -1235,7 +1234,7 @@
         f["v-s:filePath"] = [ path ];
         f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
         if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-          mkThumbnail(file, function (thumbnail) {
+          resize(file, 148, function (thumbnail) {
             uploadFile(thumbnail, null, null, function (_, path, uri) {
               var t = new veda.IndividualModel();
               t["rdf:type"] = range;

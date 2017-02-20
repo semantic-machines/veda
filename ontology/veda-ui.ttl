@@ -1189,9 +1189,9 @@ v-ui:FileTemplateWithComment
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div class="panel panel-default" style="word-wrap:break-word; width:250px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
+<div class="panel panel-default" style="word-wrap:break-word; width:180px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
   <div class="panel-body clearfix">
-    <div about="@" rel="v-s:thumbnail" data-template="v-ui:ImageSimpleTemplate"></div>
+    <div about="@" rel="v-s:thumbnail" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
     <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
     <strong property="rdfs:comment" class="view -edit -search"></strong>
     <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
