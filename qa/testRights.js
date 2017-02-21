@@ -1,6 +1,6 @@
 var webdriver = require('selenium-webdriver'),
     person = require('./person.js'),
-    basic = require('./basic.js');
+    basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000);
 
 /**
