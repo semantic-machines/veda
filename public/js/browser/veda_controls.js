@@ -91,8 +91,16 @@
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: control,
-        trigger: "focus",
+        trigger: "manual",
         animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+      input.on("focusin", function () {
+        control.tooltip("show");
+      }).on("focusout change", function () {
+        control.tooltip("hide");
       });
     }
 
@@ -263,8 +271,16 @@
         title: spec["v-ui:tooltip"].join(", "),
         placement: "auto left",
         container: control,
-        trigger: "focus",
+        trigger: "manual",
         animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+      input.on("focusin", function () {
+        control.tooltip("show");
+      }).on("focusout change", function () {
+        control.tooltip("hide");
       });
     }
 
@@ -496,8 +512,16 @@
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: control,
-        trigger: "focus",
+        trigger: "manual",
         animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+      input.on("focusin", function () {
+        control.tooltip("show");
+      }).on("focusout change", function () {
+        control.tooltip("hide");
       });
     }
 
@@ -723,6 +747,19 @@
       }
     }
 
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "top",
+        container: control,
+        trigger: "hover",
+        animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+    }
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
@@ -826,6 +863,19 @@
       }
     }
 
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "hover",
+        animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+    }
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
@@ -836,7 +886,6 @@
         $("input", control).removeAttr("disabled");
       }
     });
-
     this.val = function (value) {
       if (!value) return $("input", this).map(function () { return this.value });
       populate();
@@ -938,6 +987,19 @@
       }
     }
 
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "bottom",
+        container: control,
+        trigger: "hover",
+        animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+    }
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
@@ -948,7 +1010,6 @@
         $("input", control).removeAttr("disabled");
       }
     });
-
     this.val = function (value) {
       if (!value) return $("input", this).map(function () { return this.value });
       populate();
@@ -1000,8 +1061,16 @@
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: control,
-        trigger: "focus",
+        trigger: "manual",
         animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+      input.on("focusin", function () {
+        control.tooltip("show");
+      }).on("focusout change", function () {
+        control.tooltip("hide");
       });
     }
 
@@ -1654,6 +1723,24 @@
         isSingle = false;
       }
     });
+
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "top",
+        container: control,
+        trigger: "manual",
+        animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+      $("input", control).on("focusin", function () {
+        control.tooltip("show");
+      }).on("focusout change", function () {
+        control.tooltip("hide");
+      });
+    }
 
     this.append(control);
     return this;

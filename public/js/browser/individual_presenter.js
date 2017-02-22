@@ -924,17 +924,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       };
       controlType.call(control, opts);
 
-      // tooltip from spec
-      if (spec && spec.hasValue("v-ui:tooltip")) {
-        control.tooltip({
-          title: spec["v-ui:tooltip"].join(", "),
-          placement: "top",
-          container: control,
-          trigger: "focus",
-          animation: false
-        });
-      }
-
     });
 
     return template;
