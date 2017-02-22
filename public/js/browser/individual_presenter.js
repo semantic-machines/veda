@@ -38,6 +38,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
+          var format = function (json) {
+            var ordered = {};
+            Object.keys(json).sort().forEach(function(key) {
+              ordered[key] = json[key];
+            });
+            return JSON.stringify(ordered, null, 2);
+          };
+          var anchorize = function (string) {
+            return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
+          };
           var cntr = $( $("#json-template").html().replace(/@/g, individual.id) ),
               pre = $("pre", cntr),
               json = individual.properties;
@@ -76,17 +86,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             }
           });
           return;
-
-          var format = function (json) {
-            var ordered = {};
-            Object.keys(json).sort().forEach(function(key) {
-              ordered[key] = json[key];
-            });
-            return JSON.stringify(ordered, null, 2);
-          }
-          var anchorize = function (string) {
-            return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
-          }
         } else if (template === "ttl") {
           var list = new veda.IndividualListModel(individual);
           veda.Util.toTTL(list, function (error, ttl) {
