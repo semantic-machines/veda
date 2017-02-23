@@ -12,10 +12,12 @@ var webdriver = require('selenium-webdriver'),
  * @param shortLabel - новое короткое название
 */
 
-function updateVersion(driver, label, valueToSearch, valueToChoose, shortLabel) {
-    driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
-    driver.findElement({id:'edit'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button");});
+function updateVersion(driver, task, label, valueToSearch, valueToChoose) {
+    if(task == 'edit') {
+        driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
+        driver.findElement({id:'edit'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Edit` button");});
+    }
     driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
     driver.findElement({css:'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]'}).clear()
     driver.findElement({css:'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]'}).sendKeys(label)
@@ -24,10 +26,6 @@ function updateVersion(driver, label, valueToSearch, valueToChoose, shortLabel) 
     driver.findElement({css:'div[rel="v-s:responsible"] + veda-control input[id="fulltext"]'}).clear()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute `v-s:responsible`")});
     basic.chooseFromDropdown(driver, 'v-s:responsible', valueToSearch, valueToChoose);
-    driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
-    driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).clear();
-    driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys(shortLabel)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
     driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
     driver.findElement({id:'save'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
@@ -41,7 +39,7 @@ function updateVersion(driver, label, valueToSearch, valueToChoose, shortLabel) 
  * @param shortlabel - краткое название
 */
 
-function checkVersion(driver, version, responsible, shortLabel) {
+function checkVersion(driver, version, responsible) {
     var i = 0;
     driver.sleep(basic.FAST_OPERATION);
     for(var j = 0; j < version.length; j++) {
@@ -58,14 +56,10 @@ function checkVersion(driver, version, responsible, shortLabel) {
                         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'previousVersion'");});
                     driver.sleep(basic.FAST_OPERATION);
                     driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
-                    var b = responsible[i], c = shortLabel[i];
+                    var b = responsible[i];
                     driver.findElement({css: 'div[rel="v-s:responsible"]'}).getText().then(function (result) {
                         assert.equal("Назначение: " + b, result);
-                    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid  element");});
-                    driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
-                    driver.findElement({css: 'div[property="v-s:shortLabel"]'}).getText().then(function (result) {
-                        assert.equal(c, result);
-                    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid  journal elements count");});
+                    }).thenCatch(function (e) {basic.errorHandler(e, "Seems wrong responsible, expected" + b);})
                     i++;
                 }
             }).thenCatch(function (e) {basic.errorHandler(e, "Invalid element");}); 
@@ -75,12 +69,12 @@ function checkVersion(driver, version, responsible, shortLabel) {
 
 /**
  * 1.Open page -> login (as karpovrt);
- * 2.Open create Action document form -> Fill label, responsible, shortLabel -> Save;
+ * 2.Open create Action document form -> updateVersion(Create Action1);
  * 3.Update Action1(Action2) -> Check versions -> Update Action2(Action3) -> Check versions;
  * 4.Quit;
  *
  * 1.Открывем страницу -> Входим в систему под karpovrt;
- * 2.Открываем форму создания Мероприятия -> Заполняем название, ответственного, короткое название -> Сохраняем;
+ * 2.Открываем форму создания Мероприятия -> Создаем мероприятие;
  * 3.Обновляем Мероприятие -> Проверяем правильность версий -> Обновляем Мероприятие -> Проверяем правильность версий;
  * 4.Выход;
 */
@@ -89,21 +83,11 @@ basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+
     basic.openCreateDocumentForm(driver, 'Мероприятие', 'v-s:Action');
-    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
-    driver.findElement({css:'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]'}).sendKeys('Action1')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
-    driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
-    basic.chooseFromDropdown(driver, 'v-s:responsible', "Администратор2", "Администратор2 : Аналитик");
-    driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
-    driver.findElement({css:'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]'}).sendKeys('v1')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:shortLabel' field");});
-    driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-    driver.findElement({id:'save'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Save` button");});
+    updateVersion(driver, 'new', 'Action1', 'Администратор2', 'Администратор2 : Аналитик', 'v1');
 
-
-    updateVersion(driver, 'Action2', 'Администратор2', 'Администратор2 : Аналитик', 'v2');
+    updateVersion(driver, 'edit', 'Action2', 'Администратор2', 'Администратор2 : Аналитик', 'v2');
     checkVersion(driver, ['Action2', 'Action1'],
         ['Администратор2 : Аналитик', 'Администратор2 : Аналитик'], ['v2', 'v1']);
     //updateVersion(driver, 'Action3', 'Администратор4', 'Администратор4 : Аналитик', 'v3');

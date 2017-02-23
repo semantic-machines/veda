@@ -2,14 +2,16 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js');
 /**
  * 1.Open page -> login(as karpovrt);
- * 2.Create Report -> Attach file -> Save;
- * 3.Open Report -> Edit -> Delete file -> Attach file again -> Save;
- * 4.Quit;
+ * 2.Open Administrator graph -> download ttl;
+ * 3.Create Report -> Attach file -> Save;
+ * 4.Downlaod attached file -> Edit -> Delete file -> Attach file again -> Save;
+ * 5.Quit;
  *
- * 1.Открывем граф Администратора -> Скачиваем ttl;
- * 2.Создаем Отчет -> Прикрепляем файл -> Сохраняем;
- * 3.Открываем Отчет -> Редактируем -> Убираем прикрепленный файл -> Прикрепляем заново файл -> Сохраняем;
- * 4.Выход;
+ * 1.Открываем страницу -> Входим в систему под karpovrt;
+ * 2.Открывем граф Администратора -> Скачиваем ttl;
+ * 3.Создаем Отчет -> Прикрепляем файл -> Сохраняем;
+ * 4.Скачиваем прикрепленный файл -> Редактируем -> Убираем прикрепленный файл -> Прикрепляем заново файл -> Сохраняем;
+ * 5.Выход;
 */
 
 
@@ -38,7 +40,6 @@ basic.getDrivers().forEach(function (drv) {
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this '" + filePath + "' file");});
     basic.isVisible(driver, 'div[rel="v-s:attachment"]', basic.FAST_OPERATION);
-
     driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
     driver.findElement({css:'button[id="save"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save' button");});
@@ -46,23 +47,18 @@ basic.getDrivers().forEach(function (drv) {
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
     driver.findElement({css:'span[property="v-s:fileName"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'v-s:fileName'");});
-
     driver.executeScript("document.querySelector('button[id=\"edit\"]').scrollIntoView(true);");
     driver.findElement({css:'button[id="edit"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'edit' button");});
-
     driver.executeScript("document.querySelector('div[rel=\"v-s:attachment\"]').scrollIntoView(true);");
     basic.isVisible(driver,'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete', basic.SLOW_OPERATION);
     //driver.findElement({css:'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete'}).click()
     //    .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'button-delete' button");});
     driver.executeScript("document.elementFromPoint(675, 20).click();");
-
-
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
     driver.findElement({css:'input[type="file"]'}).sendKeys(filePath)
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot find this '" + filePath + "' file");});
     basic.isVisible(driver, 'div[rel="v-s:attachment"]', basic.FAST_OPERATION);
-
     driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
     driver.findElement({css:'button[id="save"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save' button");});

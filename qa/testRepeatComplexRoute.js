@@ -51,11 +51,11 @@ basic.getDrivers().forEach (function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Send' button");});
     driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
-    driver.sleep(basic.FAST_OPERATION);
     driver.findElement({id:'save_and_start_process'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save_and_start_process' button");});
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
+
     complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 1);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');

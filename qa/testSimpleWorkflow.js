@@ -42,7 +42,6 @@ function put(driver, type, text) {
 */
 basic.getDrivers().forEach (function (drv) {
 	var driver = basic.getDriver(drv);
-
 	basic.openPage(driver, drv);
 	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
@@ -50,7 +49,6 @@ basic.getDrivers().forEach (function (drv) {
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
 	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
 		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
-
 	driver.executeScript("document.querySelector('div[property=\"v-wf:segregateElement\"]').scrollIntoView(true);");
 	put(driver, 'v-wf:segregateElement', "contentName('@')");
 	driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);");
@@ -91,14 +89,10 @@ basic.getDrivers().forEach (function (drv) {
 	createNet.connectNet(driver, 'true');
 	createNet.saveNet(driver);
 	createNet.checkNet(driver, timeStamp, 'red', 'red', '-');
+
 	basic.logout(driver);
 	basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-
-	driver.findElement({id:'menu'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
-	basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
-	driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
+	basic.menu(driver, 'Inbox');
 	var container = driver.findElement({id:'main'});
 	var content = container.innerHTML;
 	container.innerHTML = content;

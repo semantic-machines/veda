@@ -34,11 +34,7 @@ function welcome(driver) {
  * @param driver
 */
 function open(driver) {
-    driver.findElement({id:'menu'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
-    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Inbox"]', basic.SLOW_OPERATION);
-    driver.findElement({css:'li[id="menu"] li[resource="v-l:Inbox"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `inbox` button");});
+    basic.menu(driver, 'Inbox');
     driver.sleep(1000);
 }
 
@@ -61,7 +57,6 @@ function openMsg(driver, number, commentValue, chooseValue) {
         driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
         basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик');
     }
-    driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
     driver.findElement({id:'send'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Ok' button");});
@@ -75,7 +70,6 @@ function openMsg(driver, number, commentValue, chooseValue) {
 */
 function checkMsg(driver, count) {
     open(driver);
-    driver.sleep(basic.FAST_OPERATION);
     driver.findElements({css:'span[property="v-s:description"]'}).then(function (result) {
         assert.equal(count, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
@@ -112,7 +106,6 @@ module.exports = {
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
         openMsg(driver, decision, commentValue, chooseValue);
-        driver.sleep(basic.FAST_OPERATION);
         basic.logout(driver);
     },
     /**

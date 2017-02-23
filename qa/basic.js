@@ -155,6 +155,19 @@ module.exports = {
     driver.findElement({css:'input[id="password"]'}).clear()
       .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'password' field");});
   },
+    
+  menu: function (driver, submenu) {
+      driver.findElement({id:'menu'}).click()
+          .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
+      driver.wait
+      (
+          webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'})),
+          SLOW_OPERATION
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems " + submenu + " is not visible");});
+      driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'}).click()
+          .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `" + submenu + "` button");});
+  },
+    
   /**
    * Проверка элемента на видимость
    * @param driver

@@ -27,12 +27,12 @@ function search(driver, templateName, somethingUnique, count) {
         function () {
             driver.findElement({css:'div[id="attributive-search"] a[id="refresh"]'}).click()
                 .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'refresh' button");});
-            driver.sleep(basic.FAST_OPERATION);//?
+            driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-at"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt >= count;
             });
         },
-        basic.EXTRA_SLOW_OPERATION
+        basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
     driver.findElement({id:'params-pill-at'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-at' button");});
@@ -77,11 +77,7 @@ basic.getDrivers().forEach(function (drv) {
         ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 
     // Открываем Аттрибутивный поиск
-    driver.findElement({css:'li[id="menu"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on settings button");});
-    basic.isVisible(driver, 'li[id="menu"] li[resource="v-l:Find"]', basic.FAST_OPERATION);
-    driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `find` button");});
+    basic.menu(driver, 'Find');
     basic.isVisible(driver, 'div[resource="v-fs:Search"]', basic.FAST_OPERATION);
     driver.findElement({css:'a[href*="attributive-search"'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Attributive` button");});
@@ -115,5 +111,6 @@ basic.getDrivers().forEach(function (drv) {
     search(driver, ['v-s:firstName', 'v-s:birthday'], [first, birthday], 2);
     search(driver, ['v-s:lastName', 'v-s:firstName', 'v-s:middleName', 'v-s:birthday', 'rdfs:label'],
          [last, first, middle, birthday, first], 1);
+
     driver.quit();
 })

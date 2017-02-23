@@ -68,8 +68,8 @@ function equal(a, b, button) {
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
     basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
     driver.findElement({css:'.workflow-canvas-wrapper'}).click()
@@ -100,6 +100,7 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function(e) {basic.errorHandler(e, "Cannot click 'create-condition' button");});
     driver.findElement({css:'.state-condition'}).click()
         .thenCatch(function(e) {basic.errorHandler(e, "Cannot click 'state-condition' button");});
+
     var a = " ", b = "";
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {a = state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
