@@ -57,6 +57,7 @@ function openMsg(driver, number, commentValue, chooseValue) {
         driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
         basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик');
     }
+    driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
     driver.findElement({id:'send'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Ok' button");});

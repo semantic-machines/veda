@@ -37,6 +37,7 @@ function check(driver, count) {
 
 function clickButton(driver, button) {
     driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
+    driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
         webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
@@ -75,8 +76,9 @@ basic.getDrivers().forEach(function(drv){
     driver.findElement({css:'veda-control[data-type="multilingualString"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'rdfs:label' field");});
     driver.findElement({css:'veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");})
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
     clickButton(driver, "save");
+    driver.sleep(basic.FAST_OPERATION);
 
     check(driver, 1);
     driver.findElement({css:'span[typeof="v-wf:StartForm"]'}).click()
