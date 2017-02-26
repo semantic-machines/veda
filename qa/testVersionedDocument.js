@@ -15,7 +15,7 @@ var webdriver = require('selenium-webdriver'),
 function updateVersion(driver, task, label, valueToSearch, valueToChoose) {
     if(task == 'edit') {
         driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
-        basic.execute(driver, 'click', 'button[id="id"]', "Cannot click on `Edit` button", '');
+        basic.execute(driver, 'click', 'button[id="edit"]', "Cannot click on `Edit` button", '');
     }
     driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
     basic.execute(driver, 'clear', 'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]', "Cannot fill 'rdfs:label' field");
