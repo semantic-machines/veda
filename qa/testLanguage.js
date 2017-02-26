@@ -20,8 +20,7 @@ function check(driver, language, value) {
  * @param button - необходимая кнопка смены языка
  */
 function click(driver, button) {
-    driver.findElement({css:'button[about="v-ui:' + button + '"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on " + button + " button");})
+    basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "Cannot click on " + button + " button", '');
 }
 /**
  * 1.Open Page -> Login(as karpovrt);

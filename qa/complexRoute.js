@@ -14,19 +14,8 @@ function clickUp(element) {
         .thenCatch(function (e) {basic.errorHandler(e,"Cannot click");});
 }
 
-/**
- * Выбор необходимого решения
- * @param driver
- * @param number - номер решения
-*/
-function decision(driver, number) {
-    driver.findElement({css:'div[class="radio decision"] input[value="' + number + '"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '" + number + "' decision");});
-}
-
 function welcome(driver) {
-    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button", '');
 }
 
 /**
@@ -48,10 +37,9 @@ function open(driver) {
 function openMsg(driver, number, commentValue, chooseValue) {
     open(driver);
     driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
-    decision(driver, number);
+    basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + number + '"]', "Cannot click on '" + number + "' decision", '');
     if (commentValue === '+') {
-        driver.findElement({css:'veda-control[property="rdfs:comment"] div textarea'}).sendKeys(timeStamp)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'comment'");});
+        basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "Cannot fill 'comment'", timeStamp);
     }
     if (chooseValue === '+') {
         driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
@@ -59,8 +47,7 @@ function openMsg(driver, number, commentValue, chooseValue) {
     }
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
-    driver.findElement({id:'send'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Ok' button");});
+    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button", '');
     welcome(driver);
 }
 
@@ -121,13 +108,11 @@ module.exports = {
     checkRouteStatus: function (driver, element, color, count, docNumber) {
         basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
-        driver.findElement({id:'submit'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Submit/Отправить' button");});
+        basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'Submit/Отправить' button", '');
         driver.sleep(basic.SLOW_OPERATION);
         driver.wait(findUp(driver, 'span[rel="v-wf:isProcess"]', docNumber), basic.FAST_OPERATION).then(clickUp);
         driver.sleep(basic.FAST_OPERATION);
-        driver.findElement({css:'.glyphicon-share-alt'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'glyphicon-share-alt'");});
+        basic.execute(driver, 'click', '.glyphicon-share-alt', "Cannot click on 'glyphicon-share-alt'", '');
         for (var i = 0; i < element.length; i++) {
             driver.findElements({css:'div[id="'+ element[i] +'"][colored-to="'+ color[i] +'"]'}).then(function (result) {
                 assert.equal(count, result.length);

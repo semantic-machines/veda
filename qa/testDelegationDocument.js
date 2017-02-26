@@ -12,10 +12,9 @@ var webdriver = require('selenium-webdriver'),
 */
 
 function check(driver, somethingUnique, count) {
-    driver.findElement({id:'params-pill-ft'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-ft' button");});
-    driver.findElement({css:'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input'}).sendKeys(somethingUnique)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot input search request");});
+    basic.execute(driver, 'click', 'a[id="params-pill-ft"]', "Cannot click on 'params-pill-ft' button", '');
+    basic.execute(driver, 'sendKeys', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input',
+        "Cannot input search request", somethingUnique);
     driver.wait
     (
         function () {
@@ -62,8 +61,7 @@ basic.getDrivers().forEach(function (drv) {
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     delegationRequest.createRequestDelegation(driver, 'Администратор4', 'Администратор4 : Аналитик');
-    driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Welcome' button")});
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button", '');
     basic.logout(driver);
 
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4');

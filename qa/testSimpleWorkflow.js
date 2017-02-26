@@ -17,13 +17,12 @@ function clickButton(driver, button, doctype) {
 		webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="'+doctype+'"] button[id="'+ button +'"]'})),
 		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
-	driver.findElement({css:'[typeof="'+doctype+'"] button[id="'+ button +'"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "  + button +  " button");});
+	basic.execute(driver, 'click', '[typeof="'+doctype+'"] button[id="'+ button +'"]', "Cannot click on "  + button +  " button", '');
 }
 
 function put(driver, type, text) {
-	driver.findElement({css:'div[property="' + type + '"]+veda-control[data-type="multilingualText"] textarea[class="form-control"]'}).sendKeys(text)
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill "+ type +" field");});
+	basic.execute(driver, 'sendKeys', 'div[property="' + type + '"]+veda-control[data-type="multilingualText"] textarea[class="form-control"]',
+        "Cannot fill "+ type +" field", text);
 }
 
 /**
@@ -47,8 +46,8 @@ basic.getDrivers().forEach (function (drv) {
 
 	basic.openCreateDocumentForm(driver, 'Правило', 'v-wf:Rule');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
-	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp)
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
+	basic.execute(driver, 'sendKeys', 'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]',
+        "Cannot fill 'rdfs:label' field", timeStamp);
 	driver.executeScript("document.querySelector('div[property=\"v-wf:segregateElement\"]').scrollIntoView(true);");
 	put(driver, 'v-wf:segregateElement', "contentName('@')");
 	driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);");
@@ -63,28 +62,23 @@ basic.getDrivers().forEach (function (drv) {
 	//driver.sleep(basic.FAST_OPERATION);
 	basic.openCreateDocumentForm(driver, 'Трансформация', 'v-wf:Transform');
 	driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
-	driver.findElement({css:'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]'}).sendKeys(timeStamp + 1)
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'rdfs:label' field");});
+	basic.execute(driver, 'sendKeys', 'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]',
+        "Cannot fill 'rdfs:label' field", timeStamp + 1);
 	driver.executeScript("document.querySelector('strong[about=\"v-wf:transformRule\"]').scrollIntoView(true);");
 	basic.chooseFromDropdown(driver, 'v-wf:transformRule', timeStamp, timeStamp);
 	clickButton(driver, "save", "v-wf:Transform");
 
 	createNet.startNet(driver, timeStamp);
-	driver.findElement({css:'.create-task'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'create-task' button");});
-	driver.findElement({css:'.state-task'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'state-task' button");});
+	basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button", '');
+	basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
 	driver.executeScript("document.querySelector('span[about=\"v-wf:startDecisionTransform\"]').scrollIntoView(true);");
-	driver.findElement({css:'span[about="v-wf:startDecisionTransform"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'v-wf:startDecisionTransform' field ");});
-	driver.findElement({css:'veda-control[class="VCstartDecisionTransform fulltext dropdown create properties-editor"]'}).click()
-	 	.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'VCstartDecisionTransform' field ");});
+	basic.execute(driver, 'click', 'span[about="v-wf:startDecisionTransform"]', "Cannot click on 'v-wf:startDecisionTransform' field ", '');
+	basic.execute(driver, 'click', 'veda-control[class="VCstartDecisionTransform fulltext dropdown create properties-editor"]',
+        "Cannot click on 'VCstartDecisionTransform' field ", '');
 	createNet.chooseFromDropdown(driver, 'VCstartDecisionTransform', timeStamp + 1, timeStamp + 1);
 	driver.executeScript("document.querySelector('span[about=\"v-wf:executor\"]').scrollIntoView(true);");
-	driver.findElement({css:'span[about="v-wf:executor"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'v-wf:executor' field ");});
-	driver.findElement({css:'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'VCexecutor' field ");});
+	basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "Cannot click on 'v-wf:executor' field ", '');
+	basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]', "Cannot click on 'VCexecutor' field ", '');
 	createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик');
 	createNet.connectNet(driver, 'true');
 	createNet.saveNet(driver);
@@ -96,8 +90,7 @@ basic.getDrivers().forEach (function (drv) {
 	var container = driver.findElement({id:'main'});
 	var content = container.innerHTML;
 	container.innerHTML = content;
-	driver.findElement({css:'a[property="rdfs:label"]'}).click()
-		.thenCatch(function (e) {basic.errorHandler(e, "Cannot find a task");});
+	basic.execute(driver, 'click', 'a[property="rdfs:label"]', "Cannot find a task", '');
 
 	driver.quit();
 });

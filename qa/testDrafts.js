@@ -15,8 +15,7 @@ function check(driver, count) {
     driver.findElements({css:'div[id="drafts"] span[typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
             if (count == "true") {
-                driver.findElement({css: 'div[id="drafts"] span[typeof="v-s:Person"]'}).click()
-                    .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on selected draft");});
+                basic.execute(driver, 'click', 'div[id="drafts"] span[typeof="v-s:Person"]', "Cannot click on selected draft", '');
             }
             if (count == "false") {
                 console.trace("Expected number of drafts is 0, but get 1");
@@ -40,8 +39,8 @@ function check(driver, count) {
  */
 
 function fillProperty(driver, property, something) {
-    driver.findElement({css:'[property="v-s:' + property + '"] + veda-control input'}).sendKeys(something)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill 'v-s:" + property + "' for person");});
+    basic.execute(driver, 'sendKeys', '[property="v-s:' + property + '"] + veda-control input',
+        "Cannot fill 'v-s:" + property + "' for person", something);
 }
 
 /**1.Open Page -> Login(as karpovrt);
@@ -72,8 +71,7 @@ basic.getDrivers().forEach(function(drv) {
     fillProperty(driver, 'firstName', firstName);
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#draft', basic.FAST_OPERATION);
-    driver.findElement({css:'#draft'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'draft' button");});
+    basic.execute(driver, 'click', '#draft', "Cannot click on 'draft' button", '');
     driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
         assert(txt == firstName);
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems that person is not saved properly/FN");});
@@ -87,18 +85,15 @@ basic.getDrivers().forEach(function(drv) {
     //Досоздаем черновик
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#edit')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#edit');
-    driver.findElement({css:'#edit'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'edit' button");});
+    basic.execute(driver, 'click', '#edit', "Cannot click on 'edit' button", '');
     fillProperty(driver, 'middleName', 'Пупкин');
     var now = new Date();
     fillProperty(driver, 'birthday',
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2));
-    driver.findElement({css:'[property="v-s:lastName"] + veda-control input'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'last name control' for person");});
+    basic.execute(driver, 'click', '[property="v-s:lastName"] + veda-control input', "Cannot click on 'last name control' for person", '');
     //Сохраняем его как нормальный документ
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#save')[0].scrollIntoView(true);");
-    driver.findElement({css:'#save'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save' button");});
+    basic.execute(driver, 'click', '#save', "Cannot click on 'save' button", '');
 
     check(driver, "false");
 

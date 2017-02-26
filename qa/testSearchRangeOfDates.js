@@ -11,14 +11,13 @@ var webdriver = require('selenium-webdriver'),
 
 function search(driver, somethingUnique, count) {
     basic.menu(driver, 'Search');
-    driver.findElement({css:'#q'}).sendKeys(somethingUnique)
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill input field");});
+    basic.execute(driver, 'sendKeys', '#q', "Cannot fill input field", somethingUnique);
     driver.executeScript("document.querySelector('button[id=\"search-submit\"]').scrollIntoView(true);");
     basic.isEnabled(driver, 'button[id="search-submit"]', basic.SLOW_OPERATION);
     driver.wait
     (
         function () {
-            driver.findElement({css:'button[id="search-submit"]'}).click();
+            basic.execute(driver, 'click', 'button[id="search-submit"]', "Cannot click on 'submit' button", '');
             driver.sleep(basic.FAST_OPERATION); // Иначе слишком часто щелкает поиск
             return driver.findElement({css:'#results_count'}).getText().then(function (text) {
                 return text == count;

@@ -14,19 +14,17 @@ var webdriver = require('selenium-webdriver'),
 function search(driver, templateName, somethingUnique, count) {
     //Поиск нужного документа
     for (var i = 0; i < templateName.length; i++) {
-        (templateName[i] == 'rdfs:label') ? driver.findElement({css: 'div[id="form-holder"] [property="' + templateName[i] + '"] + veda-control input'}).sendKeys(somethingUnique[i])
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill " + templateName[i] + " field");})
-            : driver.findElement({css: '[property="' + templateName[i] + '"] + veda-control input'}).sendKeys(somethingUnique[i])
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot fill " + templateName[i] + " field");});
+        (templateName[i] == 'rdfs:label') ? basic.execute(driver, 'sendKeys', 'div[id="form-holder"] [property="' + templateName[i] + '"] + veda-control input',
+                "Cannot fill " + templateName[i] + " field", somethingUnique[i])
+            : basic.execute(driver, 'sendKeys', '[property="' + templateName[i] + '"] + veda-control input',
+                "Cannot fill " + templateName[i] + " field", somethingUnique[i]);
     }
     driver.executeScript("document.querySelector('#find').scrollIntoView(true);");
-    driver.findElement({css:'#find'}).click()
-       .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Find/Найти` button");});
+    basic.execute(driver, 'click', '#find', "Cannot click on `Find/Найти` button", '');
     driver.wait
     (
         function () {
-            driver.findElement({css:'div[id="attributive-search"] a[id="refresh"]'}).click()
-                .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'refresh' button");});
+            basic.execute(driver, 'click', 'div[id="attributive-search"] a[id="refresh"]', "Cannot click on 'refresh' button", '');
             driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-at"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt >= count;
@@ -34,13 +32,10 @@ function search(driver, templateName, somethingUnique, count) {
         },
         basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
-    driver.findElement({id:'params-pill-at'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'params-pill-at' button");});
+    basic.execute(driver, 'click', 'a[id="params-pill-at"]', "Cannot click on 'params-pill-at' button", '');
     for (var i = 0; i < templateName.length; i++) {
-        (templateName[i] == 'rdfs:label') ? driver.findElement({css: 'div[id="form-holder"] [property="' + templateName[i] + '"] .glyphicon-remove'}).click()
-                .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value");})
-            : driver.findElement({css: '[property="' + templateName[i] + '"] .glyphicon-remove'}).click()
-                .thenCatch(function (e) {basic.errorHandler(e, "Cannot remove old" + templateName[i] + "value");});
+        (templateName[i] == 'rdfs:label') ? basic.execute(driver, 'click', 'div[id="form-holder"] [property="' + templateName[i] + '"] .glyphicon-remove', "Cannot remove old" + templateName[i] + "value", '')
+            : basic.execute(driver, 'click', '[property="' + templateName[i] + '"] .glyphicon-remove', "Cannot remove old" + templateName[i] + "value", '')
     }
 }
 
@@ -79,10 +74,9 @@ basic.getDrivers().forEach(function (drv) {
     // Открываем Аттрибутивный поиск
     basic.menu(driver, 'Find');
     basic.isVisible(driver, 'div[resource="v-fs:Search"]', basic.FAST_OPERATION);
-    driver.findElement({css:'a[href*="attributive-search"'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Attributive` button");});
-    driver.findElement({css:'div[typeof="v-fs:AttributiveRequest"] input[id="fulltext"]'}).sendKeys('Персона')
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot input templateName");});
+    basic.execute(driver, 'click', 'a[href*="attributive-search"]', "Cannot click on `Attributive` button", '');
+    basic.execute(driver, 'sendKeys', 'div[typeof="v-fs:AttributiveRequest"] input[id="fulltext"]',
+        "Cannot input templateName", 'Персона');
     driver.sleep(basic.FAST_OPERATION);
     driver.wait
     (
