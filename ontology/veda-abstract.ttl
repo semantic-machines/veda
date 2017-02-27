@@ -78,7 +78,7 @@ v-s:isDraft
 .
 v-s:created
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Entry date"@en ;
+  rdfs:label "Creation date"@en ;
   rdfs:label "Дата создания"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Thing ;
@@ -183,7 +183,7 @@ v-s:attachment
 .
 v-s:scanAttachment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "ScanAttachment"@en ;
+  rdfs:label "Scanned document"@en ;
   rdfs:label "Сканированный вариант документа"@ru ;
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
@@ -333,7 +333,7 @@ v-s:datePlan
 .
 v-s:dateFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date of fact"@en ;
+  rdfs:label "Date fact"@en ;
   rdfs:label "Дата фактическая"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
@@ -524,14 +524,14 @@ v-s:hasAccountingDoc
 v-s:hasPaymentConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
-  rdfs:label "Payment Conditions"@en ;
+  rdfs:label "Payment conditions"@en ;
   rdfs:label "Условия платежа"@ru ;
   rdfs:range v-s:PaymentConditions ;
 .
 v-s:hasDeliveryConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
-  rdfs:label "Delivery Conditions"@en ;
+  rdfs:label "Delivery conditions"@en ;
   rdfs:label "Условия поставки"@ru ;
   rdfs:range v-s:DeliveryConditions ;
 .
@@ -687,8 +687,8 @@ v-s:Registered
 .
 v-s:registrationDate
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата регистрации документа"@ru ;
+  rdfs:label "Registration date"@en ;
+  rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -701,8 +701,8 @@ v-s:registrationNumber
 .
 v-s:registrationDateIn
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата регистрации документа"@ru ;
+  rdfs:label "Registration date"@en ;
+  rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -715,8 +715,8 @@ v-s:registrationNumberIn
 .
 v-s:registrationDateOut
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата регистрации документа"@ru ;
+  rdfs:label "Registration date"@en ;
+  rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -917,7 +917,7 @@ v-s:hasClassifierCountry
 .
 v-s:hasClassifierLegalForm
   rdf:type owl:ObjectProperty ;
-  rdfs:label "ClassifierLegalForm"@en ;
+  rdfs:label "Legal form classifier"@en ;
   rdfs:label "Организационно-правовая форма"@ru ;
   rdfs:range v-s:ClassifierLegalForm ;
   rdfs:domain v-s:ClassifiedRus ;
@@ -995,7 +995,7 @@ v-s:prepayment
 .
 v-s:transactionDate
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Transaction date of document"@en ;
+  rdfs:label "Transaction date"@en ;
   rdfs:label "Дата проводки"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Financial ;

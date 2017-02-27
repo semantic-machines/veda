@@ -277,7 +277,7 @@ v-s:ClassifierLegalForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "ClassifierLegalForm"@en ;
+  rdfs:label "Legal form classifier"@en ;
   rdfs:label "Организационно правовая форма"@ru ;
 .
 # ------------------------------------------------------------
