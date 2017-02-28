@@ -59,7 +59,6 @@ v-ft:Event_UpdateTaskCounter
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обновления счетчиков задач" ;
   v-s:triggerByType v-wf:DecisionForm ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -164,7 +163,6 @@ v-ft:Event_UpdateAllTaskCounters
   v-s:author cfg:VedaSystem ;
   rdfs:label "Еженедельный скрипт обновления счетчиков задач для всех должностей и назначений" ;
   v-s:triggerByUid cfg:weekly ;
-  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
