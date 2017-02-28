@@ -43,34 +43,13 @@ v-l:MainPageTemplate
         <a class="navbar-brand" href="#/v-l:Welcome"><img src="/img/veda-logo.png"></a>
       </div>
       <div class="collapse navbar-collapse" id="navbar-collapse">
-        <div id="user-menu"></div>
         <ul class="nav navbar-nav navbar-right">
+          <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
+          <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
+          <li about="v-s:Drafts" data-template="v-ui:DraftsIndicatorTemplate"></li>
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-l:MainMenu" data-template="v-l:MenuTemplate"></li>
-          <li class="btn-group" id="preferred-language" about="v-ui:AvailableLanguage" rel="rdf:value">
-            <button about="@" property="rdfs:label" class="btn btn-xs btn-default navbar-btn"></button>
-            <script>
-              handler("v-ui:preferredLanguage");
-              veda.user.preferences.on("individual:propertyModified", handler);
-              template.on("remove", function () {
-                veda.user.preferences.off("individual:propertyModified", handler);
-              });
-              template.on("click", function() {
-                veda.user.toggleLanguage(individual["rdf:value"][0].toString());
-              });
-              function handler(property_uri) {
-                if (property_uri === "v-ui:preferredLanguage") {
-                  var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
-                  if (preferredLanguage.indexOf(individual.id) >= 0) {
-                    template.addClass("active btn-success").removeClass("btn-default");
-                  } else {
-                    template.removeClass("active btn-success").addClass("btn-default");
-                  }
-                }
-              }
-              //# sourceURL=v-l:MainPageTemplate_inline_template_for_language_switch
-            </script>
-          </li>
+          <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
         </ul>
       </div>
     </div>
