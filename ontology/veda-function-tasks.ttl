@@ -265,3 +265,48 @@ v-ft:TaskTemplate
 </script>
   """
 .
+
+v-ft:FunctionTasksIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "V-ft:FunctionInbox indicator template"@en ;
+  rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
+  v-ui:template """
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-envelope-o fa-lg"></span> <span class="label label-danger" id="counter"></span>
+  <span about="@" property="rdfs:label" style="display:none"></span>
+</a>
+<script>
+  //popover
+  template.tooltip({
+    container: template,
+    html: true,
+    title: function () {
+      return template.children("[property]").clone().show();
+    }
+  });
+  var tasks = individual.tasks;
+  var counter = $("#counter", template);
+  tasks.search();
+  counter.text(tasks.count);
+  var interval = setInterval(function () {
+    tasks.search();
+    counter.text(tasks.count);
+  }, 1000*60*3);
+  veda.on("task:completed", taskCompletedHandler);
+  template.on("remove", function () {
+    clearInterval(interval);
+    veda.off("task:completed", taskCompletedHandler);
+  });
+  function taskCompletedHandler(task_id) {
+    var test = tasks.result.filter(function (item) {
+      return item === task_id;
+    }).length;
+    if ( test ) {
+      var tmp = parseInt( counter.text() );
+      counter.text(tmp ? tmp - 1 : tmp);
+    }
+  }
+  //# sourceURL=v-ft:FunctionTasksIndicatorTemplate
+</script>
+  """
+.
