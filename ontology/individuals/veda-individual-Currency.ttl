@@ -13,38 +13,44 @@
   v-s:loadPriority 10 ;
 .
 
-
 d:currency_usd
     a v-s:Currency;
-    v-s:shortLabel "USD"^^xsd:string;
-    rdfs:label "Доллар США"^^xsd:string.
+    v-s:shortLabel "USD";
+    rdfs:label "Доллар США"@ru;
+    rdfs:label "US Dollar"@en.
 
 d:currency_eur
     a v-s:Currency;
-    v-s:shortLabel "EUR"^^xsd:string;
-    rdfs:label "Евро"^^xsd:string.
+    v-s:shortLabel "EUR";
+    rdfs:label "Евро"@ru;
+    rdfs:label "Euro"@en.
 
 d:currency_rub
     a v-s:Currency;
-    v-s:shortLabel "RUB"^^xsd:string;
-    rdfs:label "Российский рубль RUR"^^xsd:string.
+    v-s:shortLabel "RUB";
+    rdfs:label "Российский рубль"@ru;
+    rdfs:label "Russian ruble"@en.
 
 d:currency_gbp
     a v-s:Currency;
-    v-s:shortLabel "GBP"^^xsd:string;
-    rdfs:label "Британский фунт"^^xsd:string.
+    v-s:shortLabel "GBP";
+    rdfs:label "Британский фунт"@ru;
+    rdfs:label "British pound"@en.
 
 d:currency_rureur
     a v-s:Currency;
-    v-s:shortLabel "RUEUR"^^xsd:string;
-    rdfs:label "Условная единица EUR"^^xsd:string.
+    v-s:shortLabel "RUEUR";
+    rdfs:label "Условная единица EUR"@ru;
+    rdfs:label "Сonventional unit EUR"@en.
 
 d:currency_ruusd
     a v-s:Currency;
-    v-s:shortLabel "RUUSD"^^xsd:string;
-    rdfs:label "Условная единица USD"^^xsd:string.
+    v-s:shortLabel "RUUSD";
+    rdfs:label "Условная единица USD"@ru;
+    rdfs:label "Сonventional unit USD"@en.
 
 d:currency_rugbp
     a v-s:Currency;
-    v-s:shortLabel "RUGBP"^^xsd:string;
-    rdfs:label "Условная единица GBP"^^xsd:string.
+    v-s:shortLabel "RUGBP";
+    rdfs:label "Условная единица GBP"@ru;
+    rdfs:label "Сonventional unit GBP"@en.

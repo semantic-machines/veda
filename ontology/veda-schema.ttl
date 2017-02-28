@@ -141,7 +141,7 @@ v-s:fileSize
   rdfs:label "Размер файла"@ru ;
   rdfs:range xsd:integer ;
 .
-v-s:fileThumbnail
+v-s:thumbnail
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "Thumbnail"@en ;

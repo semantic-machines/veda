@@ -14,7 +14,14 @@ function check(driver, language, value) {
         basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Language is incorrect, expected: " + language + "get: " + value);});
 }
-
+/**
+ * Нажатие на кнопку смены языка
+ * @param driver
+ * @param button - необходимая кнопка смены языка
+ */
+function click(driver, button) {
+    basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "Cannot click on " + button + " button", '');
+}
 /**
  * 1.Open Page -> Login(as karpovrt);
  * 2.Click 'Eng' button -> Check language: english, russian;
@@ -32,28 +39,22 @@ function check(driver, language, value) {
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
-    driver.findElement({css:'button[about="v-ui:EN"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Eng` button");});
+    click(driver, 'EN');
     check(driver, 'Eng', "2");
     check(driver, 'Eng', "Administrator2");
     check(driver, 'Рус', "2");
     check(driver, 'Рус', "Администратор2");
 
     //только английский
-    driver.findElement({css:'button[about="v-ui:RU"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Рус' button");});
+    click(driver, 'RU');
     check(driver, 'Eng', "2");
     check(driver, 'Eng', "Administrator2");
 
     //только русский
-    driver.findElement({css:'button[about="v-ui:RU"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Рус` button");});
-    driver.findElement({css:'button[about="v-ui:EN"]'}).click()
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `Eng` button");});
-
+    click(driver, 'RU');
+    click(driver, 'EN');
     check(driver, 'Рус', "2");
     check(driver, 'Рус', "Администратор2");
 

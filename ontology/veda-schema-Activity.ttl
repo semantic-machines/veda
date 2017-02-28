@@ -24,6 +24,7 @@ v-s:Activity
   rdfs:subClassOf v-s:BackwardLink;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:WorkGroup ;  
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
 .
@@ -32,13 +33,6 @@ v-s:topic
   rdfs:label "Topic"@en ;
   rdfs:label "Предмет"@ru ;
   rdfs:range v-s:Thing ;
-  rdfs:domain v-s:Activity ;
-.
-v-s:member
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Member"@en ;
-  rdfs:label "Участник"@ru ;
-  rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Activity ;
 .
 v-s:hasActivity
@@ -70,6 +64,8 @@ v-s:activityCoordinator
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Activity ;
 .
+# v-s:member
+
 
 #---------------------------------------------------------
 v-s:Meeting

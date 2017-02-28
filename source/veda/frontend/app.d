@@ -1,4 +1,4 @@
-import std.conv, std.stdio, std.file, core.runtime, core.thread;
+import std.conv, std.stdio, std.file, core.runtime, core.thread, std.base64;
 import vibe.d;
 import properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
@@ -58,15 +58,18 @@ void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorIn
     res.render!("view_error.dt", req, error);
 }
 
+const string BASE64_START_POS = "base64";
+
 void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 {
     string filename;
 
     try
     {
-        auto pf = "file" in req.files;
+        auto content = "content" in req.form;
+        auto pf      = "file" in req.files;
 
-        enforce(pf !is null, "No file uploaded!");
+        enforce(pf !is null || content !is null, "No file (base64) uploaded!");
 
         auto pt = "path" in req.form;
         auto nm = "uri" in req.form;
@@ -92,15 +95,34 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
             Path path = Path("data/files/" ~ pts ~ "/") ~filename;
 
-            try moveFile(pf.tempPath, path);
-            catch (Exception e) {
-//                logWarn("Failed to move file to destination folder: %s", e.msg);
-//                logInfo("Performing copy+delete instead.");
-                copyFile(pf.tempPath, path);
+            if (content !is null)
+            {
+                string cntstr = cast(string)*content;
+
+                long   pos = cntstr.indexOf(BASE64_START_POS);
+
+                if (pos > 0)
+                {
+                    string header = cntstr[ 0.. pos ];
+                    cntstr = cntstr[ pos + BASE64_START_POS.length + 1..$ ];
+
+                    ubyte[] decoded = Base64.decode(cntstr);
+
+                    std.file.write(path.toString(), decoded);
+                }
             }
 
-            res.writeBody("File uploaded!", "text/plain");
+            if (pf !is null)
+            {
+                try moveFile(pf.tempPath, path);
+                catch (Exception e) {
+//                logWarn("Failed to move file to destination folder: %s", e.msg);
+//                logInfo("Performing copy+delete instead.");
+                    copyFile(pf.tempPath, path);
+                }
+            }
         }
+        res.writeBody("File uploaded!", "text/plain");
     }
     catch (Throwable ex)
     {

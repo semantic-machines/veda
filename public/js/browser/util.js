@@ -89,6 +89,20 @@ veda.Module(function Util(veda) { "use strict";
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
   };
 
+  veda.Util.TTLtoJSON = function (ttl) {
+    var parser = N3.Parser();
+    var triples = [];
+    var prefixes;
+    var result = parser.parse(ttl, function (error, triple, prefixez) {
+      if (triple) {
+        triples.push(triple);
+      } else {
+        prefixes = prefixez;
+      }
+    });
+    console.log('triples:', triples, 'prefixes:', prefixes);
+  }
+
   veda.Util.toTTL = function (individualList, callback) {
     var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'").result,
         all_prefixes = {},
@@ -300,18 +314,15 @@ veda.Module(function Util(veda) { "use strict";
     return query;
   }
 
-  function flattenIndividual(object, prefix, union, depth) {
-    if (typeof union === "undefined") {
-      union = {};
-    }
-    if (typeof prefix === "undefined") {
-      prefix = "";
-    }
-    if (typeof depth === "undefined") {
-      depth = 0;
-    }
-    if (depth === 5) {
+  function flattenIndividual(object, prefix, union, visited) {
+    var uri = object["@"];
+    union = typeof union !== "undefined" ? union : {};
+    prefix = typeof prefix !== "undefined" ? prefix : "";
+    visited = typeof visited !== "undefined" ? visited : [];
+    if (visited.indexOf(uri) > -1) {
       return;
+    } else {
+      visited.push(uri);
     }
     for (var property_uri in object) {
       if (property_uri === "@") { continue; }
@@ -321,9 +332,8 @@ veda.Module(function Util(veda) { "use strict";
         var value = values[i];
         if (value.type === "Uri") {
           var individ = new veda.IndividualModel(value.data);
-          //if ( true ) {
           if ( individ.isNew() ) {
-            flattenIndividual(individ.properties, prefixed, union, depth+1);
+            flattenIndividual(individ.properties, prefixed, union, visited);
           } else {
             union[prefixed] = union[prefixed] ? union[prefixed] : [];
             union[prefixed].push( value );
