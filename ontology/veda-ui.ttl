@@ -309,6 +309,72 @@ v-ui:displayedElements
 
 # --------------- System properties template ------------------
 
+v-ui:DraftsIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон переключения языка"@ru ;
+  rdfs:label "Language switch template"@en ;
+  v-ui:template """
+<a href="#/drafts" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-file-text-o fa-lg"></span> <span class="label label-default" id="drafts-counter"></span>
+  <span about="@" property="rdfs:label" style="display:none"></span>
+</a>
+<script>
+  $("#drafts-counter", template).text(veda.drafts.length);
+  //popover
+  template.tooltip({
+    container: template,
+    html: true,
+    title: function () {
+      return template.children("[property]").clone().show();
+    }
+  });
+  //# sourceURL=v-ui:DraftsIndicatorTemplate
+</script>
+  """
+.
+v-ui:LanguageSwitchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон переключения языка"@ru ;
+  rdfs:label "Language switch template"@en ;
+  v-ui:template """
+<div about="@" class="btn-group" rel="rdf:value">
+  <button about="@" property="rdfs:label" class="btn btn-xs btn-default navbar-btn"></button>
+</div>
+<script>
+  var switches = $(".btn", template);
+  handler("v-ui:preferredLanguage");
+  veda.user.preferences.on("individual:propertyModified", handler);
+  template.on("remove", function () {
+    veda.user.preferences.off("individual:propertyModified", handler);
+  });
+  template.on("click", function(e) {
+    e.stopPropagation();
+    var target = $(e.target);
+    var lang_uri = target.attr("resource");
+    var lang = new veda.IndividualModel(lang_uri);
+    var lang_name = lang["rdf:value"][0].toString();
+    veda.user.toggleLanguage(lang_name);
+  });
+  function handler(property_uri) {
+    if (property_uri === "v-ui:preferredLanguage") {
+      var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
+      switches.each(function () {
+        var $this = $(this);
+        var lang_uri = $this.attr("resource");
+        if (preferredLanguage.indexOf(lang_uri) > -1) {
+          $this.addClass("active btn-success").removeClass("btn-default");
+        } else {
+          $this.removeClass("active btn-success").addClass("btn-default");
+        }
+      });
+    }
+  }
+  //# sourceURL=v-ui:LanguageSwitchTemplate
+</script>
+
+  """
+.
+
 v-ui:SystemPropertiesTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с набором системных свойств"@ru ;

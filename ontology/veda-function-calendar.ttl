@@ -164,3 +164,53 @@ v-cal:FunctionCalendarTemplate
 </script>
   """ ;
 .
+
+v-cal:FunctionCalendarIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "v-cal:FunctionCalendar indicator template"@en ;
+  rdfs:label "Шаблон индикатора для v-cal:FunctionCalendar"@ru ;
+  v-ui:template """
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-calendar fa-lg"></span> <span class="label label-danger" id="counter"></span>
+  <span about="@" property="rdfs:label" style="display:none"></span>
+</a>
+<script>
+  //popover
+  template.tooltip({
+    container: template,
+    html: true,
+    title: function () {
+      return template.children("[property]").clone().show();
+    }
+  });
+  var interval = setInterval(setEventsCounter, 1000*60*3);
+  var events = [];
+  var counter = $("#counter", template);
+  setEventsCounter();
+  veda.on("task:completed", taskCompletedHandler);
+  template.one("remove", function () {
+    clearInterval(interval);
+    veda.off("task:completed", taskCompletedHandler);
+  });
+  function setEventsCounter() {
+    var start = new Date();
+    var end = new Date();
+    var firstDay = start.getDate() - start.getDay();
+    start.setDate( firstDay + 1);
+    end.setDate( firstDay + 7 );
+    events = individual.getEvents(start, end);
+    counter.text(events.length);
+  }
+  function taskCompletedHandler(task_id) {
+    var test = events.filter(function (item) {
+      return item.id === task_id;
+    }).length;
+    if ( test ) {
+      var tmp = parseInt( counter.text() );
+      counter.text(tmp ? tmp - 1 : tmp);
+    }
+  }
+  //# sourceURL=v-cal:FunctionCalendarIndicatorTemplate
+</script>
+  """
+.
