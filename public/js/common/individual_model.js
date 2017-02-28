@@ -288,10 +288,10 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Save current individual to database (with validation and adding new version)
    */
-  proto.save = function() {
+  proto.save = function(forced) {
     var self = this;
     // Do not save individual to server if nothing changed
-    if (self._.isSync) return;
+    if (self._.isSync && !forced) { return; }
     self.trigger("individual:beforeSave");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
@@ -347,6 +347,7 @@ veda.Module(function (veda) { "use strict";
    * Update current individual with values from database & merge with local changes
    */
   proto.update = function () {
+    this.trigger("individual:beforeUpdate");
     var self = this;
     if (!this._.isNew) {
       this._.filtered = {};
@@ -375,6 +376,8 @@ veda.Module(function (veda) { "use strict";
       self._.isSync = true;
     }
     veda.drafts.remove(this.id);
+    this.trigger("individual:afterUpdate");
+    return this;
   };
 
   /**
@@ -416,7 +419,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.hasValue = function (property_uri, value) {
     var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
-    if (typeof value !== "undefined") {
+    if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
         return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );

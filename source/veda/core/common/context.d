@@ -237,9 +237,6 @@ interface Context
 
     int[ string ] get_key2slot();
 
-//    public bool ft_check_for_reload(void delegate() load);
-    public bool acl_check_for_reload(void delegate() load);
-
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string uri);
     Onto get_onto();
@@ -313,11 +310,17 @@ interface Context
        Params:
                 ticket = указатель на экземпляр Ticket
                 query_str = строка содержащая VQL запрос
+                sort_str = порядок сортировки
+                db_str = базы данных используемые в запросе
+                from = начинать обработку с ..
+                top = сколько вернуть положительно авторизованных элементов  
+                limit = максимальное количество найденных элементов
+                prepare_element_event = делегат для дополнительных действий извне
 
        Returns:
                 список авторизованных uri
      */
-    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit);
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit, void delegate(string uri) prepare_element_event);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();

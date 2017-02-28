@@ -32,6 +32,8 @@ s-wf:net_complex_route a v-wf:Net;
     s-wf:cr_decrease_rights,
     s-wf:crf_dr_to_i,
     s-wf:cr_informing_task,
+	s-wf:cr_introduction,
+	s-wf:crf_i_to_intro,
     s-wf:crf_i_to_c1,
     s-wf:cr_c1,
     s-wf:crf_c1_to_c2,
@@ -166,15 +168,35 @@ s-wf:cr_informing_task a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "150"^^xsd:integer;
   v-wf:locationY "200"^^xsd:integer;
-  v-wf:split v-wf:XOR;
+  v-wf:split v-wf:OR;
   v-wf:belongsTo s-wf:net_complex_route;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
   v-wf:subNet s-wf:NotificationNet;
-  v-wf:hasFlow s-wf:crf_i_to_c1;
+  v-wf:hasFlow s-wf:crf_i_to_c1, s-wf:crf_i_to_intro;
   v-wf:executor s-wf:executor_informing ;
   rdfs:label "Рассылка"^^xsd:string;
 .
-  
+
+s-wf:cr_introduction a v-wf:Task;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:locationX "150"^^xsd:integer;
+  v-wf:locationY "100"^^xsd:integer;
+  v-wf:split v-wf:XOR;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:subNet s-wf:InterlayerNet;
+  v-wf:executor s-wf:executor_introduction ;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
+  rdfs:label "Ознакомление"^^xsd:string;
+.
+
+s-wf:crf_i_to_intro a v-wf:Flow;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:belongsTo s-wf:net_complex_route;
+  v-wf:flowsInto s-wf:cr_introduction;
+  v-wf:predicate "true"^^xsd:string;
+.
+
 s-wf:cr_c1 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:locationX "300"^^xsd:integer;
@@ -747,6 +769,12 @@ s-wf:executor_informing
   rdf:type v-wf:ExecutorDefinition ;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_informing'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
+.
+
+s-wf:executor_introduction
+  rdf:type v-wf:ExecutorDefinition ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:executorExpression "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_introduction'}])" ;
 .
 
 s-wf:executor_coordination1

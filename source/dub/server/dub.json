@@ -17,19 +17,18 @@
 	"../../veda/bind/nano.d", 
 	"../../veda/bind/lmdb_header.d", 
 	"../../veda/bind/xapian_d_header.d",
-	"../../veda/util/individual8json.d",
 	"../../veda/util/tools.d",
 	"../../veda/util/queue.d",
 	"../../veda/util/container.d",
-	"../../veda/util/cbor.d",
-	"../../veda/util/cbor8individual.d",
-        "../../veda/util/module_info.d"
+        "../../veda/util/module_info.d",
+	"../../veda/util/tests_tools.d"
  	],
 	"sourcePaths":[
 	    "../../veda/server", 
 	    "../../veda/common", 
 	    "../../veda/core",  
 	    "../../veda/onto", 
+            "../../veda/onto/bj8individual",
             "../../veda/vmodule"
 	],
 	"configurations": [

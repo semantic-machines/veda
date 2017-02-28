@@ -51,6 +51,7 @@ void main(char[][] args)
 {
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
+
     foreach (arg; args)
     {
         if (arg == "remove-ontology")
@@ -68,10 +69,11 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = new PThreadContext(process_name, "file_reader", log, parent_url);
+    Context context = new PThreadContext(process_name, "file_reader", individuals_db_path, log, parent_url);
     sticket = context.sys_ticket();
 
-    string[] uris = context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000).result;
+    string[] uris =
+        context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -88,7 +90,7 @@ void main(char[][] args)
             context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
         }
 
-        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000).result;
+        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
@@ -101,12 +103,12 @@ void main(char[][] args)
 
         while (true)
         {
-    	    core.thread.Thread.sleep(dur!("seconds")(1));
+            core.thread.Thread.sleep(dur!("seconds")(1));
 
             long cur_opid;
 
             cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
-            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);                        
+            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);
             if (cur_opid >= res.op_id)
                 complete_ft = true;
 
@@ -120,8 +122,8 @@ void main(char[][] args)
             if (cur_opid >= res.op_id)
                 complete_subject = true;
 
-		    if (complete_subject && complete_script && complete_ft)
-				break;
+            if (complete_subject && complete_script && complete_ft)
+                break;
         }
 
         log.tracec("WARN: !!!! VEDA SYSTEM NEED RESTART");
@@ -147,7 +149,8 @@ void main(char[][] args)
             }
         }
 
-        processed(files, context);
+        bool is_need_check_changes = !need_reload_ontology;
+        processed(files, context, is_need_check_changes);
     }
 
     // ? now variable [oFiles] is empty, reinit
@@ -182,7 +185,9 @@ void main(char[][] args)
 //                        processed(files, context);
                         if (_files.length > 0)
                         {
-                            processed(_files, context);
+                            Thread.sleep(dur!("seconds")(3));
+                            bool is_need_check_changes = !need_reload_ontology;
+                            processed(_files, context, is_need_check_changes);
                         }
 /*
                         if (_files.length > 0)
@@ -235,7 +240,7 @@ string digestFile(Hash) (string filename) if (isDigest!Hash)
     return str_res.dup;
 }
 
-Individual[ string ] check_and_read_changed(string[] changes, Context context)
+Individual[ string ] check_and_read_changed(string[] changes, Context context, bool is_check)
 {
     Individual[ string ] individuals;
     Individual *[ string ][ string ] individuals_2_filename;
@@ -251,23 +256,32 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
             string     file_uri       = "d:" ~ baseName(fname);
             Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
 
-            if (indv_ttrl_file is Individual.init)
+            if (!is_check)
             {
                 is_reload = true;
                 files_to_load ~= fname;
-                log.trace("file is new, %s", fname);
+                log.trace("file %s", fname);
             }
             else
             {
-                string new_hash = digestFile!MD5(fname);
-                string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
-
-                if (new_hash != old_hash)
+                if (indv_ttrl_file is Individual.init)
                 {
-                    log.trace("file is modifed (hash), %s", fname);
+                    is_reload = true;
+                    files_to_load ~= fname;
+                    log.trace("file is new, %s", fname);
                 }
-                files_to_load ~= fname;
-                is_reload = true;
+                else
+                {
+                    string new_hash = digestFile!MD5(fname);
+                    string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
+
+                    if (new_hash != old_hash)
+                    {
+                        log.trace("file is modifed (hash), %s", fname);
+                    }
+                    files_to_load ~= fname;
+                    is_reload = true;
+                }
             }
         }
     }
@@ -350,13 +364,13 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context)
     return individuals;
 }
 
-void processed(string[] changes, Context context)
+void processed(string[] changes, Context context, bool is_check_changes)
 {
     Ticket sticket = context.sys_ticket();
 
     log.trace("processed:find systicket [%s]", sticket.id);
 
-    Individual[ string ] individuals = check_and_read_changed(changes, context);
+    Individual[ string ] individuals = check_and_read_changed(changes, context, is_check_changes);
 
     log.trace("processed:check_and_read_changed, count individuals=[%d]", individuals.length);
 
@@ -388,7 +402,7 @@ void processed(string[] changes, Context context)
                         indv.removeResource("v-s:actualVersion");
 //                        log.trace("in storage, uri=%s \n%s", indv_in_storage.uri, text(indv_in_storage));
 
-                        if (indv_in_storage == Individual.init || indv.compare(indv_in_storage) == false)
+                        if (indv_in_storage == Individual.init || is_check_changes == false || indv.compare(indv_in_storage) == false)
                         {
                             if (indv.getResources("rdf:type").length > 0)
                             {
@@ -398,7 +412,7 @@ void processed(string[] changes, Context context)
 
                                 ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
                                 if (trace_msg[ 33 ] == 1)
-                                log.trace("file reader:store, uri=%s", indv.uri);
+                                    log.trace("file reader:store, uri=%s", indv.uri);
 
                                 if (res != ResultCode.OK)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));

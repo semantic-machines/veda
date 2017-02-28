@@ -117,7 +117,7 @@ v-s:StatusInvestigationCompleted
 v-s:StatusInvestigationInitiation
   rdf:type v-s:Status ;
   rdfs:label "Initiation of Investigation"@en ;
-  rdfs:label "Иницирование расследования"@ru ;
+  rdfs:label "Инициирование расследования"@ru ;
 .
 v-s:StatusInvestigationInitiated
   rdf:type v-s:Status ;

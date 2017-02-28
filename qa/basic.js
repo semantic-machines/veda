@@ -9,12 +9,12 @@ var webdriver = require('selenium-webdriver'),
     //SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://live.semantic-machines.com:8080/':'http://127.0.0.1:8080/';
 
 webdriver.promise.controlFlow().on('uncaughtException', function(e) {
-  console.trace(e);
+  console.trace(e, e.stack);
   process.exit(1);
 });
 
 function errrorHandlerFunction(e, message) {
-  console.trace(message, e.message);
+  console.trace(message, e.message, e.stack);
   process.exit(1);
 }
 
@@ -135,6 +135,10 @@ module.exports = {
     ).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find user last name")});
   },
 
+    /**
+     * logout
+     * @param driver
+     */
   logout: function(driver) {
     driver.findElement({id:'menu'}).click()
       .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});
@@ -152,6 +156,39 @@ module.exports = {
       .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'password' field");});
   },
 
+  execute: function(driver, task, selector, message, something) {
+      if (task === 'click') {
+          driver.findElement({css:'' + selector + ''}).click()
+              .thenCatch(function (e) {errrorHandlerFunction(e, message);});
+      }
+      if (task === 'clear') {
+          driver.findElement({css:'' + selector + ''}).clear()
+              .thenCatch(function (e) {errrorHandlerFunction(e, message);});
+      }
+      if (task === 'sendKeys') {
+          driver.findElement({css:'' + selector + ''}).sendKeys(something)
+              .thenCatch(function (e) {errrorHandlerFunction(e, message);});
+      }
+  },
+
+  menu: function (driver, submenu) {
+      driver.findElement({id:'menu'}).click()
+          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});
+      driver.wait
+      (
+          webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'})),
+          SLOW_OPERATION
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems " + submenu + " is not visible");});
+      driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'}).click()
+          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `" + submenu + "` button");});
+  },
+    
+  /**
+   * Проверка элемента на видимость
+   * @param driver
+   * @param element - элемент который проверяем.
+   * @param time - промежуток времени, втечение которого проверяем.
+  */
   isVisible: function (driver, element, time) {
     driver.wait
     (
@@ -159,7 +196,12 @@ module.exports = {
       time
     ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems " + element +" is not visible");});
   },
-
+  /**
+   * Проверка кнопки на активность
+   * @param driver
+   * @param element - элемент который проверяем.
+   * @param time - промежуток времени, втечение которого проверяем.
+  */
   isEnabled: function (driver, element, time) {
     driver.wait
     (
@@ -261,7 +303,7 @@ module.exports = {
     }).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
 
     // Проверяем что тип появился на экране
-    if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net') {
+    if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net' || templateRdfType === 'v-s:Person') {
       driver.wait
       (
         webdriver.until.elementIsVisible(driver.findElement({css:'div[typeof="'+templateRdfType+'"]'})),

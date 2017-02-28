@@ -1,8 +1,8 @@
-import std.conv, std.stdio, std.file, core.runtime, core.thread;
+import std.conv, std.stdio, std.file, core.runtime, core.thread, std.base64;
 import vibe.d;
 import properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
-import veda.frontend.core_rest, veda.frontend.cbor8vjson, veda.frontend.individual8vjson;
+import veda.frontend.core_rest, veda.frontend.individual8vjson;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
 
@@ -12,7 +12,7 @@ veda.common.logger.Logger _log;
 veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "frontend");
+        _log = new veda.common.logger.Logger("veda-core-webserver-" ~ text(http_port), "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -58,15 +58,18 @@ void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorIn
     res.render!("view_error.dt", req, error);
 }
 
+const string BASE64_START_POS = "base64";
+
 void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 {
     string filename;
 
     try
     {
-        auto pf = "file" in req.files;
+        auto content = "content" in req.form;
+        auto pf      = "file" in req.files;
 
-        enforce(pf !is null, "No file uploaded!");
+        enforce(pf !is null || content !is null, "No file (base64) uploaded!");
 
         auto pt = "path" in req.form;
         auto nm = "uri" in req.form;
@@ -92,15 +95,34 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
             Path path = Path("data/files/" ~ pts ~ "/") ~filename;
 
-            try moveFile(pf.tempPath, path);
-            catch (Exception e) {
-//                logWarn("Failed to move file to destination folder: %s", e.msg);
-//                logInfo("Performing copy+delete instead.");
-                copyFile(pf.tempPath, path);
+            if (content !is null)
+            {
+                string cntstr = cast(string)*content;
+
+                long   pos = cntstr.indexOf(BASE64_START_POS);
+
+                if (pos > 0)
+                {
+                    string header = cntstr[ 0.. pos ];
+                    cntstr = cntstr[ pos + BASE64_START_POS.length + 1..$ ];
+
+                    ubyte[] decoded = Base64.decode(cntstr);
+
+                    std.file.write(path.toString(), decoded);
+                }
             }
 
-            res.writeBody("File uploaded!", "text/plain");
+            if (pf !is null)
+            {
+                try moveFile(pf.tempPath, path);
+                catch (Exception e) {
+//                logWarn("Failed to move file to destination folder: %s", e.msg);
+//                logInfo("Performing copy+delete instead.");
+                    copyFile(pf.tempPath, path);
+                }
+            }
         }
+        res.writeBody("File uploaded!", "text/plain");
     }
     catch (Throwable ex)
     {
@@ -112,8 +134,14 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 
 HTTPListener[ ushort ] listener_2_port;
 
+short opt_http_port = 0;
+
 shared static this()
 {
+    readOption("http_port", &opt_http_port, "The listen http port");
+    if (opt_http_port != 0)
+        http_port = opt_http_port;
+
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
         registerMemoryErrorHandler();
@@ -134,17 +162,9 @@ shared static this()
     string node_id;
     node_id = properties.as!(string)("node_id");
 
-//    veda.core.common.context.Context core_context;
-
-//    core_context = veda.core.srv.server.init_core(node_id);
-//    if (core_context is null)
-//    {
-//        log.trace("ERR! Veda core has not been initialized");
-//        return;
-//    }
     veda.core.common.context.Context context;
 
-    context = new PThreadContext(node_id, "frontend", log, "127.0.0.1:8088/ws");
+    context = new PThreadContext(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 
@@ -162,7 +182,8 @@ shared static this()
             return Individual.init;
     }
 
-    string[] uris = context.get_individuals_ids_via_query(&sys_ticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000).result;
+    string[] uris =
+        context.get_individuals_ids_via_query(&sys_ticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null).result;
 
 //    long count_individuals = context.count_individuals();
     if (uris.length == 0)
@@ -205,20 +226,27 @@ shared static this()
 
     //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-    Resources listeners = node.resources.get("v-s:listener", Resources.init);
-    foreach (listener_uri; listeners)
+    if (opt_http_port == 0)
     {
-        Individual connection = get_individual(&sticket, listener_uri.uri);
-
-        Resource   transport = connection.getFirstResource("v-s:transport");
-        if (transport != Resource.init)
+        Resources listeners = node.resources.get("v-s:listener", Resources.init);
+        foreach (listener_uri; listeners)
         {
-            if (transport.data() == "http")
+            Individual connection = get_individual(&sticket, listener_uri.uri);
+
+            Resource   transport = connection.getFirstResource("v-s:transport");
+            if (transport != Resource.init)
             {
-                ushort http_port = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                is_exist_listener = start_http_listener(context, http_port);
+                if (transport.data() == "http")
+                {
+                    http_port         = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
+                    is_exist_listener = start_http_listener(context, http_port);
+                }
             }
         }
+    }
+    else
+    {
+        is_exist_listener = start_http_listener(context, opt_http_port);
     }
 }
 
@@ -232,13 +260,12 @@ bool start_http_listener(Context context, ushort http_port)
 
         settings.port           = http_port;
         settings.maxRequestSize = 1024 * 1024 * 1000;
-        //settings.bindAddresses = ["::1", "127.0.0.1", "172.17.35.148"];
         //settings.bindAddresses = ["127.0.0.1"];
         settings.errorPageHandler = toDelegate(&view_error);
         //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
-        
-        HTTPFileServerSettings file_serve_settings = new HTTPFileServerSettings; 
-		file_serve_settings.maxAge = dur!"hours"(8);
+
+        HTTPFileServerSettings file_serve_settings = new HTTPFileServerSettings;
+        file_serve_settings.maxAge = dur !"hours" (8);
 
         auto router = new URLRouter;
         router.get("/files/*", &vsr.fileManager);
@@ -283,22 +310,9 @@ bool start_http_listener(Context context, ushort http_port)
         HTTPListener listener = listenHTTP(settings, router);
         listener_2_port[ http_port ] = listener;
 
-        log.trace("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
+        log.tracec("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 
-        router.get("/ws", handleWebSockets(&handleWebSocketConnection));
-        settings               = new HTTPServerSettings;
-        settings.port          = 8091;
-        settings.bindAddresses = [ "127.0.0.1" ];
-        listenHTTP(settings, router);
-        log.trace("listen /ws %s:%s", text(settings.bindAddresses), text(settings.port));
-
-
-        //router.get("/ccus", handleWebSockets(&handleWebSocketConnection_CCUS));
-        //settings      = new HTTPServerSettings;
-        //settings.port = 8088;
-        //settings.bindAddresses = [ "127.0.0.1" ];
-        //listenHTTP(settings, router);
-        //log.trace("listen /ccus %s:%s", text(settings.bindAddresses), text(settings.port));
+        runTask(() => connectToWS());
 
         return true;
     }

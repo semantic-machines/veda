@@ -15,23 +15,23 @@ Logger log;
 // //////////////////////////  call D from C //////////////////////////////////////////
 
 string[ string ] g_prop;
-Context    g_context;
+Context g_context;
 
-string     g_vm_id;
+string  g_vm_id;
 
-_Buff      g_super_classes;
-_Buff      g_parent_script_id;
-_Buff      g_parent_document_id;
-_Buff      g_prev_state;
-_Buff      g_execute_script;
-_Buff      g_document;
-_Buff      g_user;
-_Buff      g_ticket;
+_Buff   g_super_classes;
+_Buff   g_parent_script_id;
+_Buff   g_parent_document_id;
+_Buff   g_prev_state;
+_Buff   g_execute_script;
+_Buff   g_document;
+_Buff   g_user;
+_Buff   g_ticket;
 
-_Buff      tmp_individual;
+_Buff   tmp_individual;
 
-_Buff      g_script_result;
-_Buff      g_script_out;
+//_Buff      g_script_result;
+//_Buff      g_script_out;
 
 ResultCode g_last_result;
 Cache!(string, string) g_cache_of_indv;
@@ -114,17 +114,17 @@ void set_g_super_classes(string[] indv_types, Onto onto)
 struct TransactionItem
 {
     INDV_OP    cmd;
-    string     indv_serl;
+    string     binobj;
     string     ticket_id;
     string     event_id;
     ResultCode rc;
 
     Individual indv;
 
-    this(INDV_OP _cmd, string _indv_serl, string _ticket_id, string _event_id)
+    this(INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
     {
         cmd       = _cmd;
-        indv_serl = _indv_serl;
+        binobj    = _binobj;
         ticket_id = _ticket_id;
         event_id  = _event_id;
 
@@ -134,11 +134,11 @@ struct TransactionItem
         }
         else
         {
-            int code = indv.deserialize(indv_serl);
+            int code = indv.deserialize(binobj);
             if (code < 0)
             {
                 rc = ResultCode.Unprocessable_Entity;
-                log.trace("ERR! v8d:transaction:deserialize [%s]", indv_serl);
+                log.trace("ERR! v8d:transaction:deserialize [%s]", binobj);
                 return;
             }
             else
@@ -151,7 +151,7 @@ struct TransactionItem
                 Individual      prev_indv;
 
                 TransactionItem *ti = transaction_buff.get(indv.uri, null);
-                if (ti !is null && ti.indv_serl.length > 0)
+                if (ti !is null && ti.binobj.length > 0)
                 {
                     prev_indv = ti.indv;
                 }
@@ -178,8 +178,6 @@ TransactionItem *[] transaction_queue;
 
 public ResultCode commit()
 {
-    //if (transaction_buff.values.length > 0)
-    //	writeln ("@ script: commit #1");
 
     foreach (item; transaction_queue)
     {
@@ -194,28 +192,14 @@ public ResultCode commit()
         //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
         ResultCode rc;
-//        if (item.cmd == INDV_OP.PUT)
-//        {
         rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.ADD_IN)
-//        {
-//            rc = g_context.add_to_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.SET_IN)
-//        {
-//            rc = g_context.set_in_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.REMOVE_FROM)
-//        {
-//            rc = g_context.remove_from_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
-//        }
-//        else if (item.cmd == INDV_OP.REMOVE)
-//        {
-//            rc = g_context.remove_individual(ticket, item.indv_serl, true, item.event_id, ignore_freeze).result;
-//        }
 
-        if (rc != ResultCode.OK)
+        if (rc == ResultCode.No_Content)
+        {
+        	log.trace ("WARN!: Rejected attempt to save an empty object: %s", item.indv);
+        }
+
+        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
         {
             log.trace("FAIL COMMIT");
             return rc;
@@ -224,16 +208,8 @@ public ResultCode commit()
         //log.trace ("SUCCESS COMMIT");
     }
 
-
-
-    //if (transaction_buff.values.length > 0)
-    //	writeln ("@ script: commit #e");
-
     transaction_buff  = transaction_buff.init;
     transaction_queue = transaction_queue.init;
-
-    //if (transaction_buff.values.length > 0)
-    //	writeln ("@ script: commit #e1");
 
     return ResultCode.OK;
 }
@@ -269,6 +245,7 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                        int _event_id_length)
 {
+   // writeln("@V8:put_individual");
     TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
@@ -285,8 +262,9 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                                              cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem *ti =
+        new TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                            cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
     if (ti.rc == ResultCode.OK)
@@ -302,8 +280,9 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
 extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                                              cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem *ti =
+        new TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                            cast(string)_event_id[ 0.._event_id_length ].dup);
 
 
     if (ti.rc == ResultCode.OK)
@@ -316,7 +295,8 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
         return ti.rc;
 }
 
-extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
+extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length,
+                                               const char *_event_id,
                                                int _event_id_length)
 {
     TransactionItem *ti =
@@ -355,6 +335,7 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
 
 extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
 {
+    //writeln("@V8: get_env_str_var");
     try
     {
         string var_name = cast(string)_var_name[ 0.._var_name_length ];
@@ -416,7 +397,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         Ticket   *ticket = g_context.get_ticket(ticket_id);
 
         string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit).result;
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit, null).result;
         res = text(icb);
 
         if (icb !is null)
@@ -440,12 +421,12 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
     {
         string uri = cast(string)_uri[ 0.._uri_length ];
 
-        //writeln ("@p:v8d read_individual, uri=[", uri, "],  ticket=[", ticket, "]");
+        //writeln("@p:v8d read_individual, uri=[", uri, "],  ticket=[", _ticket[ 0.._ticket_length ], "]");
 
-		if (uri == "undefined")
-		{
-			return null;
-		}	
+        if (uri == "undefined")
+        {
+            return null;
+        }
         else if (uri == "$document")
         {
             return &g_document;
@@ -467,10 +448,10 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         else
         {
             TransactionItem *ti = transaction_buff.get(uri, null);
-            if (ti !is null && ti.indv_serl.length > 0)
+            if (ti !is null && ti.binobj.length > 0)
             {
-                tmp_individual.data   = cast(char *)ti.indv_serl;
-                tmp_individual.length = cast(int)ti.indv_serl.length;
+                tmp_individual.data   = cast(char *)ti.binobj;
+                tmp_individual.length = cast(int)ti.binobj.length;
                 return &tmp_individual;
             }
 
@@ -498,7 +479,11 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
                     return &tmp_individual;
                 }
                 else
+                {
+                    tmp_individual.data   = cast(char *)"";
+                    tmp_individual.length = cast(int)0;
                     return null;
+                }
             }
             return null;
         }
@@ -594,15 +579,6 @@ ScriptVM get_ScriptVM(Context ctx)
                 g_context = ctx;
                 log       = ctx.get_logger();
 
-                string g_str_script_result = new char[ 1024 * 64 ];
-                string g_str_script_out    = new char[ 1024 * 64 ];
-
-                g_script_result.data           = cast(char *)g_str_script_result;
-                g_script_result.allocated_size = cast(int)g_str_script_result.length;
-
-                g_script_out.data           = cast(char *)g_str_script_out;
-                g_script_out.allocated_size = cast(int)g_str_script_out.length;
-
                 reload_ext_scripts();
             }
             catch (Exception ex)
@@ -646,4 +622,67 @@ private void reload_ext_scripts()
         log.tracec("init script=%s", script_file_name[ idx ]);
         script.run();
     }
+}
+
+unittest
+{
+    import veda.core.impl.thread_context;
+    import std.datetime;
+    import veda.onto.lang;
+	import veda.util.tests_tools;    
+
+    Logger   log = new Logger("test", "log", "V8");
+
+    Context  ctx = new PThreadContext("", "test", log, "");
+
+    ScriptVM script_vm;
+    script_vm = get_ScriptVM(ctx);
+
+    assert(script_vm !is null);
+
+	Individual new_indv_A = generate_new_test_individual ();        
+
+    string binobj = new_indv_A.serialize();
+
+    g_document.data   = cast(char *)binobj;
+    g_document.length = cast(int)binobj.length;
+
+    string sticket = "fake_ticket";
+    g_ticket.data   = cast(char *)sticket;
+    g_ticket.length = cast(int)sticket.length;
+
+    ScriptInfo script = ScriptInfo.init;
+
+    string     str_script =
+        "try { var ticket = get_env_str_var ('$ticket');"
+        ~ "var document = get_individual (ticket, '$document');"
+        ~ "if (document) {"
+        ~ "script();"
+        ~ "};"
+        ~ "function script() { print (toJson (document)); put_individual (ticket, document, 'test_ev'); }} catch (e) { log_trace (e); }"
+    ;
+    script.str_script = str_script;
+
+    script.compiled_script = script_vm.compile(script.str_script);
+
+    assert(script.compiled_script !is null);
+
+    TransactionItem *ti = transaction_buff.get(new_indv_A.uri, null);
+    assert(ti is null);
+
+    script.compiled_script.run();
+
+    TransactionItem *ti1 = transaction_buff.get(new_indv_A.uri, null);
+    assert(ti1 !is null);
+
+    Individual indv_B;
+    indv_B.deserialize(ti1.binobj);
+
+	bool compare_res = new_indv_A.compare(indv_B);
+	if (compare_res == false)
+		writefln ("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
+
+    assert(compare_res);
+
+    writeln("unittest [V8: store subject from script] Ok");
 }

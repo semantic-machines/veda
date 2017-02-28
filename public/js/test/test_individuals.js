@@ -229,7 +229,7 @@ for (i = 0; i < 1; i++)
             test_success_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
             test_fail_read(ticket_user2, new_test_doc1['@'], new_test_doc1);
 
-	    res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
             wait_module(condition, res.op_id);
             //wait_module(acl_manager, res.op_id);
 
@@ -290,16 +290,16 @@ for (i = 0; i < 1; i++)
 
             test_fail_read(ticket_user2, new_test_doc1_uri, new_test_doc1);
 
-	    	try
-	    	{
-        		// test UPDATE rights	
-        		res = put_individual(ticket_user2.id, new_test_doc1);
-				ok (false);
-	    	}
-	    	catch (e)
-	    	{
-				ok (true);
-	    	}	    
+            try
+            {
+                // test UPDATE rights
+                res = put_individual(ticket_user2.id, new_test_doc1);
+                ok (false);
+            }
+            catch (e)
+            {
+                ok (true);
+            }
         });
 
     test(
@@ -553,7 +553,7 @@ for (i = 0; i < 1; i++)
             var res = put_individual(ticket_user1.id, new_test_doc3, false);
             var res = put_individual(ticket_user1.id, new_test_doc4, false);
 
-	    	flush (fulltext_indexer, res.op_id);
+            flush (fulltext_indexer, res.op_id);
 
             wait_module(fulltext_indexer, res.op_id);
             wait_module(subject_manager, res.op_id);
@@ -853,6 +853,82 @@ for (i = 0; i < 1; i++)
             check_rights_success(ticket2.id, doc3['@'], [can_read]);
             check_rights_fail(ticket2.id, doc3['@'], [can_update]);
             check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
+
+        });
+
+    test("#018 Search with cursor",
+        function()
+        {
+          var user = authenticate("bushenevvt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+          var admin = authenticate("karpovrt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+
+          var meeting_template = '{\
+            "@": "d:QueryTestResource_$i", \
+            "rdf:type": [{ "type": "Uri", "data": "rdfs:Resource" }], \
+            "v-s:creator": [{ "type": "Uri", "data": "$creator" }], \
+            "rdfs:label": [{ "type": "String", "data": "$i", "lang": "NONE" }] \
+          }';
+
+          createMeetings(user, 1, 5);
+          createMeetings(admin, 6, 3);
+          createMeetings(user, 9, 3);
+          createMeetings(admin, 12, 9);
+
+          var q = "'rdf:type'==='rdfs:Resource' && '@'=='d:QueryTestResource*'";
+          var s = "'rdfs:label' asc"
+
+          var params_admin1 = {
+            ticket: admin.id,
+            query: q,
+            sort: s,
+            top: 3,
+            from: 0
+          };
+          var results_admin1 = query(params_admin1);
+          //console.log("params_admin1", params_admin1, "results_admin1", results_admin1);
+          ok(results_admin1.count === 3 && results_admin1.cursor === 3 && results_admin1.processed === 3);
+
+          var params_admin2 = {
+            ticket: admin.id,
+            query: q,
+            sort: s,
+            top: 10,
+            from: 10
+          };
+          var results_admin2 = query(params_admin2);
+          //console.log("params_admin2", params_admin2, "results_admin2", results_admin2);
+          ok(results_admin2.count === 10 && results_admin2.cursor === 20 && results_admin2.processed === 10);
+
+          var params_user1 = {
+            ticket: user.id,
+            query: q,
+            sort: s,
+            top: 6,
+            from: 0
+          };
+          var results_user1 = query(params_user1);
+          //console.log("params_user1", params_user1, "results_user1", results_user1);
+          ok(results_user1.count === 6 && results_user1.cursor === 9 && results_user1.processed === 9);
+
+          var params_user2 = {
+            ticket: user.id,
+            query: q,
+            sort: s,
+            top: 10,
+            limit: 10,
+            from: 3
+          };
+          var results_user2 = query(params_user2);
+          //console.log("params_user2", params_user2, "results_user2", results_user2);
+          ok(results_user2.count === 5 && results_user2.cursor === 13 && results_user2.processed === 10);
+
+          function createMeetings(creator, start, count) {
+            for (var i = start; i < start + count; i++) {
+              var meeting = JSON.parse( meeting_template.replace(/\$i/g, i.toString().length === 2 ? i : "0" + i ).replace(/\$creator/g, creator.user_uri) );
+              var res = put_individual(creator.id, meeting);
+              wait_module(fulltext_indexer, res.op_id);
+            }
+          }
 
         });
 }

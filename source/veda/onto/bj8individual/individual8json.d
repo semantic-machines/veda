@@ -1,4 +1,4 @@
-module veda.util.individual8json;
+module veda.onto.bj8individual.individual8json;
 
 import std.conv, std.stdio, std.json, std.datetime, std.string;
 import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang;

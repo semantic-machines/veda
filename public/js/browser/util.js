@@ -89,6 +89,20 @@ veda.Module(function Util(veda) { "use strict";
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
   };
 
+  veda.Util.TTLtoJSON = function (ttl) {
+    var parser = N3.Parser();
+    var triples = [];
+    var prefixes;
+    var result = parser.parse(ttl, function (error, triple, prefixez) {
+      if (triple) {
+        triples.push(triple);
+      } else {
+        prefixes = prefixez;
+      }
+    });
+    console.log('triples:', triples, 'prefixes:', prefixes);
+  }
+
   veda.Util.toTTL = function (individualList, callback) {
     var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'").result,
         all_prefixes = {},
@@ -125,19 +139,21 @@ veda.Module(function Util(veda) { "use strict";
     }
 
     individualList.each(function (individual) {
-      var type_triple = {};
-      type_triple.subject = prefixer(individual.id);
-      // rdf:type first!
-      type_triple.predicate = prefixer("rdf:type");
+      var subject = prefixer(individual.id);
+      // Type first
       individual.properties["rdf:type"].map(function (value) {
+        var type_triple = {};
+        type_triple.subject = subject;
+        type_triple.predicate = prefixer("rdf:type");
         type_triple.object = prefixer(value.data);
         triples.push(type_triple);
       });
-      Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
+      // Other properties
+      Object.getOwnPropertyNames(individual.properties).sort().map(function (property_uri) {
         if (property_uri === "@" || property_uri === "rdf:type") { return; }
         individual.properties[property_uri].map(function (item) {
           var triple = {};
-          triple.subject = type_triple.subject;
+          triple.subject = subject;
           triple.predicate = prefixer(property_uri);
           var value = item.data,
               type = item.type,
@@ -237,29 +253,22 @@ veda.Module(function Util(veda) { "use strict";
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
         if (property_uri === "@" || property_uri === "v-s:isDraft") { return }
-        var values = flat[property_uri];
+        var values = flat[property_uri].sort(function compare(a, b) {
+          return a.data < b.data ? - 1 : a.data === b.data ? 0 : 1;
+        });
         var oneProp;
         switch (values[0].type) {
           case "Integer":
           case "Decimal":
-            oneProp =
-              values.length === 1 ? "'" + property_uri + "'==[" + values[0].data + "," + values[0].data + "]" :
-              values.length > 1 ? "'" + property_uri + "'==[" + values[0].data + "," + values[values.length-1].data + "]" :
-              undefined;
+            oneProp = "'" + property_uri + "'==[" + values[0].data + "," + values[values.length-1].data + "]";
             break;
           // Date
           case "Datetime":
-              var start = values[0].data.substring(0,10)+"T00:00:00",
-                  end;
-              if (values.length === 1) {
-                end = "9999-12-31T23:59:59";
-                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
-              } else if (values.length > 1) {
-                end = values[values.length-1].data.substring(0,10)+"T23:59:59";
-                oneProp = "'" + property_uri + "'==[" + start + "," + end + "]";
-              } else {
-                oneProp = undefined;
-              }
+            var start = new Date(values[0].data);
+            var end = new Date(values[values.length-1].data);
+            start.setHours(0,0,0,0);
+            end.setHours(23,59,59,999);
+            oneProp = "'" + property_uri + "'==[" + start.toISOString() + "," + end.toISOString() + "]";
             break;
           case "Boolean":
             oneProp = values
@@ -299,24 +308,21 @@ veda.Module(function Util(veda) { "use strict";
         }
         return oneProp ? "(" + oneProp + ")" : undefined;
       })
-      .filter(function(item){return !!item;})
+      .filter(function(item){return typeof item !== undefined;})
       .join("&&");
     query = allProps ? "(" + allProps + ")" : undefined;
     return query;
   }
 
-  function flattenIndividual(object, prefix, union, depth) {
-    if (typeof union === "undefined") {
-      union = {};
-    }
-    if (typeof prefix === "undefined") {
-      prefix = "";
-    }
-    if (typeof depth === "undefined") {
-      depth = 0;
-    }
-    if (depth === 5) {
+  function flattenIndividual(object, prefix, union, visited) {
+    var uri = object["@"];
+    union = typeof union !== "undefined" ? union : {};
+    prefix = typeof prefix !== "undefined" ? prefix : "";
+    visited = typeof visited !== "undefined" ? visited : [];
+    if (visited.indexOf(uri) > -1) {
       return;
+    } else {
+      visited.push(uri);
     }
     for (var property_uri in object) {
       if (property_uri === "@") { continue; }
@@ -326,9 +332,8 @@ veda.Module(function Util(veda) { "use strict";
         var value = values[i];
         if (value.type === "Uri") {
           var individ = new veda.IndividualModel(value.data);
-          //if ( true ) {
           if ( individ.isNew() ) {
-            flattenIndividual(individ.properties, prefixed, union, depth+1);
+            flattenIndividual(individ.properties, prefixed, union, visited);
           } else {
             union[prefixed] = union[prefixed] ? union[prefixed] : [];
             union[prefixed].push( value );
@@ -586,7 +591,7 @@ veda.Module(function Util(veda) { "use strict";
               return true; // Found
           } else {
               if (element.hasValue(['v-s:parentUnit'])) {
-                  return eda.Util.inSubHierarchy(root, element['v-s:parentUnit'][0]); // Check parent
+                  return veda.Util.inSubHierarchy(root, element['v-s:parentUnit'][0]); // Check parent
               } else {
                   return false; // No parent
               }

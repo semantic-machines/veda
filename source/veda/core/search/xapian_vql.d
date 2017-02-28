@@ -619,7 +619,9 @@ class XapianVQL
                                                               int top,
                                                               int limit,
                                                               void delegate(string uri) add_out_element,
-                                                              Context context)
+                                                              Context context,
+                                                              void delegate(string uri) prepare_element_event
+                                                              )
     {
         SearchResult sr;
 
@@ -645,7 +647,10 @@ class XapianVQL
         }
 
         //writeln (cast(void*)xapian_enquire, " count_authorize=", count_authorize);
-        XapianMSet matches = xapian_enquire.get_mset(0, limit, &err);
+        if (prepare_element_event !is null)
+            prepare_element_event("");
+
+        XapianMSet matches = xapian_enquire.get_mset(from, limit, &err);
         if (err < 0)
         {
             log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
@@ -660,12 +665,15 @@ class XapianVQL
         {
             sr.estimated = matches.get_matches_estimated(&err);
 
+	        if (prepare_element_event !is null)
+	            prepare_element_event("");
+
             XapianMSetIterator it = matches.iterator(&err);
 
             bool               acl_db_reopen = true;
 
             while (it.is_next(&err) == true)
-            {
+            {            	
                 if (err < 0)
                 {
                     sr.result_code = ResultCode.Internal_Server_Error;
@@ -688,6 +696,9 @@ class XapianVQL
                 processed++;
 
                 string subject_id = data_str[ 0..*data_len ].idup;
+
+                if (prepare_element_event !is null)
+                    prepare_element_event(subject_id);
 
                 if (trace_msg[ 201 ] == 1)
                     log.trace("found subject_id:[%s]", subject_id);
@@ -725,6 +736,7 @@ class XapianVQL
         sr.processed   = processed;
         sr.count       = read_count;
         sr.result_code = ResultCode.OK;
+        sr.cursor      = from + processed;
 
         return sr;
     }

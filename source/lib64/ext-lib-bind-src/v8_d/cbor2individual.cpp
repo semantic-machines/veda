@@ -1,4 +1,4 @@
-#define _GLIBCXX_USE_CXX11_ABI 0
+#define _GLIBCXX_USE_CXX11_ABI    0
 #include "cbor.h"
 
 #include <string.h>
@@ -201,11 +201,11 @@ Element read_element(Individual *individual, const char *src, int b_pos, int e_p
         {
             vector <Resource> resources = individual->resources[ predicate_uri ];
 
-            ElementHeader     exponent;
-            element.pos += read_type_value(src, b_pos + element.pos, size, &exponent);
-
-            ElementHeader mantissa;
+            ElementHeader     mantissa;
             element.pos += read_type_value(src, b_pos + element.pos, size, &mantissa);
+
+            ElementHeader exponent;
+            element.pos += read_type_value(src, b_pos + element.pos, size, &exponent);
 
             Resource rr;
             rr.type                  = _Decimal;
@@ -246,7 +246,7 @@ void write_individual(Individual *individual, std::vector<char> &ou)
     {
         std::string strKey = p->first;
         if (p->second.size() > 0)
-        	write_resources(p->first, p->second, ou);
+            write_resources(p->first, p->second, ou);
     }
 }
 
@@ -263,12 +263,12 @@ void write_resources(string uri, vector <Resource> vv, std::vector<char> &ou)
         Resource value = vv[ i ];
         if (value.type == _Uri)
         {
-	    //if (value.str_data.length () > 0)
-	    {
-        	write_type_value(TAG, URI, ou);
-        	write_string(value.str_data, ou);
-        	  //  std::cout << "@c #write uri data=" << value.str_data << std::endl;
-	    }
+            //if (value.str_data.length () > 0)
+            {
+                write_type_value(TAG, URI, ou);
+                write_string(value.str_data, ou);
+                //  std::cout << "@c #write uri data=" << value.str_data << std::endl;
+            }
         }
         else if (value.type == _Integer)
         {
@@ -294,16 +294,16 @@ void write_resources(string uri, vector <Resource> vv, std::vector<char> &ou)
         }
         else
         {
-	    //if (value.str_data.length () > 0)
-	    {
+            //if (value.str_data.length () > 0)
+            {
 //std::cout << "@c#1 " << " value.lang= " <<  (uint64_t)value.lang << std::endl;
 
-        	if (value.lang != LANG_NONE)
-            	    write_type_value(TAG, value.lang + 41, ou);
-        	write_string(value.str_data, ou);	
+                if (value.lang != LANG_NONE)
+                    write_type_value(TAG, value.lang + 41, ou);
+                write_string(value.str_data, ou);
 
-        	   // std::cout << "@c #write string data=" << value.str_data << std::endl;
-	    }
+                // std::cout << "@c #write string data=" << value.str_data << std::endl;
+            }
         }
     }
 }
@@ -314,13 +314,14 @@ void write_resources(string uri, vector <Resource> vv, std::vector<char> &ou)
 void cbor2individual(Individual *individual, string in_str)
 {
 //    hexdump(abStack, 100);
-	//std::cout << "@c cbor2individual #1" << std::endl;
+    //std::cout << "@c cbor2individual #1" << std::endl;
 //    char *data_ptr = reinterpret_cast<char *>(&in_str[ 0 ]);
     const char *data_ptr = in_str.c_str();
-	//std::cout << "@c cbor2individual #2" << std::endl;
+
+    //std::cout << "@c cbor2individual #2" << std::endl;
 
     read_element(individual, data_ptr, 0, in_str.size(), "", "");
-	//std::cout << "@c cbor2individual #3" << std::endl;
+    //std::cout << "@c cbor2individual #3" << std::endl;
 }
 
 void individual2cbor(Individual *individual, std::vector<char> &ou)

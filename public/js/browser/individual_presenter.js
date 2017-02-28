@@ -38,28 +38,62 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
           template = genericTemplate(individual, _class);
         } else if (template === "json") {
-          var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
+          var format = function (json) {
+            var ordered = {};
+            Object.keys(json).sort().forEach(function(key) {
+              ordered[key] = json[key];
+            });
+            return JSON.stringify(ordered, null, 2);
+          };
+          var anchorize = function (string) {
+            return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
+          };
+          var cntr = $( $("#json-template").html().replace(/@/g, individual.id) ),
               pre = $("pre", cntr),
-              json = individual.properties,
-              ordered = {};
+              json = individual.properties;
           $("a#json", cntr).addClass("disabled");
-          Object.keys(json).sort().forEach(function(key) {
-            ordered[key] = json[key];
-          });
-          json = JSON.stringify(ordered, null, 2);
-          var formatted = json.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
-          pre.html(formatted);
+          var formatted = format(json);
+          var anchorized = anchorize(formatted);
+          pre.html(anchorized);
           container.append(cntr);
-          container.show("fade", 250);
+          container.show("fade", 250, function () {
+            var height = $("#copyright").offset().top - container.offset().top - 120;
+            pre.css("height", height);
+          });
+          $("#edit", cntr).click(function () {
+            $(".actions *", cntr).toggleClass("hidden");
+            pre.prop("contenteditable", true).text(formatted);
+          });
+          $("#cancel", cntr).click(function () {
+            $(".actions *", cntr).toggleClass("hidden");
+            pre.prop("contenteditable", false).html(anchorized);
+          });
+          $("#save", cntr).click(function () {
+            $(".actions *", cntr).toggleClass("hidden");
+            pre.prop("contenteditable", false);
+            var notify = new veda.Notify();
+            var original = individual.properties;
+            try {
+              formatted = pre.text();
+              anchorized = anchorize(formatted);
+              json = JSON.parse( formatted );
+              individual.properties = json;
+              individual.save(true);
+              notify("success", {status: "", description: "Объект сохранен"});
+            } catch (e) {
+              individual.properties = original;
+              notify("danger", {status: "Ошибка", description: "Объект не сохранен"});
+            }
+          });
           return;
         } else if (template === "ttl") {
           var list = new veda.IndividualListModel(individual);
-          veda.Util.toTTL(list, function (error, result) {
+          veda.Util.toTTL(list, function (error, ttl) {
             var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
                 pre = $("pre", cntr),
-                formatted = result.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+                anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
             $("a#ttl", cntr).addClass("disabled");
-            pre.html(formatted);
+            pre.html(anchored);
             container.html(cntr);
             container.show("fade", 250);
           });
@@ -93,19 +127,19 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if (template.first().is("script")) {
         pre_render_src = template.first().text();
-        pre_render = new Function("veda", "individual", "container", "template", "mode", "\"use strict\";" + pre_render_src);
+        pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
       }
       if (template.last().is("script")) {
         post_render_src = template.last().text();
-        post_render = new Function("veda", "individual", "container", "template", "mode", "\"use strict\";" + post_render_src);
+        post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
       }
       template = template.filter("*:not(script)");
 
       if (pre_render) {
-        pre_render(veda, individual, container, template, mode);
+        pre_render(veda, individual, container, template, mode, specs);
       }
 
-      template = renderTemplate (individual, container, template, specs, mode);
+      template = renderTemplate (individual, container, template, mode, specs);
       container.append(template);
       individual.trigger("individual:templateReady", template);
 
@@ -113,7 +147,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       setTimeout(function () {
         template.trigger(mode);
         if (post_render) {
-          post_render(veda, individual, container, template, mode);
+          post_render(veda, individual, container, template, mode, specs);
         }
       }, 0);
     });
@@ -121,7 +155,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     if (container.prop("id") === "main") { container.show("fade", 250); }
   });
 
-  function renderTemplate (individual, container, template, specs, mode) {
+  function renderTemplate (individual, container, template, mode, specs) {
 
     template.attr({
       "resource": individual.id,
@@ -353,7 +387,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
               mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
                   true;
-      template.attr("data-mode", mode);
+      template.data("mode", mode);
       e.stopPropagation();
     }
     template.on("view edit search", modeHandler);
@@ -401,6 +435,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:Distribution')['rdfs:label'].join(" "))+'</a>'
+      }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:Coordination')['rdfs:label'].join(" "))+'</a>'
       }));
     });
 
@@ -884,17 +923,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       };
       controlType.call(control, opts);
 
-      // tooltip from spec
-      if (spec && spec.hasValue("v-ui:tooltip")) {
-        control.tooltip({
-          title: spec["v-ui:tooltip"].join(", "),
-          placement: "top",
-          container: control,
-          trigger: "focus",
-          animation: false
-        });
-      }
-
     });
 
     return template;
@@ -903,7 +931,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
     propertyContainer.empty();
     individual[property_uri].map( function (value, i) {
-      var valueHolder = $("<span class='value-holder'/>");
+      var valueHolder = $("<span class='value-holder'></span>");
       propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
       var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
       var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
@@ -991,7 +1019,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       btnRemove.click(function () {
         individual[rel_uri] = individual[rel_uri].filter(function (item) { return item.id !== value.id; });
-        if ( value.is("v-s:Embedded") ) { value.delete(); }
+        if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", individual) ) {
+          value.delete();
+        }
       }).mouseenter(function () {
         valTemplate.addClass("red-outline");
       }).mouseleave(function () {
@@ -1116,7 +1146,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   function genericTemplate (individual, _class) {
     // Construct generic template
     var propTmpl = $("#generic-property-template").html();
-    var template = $("<div/>").append( $("#generic-class-template").html() );
+    var template = $($("#generic-class-template").html());
     var properties;
 
     if (_class) {

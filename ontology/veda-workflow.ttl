@@ -522,7 +522,7 @@ v-wf:NetTemplate
   rdfs:label "Template for Net class"@en ;
   v-ui:forClass v-wf:Net ;
   v-ui:template """
-<div class="workflow-wrapper">
+<div class="workflow-wrapper container-fluid sheet">
   <style>
     #main {
       margin-bottom: 0px;
@@ -566,10 +566,10 @@ v-wf:NetTemplate
                 </button>
               </div>
               <div class="btn-group">
-                <button id="workflow-save-button" type="button" class="btn btn-sm btn-default" style="float:right;">
+                <button id="workflow-save-button" type="button" class="btn btn-sm btn-default">
                   <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                 </button>
-                <button id="workflow-export-ttl" type="button" class="btn btn-sm btn-default" style="float:right;">
+                <button id="workflow-export-ttl" type="button" class="btn btn-sm btn-default">
                   <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                 </button>
               </div>
@@ -599,7 +599,7 @@ v-wf:NetTemplate
 
 <script>
 var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
   fullWidth = $("#full-width", template),
   icon = $("span", fullWidth),
   propsCol = $("#props-col", template),
@@ -636,7 +636,7 @@ v-wf:ProcessTemplate
   rdfs:label "Template for Process"@en ;
   v-ui:forClass v-wf:Process ;
   v-ui:template """
-<div class="workflow-wrapper">
+<div class="workflow-wrapper container-fluid sheet">
   <style>
     #main {
       margin-bottom: 0px;
@@ -651,6 +651,19 @@ v-wf:ProcessTemplate
           </div>
           <div class="col-md-8">
             <div class="btn-toolbar pull-right">
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-default zoom-in">
+                  <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-default zoom-default">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-sm btn-default zoom-out">
+                  <span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span>
+                </button>
+              </div>
+
               <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-default process-refresh">
                   <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
@@ -686,7 +699,7 @@ v-wf:ProcessTemplate
 
 <script>
 var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 10 ) + "px",
+  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
   fullWidth = $("#full-width", template),
   icon = $("span", fullWidth),
   propsCol = $("#props-col", template),
@@ -1588,7 +1601,7 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<div></div>
+<div class="hidden"></div>
 <script>
   individual.one("individual:beforeSave", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
@@ -2583,11 +2596,7 @@ v-wf:TaskTemplateAsModal
   v-ui:forClass v-wf:Task ;
   v-ui:template """
 <div>
-  <div class="row">
-    <div class="col-md-12">
-      <strong><span about="@" property="@"></span></strong>
-    </div>
-  </div>
+  <strong><span about="@" property="@"></span></strong>
 <!-- LABEL & POSITION -->
   <hr class="margin-sm">
   <div class="row">
@@ -2635,112 +2644,67 @@ v-wf:TaskTemplateAsModal
   </div>
 <!-- EXECUTOR -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:executor" property="rdfs:label"></h4>
-      <div about="@" rel="v-wf:executor" data-template="v-wf:ExecutorTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:executor" class="-view edit search create"></veda-control>
-    </div>
-  </div>
+  <h4 about="v-wf:executor" property="rdfs:label"></h4>
+  <div about="@" rel="v-wf:executor" data-template="v-wf:ExecutorTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:executor" class="-view edit search create"></veda-control>
 <!-- DECISIONS MAPPING -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:startDecisionTransform" property="rdfs:label"></h4>
-      <div rel="v-wf:startDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:startDecisionTransform" class="-view edit search create"></veda-control>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:completeDecisionTransform" property="rdfs:label"></h4>
-      <div rel="v-wf:completeDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:completeDecisionTransform" class="-view edit search create"></veda-control>
-    </div>
-  </div>
+  <h4 about="v-wf:startDecisionTransform" property="rdfs:label"></h4>
+  <div rel="v-wf:startDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:startDecisionTransform" class="-view edit search create"></veda-control>
+
+  <h4 about="v-wf:completeDecisionTransform" property="rdfs:label"></h4>
+  <div rel="v-wf:completeDecisionTransform" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:completeDecisionTransform" class="-view edit search create"></veda-control>
 <!-- VARIABLES MAPPING -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:startingMapping" property="rdfs:label"></h4>
-      <div rel="v-wf:startingMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:startingMapping" class="-view edit search create"></veda-control>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:completedMapping" property="rdfs:label"></h4>
-      <div rel="v-wf:completedMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:completedMapping" class="-view edit search create"></veda-control>
-    </div>
-  </div>
+  <h4 about="v-wf:startingMapping" property="rdfs:label"></h4>
+  <div rel="v-wf:startingMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:startingMapping" class="-view edit search create"></veda-control>
+
+  <h4 about="v-wf:completedMapping" property="rdfs:label"></h4>
+  <div rel="v-wf:completedMapping" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:completedMapping" class="-view edit search create"></veda-control>
 <!-- EXECUTOR JOURNAL MAPPING -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:startingExecutorJournalMap" property="rdfs:label"></h4>
-      <div rel="v-wf:startingExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:startingExecutorJournalMap" class="-view edit search create"></veda-control>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:completedExecutorJournalMap" property="rdfs:label"></h4>
-      <div rel="v-wf:completedExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:completedExecutorJournalMap" class="-view edit search create"></veda-control>
-    </div>
-  </div>
+  <h4 about="v-wf:startingExecutorJournalMap" property="rdfs:label"></h4>
+  <div rel="v-wf:startingExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:startingExecutorJournalMap" class="-view edit search create"></veda-control>
+
+  <h4 about="v-wf:completedExecutorJournalMap" property="rdfs:label"></h4>
+  <div rel="v-wf:completedExecutorJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:completedExecutorJournalMap" class="-view edit search create"></veda-control>
 <!-- JOURNAL MAPPING -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:startingJournalMap" property="rdfs:label"></h4>
-      <div rel="v-wf:startingJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:startingJournalMap" class="-view edit search create"></veda-control>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:completedJournalMap" property="rdfs:label"></h4>
-      <div rel="v-wf:completedJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:completedJournalMap" class="-view edit search create"></veda-control>
-    </div>
-  </div>
+  <h4 about="v-wf:startingJournalMap" property="rdfs:label"></h4>
+  <div rel="v-wf:startingJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:startingJournalMap" class="-view edit search create"></veda-control>
+
+  <h4 about="v-wf:completedJournalMap" property="rdfs:label"></h4>
+  <div rel="v-wf:completedJournalMap" data-template="v-wf:MappingTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:completedJournalMap" class="-view edit search create"></veda-control>
 <!-- EXPECTED RESULT TYPE & MAPPING -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
-        <veda-control about="@" rel="v-wf:expectedResultType" data-type="link" class="fulltext dropdown"></veda-control>
+  <h4 about="v-wf:expectedResultType" property="rdfs:label"></h4>
+  <veda-control about="@" rel="v-wf:expectedResultType" data-type="link" class="fulltext dropdown"></veda-control>
 <!--
-        <veda-control rel="v-wf:expectedResultType" data-type="select" class="fulltext dropdown"></veda-control>
-      <div about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
+  <veda-control rel="v-wf:expectedResultType" data-type="select" class="fulltext dropdown"></veda-control>
+  <div about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:expectedResultType" class="-view edit search create"></veda-control>
 -->
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="v-wf:wosResultsMapping" property="rdfs:label"></h4>
-      <div about="@" rel="v-wf:wosResultsMapping" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:wosResultsMapping" class="-view edit search create"></veda-control>
-    </div>
-  </div>
+
+  <h4 about="v-wf:wosResultsMapping" property="rdfs:label"></h4>
+  <div about="@" rel="v-wf:wosResultsMapping" data-template="v-wf:TransformTemplateEmbedded" data-embedded="true"></div>
+  <veda-control data-type="link" rel="v-wf:wosResultsMapping" class="-view edit search create"></veda-control>
 <!-- COMMENT -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12">
-      <h4 about="rdfs:comment" property="rdfs:label"></h4>
-      <veda-control data-type="string" property="rdfs:comment"></veda-control>
-    </div>
-  </div>
+  <h4 about="rdfs:comment" property="rdfs:label"></h4>
+  <veda-control data-type="string" property="rdfs:comment"></veda-control>
 <!-- BUTTONS -->
   <hr class="margin-sm">
-  <div class="row">
-    <div class="col-md-12 well well-sm">
+  <div class="actions">
     <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-  </div>
   </div>
 </div>
 <script>
@@ -2871,11 +2835,7 @@ v-wf:VariableTemplateEmbedded
   rdfs:label "Template for Var define class (embedded template)"@en ;
   v-ui:template """
 <div>
-  <div class="row">
-    <div class="col-md-12">
-      <veda-control data-type="string" property="v-wf:varDefineName"></veda-control>
-    </div>
-  </div>
+  <veda-control data-type="string" property="v-wf:varDefineName"></veda-control>
 <!-- v-wf:varDefineScope -->
 </div>""".
 
@@ -2886,11 +2846,8 @@ v-wf:TransformTemplateEmbedded
   rdfs:label "Template for Transform class (embedded template)"@en ;
   v-ui:template """
 <div>
-  <div class="row">
-    <div class="col-md-12">
-    <div rel="v-wf:transformRule" data-template="v-wf:RuleTemplateEmbedded" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
-    </div>
+  <div rel="v-wf:transformRule" data-template="v-wf:RuleTemplateEmbedded" data-embedded="true"></div>
+    <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
   </div>
 </div>
 """.
@@ -2971,9 +2928,8 @@ v-wf:FlowTemplateEmbedded
   rdfs:label "Шаблон для класса Поток (встроенный шаблон)"@ru ;
   rdfs:label "Template for Flow class (embedded template)"@en ;
   v-ui:template """
-<div>
-  <div class="panel panel-default">
-    <div class="panel-heading">
+<div class="panel panel-default">
+  <div class="panel-heading">
     <div class="row">
       <div class="col-md-3">
         <span about="v-wf:flowsInto" property="rdfs:label"> :
@@ -2982,8 +2938,8 @@ v-wf:FlowTemplateEmbedded
         <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
       </div>
     </div>
-    </div>
-    <div class="panel-body">
+  </div>
+  <div class="panel-body">
     <div class="row">
       <div class="col-md-4">
         <span about="rdfs:label" property="rdfs:label"></span> :
@@ -2994,12 +2950,11 @@ v-wf:FlowTemplateEmbedded
         <veda-control data-type="source" mode="javascript" property="v-wf:predicate"></veda-control>
       </div>
     </div>
-    </div>
   </div>
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
-  $(this).height(40);
+    $(this).height(40);
   });
 </script>
 """.
