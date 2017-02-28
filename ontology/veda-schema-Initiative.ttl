@@ -430,17 +430,25 @@ v-s:hasMemberOfWorkGroup
   rdfs:range v-s:MemberOfWorkGroup ;
   rdfs:domain v-s:WorkGroup ;
 .
+v-s:member
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Member"@en ;
+  rdfs:label "Участник"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:WorkGroup ;
+.
 #--------------------------------------------------
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:HRRecord ;
+  rdfs:subClassOf v-s:WorkGroup ;
   rdfs:label "Project team member"@en ;
   rdfs:label "Член рабочей группы в Проекте"@ru ;
 .
 # rdfs:label
-# v-s:employee
+# v-s:member
 # v-s:occupation
 v-s:timeEffort
   rdf:type owl:DatatypeProperty ;

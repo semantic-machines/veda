@@ -1,6 +1,5 @@
 # Veda - enterprise application development platform 
 [![Build Status](https://travis-ci.org/semantic-machines/veda.svg?branch=master)](https://travis-ci.org/semantic-machines/veda)
-[![Coverage Status](https://coveralls.io/repos/github/semantic-machines/veda/badge.svg?branch=master)](https://coveralls.io/github/semantic-machines/veda?branch=master)
 
 ## I. Overview
 

@@ -227,7 +227,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_RECEIVE:
-        writeln("[CP] LWS_CALLBACK_RECEIVE");
+        //writeln("[CP] LWS_CALLBACK_RECEIVE");
         ResultCode rc;
 
         if (len >= max_size_packet)

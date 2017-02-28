@@ -91,9 +91,9 @@ v-s:consequence
 .
 v-s:possibleLossAmount
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Possible loss amoun"@en ;
+  rdfs:label "Possible loss amount"@en ;
   rdfs:label "Величина возможного ущерба"@ru ;
-  rdfs:range xsd:integer ;
+  rdfs:range xsd:decimal;
   rdfs:domain v-s:Risk ;
 .
 

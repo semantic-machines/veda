@@ -5,6 +5,10 @@ body {
   background-color: #f0f0f0;
 }
 
+.bg-default {
+  background-color: #f5f5f5;
+}
+
 /* Sheets */
 
 .sheet {
@@ -36,6 +40,42 @@ body {
 .modal .container {
   width: inherit;
 }
+
+/* FILE CARD */
+.file-card {
+  width: 330px;
+  height: 150px;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0px 10px 10px 0px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  overflow: hidden;
+}
+.file-card .file-thumbnail {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+}
+.file-card .file-thumbnail:empty {
+  display: none;
+}
+.file-card .file-thumbnail img{
+  max-width: 128px;
+  max-height: 128px;
+}
+.file-card .file-description {
+  display: inline-block;
+  vertical-align: top;
+  width: 165px;
+  word-wrap: break-word;
+}
+.file-card .file-thumbnail:empty + .file-description {
+  width: 310px;
+}
+
+
 
 /* Gray tooltip */
 .tooltip-inner {
@@ -198,6 +238,9 @@ textarea {
 .margin-md {
   margin: 10px 0px;
 }
+.margin-lg {
+  margin: 15px 0px;
+}
 .no-padding {
   padding: 0px;
 }
@@ -206,6 +249,9 @@ textarea {
 }
 .padding-md {
   padding: 10px;
+}
+.padding-lg {
+  padding: 15px;
 }
 .no-border {
   border: none;
