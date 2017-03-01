@@ -191,12 +191,10 @@ v-l:WelcomeAspectTemplate
   v-ui:template """
 <div class="container sheet">
   <div class="jumbotron">
-    <div class="row">
-      <div class="col-md-7">
-        <h1 about="v-l:WelcomeToVeda" property="rdfs:label"></h1>
-        <p style="white-space: pre-wrap;" about="v-l:VedaDescription" property="rdfs:label"></p>
-      </div>
-    </div>
+    <h2>
+      <span about="v-l:WelcomeToVeda" property="rdfs:label"></span><br>
+      <small about="v-l:VedaDescription" property="rdfs:label"></small>
+    </h2>
   </div>
 </div>
   """ ;
@@ -221,8 +219,8 @@ v-l:WelcomeToVeda
 .
 v-l:VedaDescription
   rdf:type v-s:Bundle ;
-  rdfs:label """Veda - это платформа для разработки web-приложений уровня предприятий."""@ru ;
-  rdfs:label """Veda - enterprise application development platform."""@en ;
+  rdfs:label """Платформа для разработки web-приложений уровня предприятий."""@ru ;
+  rdfs:label """Enterprise application development platform."""@en ;
 .
 
 ### INDIVIDUALS ###
