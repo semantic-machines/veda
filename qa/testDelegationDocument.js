@@ -61,6 +61,7 @@ basic.getDrivers().forEach(function (drv) {
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     delegationRequest.createRequestDelegation(driver, 'Администратор4', 'Администратор4 : Аналитик');
+    driver.sleep(basic.FAST_OPERATION);
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button", '');
     basic.logout(driver);
 

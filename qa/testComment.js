@@ -25,31 +25,24 @@ function clickUp(element) {
 
 function check(driver, comment, reply, edit, del) {
     driver.executeScript("document.querySelector('#comment-content').scrollIntoView(true);");
-    var a;
     driver.findElements({css:'#comment-content'}).then(function (result) {
         assert.equal(comment, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'comments' is wrong, expected: " + comment);});
-
-    driver.findElements({css:'#reply'}).then(function (result) {
-        a = result.length;
+    driver.findElements({css:'#reply'}).then(function (sum) {
+        driver.findElements({css: 'a[id="reply"][style="display: none;"]'}).then(function (visible) {
+            assert.equal(reply, sum.length - visible.length);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'reply' buttons is wrong, expected: " + reply);});
     });
-    driver.findElements({css:'a[id="reply"][style="display: none;"]'}).then(function (result) {
-        assert.equal(reply, a - result.length);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'reply' buttons is wrong, expected: " + reply);});
-
-    driver.findElements({css:'#edit-comment'}).then(function (result) {
-        a = result.length;
+    driver.findElements({css:'#edit-comment'}).then(function (sum) {
+        driver.findElements({css:'a[id="edit-comment"][style="display: none;"]'}).then(function (visible) {
+            assert.equal(edit, sum.length - visible.length);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'edit-comment' buttons is wrong, expected: " + edit);});
     });
-    driver.findElements({css:'a[id="edit-comment"][style="display: none;"]'}).then(function (result) {
-        assert.equal(edit, a - result.length);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'edit-comment' buttons is wrong, expected: " + edit);});
-
-    driver.findElements({css:'#delete'}).then(function (result) {
-        a = result.length;
+    driver.findElements({css:'#delete'}).then(function (sum) {
+        driver.findElements({css:'a[id="delete"][style="display: none;"]'}).then(function (visible) {
+            assert.equal(del, sum.length - visible.length);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'delete' buttons is wrong, expected: " + del);});
     });
-    driver.findElements({css:'a[id="delete"][style="display: none;"]'}).then(function (result) {
-        assert.equal(del, a - result.length);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of 'delete' buttons is wrong, expected: " + del);});
 }
 
 /**
@@ -63,11 +56,8 @@ function comment(driver, somethingUnique) {
     basic.execute(driver, 'sendKeys', 'textarea[class="form-control"]', "Cannot input comment", somethingUnique);
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
     basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "Cannot click  on 'save' button", '');
-    driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("location.reload();");
     driver.sleep(basic.SLOW_OPERATION);
-    driver.findElement({css:'div[id="comment-content"]'})
-        .thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
+    driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
 }
 
 /**
