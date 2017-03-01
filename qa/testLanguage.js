@@ -21,6 +21,7 @@ function check(driver, language, value) {
  */
 function click(driver, button) {
     basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "Cannot click on " + button + " button", '');
+    driver.sleep(basic.FAST_OPERATION);
 }
 /**
  * 1.Open Page -> Login(as karpovrt);

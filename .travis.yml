@@ -55,7 +55,6 @@ script:
   - grunt coveralls
 #  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
-  - node ./qa/testLanguage.js
   - node ./qa/testPerson.js
   - node ./qa/testDrafts.js
   - node ./qa/testDeleteAndRecovery.js
@@ -75,6 +74,7 @@ script:
   - node ./qa/testSimpleNet3.js
   - node ./qa/testSimpleWorkflow.js
   - node ./qa/testDelegationDocument.js
+  - node ./qa/testLanguage.js
 
 # Stop deamon and show log
 after_script:
