@@ -1161,6 +1161,8 @@ function prepare_start_form(ticket, document)
 
     var new_process_uri = genUri();
 
+    var creator_f = document['v-s:creator'];
+
     var author_uri;
     var ff = get_property_chain(ticket, document, 'v-s:creator', 'v-s:employee');
     if (ff)
@@ -1251,11 +1253,12 @@ function prepare_start_form(ticket, document)
         }]
     };
 
-    var user = get_individual(ticket, author_uri);
-    if (user['v-s:hasAppointment'])
-    {
-        journalRecord['v-s:actor'] = user['v-s:hasAppointment']
-    }
+//    var user = get_individual(ticket, author_uri);
+//    if (user['v-s:hasAppointment'])
+//    {
+      if (creator_f)	
+        journalRecord['v-s:actor'] = creator_f;
+//    }
 
     put_individual(ticket, journalRecord, _event_id);
 
