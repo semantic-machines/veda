@@ -4266,7 +4266,7 @@ d:a76debaa9-b5de-2c95-ee1a-a9cc2007f7e7
 d:a2ca70102-ef34-56c8-14d8-40d64c8902b5
   a v-s:ClassifierOKVED;
   v-s:updateCounter "2"^^xsd:integer;
-  v-s:hasParentLink ;
+#  v-s:hasParentLink ;
   v-s:description "72.40"^^xsd:string;
   v-s:registrationNumber "63.11.1"^^xsd:string;
   rdfs:label " Деятельность по созданию и использованию баз данных и информационных ресурсов соответствует"^^xsd:string;
