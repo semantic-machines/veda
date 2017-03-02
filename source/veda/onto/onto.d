@@ -244,7 +244,7 @@ class Onto
 
             //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
         }
-
+/*
         if (replace && (is_class || is_prop))
         {
             foreach (key, value; _class.orphans)
@@ -269,6 +269,7 @@ class Onto
             //log.trace ("UPDATE *** class *** \n%s", _class.toString());
             //log.trace ("UPDATE *** property *** \n%s", _property.toString());
         }
+*/        
     }
 
     private void _update_element(string type_uri, Bdathe elh, string parent_predicate)
