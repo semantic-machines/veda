@@ -153,6 +153,10 @@ class Onto
 
     public void load()
     {
+        StopWatch sw1;
+
+        sw1.start();
+
         reload_count++;
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto..", context.get_name);
@@ -167,16 +171,24 @@ class Onto
                                                                        "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
                                                                        true, 10000, 10000);
 
-        log.trace_log_and_console("[%s] load onto, count individuals: %d", context.get_name, l_individuals.length);
+        sw1.stop();
+
+        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", context.get_name, l_individuals.length, sw1.peek().usecs);
+
 
         foreach (indv; l_individuals)
             individuals[ indv.uri ] = indv;
 
+        sw1.reset();
+        sw1.start();
+
         foreach (indv; l_individuals)
             update_onto_hierarchy(indv);
 
-        if (trace_msg[ 20 ] == 1)
-            log.trace_log_and_console("[%s] load onto..Ok", context.get_name);
+        sw1.stop();
+
+        //if (trace_msg[ 20 ] == 1)
+        log.trace_log_and_console("[%s] update hierarhy in mem, time=%d µs", context.get_name, sw1.peek().usecs);
 
         //log.trace ("LOAD *** class *** \n%s", _class.toString());
         //log.trace ("LOAD *** property *** \n%s", _property.toString());
@@ -188,6 +200,17 @@ class Onto
         Names  icl;
         bool   is_class = false;
         bool   is_prop  = false;
+
+        bool   is_deleted = indv.isExists("v-s:deleted", true);
+
+        if (is_deleted)
+        {
+            individuals.remove(indv.uri);
+
+            foreach (indv; individuals)
+                update_onto_hierarchy(indv);
+            return;
+        }
 
         if (indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
         {
@@ -243,33 +266,6 @@ class Onto
             }
 
             //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
-        }
-
-        if (replace && (is_class || is_prop))
-        {
-            string[] keys = _class.orphans.keys;
-            foreach (key; keys)
-            {
-                if (_class.orphans[ key ] == true)
-                {
-                    //_class.el_2_sub_els.remove(key);
-                    _class.orphans[ key ] = false;
-                }
-            }
-
-            keys = _property.orphans.keys;
-            foreach (key; keys)
-            {
-                if (_property.orphans[ key ] == true)
-                {
-                    //_property.el_2_sub_els.remove(key);
-                    _property.orphans[ key ] = false;
-                }
-            }
-
-            //log.trace ("#update_class_in_hierarchy[%s] replace=%s", indv.uri, text (replace));
-            //log.trace ("UPDATE *** class *** \n%s", _class.toString());
-            //log.trace ("UPDATE *** property *** \n%s", _property.toString());
         }
     }
 
