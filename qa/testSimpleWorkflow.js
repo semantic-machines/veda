@@ -2,7 +2,9 @@ var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
 	createNet = require('./createNet.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
+    assert = require('assert'),
 	startForm = require('./startForm.js');
+
 /**
  * Нажатие на кнопку
  * @param driver
