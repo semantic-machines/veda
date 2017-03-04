@@ -86,11 +86,9 @@ basic.getDrivers().forEach (function (drv) {
 
 	basic.logout(driver);
 	basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
-	basic.menu(driver, 'Inbox');
-	var container = driver.findElement({id:'main'});
-	var content = container.innerHTML;
-	container.innerHTML = content;
-	basic.execute(driver, 'click', 'a[property="rdfs:label"]', "Cannot find a task", '');
+	driver.findElement({css:'li[about="v-ft:Inbox"] span[id=counter]'}).getText().then(function (result) {
+        assert.equal(1, result.length);
+    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
 
 	driver.quit();
 });

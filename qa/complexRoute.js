@@ -18,52 +18,6 @@ function welcome(driver) {
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button", '');
 }
 
-/**
- * Открытие сообщений
- * @param driver
-*/
-function open(driver) {
-    basic.menu(driver, 'Inbox');
-    driver.sleep(1000);
-}
-
-/**
- * Ответ на сообщение, выбор решения, комментирование и выбор Персоны
- * @param driver -
- * @param number - номер решения
- * @param commentValue - статус комментирования
- * @param chooseValue - статус выбора Персоны
-*/
-function openMsg(driver, number, commentValue, chooseValue) {
-    open(driver);
-    driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
-    basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + number + '"]', "Cannot click on '" + number + "' decision", '');
-    if (commentValue === '+') {
-        basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "Cannot fill 'comment'", timeStamp);
-    }
-    if (chooseValue === '+') {
-        driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
-        basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик');
-    }
-    driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
-    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button", '');
-    welcome(driver);
-}
-
-/**
- * Проверка сообщений
- * @param driver
- * @param count - количество сообщений, которое должно быть;
-*/
-function checkMsg(driver, count) {
-    open(driver);
-    driver.findElements({css:'span[property="v-s:description"]'}).then(function (result) {
-        assert.equal(count, result.length);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
-    welcome(driver);
-}
-
 module.exports = {
     /**
      * Проверка сообщений
@@ -76,7 +30,10 @@ module.exports = {
     */
     checkTask: function (driver, count, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
-        checkMsg(driver, count);
+        driver.findElement({css:'li[about="v-ft:Inbox"] span[id=counter]'}).getText().then(function (result) {
+            assert.equal(count, result);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
+        welcome(driver);
         basic.logout(driver);
     },
 
@@ -93,9 +50,23 @@ module.exports = {
     */
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
-        openMsg(driver, decision, commentValue, chooseValue);
-        basic.logout(driver);
-    },
+        basic.menu(driver, 'Inbox');
+        driver.sleep(1000);
+        driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
+        basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "Cannot click on '" + decision + "' decision", '');
+        if (commentValue === '+') {
+            basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "Cannot fill 'comment'", timeStamp);
+        }
+        if (chooseValue === '+') {
+            driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
+            basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик');
+        }
+        driver.sleep(basic.FAST_OPERATION);
+        driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
+        basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button", '');
+        welcome(driver);
+            basic.logout(driver);
+        },
     /**
      * Проверка статуса маршрута
      * @param driver
