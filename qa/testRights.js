@@ -65,7 +65,6 @@ basic.getDrivers().forEach (function (drv) {
     search(driver, timeStamp, 0);
 
     person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
-    basic.menu(driver, 'Inbox');
     basic.logout(driver);
 
     //Проверка наличия созданного документа пользователем с меньшими правами

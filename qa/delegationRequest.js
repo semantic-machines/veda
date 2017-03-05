@@ -59,6 +59,7 @@ module.exports = {
         driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
+        driver.sleep(basic.FAST_OPERATION);
         basic.execute(driver, 'click','#save', "Cannot click on 'save' button", '');
 
     }

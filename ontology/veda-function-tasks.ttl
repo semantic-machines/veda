@@ -339,14 +339,9 @@ v-ft:FunctionTasksTemplate
         </th>
       </tr>
     </thead>
-    <tbody id="tasks">
-      <tr>
-        <td colspan="7">
-          <span about="v-ft:TasksNotFound" property="rdfs:label"></span>
-        </td>
-      </tr>
-    </tbody>
+    <tbody id="tasks"></tbody>
   </table>
+  <div style="display:none" class="not-found alert alert-warning" about="v-ft:TasksNotFound" property="rdfs:label"></div>
   <div class="text-center">
     <ul class="pagination" id="pager"></ul>
   </div>
@@ -361,6 +356,7 @@ v-ft:FunctionTasksTemplate
   var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
   var tmpl = tmplInd["v-ui:template"][0].toString();
   var cnt = $("#tasks", template);
+  var notFound = $(".not-found", template);
   var sorts = $("th > a", template);
   var pager = $("#pager", template);
   sorts.on("click", function (e) {
@@ -385,10 +381,11 @@ v-ft:FunctionTasksTemplate
   });
 
   function renderTasks(result) {
-    if (result.length) {
+    cnt.empty();
+    pager.empty();
 
-      cnt.empty();
-      pager.empty();
+    if (result.length) {
+      notFound.hide();
 
       var sortBy = "", dir = "";
       if ( tasks.hasValue("v-fs:sortOrder") ) {
@@ -440,6 +437,8 @@ v-ft:FunctionTasksTemplate
           "href" : ""
         }).appendTo($pg);
       }
+    } else {
+      notFound.show();
     }
   }
   //# sourceURL=v-ft:FunctionTasksTemplate
