@@ -117,7 +117,7 @@ v-s:UserScriptTemplate
   rdfs:label "Template for v-s:UserScript class"@en ;
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   v-ui:template """
-<div class="container-fluid">
+<div class="container-fluid sheet">
   <h2 about="v-s:UserScript" property="rdfs:label"></h2>
 
   <div class="row">
