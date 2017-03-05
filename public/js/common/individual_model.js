@@ -36,6 +36,7 @@ veda.Module(function (veda) { "use strict";
       isNew: false,
       isSync: false,
       isAsync: typeof async !== "undefined" ? async : false,
+      uri: uri
     };
     this.properties = {};
     this.filtered = {};
@@ -72,17 +73,10 @@ veda.Module(function (veda) { "use strict";
         this.present.call(individual, container, template, mode);
         container = template = mode = null;
       });
-      /*this.on("individual:typeChanged", function () {
-        this.present(container, template, mode);
-      });*/
     }
 
-    /*veda.on("language:changed", function () {
-      self.filtered = {};
-    });*/
-
     if ( !this.isAsync() ) {
-      return this.load(uri);
+      return this.load();
     } else {
       return this;
     }
@@ -111,13 +105,13 @@ veda.Module(function (veda) { "use strict";
             }
             return condition;
           })
-          .map( parser );
+          .map( this.parser );
         return values;
       },
       set: function (values) {
         this.isSync(false);
         var notNull = values.filter(function (i) { return i != undefined });
-        var serialized = notNull.map( serializer );
+        var serialized = notNull.map( this.serializer );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
@@ -131,7 +125,7 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function parser(value) {
+  proto.parser = function (value) {
     if (value.type === "String") {
       var string = new String(value.data);
       if (value.lang !== "NONE") { string.language = value.lang };
@@ -146,7 +140,7 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
-  function serializer (value) {
+  proto.serializer = function (value) {
     if (typeof value === "number" ) {
       return {
         type: isInteger(value) ? "Integer" : "Decimal",
@@ -257,7 +251,8 @@ veda.Module(function (veda) { "use strict";
    * Load individual specified by uri from database. If cache parameter (from constructor) is true, than try to load individual from browser cache first.
    * @param {String} uri individual uri
    */
-  proto.load = function (uri) {
+  proto.load = function () {
+    var uri = this._.uri;
     this.trigger("individual:beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
@@ -318,7 +313,7 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Save current individual to database (with validation and adding new version)
    */
-  proto.save = function() {
+  proto.save = function () {
     var self = this;
     // Do not save individual to server if nothing changed
     if (self.isSync()) { return; }
@@ -354,7 +349,7 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Save current individual without validation and without adding new version
    */
-  proto.draft = function() {
+  proto.draft = function () {
     this.trigger("individual:beforeDraft");
     veda.drafts.set(this.id, this);
     this.trigger("individual:afterDraft");
@@ -393,14 +388,14 @@ veda.Module(function (veda) { "use strict";
           return;
         }
         if (original[property_uri] && original[property_uri].length) {
-          self[property_uri] = original[property_uri].map( parser );
+          self[property_uri] = original[property_uri].map( self.parser );
         } else {
           self[property_uri] = [];
         }
         delete original[property_uri];
       });
       Object.keys(original).map(function (property_uri) {
-        self[property_uri] = original[property_uri].map( parser );
+        self[property_uri] = original[property_uri].map( self.parser );
       });
       self.isNew(false);
       self.isSync(true);
@@ -450,7 +445,7 @@ veda.Module(function (veda) { "use strict";
   proto.hasValue = function (property_uri, value) {
     var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
     if (typeof value !== "undefined" && value !== null) {
-      var serialized = serializer(value);
+      var serialized = this.serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
         return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
