@@ -14,7 +14,7 @@ veda.Module(function (veda) { "use strict";
    * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
    * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
    */
-  veda.IndividualModel = function (uri, container, template, mode, cache, init) {
+  veda.IndividualModel = function (uri, container, template, mode, cache, init, async) {
 
     var self = riot.observable(this);
 
@@ -25,6 +25,7 @@ veda.Module(function (veda) { "use strict";
       mode      = uri.mode;
       cache     = uri.cache;
       init      = uri.init;
+      async     = uri.async;
       uri       = uri.uri;
     }
 
@@ -33,7 +34,8 @@ veda.Module(function (veda) { "use strict";
       cache: typeof cache !== "undefined" ? cache : true,
       init: typeof init !== "undefined" ? init : true,
       isNew: false,
-      isSync: false
+      isSync: false,
+      isAsync: typeof async !== "undefined" ? async : false,
     };
     this.properties = {};
     this.filtered = {};
@@ -79,7 +81,11 @@ veda.Module(function (veda) { "use strict";
       self.filtered = {};
     });*/
 
-    return self.load(uri);
+    if ( !this.isAsync() ) {
+      return this.load(uri);
+    } else {
+      return this;
+    }
   };
 
   var proto = veda.IndividualModel.prototype;
@@ -516,6 +522,15 @@ veda.Module(function (veda) { "use strict";
    */
   proto.isNew = function (value) {
     return ( typeof value !== "undefined" ? this._.isNew = value : this._.isNew );
+  };
+
+  /**
+   * @method
+   * Check whether individual's db interaction methods are asynchronous
+   * @return {boolean}
+   */
+  proto.isAsync = function (value) {
+    return ( typeof value !== "undefined" ? this._.isAsync = value : this._.isAsync );
   };
 
   /**
