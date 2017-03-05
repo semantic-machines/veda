@@ -119,7 +119,8 @@ class WSClient
                                                                                                                                                    []
                                                                                                                                                    msg,
                                                                                                                                                    ResultCode
-                                                                                                                                                   rc) _ev_LWS_CALLBACK_CLIENT_RECEIVE)
+                                                                                                                                                   rc)
+                _ev_LWS_CALLBACK_CLIENT_RECEIVE)
     {
         ev_LWS_CALLBACK_GET_THREAD_ID    = _ev_LWS_CALLBACK_GET_THREAD_ID;
         ev_LWS_CALLBACK_CLIENT_RECEIVE   = _ev_LWS_CALLBACK_CLIENT_RECEIVE;
@@ -226,7 +227,7 @@ extern (C) static int ws_service_callback(lws *wsi, lws_callback_reasons reason,
         break;
 
     case lws_callback_reasons.LWS_CALLBACK_RECEIVE:
-        writeln("[CP] LWS_CALLBACK_RECEIVE");
+        //writeln("[CP] LWS_CALLBACK_RECEIVE");
         ResultCode rc;
 
         if (len >= max_size_packet)

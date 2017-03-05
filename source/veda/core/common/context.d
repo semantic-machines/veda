@@ -237,9 +237,6 @@ interface Context
 
     int[ string ] get_key2slot();
 
-//    public bool ft_check_for_reload(void delegate() load);
-    public bool acl_check_for_reload(void delegate() load);
-
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string uri);
     Onto get_onto();

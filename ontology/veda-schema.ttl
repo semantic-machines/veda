@@ -141,7 +141,7 @@ v-s:fileSize
   rdfs:label "Размер файла"@ru ;
   rdfs:range xsd:integer ;
 .
-v-s:fileThumbnail
+v-s:thumbnail
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
   rdfs:label "Thumbnail"@en ;
@@ -473,7 +473,7 @@ v-s:DocumentLinkRulesTemplate
   rdfs:label "Template for DocumentLinkRules"@en ;
   v-ui:forClass v-s:DocumentLinkRules ;
   v-ui:template """
-  <div class="container">
+  <div class="container sheet">
     <h3 property="v-s:displayName" class="view edit search"></h3>
     <br>
     <div class="row">

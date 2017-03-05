@@ -80,35 +80,25 @@
       </form>
     </script>
 
-    <!-- Console template -->
-    <script type="html/template" id="console-template">
-      <div class="container" id="console">
-        <h3>Консоль JavaScript</h3>
-        <form role="form">
-          <div class="form-group">
-            <label for="script">Скрипт</label>
-            <textarea rows="10" class="form-control" autofocus="autofocus" id="script" bound>{script}</textarea>
-          </div>
-          <div class="form-group row">
-            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-              <select class="form-control" id="runat" bound>
-                <option value="browser">Браузер</option>
-                <option value="server">Сервер</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-success" id="run">Выполнить!</button>
-            <button type="reset" class="btn" id="reset">Сброс</button>
-          </div>
-        </form>
-        <hr />
-        <p><strong><span>Результат</span> <span class="text-muted">(<span id="time" bound>{time}</span> msec)</span></label></strong></p>
-        <pre id="result" bound>{result}</pre>
+    <!-- JSON template -->
+    <script type="html/template" id="json-template">
+      <div class="container sheet">
+        <pre style="border:none;background-color:#fff;"></pre>
+        <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
+        <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
+        <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
+        <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
+        <div class="actions pull-right">
+          <button id="edit" class="btn btn-primary">Edit</button>
+          <button id="save" class="hidden btn btn-success">Save</button>
+          <button id="cancel" class="hidden btn btn-default">Cancel</button>
+        </div>
       </div>
     </script>
 
     <!-- TTL template -->
     <script type="html/template" id="ttl-template">
-      <div class="container">
+      <div class="container sheet">
         <pre style="border:none;background-color:#fff;"></pre>
         <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
         <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
@@ -149,7 +139,7 @@
 
     <!-- Drafts template -->
     <script type="html/template" id="drafts-template">
-      <div id="drafts" class="container">
+      <div id="drafts" class="container sheet">
         <h2 id="drafts-title"></h2>
         <hr>
         <ol id="drafts-list"></ol>
@@ -159,7 +149,7 @@
 
     <!-- Search template -->
     <script type="html/template" id="search-template">
-      <div class="container">
+      <div class="container sheet">
         <div role="tabpanel" id="search-tab-panel-{id}">
           <!-- Nav tabs -->
           <ul class="nav nav-pills" role="tablist">
@@ -282,7 +272,7 @@
     <!-- Modals -->
     <!-- Search modal -->
     <script type="html/template" id="search-modal-template">
-      <div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal" id="search-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
@@ -297,25 +287,9 @@
       </div>
     </script>
 
-    <!-- Individual modal -->
-    <script type="html/template" id="individual-modal-template">
-      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-body">
-               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </script>
-
     <!-- Show rights modal -->
     <script type="html/template" id="show-rights-modal-template">
-      <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
           <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -330,13 +304,29 @@
       </div>
     </script>
 
-    <!-- Notification modal -->
-    <script type="html/template" id="notification-modal-template">
-      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <!-- Individual modal -->
+    <script type="html/template" id="individual-modal-template">
+      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
-              <button class="close" style="margin-right:20px;" data-dismiss="modal"><span id="follow" class="fa fa-window-maximize"></span></button>
+               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <!-- Notification modal -->
+    <script type="html/template" id="notification-modal-template">
+      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+              <button id="follow" class="close" style="margin-right:20px;" data-dismiss="modal"><span class="fa fa-window-maximize"></span></button>
               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
             </div>
           </div>
@@ -506,7 +496,7 @@
 
     <!-- Generic class template -->
     <script type="html/template" id="generic-class-template">
-      <div class="container">
+      <div class="container sheet">
         <div class="row">
           <div class="col-md-4 col-xs-5 text-right">
             <h2 class="text-muted className"></h2>
@@ -590,7 +580,7 @@
 
     <!-- Graph template -->
     <script type="html/template" id="graph-template">
-      <div class="container-fluid">
+      <div class="container-fluid sheet">
         <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
         <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
 
@@ -697,11 +687,10 @@
     <script type="text/javascript" src="/js/browser/lib/jquery.js"></script>
     <script type="text/javascript" src="/js/browser/lib/jquery-ui.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/js/browser/lib/sha256.js"></script>
     <script type="text/javascript" src="/js/browser/lib/jsplumb.js"></script>
     <script type="text/javascript" src="/js/browser/lib/vis.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/bootstrap-contextmenu.js"></script>
-    <script type="text/javascript" src="/js/browser/lib/n3-browser.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/n3-browser.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/FileSaver.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/typeahead.jquery.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/cookie.js"></script>
@@ -727,10 +716,10 @@
     <!-- Veda browser & server -->
     <script type="text/javascript" src="/js/common/lib/riot.js"></script>
     <script type="text/javascript" src="/js/common/lib/promiz.min.js"></script>
+    <script type="text/javascript" src="/js/common/lib/sha256.js"></script>
     <script type="text/javascript" src="/js/common/util.js"></script>
     <script type="text/javascript" src="/js/common/veda_spa.js"></script>
     <script type="text/javascript" src="/js/common/app_model.js"></script>
-    <script type="text/javascript" src="/js/common/console_model.js"></script>
     <script type="text/javascript" src="/js/common/individual_model.js"></script>
     <script type="text/javascript" src="/js/common/individual_model_async.js"></script>
     <script type="text/javascript" src="/js/common/individual_list_model.js"></script>
@@ -743,7 +732,6 @@
     <!-- Veda browser only -->
     <script type="text/javascript" src="/js/browser/backend.js"></script>
     <script type="text/javascript" src="/js/browser/util.js"></script>
-    <script type="text/javascript" src="/js/browser/console_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/veda_controls.js"></script>
     <script type="text/javascript" src="/js/browser/pager.js"></script>
     <script type="text/javascript" src="/js/browser/individual_actions.js"></script>
@@ -773,8 +761,12 @@
       $(document).on("click", ".modal #follow", function () {
         var resource = $(this).closest(".modal").find("[resource]");
         var uri = resource.attr("resource");
-        var mode = resource.attr("data-mode");
-        riot.route("#/" + uri + "///" + mode);
+        var mode = resource.data("mode");
+        if (mode) {
+          riot.route("#/" + uri + "///" + mode);
+        } else {
+          riot.route("#/" + uri);
+        }
       });
       $(document).on({
         'show.bs.modal': function () {
@@ -813,29 +805,5 @@
         document.addEventListener("DOMContentLoaded", $buo_f,false)
       } catch(e) { window.attachEvent("onload", $buo_f) }
     </script>
-
-
-    <!--div class="container">
-      <div>Regex</div>
-      <input class="form-control" type="text" id="re-regex"></input>
-      <div>Replacer function</div>
-      <textarea class="form-control" rows="3" id="re-replacer"></textarea>
-      <div>Text</div>
-      <textarea class="form-control" rows="10" id="re-text"></textarea>
-      <div>Result</div>
-      <textarea class="form-control" rows="10" id="re-result"></textarea>
-      <button class="btn btn-success" id="re-go">Go</button>
-      <br>
-      <br>
-    </div>
-    <script>
-      $("#re-go").click( function () {
-        var str = $("#re-text").val();
-        var regex = new RegExp($("#re-regex").val(), "g");
-        var replacer = new Function("match", "group", $("#re-replacer").val());
-        var res = str.replace(regex, replacer);
-        var result = $("#re-result").val(res);
-      });
-    </script-->
   </body>
 </html>

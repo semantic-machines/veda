@@ -1,4 +1,4 @@
-import std.conv, std.stdio, std.file, core.runtime, core.thread;
+import std.conv, std.stdio, std.file, core.runtime, core.thread, std.base64;
 import vibe.d;
 import properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
@@ -12,7 +12,7 @@ veda.common.logger.Logger _log;
 veda.common.logger.Logger log()
 {
     if (_log is null)
-        _log = new veda.common.logger.Logger("veda-core-webserver", "log", "frontend");
+        _log = new veda.common.logger.Logger("veda-core-webserver-" ~ text(http_port), "log", "frontend");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -58,15 +58,18 @@ void view_error(HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorIn
     res.render!("view_error.dt", req, error);
 }
 
+const string BASE64_START_POS = "base64";
+
 void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 {
     string filename;
 
     try
     {
-        auto pf = "file" in req.files;
+        auto content = "content" in req.form;
+        auto pf      = "file" in req.files;
 
-        enforce(pf !is null, "No file uploaded!");
+        enforce(pf !is null || content !is null, "No file (base64) uploaded!");
 
         auto pt = "path" in req.form;
         auto nm = "uri" in req.form;
@@ -92,15 +95,34 @@ void uploadFile(HTTPServerRequest req, HTTPServerResponse res)
 
             Path path = Path("data/files/" ~ pts ~ "/") ~filename;
 
-            try moveFile(pf.tempPath, path);
-            catch (Exception e) {
-//                logWarn("Failed to move file to destination folder: %s", e.msg);
-//                logInfo("Performing copy+delete instead.");
-                copyFile(pf.tempPath, path);
+            if (content !is null)
+            {
+                string cntstr = cast(string)*content;
+
+                long   pos = cntstr.indexOf(BASE64_START_POS);
+
+                if (pos > 0)
+                {
+                    string header = cntstr[ 0.. pos ];
+                    cntstr = cntstr[ pos + BASE64_START_POS.length + 1..$ ];
+
+                    ubyte[] decoded = Base64.decode(cntstr);
+
+                    std.file.write(path.toString(), decoded);
+                }
             }
 
-            res.writeBody("File uploaded!", "text/plain");
+            if (pf !is null)
+            {
+                try moveFile(pf.tempPath, path);
+                catch (Exception e) {
+//                logWarn("Failed to move file to destination folder: %s", e.msg);
+//                logInfo("Performing copy+delete instead.");
+                    copyFile(pf.tempPath, path);
+                }
+            }
         }
+        res.writeBody("File uploaded!", "text/plain");
     }
     catch (Throwable ex)
     {
@@ -112,12 +134,13 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 
 HTTPListener[ ushort ] listener_2_port;
 
+short opt_http_port = 0;
+
 shared static this()
 {
-    short http_port = 0;
-    short ws_port   = 0;
-
-    readOption("http_port", &http_port, "The listen http port");
+    readOption("http_port", &opt_http_port, "The listen http port");
+    if (opt_http_port != 0)
+        http_port = opt_http_port;
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
@@ -141,7 +164,7 @@ shared static this()
 
     veda.core.common.context.Context context;
 
-    context = new PThreadContext(node_id, "frontend", log, "127.0.0.1:8088/ws");
+    context = new PThreadContext(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 
@@ -203,7 +226,7 @@ shared static this()
 
     //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-    if (http_port == 0)
+    if (opt_http_port == 0)
     {
         Resources listeners = node.resources.get("v-s:listener", Resources.init);
         foreach (listener_uri; listeners)
@@ -223,7 +246,7 @@ shared static this()
     }
     else
     {
-        is_exist_listener = start_http_listener(context, http_port);
+        is_exist_listener = start_http_listener(context, opt_http_port);
     }
 }
 

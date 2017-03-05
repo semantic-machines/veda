@@ -95,7 +95,7 @@ v-fc:FunctionCreateTemplate
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
-<div class="container">
+<div class="container sheet">
   <h3 property="rdfs:label"></h3>
   <hr>
   <div class="row">
@@ -115,6 +115,7 @@ v-fc:FunctionCreateTemplate
   var self = individual;
   if (self.hasValue("v-fc:targetType")) { modHandler("v-fc:targetType", self["v-fc:targetType"]) };
   self.on("individual:propertyModified", modHandler);
+  var blankTemplate = new veda.IndividualModel("v-fc:BlankTemplate");
   function modHandler(property_uri, values) {
     if (property_uri === "v-fc:targetType") {
       var holder = $("#holder", template).empty();
@@ -122,7 +123,7 @@ v-fc:FunctionCreateTemplate
         var blank = new veda.IndividualModel();
         blank["v-fc:targetType"] = values;
         blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-        blank.present(holder, undefined, "edit");
+        blank.present(holder, blankTemplate, "edit");
       }
     }
   }
@@ -232,18 +233,16 @@ v-fc:BlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "V-fc:Blank class template"@en ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
-  v-ui:forClass v-fc:Blank ;
+#  v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<div role="tabpanel" class="container">
+<div role="tabpanel">
   <br>
-  <!-- Nav tabs -->
   <ul class="nav nav-tabs nav-right hidden-print" role="tablist">
     <li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
     <li role="presentation"><a id="mgmt-pill" href="#mgmt" about="v-fc:BlankMgmt" property="rdfs:label" aria-controls="mgmt" role="tab" data-toggle="tab"></a></li>
     <li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
   </ul>
   <br />
-  <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="blank">
       <div id="object-container"></div>
@@ -263,6 +262,52 @@ v-fc:BlankTemplate
         <button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
       </div>
     </div>
+  </div>
+</div>
+<script>
+  individual._init();
+  var self = individual,
+      objectContainer = $("#object-container", template),
+      object = self.object;
+
+  var _class = object["rdf:type"][0];
+  if (_class.rights.hasValue("v-s:canCreate", true)) {
+    object.present(objectContainer, undefined, "edit");
+    object.one("individual:afterSave", saveHandler);
+    object.one("individual:afterReset", cancelHandler);
+    template.on("remove", function () {
+      object.off("individual:afterSave", saveHandler);
+      object.off("individual:afterReset", cancelHandler);
+      self.off("individual:beforeSave");
+      self.off("individual:afterSave");
+      delete self.object;
+    });
+  } else {
+    $("#no-rights", template).removeClass("hidden");
+  }
+  function saveHandler () {
+    delete self.object;
+    setTimeout(function () {
+      object.present("#main");
+    }, 100);
+  }
+  function cancelHandler () { window.history.back(); }
+  //# sourceURL=v-fc:BlankTemplate
+</script>
+  """
+.
+
+v-fc:BlankTemplateShort
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "V-fc:Blank class template"@en ;
+  rdfs:label "Шаблон класса v-fc:Blank"@ru ;
+  v-ui:forClass v-fc:Blank ;
+  v-ui:template """
+<div>
+  <div id="object-container"></div>
+  <div id="no-rights" class="alert alert-warning container hidden">
+    <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
+    <button class="btn btn-default" about="v-s:Back" property="rdfs:label" onclick="window.history.back();"></button>
   </div>
 </div>
 <script>

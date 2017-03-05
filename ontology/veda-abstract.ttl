@@ -34,6 +34,14 @@ v-s:owner
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Thing ;
 .
+v-s:name
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Имя"@ru ;
+  rdfs:label "Name"@en ;
+  rdfs:range xsd:string ;
+.
 v-s:author
   rdf:type owl:ObjectProperty ;
   rdfs:label "Author"@en ;
@@ -78,7 +86,7 @@ v-s:isDraft
 .
 v-s:created
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Entry date"@en ;
+  rdfs:label "Creation date"@en ;
   rdfs:label "Дата создания"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Thing ;
@@ -183,7 +191,7 @@ v-s:attachment
 .
 v-s:scanAttachment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "ScanAttachment"@en ;
+  rdfs:label "Scanned document"@en ;
   rdfs:label "Сканированный вариант документа"@ru ;
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
@@ -333,7 +341,7 @@ v-s:datePlan
 .
 v-s:dateFact
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Date of fact"@en ;
+  rdfs:label "Date fact"@en ;
   rdfs:label "Дата фактическая"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
@@ -524,21 +532,21 @@ v-s:hasAccountingDoc
 v-s:hasPaymentConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
-  rdfs:label "Payment Conditions"@en ;
+  rdfs:label "Payment conditions"@en ;
   rdfs:label "Условия платежа"@ru ;
   rdfs:range v-s:PaymentConditions ;
 .
 v-s:hasDeliveryConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
-  rdfs:label "Delivery Conditions"@en ;
+  rdfs:label "Delivery conditions"@en ;
   rdfs:label "Условия поставки"@ru ;
   rdfs:range v-s:DeliveryConditions ;
 .
 v-s:hasContractScope
   rdf:type owl:ObjectProperty ;
   rdfs:label "Contract scope"@en ;
-  rdfs:label "Характер условий"@ru ;
+  rdfs:label "Рамки контракта"@ru ;
   rdfs:range v-s:ContractScope ;
   rdfs:domain v-s:Contractual ;
 .
@@ -622,6 +630,13 @@ v-s:checkedRequirement
   rdfs:range v-s:NormativeDocumentRequirement ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:responsibleDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Responsible. Description"@en ;
+  rdfs:label "Ответственный. Описание"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
 v-s:responsible
   rdf:type owl:ObjectProperty ;
   rdfs:label "Responsible"@en ;
@@ -680,8 +695,8 @@ v-s:Registered
 .
 v-s:registrationDate
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата регистрации документа"@ru ;
+  rdfs:label "Registration date"@en ;
+  rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -694,8 +709,8 @@ v-s:registrationNumber
 .
 v-s:registrationDateIn
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата регистрации документа"@ru ;
+  rdfs:label "Registration date"@en ;
+  rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -708,8 +723,8 @@ v-s:registrationNumberIn
 .
 v-s:registrationDateOut
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Registration date of document"@en ;
-  rdfs:label "Дата регистрации документа"@ru ;
+  rdfs:label "Registration date"@en ;
+  rdfs:label "Дата регистрации"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Registered ;
 .
@@ -841,7 +856,7 @@ v-s:count
 v-s:rate
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Rate"@en ;
-  rdfs:label "Степень"@ru ;
+  rdfs:label "Ставка"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
@@ -863,6 +878,20 @@ v-s:hasCurrency
   rdf:type owl:ObjectProperty ;
   rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasCurrencySource
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Source currency"@en ;
+  rdfs:label "Исходная валюта"@ru ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:hasCurrencyTarget
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Target currency"@en ;
+  rdfs:label "Целевая валюта"@ru ;
   rdfs:range v-s:Currency ;
   rdfs:domain v-s:Measurable ;
 .
@@ -896,7 +925,7 @@ v-s:hasClassifierCountry
 .
 v-s:hasClassifierLegalForm
   rdf:type owl:ObjectProperty ;
-  rdfs:label "ClassifierLegalForm"@en ;
+  rdfs:label "Legal form classifier"@en ;
   rdfs:label "Организационно-правовая форма"@ru ;
   rdfs:range v-s:ClassifierLegalForm ;
   rdfs:domain v-s:ClassifiedRus ;
@@ -974,7 +1003,7 @@ v-s:prepayment
 .
 v-s:transactionDate
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Transaction date of document"@en ;
+  rdfs:label "Transaction date"@en ;
   rdfs:label "Дата проводки"@ru ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Financial ;

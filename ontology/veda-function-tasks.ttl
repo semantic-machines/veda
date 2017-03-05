@@ -91,7 +91,7 @@ v-ft:FunctionTasksTemplate
     .addClass("active");
   //# sourceURL=v-ft:FunctionTasksTemplate_pre
 </script>
-<div class="container">
+<div class="container sheet">
   <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
@@ -128,14 +128,9 @@ v-ft:FunctionTasksTemplate
         </th>
       </tr>
     </thead>
-    <tbody id="tasks">
-      <tr>
-        <td colspan="7">
-          <span about="v-ft:TasksNotFound" property="rdfs:label"></span>
-        </td>
-      </tr>
-    </tbody>
+    <tbody id="tasks"></tbody>
   </table>
+  <div style="display:none" class="not-found alert alert-warning" about="v-ft:TasksNotFound" property="rdfs:label"></div>
   <div class="text-center">
     <ul class="pagination" id="pager"></ul>
   </div>
@@ -150,6 +145,7 @@ v-ft:FunctionTasksTemplate
   var tmplInd = new veda.IndividualModel("v-ft:TaskTemplate");
   var tmpl = tmplInd["v-ui:template"][0].toString();
   var cnt = $("#tasks", template);
+  var notFound = $(".not-found", template);
   var sorts = $("th > a", template);
   var pager = $("#pager", template);
   sorts.on("click", function (e) {
@@ -174,10 +170,11 @@ v-ft:FunctionTasksTemplate
   });
 
   function renderTasks(result) {
-    if (result.length) {
+    cnt.empty();
+    pager.empty();
 
-      cnt.empty();
-      pager.empty();
+    if (result.length) {
+      notFound.hide();
 
       var sortBy = "", dir = "";
       if ( tasks.hasValue("v-fs:sortOrder") ) {
@@ -229,6 +226,8 @@ v-ft:FunctionTasksTemplate
           "href" : ""
         }).appendTo($pg);
       }
+    } else {
+      notFound.show();
     }
   }
   //# sourceURL=v-ft:FunctionTasksTemplate
@@ -262,6 +261,51 @@ v-ft:TaskTemplate
     e.stopPropagation();
   });
   //# sourceURL=v-ft:TaskTemplate
+</script>
+  """
+.
+
+v-ft:FunctionTasksIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "V-ft:FunctionInbox indicator template"@en ;
+  rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
+  v-ui:template """
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-envelope-o fa-lg"></span> <span class="label label-danger" id="counter"></span>
+  <span about="@" property="rdfs:label" style="display:none"></span>
+</a>
+<script>
+  //popover
+  template.tooltip({
+    container: template,
+    html: true,
+    title: function () {
+      return template.children("[property]").clone().show();
+    }
+  });
+  var tasks = individual.tasks;
+  var counter = $("#counter", template);
+  tasks.search();
+  counter.text(tasks.count);
+  var interval = setInterval(function () {
+    tasks.search();
+    counter.text(tasks.count);
+  }, 1000*60*3);
+  veda.on("task:completed", taskCompletedHandler);
+  template.on("remove", function () {
+    clearInterval(interval);
+    veda.off("task:completed", taskCompletedHandler);
+  });
+  function taskCompletedHandler(task_id) {
+    var test = tasks.result.filter(function (item) {
+      return item === task_id;
+    }).length;
+    if ( test ) {
+      var tmp = parseInt( counter.text() );
+      counter.text(tmp ? tmp - 1 : tmp);
+    }
+  }
+  //# sourceURL=v-ft:FunctionTasksIndicatorTemplate
 </script>
   """
 .

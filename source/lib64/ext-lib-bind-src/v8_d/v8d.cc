@@ -1,4 +1,4 @@
-#define _GLIBCXX_USE_CXX11_ABI 0
+#define _GLIBCXX_USE_CXX11_ABI    0
 
 #include "v8.h"
 #include <assert.h>
@@ -6,6 +6,13 @@
 #include <string>
 #include <string.h>
 #include <math.h>
+#include <string>
+#include <sstream>
+#include <limits>
+#include <iomanip>
+#include <cstdlib>
+#include <cassert>
+#include <cstddef>
 #include "cbor.h"
 #include "cbor2individual.h"
 
@@ -21,6 +28,48 @@ void FatalErrorCallback_r(const char *location, const char *message)
     std::cout << "Fatal error in V8: " << location << " " << message;
 }
 }
+
+static std::string to_string(double d)
+{
+    std::ostringstream oss;
+    oss.precision(std::numeric_limits<double>::digits10);
+    oss << std::fixed << d;
+    std::string str = oss.str();
+
+    // Remove padding
+    // This must be done in two steps because of numbers like 700.00
+    std::size_t pos1 = str.find_last_not_of("0");
+    if(pos1 != std::string::npos)
+        str.erase(pos1+1);
+
+    std::size_t pos2 = str.find_last_not_of(".");
+    if(pos2 != std::string::npos)
+        str.erase(pos2+1);
+
+    return str;
+}
+
+/// Stringify V8 value to JSON
+/// return empty string for empty value
+std::string json_str(v8::Isolate* isolate, v8::Handle<v8::Value> value)
+{
+    if (value.IsEmpty())
+    {
+        return std::string();
+    }
+ 
+    v8::HandleScope scope(isolate);
+ 
+    v8::Local<v8::Object> json = isolate->GetCurrentContext()->
+        Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
+    v8::Local<v8::Function> stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
+ 
+    v8::Local<v8::Value> result = stringify->Call(json, 1, &value);
+    v8::String::Utf8Value const str(result);
+ 
+    return std::string(*str, str.length());
+ }
+
 
 Handle<Value>
 individual2jsobject(Individual *individual, Isolate *isolate)
@@ -57,8 +106,14 @@ individual2jsobject(Individual *individual, Isolate *isolate)
             }
             else if (value.type == _Decimal)
             {
+				//std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_expanent_data=" << value.decimal_expanent_data << std::endl;
+
+				//string ss = to_string(value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data));
+                //in_obj->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
+
                 in_obj->Set(f_data,
                             v8::Number::New(isolate, value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data)));
+				//std::cout << "@c individual2jsobject #Q ss=" << ss << std::endl;
             }
             else if (value.type == _Integer)
             {
@@ -89,6 +144,23 @@ individual2jsobject(Individual *individual, Isolate *isolate)
     js_map->Set(String::NewFromUtf8(isolate, "@"), String::NewFromUtf8(isolate, individual->uri.c_str()));
 
     return js_map;
+}
+
+void double_to_mantissa_exponent(double inp, int64_t *mantissa, int64_t *exponent)
+{
+    double a     = trunc(inp);
+    int    power = 0;
+
+    while (inp - trunc(inp) != 0.0)
+    {
+        inp *= 10.0;
+        power--;
+    }
+
+    *mantissa = (int64_t)inp;
+    *exponent = power;
+
+    //std::cout << "@c double_to_mantissa_exponent inp=" << inp << ", mantissa=" << *mantissa << ", exponent=" << *exponent << std::endl;
 }
 
 bool
@@ -165,7 +237,17 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
     }
     else if (value->IsNumber())
     {
-        std::cout << "ERR! @v8:json->cbor (value->IsNumber() not implemented" << std::endl;
+        if (resource == NULL)
+            return false;
+
+        //std::cout << "@json->cbor #is sring" << std::endl;
+
+        double dd = value->ToNumber()->Value();
+
+        resource->type = _Decimal;
+        double_to_mantissa_exponent(dd, &resource->decimal_mantissa_data, &resource->decimal_expanent_data);
+
+        return true;
     }
     else if (value->IsObject())
     {
@@ -257,13 +339,23 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
                 indv->resources[ predicate ] = values;
                 return true;
             }
+            else if (type == _Decimal)
+            {
+                vector<Resource> values = indv->resources[ predicate ];
+                Resource         rc;
+                rc.type = type;
+
+                double dd = v_data->ToNumber()->Value();
+
+                double_to_mantissa_exponent(dd, &rc.decimal_mantissa_data, &rc.decimal_expanent_data);
+
+                values.push_back(rc);
+                indv->resources[ predicate ] = values;
+                return true;
+            }
             else if (type == _Datetime)
             {
-//                v8::String::Utf8Value s1_1(v_data);
-//                std::string           std_s1_1 = std::string(*s1_1);
-
-                int64_t          value = (int64_t)(v_data->ToInteger()->Value() / 1000);
-//                std::cout << "@json->cbor #5, " << std_s1_1 << ", " << v_data->ToInteger()->Value() << ", " << value << std::endl;
+                int64_t          value  = (int64_t)(v_data->ToInteger()->Value() / 1000);
                 vector<Resource> values = indv->resources[ predicate ];
                 Resource         rc;
                 rc.type      = type;
@@ -512,19 +604,19 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
             while ((pos = data.find(',', pos)) != std::string::npos)
             {
                 el = prepare_str_list_element(data, prev_pos, pos);
-				if (el.length() > 2)
-				{
-            	    arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
-            	    i++;
-				}
+                if (el.length() > 2)
+                {
+                    arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+                    i++;
+                }
                 prev_pos = ++pos;
             }
             el = prepare_str_list_element(data, prev_pos, data.length() - 1);
-	    
-	    	if (el.length() > 2)
-	    	{
-        		arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
-	   		}
+
+            if (el.length() > 2)
+            {
+                arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
+            }
         }
     }
     args.GetReturnValue().Set(arr_1);
@@ -560,8 +652,11 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         Individual  individual;
         cbor2individual(&individual, data);
 
+		//std::cout << "@c #get_individual uri=" << cstr << std::endl;
+
         Handle<Value> oo = individual2jsobject(&individual, isolate);
 
+		//std::cout << "@c #get_individual #E" << std::endl;
         args.GetReturnValue().Set(oo);
     }
 }
@@ -612,6 +707,8 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     if (args[ 1 ]->IsObject())
     {
+		string jsnstr = json_str(isolate, args[ 1 ]);
+		//std::cout << "@c #put_individual json=" << jsnstr << std::endl;
         Individual individual;
         jsobject2individual(args[ 1 ], &individual, NULL, "");
 
@@ -624,6 +721,7 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         std::vector<char>     buff;
         individual2cbor(&individual, buff);
         char                  *ptr = buff.data();
+		//std::cout << "@c #put_individual uri=" << individual.uri << std::endl;
         res = put_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
 
         buff.clear();

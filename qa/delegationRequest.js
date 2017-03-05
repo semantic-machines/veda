@@ -14,15 +14,19 @@ function clickUp(element) {
 
 
 module.exports = {
+    /**
+     * Создание делегирования на должность Аналатика, вводом Персоны и Даты;
+     * @param driver
+     * @param valuteToSearch - Персона, которую надо искать для делегирования
+     * @param valuteToChoose - Персона, которую надо выбрать для делегирования
+    */
     createRequestDelegation: function (driver, valueToSearch, valueToChoose ) {
         basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser');
 
         driver.executeScript("document.querySelector('#positions').scrollIntoView(true);");
-        driver.findElement({css:'div[id="positions"] input[id="td:Analyst1"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'Аналитик' position")})
+        basic.execute(driver, 'click', 'div[id="positions"] input[id="td:Analyst1"]', "Cannot click on 'Аналитик' position", '');
 
-        driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).sendKeys(valueToSearch)
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot find attribute 'rel=v-s:delegate'");});
+        basic.execute(driver, 'sendKeys', 'veda-control[rel="v-s:delegate"] input[id="fulltext"]', "Cannot find attribute 'rel=v-s:delegate'", valueToSearch);
         driver.sleep(basic.FAST_OPERATION);
         driver.wait
         (
@@ -50,15 +54,13 @@ module.exports = {
             }).then(function(x) { x[0].click();});
         }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '"+ valueToChoose +"' from dropdown");});
 
-        driver.findElement({css:'veda-control[property="v-s:dateFrom"] input[type="text"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'dateFrom' input");});
-        driver.findElement({css:'veda-control[property="v-s:dateTo"] input[type="text"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'dateTo' input");});
+        basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]', "Cannot click on 'dateFrom' input", '');
+        basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]', "Cannot click on 'dateTo' input", '');
         driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-        driver.findElement({css:'#save'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'save' button")})
+        driver.sleep(basic.FAST_OPERATION);
+        basic.execute(driver, 'click','#save', "Cannot click on 'save' button", '');
 
     }
 };
