@@ -34,6 +34,14 @@ v-s:owner
   rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Thing ;
 .
+v-s:name
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Имя"@ru ;
+  rdfs:label "Name"@en ;
+  rdfs:range xsd:string ;
+.
 v-s:author
   rdf:type owl:ObjectProperty ;
   rdfs:label "Author"@en ;

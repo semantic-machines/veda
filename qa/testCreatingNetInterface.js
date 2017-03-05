@@ -1,10 +1,10 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js');
 /**
- * Нажимает на кнопку delete
+ * Удаление текущего элемента
  *@param driver
 */
-function del(driver) {
+function deleteElement(driver) {
     basic.execute(driver, 'click', '.delete-state', "Cannot click on 'delete' button", '');
     driver.switchTo().alert().accept();
 }
@@ -77,16 +77,16 @@ basic.getDrivers().forEach(function (drv) {
     //Создание и удаление коннектора между двумя элементами
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
     basic.execute(driver, 'click', 'svg[class="_jsPlumb_connector"]', "Cannot click on 'connector' arrow", '');
-    del(driver);
+    deleteElement(driver);
     check(driver, 'svg[class="_jsPlumb_connector"]');
 
     // //Создание задачи, клонирование и удаление
     basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button", '');
     basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
     basic.execute(driver, 'click', '.copy-net-element', "Cannot click on 'copy-net-element' button", '');
-    del(driver);
+    deleteElement(driver);
     basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
-    del(driver);
+    deleteElement(driver);
     check(driver, '.state-task');
 
     basic.execute(driver, 'click', '.create-condition', "Cannot click 'create-condition' button", '');

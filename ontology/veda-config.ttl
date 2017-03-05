@@ -56,15 +56,6 @@ v-s:send_an_email_individual_by_event
   rdfs:range v-s:Connection ;
 .
 
-v-s:name
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Node, v-s:Connection ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Имя"@ru ;
-  rdfs:label "Name"@en ;
-  rdfs:range xsd:string ;
-.
-
 v-s:checktime_onto_files
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Node ;
