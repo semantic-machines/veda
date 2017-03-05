@@ -621,7 +621,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             }
           } catch (ex) {
             if (ex instanceof TypeError) {
-              veda.trigger("warning", {status: "CL:001", description: "Attribute undefined - " + rel_uri});
+              var notify = new veda.Notify();
+              notify("warning", {status: "CL:001", description: "Attribute undefined - " + rel_uri});
             }
           }
           // Remove rendered templates for removed values

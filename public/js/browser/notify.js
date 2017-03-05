@@ -11,6 +11,13 @@ veda.Module(function Notify(veda) { "use strict";
     var notificationContainer = $("#notification-container");
     var notificationTmpl = $("#notification-template").html();
     function notify(type, msg) {
+      console.log ? console.log( (new Date()).toISOString(), type, ":", JSON.stringify(msg) ) : null;
+      if (msg.status === 0) {
+        serverWatch();
+        return;
+      } else if (msg.status === 472 || msg.status === 422) {
+        return;
+      }
       var notification = $(notificationTmpl).addClass("alert-" + type).prependTo(notificationContainer),
           durationFade = 200,
           durationShown = 10000,
@@ -41,55 +48,20 @@ veda.Module(function Notify(veda) { "use strict";
   // Errors & notifications
   var notify = new veda.Notify();
 
-  veda.on("danger info warning success", function (type, msg) {
-    console.log ? console.log( (new Date()).toISOString(), type, ":", JSON.stringify(msg) ) : null;
-    switch (msg.status) {
-      case 0:
-        serverWatch();
-        break;
-      case 422:
-      case 472:
-        break;
-      case 400:
-      case 403:
-      case 404:
-      case 429:
-      case 470:
-      case 471:
-      case 473:
-      case 474:
-      case 475:
-      case 476:
-      case 477:
-      case 500:
-      case 501:
-      case 503:
-      case 904:
-      case 1021:
-      case 1022:
-      case 1118:
-      case 4000:
-        notify(type, msg);
-        break;
-      default:
-        notify(type, msg);
-    }
-  });
-
   // Check server health after crash
   var interval;
   function serverWatch() {
     if (interval) { return; }
     var duration = 10000;
-    veda.trigger("danger", {status: "Связь потеряна"});
+    notify("danger", {status: "Связь потеряна"});
     interval = setInterval(function () {
       try {
         get_individual(veda.ticket, "cfg:OntoVsn");
         clearInterval(interval);
         interval = undefined;
-        veda.trigger("success", {status: "Связь восстановлена"});
+        notify("success", {status: "Связь восстановлена"});
       } catch (ex) {
-        veda.trigger("danger", {status: "Связь потеряна"});
+        notify("danger", {status: "Связь потеряна"});
       }
     }, duration);
   }

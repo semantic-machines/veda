@@ -9,11 +9,13 @@ veda.Module(function Backend(veda) { "use strict";
     async: false
   });
 
+  var notify = new veda.Notify();
+
   function call_server(params) {
     if( !params.async ) {
       var res = $.ajax(params);
       if (res.status >= 400 || res.status == 0) {
-        veda.trigger("danger", {status: res.status, description: res.statusText});
+        notify("danger", {status: res.status, description: res.statusText});
         throw {status: res.status, description: res.statusText};
       }
       var result;
