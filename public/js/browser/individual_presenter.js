@@ -78,7 +78,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               anchorized = anchorize(formatted);
               json = JSON.parse( formatted );
               individual.properties = json;
-              individual.save(true);
+              individual.isSync(false);
+              individual.save();
               notify("success", {status: "", description: "Объект сохранен"});
             } catch (e) {
               individual.properties = original;
