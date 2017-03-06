@@ -19,18 +19,17 @@ veda.Module(function Util(veda) { "use strict";
     return str;
   };
 
-  veda.Util.guid = function () {
-    function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-           .toString(16)
-           .substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-       s4() + '-' + s4() + s4() + s4();
-  };
-
   veda.Util.genUri = function () {
-      return 'd:a' + veda.Util.guid();
+    var uid = veda.Util.guid(), re = /^\d/;
+    return (re.test(uid) ? "d:a" + uid : "d:" + uid);
+  };
+  veda.Util.guid = function () {
+    return veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4();
+  };
+  veda.Util.s4 = function () {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(36)
+      .substring(1);
   };
 
   veda.Util.mlstring = function (ru, en) {
