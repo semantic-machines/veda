@@ -51,18 +51,12 @@ veda.Module(function (veda) { "use strict";
       });
     }
 
-    if ( !this.isAsync() ) {
-      return this.load();
-    } else {
-      return this;
-    }
+    return this.load();
   };
 
-  function typeChangedHandler (property_uri, values) {
+  function typeChangedHandler (property_uri) {
     if (property_uri === "rdf:type") {
-      this.isSync(false);
       this.init();
-      this.trigger("individual:typeChanged", values);
     }
   }
 
@@ -107,13 +101,14 @@ veda.Module(function (veda) { "use strict";
             }
             return condition;
           })
-          .map( this.parser );
+          .map( function (value) { return self.parser(value); } );
         return values;
       },
       set: function (values) {
+        var self = this;
         this.isSync(false);
         var notNull = values.filter(function (i) { return i != undefined });
-        var serialized = notNull.map( this.serializer );
+        var serialized = notNull.map( function (value) { return self.serializer(value); } );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
@@ -134,7 +129,7 @@ veda.Module(function (veda) { "use strict";
       return string;
     } else if (value.type === "Uri") {
       if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
-      return new veda.IndividualModel(value.data);
+      return new veda.IndividualModel({uri: value.data, async: this.isAsync()});
     } else if (value.type === "Datetime") {
       return new Date(Date.parse(value.data));
     } else {
@@ -255,17 +250,31 @@ veda.Module(function (veda) { "use strict";
    */
   proto.load = function () {
     var uri = this._.uri;
+    var self = this;
     this.trigger("individual:beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
       if (this._.cache && veda.cache[uri]) {
         this.trigger("individual:afterLoad", veda.cache[uri]);
-        return veda.cache[uri];
+        return ( this.isAsync() ? Promise.resolve(veda.cache[uri]) : veda.cache[uri] );
       }
       try {
-        this.isNew(false);
-        this.isSync(true);
-        this.properties = get_individual(veda.ticket, uri);
+        if ( this.isAsync() ) {
+          return get_individual({ticket: veda.ticket, uri: uri, async: true})
+            .then(function (properties) {
+              self.properties = properties;
+              self.isNew(false);
+              self.isSync(true);
+              if (self._.cache) veda.cache[self.id] = self;
+              if (self._.init) self.init();
+              self.trigger("individual:afterLoad", self);
+              return self;
+            });
+        } else {
+          this.isNew(false);
+          this.isSync(true);
+          this.properties = get_individual(veda.ticket, uri);
+        }
       } catch (error) {
         if (error.code === 422) {
           this.isNew(true);
@@ -308,7 +317,7 @@ veda.Module(function (veda) { "use strict";
     if (this._.cache) veda.cache[this.id] = this;
     if (this._.init) this.init();
     this.trigger("individual:afterLoad", this);
-    return this;
+    return ( this.isAsync() ? Promise.resolve(this) : this );
   };
 
   /**
@@ -318,10 +327,12 @@ veda.Module(function (veda) { "use strict";
   proto.save = function () {
     var self = this;
     // Do not save individual to server if nothing changed
-    if (self.isSync()) { return; }
+    if (self.isSync()) {
+      return ( self.isAsync() ? Promise.resolve(self) : self );
+    }
     self.trigger("individual:beforeSave");
-    if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
+    if ( self.hasValue("v-s:isDraft", true) ) {
+      veda.drafts.remove(self.id);
     }
     Object.keys(self.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
@@ -332,19 +343,30 @@ veda.Module(function (veda) { "use strict";
       return acc;
     }, self.properties);
     try {
-      put_individual(veda.ticket, this.properties);
+      if ( self.isAsync() ) {
+        return put_individual({ticket: veda.ticket, individual: self.properties, async: true})
+          .then(function () {
+            self.isNew(false);
+            self.isSync(true);
+            if (self._.cache) veda.cache[self.id] = self;
+            self.trigger("individual:afterSave");
+            return self;
+          });
+      } else {
+        put_individual(veda.ticket, self.properties);
+      }
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      if (error.name !== 472) {
-        this.draft();
+      if (error.code !== 472) {
+        self.draft();
       }
       notify("danger", error);
     }
-    this.isNew(false);
-    this.isSync(true);
-    if (this._.cache) veda.cache[this.id] = self;
-    this.trigger("individual:afterSave");
-    return this;
+    self.isNew(false);
+    self.isSync(true);
+    if (self._.cache) veda.cache[self.id] = self;
+    self.trigger("individual:afterSave");
+    return ( self.isAsync() ? Promise.resolve(self) : self );
   }
 
   /**
