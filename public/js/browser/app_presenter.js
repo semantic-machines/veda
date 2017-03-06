@@ -168,18 +168,22 @@ veda.Module(function AppPresenter(veda) { "use strict";
     loginContainer.removeClass("hidden");
   });
 
-  // Check if ticket in cookies is valid
-  var ticket = storage.ticket,
-      user_uri = storage.user_uri,
-      end_time = storage.end_time && ( new Date() < new Date(parseInt(storage.end_time)) ) ? storage.end_time : undefined ;
+  try {
+    // Check if ticket in cookies is valid
+    var ticket = storage.ticket,
+        user_uri = storage.user_uri,
+        end_time = storage.end_time && ( new Date() < new Date(parseInt(storage.end_time)) ) ? storage.end_time : undefined ;
 
-  if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
-    veda.trigger("login:success", {
-      ticket: ticket,
-      user_uri: user_uri,
-      end_time: end_time
-    });
-  } else {
+    if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
+      veda.trigger("login:success", {
+        ticket: ticket,
+        user_uri: user_uri,
+        end_time: end_time
+      });
+    } else {
+      veda.trigger("login:failed");
+    }
+  } catch (ex) {
     veda.trigger("login:failed");
   }
 

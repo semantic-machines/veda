@@ -133,8 +133,8 @@ veda.Module(function Util(veda) { "use strict";
           return N3.Util.expandPrefixedName(uri, prefixes);
         }
       } catch (error) {
-        var notify = new veda.Notify();
-        notify("danger", {status: "TTL:", description: error.message});
+        var notify = veda.Notify ? new veda.Notify() : function () {};
+        notify("danger", error);
         return uri;
       }
     }
@@ -379,8 +379,8 @@ veda.Module(function Util(veda) { "use strict";
         $("#delete.action", template).remove();
         template.trigger('save');
         template.closest(".modal").modal("hide").remove();
-        var notify = new veda.Notify();
-        notify("success", {status: "Успешно отправлено / Successfully sent"});
+        var notify = veda.Notify ? new veda.Notify() : function () {};
+        notify("success", {name: "Успешно отправлено / Successfully sent"});
       } else if ( results.length === 1 ) {
         template.trigger('save');
         results.forEach( function (res_id) {

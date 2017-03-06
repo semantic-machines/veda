@@ -8,7 +8,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
   veda.UpdateService = function () {
 
-    var notify = new veda.Notify();
+    var notify = veda.Notify ? new veda.Notify() : function () {};
 
     // Singleton pattern
     if (veda.UpdateService.prototype._singletonInstance) {
@@ -152,7 +152,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function openedHandler(event) {
-      //if (connectTries >= 0) { notify("success", {status: "WS: Соединение восстановлено"}) }
+      //if (connectTries >= 0) { notify("success", {name: "WS: Соединение восстановлено"}) }
       console.log("client: websocket opened");
       connectTries = 0;
       var msg = "ccus=" + veda.ticket;
@@ -176,7 +176,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     function closedHandler(event) {
       var delay = initialDelay + connectDelay * connectTries;
       if (delay < maxConnectDelay) { connectTries++ }
-      //notify("danger", {status: "WS: Соединение прервано"});
+      //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
         socket = initSocket();
@@ -184,7 +184,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function errorHandler(event) {
-      //notify("danger", {status: "WS: Ошибка соединения"});
+      //notify("danger", {name: "WS: Ошибка соединения"});
       //console.log("client: websocket error");
     }
 

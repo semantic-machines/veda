@@ -1214,13 +1214,13 @@
   // FILE UPLOAD CONTROL
   function uploadFile(file, fileType, maxSize, success, progress) {
     if (file instanceof File) {
-      var notify = new veda.Notify();
+      var notify = veda.Notify ? new veda.Notify() : function () {};
       if (maxSize && file.size > maxSize * 1024 * 1024) {
-        return notify("danger", {description: "Файл слишком большой (> " + maxSize + " Mb)"});
+        return notify("danger", {message: "Файл слишком большой (> " + maxSize + " Mb)"});
       }
       var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
       if (fileType && fileType.split(",").indexOf(ext) < 0) {
-        return notify("danger", {description: "Тип файла не разрешен (" + fileType + ")"});
+        return notify("danger", {message: "Тип файла не разрешен (" + fileType + ")"});
       }
     }
     var url = "/files",
