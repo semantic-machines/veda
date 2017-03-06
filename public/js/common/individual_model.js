@@ -269,6 +269,10 @@ veda.Module(function (veda) { "use strict";
               if (self._.init) self.init();
               self.trigger("individual:afterLoad", self);
               return self;
+            })
+            .catch(function (error) {
+              var notify = veda.Notify ? new veda.Notify() : function () {};
+              notify("danger", error);
             });
         } else {
           this.isNew(false);
@@ -351,6 +355,10 @@ veda.Module(function (veda) { "use strict";
             if (self._.cache) veda.cache[self.id] = self;
             self.trigger("individual:afterSave");
             return self;
+          })
+          .catch(function (error) {
+            var notify = veda.Notify ? new veda.Notify() : function () {};
+            notify("danger", error);
           });
       } else {
         put_individual(veda.ticket, self.properties);
@@ -385,7 +393,15 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
+    var self = this;
     this.trigger("individual:beforeReset");
+    if ( this.isAsync() ) {
+      return this.update()
+        .then(function (self) {
+          self.trigger("individual:afterReset");
+          return self;
+        });
+    }
     this.update();
     this.trigger("individual:afterReset");
     return this;
@@ -402,32 +418,51 @@ veda.Module(function (veda) { "use strict";
       this.filtered = {};
       var original;
       try {
-        original = get_individual(veda.ticket, this.id);
+        if ( this.isAsync() ) {
+          return get_individual({ticket: veda.ticket, uri: this.id, async: true})
+            .then(function (original) {
+              merge.call(self, original);
+              veda.drafts.remove(self.id);
+              self.trigger("individual:afterUpdate");
+              return self;
+            })
+            .catch(function (error) {
+              var notify = veda.Notify ? new veda.Notify() : function () {};
+              notify("danger", error);
+            });
+        } else {
+          original = get_individual(veda.ticket, this.id);
+        }
       } catch (e) {
         original = {};
       }
-      Object.keys(self.properties).map(function (property_uri) {
-        if (property_uri === "@") {
-          delete original[property_uri];
-          return;
-        }
-        if (original[property_uri] && original[property_uri].length) {
-          self[property_uri] = original[property_uri].map( self.parser );
-        } else {
-          self[property_uri] = [];
-        }
-        delete original[property_uri];
-      });
-      Object.keys(original).map(function (property_uri) {
-        self[property_uri] = original[property_uri].map( self.parser );
-      });
-      self.isNew(false);
-      self.isSync(true);
+      merge.call(this, original);
     }
     veda.drafts.remove(this.id);
     this.trigger("individual:afterUpdate");
     return this;
   };
+
+  function merge (original) {
+    var self = this;
+    Object.keys(self.properties).map(function (property_uri) {
+      if (property_uri === "@") {
+        delete original[property_uri];
+        return;
+      }
+      if (original[property_uri] && original[property_uri].length) {
+        self[property_uri] = original[property_uri].map( function (value) { return self.parser(value) } );
+      } else {
+        self[property_uri] = [];
+      }
+      delete original[property_uri];
+    });
+    Object.keys(original).map(function (property_uri) {
+      self[property_uri] = original[property_uri].map( function (value) { return self.parser(value) } );
+    });
+    self.isNew(false);
+    self.isSync(true);
+  }
 
   /**
    * @method
@@ -440,10 +475,17 @@ veda.Module(function (veda) { "use strict";
     }
     if ( !this.isNew() ) {
       this["v-s:deleted"] = [ true ];
+      if ( this.isAsync() ) {
+        return this.save()
+          .then( function (self) {
+            self.trigger("individual:afterDelete");
+            return self;
+          });
+      }
       this.save();
     }
     this.trigger("individual:afterDelete");
-    return this;
+    return ( this.isAsync() ? Promise.resolve(this) : this );
   };
 
   /**
@@ -456,6 +498,13 @@ veda.Module(function (veda) { "use strict";
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];
+    if ( this.isAsync() ) {
+      return this.save()
+        .then( function (self) {
+          self.trigger("individual:afterRecover");
+          return self;
+        });
+    }
     this.save();
     this.trigger("individual:afterRecover");
     return this;
@@ -503,9 +552,21 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    self["rdf:type"].map(function (_class) {
-      if (_class.model) {
-        var model = new Function(_class.model["v-s:script"][0]);
+    if ( this.isAsync() ) {
+      return Promise.all( this["rdf:type"] )
+        .then(function (types) {
+          types.map( function (type) {
+            if (type.model) {
+              var model = new Function(type.model["v-s:script"][0]);
+              model.call(self);
+            }
+          });
+          return self;
+        });
+    }
+    self["rdf:type"].map(function (type) {
+      if (type.model) {
+        var model = new Function(type.model["v-s:script"][0]);
         model.call(self);
       }
     });
