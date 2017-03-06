@@ -57,6 +57,7 @@ module.exports = {
         basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]', "Cannot click on 'dateFrom' input", '');
         basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]', "Cannot click on 'dateTo' input", '');
         driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
+        driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
         driver.sleep(basic.FAST_OPERATION);
