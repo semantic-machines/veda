@@ -330,12 +330,12 @@ veda.Module(function (veda) { "use strict";
     }, self.properties);
     try {
       put_individual(veda.ticket, this.properties);
-    } catch (e) {
-      if (e.status !== 472) {
+    } catch (error) {
+      var notify = veda.Notify ? new veda.Notify() : function () {};
+      if (error.name !== 472) {
         this.draft();
-      } else {
-        console.log("Нет прав на создание или изменение объекта / No rights to create or modify object\n" + this.id + " (" + this.toString() + ")");
       }
+      notify("danger", error);
     }
     this.isNew(false);
     this.isSync(true);

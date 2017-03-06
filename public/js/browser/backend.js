@@ -1,6 +1,5 @@
+// Veda HTTP server functions
 veda.Module(function Backend(veda) { "use strict";
-
-  // Veda HTTP server functions
 
   $.ajaxSetup ({
     dataType: "json",
@@ -9,14 +8,75 @@ veda.Module(function Backend(veda) { "use strict";
     async: false
   });
 
-  var notify = new veda.Notify();
+  // Check server health
+  var notify = veda.Notify ? new veda.Notify() : function () {};
+  var interval;
+  function serverWatch() {
+    if (interval) { return; }
+    var duration = 10000;
+    notify("danger", {name: "Connection error"});
+    interval = setInterval(function () {
+      try {
+        var ontoVsn = get_individual(veda.ticket, "cfg:OntoVsn");
+        if (ontoVsn) {
+          clearInterval(interval);
+          interval = undefined;
+          notify("success", {name: "Connection restored"});
+        } else {
+          notify("danger", {name: "Connection error"});
+        }
+      } catch (ex) {
+        notify("danger", {name: "Connection error"});
+      }
+    }, duration);
+  }
 
+  // Server errors
+  function BackendError (result) {
+    var errorCodes = {
+         0: "Server unavailable",
+       200: "OK",
+       201: "Created",
+       204: "No_Content",
+       400: "Bad_Request",
+       403: "Forbidden",
+       404: "Not_Found",
+       422: "Unprocessable_Entity",
+       429: "Too_Many_Requests",
+       470: "Ticket_not_found",
+       471: "Ticket_expired",
+       472: "Not_Authorized",
+       473: "Authentication_Failed",
+       474: "Not_Ready",
+       475: "Fail_Open_Transaction",
+       476: "Fail_Commit",
+       477: "Fail_Store",
+       500: "Internal_Server_Error",
+       501: "Not_Implemented",
+       503: "Service_Unavailable",
+       904: "Invalid_Identifier",
+      1021: "Disk_Full",
+      1022: "Duplicate_Key",
+      1118: "Size_too_large",
+      4000: "Connect_Error"
+    }
+    this.code = result.status;
+    this.name = errorCodes(code);
+    //this.message = errorCodes(code);
+    this.stack = (new Error()).stack;
+  }
+  BackendError.prototype = Object.create(Error.prototype);
+  BackendError.prototype.constructor = BackendError;
+
+  // Common server call function
   function call_server(params) {
     if( !params.async ) {
       var res = $.ajax(params);
-      if (res.status >= 400 || res.status == 0) {
-        notify("danger", {status: res.status, description: res.statusText});
-        throw {status: res.status, description: res.statusText};
+      if (res.status === 0) {
+        serverWatch();
+      }
+      if (res.status >= 400) {
+        throw new BackendError(res);
       }
       var result;
       try {
