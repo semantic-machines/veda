@@ -41,32 +41,8 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
-    function typeHandler (property_uri, values) {
-      if (property_uri === "rdf:type") {
-        this.isSync(false);
-        this.init();
-        this.trigger("individual:typeChanged", values);
-      }
-    }
-    this.on("individual:propertyModified", typeHandler);
-
-    this.on("individual:beforeSave", function () {
-      var now = new Date();
-      var user = veda.appointment ? veda.appointment : veda.user;
-      if (
-        !this.hasValue("v-s:lastEditor")
-        || !this.hasValue("v-s:edited")
-        || this["v-s:lastEditor"][0].id !== user.id
-        || (now - this["v-s:edited"][0]) > 1000
-      ) {
-        this["v-s:edited"] = [ now ];
-        this["v-s:lastEditor"] = [ user ];
-      }
-      if ( this.isNew() ) {
-        this["v-s:created"] = [ now ];
-        this["v-s:creator"] = [ user ];
-      }
-    });
+    this.on("individual:propertyModified", typeChangedHandler);
+    this.on("individual:beforeSave", beforeSaveHandler);
 
     if (container) {
       this.one("individual:afterLoad", function (individual) {
@@ -81,6 +57,32 @@ veda.Module(function (veda) { "use strict";
       return this;
     }
   };
+
+  function typeChangedHandler (property_uri, values) {
+    if (property_uri === "rdf:type") {
+      this.isSync(false);
+      this.init();
+      this.trigger("individual:typeChanged", values);
+    }
+  }
+
+  function beforeSaveHandler() {
+    var now = new Date();
+    var user = veda.appointment ? veda.appointment : veda.user;
+    if (
+      !this.hasValue("v-s:lastEditor")
+      || !this.hasValue("v-s:edited")
+      || this["v-s:lastEditor"][0].id !== user.id
+      || (now - this["v-s:edited"][0]) > 1000
+    ) {
+      this["v-s:edited"] = [ now ];
+      this["v-s:lastEditor"] = [ user ];
+    }
+    if ( this.isNew() ) {
+      this["v-s:created"] = [ now ];
+      this["v-s:creator"] = [ user ];
+    }
+  }
 
   var proto = veda.IndividualModel.prototype;
 
@@ -264,8 +266,8 @@ veda.Module(function (veda) { "use strict";
         this.isNew(false);
         this.isSync(true);
         this.properties = get_individual(veda.ticket, uri);
-      } catch (e) {
-        if (e.status === 422) {
+      } catch (error) {
+        if (error.code === 422) {
           this.isNew(true);
           this.isSync(false);
           this.properties = {
@@ -273,7 +275,7 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
           };
-        } else if (e.status === 472) {
+        } else if (error.code === 472) {
           this.isNew(false);
           this.isSync(false);
           this.properties = {
