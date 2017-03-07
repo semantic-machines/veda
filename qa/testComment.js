@@ -55,7 +55,7 @@ function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
     basic.execute(driver, 'sendKeys', 'textarea[class="form-control"]', "Cannot input comment", somethingUnique);
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "Cannot click  on 'save' button", '');
+    basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "Cannot click  on 'save' button");
     driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
 }
@@ -79,12 +79,12 @@ basic.getDrivers().forEach(function (drv) {
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
-    basic.execute(driver, 'click', '#user-info', "Cannot click on 'user-info' button", '');
+    basic.execute(driver, 'click', '#user-info', "Cannot click on 'user-info' button");
     driver.executeScript("document.querySelector('#add-comment').scrollIntoView(true);");
-    basic.execute(driver, 'click', '#add-comment', "Cannot click on 'add-comment' button", '');
+    basic.execute(driver, 'click', '#add-comment', "Cannot click on 'add-comment' button");
     comment(driver, timeStamp);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
-    basic.execute(driver, 'click', '#reply', "Cannot click on 'reply' button", '');
+    basic.execute(driver, 'click', '#reply', "Cannot click on 'reply' button");
     comment(driver, timeStamp + 1);
 
     check(driver, 2, 2, 1, 1);

@@ -15,7 +15,7 @@ function clickUp(element) {
 }
 
 function welcome(driver) {
-    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button", '');
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
 }
 
 module.exports = {
@@ -53,7 +53,7 @@ module.exports = {
         basic.menu(driver, 'Inbox');
         driver.sleep(1000);
         driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
-        basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "Cannot click on '" + decision + "' decision", '');
+        basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "Cannot click on '" + decision + "' decision");
         if (commentValue === '+') {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "Cannot fill 'comment'", timeStamp);
         }
@@ -63,7 +63,7 @@ module.exports = {
         }
         driver.sleep(basic.FAST_OPERATION);
         driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
-        basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button", '');
+        basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button");
         welcome(driver);
             basic.logout(driver);
         },
@@ -79,11 +79,11 @@ module.exports = {
     checkRouteStatus: function (driver, element, color, count, docNumber) {
         basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
-        basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'Submit/Отправить' button", '');
+        basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'Submit/Отправить' button");
         driver.sleep(basic.SLOW_OPERATION);
         driver.wait(findUp(driver, 'span[rel="v-wf:isProcess"]', docNumber), basic.FAST_OPERATION).then(clickUp);
         driver.sleep(basic.FAST_OPERATION);
-        basic.execute(driver, 'click', '.glyphicon-share-alt', "Cannot click on 'glyphicon-share-alt'", '');
+        basic.execute(driver, 'click', '.glyphicon-share-alt', "Cannot click on 'glyphicon-share-alt'");
         for (var i = 0; i < element.length; i++) {
             driver.findElements({css:'div[id="'+ element[i] +'"][colored-to="'+ color[i] +'"]'}).then(function (result) {
                 assert.equal(count, result.length);

@@ -5,7 +5,7 @@ var webdriver = require('selenium-webdriver'),
  *@param driver
 */
 function deleteElement(driver) {
-    basic.execute(driver, 'click', '.delete-state', "Cannot click on 'delete' button", '');
+    basic.execute(driver, 'click', '.delete-state', "Cannot click on 'delete' button");
     driver.switchTo().alert().accept();
 }
 
@@ -71,47 +71,47 @@ basic.getDrivers().forEach(function (drv) {
 
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
     basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
-    basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas", '');
+    basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
     basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
 
     //Создание и удаление коннектора между двумя элементами
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
-    basic.execute(driver, 'click', 'svg[class="_jsPlumb_connector"]', "Cannot click on 'connector' arrow", '');
+    basic.execute(driver, 'click', 'svg[class="_jsPlumb_connector"]', "Cannot click on 'connector' arrow");
     deleteElement(driver);
     check(driver, 'svg[class="_jsPlumb_connector"]');
 
     // //Создание задачи, клонирование и удаление
-    basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button", '');
-    basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
-    basic.execute(driver, 'click', '.copy-net-element', "Cannot click on 'copy-net-element' button", '');
+    basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button");
+    basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button");
+    basic.execute(driver, 'click', '.copy-net-element', "Cannot click on 'copy-net-element' button");
     deleteElement(driver);
-    basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
+    basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button");
     deleteElement(driver);
     check(driver, '.state-task');
 
-    basic.execute(driver, 'click', '.create-condition', "Cannot click 'create-condition' button", '');
-    basic.execute(driver, 'click', '.state-condition', "Cannot click 'state-condition' button", '');
+    basic.execute(driver, 'click', '.create-condition', "Cannot click 'create-condition' button");
+    basic.execute(driver, 'click', '.state-condition', "Cannot click 'state-condition' button");
 
     var a = " ", b = "";
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {a = state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
-    basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button", '');
+    basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-out');
 
-    basic.execute(driver, 'click', '.zoom-in', "Cannot click on 'zoom-in' button", '');
-    basic.execute(driver, 'click', '.zoom-in', "Cannot click on 'zoom-in' button", '');
+    basic.execute(driver, 'click', '.zoom-in', "Cannot click on 'zoom-in' button");
+    basic.execute(driver, 'click', '.zoom-in', "Cannot click on 'zoom-in' button");
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {b == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-in');
 
-    basic.execute(driver, 'click', '.zoom-default', "Cannot click on 'zoom-default' button", '');
+    basic.execute(driver, 'click', '.zoom-default', "Cannot click on 'zoom-default' button");
     driver.findElement({css:'div[id="workflow-canvas"]'}).getCssValue("transform").then(function (state) {a == state;})
         .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on net canvas");});
     equal(a, b, 'zoom-default');
 
-    basic.execute(driver, 'click', 'button[id="full-width"]', "Cannot click on 'full-width' button", '');
+    basic.execute(driver, 'click', 'button[id="full-width"]', "Cannot click on 'full-width' button");
     driver.findElement({css:'div[id="props-col"]'}).isDisplayed().then(function (state) {
         if (state === true) {
             console.trace("Seems 'button[id=full-width]' does not work");
@@ -119,7 +119,7 @@ basic.getDrivers().forEach(function (drv) {
         }
     });
 
-    basic.execute(driver, 'click', '#workflow-save-button', "Cannot click on 'save net' button", '');
+    basic.execute(driver, 'click', '#workflow-save-button', "Cannot click on 'save net' button");
     driver.sleep(basic.SLOW_OPERATION);
     driver.findElements({css:'h4[about="v-fc:ChooseType"]'}).then(function(elements_arr) {
         if (elements_arr.length > 0) {

@@ -156,6 +156,14 @@ module.exports = {
       .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'password' field");});
   },
 
+    /**
+     * Выполнение задачи
+     * @param driver
+     * @param task - задача
+     * @param selector
+     * @param message - сообщение ошибки
+     * @param something - данные для ввода в поле
+     */
   execute: function(driver, task, selector, message, something) {
       if (task === 'click') {
           driver.findElement({css:'' + selector + ''}).click()
@@ -171,6 +179,11 @@ module.exports = {
       }
   },
 
+    /**
+     * Открытие вкладки в меню
+     * @param driver
+     * @param submenu - вкладка
+     */
   menu: function (driver, submenu) {
       driver.findElement({id:'menu'}).click()
           .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});

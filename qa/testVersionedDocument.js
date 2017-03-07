@@ -15,16 +15,16 @@ var webdriver = require('selenium-webdriver'),
 function updateVersion(driver, task, label, valueToSearch, valueToChoose) {
     if(task == 'edit') {
         driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
-        basic.execute(driver, 'click', 'button[id="edit"]', "Cannot click on `Edit` button", '');
+        basic.execute(driver, 'click', 'button[id="edit"]', "Cannot click on `Edit` button");
     }
     driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
     basic.execute(driver, 'clear', 'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]', "Cannot fill 'rdfs:label' field");
     basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]', "Cannot fill 'rdfs:label' field", label);
     driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
-    basic.execute(driver, 'clear', 'div[rel="v-s:responsible"] + veda-control input[id="fulltext"]', "Cannot find attribute `v-s:responsible`", '');
+    basic.execute(driver, 'clear', 'div[rel="v-s:responsible"] + veda-control input[id="fulltext"]', "Cannot find attribute `v-s:responsible`");
     basic.chooseFromDropdown(driver, 'v-s:responsible', valueToSearch, valueToChoose);
     driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'button[id="save"]', "Cannot click on `Save` button", '');
+    basic.execute(driver, 'click', 'button[id="save"]', "Cannot click on `Save` button");
 }
 
 /**
@@ -48,7 +48,7 @@ function checkVersion(driver, version, responsible) {
                     process.exit(1);
                 } else {
                     driver.executeScript("document.querySelector('strong[about=\"v-s:previousVersion\"]').scrollIntoView(true);");
-                    basic.execute(driver, 'click', 'div[rel="v-s:previousVersion"] span[typeof="v-s:Action v-s:Version"]', "Cannot click on 'previousVersion'", '');
+                    basic.execute(driver, 'click', 'div[rel="v-s:previousVersion"] span[typeof="v-s:Action v-s:Version"]', "Cannot click on 'previousVersion'");
                     driver.sleep(basic.FAST_OPERATION);
                     driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
                     var b = responsible[i];
