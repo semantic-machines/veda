@@ -61,8 +61,8 @@ veda.Module(function Backend(veda) { "use strict";
       4000: "Connect error"
     };
     this.code = result.status;
-    this.name = errorCodes(code);
-    //this.message = errorCodes(code);
+    this.name = errorCodes(this.code);
+    //this.message = errorCodes(this.code);
     this.stack = (new Error()).stack;
   }
   BackendError.prototype = Object.create(Error.prototype);
