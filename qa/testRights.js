@@ -24,7 +24,7 @@ function search(driver, somethingUnique, count) {
                 return txt == count;
             });
         },
-        basic.EXTRA_SLOW_OPERATION
+        basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
 }
 /**

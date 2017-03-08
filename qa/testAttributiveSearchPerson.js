@@ -58,13 +58,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
     //Создание документов типа "Персона"
-    var first = "", last = "", middle = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i = 0; i < 5; i++ ) {
-        first += possible.charAt(Math.floor(Math.random() * possible.length));
-        last += possible.charAt(Math.floor(Math.random() * possible.length));
-        middle += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
+    var first = "xGIo5", last = "GhiOJ", middle = "NE1UC";
     var now = new Date();
     person.createPerson(driver, drv, 'a' + last, first + 'bcc', 'T' + middle,
         ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());

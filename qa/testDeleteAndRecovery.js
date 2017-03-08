@@ -71,8 +71,7 @@ basic.getDrivers().forEach(function(drv){
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm');
     driver.executeScript("document.querySelector('strong[about=\"rdfs:label\"]').scrollIntoView(true);");
     basic.execute(driver, 'click', 'veda-control[data-type="multilingualString"]', "Cannot click on 'rdfs:label' field");
-    basic.execute(driver, 'sendKeys', 'veda-control[data-type="multilingualString"] input[type="text"]',
-        "Cannot fill 'rdfs:label' field", timeStamp);
+    basic.execute(driver, 'sendKeys', 'veda-control[data-type="multilingualString"] input[type="text"]', "Cannot fill 'rdfs:label' field", timeStamp);
     clickButton(driver, "save");
     driver.sleep(basic.FAST_OPERATION);
 
@@ -84,12 +83,10 @@ basic.getDrivers().forEach(function(drv){
     check(driver, 0);
 
     basic.menu(driver, 'Search');
-    basic.execute(driver, 'sendKeys', '#q', 'Cannot fill input field',
-        "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");
+    basic.execute(driver, 'sendKeys', '#q', 'Cannot fill input field', "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");
     clickButton(driver, "search-submit");
     basic.execute(driver, 'click', 'span[id="individual-label"]', "Cannot click on 'individual-label'");
-    basic.execute(driver, 'click', 'div[role="alert"] button[class="btn btn-default btn-sm"]',
-        "Cannot click on 'Recovery' button");
+    basic.execute(driver, 'click', 'div[role="alert"] button[class="btn btn-default btn-sm"]', "Cannot click on 'Recovery' button");
     check(driver, 1);
 
     driver.quit();
