@@ -11,20 +11,20 @@ var webdriver = require('selenium-webdriver'),
  */
 
 function search(driver, somethingUnique, count) {
-    basic.execute(driver, 'click', 'a[id="params-pill-ft"]', "Cannot click on 'params-pill-ft' button", '');
+    basic.execute(driver, 'click', 'a[id="params-pill-ft"]', "Cannot click on 'params-pill-ft' button");
     basic.execute(driver, 'sendKeys', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input',
         "Cannot input search request", somethingUnique);
     driver.wait
     (
         function () {
             basic.execute(driver, 'click', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]',
-                "Cannot click on 'submit' button", '');
+                "Cannot click on 'submit' button");
             driver.sleep(basic.FAST_OPERATION);
             return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt == count;
             });
         },
-        basic.EXTRA_SLOW_OPERATION
+        basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "Number of documents is incorrect, expected: " + count);});
 }
 /**
@@ -59,8 +59,8 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
 
-    basic.execute(driver, 'click', 'a[id="params-pill-ft"]', "Cannot click on 'params-pill-ft' button", '');
-    basic.execute(driver, 'clear', 'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]', "Cannot find 'fulltext' field", '');
+    basic.execute(driver, 'click', 'a[id="params-pill-ft"]', "Cannot click on 'params-pill-ft' button");
+    basic.execute(driver, 'clear', 'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]', "Cannot find 'fulltext' field");
     basic.execute(driver, 'sendKeys', 'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]', "Cannot fill 'fulltext' field", 'Персона');
     search(driver, timeStamp, 0);
 

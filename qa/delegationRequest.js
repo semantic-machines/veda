@@ -24,7 +24,7 @@ module.exports = {
         basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser');
 
         driver.executeScript("document.querySelector('#positions').scrollIntoView(true);");
-        basic.execute(driver, 'click', 'div[id="positions"] input[id="td:Analyst1"]', "Cannot click on 'Аналитик' position", '');
+        basic.execute(driver, 'click', 'div[id="positions"] input[id="td:Analyst1"]', "Cannot click on 'Аналитик' position");
 
         basic.execute(driver, 'sendKeys', 'veda-control[rel="v-s:delegate"] input[id="fulltext"]', "Cannot find attribute 'rel=v-s:delegate'", valueToSearch);
         driver.sleep(basic.FAST_OPERATION);
@@ -54,14 +54,14 @@ module.exports = {
             }).then(function(x) { x[0].click();});
         }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '"+ valueToChoose +"' from dropdown");});
 
-        basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]', "Cannot click on 'dateFrom' input", '');
-        basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]', "Cannot click on 'dateTo' input", '');
+        basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]', "Cannot click on 'dateFrom' input");
+        basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]', "Cannot click on 'dateTo' input");
         driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
         driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
         driver.sleep(basic.FAST_OPERATION);
-        basic.execute(driver, 'click','#save', "Cannot click on 'save' button", '');
+        basic.execute(driver, 'click','#save', "Cannot click on 'save' button");
 
     }
 };

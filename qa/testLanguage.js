@@ -20,7 +20,7 @@ function check(driver, language, value) {
  * @param button - необходимая кнопка смены языка
  */
 function click(driver, button) {
-    basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "Cannot click on " + button + " button", '');
+    basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "Cannot click on " + button + " button");
     driver.sleep(basic.FAST_OPERATION);
 }
 /**

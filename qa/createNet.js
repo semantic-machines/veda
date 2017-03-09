@@ -52,9 +52,9 @@ module.exports = {
     startNet: function (driver, timeStamp) {
         basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
         basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
-        basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas", '');
+        basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
         basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
-        basic.execute(driver, 'click', '#props-col [about="rdfs:label"]', "Cannot click on net rdfs:label", '');
+        basic.execute(driver, 'click', '#props-col [about="rdfs:label"]', "Cannot click on net rdfs:label");
         basic.execute(driver, 'sendKeys', '#VClabel input', "Cannot fill rdfl:label in net properties", timeStamp);
     },
     /**
@@ -74,12 +74,12 @@ module.exports = {
      * @param taskExecutor - исполнитель, которого нужно выбрать
     */
     createTask: function(driver, toFind, taskExecutor) {
-        basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button", '');
+        basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button");
         if (taskExecutor != "false") {
-            basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
+            basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button");
             driver.executeScript("$('span[about=\"v-wf:executor\"]')[0].scrollIntoView(true);");
-            basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "Cannot click on 'executor' field ", '');
-            basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]', "Cannot click on 'VCexecutor' field ", '');
+            basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "Cannot click on 'executor' field ");
+            basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]', "Cannot click on 'VCexecutor' field ");
             choose(driver, 'VCexecutor', toFind, taskExecutor);
         }
     },
@@ -108,7 +108,7 @@ module.exports = {
      * @param driver
     */
     saveNet: function(driver) {
-        basic.execute(driver, 'click', '#workflow-save-button', "Cannot click save net", '');
+        basic.execute(driver, 'click', '#workflow-save-button', "Cannot click save net");
         driver.sleep(basic.FAST_OPERATION);//+
     },
 
@@ -122,7 +122,7 @@ module.exports = {
     */
     checkNet: function(driver, timeStamp, input, task, output) {
         startForm.createStartForm(driver, timeStamp, 'Ожидает отправки');
-        basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas", '');
+        basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
         driver.findElement({css:'.state-io-condition-input[colored-to="' + input + '"]'})
             .thenCatch(function (e) {basic.errorHandler(e, "Seems 'input' condition is not located/" + input);});
         if (task != "-") {

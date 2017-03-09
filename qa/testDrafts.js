@@ -15,7 +15,7 @@ function check(driver, count) {
     driver.findElements({css:'div[id="drafts"] span[typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
             if (count == "true") {
-                basic.execute(driver, 'click', 'div[id="drafts"] span[typeof="v-s:Person"]', "Cannot click on selected draft", '');
+                basic.execute(driver, 'click', 'div[id="drafts"] span[typeof="v-s:Person"]', "Cannot click on selected draft");
             }
             if (count == "false") {
                 console.trace("Expected number of drafts is 0, but get 1");
@@ -71,7 +71,7 @@ basic.getDrivers().forEach(function(drv) {
     fillProperty(driver, 'firstName', firstName);
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#draft', basic.FAST_OPERATION);
-    basic.execute(driver, 'click', '#draft', "Cannot click on 'draft' button", '');
+    basic.execute(driver, 'click', '#draft', "Cannot click on 'draft' button");
     driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
         assert(txt == firstName);
     }).thenCatch(function (e) {basic.errorHandler(e, "Seems that person is not saved properly/FN");});
@@ -85,15 +85,15 @@ basic.getDrivers().forEach(function(drv) {
     //Досоздаем черновик
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#edit')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#edit');
-    basic.execute(driver, 'click', '#edit', "Cannot click on 'edit' button", '');
+    basic.execute(driver, 'click', '#edit', "Cannot click on 'edit' button");
     fillProperty(driver, 'middleName', 'Пупкин');
     var now = new Date();
     fillProperty(driver, 'birthday',
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2));
-    basic.execute(driver, 'click', '[property="v-s:lastName"] + veda-control input', "Cannot click on 'last name control' for person", '');
+    basic.execute(driver, 'click', '[property="v-s:lastName"] + veda-control input', "Cannot click on 'last name control' for person");
     //Сохраняем его как нормальный документ
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#save')[0].scrollIntoView(true);");
-    basic.execute(driver, 'click', '#save', "Cannot click on 'save' button", '');
+    basic.execute(driver, 'click', '#save', "Cannot click on 'save' button");
 
     check(driver, "false");
 
