@@ -14,7 +14,7 @@ veda.Module(function (veda) { "use strict";
    * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
    * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
    */
-  veda.IndividualModel = function (uri, container, template, mode, cache, init, async) {
+  veda.IndividualModel = function (uri, container, template, mode, cache, init) {
 
     var self = riot.observable(this);
 
@@ -25,7 +25,6 @@ veda.Module(function (veda) { "use strict";
       mode      = uri.mode;
       cache     = uri.cache;
       init      = uri.init;
-      async     = uri.async;
       uri       = uri.uri;
     }
 
@@ -34,9 +33,7 @@ veda.Module(function (veda) { "use strict";
       cache: typeof cache !== "undefined" ? cache : true,
       init: typeof init !== "undefined" ? init : true,
       isNew: false,
-      isSync: false,
-      isAsync: typeof async !== "undefined" ? async : false,
-      uri: uri
+      isSync: false
     };
     this.properties = {};
     this.filtered = {};
@@ -51,7 +48,7 @@ veda.Module(function (veda) { "use strict";
       });
     }
 
-    return this.load();
+    return self.load(uri);
   };
 
   function typeChangedHandler (property_uri) {
@@ -101,14 +98,13 @@ veda.Module(function (veda) { "use strict";
             }
             return condition;
           })
-          .map( function (value) { return self.parser(value); } );
+          .map( parser );
         return values;
       },
       set: function (values) {
-        var self = this;
         this.isSync(false);
         var notNull = values.filter(function (i) { return i != undefined });
-        var serialized = notNull.map( function (value) { return self.serializer(value); } );
+        var serialized = notNull.map( serializer );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
@@ -122,14 +118,14 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  proto.parser = function (value) {
+  function parser(value) {
     if (value.type === "String") {
       var string = new String(value.data);
       if (value.lang !== "NONE") { string.language = value.lang };
       return string;
     } else if (value.type === "Uri") {
       if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
-      return new veda.IndividualModel({uri: value.data, async: this.isAsync()});
+      return new veda.IndividualModel(value.data);
     } else if (value.type === "Datetime") {
       return new Date(Date.parse(value.data));
     } else {
@@ -137,7 +133,7 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
-  proto.serializer = function (value) {
+  function serializer (value) {
     if (typeof value === "number" ) {
       return {
         type: isInteger(value) ? "Integer" : "Decimal",
@@ -248,39 +244,20 @@ veda.Module(function (veda) { "use strict";
    * Load individual specified by uri from database. If cache parameter (from constructor) is true, than try to load individual from browser cache first.
    * @param {String} uri individual uri
    */
-  proto.load = function () {
-    var uri = this._.uri;
-    var self = this;
+  proto.load = function (uri) {
     this.trigger("individual:beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
       if (this._.cache && veda.cache[uri]) {
         this.trigger("individual:afterLoad", veda.cache[uri]);
-        return ( this.isAsync() ? Promise.resolve(veda.cache[uri]) : veda.cache[uri] );
+        return veda.cache[uri];
       }
       try {
-        if ( this.isAsync() ) {
-          return get_individual({ticket: veda.ticket, uri: uri, async: true})
-            .then(function (properties) {
-              self.properties = properties;
-              self.isNew(false);
-              self.isSync(true);
-              if (self._.cache) veda.cache[self.id] = self;
-              if (self._.init) self.init();
-              self.trigger("individual:afterLoad", self);
-              return self;
-            })
-            .catch(function (error) {
-              var notify = veda.Notify ? new veda.Notify() : function () {};
-              notify("danger", error);
-            });
-        } else {
-          this.isNew(false);
-          this.isSync(true);
-          this.properties = get_individual(veda.ticket, uri);
-        }
-      } catch (error) {
-        if (error.code === 422) {
+        this.isNew(false);
+        this.isSync(true);
+        this.properties = get_individual(veda.ticket, uri);
+      } catch (e) {
+        if (e.status === 422) {
           this.isNew(true);
           this.isSync(false);
           this.properties = {
@@ -288,7 +265,7 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
           };
-        } else if (error.code === 472) {
+        } else if (e.status === 472) {
           this.isNew(false);
           this.isSync(false);
           this.properties = {
@@ -321,22 +298,20 @@ veda.Module(function (veda) { "use strict";
     if (this._.cache) veda.cache[this.id] = this;
     if (this._.init) this.init();
     this.trigger("individual:afterLoad", this);
-    return ( this.isAsync() ? Promise.resolve(this) : this );
+    return this;
   };
 
   /**
    * @method
    * Save current individual to database (with validation and adding new version)
    */
-  proto.save = function () {
+  proto.save = function() {
     var self = this;
     // Do not save individual to server if nothing changed
-    if (self.isSync()) {
-      return ( self.isAsync() ? Promise.resolve(self) : self );
-    }
+    if (self.isSync()) { return; }
     self.trigger("individual:beforeSave");
-    if ( self.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(self.id);
+    if ( this.hasValue("v-s:isDraft", true) ) {
+      veda.drafts.remove(this.id);
     }
     Object.keys(self.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
@@ -347,41 +322,26 @@ veda.Module(function (veda) { "use strict";
       return acc;
     }, self.properties);
     try {
-      if ( self.isAsync() ) {
-        return put_individual({ticket: veda.ticket, individual: self.properties, async: true})
-          .then(function () {
-            self.isNew(false);
-            self.isSync(true);
-            if (self._.cache) veda.cache[self.id] = self;
-            self.trigger("individual:afterSave");
-            return self;
-          })
-          .catch(function (error) {
-            var notify = veda.Notify ? new veda.Notify() : function () {};
-            notify("danger", error);
-          });
-      } else {
-        put_individual(veda.ticket, self.properties);
-      }
+      put_individual(veda.ticket, this.properties);
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      if (error.code !== 472) {
-        self.draft();
+      if (error.name !== 472) {
+        this.draft();
       }
       notify("danger", error);
     }
-    self.isNew(false);
-    self.isSync(true);
-    if (self._.cache) veda.cache[self.id] = self;
-    self.trigger("individual:afterSave");
-    return ( self.isAsync() ? Promise.resolve(self) : self );
+    this.isNew(false);
+    this.isSync(true);
+    if (this._.cache) veda.cache[this.id] = self;
+    this.trigger("individual:afterSave");
+    return this;
   }
 
   /**
    * @method
    * Save current individual without validation and without adding new version
    */
-  proto.draft = function () {
+  proto.draft = function() {
     this.trigger("individual:beforeDraft");
     veda.drafts.set(this.id, this);
     this.trigger("individual:afterDraft");
@@ -393,15 +353,7 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
-    var self = this;
     this.trigger("individual:beforeReset");
-    if ( this.isAsync() ) {
-      return this.update()
-        .then(function (self) {
-          self.trigger("individual:afterReset");
-          return self;
-        });
-    }
     this.update();
     this.trigger("individual:afterReset");
     return this;
@@ -418,51 +370,32 @@ veda.Module(function (veda) { "use strict";
       this.filtered = {};
       var original;
       try {
-        if ( this.isAsync() ) {
-          return get_individual({ticket: veda.ticket, uri: this.id, async: true})
-            .then(function (original) {
-              merge.call(self, original);
-              veda.drafts.remove(self.id);
-              self.trigger("individual:afterUpdate");
-              return self;
-            })
-            .catch(function (error) {
-              var notify = veda.Notify ? new veda.Notify() : function () {};
-              notify("danger", error);
-            });
-        } else {
-          original = get_individual(veda.ticket, this.id);
-        }
+        original = get_individual(veda.ticket, this.id);
       } catch (e) {
         original = {};
       }
-      merge.call(this, original);
+      Object.keys(self.properties).map(function (property_uri) {
+        if (property_uri === "@") {
+          delete original[property_uri];
+          return;
+        }
+        if (original[property_uri] && original[property_uri].length) {
+          self[property_uri] = original[property_uri].map( parser );
+        } else {
+          self[property_uri] = [];
+        }
+        delete original[property_uri];
+      });
+      Object.keys(original).map(function (property_uri) {
+        self[property_uri] = original[property_uri].map( parser );
+      });
+      self.isNew(false);
+      self.isSync(true);
     }
     veda.drafts.remove(this.id);
     this.trigger("individual:afterUpdate");
     return this;
   };
-
-  function merge (original) {
-    var self = this;
-    Object.keys(self.properties).map(function (property_uri) {
-      if (property_uri === "@") {
-        delete original[property_uri];
-        return;
-      }
-      if (original[property_uri] && original[property_uri].length) {
-        self[property_uri] = original[property_uri].map( function (value) { return self.parser(value) } );
-      } else {
-        self[property_uri] = [];
-      }
-      delete original[property_uri];
-    });
-    Object.keys(original).map(function (property_uri) {
-      self[property_uri] = original[property_uri].map( function (value) { return self.parser(value) } );
-    });
-    self.isNew(false);
-    self.isSync(true);
-  }
 
   /**
    * @method
@@ -475,17 +408,10 @@ veda.Module(function (veda) { "use strict";
     }
     if ( !this.isNew() ) {
       this["v-s:deleted"] = [ true ];
-      if ( this.isAsync() ) {
-        return this.save()
-          .then( function (self) {
-            self.trigger("individual:afterDelete");
-            return self;
-          });
-      }
       this.save();
     }
     this.trigger("individual:afterDelete");
-    return ( this.isAsync() ? Promise.resolve(this) : this );
+    return this;
   };
 
   /**
@@ -498,13 +424,6 @@ veda.Module(function (veda) { "use strict";
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];
-    if ( this.isAsync() ) {
-      return this.save()
-        .then( function (self) {
-          self.trigger("individual:afterRecover");
-          return self;
-        });
-    }
     this.save();
     this.trigger("individual:afterRecover");
     return this;
@@ -518,7 +437,7 @@ veda.Module(function (veda) { "use strict";
   proto.hasValue = function (property_uri, value) {
     var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
     if (typeof value !== "undefined" && value !== null) {
-      var serialized = this.serializer(value);
+      var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
         return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
@@ -552,21 +471,9 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    if ( this.isAsync() ) {
-      return Promise.all( this["rdf:type"] )
-        .then(function (types) {
-          types.map( function (type) {
-            if (type.model) {
-              var model = new Function(type.model["v-s:script"][0]);
-              model.call(self);
-            }
-          });
-          return self;
-        });
-    }
-    self["rdf:type"].map(function (type) {
-      if (type.model) {
-        var model = new Function(type.model["v-s:script"][0]);
+    self["rdf:type"].map(function (_class) {
+      if (_class.model) {
+        var model = new Function(_class.model["v-s:script"][0]);
         model.call(self);
       }
     });
@@ -602,15 +509,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.isNew = function (value) {
     return ( typeof value !== "undefined" ? this._.isNew = value : this._.isNew );
-  };
-
-  /**
-   * @method
-   * Check whether individual's db interaction methods are asynchronous
-   * @return {boolean}
-   */
-  proto.isAsync = function (value) {
-    return ( typeof value !== "undefined" ? this._.isAsync = value : this._.isAsync );
   };
 
   /**
