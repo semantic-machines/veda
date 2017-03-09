@@ -23,6 +23,7 @@ v-ft:FunctionTasks
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
+  v-ui:hasModel v-ft:FunctionTasksModel;
 .
 v-ft:query
   rdf:type owl:DatatypeProperty ;
@@ -38,7 +39,6 @@ v-ft:FunctionTasksModel
   rdf:type v-s:ClassModel ;
   rdfs:label "V-ft:FunctionTasks class template"@en ;
   rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
-  v-ui:forClass v-ft:FunctionTasks ;
   v-s:script """
   var self = this;
   var q = self["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id).replace("$2", veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id);

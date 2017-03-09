@@ -30,12 +30,14 @@ v-fs:FulltextRequest
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Fulltext request"@en ;
   rdfs:label "Полнотекстовый запрос"@ru ;
+  v-ui:hasModel v-fs:FulltextRequestModel ;
 .
 v-fs:AttributiveRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Attributive request"@en ;
   rdfs:label "Аттрибутивный запрос"@ru ;
+  v-ui:hasModel v-fs:AttributiveRequestModel ;
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;
@@ -311,7 +313,6 @@ v-fs:FulltextRequestModel
   rdf:type v-s:ClassModel ;
   rdfs:label "V-fs:FulltextRequest class model"@en ;
   rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
-  v-ui:forClass v-fs:FulltextRequest ;
   v-s:script """
   var self = this,
     q = mkQuery(),
@@ -584,7 +585,6 @@ v-fs:AttributiveRequestModel
   rdf:type v-s:ClassModel ;
   rdfs:label "V-fs:AttributiveRequest class model"@en ;
   rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
-  v-ui:forClass v-fs:AttributiveRequest ;
   v-s:script """
   var stopList = [
     "@",
@@ -1110,14 +1110,6 @@ v-fs:searchBlank
   rdfs:label "Search blank"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range v-fc:Blank ;
-.
-
-v-fs:AttributiveSearchModel
-  rdf:type v-s:ClassModel ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Model for v-fs:AttributiveSearch class"@en ;
-  rdfs:label "Модель для класса v-fs:AttributiveSearch"@ru ;
-  v-s:script "" ;
 .
 
 v-fs:TotalFoundBundle

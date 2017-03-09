@@ -47,7 +47,6 @@ v-ui:preferredLanguage
 v-ui:forClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ClassTemplate ;
-  rdfs:domain v-s:ClassModel ;
   rdfs:domain v-ui:PropertySpecification ;
   rdfs:label "For class"@en ;
   rdfs:label "Для класса"@ru ;

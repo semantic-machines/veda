@@ -85,9 +85,9 @@ veda.Module(function (veda) { "use strict";
           || type === 'owl:OntologyProperty'
           || type === 'owl:AnnotationProperty'
         )
-        && !veda.IndividualModel.prototype.hasOwnProperty(property_uri)
       ) {
         veda.IndividualModel.defineProperty(property_uri);
+        veda.IndividualModelAsync.defineProperty(property_uri);
       }
     });
 
