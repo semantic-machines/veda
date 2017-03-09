@@ -38,49 +38,42 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
-    function typeHandler (property_uri, values) {
-      if (property_uri === "rdf:type") {
-        this.isSync(false);
-        this.init();
-        this.trigger("individual:typeChanged", values);
-      }
-    }
-    this.on("individual:propertyModified", typeHandler);
-
-    this.on("individual:beforeSave", function () {
-      var now = new Date();
-      var user = veda.appointment ? veda.appointment : veda.user;
-      if (
-        !this.hasValue("v-s:lastEditor")
-        || !this.hasValue("v-s:edited")
-        || this["v-s:lastEditor"][0].id !== user.id
-        || (now - this["v-s:edited"][0]) > 1000
-      ) {
-        this["v-s:edited"] = [ now ];
-        this["v-s:lastEditor"] = [ user ];
-      }
-      if ( this.isNew() ) {
-        this["v-s:created"] = [ now ];
-        this["v-s:creator"] = [ user ];
-      }
-    });
+    this.on("individual:propertyModified", typeChangedHandler);
+    this.on("individual:beforeSave", beforeSaveHandler);
 
     if (container) {
       this.one("individual:afterLoad", function (individual) {
         this.present.call(individual, container, template, mode);
         container = template = mode = null;
       });
-      /*this.on("individual:typeChanged", function () {
-        this.present(container, template, mode);
-      });*/
     }
-
-    /*veda.on("language:changed", function () {
-      self.filtered = {};
-    });*/
 
     return self.load(uri);
   };
+
+  function typeChangedHandler (property_uri) {
+    if (property_uri === "rdf:type") {
+      this.init();
+    }
+  }
+
+  function beforeSaveHandler() {
+    var now = new Date();
+    var user = veda.appointment ? veda.appointment : veda.user;
+    if (
+      !this.hasValue("v-s:lastEditor")
+      || !this.hasValue("v-s:edited")
+      || this["v-s:lastEditor"][0].id !== user.id
+      || (now - this["v-s:edited"][0]) > 1000
+    ) {
+      this["v-s:edited"] = [ now ];
+      this["v-s:lastEditor"] = [ user ];
+    }
+    if ( this.isNew() ) {
+      this["v-s:created"] = [ now ];
+      this["v-s:creator"] = [ user ];
+    }
+  }
 
   var proto = veda.IndividualModel.prototype;
 
