@@ -36,7 +36,7 @@ v-s:vinNumber
   rdfs:domain v-s:Asset ;
 .
 
-mnd-s:PsAssetNumber
+v-s:PsAssetNumber
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:assetNumber ;
