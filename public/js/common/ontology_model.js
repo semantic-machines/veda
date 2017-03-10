@@ -85,6 +85,8 @@ veda.Module(function (veda) { "use strict";
           || type === 'owl:OntologyProperty'
           || type === 'owl:AnnotationProperty'
         )
+        && !veda.IndividualModel.prototype.hasOwnProperty(property_uri)
+        && !veda.IndividualModelAsync.prototype.hasOwnProperty(property_uri)
       ) {
         veda.IndividualModel.defineProperty(property_uri);
         veda.IndividualModelAsync.defineProperty(property_uri);
@@ -153,6 +155,9 @@ veda.Module(function (veda) { "use strict";
         item.subClasses = item.subClasses || {};
         item.subClasses[_class.id] = _class;
       });
+      if ( _class.hasValue("v-ui:hasModel") ) {
+        _class.model = _class["v-ui:hasModel"][0];
+      }
     });
 
     // Initialization percentage
@@ -200,13 +205,13 @@ veda.Module(function (veda) { "use strict";
     veda.trigger("init:progress", 80);
 
     // Process models
-    Object.keys(models).map( function (uri) {
+    /*Object.keys(models).map( function (uri) {
       var model = models[uri];
       if (!model["v-ui:forClass"]) return;
       model["v-ui:forClass"].map( function ( item ) {
         item.model = model;
       });
-    });
+    });*/
 
     // Propagate properties, specifications and templates to sub-classes.
     // rdfs:Resource is a top-level class.
