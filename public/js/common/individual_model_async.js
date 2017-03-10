@@ -513,12 +513,19 @@ veda.Module(function (veda) { "use strict";
   proto.init = function () {
     var self = this;
     return Promise.all( this["rdf:type"] )
-      .then(function (types) {
+      .then( function (types) {
+        var model_promises = [];
         types.map( function (type) {
-          if (type.model) {
-            var model = new Function(type.model["v-s:script"][0]);
-            model.call(self);
+          if ( type.hasValue("v-ui:hasModel") ) {
+            model_promises.push( type["v-ui:hasModel"] );
           }
+        });
+        return Promise.all( model_promises );
+      })
+      .then( function (models) {
+        models.map(function (model) {
+          var model_fn = new Function(model["v-s:script"][0]);
+          model.call(self);
         });
         return self;
       });

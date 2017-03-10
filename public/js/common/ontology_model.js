@@ -77,7 +77,7 @@ veda.Module(function (veda) { "use strict";
     // Initialize individual properties in {veda.IndividualModel.prototype}
     Object.keys(ontology).map(function (property_uri) {
       var individual = ontology[property_uri],
-        type = individual["rdf:type"][0].data;
+          type = individual["rdf:type"][0].data;
       if (
         ( type === 'rdf:Property'
           || type === 'owl:DatatypeProperty'
@@ -130,9 +130,9 @@ veda.Module(function (veda) { "use strict";
         case "v-ui:ObjectPropertySpecification" :
           specifications[individual.id] = individual;
           break;
-        case "v-s:ClassModel" :
+        /*case "v-s:ClassModel" :
           models[individual.id] = individual;
-          break;
+          break;*/
         case "v-ui:ClassTemplate" :
           templates[individual.id] = individual;
           break;
@@ -155,9 +155,9 @@ veda.Module(function (veda) { "use strict";
         item.subClasses = item.subClasses || {};
         item.subClasses[_class.id] = _class;
       });
-      if ( _class.hasValue("v-ui:hasModel") ) {
+      /*if ( _class.hasValue("v-ui:hasModel") ) {
         _class.model = _class["v-ui:hasModel"][0];
-      }
+      }*/
     });
 
     // Initialization percentage
@@ -278,7 +278,7 @@ veda.Module(function (veda) { "use strict";
           "'rdf:type' === 'owl:OntologyProperty' || " +
           "'rdf:type' === 'owl:AnnotationProperty' || " +
           /* Models */
-          "'rdf:type' === 'v-s:ClassModel' || " +
+          /*"'rdf:type' === 'v-s:ClassModel' || " +*/
           /* Templates */
           "'rdf:type' === 'v-ui:ClassTemplate' || " +
           /* Property specifications */
