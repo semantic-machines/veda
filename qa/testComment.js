@@ -56,7 +56,7 @@ function comment(driver, somethingUnique) {
     basic.execute(driver, 'sendKeys', 'textarea[class="form-control"]', "Cannot input comment", somethingUnique);
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
     basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "Cannot click  on 'save' button");
-    driver.sleep(basic.SLOW_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION/2);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
 }
 
@@ -91,8 +91,7 @@ basic.getDrivers().forEach(function (drv) {
     driver.executeScript("document.querySelector('#delete').scrollIntoView(true);");
     driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
     driver.switchTo().alert().accept();
-    driver.executeScript("location.reload();");
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION/2);
     check(driver, 1, 1, 1, 1);
 
     basic.logout(driver);
