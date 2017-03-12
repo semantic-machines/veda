@@ -34,6 +34,7 @@ function check(driver, count) {
  */
 
 function clickButton(driver, button) {
+    driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);")
     basic.execute(driver, 'click', 'button[id="'+ button +'"]', "Cannot click on "  + button +  " button");
     driver.sleep(basic.FAST_OPERATION);
