@@ -279,7 +279,7 @@ class XapianVQL
                         else
                         {
                             int slot;
-                            if (rs !is null && utf.count (rs) > 3 && rs[ 0 ] == '*')
+                            if (rs !is null && utf.count(rs) > 3 && rs[ 0 ] == '*')
                                 slot = key2slot.get(ls ~ "#F", -1);
                             else
                                 slot = key2slot.get(ls, -1);
@@ -309,7 +309,7 @@ class XapianVQL
                                 }
                                 else
                                 {
-                                    if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && utf.count (rs) > 3)
+                                    if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && utf.count(rs) > 3)
                                     {
                                         char[] query_str = to_lower_and_replace_delimeters(rs).dup;
                                         if (rs[ 0 ] == '*')
@@ -427,16 +427,16 @@ class XapianVQL
                         xtr = to_lower_and_replace_delimeters(rs);
                         //writeln("xtr=", xtr);
 
-                        if (indexOf(xtr, '*') > 0 && utf.count (xtr) > 3)
+                        if (indexOf(xtr, '*') > 0 && utf.count(xtr) > 3)
                         {
                             feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD | feature_flag.FLAG_PHRASE;
                             if (tta.op == "!=")
                             {
-/*	TODO
-                         вероятно получаются не оптимальны запросы вида
-                         '*' == 'rdf' && '*' != 'List*'
-                         @query=Xapian::Query((rdf:(pos=1) AND (<alldocuments> AND_NOT (list:(pos=1) SYNONYM lists:(pos=1)))))
- */
+                                //	TODO
+                                //	вероятно получаются не оптимальны запросы вида
+                                //	'*' == 'rdf' && '*' != 'List*'
+                                //	@query=Xapian::Query((rdf:(pos=1) AND (<alldocuments> AND_NOT (list:(pos=1) SYNONYM lists:(pos=1)))))
+                                //
 
                                 flags = flags | feature_flag.FLAG_PURE_NOT;
                                 xtr   = "NOT " ~ xtr;
@@ -665,15 +665,15 @@ class XapianVQL
         {
             sr.estimated = matches.get_matches_estimated(&err);
 
-	        if (prepare_element_event !is null)
-	            prepare_element_event("");
+            if (prepare_element_event !is null)
+                prepare_element_event("");
 
             XapianMSetIterator it = matches.iterator(&err);
 
             bool               acl_db_reopen = true;
 
             while (it.is_next(&err) == true)
-            {            	
+            {
                 if (err < 0)
                 {
                     sr.result_code = ResultCode.Internal_Server_Error;
