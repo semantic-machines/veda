@@ -32,11 +32,18 @@ veda.Module(function (veda) { "use strict";
     this._ = {
       cache: typeof cache !== "undefined" ? cache : true,
       init: typeof init !== "undefined" ? init : true,
-      isNew: false,
+      isNew: typeof uri === "undefined",
       isSync: false,
       uri: uri
     };
-    this.properties = {};
+
+    if ( typeof uri === "string" ) {
+      this.properties = {"@": uri};
+    } else if ( typeof uri === "object" && uri["@"] ) {
+      this.properties = uri;
+    } else {
+      this.properties = {};
+    }
     this.filtered = {};
 
     this.on("individual:propertyModified", typeChangedHandler);
@@ -512,15 +519,18 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    return Promise.all( this["rdf:type"] )
+    var types_promises = this["rdf:type"].map( function (type_promise) {
+      return type_promise.load();
+    });
+    return Promise.all( types_promises )
       .then( function (types) {
-        var model_promises = [];
+        var models_promises = [];
         types.map( function (type) {
           if ( type.hasValue("v-ui:hasModel") ) {
-            model_promises.push( type["v-ui:hasModel"] );
+            models_promises.push( type["v-ui:hasModel"] );
           }
         });
-        return Promise.all( model_promises );
+        return Promise.all( models_promises );
       })
       .then( function (models) {
         models.map(function (model) {
@@ -537,14 +547,12 @@ veda.Module(function (veda) { "use strict";
    * @return {veda.IndividualModelAsync} clone of this individual with different id.
    */
   proto.clone = function () {
-    var individual = JSON.parse( JSON.stringify(this.properties) );
-    individual["@"] = veda.Util.genUri();
-    return new veda.IndividualModelAsync(individual)
-      .then(function (self) {
-        self.isNew(true);
-        self.isSync(false);
-        return self;
-      });
+    var clone_properties = JSON.parse( JSON.stringify(this.properties) );
+    clone_properties["@"] = veda.Util.genUri();
+    var clone = new veda.IndividualModelAsync(clone_properties);
+    clone.isNew(true);
+    clone.isSync(false);
+    return clone;
   };
 
   /**
@@ -564,7 +572,6 @@ veda.Module(function (veda) { "use strict";
   proto.isNew = function (value) {
     return ( typeof value !== "undefined" ? this._.isNew = value : this._.isNew );
   };
-
 
   /**
    * @method
@@ -601,7 +608,7 @@ veda.Module(function (veda) { "use strict";
    * @return {String} String representation of individual.
    */
   proto.toString = function () {
-    return this.hasValue("rdfs:label") ? this["rdfs:label"].join(" ") : this.properties["rdf:type"] ? this.properties["rdf:type"][0].data + ": " + this.id : this.id ;
+    return this.hasValue("rdfs:label") ? this["rdfs:label"].join(" ") : this.hasValue("rdf:type") ? this["rdf:type"][0].id + ": " + this.id : this.id ;
   };
 
   /**

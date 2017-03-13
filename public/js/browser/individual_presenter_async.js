@@ -75,18 +75,23 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
             pre.prop("contenteditable", false);
             var notify = veda.Notify ? new veda.Notify() : function () {};
             var original = individual.properties;
+            formatted = pre.text();
+            anchorized = anchorize( formatted );
             try {
-              formatted = pre.text();
-              anchorized = anchorize(formatted);
               json = JSON.parse( formatted );
-              individual.properties = json;
-              individual.isSync(false);
-              individual.save();
-              notify("success", {name: "Объект сохранен"});
             } catch (error) {
-              individual.properties = original;
               notify("danger", error);
+              return;
             }
+            individual.properties = json;
+            individual.isSync(false);
+            individual.save()
+              .then(function () {
+                notify("success", {name: "Объект сохранен"});
+              })
+              .catch(function (error) {
+                notify("danger", error);
+              });
           });
           return;
         } else if (template === "ttl") {
@@ -197,12 +202,21 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     template.on("view edit search save cancel delete recover draft", syncEmbedded);
 
     // Define handlers
+
+    var notify = veda.Notify ? new veda.Notify() : function () {};
+
     function saveHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.save();
-      }
-      template.trigger("view");
       e.stopPropagation();
+      if (parent !== individual.id) {
+        individual.save().then(
+          function () {
+            template.trigger("view");
+            notify("success", {name: "Объект сохранен"});
+          }, function (error) {
+            notify("danger", {name: "Объект не сохранен"});
+          }
+        )
+      }
     }
     template.on("save", saveHandler);
 
