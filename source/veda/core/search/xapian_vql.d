@@ -279,7 +279,7 @@ class XapianVQL
                         else
                         {
                             int slot;
-                            if (rs !is null && rs.length > 2 && rs[ 0 ] == '*')
+                            if (rs !is null && rs.length > 3 && rs[ 0 ] == '*')
                                 slot = key2slot.get(ls ~ "#F", -1);
                             else
                                 slot = key2slot.get(ls, -1);
