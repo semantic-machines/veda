@@ -49,7 +49,7 @@ veda.Module(function (veda) { "use strict";
       });
     }
 
-    return this.load();
+    return this;
   };
 
   function typeChangedHandler (property_uri) {
@@ -298,7 +298,7 @@ veda.Module(function (veda) { "use strict";
               "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
             };
           }
-          return Promise.resolve(this);
+          return self;
         });
     } else if (typeof uri === "object") {
       this.isNew(false);
