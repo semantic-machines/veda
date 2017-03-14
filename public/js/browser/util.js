@@ -517,23 +517,25 @@ veda.Module(function Util(veda) { "use strict";
    *  - Redirect to report
    */
   veda.Util.showRights = function (individual) {
-    // Ignore individuals without id
-    if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
-    var container = $($("#show-rights-modal-template").html());
-    container.modal();
-
-    $("body").append(container);
+    var modalTmpl = $("#individual-modal-template").html();
+    var modal = $(modalTmpl);
+    var modalBody = $(".modal-body", modal);
+    modal.on("remove", function (e) {
+      modal.modal("hide");
+    });
+    modal.modal();
+    $("#main").append(modal);
 
     var rights = individual['rights'];
     var holder = $("<div>");
     rights.present(holder);
-    holder.appendTo($(".modal-body", container));
+    holder.appendTo(modalBody);
 
     var origin = individual['rightsOrigin'];
     origin.forEach(function (rightRecord) {
       var holder = $("<div>");
       rightRecord.present(holder);
-      holder.appendTo($(".modal-body", container));
+      holder.appendTo(modalBody);
     });
   }
 

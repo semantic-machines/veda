@@ -14,7 +14,7 @@ veda.Module(function Notify(veda) { "use strict";
       console.log ? console.log( (new Date()).toISOString(), type + ":", JSON.stringify(note) ) : null;
       var notification = $(notificationTmpl).addClass("alert-" + type).prependTo(notificationContainer),
           durationFade = 200,
-          durationShown = 10000,
+          durationShown = 5000,
           code = note.code,
           name = note.name,
           message = note.message && note.message.length > 70 ? note.message.substring(0, 70) + "..." : note.message,
