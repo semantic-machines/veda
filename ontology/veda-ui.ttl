@@ -2018,6 +2018,102 @@ td:AppointmentTemplate2
   """ ;
 .
 
+v-ui:ttl
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон TTL"@ru ;
+  rdfs:label "Template TTL"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <pre style="border:none;background-color:#fff;"></pre>
+  <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+  <a id="generic" class="btn btn-default" href="#/@//generic">generic</a>
+  <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+  <a id="ttl" class="disabled btn btn-default" href="#/@//v-ui:ttl">ttl</a>
+</div>
+<script>
+  var list = new veda.IndividualListModel(individual);
+  veda.Util.toTTL(list, function (error, ttl) {
+    var pre = $("pre", template),
+        anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+    pre.html(anchored);
+  });
+  //# sourceURL=v-ui:ttl
+</script>
+  """ ;
+.
+
+v-ui:json
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон TTL"@ru ;
+  rdfs:label "Template TTL"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <pre style="border:none;background-color:#fff;"></pre>
+  <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+  <a id="generic" class="btn btn-default" href="#/@//generic">generic</a>
+  <a id="json" class="disabled btn btn-default" href="#/@//v-ui:json">json</a>
+  <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
+  <div class="pull-right">
+    <button id="edit" class="btn btn-primary" about="v-s:Edit" property="rdfs:label"></button>
+    <button id="save" class="hidden btn btn-success" about="v-s:Save" property="rdfs:label"></button>
+    <button id="cancel" class="hidden btn btn-default" about="v-s:Cancel" property="rdfs:label"></button>
+  </div>
+</div>
+<script>
+  var pre = $("pre", template),
+      json = individual.properties;
+  var formatted = format(json);
+  var anchorized = anchorize(formatted);
+  var height = $("#copyright").offset().top - container.offset().top - 120;
+  pre.css("height", height);
+  pre.html(anchorized);
+  $("#edit", template).click(function () {
+    $(this).addClass("hidden");
+    $("#save", template).removeClass("hidden");
+    $("#cancel", template).removeClass("hidden");
+    pre.prop("contenteditable", true).text(formatted);
+  });
+  $("#cancel", template).click(function () {
+    $("#edit", template).removeClass("hidden");
+    $("#save", template).addClass("hidden");
+    $("#cancel", template).addClass("hidden");
+    pre.prop("contenteditable", false).html(anchorized);
+  });
+  $("#save", template).click(function () {
+    $("#edit", template).removeClass("hidden");
+    $("#save", template).addClass("hidden");
+    $("#cancel", template).addClass("hidden");
+    pre.prop("contenteditable", false);
+    var notify = veda.Notify ? new veda.Notify() : function () {};
+    var original = individual.properties;
+    try {
+      formatted = pre.text();
+      anchorized = anchorize(formatted);
+      json = JSON.parse( formatted );
+      individual.properties = json;
+      individual.isSync(false);
+      individual.save();
+      notify("success", {name: "Объект сохранен"});
+    } catch (error) {
+      individual.properties = original;
+      notify("danger", error);
+    }
+  });
+  function format (json) {
+    var ordered = {};
+    Object.keys(json).sort().forEach(function(key) {
+      ordered[key] = json[key];
+    });
+    return JSON.stringify(ordered, null, 2);
+  };
+  function anchorize (string) {
+    return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
+  };
+  //# sourceURL=v-ui:json
+</script>
+  """ ;
+.
+
 td:AccountTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Учетной записи"@ru ;
