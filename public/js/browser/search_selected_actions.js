@@ -14,7 +14,8 @@ veda.Module(function SearchSelectedFunctions(veda) { "use strict";
           for (i=start; i<length; i++) {
             var key = keys[i],
               item = search.selected[key];
-            item.save(true);
+            item.isSync(false);
+            item.save();
           }
         } catch (ex) {
           setTimeout(function () {

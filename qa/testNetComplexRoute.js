@@ -47,12 +47,12 @@ basic.getDrivers().forEach (function (drv) {
 
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest');
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
-    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Send' button", '');
+    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Send' button");
     driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
     driver.sleep(basic.FAST_OPERATION);
     basic.execute(driver, 'click', 'button[id="save_and_start_process"]',
-        "Cannot click on 'save_and_start_process' button", '');
+        "Cannot click on 'save_and_start_process' button");
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
 

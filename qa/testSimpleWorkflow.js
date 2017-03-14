@@ -19,7 +19,7 @@ function clickButton(driver, button, doctype) {
 		webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="'+doctype+'"] button[id="'+ button +'"]'})),
 		basic.SLOW_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
-	basic.execute(driver, 'click', '[typeof="'+doctype+'"] button[id="'+ button +'"]', "Cannot click on "  + button +  " button", '');
+	basic.execute(driver, 'click', '[typeof="'+doctype+'"] button[id="'+ button +'"]', "Cannot click on "  + button +  " button");
 }
 
 function put(driver, type, text) {
@@ -71,16 +71,16 @@ basic.getDrivers().forEach (function (drv) {
 	clickButton(driver, "save", "v-wf:Transform");
 
 	createNet.startNet(driver, timeStamp);
-	basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button", '');
-	basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button", '');
+	basic.execute(driver, 'click', '.create-task', "Cannot click on 'create-task' button");
+	basic.execute(driver, 'click', '.state-task', "Cannot click on 'state-task' button");
 	driver.executeScript("document.querySelector('span[about=\"v-wf:startDecisionTransform\"]').scrollIntoView(true);");
-	basic.execute(driver, 'click', 'span[about="v-wf:startDecisionTransform"]', "Cannot click on 'v-wf:startDecisionTransform' field ", '');
+	basic.execute(driver, 'click', 'span[about="v-wf:startDecisionTransform"]', "Cannot click on 'v-wf:startDecisionTransform' field ");
 	basic.execute(driver, 'click', 'veda-control[class="VCstartDecisionTransform fulltext dropdown create properties-editor"]',
-        "Cannot click on 'VCstartDecisionTransform' field ", '');
+        "Cannot click on 'VCstartDecisionTransform' field ");
 	createNet.chooseFromDropdown(driver, 'VCstartDecisionTransform', timeStamp + 1, timeStamp + 1);
 	driver.executeScript("document.querySelector('span[about=\"v-wf:executor\"]').scrollIntoView(true);");
-	basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "Cannot click on 'v-wf:executor' field ", '');
-	basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]', "Cannot click on 'VCexecutor' field ", '');
+	basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "Cannot click on 'v-wf:executor' field ");
+	basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]', "Cannot click on 'VCexecutor' field ");
 	createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик');
 	createNet.connectNet(driver, 'true');
 	createNet.saveNet(driver);

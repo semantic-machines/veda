@@ -415,7 +415,7 @@ v-ft:FunctionTasksTemplate
           continue;
         } else {
           _tmpl = tmpl.replace("###", i+1);
-          result.present(cnt, _tmpl);
+          result.present(cnt, $(_tmpl));
         }
       }
 

@@ -17,7 +17,7 @@ module.exports = {
         basic.chooseFromDropdown(driver, 'v-wf:hasStatusWorkflow', hasStatusWorkflow, hasStatusWorkflow);
         driver.executeScript("$('#save')[0].scrollIntoView(true);");
         basic.isEnabled(driver, '#save', basic.FAST_OPERATION);
-        basic.execute(driver, 'click', '#save', "Cannot click on save button", '');
+        basic.execute(driver, 'click', '#save', "Cannot click on save button");
         //Смотрим на процесс
         driver.executeScript("location.reload();");
         driver.wait
@@ -26,7 +26,7 @@ module.exports = {
             basic.SLOW_OPERATION
         ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'isProcess' button");});
         driver.executeScript("document.querySelector('div[rel=\"v-wf:isProcess\"]').scrollIntoView(true);");
-        basic.execute(driver, 'click', 'div[rel=\"v-wf:isProcess\"] #label', "Cannot click 'isProcess' button", '');
+        basic.execute(driver, 'click', 'div[rel=\"v-wf:isProcess\"] #label', "Cannot click 'isProcess' button");
         basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
     }
 };

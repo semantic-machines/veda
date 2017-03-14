@@ -17,7 +17,7 @@ function search(driver, somethingUnique, count) {
     driver.wait
     (
         function () {
-            basic.execute(driver, 'click', 'button[id="search-submit"]', "Cannot click on 'submit' button", '');
+            driver.findElement({css:'#search-submit'}).click();
             driver.sleep(basic.FAST_OPERATION); // Иначе слишком часто щелкает поиск
             return driver.findElement({css:'#results_count'}).getText().then(function (text) {
                 return text == count;

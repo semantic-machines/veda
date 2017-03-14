@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8"/>
-		<title>Veda</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<meta name="description" content=""/>
-		<meta name="author" content=""/>
-		<link href="/css/bootstrap.min.css" rel="stylesheet"/>		
-		<link href="/css/veda.css" rel="stylesheet"/>
-		<link rel="stylesheet" href="./css/qunit.css">
-		
-		<!-- Do not cache tests page -->
-		<meta http-equiv="pragma" content="no-cache" />
-		<meta http-equiv="cache-control" content="no-cache" />
-	</head>
-	<body style="padding: 0px 0px 30px;">
-		<nav role="navigation" class="navbar" id="navigation">
-			<div class="container-fluid" id="nav-container">
-				<a class="navbar-brand" href="#">
-				</a>
-			</div>
-		</nav>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Veda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/veda.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="./css/qunit.css">
+
+    <!-- Do not cache tests page -->
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+  </head>
+  <body style="padding: 0px 0px 30px;">
+    <nav role="navigation" class="navbar" id="navigation">
+      <div class="container-fluid" id="nav-container">
+        <a class="navbar-brand" href="#">
+        </a>
+      </div>
+    </nav>
         <div id="qunit-testrunner-toolbar">
         </div>
         <h2 id="qunit-userAgent"></h2>
@@ -28,65 +28,65 @@
         </ol>
         <div id="qunit-fixture">
             <div id="container"></div>
-        </div>        
+        </div>
 
-		<br />
-		<nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
-			<footer>
-				<div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
-					<a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
-					Лицензия / License
-					<a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
-				</div>
-			</footer>
-		</nav>
+    <br />
+    <nav style="min-height:20px;" class="navbar navbar-fixed-bottom" id="copyright">
+      <footer>
+        <div class="container-fluid" style="background-color: white; border-top: 1px solid lightgray">
+          <a href="http://www.semantic-machines.com" title="Официальный сайт компании">&copy; "Смысловые машины", ООО.</a>
+          Лицензия / License
+          <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
+        </div>
+      </footer>
+    </nav>
 
-		<!-- Javascript placed at the end of the document so the pages load faster -->
-		
-		<!-- Utils & UI -->
-		<script src="./js/test/esprima.js"></script>
-		<script src="/js/browser/lib/jquery.js"></script>
-		<script src="/js/browser/lib/bootstrap.min.js"></script>
-		<script src="/js/browser/lib/cookie.js" data-cover></script>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
 
-		<!-- Veda browser & server -->
-		<script src="/js/common/lib/riot.js"></script>
-		<script src="/js/common/util.js" data-cover></script>
+    <!-- Utils & UI -->
+    <script src="./js/test/esprima.js"></script>
+    <script src="/js/browser/lib/jquery.js"></script>
+    <script src="/js/browser/lib/bootstrap.min.js"></script>
+    <script src="/js/browser/lib/cookie.js" data-cover></script>
 
-		<!-- Veda browser only -->
-		<script>
-			var veda = riot.observable({});
-			(function (veda) { "use strict";
-				veda.Module = riot.observable(function(arg) {
-					if (typeof arg == 'function') {
-						veda.Module.on("ready", arg);
-					} else {
-						veda.on("ready", function() {
-							veda.Module.trigger("ready", veda);
-						});
-						veda.trigger("ready");
-					}
-				});
-			})(veda);
-		</script>
+    <!-- Veda browser & server -->
+    <script src="/js/common/lib/riot.js"></script>
+    <script src="/js/common/util.js" data-cover></script>
 
-		<script src="/js/browser/backend.js" data-cover data-cover-reporter="/js/browser/lcov_reporter.js"></script>
-		
-		<!-- QUNIT tests -->
-		<script src="./js/test/qunit.js"></script>
-		<script src="./js/test/qunit-reporter-junit.js"></script>
-		
-		<script src="./js/test/blanket.min.js"></script>
-		<script src="./js/test/test_individuals.js"></script>
-		<script src="./js/test/stress_test_docflow.js"></script>
-		<script>
-			veda.Module();
-			QUnit.jUnitReport = function(report) {
-				if (location.href.match(/(\?|&)lcovReport($|&|=)/)) {
-				    blanket.options("reporter_options", { toHTML:false });
-				    blanket.options("reporter", "/js/test/lcov_reporter.js");
-				}
-			}
-		</script>
-	</body>
+    <!-- Veda browser only -->
+    <script>
+      var veda = riot.observable({});
+      (function (veda) { "use strict";
+        veda.Module = riot.observable(function(arg) {
+          if (typeof arg == 'function') {
+            veda.Module.on("ready", arg);
+          } else {
+            veda.on("ready", function() {
+              veda.Module.trigger("ready", veda);
+            });
+            veda.trigger("ready");
+          }
+        });
+      })(veda);
+    </script>
+
+    <script src="/js/browser/backend.js" data-cover data-cover-reporter="/js/browser/lcov_reporter.js"></script>
+
+    <!-- QUNIT tests -->
+    <script src="./js/test/qunit.js"></script>
+    <script src="./js/test/qunit-reporter-junit.js"></script>
+
+    <script src="./js/test/blanket.min.js"></script>
+    <script src="./js/test/test_individuals.js"></script>
+    <script src="./js/test/stress_test_docflow.js"></script>
+    <script>
+      veda.Module();
+      QUnit.jUnitReport = function(report) {
+        if (location.href.match(/(\?|&)lcovReport($|&|=)/)) {
+            blanket.options("reporter_options", { toHTML:false });
+            blanket.options("reporter", "/js/test/lcov_reporter.js");
+        }
+      }
+    </script>
+  </body>
 </html>

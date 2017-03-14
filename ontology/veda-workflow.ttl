@@ -1591,7 +1591,7 @@ v-wf:WorkOrderTemplate
   //# sourceURL=v-wf:WorkOrderTemplate
 </script>
   """ ;
-  .
+.
 
 v-wf:DecisionFormTemplate
   rdf:type v-ui:ClassTemplate ;

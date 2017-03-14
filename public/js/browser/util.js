@@ -19,18 +19,17 @@ veda.Module(function Util(veda) { "use strict";
     return str;
   };
 
-  veda.Util.guid = function () {
-    function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-           .toString(16)
-           .substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-       s4() + '-' + s4() + s4() + s4();
-  };
-
   veda.Util.genUri = function () {
-      return 'd:a' + veda.Util.guid();
+    var uid = veda.Util.guid(), re = /^\d/;
+    return (re.test(uid) ? "d:a" + uid : "d:" + uid);
+  };
+  veda.Util.guid = function () {
+    return veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4();
+  };
+  veda.Util.s4 = function () {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(36)
+      .substring(1);
   };
 
   veda.Util.mlstring = function (ru, en) {
@@ -133,7 +132,8 @@ veda.Module(function Util(veda) { "use strict";
           return N3.Util.expandPrefixedName(uri, prefixes);
         }
       } catch (error) {
-        veda.trigger("danger", {status: "TTL:", description: error.message});
+        var notify = veda.Notify ? new veda.Notify() : function () {};
+        notify("danger", error);
         return uri;
       }
     }
@@ -378,7 +378,8 @@ veda.Module(function Util(veda) { "use strict";
         $("#delete.action", template).remove();
         template.trigger('save');
         template.closest(".modal").modal("hide").remove();
-        veda.trigger("success", {status: "Успешно отправлено / Successfully sent"});
+        var notify = veda.Notify ? new veda.Notify() : function () {};
+        notify("success", {name: "Успешно отправлено / Successfully sent"});
       } else if ( results.length === 1 ) {
         template.trigger('save');
         results.forEach( function (res_id) {
@@ -516,23 +517,25 @@ veda.Module(function Util(veda) { "use strict";
    *  - Redirect to report
    */
   veda.Util.showRights = function (individual) {
-    // Ignore individuals without id
-    if (individual.id === undefined || individual.id === '' || individual.id === '_') return;
-    var container = $($("#show-rights-modal-template").html());
-    container.modal();
-
-    $("body").append(container);
+    var modalTmpl = $("#individual-modal-template").html();
+    var modal = $(modalTmpl);
+    var modalBody = $(".modal-body", modal);
+    modal.on("remove", function (e) {
+      modal.modal("hide");
+    });
+    modal.modal();
+    $("#main").append(modal);
 
     var rights = individual['rights'];
     var holder = $("<div>");
     rights.present(holder);
-    holder.appendTo($(".modal-body", container));
+    holder.appendTo(modalBody);
 
     var origin = individual['rightsOrigin'];
     origin.forEach(function (rightRecord) {
       var holder = $("<div>");
       rightRecord.present(holder);
-      holder.appendTo($(".modal-body", container));
+      holder.appendTo(modalBody);
     });
   }
 

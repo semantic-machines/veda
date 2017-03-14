@@ -10,10 +10,10 @@ function testPager(driver) {
 
 	driver.findElements({css:'#pager > li:nth-child(2) > a'}).then(function (result) {
 		if (result.length > 0) {
-			basic.execute(driver, 'click', '#pager > li:nth-child(2) > a', "Cannot click on 2 page", '');
+			basic.execute(driver, 'click', '#pager > li:nth-child(2) > a', "Cannot click on 2 page");
 			driver.sleep(basic.EXTRA_SLOW_OPERATION);
 			driver.executeScript("document.querySelector('ul[id=\"pager\"]').scrollIntoView(true);");
-            basic.execute(driver, 'click', '#pager > li:nth-child(1) > a', "Cannot click on 1 page", '');
+            basic.execute(driver, 'click', '#pager > li:nth-child(1) > a', "Cannot click on 1 page");
 			driver.sleep(basic.SLOW_OPERATION);
 		}
 	}).thenCatch(function (e) {basic.errorHandler(e, "Seems something is wrong");});
@@ -38,12 +38,12 @@ basic.getDrivers().forEach(function(drv) {
 
 	basic.menu(driver, 'Search');
 	basic.execute(driver, 'sendKeys', '#q', "Cannot fill input field", "'v-s:created' == [2013-06-30T12:13:11, 2017-01-30T12:13:11]");
-	basic.execute(driver, 'click', 'button[id="search-submit"]', "Cannot click on 'search-submit' button", '');
+	basic.execute(driver, 'click', 'button[id="search-submit"]', "Cannot click on 'search-submit' button");
 	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 	testPager(driver);
 
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
-    basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'submit' button", '');
+    basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'submit' button");
 	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 	testPager(driver);
 
