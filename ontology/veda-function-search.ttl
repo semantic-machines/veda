@@ -560,7 +560,7 @@ v-fs:FulltextRequestTemplate
           var container = $("<li>").appendTo(resultsList);
           var result = new veda.IndividualModel( self.result[i] );
           var tmpl = genericTemplate(result);
-          result.present(container, tmpl);
+          result.present(container, $(tmpl));
         }, 0);
       }(i));
     }
@@ -849,7 +849,7 @@ v-fs:AttributiveRequestTemplate
       head = gen_head(types[0]);
       genericHead.html(head);
       customHead.empty();
-      var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>');
+      var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, $('<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>'));
     }
     tHead.html( head.clone() );
 
@@ -991,9 +991,9 @@ v-fs:AttributiveRequestTemplate
     for (var i = self.page * veda.user.displayedElements; i < (self.page + 1) * veda.user.displayedElements && i < self.count; i++) {
       (function (i) {
         setTimeout(function () {
-          var _tmpl = $(tmpl.replace("###", i+1));
+          var _tmpl = tmpl.replace("###", i+1);
           var result = new veda.IndividualModel( self.result[i] );
-          result.present(tBody, _tmpl);
+          result.present(tBody, $(_tmpl));
           _tmpl.dblclick(function (e) {
             riot.route("#/" + result.id);
           });
@@ -1039,9 +1039,9 @@ v-fs:AttributiveRequestTemplate
 
     for (var i = 0; i < self.count; i++) {
       (function (i) {
-        var _tmpl = $(tmpl.replace("###", i+1));
+        var _tmpl = tmpl.replace("###", i+1);
         var result = new veda.IndividualModel( self.result[i] );
-        result.present($("tbody", tbl), _tmpl);
+        result.present($("tbody", tbl), $(_tmpl));
       }(i));
     }
     setTimeout(function () {
@@ -1483,7 +1483,7 @@ v-fs:AttributiveSearchTemplate
     for (var i = 0; i < self.result.length; i++) {
       var tmpl = resultTemplate.replace("###", i + 1);
       var result = new veda.IndividualModel( self.result[i] );
-      result.present($("tbody", tbl), tmpl);
+      result.present($("tbody", tbl), $(tmpl));
     }
     setTimeout(function () {
       tableToExcel(tbl[0], self["rdfs:label"].join(", "));

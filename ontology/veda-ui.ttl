@@ -475,7 +475,7 @@ v-ui:VersionedTemplate
     if (current.hasValue("v-s:nextVersion") && current["v-s:nextVersion"][0].id === actual.id) {
       renderVersion(previous, counter, limit);
     } else {
-      current.present(tbody, row);
+      current.present(tbody, $(row));
       renderVersion(previous, ++counter, --limit);
     }
   }
