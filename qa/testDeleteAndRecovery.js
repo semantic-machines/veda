@@ -34,13 +34,8 @@ function check(driver, count) {
  */
 
 function clickButton(driver, button) {
-    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
     driver.sleep(basic.FAST_OPERATION);
-    driver.wait
-    (
-        webdriver.until.elementIsEnabled(driver.findElement({css:'button[id="'+ button +'"]'})),
-        basic.SLOW_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + button + " button");});
+    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);")
     basic.execute(driver, 'click', 'button[id="'+ button +'"]', "Cannot click on "  + button +  " button");
     driver.sleep(basic.FAST_OPERATION);
 }
