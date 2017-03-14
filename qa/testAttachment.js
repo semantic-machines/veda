@@ -27,7 +27,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'submit' button");
     driver.sleep(basic.SLOW_OPERATION);
     basic.execute(driver, 'click', 'a[href="#/cfg:Administrator"]', "Cannot click on 'Администратор'");
-    basic.execute(driver, 'click', 'a[href="#/graph/cfg:Administrator"]', "Cannot click on 'glyphicon-link'");
+    basic.execute(driver, 'click', 'a[href="#/cfg:Administrator//v-ui:Graph"]', "Cannot click on 'glyphicon-link'");
     basic.execute(driver, 'click', 'button[id="export-ttl"]', "Cannot click on 'export-ttl' button");
 
     //attach-save-check-delete-attach-save
