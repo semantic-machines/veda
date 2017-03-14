@@ -29,7 +29,7 @@ basic.getDrivers().forEach (function (drv) {
 	driver.wait
 	(
 	  function () {
-		  basic.execute(driver, 'click', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]', "Cannot click on submit button", '');
+		  basic.execute(driver, 'click', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] button[id="submit"]', "Cannot click on submit button");
 		  driver.sleep(basic.FAST_OPERATION); // Иначе слишком часто щелкает поиск
 		  return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
 			  return txt == '1';

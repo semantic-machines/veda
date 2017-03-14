@@ -17,81 +17,33 @@ v-s:Asset
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Registered ;
   rdfs:label "Asset"@en ;
   rdfs:label "Основное средство"@ru ;
-.
-v-s:disposalPercent
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Disposal percent"@en ;
-  rdfs:label "Процент выбытия"@ru ;
-  rdfs:range xsd:integer ;
-  rdfs:domain v-s:Asset ;
 .
 v-s:assetNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Fixed asset ID"@en ;
   rdfs:label "Номер ОС"@ru ;
   rdfs:range xsd:string ;
-  rdfs:subPropertyOf v-s:description ;
   rdfs:domain v-s:Asset ;
 .
-v-s:msfo
+v-s:vinNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Msfo"@en ;
-  rdfs:label "МСФО"@ru ;
-  rdfs:range xsd:decimal ;
+  rdfs:label "Fixed asset VIN"@en ;
+  rdfs:label "Идентификатор VIN"@ru ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Asset ;
 .
-v-s:rsbu
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Rsbu"@en ;
-  rdfs:label "РСБУ"@ru ;
-  rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Asset ;
-.
-v-s:nu
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Nu"@en ;
-  rdfs:label "НУ"@ru ;
-  rdfs:range xsd:decimal ;
-  rdfs:domain v-s:Asset ;
-.
-v-s:assetDateTo
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "to date"@en ;
-  rdfs:label "на дату"@ru ;
-  rdfs:range xsd:dateTime ;
-  rdfs:subPropertyOf v-s:dateTo ;
-  rdfs:domain v-s:Asset ;
-.
-v-s:isIncludingToReserv
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "is including to reserv"@en ;
-  rdfs:label "Включено в резерв на обесценение"@ru ;
-  rdfs:range xsd:boolean ;
-  rdfs:domain v-s:Asset ;
-.
-v-s:PsSomeDecimalInAsset
-  rdf:type v-ui:DatatypePropertySpecification ;
-  v-ui:forClass v-s:Asset ;
-  v-ui:forProperty v-s:msfo ;
-  v-ui:forProperty v-s:rsbu ;
-  v-ui:forProperty v-s:nu ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-required, single decimal value."@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
-  rdfs:label "Some decimal property specification for Asset class"@en ;
-  rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
-.
+
 v-s:PsAssetNumber
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Asset ;
   v-ui:forProperty v-s:assetNumber ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-required, single decimal value."@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
-  rdfs:label "Some decimal property specification for Asset class"@en ;
-  rdfs:label "Спецификация некоторых десятичных cвойств для класса Asset"@ru ;
+  v-ui:tooltip "non-required, single value."@en ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение."@ru ;
+  rdfs:label "Some property specification for Asset class"@en ;
+  rdfs:label "Спецификация некоторых cвойств для класса Asset"@ru ;
 .

@@ -42,9 +42,6 @@
         case "search":
           veda.Util.construct(veda.SearchModel, params);
           break;
-        case "graph":
-          self.trigger.apply(self, ["load:graph"].concat(params));
-          break;
         case "drafts":
           self.trigger.apply(self, ["load:drafts"].concat(params));
           break;

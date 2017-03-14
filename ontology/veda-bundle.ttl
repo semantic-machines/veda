@@ -176,6 +176,11 @@ v-s:Cancel
   rdfs:label "Отмена"@ru ;
   rdfs:label "Cancel"@en ;
 .
+v-s:Default
+  rdf:type v-s:Bundle ;
+  rdfs:label "По умолчанию"@ru ;
+  rdfs:label "Default"@en ;
+.
 v-s:Delete
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить"@ru ;

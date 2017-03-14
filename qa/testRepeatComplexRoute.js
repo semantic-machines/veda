@@ -25,11 +25,11 @@ basic.getDrivers().forEach (function (drv) {
 
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута 2', 's-wf:ComplexRouteTest2');
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
-    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Send' button", '');
+    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Send' button");
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
     driver.sleep(basic.FAST_OPERATION);
-    basic.execute(driver, 'click', 'button[id="save_and_start_process"]', "Cannot click on 'save_and_start_process' button", '');
+    basic.execute(driver, 'click', 'button[id="save_and_start_process"]', "Cannot click on 'save_and_start_process' button");
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
 
@@ -40,13 +40,13 @@ basic.getDrivers().forEach (function (drv) {
 
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
-    basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'submit' button", '');
+    basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'submit' button");
     driver.sleep(basic.FAST_OPERATION);
-    basic.execute(driver, 'click', 'a[typeof="s-wf:ComplexRouteTest2"]', "Cannot click on document id", '');
-    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Send' button", '');
+    basic.execute(driver, 'click', 'a[typeof="s-wf:ComplexRouteTest2"]', "Cannot click on document id");
+    basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Send' button");
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
-    basic.execute(driver, 'click', 'button[id="save_and_start_process"]', "Cannot click on 'save_and_start_process' button", '');
+    basic.execute(driver, 'click', 'button[id="save_and_start_process"]', "Cannot click on 'save_and_start_process' button");
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
 

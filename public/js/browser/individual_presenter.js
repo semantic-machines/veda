@@ -21,85 +21,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (hash !== location.hash) riot.route(hash, false);
     }
 
-    var specs = $.extend.apply ({}, [].concat(
+    var specs = $.extend.apply (
+      {}, [].concat(
         individual["rdf:type"].map( function (_class) {
           return _class.specsByProps;
         })
-        )
+      )
     );
 
     var toRender = [];
 
     if (template) {
-      if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
-      if (template instanceof String) template = $( template.toString() );
-      if (typeof template === "string") {
+      if (template instanceof veda.IndividualModel) {
+        template = $( template["v-ui:template"][0].toString() );
+      } else if (typeof template === "string") {
         if (template === "generic") {
           var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
           template = genericTemplate(individual, _class);
-        } else if (template === "json") {
-          var format = function (json) {
-            var ordered = {};
-            Object.keys(json).sort().forEach(function(key) {
-              ordered[key] = json[key];
-            });
-            return JSON.stringify(ordered, null, 2);
-          };
-          var anchorize = function (string) {
-            return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
-          };
-          var cntr = $( $("#json-template").html().replace(/@/g, individual.id) ),
-              pre = $("pre", cntr),
-              json = individual.properties;
-          $("a#json", cntr).addClass("disabled");
-          var formatted = format(json);
-          var anchorized = anchorize(formatted);
-          pre.html(anchorized);
-          container.append(cntr);
-          container.show("fade", 250, function () {
-            var height = $("#copyright").offset().top - container.offset().top - 120;
-            pre.css("height", height);
-          });
-          $("#edit", cntr).click(function () {
-            $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", true).text(formatted);
-          });
-          $("#cancel", cntr).click(function () {
-            $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", false).html(anchorized);
-          });
-          $("#save", cntr).click(function () {
-            $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", false);
-            var notify = new veda.Notify();
-            var original = individual.properties;
-            try {
-              formatted = pre.text();
-              anchorized = anchorize(formatted);
-              json = JSON.parse( formatted );
-              individual.properties = json;
-              individual.save(true);
-              notify("success", {status: "", description: "Объект сохранен"});
-            } catch (e) {
-              individual.properties = original;
-              notify("danger", {status: "Ошибка", description: "Объект не сохранен"});
-            }
-          });
-          return;
-        } else if (template === "ttl") {
-          var list = new veda.IndividualListModel(individual);
-          veda.Util.toTTL(list, function (error, ttl) {
-            var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
-                pre = $("pre", cntr),
-                anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
-            $("a#ttl", cntr).addClass("disabled");
-            pre.html(anchored);
-            container.html(cntr);
-            container.show("fade", 250);
-          });
-          return;
         } else {
-          template = $( template );
+          template = $( (new veda.IndividualModel(template))["v-ui:template"][0].toString() );
         }
       }
       toRender = [ template ];
@@ -241,7 +181,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function afterDeleteHandler() {
       template.addClass("deleted");
       if ( container.prop("id") === "main" ) {
-        deletedAlert = $( $("#deleted-individual-alert-template").html() );
+        deletedAlert = $(
+          '<div class="alert alert-warning no-margin" role="alert">\
+            <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>\
+          </div>'
+        );
         template.prepend(deletedAlert);
         $("button", deletedAlert).click(function () {
           template.trigger("recover");
@@ -618,9 +562,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             } else {
               relContainer.empty();
             }
-          } catch (ex) {
-            if (ex instanceof TypeError) {
-              veda.trigger("warning", {status: "CL:001", description: "Attribute undefined - " + rel_uri});
+          } catch (error) {
+            if (error instanceof TypeError) {
+              var notify = veda.Notify ? new veda.Notify() : function () {};
+              notify("warning", {name: "Error", message: "Attribute undefined: " + rel_uri});
             }
           }
           // Remove rendered templates for removed values

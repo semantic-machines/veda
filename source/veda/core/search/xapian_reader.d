@@ -219,20 +219,20 @@ class XapianReader : SearchReader
                 return sr;
             }
 
-	        if (prepare_element_event !is null)
-	            prepare_element_event("");
+            if (prepare_element_event !is null)
+                prepare_element_event("");
 
             XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot);
 
-	        if (prepare_element_event !is null)
-	            prepare_element_event("");
+            if (prepare_element_event !is null)
+                prepare_element_event("");
 
             xapian_enquire.set_query(query, &err);
             if (sorter !is null)
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
 
-	        if (prepare_element_event !is null)
-	            prepare_element_event("");
+            if (prepare_element_event !is null)
+                prepare_element_event("");
 
             while (sr.result_code != ResultCode.OK)
             {

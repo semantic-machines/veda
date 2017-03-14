@@ -4,8 +4,8 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 
   var template = $("#drafts-template").html();
 
-  veda.on("load:drafts", function () {
-    var container = $("#main");
+  veda.on("load:drafts", function (cntr) {
+    var container = $(cntr || "#main");
     var tmpl = $(template);
     var ol = $("#drafts-list", tmpl);
     var deleteAllBtn = $("#delete-all", tmpl).click( function () {

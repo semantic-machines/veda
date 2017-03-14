@@ -41,6 +41,7 @@
     <meta http-equiv="cache-control" content="no-cache" />
   </head>
   <body>
+    <!-- Application container -->
     <div id="app"></div>
 
     <!-- Login form -->
@@ -58,9 +59,8 @@
 
     <!-- Notification alert -->
     <script type="html/template" id="notification-template">
-      <div class="alert alert-notify alert-dismissible fade in" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <p class="msg"><strong class="msg-icon"></strong> <strong class="msg-status"></strong> <span class="msg-description"></span></p>
+      <div class="alert alert-notify fade in" role="alert">
+        <p class="note"><strong class="note-icon"></strong> <strong class="note-code"></strong> <strong class="note-name"></strong> <span class="note-message"></span></p>
       </div>
     </script>
 
@@ -80,33 +80,6 @@
       </form>
     </script>
 
-    <!-- JSON template -->
-    <script type="html/template" id="json-template">
-      <div class="container sheet">
-        <pre style="border:none;background-color:#fff;"></pre>
-        <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
-        <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
-        <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
-        <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
-        <div class="actions pull-right">
-          <button id="edit" class="btn btn-primary">Edit</button>
-          <button id="save" class="hidden btn btn-success">Save</button>
-          <button id="cancel" class="hidden btn btn-default">Cancel</button>
-        </div>
-      </div>
-    </script>
-
-    <!-- TTL template -->
-    <script type="html/template" id="ttl-template">
-      <div class="container sheet">
-        <pre style="border:none;background-color:#fff;"></pre>
-        <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
-        <a id="generic" class="btn btn-default" href="#/@//generic">GENERIC</a>
-        <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
-        <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
-      </div>
-    </script>
-
     <!-- Individual template -->
     <script type="html/template" id="individual-template">
       <span id="individual-label"></span>
@@ -123,18 +96,6 @@
     <script type="html/template" id="individual-single-property-template">
       <span class="text-muted">{label}: </span>
       <span>{values};</span>
-    </script>
-
-    <!-- Current user template -->
-    <script type="html/template" id="user-template">
-      <a href="#/{user.id}" class="navbar-link" id="current-user"><i class="glyphicon glyphicon-user"></i> {user.rdfs:label}</a>
-    </script>
-
-    <!-- Language template -->
-    <script type="html/template" id="language-template">
-      <button id="{rdf:value.0}" class="btn btn-xs btn-success navbar-btn">
-        {rdfs:label}
-      </button>
     </script>
 
     <!-- Drafts template -->
@@ -277,23 +238,6 @@
           <div class="modal-content">
             <div class="modal-body">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
-              <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Отмена</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </script>
-
-    <!-- Show rights modal -->
-    <script type="html/template" id="show-rights-modal-template">
-      <div class="modal" id="show-rights-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <div class="modal-body">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
@@ -512,7 +456,7 @@
           </div>
           <div class="col-md-8 col-xs-7">
             <a href="#/@"><span property="@"></span></a>
-            <a href="#/graph/@/#main"><span class="glyphicon glyphicon-link"></span></a>
+            <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
           </div>
         </div>
         <hr style="margin: 10px 0px"/>
@@ -539,26 +483,26 @@
         <div class="properties"></div>
         <br>
         <br>
-        <div class="btn-group dropup">
-          <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span about="v-s:Send" property="rdfs:label"></span>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" id="standard-tasks"></ul>
-        </div>
         <div class="actions pull-left">
-          <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-          <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-          <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-          <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
-          <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin">Права доступа</button>
-          <button type="button" class="action btn btn-primary view -edit -search" id="journal">Журнал</button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+          <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+          <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+          <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+          <button type="button" class="action btn btn-primary view -edit -search" id="journal" about="v-s:Journal" property="rdfs:label"></button>
+          <div class="btn-group dropup">
+            <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span about="v-s:Send" property="rdfs:label"></span>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" id="standard-tasks"></ul>
+          </div>
         </div>
         <div class="pull-right">
-          <a id="default" class="btn btn-info" href="#/@">DEFAULT</a>
-          <a id="generic" class="btn btn-default disabled" href="#/@//generic">GENERIC</a>
-          <a id="json" class="btn btn-default" href="#/@//json">JSON</a>
-          <a id="ttl" class="btn btn-default" href="#/@//ttl">TTL</a>
+          <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+          <a id="generic" class="disabled btn btn-default" href="#/@//generic">generic</a>
+          <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+          <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
         </div>
       </div>
     </script>
@@ -571,116 +515,6 @@
       </div>
     </script>
 
-    <!-- Deleted individual alert -->
-    <script type="html/template" id="deleted-individual-alert-template">
-      <div class="alert alert-warning no-margin" role="alert">
-        <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>
-      </div>
-    </script>
-
-    <!-- Graph template -->
-    <script type="html/template" id="graph-template">
-      <div class="container-fluid sheet">
-        <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
-        <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
-
-        <div id="graph"></div>
-
-        <div id="individual-context-menu">
-          <ul class="dropdown-menu" role="menu">
-            <li role="presentation" class="dropdown-header">Индивид</li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="delete">Удалить</a></li>
-            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-          </ul>
-        </div>
-        <div id="class-context-menu">
-          <ul class="dropdown-menu" role="menu">
-            <li role="presentation" class="dropdown-header">Класс</li>
-            <li><a tabindex="-1" id="class-individuals">Все индивиды</a></li>
-            <li><a tabindex="-1" id="class-subclasses">Все подклассы</a></li>
-            <li><a tabindex="-1" id="class-properties">Свойства класса</a></li>
-            <li><a tabindex="-1" id="class-templates">Шаблоны класса</a></li>
-            <li><a tabindex="-1" id="class-specifications">Спецификации класса</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="delete">Удалить</a></li>
-            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-          </ul>
-        </div>
-        <div id="property-context-menu">
-          <ul class="dropdown-menu" role="menu">
-            <li role="presentation" class="dropdown-header">Свойство</li>
-            <li><a tabindex="-1" id="property-specifications">Спецификации свойства</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="delete">Удалить</a></li>
-            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-          </ul>
-        </div>
-        <div id="ontology-context-menu">
-          <ul class="dropdown-menu" role="menu">
-            <li role="presentation" class="dropdown-header">Онтология</li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="delete">Удалить</a></li>
-            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-          </ul>
-        </div>
-        <div id="template-context-menu">
-          <ul class="dropdown-menu" role="menu">
-            <li role="presentation" class="dropdown-header">Шаблон</li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="delete">Удалить</a></li>
-            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-          </ul>
-        </div>
-        <div id="specification-context-menu">
-          <ul class="dropdown-menu" role="menu">
-            <li role="presentation" class="dropdown-header">Спецификация</li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="out-links">Все исходящие ссылки</a></li>
-            <li><a tabindex="-1" id="in-links">Все входящие ссылки</a></li>
-            <li role="presentation" class="divider"></li>
-            <li><a tabindex="-1" id="delete">Удалить</a></li>
-            <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
-            <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
-          </ul>
-        </div>
-      </div>
-    </script>
-
-    <!-- Graph modal template -->
-    <script type="html/template" id="graph-modal-template">
-      <div class="modal" id="graph-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title"></h4>
-            </div>
-            <div class="modal-body"></div>
-          </div>
-        </div>
-      </div>
-    </script>
     <!-- Javascript -->
 
     <!-- Utils & UI -->
@@ -730,11 +564,11 @@
     <script type="text/javascript" src="/js/common/drafts_model.js"></script>
 
     <!-- Veda browser only -->
+    <script type="text/javascript" src="/js/browser/notify.js"></script>
     <script type="text/javascript" src="/js/browser/backend.js"></script>
     <script type="text/javascript" src="/js/browser/util.js"></script>
     <script type="text/javascript" src="/js/browser/veda_controls.js"></script>
     <script type="text/javascript" src="/js/browser/pager.js"></script>
-    <script type="text/javascript" src="/js/browser/individual_actions.js"></script>
     <script type="text/javascript" src="/js/browser/update_service.js"></script>
     <script type="text/javascript" src="/js/browser/displayed_services.js"></script>
     <script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
@@ -744,10 +578,8 @@
     <script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/search_sort.js"></script>
     <script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
-    <script type="text/javascript" src="/js/browser/graph_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/drafts_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
-    <script type="text/javascript" src="/js/browser/notify.js"></script>
     <script type="text/javascript" src="/js/browser/app_presenter.js"></script>
 
     <script type="text/javascript">
@@ -762,10 +594,11 @@
         var resource = $(this).closest(".modal").find("[resource]");
         var uri = resource.attr("resource");
         var mode = resource.data("mode");
+        var individual = new veda.IndividualModel(uri);
         if (mode) {
-          riot.route("#/" + uri + "///" + mode);
+          individual.present("#main", undefined, mode);
         } else {
-          riot.route("#/" + uri);
+          individual.present("#main");
         }
       });
       $(document).on({
