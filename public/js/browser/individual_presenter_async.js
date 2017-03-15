@@ -4,7 +4,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
 
   //var c = 0;
 
-  veda.on("individual:loaded_async", function (individual, container, template, mode) {
+  veda.on("individual_async:loaded", function (individual, container, template, mode) {
 
     //console.log(individual.id, "presenter count:", ++c);
 
@@ -22,8 +22,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     }
 
     var specs = $.extend.apply (
-      {},
-      [].concat(
+      {}, [].concat(
         individual["rdf:type"].map( function (_class) {
           return _class.specsByProps;
         })
@@ -33,93 +32,20 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     var toRender = [];
 
     if (template) {
-      if (template instanceof veda.IndividualModel) template = $( template["v-ui:template"][0].toString() );
-      if (template instanceof String) template = $( template.toString() );
-      if (typeof template === "string") {
-        if (template === "generic") {
-          var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
-          template = genericTemplate(individual, _class);
-        } else if (template === "json") {
-          var format = function (json) {
-            var ordered = {};
-            Object.keys(json).sort().forEach(function(key) {
-              ordered[key] = json[key];
-            });
-            return JSON.stringify(ordered, null, 2);
-          };
-          var anchorize = function (string) {
-            return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//json'>$1</a>");
-          };
-          var cntr = $( $("#json-template").html().replace(/@/g, individual.id) ),
-              pre = $("pre", cntr),
-              json = individual.properties;
-          $("a#json", cntr).addClass("disabled");
-          var formatted = format(json);
-          var anchorized = anchorize(formatted);
-          pre.html(anchorized);
-          container.append(cntr);
-          container.show("fade", 250, function () {
-            var height = $("#copyright").offset().top - container.offset().top - 120;
-            pre.css("height", height);
-          });
-          $("#edit", cntr).click(function () {
-            $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", true).text(formatted);
-          });
-          $("#cancel", cntr).click(function () {
-            $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", false).html(anchorized);
-          });
-          $("#save", cntr).click(function () {
-            $(".actions *", cntr).toggleClass("hidden");
-            pre.prop("contenteditable", false);
-            var notify = veda.Notify ? new veda.Notify() : function () {};
-            var original = individual.properties;
-            formatted = pre.text();
-            anchorized = anchorize( formatted );
-            try {
-              json = JSON.parse( formatted );
-            } catch (error) {
-              notify("danger", error);
-              return;
-            }
-            individual.properties = json;
-            individual.isSync(false);
-            individual.save()
-              .then(function () {
-                notify("success", {name: "Объект сохранен"});
-              })
-              .catch(function (error) {
-                notify("danger", error);
-              });
-          });
-          return;
-        } else if (template === "ttl") {
-          var list = new veda.IndividualListModel(individual);
-          veda.Util.toTTL(list, function (error, ttl) {
-            var cntr = $( $("#ttl-template").html().replace(/@/g, individual.id) ),
-                pre = $("pre", cntr),
-                anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
-            $("a#ttl", cntr).addClass("disabled");
-            pre.html(anchored);
-            container.html(cntr);
-            container.show("fade", 250);
-          });
-          return;
-        } else {
-          template = $( template );
-        }
+      if (template instanceof veda.IndividualModel) {
+        template = $( template["v-ui:template"][0].toString() );
+      } else if (typeof template === "string") {
+        template = $( (new veda.IndividualModel(template))["v-ui:template"][0].toString() );
       }
       toRender = [ template ];
-
     } else {
       toRender = individual["rdf:type"].map( function (_class) {
         if (_class.template && _class.template["v-ui:template"]) {
           // Get template from class
           template = $( _class.template["v-ui:template"][0].toString() );
         } else {
-          // Construct generic template
-          template = genericTemplate(individual, _class);
+          // Use generic template
+          template = $( (new veda.IndividualModel("v-ui:generic"))["v-ui:template"][0].toString() );
         }
         return template;
       });
@@ -258,7 +184,11 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     function afterDeleteHandler() {
       template.addClass("deleted");
       if ( container.prop("id") === "main" ) {
-        deletedAlert = $( $("#deleted-individual-alert-template").html() );
+        deletedAlert = $(
+          '<div class="alert alert-warning no-margin" role="alert">\
+            <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>\
+          </div>'
+        );
         template.prepend(deletedAlert);
         $("button", deletedAlert).click(function () {
           template.trigger("recover");
@@ -1161,103 +1091,4 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     return result;
   }
 
-  function genericTemplate (individual, _class) {
-    // Construct generic template
-    var propTmpl = $("#generic-property-template").html();
-    var template = $($("#generic-class-template").html());
-    var properties;
-
-    if (_class) {
-      properties = _class.domainProperties;
-      $(".className", template).append (
-          $("<span/>", {"about": _class.id, "property": "rdfs:label"})
-      );
-    } else {
-      properties = individual.properties;
-    }
-    $(".properties", template).append (
-        Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
-
-          if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
-
-          var property = new veda.IndividualModel(property_uri);
-
-          var result = $("<div/>").append( propTmpl );
-          $(".name", result).append (
-              $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-          );
-
-          var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
-
-          switch ( range ) {
-            case "rdfs:Literal":
-            case "xsd:string":
-              if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
-                $(".value", result).append (
-                    "<veda-control property='" + property_uri + "' data-type='source'></veda-control>"
-                );
-              } else {
-                $(".value", result).append (
-                    "<div property='" + property_uri + "' class='view -edit -search'/>" +
-                    "<veda-control property='" + property_uri + "' data-type='multilingualText' class='-view edit search'></veda-control>"
-                );
-              }
-              break;
-            case "xsd:integer":
-            case "xsd:nonNegativeInteger":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='integer' class='-view edit search'></veda-control>"
-              );
-              break;
-            case "xsd:decimal":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='decimal' class='-view edit search'></veda-control>"
-              );
-              break;
-            case "xsd:dateTime":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='dateTime' class='-view edit search'></veda-control>"
-              );
-              break;
-            case "xsd:boolean":
-              $(".name", result).empty();
-              $(".value", result).append (
-                  "<div class='checkbox'>" +
-                  "<label>" +
-                  "<veda-control property='" + property_uri + "' data-type='boolean'></veda-control>" +
-                  "<em about='" + property_uri + "' property='rdfs:label' class='text-muted'></em>" +
-                  "</label>" +
-                  "</div>"
-              );
-              break;
-            case "rdfs:Resource":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='generic' class='-view edit search'></veda-control>"
-              );
-              break;
-            default:
-              if (property_uri === "v-s:attachment") {
-                $(".value", result).append (
-                    "<div rel='" + property_uri + "' data-template='v-ui:FileTemplateWithComment' data-embedded='true' />" +
-                    "<veda-control rel='" + property_uri + "' data-type='file' class='-view edit -search'></veda-control>"
-                );
-              } else {
-                $(".value", result).append (
-                    "<div rel='" + property_uri + "' data-template='v-ui:ClassNameLabelLinkTemplate' />" +
-                    "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
-                );
-              }
-              break;
-          }
-          if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
-
-          return result;
-        })
-    );
-    return template;
-  }
 });
