@@ -36,8 +36,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         template = $( template["v-ui:template"][0].toString() );
       } else if (typeof template === "string") {
         if (template === "generic") {
-          var _class = individual.hasValue("rdf:type") ? individual["rdf:type"][0] : undefined ;
-          template = genericTemplate(individual, _class);
+          template = genericTemplate(individual);
         } else {
           template = $( (new veda.IndividualModel(template))["v-ui:template"][0].toString() );
         }
@@ -51,7 +50,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           template = $( _class.template["v-ui:template"][0].toString() );
         } else {
           // Construct generic template
-          template = genericTemplate(individual, _class);
+          template = genericTemplate(individual);
         }
         return template;
       });
@@ -1088,20 +1087,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return result;
   }
 
-  function genericTemplate (individual, _class) {
+  function genericTemplate (individual) {
     // Construct generic template
     var propTmpl = $("#generic-property-template").html();
     var template = $($("#generic-class-template").html());
-    var properties;
-
-    if (_class) {
-      properties = _class.domainProperties;
-      $(".className", template).append (
-          $("<span/>", {"about": _class.id, "property": "rdfs:label"})
-      );
-    } else {
-      properties = individual.properties;
-    }
+    var properties = $.extend.apply (
+      {}, [].concat(
+        individual["rdf:type"].map( function (_class) {
+          $(".className", template).append (
+            $("<span/>", {"about": _class.id, "property": "rdfs:label"})
+          );
+          return _class.domainProperties;
+        })
+      )
+    );
     $(".properties", template).append (
         Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
 
