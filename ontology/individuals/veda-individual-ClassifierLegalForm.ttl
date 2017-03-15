@@ -853,13 +853,13 @@ d:OKOPF_75404
   v-s:registrationNumber "75404" ;
   v-s:hasParentLink d:OKOPF_75400
 .
-#d:OKOPF_75500
-#  a v-s:ClassifierLegalForm;
-#  rdfs:label "Частные учреждения" ;
-#  v-s:title "Частные учреждения" ;
-#  v-s:registrationNumber "75500" ;
-#  v-s:hasParentLink d:OKOPF_75000
-#.
+d:OKOPF_75500
+  a v-s:ClassifierLegalForm;
+  rdfs:label "Частные учреждения" ;
+  v-s:title "Частные учреждения" ;
+  v-s:registrationNumber "75500" ;
+  v-s:hasParentLink d:OKOPF_75000
+.
 d:OKOPF_75502
   a v-s:ClassifierLegalForm;
   rdfs:label "Благотворительные учреждения" ;
