@@ -115,8 +115,8 @@ v-s:RequestDelegationTemplate
     $("#delegator-control", template).removeClass("-edit").addClass("edit");
     $("#delegator-value", template).removeClass("edit").addClass("-edit");
     $("#position-control", template).removeClass("-edit").addClass("edit");
-  } else if ( !individual.isNew() && !individual.hasValue("v-s:creator", veda.appointment) && !individual.hasValue("v-s:creator", veda.user) ) {
-    $(".actions", template).remove();
+  } else {
+    $("#custom-label", template).remove();
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
@@ -152,6 +152,13 @@ v-s:RequestDelegationTemplate
       <veda-control data-type="link" rel="v-s:delegate" class="-view edit search fulltext"></veda-control>
     </div>
   </div>
+  <div class="row" id="custom-label">
+    <div class="col-md-6 col-xs-12">
+      <em about="rdfs:label" property="rdfs:label"></em>
+      <div property="rdfs:label" class="view -edit -search"></div>
+      <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-3 col-xs-6">
       <em about="v-s:dateFrom" property="rdfs:label"></em>
@@ -168,7 +175,7 @@ v-s:RequestDelegationTemplate
   <div class="view -edit -search">
     <em about="v-s:createdAppointment" property="rdfs:label"></em>
     <ul about="@" rel="v-s:createdAppointment">
-      <li><a href="#/@" property="@"></a></li>
+      <li><a href="#/@" property="rdfs:label"></a></li>
     </ul>
   </div>
   <br>
@@ -418,7 +425,8 @@ var request_uri = document["@"],
     delegate_uri = getUri(document["v-s:delegate"]),
     position_uris = getUris(document["v-s:delegatedPosition"]),
     request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean}),
-    delegate;
+    delegate,
+    custom_label = document["rdfs:label"];
 
 print("[cfg:Event_Delegation] ************************** START **************************");
 print("[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual);
@@ -443,11 +451,36 @@ position_uris.map(function (position_uri) {
   var uri = "d:" + ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_");
   var appointment = get_individual(ticket, uri);
 
+  // Compute label
+  var appointment_label;
+  if ( !custom_label ) {
+    try {
+      var delegate = get_individual(ticket, delegate_uri);
+      var position = get_individual(ticket, position_uri);
+      var delegate_labels = delegate["rdfs:label"];
+      var position_labels = position["rdfs:label"];
+      print('delegate_labels:', JSON.stringify(delegate_labels), 'position_labels:', JSON.stringify(position_labels));
+      appointment_label = delegate_labels.map(function (item) {
+        var lang = item.lang;
+        var pos_label = position_labels.map( function (label) {
+          return label.lang === lang ? label.data : undefined;
+        }).filter( function (val) {
+          return val !== undefined;
+        });
+        item.data = item.data + " : " + pos_label.join(", ") + " (*)";
+        return item;
+      });
+    } catch (error) {
+      print(error);
+      appointment_label = newStr(uri);
+    }
+  }
+
   if ( !appointment ) {
     appointment = {
       "@": uri,
       "rdf:type": newUri("v-s:Appointment"),
-      "rdfs:label": newStr(uri),
+      "rdfs:label": custom_label || appointment_label,
       "v-s:employee": newUri(delegate_uri),
       "v-s:occupation": newUri(position_uri),
       "v-s:dateFrom": dateFrom,
