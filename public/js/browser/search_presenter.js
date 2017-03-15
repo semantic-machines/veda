@@ -11,19 +11,18 @@ veda.Module(function SearchPresenter(veda) { "use strict";
 
     var container = container_param || $("#main");
 
-    // Change location.hash if search was presented in #main container
-    /*if (container.prop("id") === "main") {
-      var hash = ["#/search", container_param || "", page_param || ""].join("/");
-      riot.route(hash, false);
-    }*/
+    // Clear #main container
+    if (container.prop("id") === "main") {
+      container.empty();
+    }
 
-    container.empty().hide();
+    container.hide();
 
     search.currentPage = (typeof page_param === "number" ? page_param : search.currentPage) || 0;
 
     // Get template
     var rendered = riot.render(template, search);
-    container.html(rendered);
+    container.append(rendered);
 
     $("#q", container).focus();
     $(".not-found", container).hide();

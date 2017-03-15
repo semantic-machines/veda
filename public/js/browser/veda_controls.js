@@ -1695,7 +1695,7 @@
     // Search modal feature
     if ( this.hasClass("fullsearch") || this.hasClass("full") ) {
       // Search modal
-      var tmpl = $("#search-modal-template").html();
+      var tmpl = $("#individual-modal-template").html();
       fullsearch.on("click", function (e) {
         var $modal = $(tmpl);
         $modal.on('hidden.bs.modal', function (e) {
