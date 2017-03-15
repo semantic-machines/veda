@@ -35,22 +35,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (template instanceof veda.IndividualModel) {
         template = $( template["v-ui:template"][0].toString() );
       } else if (typeof template === "string") {
-        if (template === "generic") {
-          template = genericTemplate(individual);
-        } else {
-          template = $( (new veda.IndividualModel(template))["v-ui:template"][0].toString() );
-        }
+        template = $( (new veda.IndividualModel(template))["v-ui:template"][0].toString() );
       }
       toRender = [ template ];
-
     } else {
       toRender = individual["rdf:type"].map( function (_class) {
         if (_class.template && _class.template["v-ui:template"]) {
           // Get template from class
           template = $( _class.template["v-ui:template"][0].toString() );
         } else {
-          // Construct generic template
-          template = genericTemplate(individual);
+          // Use generic template
+          template = $( (new veda.IndividualModel("v-ui:generic"))["v-ui:template"][0].toString() );
         }
         return template;
       });
@@ -1087,103 +1082,4 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return result;
   }
 
-  function genericTemplate (individual) {
-    // Construct generic template
-    var propTmpl = $("#generic-property-template").html();
-    var template = $($("#generic-class-template").html());
-    var properties = $.extend.apply (
-      {}, [].concat(
-        individual["rdf:type"].map( function (_class) {
-          $(".className", template).append (
-            $("<span/>", {"about": _class.id, "property": "rdfs:label"})
-          );
-          return _class.domainProperties;
-        })
-      )
-    );
-    $(".properties", template).append (
-        Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
-
-          if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
-
-          var property = new veda.IndividualModel(property_uri);
-
-          var result = $("<div/>").append( propTmpl );
-          $(".name", result).append (
-              $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
-          );
-
-          var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
-
-          switch ( range ) {
-            case "rdfs:Literal":
-            case "xsd:string":
-              if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
-                $(".value", result).append (
-                    "<veda-control property='" + property_uri + "' data-type='source'></veda-control>"
-                );
-              } else {
-                $(".value", result).append (
-                    "<div property='" + property_uri + "' class='view -edit -search'/>" +
-                    "<veda-control property='" + property_uri + "' data-type='multilingualText' class='-view edit search'></veda-control>"
-                );
-              }
-              break;
-            case "xsd:integer":
-            case "xsd:nonNegativeInteger":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='integer' class='-view edit search'></veda-control>"
-              );
-              break;
-            case "xsd:decimal":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='decimal' class='-view edit search'></veda-control>"
-              );
-              break;
-            case "xsd:dateTime":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='dateTime' class='-view edit search'></veda-control>"
-              );
-              break;
-            case "xsd:boolean":
-              $(".name", result).empty();
-              $(".value", result).append (
-                  "<div class='checkbox'>" +
-                  "<label>" +
-                  "<veda-control property='" + property_uri + "' data-type='boolean'></veda-control>" +
-                  "<em about='" + property_uri + "' property='rdfs:label' class='text-muted'></em>" +
-                  "</label>" +
-                  "</div>"
-              );
-              break;
-            case "rdfs:Resource":
-              $(".value", result).append (
-                  "<div property='" + property_uri + "' />" +
-                  "<veda-control property='" + property_uri + "' data-type='generic' class='-view edit search'></veda-control>"
-              );
-              break;
-            default:
-              if (property_uri === "v-s:attachment") {
-                $(".value", result).append (
-                    "<div rel='" + property_uri + "' data-template='v-ui:FileTemplateWithComment' data-embedded='true' />" +
-                    "<veda-control rel='" + property_uri + "' data-type='file' class='-view edit -search'></veda-control>"
-                );
-              } else {
-                $(".value", result).append (
-                    "<div rel='" + property_uri + "' data-template='v-ui:ClassNameLabelLinkTemplate' />" +
-                    "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
-                );
-              }
-              break;
-          }
-          if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
-
-          return result;
-        })
-    );
-    return template;
-  }
 });
