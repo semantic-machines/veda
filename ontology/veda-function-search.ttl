@@ -35,12 +35,22 @@ v-fs:AttributiveRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Attributive request"@en ;
-  rdfs:label "Аттрибутивный запрос"@ru ;
+  rdfs:label "Атрибутивный запрос"@ru ;
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;
   rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
+.
+v-fs:Fulltext
+  rdf:type v-fs:FulltextRequest ;
+  rdfs:label "Полнотекстовый поиск"@ru ;
+  rdfs:label "Fulltext search"@en ;
+.
+v-fs:Attributive
+  rdf:type v-fs:AttributiveRequest ;
+  rdfs:label "Атрибутивный поиск"@ru ;
+  rdfs:label "Attributive search"@en ;
 .
 v-fs:fulltextQuery
   rdf:type owl:DatatypeProperty ;
@@ -148,12 +158,12 @@ v-fs:SavedRequests
   rdfs:label "Saved requests"@en ;
   rdfs:label "Сохраненные запросы"@ru ;
 .
-v-fs:Fulltext
+v-fs:FulltextBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Fulltext"@en ;
   rdfs:label "Полнотекстовый"@ru ;
 .
-v-fs:Attributive
+v-fs:AttributiveBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Attributive"@en ;
   rdfs:label "Атрибутивный"@ru ;
@@ -246,8 +256,8 @@ v-fs:SearchTemplate
       <div class="col-md-2 col-sm-3">
         <h4></h4>
         <ul class="nav nav-pills nav-stacked" role="tablist" id="req-tabs">
-          <li role="presentation" class="active"><a href="#fulltext-search" about="v-fs:Fulltext" property="rdfs:label" aria-controls="fulltext-search" role="tab" data-toggle="tab"></a></li>
-          <li role="presentation"><a href="#attributive-search" about="v-fs:Attributive" property="rdfs:label" aria-controls="attributive-search" role="tab" data-toggle="tab"></a></li>
+          <li role="presentation" class="active"><a href="#fulltext-search" about="v-fs:FulltextBundle" property="rdfs:label" aria-controls="fulltext-search" role="tab" data-toggle="tab"></a></li>
+          <li role="presentation"><a href="#attributive-search" about="v-fs:AttributiveBundle" property="rdfs:label" aria-controls="attributive-search" role="tab" data-toggle="tab"></a></li>
         </ul>
         <hr>
         <h4 about="v-fs:SavedRequests" property="rdfs:label"></h4>

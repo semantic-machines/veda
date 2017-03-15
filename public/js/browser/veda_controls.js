@@ -460,6 +460,9 @@
     function handler (doc_property_uri, values) {
       if (doc_property_uri === property_uri) {
         input.each(function () {
+          if (this !== document.activeElement) {
+            return;
+          }
           var lang = this.lang;
           var value = values.filter(function (item) {
             // Set string language to default if undefined
@@ -1695,7 +1698,7 @@
     // Search modal feature
     if ( this.hasClass("fullsearch") || this.hasClass("full") ) {
       // Search modal
-      var tmpl = $("#search-modal-template").html();
+      var tmpl = $("#individual-modal-template").html();
       fullsearch.on("click", function (e) {
         var $modal = $(tmpl);
         $modal.on('hidden.bs.modal', function (e) {
