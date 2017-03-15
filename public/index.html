@@ -55,7 +55,7 @@
     <!-- Notification alerts -->
     <div id="notification-container"></div>
 
-    <!-- Templates -->
+    <!-- TEMPLATES -->
 
     <!-- Notification alert -->
     <script type="html/template" id="notification-template">
@@ -230,7 +230,7 @@
       </span>
     </script>
 
-    <!-- Modals -->
+    <!-- MODALS -->
 
     <!-- Individual modal -->
     <script type="html/template" id="individual-modal-template">
@@ -262,7 +262,8 @@
       </div>
     </script>
 
-<!-- BEGIN VEDA-CONTROLS -->
+
+    <!-- CONTROLS -->
 
     <!-- Link control template -->
     <script type="html/template" id="link-control-template">
@@ -417,85 +418,6 @@
           <input type="hidden" id="uri" name="uri"/>
         </form>
         <iframe src="#" style="display:none"></iframe>
-      </div>
-    </script>
-
-<!-- END VEDA-CONTROLS -->
-
-    <!-- Generic class template -->
-    <script type="html/template" id="generic-class-template">
-      <div class="container sheet">
-        <div class="row">
-          <div class="col-md-4 col-xs-5 text-right">
-            <h2 class="text-muted className"></h2>
-          </div>
-          <div class="col-md-8 col-xs-7">
-            <h2 about="@" property="rdfs:label"></h2>
-          </div>
-        </div>
-        <hr style="margin: 10px 0px"/>
-        <div class="row">
-          <div class="col-md-4 col-xs-5 text-right">
-            <strong class="text-muted">@</strong>
-          </div>
-          <div class="col-md-8 col-xs-7">
-            <a href="#/@"><span property="@"></span></a>
-            <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-          </div>
-        </div>
-        <hr style="margin: 10px 0px"/>
-        <div class="row">
-          <div class="col-md-4 col-xs-5 text-right">
-            <strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
-          </div>
-          <div class="col-md-8 col-xs-7">
-            <div rel="rdf:type" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-            <veda-control rel="rdf:type" data-type="link" data-template="{individual['rdf:type'][0]['rdfs:label'].join(' ')+': '+individual['rdfs:label'].join(' ')}" class='-view edit search fullsearch fulltext dropdown'></veda-control>
-          </div>
-        </div>
-        <hr style="margin: 10px 0px"/>
-        <div class="row">
-          <div class="col-md-4 col-xs-5 text-right">
-            <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
-          </div>
-          <div class="col-md-8 col-xs-7">
-            <div property="rdfs:label"></div>
-            <veda-control property="rdfs:label" data-type="multilingualString" class='-view edit search'></veda-control>
-          </div>
-        </div>
-        <hr style="margin: 10px 0px"/>
-        <div class="properties"></div>
-        <br>
-        <br>
-        <div class="actions pull-left">
-          <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-          <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
-          <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-          <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-          <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
-          <button type="button" class="action btn btn-primary view -edit -search" id="journal" about="v-s:Journal" property="rdfs:label"></button>
-          <div class="btn-group dropup">
-            <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <span about="v-s:Send" property="rdfs:label"></span>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" id="standard-tasks"></ul>
-          </div>
-        </div>
-        <div class="pull-right">
-          <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
-          <a id="generic" class="disabled btn btn-default" href="#/@//generic">generic</a>
-          <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
-          <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
-        </div>
-      </div>
-    </script>
-    <script type="html/template" id="generic-property-template">
-      <div class="row">
-        <div class="col-md-4 col-xs-5 text-right name">
-        </div>
-        <div class="col-md-8 col-xs-7 value">
-        </div>
       </div>
     </script>
 
