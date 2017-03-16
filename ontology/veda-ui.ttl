@@ -2036,7 +2036,7 @@ v-ui:ttl
   var list = new veda.IndividualListModel(individual);
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
-        anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+        anchored = ttl.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
     pre.html(anchored);
   });
   //# sourceURL=v-ui:ttl
@@ -2111,7 +2111,7 @@ v-ui:json
     return JSON.stringify(ordered, null, 2);
   };
   function anchorize (string) {
-    return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
+    return string.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
   };
   //# sourceURL=v-ui:json
 </script>
