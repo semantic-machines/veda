@@ -2054,7 +2054,7 @@ v-ui:ttl
   var list = new veda.IndividualListModel(individual);
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
-        anchored = ttl.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+        anchored = ttl.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
     pre.html(anchored);
   });
   //# sourceURL=v-ui:ttl
