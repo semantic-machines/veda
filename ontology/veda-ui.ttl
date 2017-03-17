@@ -904,6 +904,24 @@ v-ui:ClassNameLabelLinkTemplate
   </script>
   """ ;
 .
+v-ui:ClassNameLabelLinkEditTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Template with class name and label"@en ;
+  v-ui:template """
+  <span><a href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    template.css({
+      "display": "inline-block",
+      "margin": "0 7px 7px 0"
+    });
+    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
+  </script>
+  """ ;
+.
 
 v-ui:RabbitHole
   rdf:type v-ui:ClassTemplate ;
