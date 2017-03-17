@@ -521,7 +521,7 @@ v-ui:LinkTemplate
           <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
           <br class="-view edit search">
           <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
-          <veda-control data-type="link" rel="v-s:to" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
           <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
           <div class="view -edit -search">
             <span class="fa fa-long-arrow-down"></span> <strong property="rdfs:comment" class="view -edit -search"></strong>
@@ -660,7 +660,7 @@ v-ui:ClassTemplateTemplate
   <br class="-view edit search">
   <em about="v-ui:forClass" property="rdfs:label"></em>
   <div rel="v-ui:forClass" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-  <veda-control rel="v-ui:forClass" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+  <veda-control rel="v-ui:forClass" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
   <br>
   <veda-control property="v-ui:template" data-type="source"></veda-control>
   <br>
@@ -1998,19 +1998,19 @@ td:AppointmentTemplate1
         <div class="col-md-6">
           <em about="v-s:employee" property="rdfs:label"></em>
           <div rel="v-s:employee" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fullsearch fulltext full"></veda-control>
+          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fulltext full"></veda-control>
         </div>
         <div class="col-md-6">
           <em about="v-s:occupation" property="rdfs:label"></em>
           <div rel="v-s:occupation" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fulltext"></veda-control>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6">
           <em about="v-s:parentUnit" property="rdfs:label"></em>
           <div rel="v-s:parentUnit" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fulltext"></veda-control>
         </div>
       </div>
     </div>
@@ -2229,7 +2229,7 @@ v-ui:generic
           } else {
             $(".value", result).append (
                 "<div rel='" + property_uri + "' data-template='v-ui:ClassNameLabelLinkTemplate' />" +
-                "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fullsearch fulltext dropdown'></veda-control>"
+                "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fulltext dropdown'></veda-control>"
             );
           }
           break;
@@ -2267,7 +2267,7 @@ v-ui:generic
     </div>
     <div class="col-md-8 col-xs-7">
       <div rel="rdf:type" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-      <veda-control rel="rdf:type" data-type="link" data-template="{individual['rdf:type'][0]['rdfs:label'].join(' ')+': '+individual['rdfs:label'].join(' ')}" class='-view edit search fullsearch fulltext dropdown'></veda-control>
+      <veda-control rel="rdf:type" data-type="link" data-template="{individual['rdf:type'][0]['rdfs:label'].join(' ')+': '+individual['rdfs:label'].join(' ')}" class='-view edit search fulltext dropdown'></veda-control>
     </div>
   </div>
   <hr style="margin: 10px 0px"/>
@@ -2336,7 +2336,7 @@ td:AccountTemplate1
     <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
     <em about="v-s:owner" property="rdfs:label">Владелец</em>
     <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
-    <veda-control rel="v-s:owner" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+    <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
     <br />
     <div class="row">
       <div class="col-md-6">
