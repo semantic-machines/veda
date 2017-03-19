@@ -49,13 +49,6 @@ veda.Module(function (veda) { "use strict";
     this.on("individual:propertyModified", typeChangedHandler);
     this.on("individual:beforeSave", beforeSaveHandler);
 
-    if (container) {
-      this.one("individual:afterLoad", function (individual) {
-        this.present.call(individual, container, template, mode);
-        container = template = mode = null;
-      });
-    }
-
     return this;
   };
 
@@ -259,9 +252,15 @@ veda.Module(function (veda) { "use strict";
     this.trigger("individual:beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
+
       if (this._.cache && veda.cache[uri]) {
-        this.trigger("individual:afterLoad", veda.cache[uri]);
-        return Promise.resolve(veda.cache[uri]);
+        if ( veda.cache[uri] instanceof veda.IndividualModelAsync ) {
+          this.trigger("individual:afterLoad", veda.cache[uri]);
+          return Promise.resolve(veda.cache[uri]);
+        } else if ( veda.cache[uri] instanceof veda.IndividualModel ) {
+          var asyncModel = new veda.IndividualModelAsync( veda.cache[uri].properties );
+          return asyncModel.load();
+        }
       }
 
       return get_individual({ticket: veda.ticket, uri: uri, async: true})

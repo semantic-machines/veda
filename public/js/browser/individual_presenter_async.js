@@ -21,75 +21,84 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       if (hash !== location.hash) riot.route(hash, false);
     }
 
-    var specs = $.extend.apply (
+    /*var specs = $.extend.apply (
       {}, [].concat(
         individual["rdf:type"].map( function (_class) {
           return _class.specsByProps;
         })
       )
-    );
-
-    var toRender = [];
+    );*/
+    var specs = {};
 
     if (template) {
-      if (template instanceof veda.IndividualModel) {
-        template = $( template["v-ui:template"][0].toString() );
+      if (template instanceof veda.IndividualModelAsync) {
+        template.load().then(function (template) {
+          template = $( template["v-ui:template"][0].toString() );
+          renderTemplate(individual, container, template, mode, specs);
+        });
       } else if (typeof template === "string") {
-        template = $( (new veda.IndividualModel(template))["v-ui:template"][0].toString() );
+        template = new veda.IndividualModelAsync(template);
+        template.load().then(function (template) {
+          template = $( template["v-ui:template"][0].toString() );
+          renderTemplate(individual, container, template, mode, specs);
+        });
+      } else {
+        renderTemplate(individual, container, template, mode, specs);
       }
-      toRender = [ template ];
     } else {
-      toRender = individual["rdf:type"].map( function (_class) {
-        if (_class.template && _class.template["v-ui:template"]) {
-          // Get template from class
-          template = $( _class.template["v-ui:template"][0].toString() );
-        } else {
-          // Use generic template
-          template = $( (new veda.IndividualModel("v-ui:generic"))["v-ui:template"][0].toString() );
-        }
-        return template;
+      individual["rdf:type"].map(function (type) {
+        type.load()
+          .then(function (type) {
+            return type.template ? type.template.load() : (new veda.IndividualModelAsync("v-ui:generic")).load();
+          })
+          .then(function (template) {
+            renderTemplate(individual, container, template, mode, specs);
+          });
       });
     }
-
-    toRender.map( function (template) {
-      var pre_render_src,
-          pre_render,
-          post_render_src,
-          post_render;
-
-      template = template.filter(function () { return this.nodeType === 1 });
-
-      if (template.first().is("script")) {
-        pre_render_src = template.first().text();
-        pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
-      }
-      if (template.last().is("script")) {
-        post_render_src = template.last().text();
-        post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
-      }
-      template = template.filter("*:not(script)");
-
-      if (pre_render) {
-        pre_render(veda, individual, container, template, mode, specs);
-      }
-
-      template = renderTemplate (individual, container, template, mode, specs);
-      container.append(template);
-      individual.trigger("individual:templateReady", template);
-
-      // Timeout to wait all related individuals to render
-      setTimeout(function () {
-        template.trigger(mode);
-        if (post_render) {
-          post_render(veda, individual, container, template, mode, specs);
-        }
-      }, 0);
-    });
-
     if (container.prop("id") === "main") { container.show("fade", 250); }
   });
 
-  function renderTemplate (individual, container, template, mode, specs) {
+  function renderTemplate(individual, container, template, mode, specs) {
+    console.log("rendered!", individual, container, template, mode, specs);
+  }
+
+  function renderTemplate2(individual, container, template, mode, specs) {
+    var pre_render_src,
+        pre_render,
+        post_render_src,
+        post_render;
+
+    template = template.filter(function () { return this.nodeType === 1 });
+
+    if (template.first().is("script")) {
+      pre_render_src = template.first().text();
+      pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
+    }
+    if (template.last().is("script")) {
+      post_render_src = template.last().text();
+      post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
+    }
+    template = template.filter("*:not(script)");
+
+    if (pre_render) {
+      pre_render.call(individual, veda, individual, container, template, mode, specs);
+    }
+
+    template = processTemplate (individual, container, template, mode, specs);
+    container.append(template);
+    individual.trigger("individual:templateReady", template);
+
+    // Timeout to wait all related individuals to render
+    setTimeout(function () {
+      template.trigger(mode);
+      if (post_render) {
+        post_render.call(individual, veda, individual, container, template, mode, specs);
+      }
+    }, 0);
+  }
+
+  function processTemplate (individual, container, template, mode, specs) {
 
     template.attr({
       "resource": individual.id,
@@ -141,7 +150,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           }, function (error) {
             notify("danger", {name: "Объект не сохранен"});
           }
-        )
+        );
       }
     }
     template.on("save", saveHandler);

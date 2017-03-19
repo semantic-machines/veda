@@ -41,13 +41,6 @@ veda.Module(function (veda) { "use strict";
     this.on("individual:propertyModified", typeChangedHandler);
     this.on("individual:beforeSave", beforeSaveHandler);
 
-    if (container) {
-      this.one("individual:afterLoad", function (individual) {
-        this.present.call(individual, container, template, mode);
-        container = template = mode = null;
-      });
-    }
-
     return self.load(uri);
   };
 
@@ -248,10 +241,17 @@ veda.Module(function (veda) { "use strict";
     this.trigger("individual:beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
+
       if (this._.cache && veda.cache[uri]) {
-        this.trigger("individual:afterLoad", veda.cache[uri]);
-        return veda.cache[uri];
+        if ( veda.cache[uri] instanceof veda.IndividualModel ) {
+          this.trigger("individual:afterLoad", veda.cache[uri]);
+          return veda.cache[uri];
+        } else if ( veda.cache[uri] instanceof veda.IndividualModelAsync ) {
+          var syncModel = new veda.IndividualModel( veda.cache[uri].properties );
+          return syncModel;
+        }
       }
+
       try {
         this.isNew(false);
         this.isSync(true);
