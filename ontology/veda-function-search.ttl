@@ -197,8 +197,8 @@ v-fs:Find
 .
 v-fs:Results
   rdf:type v-s:Bundle ;
-  rdfs:label "What we found"@en ;
-  rdfs:label "Что нашли"@ru ;
+  rdfs:label "Results"@en ;
+  rdfs:label "Результаты"@ru ;
 .
 v-fs:Empty
   rdf:type v-s:Bundle ;
@@ -1122,6 +1122,22 @@ v-fs:searchBlank
   rdfs:range v-fc:Blank ;
 .
 
+v-fs:searchOnLoad
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Искать сразу"@ru ;
+  rdfs:label "Search on load"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:boolean ;
+.
+
+v-fs:AttributiveSearchModel
+  rdf:type v-s:ClassModel ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Model for v-fs:AttributiveSearch class"@en ;
+  rdfs:label "Модель для класса v-fs:AttributiveSearch"@ru ;
+  v-s:script "" ;
+.
+
 v-fs:TotalFoundBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Total found"@en ;
@@ -1160,9 +1176,8 @@ v-fs:AttributiveSearchTemplate
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
-  <!--h2 about="@" property="rdfs:label"></h2-->
+  <h2 about="@" property="rdfs:label"></h2>
   <div id="params">
-    <h3 about="v-fs:Params" property="rdfs:label"></h3>
     <div id="search-form"></div>
     <br>
     <br>
@@ -1172,17 +1187,19 @@ v-fs:AttributiveSearchTemplate
   <br>
   <div id="results" class="hidden">
     <hr>
-    <h3><span about="v-fs:Results" property="rdfs:label"></span></h3>
-    <div id="stats-top" class="text-right margin-md">
-      <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
-      <span class="total-found badge">0</span>&nbsp;&nbsp;
-      <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
-      <span class="total-processed badge">0</span>&nbsp;&nbsp;
-      <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
-      <span class="total-authorized badge">0</span>&nbsp;&nbsp;
-    </div>
+    <h3 class="clearfix">
+      <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
+      <small class="stats-top pull-right" style="color:black">
+        <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
+        <span class="total-found badge">0</span>&nbsp;&nbsp;
+        <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
+        <span class="total-processed badge">0</span>&nbsp;&nbsp;
+        <span about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></span>
+        <span class="total-authorized badge">0</span>&nbsp;&nbsp;
+      </small>
+    </h3>
     <div id="search-result" class="search-result table-responsive"></div>
-    <div id="stats-bottom" class="text-right margin-md">
+    <div class="stats-bottom text-right margin-md">
       <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
       <span class="total-found badge">0</span>&nbsp;&nbsp;
       <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
@@ -1219,7 +1236,8 @@ v-fs:AttributiveSearchTemplate
       totalFound = $(".total-found", template),
       totalProcessed = $(".total-processed", template),
       totalAuthorized = $(".total-authorized", template),
-      statsBottom = $("#stats-bottom", template);
+      statsTop = $(".stats-top", template),
+      statsBottom = $(".stats-bottom", template);
 
   self.cursor = self.cursor || 0;
   self.top = veda.user.displayedElements || 10;
@@ -1241,13 +1259,12 @@ v-fs:AttributiveSearchTemplate
     renderResult(self.result).then(function () {
       scrollTo(self.scroll);
     });
-  }
   // Search on load
-  /*else {
+  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     search().then(function () {
       scrollTo( $("#results").offset().top );
     });
-  }*/
+  }
 
   // Remember scroll position
   template.one("remove", function () {

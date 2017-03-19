@@ -92,7 +92,7 @@ v-df:ApprovalTaskTemplate
     </div>
     <div class="col-md-3">
       <div rel="v-wf:from" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-wf:from" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+      <veda-control rel="v-wf:from" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
   </div>
   <div class="row">
@@ -101,7 +101,7 @@ v-df:ApprovalTaskTemplate
     </div>
     <div class="col-md-3">
       <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-wf:onDocument" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+      <veda-control rel="v-wf:onDocument" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
   </div>
   <div class="row">
@@ -110,7 +110,7 @@ v-df:ApprovalTaskTemplate
     </div>
     <div class="col-md-3">
       <div property="v-wf:dateGiven" class="view -edit -search"></div>
-      <veda-control property="v-wf:dateGiven" data-type="dateTime" class="-view edit search fullsearch fulltext"></veda-control>
+      <veda-control property="v-wf:dateGiven" data-type="dateTime" class="-view edit search fulltext"></veda-control>
     </div>
   </div>
   <hr class="margin-sm">
@@ -990,7 +990,7 @@ v-df:DecisionTemplate2
   v-ui:template """
 <div>
   <div rel="v-s:hasActivity" data-template="v-df:ActionInDecisionTemplate" data-embedded="true"></div>
-  <veda-control rel="v-s:hasActivity" data-type="link" class="-view edit search fullsearch fulltext create"></veda-control>
+  <veda-control rel="v-s:hasActivity" data-type="link" class="-view edit search fulltext create"></veda-control>
 </div>
   """ ;
 .

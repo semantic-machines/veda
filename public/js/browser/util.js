@@ -275,7 +275,7 @@ veda.Module(function Util(veda) { "use strict";
               .map( function (value) {
                 return "'" + property_uri + "'=='" + value.data + "'";
               })
-              .join("||");
+              .join(" || ");
             break;
           case "String":
             oneProp = values
@@ -291,7 +291,7 @@ veda.Module(function Util(veda) { "use strict";
                 }
                 return "'" + property_uri + "'=='" + q + "'";
               })
-              .join("||");
+              .join(" || ");
             break;
           case "Uri":
             oneProp = values
@@ -303,14 +303,14 @@ veda.Module(function Util(veda) { "use strict";
                   return "'" + property_uri + "'=='" + value.data + "'";
                 }
               })
-              .join("||");
+              .join(" || ");
             break;
         }
-        return oneProp ? "(" + oneProp + ")" : undefined;
+        return oneProp ? "( " + oneProp + " )" : undefined;
       })
       .filter(function(item){return typeof item !== undefined;})
-      .join("&&");
-    query = allProps ? "(" + allProps + ")" : undefined;
+      .join(" && ");
+    query = allProps ? "( " + allProps + " )" : undefined;
     return query;
   }
 

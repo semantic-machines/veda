@@ -27,6 +27,13 @@ td:pm_pa_au
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
+cfg:User_position
+  a v-s:Position;
+  v-s:updateCounter "1"^^xsd:integer;
+  v-s:origin "manual"^^xsd:string;
+  rdfs:label "Пользователь"@ru;
+  rdfs:label "User"@en;
+.
 
 cfg:Guest
   rdf:type v-s:Person ;
@@ -37,11 +44,43 @@ cfg:Guest
   rdfs:label "Guest"@en ;
   rdfs:label "Гость"@ru ;
 .
-
 cfg:GuestAccount
   rdf:type v-s:Account ;
   rdfs:label "Guest account"@en ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "Гостевая учетная запись"@ru ;
+.
+cfg:GuestAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:Guest ;
+  rdfs:label "Guest"@ru ;
+.
+
+cfg:ImportDMSToVeda
+  rdf:type v-s:Person ;
+  v-s:author cfg:VedaSystem ;
+  v-s:firstName "Import DMS to Veda"@en ;
+  v-s:firstName "Утилита импорта DMS to Veda"@ru ;
+  v-s:hasAccount cfg:ImportDMSToVedaAccount ;
+  rdfs:label "Import DMS to Veda"@en ;
+  rdfs:label "Утилита DMS to Veda"@ru ;
+.
+cfg:ImportDMSToVedaAccount
+  rdf:type v-s:Account ;
+  rdfs:label "Import DMS to Veda account"@en ;
+  v-s:owner cfg:ImportDMSToVeda;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  v-s:login "ImportDMSToVeda" ;
+  rdfs:label "Утилита импорта DMS to Veda. Учетная запись"@ru ;
+.
+cfg:ImportDMSToVedaAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:ImportDMSToVeda ;
+  v-s:occupation cfg:User_position;
+  v-s:official "false"^^xsd:boolean;
+  rdfs:label "Утилита DMS To Veda"@ru ;
 .
 
 cfg:VedaSystem
@@ -57,21 +96,6 @@ cfg:VedaSystem
   rdfs:label "Veda System"@en ;
   rdfs:label "Система Веда"@ru ;
 .
-
-cfg:Permission_VedaSystem_allRead
-  rdf:type v-s:PermissionStatement ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:permissionObject cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-.
-
-cfg:VedaSystemAppointment
-  rdf:type v-s:Appointment ;
-  v-s:author cfg:VedaSystem ;
-  v-s:employee cfg:VedaSystem ;
-  rdfs:label "Система Optiflow"@ru ;
-.
-
 cfg:VedaSystemAccount
   rdf:type v-s:Account ;
   v-s:author cfg:VedaSystem ;
@@ -81,6 +105,19 @@ cfg:VedaSystemAccount
   rdfs:label "Veda System account"@en ;
   rdfs:label "Учетная запись системы Веда"@ru ;
   v-s:mailbox "DocFlow.Syktyvkar@mondigroup.com" ;
+.
+cfg:VedaSystemAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:VedaSystem ;
+  rdfs:label "Система Optiflow"@ru ;
+.
+
+cfg:Permission_VedaSystem_allRead
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject cfg:VedaSystem ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
 .
 
 cfg:Administrator
@@ -94,13 +131,6 @@ cfg:Administrator
   rdfs:label "Administrator"@en ;
   rdfs:label "Администратор"@ru ;
 .
-
-cfg:AdministratorAppointment
-  rdf:type v-s:Appointment ;
-  v-s:author cfg:VedaSystem ;
-  v-s:employee cfg:Administrator ;
-.
-
 cfg:AdministratorAccount
   rdf:type v-s:Account ;
   v-s:author cfg:VedaSystem ;
@@ -109,6 +139,11 @@ cfg:AdministratorAccount
   v-s:owner cfg:Administrator ;
   rdfs:label "Administrator account"@en ;
   rdfs:label "Учетная запись администратора"@ru ;
+.
+cfg:AdministratorAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:Administrator ;
 .
 
 cfg:SuperUser
@@ -144,6 +179,7 @@ cfg:Membership_su
   v-s:author cfg:VedaSystem ;
   v-s:resource cfg:VedaSystem ;
   v-s:resource cfg:Administrator ;
+  v-s:resource cfg:ImportDMSToVeda ;
   v-s:memberOf cfg:SuperUser ;
 .
 

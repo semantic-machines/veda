@@ -1705,7 +1705,7 @@ v-wf:replyTo
 v-wf:dateGiven
   rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Контрольный срок"@ru ;
+  rdfs:label "Срок"@ru ;
   rdfs:label "Due date"@en ;
   rdfs:domain v-wf:DecisionForm ;
   rdfs:range xsd:dateTime ;
