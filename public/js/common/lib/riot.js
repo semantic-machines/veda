@@ -12,10 +12,10 @@ riot.observable = function(el) {
         fn.typed = pos > 0;
       });
     }
-    
+
     //Karpovr:DEBUG
-    el._events = callbacks;
-    
+    //el._events = callbacks;
+
     return el;
   };
 
@@ -31,10 +31,10 @@ riot.observable = function(el) {
         callbacks[name] = [];
       });
     }
-    
+
     //Karpovr:DEBUG
-    el._events = callbacks;
-    
+    //el._events = callbacks;
+
     return el;
   };
 
@@ -59,7 +59,7 @@ riot.observable = function(el) {
 
     return el;
   };
-  
+
   return el;
 
 };
@@ -77,23 +77,23 @@ riot.render = function(tmpl, data, escape_fn) {
   if (escape_fn === true) escape_fn = default_escape_fn;
   tmpl = tmpl || '';
 
-  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" + 
+  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
     tmpl.replace(/[\\\n\r']/g, function(char) {
       return template_escape[char];
     }).replace(/{\s*(.+?)\s*}/g, function(m, g) {
-		var key = g.split(".").reduce(function (acc, i) {
-			return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
-		}, "");
-		return "' + (e?e(_" + key + ",\"" + key + "\"):_" + key + "||(_" + key + "==null?'':_" + key + ")) + '";
+      var key = g.split(".").reduce(function (acc, i) {
+        return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
+      }, "");
+      return "' + (e?e(_" + key + ",\"" + key + "\"):_" + key + "||(_" + key + "==null?'':_" + key + ")) + '";
     }) + "'")
   )(data, escape_fn);
-  
+
   /*return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
     tmpl.replace(/[\\\n\r']/g, function(char) {
       return template_escape[char];
     }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==null?'':_.$1)) + '") + "'")
   )(data, escape_fn);*/
-  
+
 };
 /* Cross browser popstate */
 (function () {
@@ -134,7 +134,7 @@ riot.render = function(tmpl, data, escape_fn) {
 
     // fire
     if (history.pushState) history.pushState(0, 0, to);
-    
+
     /* (KarpovR:) change hash only if forced === false */
     if (forced === false) return;
     pop(to, forced);
