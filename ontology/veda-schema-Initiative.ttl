@@ -758,18 +758,6 @@ v-s:PsHasProjectKind
   rdfs:label "Kind property specification for Project class"@en ;
   rdfs:label "Спецификация вид проекта"@ru ;
 .
-v-s:PsHasAsset
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Initiative ;
-  v-ui:forProperty v-s:hasAsset ;
-  v-ui:maxCardinality 100 ;
-  v-ui:minCardinality 0 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Asset')"^^xsd:string ;
-  v-ui:tooltip "Non-required, multy value. Link to instance of Asset class"@en ;
-  v-ui:tooltip "Множественное значение выбора при демонтаже нескольких ОС."@ru ;
-  rdfs:label "HasOsInformation property specification for Initiative"@en ;
-  rdfs:label "Спецификация ссылки на информация об основном средстве для класса Initiative"@ru ;
-.
 v-s:PsDescriptionForInitiative
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:Initiative ;
