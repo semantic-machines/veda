@@ -85,13 +85,7 @@ v-s:actualState
   rdfs:range xsd:string ;
   rdfs:domain v-s:Initiative ;
 .
-v-s:hasAsset
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Asset"@en ;
-  rdfs:label "Основное средство"@ru ;
-  rdfs:range v-s:Asset ;
-  rdfs:domain v-s:Initiative ;
-.
+
 # -- Может в Проект а не в Инициативу. Используется ли в Идее
 v-s:hasProjectKind
   rdf:type owl:ObjectProperty ;
@@ -775,17 +769,6 @@ v-s:PsHasAsset
   v-ui:tooltip "Множественное значение выбора при демонтаже нескольких ОС."@ru ;
   rdfs:label "HasOsInformation property specification for Initiative"@en ;
   rdfs:label "Спецификация ссылки на информация об основном средстве для класса Initiative"@ru ;
-.
-v-s:PsIsIncludingToReserv
-  rdf:type v-ui:DatatypePropertySpecification ;
-  v-ui:forClass v-s:Asset ;
-  v-ui:forProperty v-s:isIncludingToReserv ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 0 ;
-  rdfs:label "isIncludingToReserv property specification for Initiative class"@en ;
-  rdfs:label "Спецификация isIncludingToReserv для класса инициатива"@ru ;
-  v-ui:tooltip "Если ваш проект включен в резерв на обесценение, отметьте данный переключатель"@ru ;
-  v-ui:tooltip "Tick this box if implementation of your initiative is including to reserv"@en ;
 .
 v-s:PsDescriptionForInitiative
   rdf:type v-ui:DatatypePropertySpecification ;
