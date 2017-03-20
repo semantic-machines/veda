@@ -60,7 +60,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
   });
 
   function renderTemplate(individual, container, template, mode, specs) {
-    console.log("rendered!", individual, container, template, mode, specs);
+    container.text(individual.toString());
   }
 
   function renderTemplate2(individual, container, template, mode, specs) {
