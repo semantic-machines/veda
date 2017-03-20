@@ -96,6 +96,8 @@ basic.getDrivers().forEach(function (drv) {
 
     basic.logout(driver);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
+    driver.navigate().refresh();
+    driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
     check(driver, 1, 1, 0, 0);
 
