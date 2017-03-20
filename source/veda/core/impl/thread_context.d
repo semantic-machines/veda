@@ -838,7 +838,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get);
+            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get, false);
             return res;
         }
         finally
@@ -916,14 +916,14 @@ class PThreadContext : Context
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event)
+                                                      void delegate(string uri) prepare_element_event, bool trace)
     {
         SearchResult sr;
 
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event);
+        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, false, trace);
 
         return sr;
     }

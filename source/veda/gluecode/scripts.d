@@ -245,7 +245,7 @@ class ScriptProcess : VedaModule
         Individual[] res;
         vql.get(&sticket,
                 "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                res);
+                res, false, false);
 
         foreach (ss; res)
             prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script);
