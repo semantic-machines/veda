@@ -12,10 +12,6 @@ riot.observable = function(el) {
         fn.typed = pos > 0;
       });
     }
-
-    //Karpovr:DEBUG
-    //el._events = callbacks;
-
     return el;
   };
 
@@ -31,10 +27,6 @@ riot.observable = function(el) {
         callbacks[name] = [];
       });
     }
-
-    //Karpovr:DEBUG
-    //el._events = callbacks;
-
     return el;
   };
 
