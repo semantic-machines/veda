@@ -16,10 +16,10 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     if (container.prop("id") === "main") { container.hide(); }
 
     // Change location.hash if individual was presented in #main container
-    if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
+    /*if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
       var hash = ["#", individual.id].join("/");
       if (hash !== location.hash) riot.route(hash, false);
-    }
+    }*/
 
     /*var specs = $.extend.apply (
       {}, [].concat(
@@ -52,6 +52,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
             return type.template ? type.template.load() : (new veda.IndividualModelAsync("v-ui:generic")).load();
           })
           .then(function (template) {
+            template = $( template["v-ui:template"][0].toString() );
             renderTemplate(individual, container, template, mode, specs);
           });
       });

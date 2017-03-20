@@ -581,12 +581,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.present = function (container, template, mode) {
     if (container) {
-      if (!this.hasValue("rdf:type")) {
-        this["rdf:type"] = [ new veda.IndividualModelAsync("rdfs:Resource") ];
-        return;
-      }
-      // Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering
-      //this.prefetch(2);
       veda.trigger("individual_async:loaded", this, container, template, mode);
     }
     return this;
