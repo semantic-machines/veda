@@ -25,7 +25,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
   $("body").on("click", "[href^='#/']", function (e) {
     e.preventDefault();
     var hash = $(this).attr("href");
-    return ( hash === location.hash ? false : riot.route(hash, true) );
+    return ( hash === location.hash ? false : riot.route(hash) );
   });
 
   // App loading indicator
