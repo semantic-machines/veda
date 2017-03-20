@@ -226,7 +226,7 @@ jsWorkflow.ready = jsPlumb.ready;
             if (mode=='edit') {
               instance.bind("dblclick", function(transition) {
                   var _this = this;
-                riot.route("#/" + transition.id + "///edit", true);
+                riot.route("#/" + transition.id + "///edit");
               });
             }
 
@@ -300,7 +300,7 @@ jsWorkflow.ready = jsPlumb.ready;
               }
               $("<span/>", {
                 "click": (function (instance) {
-                    riot.route('#/'+state['v-wf:subNet'][0].id+'///edit', true);
+                    riot.route('#/'+state['v-wf:subNet'][0].id+'///edit');
                  }),
                  "class" : "glyphicon glyphicon-search subnet-link"
               }).appendTo($state);
@@ -1063,7 +1063,7 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('.to-net-editor').on('click', function() {
-              riot.route("#/" + net.id + "///edit", true);
+              riot.route("#/" + net.id + "///edit");
             });
 
             $('.copy-net-element').on('click', function() {

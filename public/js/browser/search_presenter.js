@@ -38,7 +38,7 @@ veda.Module(function SearchPresenter(veda) { "use strict";
       $("#search-submit", container).addClass("disabled");
       search.currentPage = 0;
 
-      if (container.prop("id") === "main") riot.route("#/search/" + search.q, false);
+      if (container.prop("id") === "main") riot.route("#/search/" + search.q);
       search.search();
     });
 
