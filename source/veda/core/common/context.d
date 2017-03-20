@@ -320,7 +320,7 @@ interface Context
        Returns:
                 список авторизованных uri
      */
-    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit, void delegate(string uri) prepare_element_event);
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit, void delegate(string uri) prepare_element_event, bool trace);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_subject_storage_db();

@@ -8,9 +8,6 @@ veda.Module(function (veda) { "use strict";
   /**
    * @constructor
    * @param {String} uri URI of individual. If not specified, than id of individual will be generated automatically.
-   * @param {String/jQuery} container Container to render individual in. If passed as String, then must be a valid css selector. If passed as jQuery, then is used as is. If not specified, than individual will not be presented.
-   * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
-   * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
    * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
    * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
    */
@@ -517,12 +514,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.present = function (container, template, mode) {
     if (container) {
-      if (!this.hasValue("rdf:type")) {
-        this["rdf:type"] = [ new veda.IndividualModel("rdfs:Resource") ];
-        return;
-      }
-      // Prefetch linked object (depth 2) to reduce 'get_individual' requests count during rendering
-      //this.prefetch(2);
       veda.trigger("individual:loaded", this, container, template, mode);
     }
     return this;

@@ -1205,11 +1205,16 @@ if (doc) {
       }
     } else if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       // Продажа
-      routes['coordination1'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+      // Исполнитель по договору, если в заявке есть ссылка на договор
+      if ( doc.hasValue('v-s:hasContract') && doc['v-s:hasContract'][0].hasValue("mnd-s:executorSpecialistOfContract") ) {
+        var contractExecutor = doc['v-s:hasContract'][0]["mnd-s:executorSpecialistOfContract"];
+        routes['coordination1'][simple+'participant'] = contractExecutor;
+      }
+      // Руководитель отдела ответственного подразделения
       if (doc.hasValue('v-s:responsibleDepartment')) {
         var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
         if (dep.hasValue('v-s:hasChief')) {
-          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
+          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]);
         }
       }
       routes['coordination1'][simple+'visible'] = [true];

@@ -52,7 +52,7 @@ before_script:
 # Run API & integration test
 script:
   - grunt test
-  - grunt coveralls
+#  - grunt coveralls
 #  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
   - node ./qa/testPerson.js
