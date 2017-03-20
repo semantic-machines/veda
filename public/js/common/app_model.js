@@ -36,18 +36,16 @@
 
     self.load = function (page, params) {
       switch (page) {
-        case "console":
-          veda.Util.construct(veda.ConsoleModel, params);
-          break;
         case "search":
-          veda.Util.construct(veda.SearchModel, params);
+          construct(veda.SearchModel, params);
           break;
         case "drafts":
           self.trigger.apply(self, ["load:drafts"].concat(params));
           break;
         default:
           if (!params[0]) { params[0] = "#main"; }
-          veda.Util.construct(veda.IndividualModel, [page].concat(params));
+          var individual = new veda.IndividualModel(page);
+          individual.present.apply(individual, params);
       }
     };
 
@@ -66,6 +64,14 @@
         veda.logout();
       }
     });
+
+    function construct (constr, args) {
+      function F() {
+        return constr.apply(this, args);
+      }
+      F.prototype = constr.prototype;
+      return new F();
+    };
 
     return self;
   };

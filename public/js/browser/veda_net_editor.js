@@ -742,14 +742,14 @@ jsWorkflow.ready = jsPlumb.ready;
               instance.remove(element);
               net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', element.id);
               net['v-wf:consistsOf'].forEach(function(state) {
-            	 if (state.hasValue('v-wf:hasFlow')) {
-            		 state['v-wf:hasFlow'].forEach(function(flow) {
-		            	 if (flow.hasValue("v-wf:flowsInto")
-		        			 && flow["v-wf:flowsInto"][0].id == element.id) {
-		            	 	instance.deleteFlow(flow, state);
-		            	 }
-            		 });
-            	 }
+               if (state.hasValue('v-wf:hasFlow')) {
+                 state['v-wf:hasFlow'].forEach(function(flow) {
+                   if (flow.hasValue("v-wf:flowsInto")
+                   && flow["v-wf:flowsInto"][0].id == element.id) {
+                    instance.deleteFlow(flow, state);
+                   }
+                 });
+               }
               });
             };
 
@@ -909,7 +909,7 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.loadProcessWorkItems = function(process, wis, usecache) {
               if (process.hasValue('v-wf:workItemList')) {
                 process['v-wf:workItemList'].forEach(function(wi) {
-                  wis.push(new veda.IndividualModel(wi.id, undefined, undefined, 'view', usecache));
+                  wis.push(new veda.IndividualModel({uri: wi.id, cache: usecache}));
                   instance.loadProcessWorkItems(wi, wis, usecache);
                 });
               }

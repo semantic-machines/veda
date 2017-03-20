@@ -113,11 +113,22 @@ class FanoutProcess : VedaModule
             string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
             if (isDraftOf !is null)
+            {
+                log.trace("new_indv [%s] is draft, ignore", new_indv.uri);
                 return ResultCode.OK;
+            }
 
-            if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri ||
-                                        (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+            if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri /*||
+                                                                                                   (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)*/))
+            {
+                if (actualVersion !is null && actualVersion != new_indv.uri)
+                    log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", new_indv.uri, actualVersion, new_indv.uri);
+
+//		if (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)
+//          log.trace("prev[%s].v-s:previousVersion[%s] == new[%s].v-s:previousVersion[%s], ignore", prev_indv.uri, previousVersion_prev, new_indv.uri, previousVersion_new);
+
                 return ResultCode.OK;
+            }
 
             Resource  created = new_indv.getFirstResource("v-s:created");
 
