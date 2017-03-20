@@ -18,7 +18,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // Change location.hash if individual was presented in #main container
     if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
       var hash = ["#", individual.id].join("/");
-      if (hash !== location.hash) riot.route(hash, false);
+      if (hash !== location.hash) return riot.route(hash);
     }
 
     var specs = $.extend.apply (
