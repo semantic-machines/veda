@@ -173,14 +173,14 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public long unload(P_MODULE storage_id, string queue_name)
+public long unload(P_MODULE storage_id, string queue_name, bool only_ids)
 {
     Tid  tid   = getTid(storage_id);
     long count = -1;
 
     if (tid != Tid.init)
     {
-        send(tid, CMD_UNLOAD, queue_name, thisTid);
+        send(tid, CMD_UNLOAD, queue_name, only_ids, thisTid);
         receive((long _count) { count = _count; });
     }
     return count;
@@ -394,17 +394,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 storage.put(key, msg, -1);
                             }
                         },
-                        (byte cmd, string arg, Tid tid_response_reciever)
+                        (byte cmd, string arg, bool only_ids, Tid tid_response_reciever)
                         {
-                            if (cmd == CMD_FIND)
+                            if (cmd == CMD_UNLOAD)
                             {
-                                string res = storage.find(arg);
-                                //writeln("@FIND msg=", msg, ", $res = ", res);
-                                send(tid_response_reciever, arg, res, thisTid);
-                                return;
-                            }
-                            else if (cmd == CMD_UNLOAD)
-                            {
+                            	log.trace ("START UNLOAD DATA TO QUEUE %s", arg);
                                 long count;
                                 Queue queue = new Queue(arg, Mode.RW, log);
 
@@ -416,14 +410,38 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                         count++;
                                         return true;
                                     }
+                                    
+                                    bool add_id_to_queue(string key, string value)
+                                    {
+                                        queue.push(key);
+                                        count++;
+                                        return true;
+                                    }
 
-                                    storage.get_of_cursor(&add_to_queue);
+									if (only_ids)
+	                                    storage.get_of_cursor(&add_id_to_queue);
+									else
+	                                    storage.get_of_cursor(&add_to_queue);
+									
                                     queue.close();
                                 }
                                 else
-                                    writeln("store_thread:CMD_UNLOAD: not open queue");
+                                    log.trace("store_thread:CMD_UNLOAD: not open queue");
+
+                            	log.trace ("END UNLOAD DATA TO QUEUE %s", arg);
 
                                 send(tid_response_reciever, count);
+                            }
+                        	
+                        },
+                        (byte cmd, string arg, Tid tid_response_reciever)
+                        {
+                            if (cmd == CMD_FIND)
+                            {
+                                string res = storage.find(arg);
+                                //writeln("@FIND msg=", msg, ", $res = ", res);
+                                send(tid_response_reciever, arg, res, thisTid);
+                                return;
                             }
                         },
                         (INDV_OP cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)

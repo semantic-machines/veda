@@ -328,7 +328,7 @@ interface Context
     public void reopen_ro_ticket_manager_db();
 
     public void subject_storage_commmit(bool isWait = true);
-    public long unload_subject_storage(string queue_name);
+    public long unload_subject_storage(string queue_name, bool only_ids);
 
 
     public Storage get_subject_storage_db();
