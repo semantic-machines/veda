@@ -311,6 +311,11 @@ class XapianVQL
                                 {
                                     if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && utf.count(rs) > 3)
                                     {
+                                    	if ((indexOf(rs, '*') >= 0) && ((rs[ 0 ] == '+' && utf.count(rs) < 3) || utf.count(rs) < 4))
+                                    	{
+                                    		rs = rs.removechars ("*");
+                                    	}	
+	                                    	
                                         char[] query_str = to_lower_and_replace_delimeters(rs).dup;
                                         if (rs[ 0 ] == '*')
                                             reverse(query_str);
@@ -664,7 +669,7 @@ class XapianVQL
         if (matches !is null)
         {
             sr.estimated = matches.get_matches_estimated(&err);
-
+            
             if (prepare_element_event !is null)
                 prepare_element_event("");
 
