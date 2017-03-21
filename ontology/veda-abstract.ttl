@@ -571,6 +571,13 @@ v-s:isDebitor
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:hasAsset
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Asset"@en ;
+  rdfs:label "Основное средство"@ru ;
+  rdfs:range v-s:Asset ;
+  rdfs:domain v-s:Contractual ;
+.
 
 ### -------------------------------------------------------
 v-s:Controlled
