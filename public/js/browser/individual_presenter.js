@@ -15,12 +15,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     if (container.prop("id") === "main") { container.hide(); }
 
-    // Change location.hash if individual was presented in #main container
-    if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
-      var hash = ["#", individual.id].join("/");
-      if (hash !== location.hash) return riot.route(hash);
-    }
-
     var specs = $.extend.apply (
       {}, [].concat(
         individual["rdf:type"].map( function (_class) {
@@ -156,6 +150,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       template.trigger("view");
       if (parent !== individual.id) {
         individual.reset();
+        if (container.prop("id") === "main") {
+          window.history.back();
+        }
       }
       e.stopPropagation();
     }

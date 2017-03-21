@@ -54,7 +54,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
   veda.on("started", function () {
     var layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
     layout.present("#app");
-    riot.route(location.hash, true);
+    riot.route(location.hash);
   });
 
   // Login invitation

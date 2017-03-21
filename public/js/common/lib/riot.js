@@ -86,7 +86,8 @@ riot.render = function(tmpl, data, escape_fn) {
 
   function pop(hash) {
     hash = hash.type ? location.hash : hash;
-    if (hash !== currentHash) pops.trigger("pop", hash);
+    //if (hash !== currentHash) pops.trigger("pop", hash);
+    pops.trigger("pop", hash);
     currentHash = hash;
   }
 

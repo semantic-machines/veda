@@ -448,7 +448,7 @@ if (!allDelegated) {
 allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
 
 position_uris.map(function (position_uri) {
-  var uri = "d:" + ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_");
+  var uri = "d:" + Sha256.hash( ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_") ).substring(40);
   var appointment = get_individual(ticket, uri);
 
   // Compute label

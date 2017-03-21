@@ -69,7 +69,7 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = new PThreadContext(process_name, "file_reader", individuals_db_path, log, parent_url);
+    Context context = PThreadContext.create_new(process_name, "file_reader", individuals_db_path, log, parent_url);
     sticket = context.sys_ticket();
 
     string[] uris =

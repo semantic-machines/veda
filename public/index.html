@@ -503,9 +503,9 @@
         var mode = resource.data("mode");
         var individual = new veda.IndividualModel(uri);
         if (mode) {
-          individual.present("#main", undefined, mode);
+          riot.route( ["#", individual.id, "#main", undefined, mode].join("/") );
         } else {
-          individual.present("#main");
+          riot.route( ["#", individual.id, "#main"].join("/") );
         }
       });
       $(document).on({

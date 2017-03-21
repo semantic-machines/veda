@@ -117,7 +117,7 @@ class VedaModule
         context = create_context();
 
         if (context is null)
-            context = new PThreadContext("cfg:standart_node", process_name, individuals_db_path, log, main_module_url);
+            context = PThreadContext.create_new("cfg:standart_node", process_name, individuals_db_path, log, main_module_url);
 
         if (node == Individual.init)
             node = context.get_configuration();
