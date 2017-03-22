@@ -113,23 +113,23 @@ v-fc:FunctionCreateTemplate
 </div>
 <script>
   var self = individual;
-  if (self.hasValue("v-fc:targetType")) { modHandler("v-fc:targetType", self["v-fc:targetType"]) };
-  self.on("propertyModified", modHandler);
   var blankTemplate = new veda.IndividualModel("v-fc:BlankTemplate");
-  function modHandler(property_uri, values) {
-    if (property_uri === "v-fc:targetType") {
-      var holder = $("#holder", template).empty();
-      if (values.length) {
-        var blank = new veda.IndividualModel();
-        blank["v-fc:targetType"] = values;
-        blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-        blank.present(holder, blankTemplate, "edit");
-      }
+  function typeHandler(values) {
+    var holder = $("#holder", template).empty();
+    if (values.length) {
+      var blank = new veda.IndividualModel();
+      blank["v-fc:targetType"] = values;
+      blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+      blank.present(holder, blankTemplate, "edit");
     }
   }
+  self.on("v-fc:targetType", typeHandler);
   template.one("remove", function () {
-    self.off("propertyModified", modHandler);
+    self.off("v-fc:targetType", typeHandler);
   });
+  if (self.hasValue("v-fc:targetType")) {
+    typeHandler(self["v-fc:targetType"]);
+  }
   var blanksHolder = $("#blanks", template),
     asp = veda.user.aspect,
     blanks = asp["v-s:hasBlank"];

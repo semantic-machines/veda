@@ -796,17 +796,17 @@ v-fs:AttributiveRequestTemplate
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
   self.on("afterSave", updateAspect);
-  self.on("propertyModified", typeChanged);
+  self.on("v-fs:typeToSearch", typeChanged);
   template.on("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
     self.off("afterSave", updateAspect);
-    self.off("propertyModified", typeChanged);
+    self.off("v-fs:typeToSearch", typeChanged);
   });
 
   // Present form if defined
   if (self.form) {
-    typeChanged("v-fs:typeToSearch", self["v-fs:typeToSearch"]);
+    typeChanged(self["v-fs:typeToSearch"]);
   }
 
   // Present results if query defined
@@ -837,12 +837,10 @@ v-fs:AttributiveRequestTemplate
   });
 
   // Display search form
-  function typeChanged(property_uri, types) {
-    if (property_uri === "v-fs:typeToSearch") {
-      formHolder.empty();
-      self.form.present(formHolder, undefined, "search");
-      setResultTable(types);
-    }
+  function typeChanged(types) {
+    formHolder.empty();
+    self.form.present(formHolder, undefined, "search");
+    setResultTable(types);
   }
 
   // Set result table
@@ -1002,9 +1000,10 @@ v-fs:AttributiveRequestTemplate
       (function (i) {
         setTimeout(function () {
           var _tmpl = tmpl.replace("###", i+1);
+          var $tmpl = $(_tmpl);
           var result = new veda.IndividualModel( self.result[i] );
-          result.present(tBody, $(_tmpl));
-          _tmpl.dblclick(function (e) {
+          result.present(tBody, $tmpl);
+          $tmpl.dblclick(function (e) {
             riot.route("#/" + result.id);
           });
         }, 0);

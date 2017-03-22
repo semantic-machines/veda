@@ -174,20 +174,20 @@ v-s:RecursiveCommentTemplate
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
 <script>
-  individual.on("propertyModified", handler);
-  template.one("remove", function () {
-    individual.off("propertyModified", handler);
-  });
-  handler("v-s:hasComment", individual["v-s:hasComment"]);
-  handler("v-s:linkedObject", individual["v-s:linkedObject"]);
-  function handler (property_uri, values) {
-    if (property_uri === "v-s:hasComment") {
-      values.length ? $("#edit-comment, #delete", template).hide() : $("#edit-comment, #delete", template).show();
-    }
-    if (property_uri === "v-s:linkedObject") {
-      values.length ? $(".linked-object", template).show() : $(".linked-object", template).hide();
-    }
+  function commentHandler (values) {
+    values.length ? $("#edit-comment, #delete", template).hide() : $("#edit-comment, #delete", template).show();
   }
+  function linkedHandler (values) {
+    values.length ? $(".linked-object", template).show() : $(".linked-object", template).hide();
+  }
+  individual.on("v-s:hasComment", commentHandler);
+  individual.on("v-s:linkedObject", linkedHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasComment", commentHandler);
+    individual.off("v-s:linkedObject", linkedHandler);
+  });
+  commentHandler(individual["v-s:hasComment"]);
+  linkedHandler(individual["v-s:linkedObject"]);
   if (!individual.rights.hasValue("v-s:canUpdate", true)) {
     $("#edit-comment", template).remove();
   }

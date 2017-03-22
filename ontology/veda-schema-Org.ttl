@@ -396,16 +396,16 @@ v-s:OrganizationTemplate
   var _class = new veda.IndividualModel("v-s:ContractorProfile");
   var hasRights = _class.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
 
-  individual.on("propertyModified", handler);
-  template.one("remove", function () {
-    individual.off("propertyModified", handler);
-  });
-  function handler(property_uri, values) {
-    if (property_uri === "v-s:hasContractorProfile" && (individual.hasValue("v-s:hasContractorProfile") || !hasRights)) {
+  function handler() {
+    if (individual.hasValue("v-s:hasContractorProfile") || !hasRights) {
       $("#add-profile", template).remove();
     }
   }
-  handler("v-s:hasContractorProfile", individual["v-s:hasContractorProfile"]);
+  individual.on("v-s:hasContractorProfile", handler);
+  template.one("remove", function () {
+    individual.off("v-s:hasContractorProfile", handler);
+  });
+  handler();
 
   var _class = new veda.IndividualModel("v-s:Subsidiary");
   if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
