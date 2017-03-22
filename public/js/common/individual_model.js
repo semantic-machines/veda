@@ -32,17 +32,11 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
-    this.on("propertyModified", typeChangedHandler);
+    this.on("rdf:type", this.init);
     this.on("beforeSave", beforeSaveHandler);
 
     return self.load(uri);
   };
-
-  function typeChangedHandler (property_uri) {
-    if (property_uri === "rdf:type") {
-      this.init();
-    }
-  }
 
   function beforeSaveHandler() {
     var now = new Date();
@@ -98,6 +92,7 @@ veda.Module(function (veda) { "use strict";
         if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
           this.properties[property_uri] = serialized;
           this.trigger("propertyModified", property_uri, notNull);
+          this.trigger(property_uri, notNull);
         }
       },
       configurable: false,
