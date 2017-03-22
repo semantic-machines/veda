@@ -396,9 +396,9 @@ v-s:OrganizationTemplate
   var _class = new veda.IndividualModel("v-s:ContractorProfile");
   var hasRights = _class.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
 
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
   template.one("remove", function () {
-    individual.off("individual:propertyModified", handler);
+    individual.off("propertyModified", handler);
   });
   function handler(property_uri, values) {
     if (property_uri === "v-s:hasContractorProfile" && (individual.hasValue("v-s:hasContractorProfile") || !hasRights)) {

@@ -174,9 +174,9 @@ v-s:RecursiveCommentTemplate
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
 <script>
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
   template.one("remove", function () {
-    individual.off("individual:propertyModified", handler);
+    individual.off("propertyModified", handler);
   });
   handler("v-s:hasComment", individual["v-s:hasComment"]);
   handler("v-s:linkedObject", individual["v-s:linkedObject"]);

@@ -1225,10 +1225,10 @@ v-wf:TaskTemplateAsProperties
       $('.state-name', $state).html(values);
     }
   }
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
 
   template.on("remove", function () {
-    individual.off("individual:propertyModified");
+    individual.off("propertyModified");
   });
 
   $('#taskTemplateProperties > tbody > tr > td > span[about]').each(function () {
@@ -1298,10 +1298,10 @@ v-wf:ConditionTemplateAsProperties
       $('.state-name', $state).html(values);
     }
   }
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
 
   template.on("remove", function () {
-    individual.off("individual:propertyModified");
+    individual.off("propertyModified");
   });
   //# sourceURL=v-wf:ConditionTemplateAsProperties
 </script>
@@ -1373,10 +1373,10 @@ v-wf:FlowTemplateAsProperties
       }
     }
   }
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
 
   template.on("remove", function () {
-    individual.off("individual:propertyModified");
+    individual.off("propertyModified");
   });
   //# sourceURL=v-wf:FlowTemplateAsProperties
 </script>
@@ -3023,10 +3023,10 @@ v-wf:FlowTemplateAsModal
       }
     }
   }
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
 
   template.on("remove", function () {
-    individual.off("individual:propertyModified");
+    individual.off("propertyModified");
   });
   //# sourceURL=v-wf:FlowTemplateAsProperties
 </script>

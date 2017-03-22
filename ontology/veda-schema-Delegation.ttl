@@ -189,9 +189,9 @@ v-s:RequestDelegationTemplate
   </div>
 </div>
 <script>
-  individual.on("individual:propertyModified", handler);
+  individual.on("propertyModified", handler);
   template.one("remove", function () {
-    individual.off("individual:propertyModified", handler);
+    individual.off("propertyModified", handler);
   });
   handler("v-s:delegatedPosition", individual["v-s:delegatedPosition"]);
 

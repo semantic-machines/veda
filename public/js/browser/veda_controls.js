@@ -27,9 +27,9 @@
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
 
-    individual.on("individual:propertyModified", modifiedHandler);
+    individual.on("propertyModified", modifiedHandler);
     control.one("remove", function () {
-      individual.off("individual:propertyModified", modifiedHandler);
+      individual.off("propertyModified", modifiedHandler);
     });
     modifiedHandler(property_uri);
 
@@ -255,9 +255,9 @@
       if (individual.hasValue(property_uri)) {
         input.val( moment(individual[property_uri][0]).format(format) );
       }
-      individual.on("individual:propertyModified", singleValueHandler);
+      individual.on("propertyModified", singleValueHandler);
       control.one("remove", function () {
-        individual.off("individual:propertyModified", singleValueHandler);
+        individual.off("propertyModified", singleValueHandler);
       });
     } else {
       change = function (value) {
@@ -433,9 +433,9 @@
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
 
-    individual.on("individual:propertyModified", handler);
+    individual.on("propertyModified", handler);
     control.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("propertyModified", handler);
     });
 
     function keyupHandler (e) {
@@ -610,9 +610,9 @@
     }
     handler(property_uri);
 
-    individual.on("individual:propertyModified", handler);
+    individual.on("propertyModified", handler);
     this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("propertyModified", handler);
     });
 
     input.click( function () {
@@ -691,9 +691,9 @@
       }
     });
 
-    individual.on("individual:propertyModified", handler);
+    individual.on("propertyModified", handler);
     control.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("propertyModified", handler);
     });
 
     if (template) {
@@ -800,9 +800,9 @@
 
     populate();
 
-    individual.on("individual:propertyModified", handler);
+    individual.on("propertyModified", handler);
     this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("propertyModified", handler);
     });
 
     if (template) {
@@ -924,9 +924,9 @@
 
     populate();
 
-    individual.on("individual:propertyModified", handler);
+    individual.on("propertyModified", handler);
     this.one("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("propertyModified", handler);
     });
 
     if (template) {
@@ -1054,9 +1054,9 @@
     };
 
     input.val(individual[property_uri][0]);
-    individual.on("individual:propertyModified", singleValueHandler);
+    individual.on("propertyModified", singleValueHandler);
     control.one("remove", function () {
-      individual.off("individual:propertyModified", singleValueHandler);
+      individual.off("propertyModified", singleValueHandler);
     });
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -1171,9 +1171,9 @@
         }
       }
     }
-    individual.on("individual:propertyModified", handler );
+    individual.on("propertyModified", handler );
     this.on("remove", function () {
-      individual.off("individual:propertyModified", handler);
+      individual.off("propertyModified", handler);
     });
 
     fscreen.click(function () {
@@ -1542,9 +1542,9 @@
             }
           }
         };
-        individual.on("individual:propertyModified", singleValueHandler);
+        individual.on("propertyModified", singleValueHandler);
         create.one("remove", function () {
-          individual.off("individual:propertyModified", singleValueHandler);
+          individual.off("propertyModified", singleValueHandler);
         });
       }
 
@@ -1671,9 +1671,9 @@
           }
         }
       }
-      individual.on("individual:propertyModified", handler);
+      individual.on("propertyModified", handler);
       control.one("remove", function () {
-        individual.off("individual:propertyModified", handler);
+        individual.off("propertyModified", handler);
       });
 
       handler(rel_uri);

@@ -305,9 +305,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         }
       }
     }
-    individual.on("individual:propertyModified", isDraftHandler);
+    individual.on("propertyModified", isDraftHandler);
     template.on("remove", function () {
-      individual.off("individual:propertyModified", isDraftHandler);
+      individual.off("propertyModified", isDraftHandler);
       draftLabel = null;
     });
 
@@ -410,9 +410,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
         }
       }
-      individual.on("individual:propertyModified", propertyModifiedHandler);
+      individual.on("propertyModified", propertyModifiedHandler);
       template.one("remove", function () {
-        individual.off("individual:propertyModified", propertyModifiedHandler);
+        individual.off("propertyModified", propertyModifiedHandler);
       });
     });
 
@@ -521,16 +521,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       relContainer.empty();
 
       propertyModifiedHandler(rel_uri, values);
-      about.on("individual:propertyModified", propertyModifiedHandler);
+      about.on("propertyModified", propertyModifiedHandler);
       template.one("remove", function () {
-        about.off("individual:propertyModified", propertyModifiedHandler);
+        about.off("propertyModified", propertyModifiedHandler);
       });
 
       if (isEmbedded) {
         embeddedHandler(rel_uri, values);
-        about.on("individual:propertyModified", embeddedHandler);
+        about.on("propertyModified", embeddedHandler);
         template.one("remove", function () {
-          about.off("individual:propertyModified", embeddedHandler);
+          about.off("propertyModified", embeddedHandler);
         });
       }
 
@@ -635,9 +635,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           }
         }
       }
-      about.on("individual:propertyModified", propertyModifiedHandler);
+      about.on("propertyModified", propertyModifiedHandler);
       template.one("remove", function () {
-        about.off("individual:propertyModified", propertyModifiedHandler);
+        about.off("propertyModified", propertyModifiedHandler);
       });
       /*veda.on("language:changed", langWatch);
       template.one("remove", function () {
@@ -694,9 +694,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         template.trigger("internal-validate");
       }
     };
-    individual.on("individual:propertyModified", triggerValidation);
+    individual.on("propertyModified", triggerValidation);
     template.one("remove", function () {
-      individual.off("individual:propertyModified", triggerValidation);
+      individual.off("propertyModified", triggerValidation);
     });
     template.on("edit", triggerValidation);
 

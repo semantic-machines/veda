@@ -114,7 +114,7 @@ v-fc:FunctionCreateTemplate
 <script>
   var self = individual;
   if (self.hasValue("v-fc:targetType")) { modHandler("v-fc:targetType", self["v-fc:targetType"]) };
-  self.on("individual:propertyModified", modHandler);
+  self.on("propertyModified", modHandler);
   var blankTemplate = new veda.IndividualModel("v-fc:BlankTemplate");
   function modHandler(property_uri, values) {
     if (property_uri === "v-fc:targetType") {
@@ -128,7 +128,7 @@ v-fc:FunctionCreateTemplate
     }
   }
   template.one("remove", function () {
-    self.off("individual:propertyModified", modHandler);
+    self.off("propertyModified", modHandler);
   });
   var blanksHolder = $("#blanks", template),
     asp = veda.user.aspect,

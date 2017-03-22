@@ -29,7 +29,7 @@ veda.Module(function (veda) { "use strict";
       veda.appointment = undefined;
     }
 
-    self.on("individual:propertyModified", function (property_uri) {
+    self.on("propertyModified", function (property_uri) {
       if (property_uri === "v-s:defaultAppointment") {
         if ( veda.appointment && veda.appointment.id === self["v-s:defaultAppointment"][0].id ) { return; }
         self.save();
@@ -73,7 +73,7 @@ veda.Module(function (veda) { "use strict";
       self.save();
     }
 
-    self.preferences.on("individual:propertyModified", function (property_uri, values) {
+    self.preferences.on("propertyModified", function (property_uri, values) {
       if (property_uri === "v-ui:displayedElements") {
         self.displayedElements = values[0];
       }

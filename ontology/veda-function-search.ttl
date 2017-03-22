@@ -329,7 +329,7 @@ v-fs:FulltextRequestModel
     databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0] : undefined,
     reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false;
 
-  self.on("individual:propertyModified", function (property_uri, values) {
+  self.on("propertyModified", function (property_uri, values) {
     switch (property_uri) {
       case "v-fs:typeToSearch":
       case "v-fs:fulltextQuery" : q = mkQuery(); break;
@@ -624,7 +624,7 @@ v-fs:AttributiveRequestModel
     reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false,
     q;
 
-  self.on("individual:propertyModified", function (property_uri, values) {
+  self.on("propertyModified", function (property_uri, values) {
     switch (property_uri) {
       case "v-fs:typeToSearch":
         self.form = new veda.IndividualModel();
@@ -633,7 +633,7 @@ v-fs:AttributiveRequestModel
           if ( stopList.indexOf(property_uri) >= 0 ) { continue; }
           self.form[property_uri] = self[property_uri];
         }
-        self.form.on("individual:propertyModified", handler);
+        self.form.on("propertyModified", handler);
         q = mkQuery(self.form);
         break;
       case "v-fs:sortOrder"   : sort = values.length      ? values[0].toString() : undefined; break;
@@ -643,7 +643,7 @@ v-fs:AttributiveRequestModel
   });
 
   if (self.hasValue("v-fs:typeToSearch")) {
-    self.trigger("individual:propertyModified", "v-fs:typeToSearch", self["v-fs:typeToSearch"]);
+    self.trigger("propertyModified", "v-fs:typeToSearch", self["v-fs:typeToSearch"]);
   }
 
   function handler(property_uri, values) {
@@ -796,12 +796,12 @@ v-fs:AttributiveRequestTemplate
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
   self.on("afterSave", updateAspect);
-  self.on("individual:propertyModified", typeChanged);
+  self.on("propertyModified", typeChanged);
   template.on("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
     self.off("afterSave", updateAspect);
-    self.off("individual:propertyModified", typeChanged);
+    self.off("propertyModified", typeChanged);
   });
 
   // Present form if defined

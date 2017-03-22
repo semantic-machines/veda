@@ -32,7 +32,7 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
-    this.on("individual:propertyModified", typeChangedHandler);
+    this.on("propertyModified", typeChangedHandler);
     this.on("beforeSave", beforeSaveHandler);
 
     return self.load(uri);
@@ -97,7 +97,7 @@ veda.Module(function (veda) { "use strict";
         }
         if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
           this.properties[property_uri] = serialized;
-          this.trigger("individual:propertyModified", property_uri, notNull);
+          this.trigger("propertyModified", property_uri, notNull);
         }
       },
       configurable: false,
