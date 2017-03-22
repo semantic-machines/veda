@@ -846,10 +846,10 @@ v-ui:IconModalTemplate
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
       individual.present(cntr, tmpl, newMode);
     }
-    individual.one("individual:beforeReset", function () {
+    individual.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
-    individual.one("individual:afterSave", function () {
+    individual.one("afterSave", function () {
       modal.modal("hide").remove();
     });
   });

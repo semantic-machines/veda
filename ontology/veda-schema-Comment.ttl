@@ -89,10 +89,10 @@ v-s:CommentsTemplate
     comment["v-s:backwardTarget"] = [individual];
     comment["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
     comment.present(cntr, tmpl, "edit");
-    comment.one("individual:beforeReset", function () {
+    comment.one("beforeReset", function () {
       cntr.hide();
     });
-    comment.one("individual:afterSave", function () {
+    comment.one("afterSave", function () {
       cntr.hide();
     });
   });
@@ -110,10 +110,10 @@ v-s:CommentsTemplate
     reply["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
     reply.present(cntr, tmpl, "edit");
 
-    reply.one("individual:beforeReset", function () {
+    reply.one("beforeReset", function () {
       cntr.hide();
     });
-    reply.one("individual:afterSave", function () {
+    reply.one("afterSave", function () {
       cntr.hide();
     });
   });
@@ -126,11 +126,11 @@ v-s:CommentsTemplate
         cntr = $("<div>").appendTo( $("#new-reply", commentTemplate).first() ),
         commentContent = $("#comment-content", commentTemplate).hide();
     comment.present(cntr, tmpl, "edit");
-    comment.one("individual:beforeReset", function () {
+    comment.one("beforeReset", function () {
       commentContent.show();
       cntr.remove();
     });
-    comment.one("individual:afterSave", function () {
+    comment.one("afterSave", function () {
       commentContent.show();
       cntr.remove();
     });

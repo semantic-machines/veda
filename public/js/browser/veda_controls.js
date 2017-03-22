@@ -1510,10 +1510,10 @@
             };
             $(document).on("keyup", escHandler);
             var cntr = $(".modal-body", modal);
-            newVal.one("individual:beforeReset", function () {
+            newVal.one("beforeReset", function () {
               modal.modal("hide").remove();
             });
-            newVal.one("individual:afterSave", function () {
+            newVal.one("afterSave", function () {
               select(newVal);
               modal.modal("hide").remove();
             });

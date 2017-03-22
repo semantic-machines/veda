@@ -695,7 +695,7 @@ v-s:OrganizationTemplate
     profile.one("individual:beforeReset", function () {
       modal.modal("hide").remove();
     });
-    profile.one("individual:afterSave", function () {
+    profile.one("afterSave", function () {
       modal.modal("hide").remove();
     });
   });
@@ -717,10 +717,10 @@ v-s:OrganizationTemplate
     subsidiary["v-s:backwardTarget"] = [individual];
     subsidiary["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasSubsidiary")];
     subsidiary.present(cntr, tmpl, "edit");
-    subsidiary.one("individual:beforeReset", function () {
+    subsidiary.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
-    subsidiary.one("individual:afterSave", function () {
+    subsidiary.one("afterSave", function () {
       modal.modal("hide").remove();
     });
   });
@@ -745,10 +745,10 @@ v-s:OrganizationTemplate
     request["v-s:backwardProperty"] = [new veda.IndividualModel("mnd-s:hasContractorCreateChangeRequest")];
     request["mnd-s:additionalContractorProfile"] = [ individual["rdfs:label"].join(" ") + " " + veda.Util.formatDate(new Date()) ];
     request["v-s:hasContractor"]= individual["v-s:hasContractor"];
-    request.one("individual:beforeReset", function () {
+    request.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
-    request.one("individual:afterSave", function () {
+    request.one("afterSave", function () {
       modal.modal("hide").remove();
     });
   });

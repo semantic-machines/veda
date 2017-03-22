@@ -33,7 +33,7 @@ veda.Module(function (veda) { "use strict";
     this.filtered = {};
 
     this.on("individual:propertyModified", typeChangedHandler);
-    this.on("individual:beforeSave", beforeSaveHandler);
+    this.on("beforeSave", beforeSaveHandler);
 
     return self.load(uri);
   };
@@ -161,7 +161,7 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       this.properties["@"] = value;
-      this.trigger("individual:idChanged", value);
+      this.trigger("idChanged", value);
     }
   });
 
@@ -232,11 +232,11 @@ veda.Module(function (veda) { "use strict";
    * @param {String} uri individual uri
    */
   proto.load = function (uri) {
-    this.trigger("individual:beforeLoad");
+    this.trigger("beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
       if (this._.cache && veda.cache[uri]) {
-        this.trigger("individual:afterLoad", veda.cache[uri]);
+        this.trigger("afterLoad", veda.cache[uri]);
         return veda.cache[uri];
       }
       try {
@@ -284,7 +284,7 @@ veda.Module(function (veda) { "use strict";
     }
     if (this._.cache) veda.cache[this.id] = this;
     if (this._.init) this.init();
-    this.trigger("individual:afterLoad", this);
+    this.trigger("afterLoad", this);
     return this;
   };
 
@@ -296,7 +296,7 @@ veda.Module(function (veda) { "use strict";
     var self = this;
     // Do not save individual to server if nothing changed
     if (self.isSync()) { return; }
-    self.trigger("individual:beforeSave");
+    self.trigger("beforeSave");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -320,7 +320,7 @@ veda.Module(function (veda) { "use strict";
     this.isNew(false);
     this.isSync(true);
     if (this._.cache) veda.cache[this.id] = self;
-    this.trigger("individual:afterSave");
+    this.trigger("afterSave");
     return this;
   }
 

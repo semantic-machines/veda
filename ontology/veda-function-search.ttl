@@ -474,11 +474,11 @@ v-fs:FulltextRequestTemplate
   // Define and clean handlers
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
-  self.on("individual:afterSave", updateAspect);
+  self.on("afterSave", updateAspect);
   template.on("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
-    self.off("individual:afterSave", updateAspect);
+    self.off("afterSave", updateAspect);
   });
 
   // Present results if query defined
@@ -795,12 +795,12 @@ v-fs:AttributiveRequestTemplate
   // Define and clean handlers
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
-  self.on("individual:afterSave", updateAspect);
+  self.on("afterSave", updateAspect);
   self.on("individual:propertyModified", typeChanged);
   template.on("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
-    self.off("individual:afterSave", updateAspect);
+    self.off("afterSave", updateAspect);
     self.off("individual:propertyModified", typeChanged);
   });
 

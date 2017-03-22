@@ -191,8 +191,8 @@ this._init = function () {
   });
 }
 
-self.on("individual:beforeSave", updateBlank);
-//self.on("individual:afterSave", updateAspect);
+self.on("beforeSave", updateBlank);
+//self.on("afterSave", updateAspect);
 
 function updateBlank() {
   Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
@@ -273,13 +273,13 @@ v-fc:BlankTemplate
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
     object.present(objectContainer, undefined, "edit");
-    object.one("individual:afterSave", saveHandler);
-    object.one("individual:afterReset", cancelHandler);
+    object.one("afterSave", saveHandler);
+    object.one("afterReset", cancelHandler);
     template.on("remove", function () {
-      object.off("individual:afterSave", saveHandler);
-      object.off("individual:afterReset", cancelHandler);
-      self.off("individual:beforeSave");
-      self.off("individual:afterSave");
+      object.off("afterSave", saveHandler);
+      object.off("afterReset", cancelHandler);
+      self.off("beforeSave");
+      self.off("afterSave");
       delete self.object;
     });
   } else {
@@ -319,13 +319,13 @@ v-fc:BlankTemplateShort
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
     object.present(objectContainer, undefined, "edit");
-    object.one("individual:afterSave", saveHandler);
-    object.one("individual:afterReset", cancelHandler);
+    object.one("afterSave", saveHandler);
+    object.one("afterReset", cancelHandler);
     template.on("remove", function () {
-      object.off("individual:afterSave", saveHandler);
-      object.off("individual:afterReset", cancelHandler);
-      self.off("individual:beforeSave");
-      self.off("individual:afterSave");
+      object.off("afterSave", saveHandler);
+      object.off("afterReset", cancelHandler);
+      self.off("beforeSave");
+      self.off("afterSave");
       delete self.object;
     });
   } else {

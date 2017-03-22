@@ -1603,19 +1603,19 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div class="hidden"></div>
 <script>
-  individual.one("individual:beforeSave", function () {
+  individual.one("beforeSave", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
       individual["v-wf:read"] = [true];
     }
   });
-  individual.on("individual:afterSave", afterSaveHandler);
+  individual.on("afterSave", afterSaveHandler);
   template.one("remove", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
       individual.reset();
       individual["v-wf:read"] = [true];
       individual.save();
     }
-    individual.off("individual:afterSave", afterSaveHandler);
+    individual.off("afterSave", afterSaveHandler);
   });
   function afterSaveHandler () {
     if ( individual.hasValue("v-wf:takenDecision") ) {
