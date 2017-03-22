@@ -692,7 +692,7 @@ v-s:OrganizationTemplate
     profile["rdfs:label"] = individual["v-s:shortLabel"] ;
     profile["v-s:omitBackwardTargetGroup"] = [true];
     profile.present(cntr, tmpl, "edit");
-    profile.one("individual:beforeReset", function () {
+    profile.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
     profile.one("afterSave", function () {

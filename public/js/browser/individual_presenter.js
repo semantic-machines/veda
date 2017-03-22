@@ -183,11 +183,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         });
       }
     }
-    individual.on("individual:afterRecover", afterRecoverHandler);
-    individual.on("individual:afterDelete", afterDeleteHandler);
+    individual.on("afterRecover", afterRecoverHandler);
+    individual.on("afterDelete", afterDeleteHandler);
     template.one("remove", function () {
-      individual.off("individual:afterRecover", afterRecoverHandler);
-      individual.off("individual:afterDelete", afterDeleteHandler);
+      individual.off("afterRecover", afterRecoverHandler);
+      individual.off("afterDelete", afterDeleteHandler);
     });
 
     function deleteHandler (e, parent) {

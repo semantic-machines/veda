@@ -329,9 +329,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual without validation and without adding new version
    */
   proto.draft = function() {
-    this.trigger("individual:beforeDraft");
+    this.trigger("beforeDraft");
     veda.drafts.set(this.id, this);
-    this.trigger("individual:afterDraft");
+    this.trigger("afterDraft");
     return this;
   }
 
@@ -340,9 +340,9 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
-    this.trigger("individual:beforeReset");
+    this.trigger("beforeReset");
     this.update();
-    this.trigger("individual:afterReset");
+    this.trigger("afterReset");
     return this;
   };
 
@@ -351,7 +351,7 @@ veda.Module(function (veda) { "use strict";
    * Update current individual with values from database & merge with local changes
    */
   proto.update = function () {
-    this.trigger("individual:beforeUpdate");
+    this.trigger("beforeUpdate");
     var self = this;
     if (!this.isNew()) {
       this.filtered = {};
@@ -380,7 +380,7 @@ veda.Module(function (veda) { "use strict";
       self.isSync(true);
     }
     veda.drafts.remove(this.id);
-    this.trigger("individual:afterUpdate");
+    this.trigger("afterUpdate");
     return this;
   };
 
@@ -389,7 +389,7 @@ veda.Module(function (veda) { "use strict";
    * Mark current individual as deleted in database (add v-s:deleted property)
    */
   proto.delete = function () {
-    this.trigger("individual:beforeDelete");
+    this.trigger("beforeDelete");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -397,7 +397,7 @@ veda.Module(function (veda) { "use strict";
       this["v-s:deleted"] = [ true ];
       this.save();
     }
-    this.trigger("individual:afterDelete");
+    this.trigger("afterDelete");
     return this;
   };
 
@@ -406,13 +406,13 @@ veda.Module(function (veda) { "use strict";
    * Recover current individual in database (remove v-s:deleted property)
    */
   proto.recover = function () {
-    this.trigger("individual:beforeRecover");
+    this.trigger("beforeRecover");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];
     this.save();
-    this.trigger("individual:afterRecover");
+    this.trigger("afterRecover");
     return this;
   };
 
