@@ -304,7 +304,7 @@ class PThreadContext : Context
             {
                 try
                 {
-                    ticket = create_new_ticket("cfg:VedaSystem", "400000");
+                    ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
                     storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
@@ -544,11 +544,11 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        // store ticket
-        string ss_as_binobj = new_ticket.serialize();
-
         version (isServer)
         {
+        	// store ticket
+        	string ss_as_binobj = new_ticket.serialize();
+        	
             long       op_id;
             ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
             ticket.result = rc;
@@ -561,6 +561,12 @@ class PThreadContext : Context
 
             if (trace_msg[ T_API_50 ] == 1)
                 log.trace("create_new_ticket, new ticket=%s", ticket);
+        }
+
+        version (WebServer)
+        {
+                subject2Ticket(new_ticket, &ticket);
+                user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
 
         return ticket;
@@ -789,7 +795,7 @@ class PThreadContext : Context
 
                     if (ticket_id == "guest")
                     {
-                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "4000000", "guest");
+                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "900000000", "guest");
                         tt = &guest_ticket;
                     }
                     else
