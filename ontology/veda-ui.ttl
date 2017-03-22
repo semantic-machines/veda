@@ -342,11 +342,11 @@ v-ui:LanguageSwitchTemplate
 </div>
 <script>
   var switches = $(".btn", template);
-  handler("v-ui:preferredLanguage");
-  veda.user.preferences.on("individual:propertyModified", handler);
-  template.on("remove", function () {
-    veda.user.preferences.off("individual:propertyModified", handler);
+  veda.user.preferences.on("v-ui:preferredLanguage", langHandler);
+  template.one("remove", function () {
+    veda.user.preferences.off("v-ui:preferredLanguage", langHandler);
   });
+  langHandler();
   template.on("click", function(e) {
     e.stopPropagation();
     var target = $(e.target);
@@ -355,19 +355,17 @@ v-ui:LanguageSwitchTemplate
     var lang_name = lang["rdf:value"][0].toString();
     veda.user.toggleLanguage(lang_name);
   });
-  function handler(property_uri) {
-    if (property_uri === "v-ui:preferredLanguage") {
-      var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
-      switches.each(function () {
-        var $this = $(this);
-        var lang_uri = $this.attr("resource");
-        if (preferredLanguage.indexOf(lang_uri) > -1) {
-          $this.addClass("active btn-success").removeClass("btn-default");
-        } else {
-          $this.removeClass("active btn-success").addClass("btn-default");
-        }
-      });
-    }
+  function langHandler() {
+    var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
+    switches.each(function () {
+      var $this = $(this);
+      var lang_uri = $this.attr("resource");
+      if (preferredLanguage.indexOf(lang_uri) > -1) {
+        $this.addClass("active btn-success").removeClass("btn-default");
+      } else {
+        $this.removeClass("active btn-success").addClass("btn-default");
+      }
+    });
   }
   //# sourceURL=v-ui:LanguageSwitchTemplate
 </script>
@@ -537,18 +535,16 @@ v-ui:LinkTemplate
   <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
 </div>
 <script>
-  individual.on("individual:propertyModified", handler);
-  template.on("remove", function () {
-    individual.off("individual:propertyModified", handler);
+  individual.on("v-s:hasLink", linkHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasLink", linkHandler);
   });
-  function handler (property_uri, values) {
-    if (property_uri === "v-s:hasLink" && values.length !== 0) {
-      values.map(function (item) {
-        if (!item.hasValue("v-s:from")) {
-          item["v-s:from"] = [individual];
-        }
-      });
-    }
+  function linkHandler (values) {
+    values.map(function (item) {
+      if (!item.hasValue("v-s:from")) {
+        item["v-s:from"] = [individual];
+      }
+    });
   }
   //# sourceURL=v-ui:LinkTemplate
 </script>
@@ -846,10 +842,10 @@ v-ui:IconModalTemplate
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
       individual.present(cntr, tmpl, newMode);
     }
-    individual.one("individual:beforeReset", function () {
+    individual.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
-    individual.one("individual:afterSave", function () {
+    individual.one("afterSave", function () {
       modal.modal("hide").remove();
     });
   });
