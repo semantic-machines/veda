@@ -306,7 +306,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
     }
     individual.on("propertyModified", isDraftHandler);
-    template.on("remove", function () {
+    template.one("remove", function () {
       individual.off("propertyModified", isDraftHandler);
       draftLabel = null;
     });
@@ -917,7 +917,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       valTemplate = $("[resource='" + value.id + "']", relContainer).first();
       valTemplate.data("isEmbedded", true);
       embedded.push(valTemplate);
-      valTemplate.on("remove", function () {
+      valTemplate.one("remove", function () {
         if (embedded.length) {
           var index = embedded.indexOf(valTemplate);
           if ( index >= 0 ) embedded.splice(index, 1);
