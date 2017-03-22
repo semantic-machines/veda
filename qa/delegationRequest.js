@@ -1,18 +1,6 @@
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js');
 
-function findUp(driver) {
-    return driver.findElements({css:'.glyphicon-chevron-up'}).then(function (result) {
-        return result[1];
-    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find 'glyphicon-chevron-up' button");});
-}
-
-function clickUp(element) {
-    element.click()
-        .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on 2nd glyphicon-chevron-up");});
-}
-
-
 module.exports = {
     /**
      * Создание делегирования на должность Аналатика, вводом Персоны и Даты;
@@ -56,8 +44,10 @@ module.exports = {
 
         basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]', "Cannot click on 'dateFrom' input");
         basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]', "Cannot click on 'dateTo' input");
-        driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
-        driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
+        driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "Cannot find 'glyphicon-chevron-up' button"),
+            basic.FAST_OPERATION).then(function (result) {basic.clickUp(result)});
+        driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "Cannot find 'glyphicon-chevron-up' button"),
+            basic.FAST_OPERATION).then(function (result) {basic.clickUp(result)});
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
         driver.sleep(basic.FAST_OPERATION);
