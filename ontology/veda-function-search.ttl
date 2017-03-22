@@ -475,7 +475,7 @@ v-fs:FulltextRequestTemplate
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
   self.on("afterSave", updateAspect);
-  template.on("remove", function () {
+  template.one("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
     self.off("afterSave", updateAspect);
@@ -495,7 +495,7 @@ v-fs:FulltextRequestTemplate
   // Modal for links
   var $objModal = $("#object-modal", template).modal({show: false});
   var cntr = $(".modal-body", $objModal);
-  template.on("remove", function () {
+  template.one("remove", function () {
     $objModal.modal("hide");
   });
   resultsList.on("click", "a[resource]", function (e) {
@@ -797,7 +797,7 @@ v-fs:AttributiveRequestTemplate
   self.on("afterSearch", afterSearch);
   self.on("afterSave", updateAspect);
   self.on("v-fs:typeToSearch", typeChanged);
-  template.on("remove", function () {
+  template.one("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
     self.off("afterSave", updateAspect);
@@ -823,7 +823,7 @@ v-fs:AttributiveRequestTemplate
   // Modal for links
   var $objModal = $("#object-modal", template).modal({show: false});
   var cntr = $(".modal-body", $objModal);
-  template.on("remove", function () {
+  template.one("remove", function () {
     $objModal.modal("hide");
   });
   tBody.on("click", "a[resource]", function (e) {

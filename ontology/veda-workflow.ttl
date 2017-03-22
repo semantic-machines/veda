@@ -620,7 +620,7 @@ jsWorkflow.ready(function () {
 
     veda.net = net;
 
-    template.on("remove", function () {
+    template.one("remove", function () {
       delete veda.net
     });
 });
@@ -1225,7 +1225,7 @@ v-wf:TaskTemplateAsProperties
   }
   individual.on("v-wf:join v-wf:split", joinSplitHandler);
   individual.on("rdfs:label", handler);
-  template.on("remove", function () {
+  template.one("remove", function () {
     individual.off("v-wf:join v-wf:split", joinSplitHandler);
     individual.off("rdfs:label", handler);
   });
@@ -1296,7 +1296,7 @@ v-wf:ConditionTemplateAsProperties
     $('.state-name', $state).html(values);
   }
   individual.on("rdfs:label", handler);
-  template.on("remove", function () {
+  template.one("remove", function () {
     individual.off("rdfs:label");
   });
   //# sourceURL=v-wf:ConditionTemplateAsProperties
@@ -1364,7 +1364,7 @@ v-wf:FlowTemplateAsProperties
     }
   }
   individual.on("rdfs:label", handler);
-  template.on("remove", function () {
+  template.one("remove", function () {
     individual.off("rdfs:label", handler);
   });
   //# sourceURL=v-wf:FlowTemplateAsProperties
@@ -3007,7 +3007,7 @@ v-wf:FlowTemplateAsModal
     }
   }
   individual.on("rdfs:label", handler);
-  template.on("remove", function () {
+  template.one("remove", function () {
     individual.off("rdfs:label");
   });
   //# sourceURL=v-wf:FlowTemplateAsProperties

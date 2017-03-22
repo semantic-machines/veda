@@ -275,7 +275,7 @@ v-fc:BlankTemplate
     object.present(objectContainer, undefined, "edit");
     object.one("afterSave", saveHandler);
     object.one("afterReset", cancelHandler);
-    template.on("remove", function () {
+    template.one("remove", function () {
       object.off("afterSave", saveHandler);
       object.off("afterReset", cancelHandler);
       self.off("beforeSave");
@@ -321,7 +321,7 @@ v-fc:BlankTemplateShort
     object.present(objectContainer, undefined, "edit");
     object.one("afterSave", saveHandler);
     object.one("afterReset", cancelHandler);
-    template.on("remove", function () {
+    template.one("remove", function () {
       object.off("afterSave", saveHandler);
       object.off("afterReset", cancelHandler);
       self.off("beforeSave");
