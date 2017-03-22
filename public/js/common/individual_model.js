@@ -84,15 +84,15 @@ veda.Module(function (veda) { "use strict";
       },
       set: function (values) {
         this.isSync(false);
-        var notNull = values.filter(function (i) { return i != undefined });
-        var serialized = notNull.map( serializer );
+        values = values.filter(function (i) { return i != undefined });
+        var serialized = values.map( serializer );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
         if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
           this.properties[property_uri] = serialized;
-          this.trigger("propertyModified", property_uri, notNull);
-          this.trigger(property_uri, notNull);
+          this.trigger("propertyModified", property_uri, values);
+          this.trigger(property_uri, values);
         }
       },
       configurable: false,

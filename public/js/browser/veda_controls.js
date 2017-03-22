@@ -27,14 +27,14 @@
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
 
-    individual.on("propertyModified", modifiedHandler);
+    individual.on(property_uri, modifiedHandler);
     control.one("remove", function () {
-      individual.off("propertyModified", modifiedHandler);
+      individual.off(property_uri, modifiedHandler);
     });
-    modifiedHandler(property_uri);
+    modifiedHandler();
 
-    function modifiedHandler (doc_property_uri) {
-      if (doc_property_uri === property_uri && control.isSingle) {
+    function modifiedHandler () {
+      if (control.isSingle) {
         var field = input[0];
         var value = veda.Util.formatValue( individual[property_uri][0] );
         value = typeof value !== "undefined" ? value : "";
@@ -238,13 +238,11 @@
 
     input.attr("placeholder", placeholder);
 
-    var singleValueHandler = function (doc_property_uri, values) {
-      if (doc_property_uri === property_uri) {
-        if (values.length) {
-          input.val( moment(values[0]).format(format) );
-        } else {
-          input.val("");
-        }
+    var singleValueHandler = function (values) {
+      if (values.length) {
+        input.val( moment(values[0]).format(format) );
+      } else {
+        input.val("");
       }
     }
 
@@ -255,9 +253,9 @@
       if (individual.hasValue(property_uri)) {
         input.val( moment(individual[property_uri][0]).format(format) );
       }
-      individual.on("propertyModified", singleValueHandler);
+      individual.on(property_uri, singleValueHandler);
       control.one("remove", function () {
-        individual.off("propertyModified", singleValueHandler);
+        individual.off(property_uri, singleValueHandler);
       });
     } else {
       change = function (value) {
@@ -433,9 +431,9 @@
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
 
-    individual.on("propertyModified", handler);
+    individual.on(property_uri, handler);
     control.one("remove", function () {
-      individual.off("propertyModified", handler);
+      individual.off(property_uri, handler);
     });
 
     function keyupHandler (e) {
@@ -457,31 +455,29 @@
       });
       individual[property_uri] = value.length ? filtered.concat(value) : filtered;
     }
-    function handler (doc_property_uri, values) {
-      if (doc_property_uri === property_uri) {
-        input.each(function () {
-          if (this !== document.activeElement) {
-            return;
-          }
-          var lang = this.lang;
-          var value = values.filter(function (item) {
-            // Set string language to default if undefined
-            if ( !item.language ) { item.language = veda.user.defaultLanguage; }
-            return item.language === lang;
-          })[0];
-          value = typeof value !== "undefined" ? value : "";
-          try {
-            var start = this.selectionStart;
-            var end = this.selectionEnd;
-            this.value = value;
-            this.selectionStart = start;
-            this.selectionEnd = end;
-          } catch (ex) {
-            this.value = value;
-            console.log("selectionStart/End error:", property_uri, value, typeof value);
-          }
-        });
-      }
+    function handler (values) {
+      input.each(function () {
+        if (this !== document.activeElement) {
+          return;
+        }
+        var lang = this.lang;
+        var value = values.filter(function (item) {
+          // Set string language to default if undefined
+          if ( !item.language ) { item.language = veda.user.defaultLanguage; }
+          return item.language === lang;
+        })[0];
+        value = typeof value !== "undefined" ? value : "";
+        try {
+          var start = this.selectionStart;
+          var end = this.selectionEnd;
+          this.value = value;
+          this.selectionStart = start;
+          this.selectionEnd = end;
+        } catch (ex) {
+          this.value = value;
+          console.log("selectionStart/End error:", property_uri, value, typeof value);
+        }
+      });
     }
 
     this.on("veda_focus", function (e, value) {
@@ -596,23 +592,21 @@
       spec = opts.spec;
 
     function handler (doc_property_uri) {
-      if (doc_property_uri === property_uri) {
-        if (individual.hasValue(property_uri)) {
-          if (individual[property_uri][0] == true) {
-            input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
-          } else {
-            input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
-          }
+      if (individual.hasValue(property_uri)) {
+        if (individual[property_uri][0] == true) {
+          input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
         } else {
-          input.prop("readonly", true).prop("indeterminate", true);
+          input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
         }
+      } else {
+        input.prop("readonly", true).prop("indeterminate", true);
       }
     }
-    handler(property_uri);
+    handler();
 
-    individual.on("propertyModified", handler);
+    individual.on(property_uri, handler);
     this.one("remove", function () {
-      individual.off("propertyModified", handler);
+      individual.off(property_uri, handler);
     });
 
     input.click( function () {
@@ -691,9 +685,9 @@
       }
     });
 
-    individual.on("propertyModified", handler);
+    individual.on(property_uri, handler);
     control.one("remove", function () {
-      individual.off("propertyModified", handler);
+      individual.off(property_uri, handler);
     });
 
     if (template) {
@@ -740,8 +734,8 @@
       });
     }
 
-    function handler(doc_property_uri) {
-      if (doc_property_uri === property_uri && isSingle) {
+    function handler() {
+      if (isSingle) {
         $("option", control).each(function () {
           var value = $(this).data("value");
           var hasValue = individual.hasValue(property_uri, value);
@@ -800,9 +794,9 @@
 
     populate();
 
-    individual.on("propertyModified", handler);
+    individual.on(property_uri, handler);
     this.one("remove", function () {
-      individual.off("propertyModified", handler);
+      individual.off(property_uri, handler);
     });
 
     if (template) {
@@ -857,13 +851,11 @@
     }
 
     function handler(doc_property_uri) {
-      if (doc_property_uri === property_uri) {
-        $("input", control).each(function () {
-          var value = $(this).data("value");
-          var hasValue = individual.hasValue(property_uri, value);
-          $(this).prop("checked", hasValue);
-        });
-      }
+      $("input", control).each(function () {
+        var value = $(this).data("value");
+        var hasValue = individual.hasValue(property_uri, value);
+        $(this).prop("checked", hasValue);
+      });
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -924,9 +916,9 @@
 
     populate();
 
-    individual.on("propertyModified", handler);
+    individual.on(property_uri, handler);
     this.one("remove", function () {
-      individual.off("propertyModified", handler);
+      individual.off(property_uri, handler);
     });
 
     if (template) {
@@ -980,14 +972,12 @@
       });
     }
 
-    function handler(doc_property_uri) {
-      if (doc_property_uri === property_uri) {
-        $("input", control).each(function () {
-          var value = $(this).data("value");
-          var hasValue = individual.hasValue(property_uri, value);
-          $(this).prop("checked", hasValue);
-        });
-      }
+    function handler() {
+      $("input", control).each(function () {
+        var value = $(this).data("value");
+        var hasValue = individual.hasValue(property_uri, value);
+        $(this).prop("checked", hasValue);
+      });
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -1043,10 +1033,8 @@
 
     input.attr("placeholder", placeholder);
 
-    function singleValueHandler (doc_property_uri, values) {
-      if (doc_property_uri === property_uri) {
-        input.val( values[0] );
-      }
+    function singleValueHandler (values) {
+      input.val( values[0] );
     }
 
     var change = function (value) {
@@ -1054,9 +1042,9 @@
     };
 
     input.val(individual[property_uri][0]);
-    individual.on("propertyModified", singleValueHandler);
+    individual.on(property_uri, singleValueHandler);
     control.one("remove", function () {
-      individual.off("propertyModified", singleValueHandler);
+      individual.off(property_uri, singleValueHandler);
     });
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -1160,20 +1148,18 @@
       var value = opts.parser( editor.doc.getValue() );
       opts.change(value);
     });
-    function handler(property_modified, values) {
-      if (property_modified === property_uri) {
-        var doc = editor.getDoc();
-        var value = doc.getValue();
-        if (!values.length || values[0].toString() !== value) {
-          var cursor = doc.getCursor();
-          doc.setValue( values.length ? values[0].toString() : "" );
-          doc.setCursor(cursor);
-        }
+    function handler(values) {
+      var doc = editor.getDoc();
+      var value = doc.getValue();
+      if (!values.length || values[0].toString() !== value) {
+        var cursor = doc.getCursor();
+        doc.setValue( values.length ? values[0].toString() : "" );
+        doc.setCursor(cursor);
       }
     }
-    individual.on("propertyModified", handler );
+    individual.on(property_uri, handler );
     this.on("remove", function () {
-      individual.off("propertyModified", handler);
+      individual.off(property_uri, handler);
     });
 
     fscreen.click(function () {
@@ -1533,18 +1519,16 @@
 
       // Hide create button for single value relations if value exists
       if (isSingle) {
-        var singleValueHandler = function (modified_rel_uri, values) {
-          if (modified_rel_uri === rel_uri) {
-            if (values.length) {
-              create.hide();
-            } else {
-              create.show();
-            }
+        var singleValueHandler = function (values) {
+          if (values.length) {
+            create.hide();
+          } else {
+            create.show();
           }
         };
-        individual.on("propertyModified", singleValueHandler);
+        individual.on(rel_uri, singleValueHandler);
         create.one("remove", function () {
-          individual.off("propertyModified", singleValueHandler);
+          individual.off(rel_uri, singleValueHandler);
         });
       }
 
@@ -1658,22 +1642,20 @@
       });
 
       // Fill in value in fulltext field
-      var handler = function (doc_rel_uri) {
-        if (doc_rel_uri === rel_uri) {
-          if (isSingle && individual.hasValue(rel_uri)) {
-            try {
-              typeAhead.typeahead( "val", renderTemplate( individual[rel_uri][0]) );
-            } catch (e) {
-              typeAhead.typeahead("val", "");
-            }
-          } else {
+      var handler = function () {
+        if (isSingle && individual.hasValue(rel_uri)) {
+          try {
+            typeAhead.typeahead( "val", renderTemplate( individual[rel_uri][0]) );
+          } catch (e) {
             typeAhead.typeahead("val", "");
           }
+        } else {
+          typeAhead.typeahead("val", "");
         }
       }
-      individual.on("propertyModified", handler);
+      individual.on(rel_uri, handler);
       control.one("remove", function () {
-        individual.off("propertyModified", handler);
+        individual.off(rel_uri, handler);
       });
 
       handler(rel_uri);

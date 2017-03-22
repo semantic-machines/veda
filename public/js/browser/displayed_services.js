@@ -54,6 +54,7 @@ veda.Module(function DisplayedServices(veda) { "use strict";
             range = property.hasValue("rdfs:range") ?  property["rdfs:range"][0].id : undefined;
         if (range === "xsd:string" || range === "rdfs:Literal" || range === "rdfs:Resource") {
           self.trigger("propertyModified", property_uri, self[property_uri]);
+          self.trigger(property_uri, self[property_uri]);
         }
       }
     }
