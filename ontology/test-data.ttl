@@ -20,15 +20,6 @@
 # owl:versionInfo "1.3" ;
 .
 
-td:run-script
-  rdf:type v-s:ExecuteScript0;
-  v-s:argument td:arg1;
-  v-s:result td:res1 ;
-  v-s:isSuccess false;
-  v-s:useScript td:script_onto_rename;
-  v-s:priority 16;
-.
-
 td:arg1
   rdf:type v-s:Variable ;
   v-s:variableName "rename_template" ;
@@ -40,11 +31,20 @@ td:res1
   v-s:variableName "res" ;
 .
 
-td:script_onto_rename
+td:run-script
+  rdf:type v-s:ExecuteScript;
+  v-s:argument td:arg1;
+  v-s:result td:res1 ;
+  v-s:isSuccess false;
+  v-s:useScript td:script_find_long_terms;
+  v-s:priority 16;
+.
+
+td:script_find_long_terms
   rdf:type v-s:Codelet ;
   v-s:script
   """
-    onto_rename (ticket, document, execute_script);
+    find_long_terms (ticket, document, execute_script);
   """;
 .
 

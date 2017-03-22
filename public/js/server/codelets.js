@@ -339,6 +339,14 @@ function create_use_transformation(process, task)
 
 }
 
+// скрипт поиска идентификаторов > 64
+function find_long_terms (ticket, document, execute_script)
+{
+    if (document['@'].length > 64 )
+	print ('$$$$$$$$$$$$$$ find_long_terms:doc= ' + document['@']);
+}
+
+
 // скрипт переименования онтологии
 function onto_rename(ticket, document, execute_script)
 {
