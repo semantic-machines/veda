@@ -149,9 +149,18 @@ v-s:StatusRemovedFromBalancee
   rdfs:label "Removed from the balance"@en ;
   rdfs:label "Снято с балланса"@ru ;
 .
-
 v-s:StatusDecisionExpected
   rdf:type v-s:Status ;
   rdfs:label "Decision expected"@en ;
   rdfs:label "Ожидает решения по реализации"@ru ;
+.
+v-s:StatusConfirmed
+  rdf:type v-s:Status ;
+  rdfs:label "Status confirmed"@en ;
+  rdfs:label "Подтверждено"@ru ;
+.
+v-s:StatusNotConfirmed
+  rdf:type v-s:Status ;
+  rdfs:label "Status not confirmed"@en ;
+  rdfs:label "Не подтверждено"@ru ;
 .
