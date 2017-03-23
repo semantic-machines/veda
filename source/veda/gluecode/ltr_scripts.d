@@ -147,10 +147,10 @@ private void ltrs_thread(string parent_url)
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
                                        return;
 
-                                   Queue queue = new Queue(queue_id, Mode.R, log);
+                                   Queue queue = new Queue(uris_db_path, queue_id, Mode.R, log);
                                    if (queue.open())
                                    {
-                                       Consumer cs = new Consumer(queue, "consumer1", log);
+                                       Consumer cs = new Consumer(queue, tmp_path, "consumer-ltr-scripts", log);
 
                                        if (cs.open())
                                        {
@@ -358,8 +358,8 @@ class ScriptProcess : VedaModule
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
             return ResultCode.OK;
 
-        string queue_id = randomUUID().toString();
-        context.get_subject_storage_db().unload_to_queue(queue_id, true);
+        string queue_id = "uris-tmp";
+        context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
 
         start_script(new_bin, queue_id);
 

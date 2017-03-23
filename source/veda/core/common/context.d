@@ -211,7 +211,7 @@ interface Storage
     public ResultCode put(string in_key, string in_value, long op_id);    
     public string find(string uri, bool return_value = true);
     public int get_of_cursor(bool delegate(string key, string value) prepare);
-	public void unload_to_queue (string queue_id, bool only_ids);    
+	public void unload_to_queue (string path, string queue_id, bool only_ids);    
     public long count_entries();
     public void reopen_db();
     public void close_db();

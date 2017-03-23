@@ -93,11 +93,11 @@ class Consumer
     ubyte[ 8 ] buff8;
     ubyte[ 4 ] crc;
 
-
     Logger  log;
     bool    isReady;
     Queue   queue;
     string  name;
+    string path;
     ulong   first_element;
     uint    count_popped;
     ubyte[] last_read_msg;
@@ -111,9 +111,10 @@ class Consumer
     Header header;
     CRC32  hash;
 
-    this(Queue _queue, string _name, Logger _log)
+    this(Queue _queue, string _path, string _name, Logger _log)
     {
         queue       = _queue;
+        path        = _path;
         name        = _name;
         log         = _log;
         buff        = new ubyte[ 4096 * 100 ];
@@ -128,7 +129,7 @@ class Consumer
             return false;
         }
 
-        file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
+        file_name_info_pop = path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
         if (exists(file_name_info_pop) == false)
             ff_info_pop_w = new File(file_name_info_pop, "w");
@@ -339,6 +340,7 @@ class Queue
     Logger log;
     bool   isReady;
     string name;
+    string path;
     int    chunk;
     ulong  right_edge;
     uint   count_pushed;
@@ -358,18 +360,19 @@ class Queue
     Header header;
     CRC32  hash;
 
-    this(string _name, Mode _mode, Logger _log)
+    this(string _path, string _name, Mode _mode, Logger _log)
     {
         log         = _log;
         mode        = _mode;
+        path 		= _path; 
         name        = _name;
         isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
 
-        file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
-        file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-        file_name_lock      = queue_db_path ~ "/" ~ name ~ "_queue.lock";
+        file_name_info_push = path ~ "/" ~ name ~ "_info_push";
+        file_name_queue     = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+        file_name_lock      = path ~ "/" ~ name ~ "_queue.lock";
     }
 
     ~this()

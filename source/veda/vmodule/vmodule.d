@@ -95,12 +95,12 @@ class VedaModule
     private void open_perapareall_queue()
     {
         // attempt open [prepareall] queue
-        prepareall_queue = new Queue(prepareall_queue_name, Mode.R, log);
+        prepareall_queue = new Queue(queue_db_path, prepareall_queue_name, Mode.R, log);
         prepareall_queue.open();
 
         if (prepareall_queue.isReady)
         {
-            prepareall_cs = new Consumer(prepareall_queue, process_name, log);
+            prepareall_cs = new Consumer(prepareall_queue, queue_db_path, process_name, log);
             prepareall_cs.open();
         }
     }
@@ -133,7 +133,7 @@ class VedaModule
 
         ubyte[] buffer = new ubyte[ 1024 ];
 
-        main_queue = new Queue(main_queue_name, Mode.R, log);
+        main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
         main_queue.open();
 
         while (!main_queue.isReady)
@@ -143,10 +143,10 @@ class VedaModule
             main_queue.open();
         }
 
-        main_cs = new Consumer(main_queue, process_name, log);
+        main_cs = new Consumer(main_queue, queue_db_path, process_name, log);
         main_cs.open();
 
-        main_cs_prefetch = new Consumer(main_queue, process_name ~ "_prefetch", log);
+        main_cs_prefetch = new Consumer(main_queue, queue_db_path, process_name ~ "_prefetch", log);
         main_cs_prefetch.open();
 
         // attempt open [prepareall] queue
@@ -222,7 +222,7 @@ class VedaModule
         long  count_prepared = 0;
 
         long  count;
-        Queue queue = new Queue(prepareall_queue_name, Mode.RW, log);
+        Queue queue = new Queue(queue_db_path, prepareall_queue_name, Mode.RW, log);
 
         if (queue.open(Mode.RW) != true)
         {
