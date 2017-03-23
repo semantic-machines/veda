@@ -1169,33 +1169,6 @@ class PThreadContext : Context
         }
     }
 
-    public long unload_subject_storage(string queue_id, bool only_ids)
-    {
-        long res = -1;
-
-        version (isServer)
-        {
-            res = subject_storage_module.unload(P_MODULE.subject_manager, queue_id, only_ids);
-        }
-
-		version (isModule)
-        {
-            version (isModule)
-            {
-                log.trace("[%s] unload_subject_storage: isModule", name);
-
-                JSONValue req_body;
-                req_body[ "function" ] = "unload";
-                req_body[ "queue_id" ] = queue_id;
-                req_body[ "only_ids" ] = only_ids;
-
-                reqrep_2_main_module(req_body);
-            }
-        }
-
-        return res;
-    }
-
     private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
                                       bool is_api_request)
     {
@@ -1866,20 +1839,6 @@ class PThreadContext : Context
 
                 res[ "type" ] = "OpResult";
                 if (rc == true)
-                    res[ "result" ] = ResultCode.OK;
-                else
-                    res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ] = -1;
-            }
-            else if (sfn == "unload")
-            {
-                string     queue_id         = jsn[ "queue_id" ].str;
-                bool only_ids = jsn[ "only_ids" ].type() == JSON_TYPE.TRUE;                
-                
-                long rc        = this.unload_subject_storage(queue_id, only_ids);
-
-                res[ "type" ] = "OpResult";
-                if (rc > 0)
                     res[ "result" ] = ResultCode.OK;
                 else
                     res[ "result" ] = ResultCode.Internal_Server_Error;

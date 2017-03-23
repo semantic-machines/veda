@@ -359,7 +359,7 @@ class ScriptProcess : VedaModule
             return ResultCode.OK;
 
         string queue_id = randomUUID().toString();
-        context.unload_subject_storage(queue_id, true);
+        context.get_subject_storage_db().unload_to_queue(queue_id, true);
 
         start_script(new_bin, queue_id);
 

@@ -42,6 +42,11 @@ class Authorization : LmdbStorage
         //writeln("ACL:CACHE:RESET");
     }
 
+	override public void unload_to_queue (string queue_id, bool only_ids)
+	{
+		super.unload_to_queue(queue_id, only_ids);
+	}
+
     ubyte authorize(string _uri, Ticket *ticket, ubyte request_access, bool is_check_for_reload, void delegate(string resource_group,
                                                                                                                string subject_group,
                                                                                                                string right)

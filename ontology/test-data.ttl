@@ -32,7 +32,7 @@ td:res1
 .
 
 td:run-script
-  rdf:type v-s:ExecuteScript;
+  rdf:type v-s:ExecuteScript0;
   v-s:argument td:arg1;
   v-s:result td:res1 ;
   v-s:isSuccess false;

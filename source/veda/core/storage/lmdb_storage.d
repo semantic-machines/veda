@@ -8,7 +8,7 @@ private
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.bind.lmdb_header, veda.onto.individual;
     import veda.common.logger, veda.core.util.utils, veda.core.common.context, veda.core.common.define;
-    import veda.core.storage.binlog_tools;
+    import veda.core.storage.binlog_tools, veda.util.queue;
 
     alias core.thread.Thread core_thread;
 }
@@ -737,7 +737,7 @@ public class LmdbStorage : Storage
 
                 if (records_in_memory.length > max_count_record_in_memory)
                 {
-                	log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                    log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
                     reopen_db();
                 }
             }
@@ -968,6 +968,41 @@ public class LmdbStorage : Storage
             if (txn_r !is null)
                 mdb_txn_abort(txn_r);
         }
+    }
+
+    public void unload_to_queue(string queue_id, bool only_ids)
+    {
+        log.trace("START UNLOAD DATA TO QUEUE %s", queue_id);
+        long  count;
+        Queue queue = new Queue(queue_id, Mode.RW, log);
+
+        if (queue.open(Mode.RW))
+        {
+            bool add_to_queue(string key, string value)
+            {
+                queue.push(value);
+                count++;
+                return true;
+            }
+
+            bool add_id_to_queue(string key, string value)
+            {
+                queue.push(key);
+                count++;
+                return true;
+            }
+
+            if (only_ids)
+                get_of_cursor(&add_id_to_queue);
+            else
+                get_of_cursor(&add_to_queue);
+
+            queue.close();
+        }
+        else
+            log.trace("store_thread:CMD_UNLOAD: not open queue");
+
+        log.trace("END UNLOAD DATA TO QUEUE %s", queue_id);
     }
 }
 
