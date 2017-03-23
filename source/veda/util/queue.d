@@ -83,16 +83,17 @@ struct Header
     }
 }
 
-ubyte[] buff;
-ubyte[] header_buff;
-ubyte[ 1 ] buff1;
-ubyte[ 4 ] buff4;
-ubyte[ 8 ] buff8;
-ubyte[ 4 ] crc;
-
 
 class Consumer
 {
+    ubyte[] buff;
+    ubyte[] header_buff;
+    ubyte[ 1 ] buff1;
+    ubyte[ 4 ] buff4;
+    ubyte[ 8 ] buff8;
+    ubyte[ 4 ] crc;
+
+
     Logger  log;
     bool    isReady;
     Queue   queue;
@@ -112,9 +113,11 @@ class Consumer
 
     this(Queue _queue, string _name, Logger _log)
     {
-        queue = _queue;
-        name  = _name;
-        log   = _log;
+        queue       = _queue;
+        name        = _name;
+        log         = _log;
+        buff        = new ubyte[ 4096 * 100 ];
+        header_buff = new ubyte[ header.length() ];
     }
 
     public bool open()
@@ -301,7 +304,9 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue:commit:invalid msg: fail crc[%s] : %s", text(crc), text(header));
+            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid last_read_msg[%s]: fail crc[%s] : %s", queue.name, name, last_read_msg, text(
+                                                                                                                                               crc),
+                      text(header));
             log.trace(text(last_read_msg.length));
             log.trace(cast(string)last_read_msg);
             return false;
@@ -324,6 +329,13 @@ class Consumer
 
 class Queue
 {
+    ubyte[] buff;
+    ubyte[] header_buff;
+    ubyte[ 1 ] buff1;
+    ubyte[ 4 ] buff4;
+    ubyte[ 8 ] buff8;
+    ubyte[ 4 ] crc;
+
     Logger log;
     bool   isReady;
     string name;
