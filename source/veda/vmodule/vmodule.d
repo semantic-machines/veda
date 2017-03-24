@@ -240,7 +240,7 @@ class VedaModule
         log.trace_console("start prepare_all");
         context.freeze();
         log.trace_console("start create queue");
-        context.get_subject_storage_db().get_of_cursor(&add_to_queue);
+        context.get_subject_storage_db().get_of_cursor(&add_to_queue, false);
         log.trace_console("end create queue, count: %d", queue.count_pushed);
         queue.close();
         context.unfreeze();
