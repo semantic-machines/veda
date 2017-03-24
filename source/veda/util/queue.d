@@ -595,7 +595,7 @@ class Queue
 
 ///////////////////////////////////////////////////////////////////////////
 
-    public void push(string msg, QMessageType type = QMessageType.STRING)
+    public void push(string msg, bool is_flush = true, QMessageType type = QMessageType.STRING)
     {
         if (!isReady || mode == Mode.R)
         {
@@ -607,8 +607,10 @@ class Queue
         put_msg(msg, type);
         put_info();
 
-        flush();
+		if (is_flush)
+	        flush();
     }
+
 }
 
 unittest

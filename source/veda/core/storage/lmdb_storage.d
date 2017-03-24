@@ -980,14 +980,14 @@ public class LmdbStorage : Storage
         {
             bool add_to_queue(string key, string value)
             {
-                queue.push(value);
+                queue.push(value, false);
                 count++;
                 return true;
             }
 
             bool add_id_to_queue(string key, string value)
             {
-                queue.push(key);
+                queue.push(key, false);
                 count++;
                 return true;
             }
@@ -996,7 +996,7 @@ public class LmdbStorage : Storage
                 get_of_cursor(&add_id_to_queue);
             else
                 get_of_cursor(&add_to_queue);
-
+			
             queue.close();
         }
         else
