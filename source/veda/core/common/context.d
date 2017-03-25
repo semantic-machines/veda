@@ -210,7 +210,8 @@ interface Storage
 {
     public ResultCode put(string in_key, string in_value, long op_id);    
     public string find(string uri, bool return_value = true);
-    public int get_of_cursor(bool delegate(string key, string value) prepare);
+    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
+	public void unload_to_queue (string path, string queue_id, bool only_ids);    
     public long count_entries();
     public void reopen_db();
     public void close_db();
@@ -328,8 +329,6 @@ interface Context
     public void reopen_ro_ticket_manager_db();
 
     public void subject_storage_commmit(bool isWait = true);
-    public long unload_subject_storage(string queue_name);
-
 
     public Storage get_subject_storage_db();
 

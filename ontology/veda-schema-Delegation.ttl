@@ -121,7 +121,7 @@ v-s:RequestDelegationTemplate
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
 <div class="container sheet">
-  <h2 about="v-s:RequestDelegation" property="rdfs:label"></h2>
+  <h2 about="v-s:RequestDelegation" property="rdfs:label" class="view edit -search"></h2>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegator" property="rdfs:label"></em>
@@ -189,11 +189,15 @@ v-s:RequestDelegationTemplate
   </div>
 </div>
 <script>
-  individual.on("individual:propertyModified", handler);
+  individual.on("v-s:delegatedPosition", delegatedPositionHandler);
+  individual.on("v-s:delegator v-s:delegate", delegatorDelegateHandler);
+  individual.on("v-s:delegator", delegatorHandler);
   template.one("remove", function () {
-    individual.off("individual:propertyModified", handler);
+    individual.off("v-s:delegatedPosition", delegatedPositionHandler);
+    individual.off("v-s:delegator v-s:delegate", delegatorDelegateHandler);
+    individual.off("v-s:delegator", delegatorHandler);
   });
-  handler("v-s:delegatedPosition", individual["v-s:delegatedPosition"]);
+  delegatedPositionHandler(individual["v-s:delegatedPosition"]);
 
   var positionTemplate = $("#positions", template).html();
   $("#positions", template)
@@ -210,46 +214,44 @@ v-s:RequestDelegationTemplate
       }
     });
 
-  function handler(property_uri, values) {
-    if (property_uri === "v-s:delegatedPosition") {
-      if (values.length) {
-        $("#positions", template).removeClass("has-error");
-      } else {
-        $("#positions", template).addClass("has-error");
-      }
+  function delegatedPositionHandler(values) {
+    if (values.length) {
+      $("#positions", template).removeClass("has-error");
+    } else {
+      $("#positions", template).addClass("has-error");
     }
-    if (property_uri === "v-s:delegator" || property_uri === "v-s:delegate") {
-      if (values.length && values[0]["rdf:type"][0].id === "v-s:Appointment") {
-        individual[property_uri] = values[0]["v-s:employee"];
-      }
+  }
+  function delegatorDelegateHandler(property_uri, values) {
+    if (values.length && values[0]["rdf:type"][0].id === "v-s:Appointment") {
+      individual[property_uri] = values[0]["v-s:employee"];
     }
-    if (property_uri === "v-s:delegator") {
-      $("#positions", template).empty();
-      if (values.length) {
-        var delegator = individual["v-s:delegator"][0];
-        var appointments_ids = query(veda.ticket, "'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'").result;
-        var appointments = get_individuals(veda.ticket, appointments_ids);
-        var positions_ids = appointments.map(function (appointment_json) {
-          var appointment = new veda.IndividualModel(appointment_json);
-          return appointment["v-s:occupation"][0].id;
-        });
-        var positions = get_individuals(veda.ticket, positions_ids);
-        positions.map(function (position_json) {
-          var position = new veda.IndividualModel(position_json);
-          var tmpl = $(positionTemplate);
-          var input = tmpl.find(".input");
-          var label = tmpl.find(".position-label");
-          if ( individual.hasValue("v-s:delegatedPosition", position) ) {
-            input.prop("checked", "checked");
-          }
-          input.prop( "id", position.id );
-          if (mode === "view") {
-            input.prop("disabled", "disabled");
-          }
-          label.text( position["rdfs:label"] );
-          tmpl.appendTo( $("#positions", template) );
-        });
-      }
+  }
+  function delegatorHandler(values) {
+    $("#positions", template).empty();
+    if (values.length) {
+      var delegator = individual["v-s:delegator"][0];
+      var appointments_ids = query(veda.ticket, "'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'").result;
+      var appointments = get_individuals(veda.ticket, appointments_ids);
+      var positions_ids = appointments.map(function (appointment_json) {
+        var appointment = new veda.IndividualModel(appointment_json);
+        return appointment["v-s:occupation"][0].id;
+      });
+      var positions = get_individuals(veda.ticket, positions_ids);
+      positions.map(function (position_json) {
+        var position = new veda.IndividualModel(position_json);
+        var tmpl = $(positionTemplate);
+        var input = tmpl.find(".input");
+        var label = tmpl.find(".position-label");
+        if ( individual.hasValue("v-s:delegatedPosition", position) ) {
+          input.prop("checked", "checked");
+        }
+        input.prop( "id", position.id );
+        if (mode === "view") {
+          input.prop("disabled", "disabled");
+        }
+        label.text( position["rdfs:label"] );
+        tmpl.appendTo( $("#positions", template) );
+      });
     }
   }
 

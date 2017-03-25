@@ -138,7 +138,7 @@ v-ft:FunctionTasksTemplate
 <script>
   var tasks = individual.tasks;
   tasks.on("afterSearch", renderTasks);
-  template.on("remove", function () {
+  template.one("remove", function () {
     tasks.off("afterSearch", renderTasks);
   });
 
@@ -292,7 +292,7 @@ v-ft:FunctionTasksIndicatorTemplate
     counter.text(tasks.count);
   }, 1000*60*3);
   veda.on("task:completed", taskCompletedHandler);
-  template.on("remove", function () {
+  template.one("remove", function () {
     clearInterval(interval);
     veda.off("task:completed", taskCompletedHandler);
   });

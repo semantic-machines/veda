@@ -222,6 +222,27 @@ module.exports = {
       time
     ).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find" + element + "button");});
   },
+    /**
+     * Клик по элементу
+     * @param element - элемент
+     */
+  clickUp: function (element) {
+    element.click()
+        .thenCatch(function(e) {errrorHandlerFunction(e, "Cannot click on" + element)})
+  },
+    /**
+     * Поиск небходимого элемента среди всех таких элементов
+     * @param driver
+     * @param element - элемента
+     * @param number - номер элемента
+     * @param message - сообщение ошибки
+     * @returns {!promise.Promise.<R>|!goog.Promise|*}
+     */
+  findUp: function (driver, element, number, message) {
+      return driver.findElements({css:'' + element + ''}).then(function (result) {
+          return result[number];
+      }).thenCatch(function (e) {basic.errorHandler(e, message);});
+  },
   /**
    * Заполнить ссылочный атрибут значением из выпадающего списка
    *

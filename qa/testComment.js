@@ -2,17 +2,6 @@ var basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
     assert = require('assert');
 
-function findUp(driver) {
-    return driver.findElements({css:'#delete'}).then(function (result) {
-        return result[1];
-    }).thenCatch(function(e){basic.errorHandler(e, "Cannot find delete buttons");});
-}
-
-function clickUp(element) {
-    element.click()
-        .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on delete button");});
-}
-
 /**
  * Проверка кнопок Комментировать, Ответить, Редактировать, Удалить
  * @param driver
@@ -89,7 +78,8 @@ basic.getDrivers().forEach(function (drv) {
 
     check(driver, 2, 2, 1, 1);
     driver.executeScript("document.querySelector('#delete').scrollIntoView(true);");
-    driver.wait(findUp(driver), basic.FAST_OPERATION).then(clickUp);
+    driver.wait(basic.findUp(driver, '#delete', 1, "Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
+        basic.clickUp(result);});
     driver.switchTo().alert().accept();
     driver.sleep(basic.SLOW_OPERATION/2);
     check(driver, 1, 1, 1, 1);

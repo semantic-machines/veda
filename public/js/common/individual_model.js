@@ -32,17 +32,11 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
-    this.on("individual:propertyModified", typeChangedHandler);
-    this.on("individual:beforeSave", beforeSaveHandler);
+    this.on("rdf:type", this.init);
+    this.on("beforeSave", beforeSaveHandler);
 
     return self.load(uri);
   };
-
-  function typeChangedHandler (property_uri) {
-    if (property_uri === "rdf:type") {
-      this.init();
-    }
-  }
 
   function beforeSaveHandler() {
     var now = new Date();
@@ -90,14 +84,15 @@ veda.Module(function (veda) { "use strict";
       },
       set: function (values) {
         this.isSync(false);
-        var notNull = values.filter(function (i) { return i != undefined });
-        var serialized = notNull.map( serializer );
+        values = values.filter(function (i) { return i != undefined });
+        var serialized = values.map( serializer );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
         if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
           this.properties[property_uri] = serialized;
-          this.trigger("individual:propertyModified", property_uri, notNull);
+          this.trigger("propertyModified", property_uri, values);
+          this.trigger(property_uri, values);
         }
       },
       configurable: false,
@@ -161,7 +156,7 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       this.properties["@"] = value;
-      this.trigger("individual:idChanged", value);
+      this.trigger("idChanged", value);
     }
   });
 
@@ -232,13 +227,13 @@ veda.Module(function (veda) { "use strict";
    * @param {String} uri individual uri
    */
   proto.load = function (uri) {
-    this.trigger("individual:beforeLoad");
+    this.trigger("beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
 
       if (this._.cache && veda.cache[uri]) {
         if ( veda.cache[uri] instanceof veda.IndividualModel ) {
-          this.trigger("individual:afterLoad", veda.cache[uri]);
+          this.trigger("afterLoad", veda.cache[uri]);
           return veda.cache[uri];
         } else if ( veda.cache[uri] instanceof veda.IndividualModelAsync ) {
           var syncModel = new veda.IndividualModel( veda.cache[uri].properties );
@@ -291,7 +286,7 @@ veda.Module(function (veda) { "use strict";
     }
     if (this._.cache) veda.cache[this.id] = this;
     if (this._.init) this.init();
-    this.trigger("individual:afterLoad", this);
+    this.trigger("afterLoad", this);
     return this;
   };
 
@@ -303,7 +298,7 @@ veda.Module(function (veda) { "use strict";
     var self = this;
     // Do not save individual to server if nothing changed
     if (self.isSync()) { return; }
-    self.trigger("individual:beforeSave");
+    self.trigger("beforeSave");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -327,7 +322,7 @@ veda.Module(function (veda) { "use strict";
     this.isNew(false);
     this.isSync(true);
     if (this._.cache) veda.cache[this.id] = self;
-    this.trigger("individual:afterSave");
+    this.trigger("afterSave");
     return this;
   }
 
@@ -336,9 +331,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual without validation and without adding new version
    */
   proto.draft = function() {
-    this.trigger("individual:beforeDraft");
+    this.trigger("beforeDraft");
     veda.drafts.set(this.id, this);
-    this.trigger("individual:afterDraft");
+    this.trigger("afterDraft");
     return this;
   }
 
@@ -347,9 +342,9 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
-    this.trigger("individual:beforeReset");
+    this.trigger("beforeReset");
     this.update();
-    this.trigger("individual:afterReset");
+    this.trigger("afterReset");
     return this;
   };
 
@@ -358,7 +353,7 @@ veda.Module(function (veda) { "use strict";
    * Update current individual with values from database & merge with local changes
    */
   proto.update = function () {
-    this.trigger("individual:beforeUpdate");
+    this.trigger("beforeUpdate");
     var self = this;
     if (!this.isNew()) {
       this.filtered = {};
@@ -387,7 +382,7 @@ veda.Module(function (veda) { "use strict";
       self.isSync(true);
     }
     veda.drafts.remove(this.id);
-    this.trigger("individual:afterUpdate");
+    this.trigger("afterUpdate");
     return this;
   };
 
@@ -396,7 +391,7 @@ veda.Module(function (veda) { "use strict";
    * Mark current individual as deleted in database (add v-s:deleted property)
    */
   proto.delete = function () {
-    this.trigger("individual:beforeDelete");
+    this.trigger("beforeDelete");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -404,7 +399,7 @@ veda.Module(function (veda) { "use strict";
       this["v-s:deleted"] = [ true ];
       this.save();
     }
-    this.trigger("individual:afterDelete");
+    this.trigger("afterDelete");
     return this;
   };
 
@@ -413,13 +408,13 @@ veda.Module(function (veda) { "use strict";
    * Recover current individual in database (remove v-s:deleted property)
    */
   proto.recover = function () {
-    this.trigger("individual:beforeRecover");
+    this.trigger("beforeRecover");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];
     this.save();
-    this.trigger("individual:afterRecover");
+    this.trigger("afterRecover");
     return this;
   };
 
@@ -433,7 +428,8 @@ veda.Module(function (veda) { "use strict";
     if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
-        return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+        //return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+        return ( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
     }
     return result;

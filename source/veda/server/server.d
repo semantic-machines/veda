@@ -191,7 +191,7 @@ class VedaServer : WSClient
             string guest_ticket = core_context.get_ticket_from_storage("guest");
 
             if (guest_ticket is null)
-                core_context.create_new_ticket("cfg:Guest", "4000000", "guest");
+                core_context.create_new_ticket("cfg:Guest", "900000000", "guest");
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (node.getStatus() != ResultCode.OK)

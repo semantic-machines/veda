@@ -89,6 +89,8 @@ private void ltrs_thread(string parent_url)
 {
     process_name = "ltr_scripts";
 
+    g_vm_id = "main";
+
     scope (exit)
     {
         log.trace("ERR! ltrs_thread dead (exit)");
@@ -145,10 +147,10 @@ private void ltrs_thread(string parent_url)
                                    if (indv.getFirstBoolean("v-s:isSuccess") == true)
                                        return;
 
-                                   Queue queue = new Queue(queue_id, Mode.R, log);
+                                   Queue queue = new Queue(uris_db_path, queue_id, Mode.R, log);
                                    if (queue.open())
                                    {
-                                       Consumer cs = new Consumer(queue, "consumer1", log);
+                                       Consumer cs = new Consumer(queue, tmp_path, "consumer-ltr-scripts", log);
 
                                        if (cs.open())
                                        {
@@ -202,10 +204,12 @@ private void ltrs_thread(string parent_url)
                         if (tasks is null)
                             continue;
 
-                        string data = task.consumer.pop();
+                        string uri = task.consumer.pop();
                         //writeln ("@ data from queue=", data);
-                        if (data !is null)
+                        if (uri !is null)
                         {
+                            ResultCode rs;
+                            string     data = context.get_individual_as_binobj(&sticket, uri, rs);
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);
@@ -275,7 +279,6 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
         g_user.length = "cfg:VedaSystem".length;
     }
 
-
     Ticket sticket    = context.sys_ticket();
     string sticket_id = sticket.id;
     g_ticket.data   = cast(char *)sticket_id;
@@ -288,7 +291,7 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
     if (script is ScriptInfo.init)
     {
         Individual codelet = context.get_individual(&sticket, script_uri);
-        prepare_script(codelet_scripts, codelet_scripts_order, codelet, script_vm, vars_for_codelet_script);
+        prepare_script(codelet_scripts, codelet_scripts_order, codelet, script_vm, vars_for_codelet_script, false);
     }
 
     if (script.compiled_script !is null)
@@ -355,8 +358,8 @@ class ScriptProcess : VedaModule
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
             return ResultCode.OK;
 
-        string queue_id = randomUUID().toString();
-        context.unload_subject_storage(queue_id);
+        string queue_id = "uris-tmp";
+        context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
 
         start_script(new_bin, queue_id);
 
@@ -395,4 +398,3 @@ private void shutdown_ltr_scripts()
     if (tid_ltr_scripts != Tid.init)
         send(tid_ltr_scripts, CMD_EXIT);
 }
-
