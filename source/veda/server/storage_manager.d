@@ -173,19 +173,6 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public long unload(P_MODULE storage_id, string queue_name)
-{
-    Tid  tid   = getTid(storage_id);
-    long count = -1;
-
-    if (tid != Tid.init)
-    {
-        send(tid, CMD_UNLOAD, queue_name, thisTid);
-        receive((long _count) { count = _count; });
-    }
-    return count;
-}
-
 public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter,
                       string event_id,
                       bool ignore_freeze,
@@ -233,6 +220,7 @@ public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, ou
 public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
 {
     Queue                        individual_queue;
+    Queue                        uris_queue;
 
     P_MODULE                     storage_id  = _storage_id;
     string                       thread_name = text(storage_id);
@@ -258,9 +246,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     {
         if (storage_id == P_MODULE.subject_manager)
         {
-            individual_queue = new Queue("individuals-flow", Mode.RW, log);
-//            individual_queue.remove_lock();
+            individual_queue = new Queue(queue_db_path, "individuals-flow", Mode.RW, log);
             individual_queue.open();
+
+            uris_queue = new Queue(uris_db_path, "uris-db", Mode.RW, log);
+            uris_queue.open();
 
             sock = nn_socket(AF_SP, NN_PUB);
             if (sock >= 0)
@@ -403,28 +393,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
                             }
-                            else if (cmd == CMD_UNLOAD)
-                            {
-                                long count;
-                                Queue queue = new Queue(arg, Mode.RW, log);
-
-                                if (queue.open(Mode.RW))
-                                {
-                                    bool add_to_queue(string key, string value)
-                                    {
-                                        queue.push(value);
-                                        count++;
-                                        return true;
-                                    }
-
-                                    storage.get_of_cursor(&add_to_queue);
-                                    queue.close();
-                                }
-                                else
-                                    writeln("store_thread:CMD_UNLOAD: not open queue");
-
-                                send(tid_response_reciever, count);
-                            }
                         },
                         (INDV_OP cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)
                         {
@@ -502,6 +470,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             if (prev_state !is null && prev_state.length > 0)
                                                 imm.addResource("prev_state", Resource(DataType.String, prev_state));
+                                            else    
+	                                            uris_queue.push(indv_uri);
 
                                             if (event_id !is null && event_id.length > 0)
                                                 imm.addResource("event_id", Resource(DataType.String, event_id));
@@ -610,6 +580,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
         {
             individual_queue.close();
             individual_queue = null;
+        }
+        if (uris_queue !is null)
+        {
+            uris_queue.close();
+            uris_queue = null;
         }
     }
 }

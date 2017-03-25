@@ -83,20 +83,21 @@ struct Header
     }
 }
 
-ubyte[] buff;
-ubyte[] header_buff;
-ubyte[ 1 ] buff1;
-ubyte[ 4 ] buff4;
-ubyte[ 8 ] buff8;
-ubyte[ 4 ] crc;
-
 
 class Consumer
 {
+    ubyte[] buff;
+    ubyte[] header_buff;
+    ubyte[ 1 ] buff1;
+    ubyte[ 4 ] buff4;
+    ubyte[ 8 ] buff8;
+    ubyte[ 4 ] crc;
+
     Logger  log;
     bool    isReady;
     Queue   queue;
     string  name;
+    string path;
     ulong   first_element;
     uint    count_popped;
     ubyte[] last_read_msg;
@@ -110,11 +111,14 @@ class Consumer
     Header header;
     CRC32  hash;
 
-    this(Queue _queue, string _name, Logger _log)
+    this(Queue _queue, string _path, string _name, Logger _log)
     {
-        queue = _queue;
-        name  = _name;
-        log   = _log;
+        queue       = _queue;
+        path        = _path;
+        name        = _name;
+        log         = _log;
+        buff        = new ubyte[ 4096 * 100 ];
+        header_buff = new ubyte[ header.length() ];
     }
 
     public bool open()
@@ -125,7 +129,7 @@ class Consumer
             return false;
         }
 
-        file_name_info_pop = queue_db_path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
+        file_name_info_pop = path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
         if (exists(file_name_info_pop) == false)
             ff_info_pop_w = new File(file_name_info_pop, "w");
@@ -301,7 +305,9 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue:commit:invalid msg: fail crc[%s] : %s", text(crc), text(header));
+            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid last_read_msg[%s]: fail crc[%s] : %s", queue.name, name, last_read_msg, text(
+                                                                                                                                               crc),
+                      text(header));
             log.trace(text(last_read_msg.length));
             log.trace(cast(string)last_read_msg);
             return false;
@@ -324,9 +330,17 @@ class Consumer
 
 class Queue
 {
+    ubyte[] buff;
+    ubyte[] header_buff;
+    ubyte[ 1 ] buff1;
+    ubyte[ 4 ] buff4;
+    ubyte[ 8 ] buff8;
+    ubyte[ 4 ] crc;
+
     Logger log;
     bool   isReady;
     string name;
+    string path;
     int    chunk;
     ulong  right_edge;
     uint   count_pushed;
@@ -346,18 +360,19 @@ class Queue
     Header header;
     CRC32  hash;
 
-    this(string _name, Mode _mode, Logger _log)
+    this(string _path, string _name, Mode _mode, Logger _log)
     {
         log         = _log;
         mode        = _mode;
+        path 		= _path; 
         name        = _name;
         isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
 
-        file_name_info_push = queue_db_path ~ "/" ~ name ~ "_info_push";
-        file_name_queue     = queue_db_path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-        file_name_lock      = queue_db_path ~ "/" ~ name ~ "_queue.lock";
+        file_name_info_push = path ~ "/" ~ name ~ "_info_push";
+        file_name_queue     = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+        file_name_lock      = path ~ "/" ~ name ~ "_queue.lock";
     }
 
     ~this()
@@ -580,7 +595,7 @@ class Queue
 
 ///////////////////////////////////////////////////////////////////////////
 
-    public void push(string msg, QMessageType type = QMessageType.STRING)
+    public void push(string msg, bool is_flush = true, QMessageType type = QMessageType.STRING)
     {
         if (!isReady || mode == Mode.R)
         {
@@ -592,8 +607,10 @@ class Queue
         put_msg(msg, type);
         put_info();
 
-        flush();
+		if (is_flush)
+	        flush();
     }
+
 }
 
 unittest

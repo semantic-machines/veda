@@ -15,9 +15,9 @@ struct ScriptInfo
     string run_at;
 }
 
-void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scripts_order, Individual ss, ScriptVM script_vm, string vars_env)
+void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_order, Individual ss, ScriptVM script_vm, string vars_env, bool trace)
 {
-    if (trace_msg[ 310 ] == 1)
+    if (trace)
         log.trace("prepare_script uri=%s", ss.uri);
 
     try
@@ -38,6 +38,9 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
         string scripts_text = ss.getFirstResource(veda_schema__script).literal;
         if (scripts_text.length <= 0)
             return;
+
+        if (trace)
+            log.trace("script_text=%s", scripts_text);
 
         string str_script =
             "try { var ticket = get_env_str_var ('$ticket');"
@@ -63,9 +66,10 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             if (script.run_at != g_vm_id)
                 return;
 
+            if (trace)
+                log.trace("compile script.id=%s, text=%s", script.id, script.str_script);
+
             script.compiled_script = script_vm.compile(script.str_script);
-            if (trace_msg[ 310 ] == 1)
-                log.trace("#compile event script.id=%s, text=%s", script.id, script.str_script);
 
             //writeln("scripts_text:", scripts_text);
 
@@ -87,10 +91,10 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
 
 
             // удалить вхождение
-            auto rr = event_scripts_order[].find(ss.uri);
+            auto rr = scripts_order[].find(ss.uri);
 
             if (rr.length > 0)
-                event_scripts_order.linearRemove(rr);
+                scripts_order.linearRemove(rr);
 
             // найти новую позицию с учетом зависимостей
             long max_pos = 0;
@@ -98,7 +102,7 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             long idx                = 0;
             bool need_before_insert = false;
 
-            foreach (oo; event_scripts_order)
+            foreach (oo; scripts_order)
             {
                 // проверить зависит ли [oo] от [script]
                 auto soo = scripts[ oo ];
@@ -124,21 +128,21 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string event_scr
             }
             if (max_pos > 0)
             {
-                rr = event_scripts_order[].find(event_scripts_order[ max_pos ]);
+                rr = scripts_order[].find(scripts_order[ max_pos ]);
 
                 // добавить новое вхождение
                 if (rr.length > 0)
                 {
                     if (need_before_insert)
-                        event_scripts_order.insertBefore(rr, ss.uri);
+                        scripts_order.insertBefore(rr, ss.uri);
                     else
-                        event_scripts_order.insertAfter(rr, ss.uri);
+                        scripts_order.insertAfter(rr, ss.uri);
                 }
                 else
-                    event_scripts_order.insertBack(ss.uri);
+                    scripts_order.insertBack(ss.uri);
             }
             else
-                event_scripts_order.insertBack(ss.uri);
+                scripts_order.insertBack(ss.uri);
         }
         catch (Exception ex)
         {

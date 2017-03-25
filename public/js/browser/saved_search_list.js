@@ -39,7 +39,7 @@ veda.Module(function SavedSearchList(veda) { "use strict";
           $("a", sContainer).removeClass("active");
           search.q = d["v-s:query"][0];
 
-          if (container.prop("id") === "main") riot.route("#/search/" + search.q, false);
+          if (container.prop("id") === "main") riot.route("#/search/" + search.q);
 
           search.search();
           a.addClass("active");

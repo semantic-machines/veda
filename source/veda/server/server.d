@@ -177,7 +177,7 @@ class VedaServer : WSClient
 
             Ticket     sticket;
 
-            core_context = new PThreadContext(node_id, "core_context-" ~ text(port), individuals_db_path, log);
+            core_context = PThreadContext.create_new(node_id, "core_context-" ~ text(port), individuals_db_path, log);
             l_context    = core_context;
 
             sticket = core_context.sys_ticket();
@@ -191,7 +191,7 @@ class VedaServer : WSClient
             string guest_ticket = core_context.get_ticket_from_storage("guest");
 
             if (guest_ticket is null)
-                core_context.create_new_ticket("cfg:Guest", "4000000", "guest");
+                core_context.create_new_ticket("cfg:Guest", "900000000", "guest");
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (node.getStatus() != ResultCode.OK)

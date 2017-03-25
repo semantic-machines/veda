@@ -19,7 +19,8 @@ private
 
     version (isServer)
     {
-        alias veda.server.storage_manager storage_module;
+        alias veda.server.storage_manager ticket_storage_module;
+        alias veda.server.storage_manager subject_storage_module;
         alias veda.server.acl_manager     acl_module;
         alias veda.server.load_info       load_info;
     }
@@ -187,16 +188,18 @@ class PThreadContext : Context
         return node_id;
     }
 
-    this(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
-    {
-        log = _log;
+    public static Context create_new (string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
+    {    	
+    	PThreadContext ctx = new PThreadContext ();
+    	
+        ctx.log = _log;
 
-        if (log is null)
+        if (ctx.log is null)
             writefln("context_name [%s] log is null", context_name);
 
-        _acl_indexes = in_acl_indexes;
+        ctx._acl_indexes = in_acl_indexes;
 
-        main_module_url = _main_module_url;
+        ctx.main_module_url = _main_module_url;
 /*
         {
             import std.experimental.Logger;
@@ -205,30 +208,32 @@ class PThreadContext : Context
             std.experimental.Logger.core.globalLogLevel(LogLevel.info);
         }
  */
-        node_id = _node_id;
+        ctx.node_id = _node_id;
 
-        inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", this.log);
-        tickets_storage_r    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", this.log);
+        ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
+        ctx.tickets_storage_r    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
 
-        name = context_name;
+        ctx.name = context_name;
 
-        is_traced_module[ P_MODULE.ticket_manager ]  = true;
-        is_traced_module[ P_MODULE.subject_manager ] = true;
+        ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
+        ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
 //        is_traced_module[ P_MODULE.acl_preparer ]      = true;
 //        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
 //        is_traced_module[ P_MODULE.scripts ]          = true;
 
-        get_configuration();
+        ctx.get_configuration();
 
-        _vql = new VQL(this);
+        ctx._vql = new VQL(ctx);
 
-        onto = new Onto(this);
-        onto.load();
+        ctx.onto = new Onto(ctx);
+        ctx.onto.load();
 
-        local_count_put = get_subject_manager_op_id();
+        ctx.local_count_put = get_subject_manager_op_id();
         //ft_local_count  = get_count_indexed();
 
-        log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
+        ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
+        
+        return ctx;
     }
 
     ~this()
@@ -244,7 +249,7 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            res = storage_module.begin_transaction(P_MODULE.subject_manager);
+            res = subject_storage_module.begin_transaction(P_MODULE.subject_manager);
         }
 
         return res;
@@ -254,7 +259,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
+            subject_storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
         }
     }
 
@@ -262,7 +267,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
+            subject_storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
         }
     }
 
@@ -300,10 +305,10 @@ class PThreadContext : Context
             {
                 try
                 {
-                    ticket = create_new_ticket("cfg:VedaSystem", "400000");
+                    ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
-                    storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
+                    ticket_storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -540,13 +545,13 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        // store ticket
-        string ss_as_binobj = new_ticket.serialize();
-
         version (isServer)
         {
+        	// store ticket
+        	string ss_as_binobj = new_ticket.serialize();
+        	
             long       op_id;
-            ResultCode rc = storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
+            ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -557,6 +562,12 @@ class PThreadContext : Context
 
             if (trace_msg[ T_API_50 ] == 1)
                 log.trace("create_new_ticket, new ticket=%s", ticket);
+        }
+
+        version (WebServer)
+        {
+                subject2Ticket(new_ticket, &ticket);
+                user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
 
         return ticket;
@@ -785,7 +796,7 @@ class PThreadContext : Context
 
                     if (ticket_id == "guest")
                     {
-                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "4000000", "guest");
+                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "900000000", "guest");
                         tt = &guest_ticket;
                     }
                     else
@@ -838,7 +849,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get);
+            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get, false);
             return res;
         }
         finally
@@ -916,14 +927,14 @@ class PThreadContext : Context
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event)
+                                                      void delegate(string uri) prepare_element_event, bool trace)
     {
         SearchResult sr;
 
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event);
+        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, false, trace);
 
         return sr;
     }
@@ -1121,7 +1132,7 @@ class PThreadContext : Context
 
                 if (oprc.result == ResultCode.OK)
                 {
-                    res.result = storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
+                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
                 }
                 else
                     res.result = oprc.result;
@@ -1154,25 +1165,8 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            storage_module.flush_int_module(P_MODULE.subject_manager, isWait);
+            subject_storage_module.flush_int_module(P_MODULE.subject_manager, isWait);
         }
-    }
-
-    public long unload_subject_storage(string queue_id)
-    {
-        long res = -1;
-
-        version (isServer)
-        {
-            res = storage_module.unload(P_MODULE.subject_manager, queue_id);
-        }
-
-        if (main_module_url !is null)
-        {
-            //writeln("context:store_individual #3 ", process_name);
-        }
-
-        return res;
     }
 
     private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
@@ -1333,7 +1327,7 @@ class PThreadContext : Context
                 }
 
                 res.result =
-                    storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id,
+                    subject_storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id,
                                        ignore_freeze,
                                        res.op_id);
                 //log.trace("res.result=%s", res.result);
@@ -1469,7 +1463,7 @@ class PThreadContext : Context
                 }
                 else
                 {
-                    backup_id = storage_module.backup(P_MODULE.subject_manager);
+                    backup_id = subject_storage_module.backup(P_MODULE.subject_manager);
 
                     if (backup_id != "")
                     {
@@ -1536,7 +1530,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            storage_module.freeze(P_MODULE.subject_manager);
+            subject_storage_module.freeze(P_MODULE.subject_manager);
         }
         version (isModule)
         {
@@ -1550,7 +1544,7 @@ class PThreadContext : Context
     {
         version (isServer)
         {
-            storage_module.unfreeze(P_MODULE.subject_manager);
+            subject_storage_module.unfreeze(P_MODULE.subject_manager);
         }
         version (isModule)
         {
@@ -1566,7 +1560,7 @@ class PThreadContext : Context
 
         version (isServer)
         {
-            res = storage_module.find(P_MODULE.subject_manager, uri);
+            res = subject_storage_module.find(P_MODULE.subject_manager, uri);
         }
         return res;
     }
@@ -1815,11 +1809,11 @@ class PThreadContext : Context
                 ResultCode rc;
 
                 if (f_module_id == P_MODULE.subject_manager)
-                    rc = storage_module.flush_int_module(P_MODULE.subject_manager, false);
+                    rc = subject_storage_module.flush_int_module(P_MODULE.subject_manager, false);
                 else if (f_module_id == P_MODULE.acl_preparer)
                     rc = acl_module.flush(false);
                 else if (f_module_id == P_MODULE.fulltext_indexer)
-                    storage_module.flush_ext_module(f_module_id, wait_op_id);
+                    subject_storage_module.flush_ext_module(f_module_id, wait_op_id);
 
                 res[ "type" ]   = "OpResult";
                 res[ "result" ] = ResultCode.OK;
@@ -1832,7 +1826,7 @@ class PThreadContext : Context
 
                 ResultCode rc;
 
-                storage_module.msg_to_module(f_module_id, msg, false);
+                subject_storage_module.msg_to_module(f_module_id, msg, false);
 
                 res[ "type" ]   = "OpResult";
                 res[ "result" ] = ResultCode.OK;

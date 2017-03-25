@@ -104,7 +104,7 @@ basic.getDrivers().forEach (function (drv) {
   assertCounts(driver, 2, 1, 1);
   update(driver, '');
   assertCounts(driver, 2, 1, 1);
-  update(driver, timeStamp + 3)
+  update(driver, timeStamp + 3);
   assertCounts(driver, 3, 1, 2);
 
   driver.quit();

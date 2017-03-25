@@ -106,7 +106,7 @@ interface VedaStorageRest_API {
 
     @path("query") @method(HTTPMethod.GET)
     SearchResult query(string ticket, string query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
-                       int limit = 10000);
+                       int limit = 10000, bool trace = false);
 
     @path("get_individuals") @method(HTTPMethod.POST)
     Json[] get_individuals(string ticket, string[] uris);
@@ -636,7 +636,7 @@ class VedaStorageRest : VedaStorageRest_API
     }
 
     SearchResult query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
-                       int limit = 10000)
+                       int limit = 10000, bool trace = false)
     {
         ulong        timestamp = Clock.currTime().stdTime() / 10;
 
@@ -662,9 +662,9 @@ class VedaStorageRest : VedaStorageRest_API
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc, text(rc));
+                return sr;
 
-            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null); //&prepare_element);
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null, trace); //&prepare_element);
 
             return sr;
         }
@@ -680,6 +680,9 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "limit" ]     = limit;
 
             trail(_ticket, ticket.user_uri, "query", jreq, text(sr.result), rc, timestamp);
+            
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));            
         }
     }
 
@@ -696,9 +699,9 @@ class VedaStorageRest : VedaStorageRest_API
         {
             ticket = context.get_ticket(_ticket);
             rc     = ticket.result;
-
+            
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc, text(rc));
+                return res;
 
             try
             {
@@ -711,7 +714,8 @@ class VedaStorageRest : VedaStorageRest_API
             }
             catch (Throwable ex)
             {
-                throw new HTTPStatusException(ResultCode.Internal_Server_Error);
+            	rc = ResultCode.Internal_Server_Error;
+                return res;
             }
 
             return res;
@@ -721,6 +725,9 @@ class VedaStorageRest : VedaStorageRest_API
             Json jreq = Json.emptyObject;
             jreq[ "uris" ] = args;
             trail(_ticket, ticket.user_uri, "get_individuals", jreq, text(res), rc, timestamp);
+            
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));            
         }
     }
 
@@ -728,7 +735,7 @@ class VedaStorageRest : VedaStorageRest_API
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
 
-        Json       res;
+        Json       res = Json.emptyObject;
         ResultCode rc = ResultCode.Internal_Server_Error;
         Ticket     *ticket;
 
@@ -738,7 +745,7 @@ class VedaStorageRest : VedaStorageRest_API
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc, text(rc));
+	            return res;
 
             try
             {
@@ -771,12 +778,8 @@ class VedaStorageRest : VedaStorageRest_API
             }
             catch (Throwable ex)
             {
-                throw new HTTPStatusException(rc, ex.msg);
-            }
-
-            if (rc != ResultCode.OK)
-            {
-                throw new HTTPStatusException(rc, text(rc));
+            	return res;
+                //throw new HTTPStatusException(rc, ex.msg);
             }
 
             return res;
@@ -786,6 +789,11 @@ class VedaStorageRest : VedaStorageRest_API
             Json jreq = Json.emptyObject;
             jreq[ "uri" ] = uri;
             trail(_ticket, ticket.user_uri, "get_individual", jreq, res.toString(), rc, timestamp);
+
+            if (rc != ResultCode.OK)
+            {
+                throw new HTTPStatusException(rc, text(rc));
+            }
         }
     }
 

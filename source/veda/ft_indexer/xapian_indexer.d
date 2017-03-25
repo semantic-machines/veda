@@ -209,11 +209,18 @@ public class IndexerContext
                 string previousVersion_new  = indv.getFirstLiteral("v-s:previousVersion");
 
                 if (isDraftOf !is null)
+                {
+                    log.trace("new_indv [%s] is draft, ignore", indv.uri);
                     return;
+                }
 
-                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri ||
-                                            (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)))
+                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri /*||
+                                                                                                       (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)*/))
+                {
+                    if (actualVersion !is null && actualVersion != indv.uri)
+                        log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", indv.uri, actualVersion, indv.uri);
                     return;
+                }
 
                 OutBuffer      all_text = new OutBuffer();
                 XapianDocument doc      = new_Document(&err);

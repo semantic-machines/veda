@@ -1,5 +1,4 @@
-/* Riot 1.0.2, @license MIT, (c) 2014 Muut Inc + contributors */
-
+/* Riot 1.0.4, @license MIT, (c) 2014 Muut Inc + contributors */
 (function(riot) { "use strict";
 
 riot.observable = function(el) {
@@ -12,10 +11,6 @@ riot.observable = function(el) {
         fn.typed = pos > 0;
       });
     }
-    
-    //Karpovr:DEBUG
-    el._events = callbacks;
-    
     return el;
   };
 
@@ -24,17 +19,13 @@ riot.observable = function(el) {
     else if (fn) {
       var arr = callbacks[events];
       for (var i = 0, cb; (cb = arr && arr[i]); ++i) {
-        if (cb === fn) arr.splice(i, 1);
+        if (cb === fn) { arr.splice(i, 1); i--; }
       }
     } else {
       events.replace(/[^\s]+/g, function(name) {
         callbacks[name] = [];
       });
     }
-    
-    //Karpovr:DEBUG
-    el._events = callbacks;
-    
     return el;
   };
 
@@ -59,7 +50,7 @@ riot.observable = function(el) {
 
     return el;
   };
-  
+
   return el;
 
 };
@@ -77,23 +68,11 @@ riot.render = function(tmpl, data, escape_fn) {
   if (escape_fn === true) escape_fn = default_escape_fn;
   tmpl = tmpl || '';
 
-  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" + 
-    tmpl.replace(/[\\\n\r']/g, function(char) {
-      return template_escape[char];
-    }).replace(/{\s*(.+?)\s*}/g, function(m, g) {
-		var key = g.split(".").reduce(function (acc, i) {
-			return isNaN(i) ? acc + "['" + i + "']" : acc + "[" + i + "]";
-		}, "");
-		return "' + (e?e(_" + key + ",\"" + key + "\"):_" + key + "||(_" + key + "==null?'':_" + key + ")) + '";
-    }) + "'")
-  )(data, escape_fn);
-  
-  /*return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
+  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
     tmpl.replace(/[\\\n\r']/g, function(char) {
       return template_escape[char];
     }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==null?'':_.$1)) + '") + "'")
-  )(data, escape_fn);*/
-  
+  )(data, escape_fn);
 };
 /* Cross browser popstate */
 (function () {
@@ -105,10 +84,10 @@ riot.render = function(tmpl, data, escape_fn) {
     listen = window.addEventListener,
     doc = document;
 
-  function pop(hash, forced) {
+  function pop(hash) {
     hash = hash.type ? location.hash : hash;
-    /* (KarpovR:) Trigger pop if forced */
-    if (forced || hash !== currentHash) pops.trigger("pop", hash);
+    //if (hash !== currentHash) pops.trigger("pop", hash);
+    pops.trigger("pop", hash);
     currentHash = hash;
   }
 
@@ -117,29 +96,38 @@ riot.render = function(tmpl, data, escape_fn) {
   // standard browsers
   if (listen) {
     listen("popstate", pop, false);
-    doc.addEventListener("DOMContentLoaded", pop, false);
+    //doc.addEventListener("DOMContentLoaded", pop, false);
 
   // IE
   } else {
     doc.attachEvent("onreadystatechange", function() {
-      if (doc.readyState === "complete") pop("");
+      //if (doc.readyState === "complete") pop("");
+      pop("");
     });
   }
 
   /* Change the browser URL or listen to changes on the URL */
-  /* (KarpovR:) Trigger pop if forced == true */
-  riot.route = function(to, forced) {
+  riot.route = function(to) {
     // listen
     if (typeof to === "function") return pops.on("pop", to);
 
     // fire
     if (history.pushState) history.pushState(0, 0, to);
-    
-    /* (KarpovR:) change hash only if forced === false */
-    if (forced === false) return;
-    pop(to, forced);
+    pop(to);
 
   };
-
 })();
-})(typeof window !== "undefined" ? window.riot = {} : this.riot = {});
+if (typeof exports === 'object') {
+  // CommonJS support
+  module.exports = riot;
+} else if (typeof define === 'function' && define.amd) {
+  // support AMD
+  define(function() { return riot; });
+} else if (typeof window === 'object') {
+  // support browser
+  window.riot = riot;
+} else {
+  // support veda server
+  this.riot = riot;
+}
+})({});

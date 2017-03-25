@@ -66,6 +66,8 @@ const string   dbs_data            = "./data";
 const string   individuals_db_path = "./data/lmdb-individuals";
 const string   tickets_db_path     = "./data/lmdb-tickets";
 const string   acl_indexes_db_path = "./data/acl-indexes";
+const string   uris_db_path        = "./data/uris";
+const string   tmp_path       	   = "./data/tmp";
 const string   queue_db_path       = "./data/queue";
 const string   onto_path           = "./ontology";
 const string   xapian_info_path    = "./data/xapian-info";
@@ -75,7 +77,7 @@ const string   logs_path           = "./logs";
 
 const string[] paths_list          =
 [
-    logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path,
+    tmp_path, logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, uris_db_path, tickets_db_path, acl_indexes_db_path, queue_db_path,
     xapian_info_path, module_info_path, trails_path
 ];
 
