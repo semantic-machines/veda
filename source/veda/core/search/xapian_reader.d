@@ -16,7 +16,7 @@ protected byte err;
 interface SearchReader
 {
     public SearchResult get(Ticket *ticket, string str_query, string str_sort, string db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event);
+                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event, bool trace);
 
     public void reopen_db();
 }
@@ -91,7 +91,7 @@ class XapianReader : SearchReader
 
 
     public SearchResult get(Ticket *ticket, string str_query, string str_sort, string _db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event)
+                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event, bool trace)
     {
         SearchResult sr;
 
@@ -145,10 +145,10 @@ class XapianReader : SearchReader
         if (db_names.length == 0)
             db_names = [ "base" ];
 
-        if (trace_msg[ 321 ] == 1)
+        if (trace)
             log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
 
-        if (trace_msg[ 322 ] == 1)
+        if (trace)
             log.trace("[Q:%X] TTA [%s]", cast(void *)str_query, tta.toString());
 
         long cur_committed_op_id = get_info().committed_op_id;
@@ -171,7 +171,7 @@ class XapianReader : SearchReader
         {
             try
             {
-                xpnvql.transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp);
+                xpnvql.transform_vql_to_xapian(context, tta, "", dummy, dummy, query, key2slot, d_dummy, 0, db_qp.qp, trace);
                 state = 0;
             }
             catch (XapianError ex)
@@ -205,7 +205,7 @@ class XapianReader : SearchReader
         if (opened_db.keys.length == 0)
             return sr;
 
-        if (trace_msg[ 323 ] == 1)
+        if (trace == 1)
             log.trace("[Q:%X] xapian query [%s]", cast(void *)str_query, xpnvql.get_query_description(query));
 
         if (query !is null)
@@ -222,7 +222,7 @@ class XapianReader : SearchReader
             if (prepare_element_event !is null)
                 prepare_element_event("");
 
-            XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot);
+            XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot, trace);
 
             if (prepare_element_event !is null)
                 prepare_element_event("");
@@ -237,7 +237,7 @@ class XapianReader : SearchReader
             while (sr.result_code != ResultCode.OK)
             {
                 sr = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, from, top, limit, add_out_element,
-                                                                  context, prepare_element_event);
+                                                                  context, prepare_element_event, trace);
                 if (sr.result_code != ResultCode.OK)
                 {
                     add_out_element(null); // reset previous collected data

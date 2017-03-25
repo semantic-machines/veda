@@ -83,9 +83,6 @@ basic.getDrivers().forEach(function(drv) {
     check(driver, "true");
 
     //Досоздаем черновик
-    driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#edit')[0].scrollIntoView(true);");
-    basic.isEnabled(driver, '#edit');
-    basic.execute(driver, 'click', '#edit', "Cannot click on 'edit' button");
     fillProperty(driver, 'middleName', 'Пупкин');
     var now = new Date();
     fillProperty(driver, 'birthday',

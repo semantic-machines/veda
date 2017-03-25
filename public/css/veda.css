@@ -257,7 +257,7 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted *:not(.btn) {
+.deleted, .deleted *:not(.btn) {
   text-decoration: line-through!important;
 }
 

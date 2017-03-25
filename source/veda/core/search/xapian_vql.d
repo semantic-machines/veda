@@ -21,7 +21,7 @@ class XapianVQL
         log = _log;
     }
 
-    public XapianMultiValueKeyMaker get_sorter(string sort, ref int[ string ] key2slot)
+    public XapianMultiValueKeyMaker get_sorter(string sort, ref int[ string ] key2slot, bool trace)
     {
         XapianMultiValueKeyMaker sorter;
 
@@ -48,7 +48,7 @@ class XapianVQL
                     int slot = key2slot.get(key, -1);
                     if (slot >= 0)
                     {
-                        if (trace_msg[ 200 ] == 1)
+                        if (trace)
                             log.trace("sort key=%s, slot=%d", key, slot);
                         sorter.add_value(slot, asc_desc, &err);
                     }
@@ -111,12 +111,12 @@ class XapianVQL
     }
 
     public string transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
-                                          ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp)
+                                          ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp, bool trace)
     {
         //log.trace ("tta in= %s", tta);
         prepare_subproperties(ctx, tta);
         //log.trace ("tta out= %s", tta);
-        return _transform_vql_to_xapian(ctx, tta, p_op, l_token, op, query, key2slot, _rd, level, qp);
+        return _transform_vql_to_xapian(ctx, tta, p_op, l_token, op, query, key2slot, _rd, level, qp, trace);
     }
 
     private void prepare_subproperties(Context ctx, TTA tta)
@@ -181,7 +181,7 @@ class XapianVQL
     }
 
     private string _transform_vql_to_xapian(Context ctx, TTA tta, string p_op, out string l_token, out string op, out XapianQuery query,
-                                            ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp)
+                                            ref int[ string ] key2slot, out double _rd, int level, XapianQueryParser qp, bool trace)
     {
         //if (level == 0)
         //	log.trace ("----------------------------");
@@ -209,8 +209,8 @@ class XapianVQL
                     throw new XapianError(err, "invalid tta=" ~ text(tta));
                 }
 
-                string    ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
-                string    rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+                string    ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
+                string    rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp, trace);
 
                 double    value;
                 TokenType rs_type = get_token_type(rs, value);
@@ -239,8 +239,8 @@ class XapianVQL
                     throw new XapianError(err, "invalid tta=" ~ text(tta));
                 }
 
-                string ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
-                string rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+                string ls = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
+                string rs = _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp, trace);
 
                 //log.trace("%d query_l=%s", level, query_l);
                 //log.trace("%d query_r=%s", level, query_r);
@@ -311,6 +311,11 @@ class XapianVQL
                                 {
                                     if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && utf.count(rs) > 3)
                                     {
+                                    	if ((indexOf(rs, '*') >= 0) && ((rs[ 0 ] == '+' && utf.count(rs) < 3) || utf.count(rs) < 4))
+                                    	{
+                                    		rs = rs.removechars ("*");
+                                    	}	
+	                                    	
                                         char[] query_str = to_lower_and_replace_delimeters(rs).dup;
                                         if (rs[ 0 ] == '*')
                                             reverse(query_str);
@@ -470,14 +475,14 @@ class XapianVQL
 
                 string tta_R;
                 if (tta.R !is null)
-                    tta_R = _transform_vql_to_xapian(ctx, tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp);
+                    tta_R = _transform_vql_to_xapian(ctx, tta.R, tta.op, token_L, t_op_r, query_r, key2slot, rd, level + 1, qp, trace);
 
                 if (t_op_r !is null)
                     op = t_op_r;
 
                 string tta_L;
                 if (tta.L !is null)
-                    tta_L = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, t_op_l, query_l, key2slot, ld, level + 1, qp);
+                    tta_L = _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, t_op_l, query_l, key2slot, ld, level + 1, qp, trace);
 
                 if (t_op_l !is null)
                     op = t_op_l;
@@ -579,10 +584,10 @@ class XapianVQL
             else if (tta.op == "||")
             {
                 if (tta.R !is null)
-                    _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp);
+                    _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp, trace);
 
                 if (tta.L !is null)
-                    _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp);
+                    _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace );
 
                 if (query_l !is null)
                     query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
@@ -620,7 +625,7 @@ class XapianVQL
                                                               int limit,
                                                               void delegate(string uri) add_out_element,
                                                               Context context,
-                                                              void delegate(string uri) prepare_element_event
+                                                              void delegate(string uri) prepare_element_event, bool trace
                                                               )
     {
         SearchResult sr;
@@ -634,7 +639,7 @@ class XapianVQL
         int       read_count = 0;
         StopWatch sw;
 
-        if (trace_msg[ 200 ] == 1)
+        if (trace)
             sw.start;
 
         byte err;
@@ -664,7 +669,7 @@ class XapianVQL
         if (matches !is null)
         {
             sr.estimated = matches.get_matches_estimated(&err);
-
+            
             if (prepare_element_event !is null)
                 prepare_element_event("");
 
@@ -700,7 +705,7 @@ class XapianVQL
                 if (prepare_element_event !is null)
                     prepare_element_event(subject_id);
 
-                if (trace_msg[ 201 ] == 1)
+                if (trace)
                     log.trace("found subject_id:[%s]", subject_id);
 
                 if (context.authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
@@ -722,7 +727,7 @@ class XapianVQL
                 it.next(&err);
             }
 
-            if (trace_msg[ 200 ] == 1)
+            if (trace)
             {
                 sw.stop();
                 long t = cast(long)sw.peek().usecs;

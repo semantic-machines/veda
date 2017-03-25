@@ -2,18 +2,6 @@ var basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
     assert = require('assert');
 
-
-function findUp(driver, element, number) {
-    return driver.findElements({css:'' + element + ''}).then(function (result) {
-        return result[number];
-    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot find " + element);});
-}
-
-function clickUp(element) {
-    element.click()
-        .thenCatch(function (e) {basic.errorHandler(e,"Cannot click");});
-}
-
 function welcome(driver) {
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
 }
@@ -52,7 +40,8 @@ module.exports = {
         basic.login(driver, login, password, firstName, lastName);
         basic.menu(driver, 'Inbox');
         driver.sleep(1000);
-        driver.wait(findUp(driver, 'a[property="rdfs:label"]', 3), basic.FAST_OPERATION).then(clickUp);
+        driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
+            function(result){basic.clickUp(result);});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "Cannot click on '" + decision + "' decision");
         if (commentValue === '+') {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "Cannot fill 'comment'", timeStamp);
@@ -81,7 +70,8 @@ module.exports = {
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
         basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'Submit/Отправить' button");
         driver.sleep(basic.SLOW_OPERATION);
-        driver.wait(findUp(driver, 'span[rel="v-wf:isProcess"]', docNumber), basic.FAST_OPERATION).then(clickUp);
+        driver.wait(basic.findUp(driver, 'span[rel="v-wf:isProcess"]', docNumber, "Cannot find isProcess"),
+            basic.FAST_OPERATION).then(function(result) {basic.clickUp(result);});
         driver.sleep(basic.FAST_OPERATION);
         basic.execute(driver, 'click', '.glyphicon-share-alt', "Cannot click on 'glyphicon-share-alt'");
         for (var i = 0; i < element.length; i++) {

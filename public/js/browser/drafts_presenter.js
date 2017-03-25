@@ -22,7 +22,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     deleteAll.present( $("#delete-all", tmpl), new veda.IndividualModel("v-ui:LabelTemplate") );
 
     var tree = {};
-    var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelLinkTemplate");
+    var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelLinkEditTemplate");
     var labelTmpl = new veda.IndividualModel("v-ui:ClassNameLabelTemplate");
 
     if (veda.drafts.length) {

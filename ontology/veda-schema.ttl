@@ -480,17 +480,17 @@ v-s:DocumentLinkRulesTemplate
       <div class="col-md-3">
       <em about="v-s:classFrom" property="rdfs:label"></em>
       <div rel="v-s:classFrom" data-template="v-ui:LabelLinkTemplate"></div>
-      <veda-control rel="v-s:classFrom" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      <veda-control rel="v-s:classFrom" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
       </div>
       <div class="col-md-3">
       <em about="v-s:classTo" property="rdfs:label"></em>
       <div rel="v-s:classTo" data-template="v-ui:LabelLinkTemplate"></div>
-      <veda-control rel="v-s:classTo" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      <veda-control rel="v-s:classTo" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
       </div>
       <div class="col-md-3">
       <em about="v-s:hasTransformation" property="rdfs:label"></em>
       <div rel="v-s:hasTransformation" data-template="v-ui:LabelLinkTemplate"></div>
-      <veda-control rel="v-s:hasTransformation" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+      <veda-control rel="v-s:hasTransformation" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
       </div>
       <div class="col-md-3">
       </div>

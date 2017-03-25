@@ -342,11 +342,11 @@ v-ui:LanguageSwitchTemplate
 </div>
 <script>
   var switches = $(".btn", template);
-  handler("v-ui:preferredLanguage");
-  veda.user.preferences.on("individual:propertyModified", handler);
-  template.on("remove", function () {
-    veda.user.preferences.off("individual:propertyModified", handler);
+  veda.user.preferences.on("v-ui:preferredLanguage", langHandler);
+  template.one("remove", function () {
+    veda.user.preferences.off("v-ui:preferredLanguage", langHandler);
   });
+  langHandler();
   template.on("click", function(e) {
     e.stopPropagation();
     var target = $(e.target);
@@ -355,19 +355,17 @@ v-ui:LanguageSwitchTemplate
     var lang_name = lang["rdf:value"][0].toString();
     veda.user.toggleLanguage(lang_name);
   });
-  function handler(property_uri) {
-    if (property_uri === "v-ui:preferredLanguage") {
-      var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
-      switches.each(function () {
-        var $this = $(this);
-        var lang_uri = $this.attr("resource");
-        if (preferredLanguage.indexOf(lang_uri) > -1) {
-          $this.addClass("active btn-success").removeClass("btn-default");
-        } else {
-          $this.removeClass("active btn-success").addClass("btn-default");
-        }
-      });
-    }
+  function langHandler() {
+    var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
+    switches.each(function () {
+      var $this = $(this);
+      var lang_uri = $this.attr("resource");
+      if (preferredLanguage.indexOf(lang_uri) > -1) {
+        $this.addClass("active btn-success").removeClass("btn-default");
+      } else {
+        $this.removeClass("active btn-success").addClass("btn-default");
+      }
+    });
   }
   //# sourceURL=v-ui:LanguageSwitchTemplate
 </script>
@@ -521,7 +519,7 @@ v-ui:LinkTemplate
           <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
           <br class="-view edit search">
           <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
-          <veda-control data-type="link" rel="v-s:to" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
           <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
           <div class="view -edit -search">
             <span class="fa fa-long-arrow-down"></span> <strong property="rdfs:comment" class="view -edit -search"></strong>
@@ -537,18 +535,16 @@ v-ui:LinkTemplate
   <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
 </div>
 <script>
-  individual.on("individual:propertyModified", handler);
-  template.on("remove", function () {
-    individual.off("individual:propertyModified", handler);
+  individual.on("v-s:hasLink", linkHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasLink", linkHandler);
   });
-  function handler (property_uri, values) {
-    if (property_uri === "v-s:hasLink" && values.length !== 0) {
-      values.map(function (item) {
-        if (!item.hasValue("v-s:from")) {
-          item["v-s:from"] = [individual];
-        }
-      });
-    }
+  function linkHandler (values) {
+    values.map(function (item) {
+      if (!item.hasValue("v-s:from")) {
+        item["v-s:from"] = [individual];
+      }
+    });
   }
   //# sourceURL=v-ui:LinkTemplate
 </script>
@@ -660,7 +656,7 @@ v-ui:ClassTemplateTemplate
   <br class="-view edit search">
   <em about="v-ui:forClass" property="rdfs:label"></em>
   <div rel="v-ui:forClass" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-  <veda-control rel="v-ui:forClass" data-type="link" class="-view edit search fullsearch fulltext dropdown"></veda-control>
+  <veda-control rel="v-ui:forClass" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
   <br>
   <veda-control property="v-ui:template" data-type="source"></veda-control>
   <br>
@@ -846,10 +842,10 @@ v-ui:IconModalTemplate
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
       individual.present(cntr, tmpl, newMode);
     }
-    individual.one("individual:beforeReset", function () {
+    individual.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
-    individual.one("individual:afterSave", function () {
+    individual.one("afterSave", function () {
       modal.modal("hide").remove();
     });
   });
@@ -892,6 +888,24 @@ v-ui:ClassNameLabelLinkTemplate
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
   <span><a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    template.css({
+      "display": "inline-block",
+      "margin": "0 7px 7px 0"
+    });
+    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
+  </script>
+  """ ;
+.
+v-ui:ClassNameLabelLinkEditTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Template with class name and label"@en ;
+  v-ui:template """
+  <span><a href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
@@ -1974,19 +1988,19 @@ td:AppointmentTemplate1
         <div class="col-md-6">
           <em about="v-s:employee" property="rdfs:label"></em>
           <div rel="v-s:employee" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fullsearch fulltext full"></veda-control>
+          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fulltext full"></veda-control>
         </div>
         <div class="col-md-6">
           <em about="v-s:occupation" property="rdfs:label"></em>
           <div rel="v-s:occupation" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fulltext"></veda-control>
         </div>
       </div>
       <div class="row">
         <div class="col-md-6">
           <em about="v-s:parentUnit" property="rdfs:label"></em>
           <div rel="v-s:parentUnit" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
+          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fulltext"></veda-control>
         </div>
       </div>
     </div>
@@ -2019,16 +2033,18 @@ v-ui:ttl
   v-ui:template """
 <div class="container sheet">
   <pre style="border:none;background-color:#fff;"></pre>
-  <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
-  <a id="generic" class="btn btn-default" href="#/@//generic">generic</a>
-  <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
-  <a id="ttl" class="disabled btn btn-default" href="#/@//v-ui:ttl">ttl</a>
+  <div class="pull-right">
+    <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+    <a id="generic" class="btn btn-default" href="#/@//v-ui:generic">generic</a>
+    <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+    <a id="ttl" class="disabled btn btn-default" href="#/@//v-ui:ttl">ttl</a>
+  </div>
 </div>
 <script>
   var list = new veda.IndividualListModel(individual);
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
-        anchored = ttl.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//ttl'>$1</a>");
+        anchored = ttl.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
     pre.html(anchored);
   });
   //# sourceURL=v-ui:ttl
@@ -2043,11 +2059,13 @@ v-ui:json
   v-ui:template """
 <div class="container sheet">
   <pre style="border:none;background-color:#fff;"></pre>
-  <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
-  <a id="generic" class="btn btn-default" href="#/@//generic">generic</a>
-  <a id="json" class="disabled btn btn-default" href="#/@//v-ui:json">json</a>
-  <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   <div class="pull-right">
+    <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+    <a id="generic" class="btn btn-default" href="#/@//v-ui:generic">generic</a>
+    <a id="json" class="disabled btn btn-default" href="#/@//v-ui:json">json</a>
+    <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
+  </div>
+  <div class="pull-left">
     <button id="edit" class="btn btn-primary" about="v-s:Edit" property="rdfs:label"></button>
     <button id="save" class="hidden btn btn-success" about="v-s:Save" property="rdfs:label"></button>
     <button id="cancel" class="hidden btn btn-default" about="v-s:Cancel" property="rdfs:label"></button>
@@ -2101,10 +2119,188 @@ v-ui:json
     return JSON.stringify(ordered, null, 2);
   };
   function anchorize (string) {
-    return string.replace(/([a-z_-]+\:[\w-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
+    return string.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
   };
   //# sourceURL=v-ui:json
 </script>
+  """ ;
+.
+
+v-ui:generic
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон общий"@ru ;
+  rdfs:label "Template generic"@en ;
+  v-ui:template """
+<script>
+  // Construct generic template
+  var props = $("#properties", template);
+  var propTmpl = props.html();
+  props.empty();
+  var properties = $.extend.apply (
+    {}, [].concat(
+      individual["rdf:type"].map( function (_class) {
+        $(".className", template).append (
+          $("<span/>", {"about": _class.id, "property": "rdfs:label"})
+        );
+        return _class.domainProperties;
+      })
+    )
+  );
+  props.append (
+    Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
+
+      if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
+
+      var property = new veda.IndividualModel(property_uri);
+
+      var result = $("<div/>").append( propTmpl );
+      $(".name", result).append (
+          $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
+      );
+
+      var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
+
+      switch ( range ) {
+        case "rdfs:Literal":
+        case "xsd:string":
+          if (property_uri === "v-s:script" || property_uri === "v-ui:template") {
+            $(".value", result).append (
+                "<veda-control property='" + property_uri + "' data-type='source'></veda-control>"
+            );
+          } else {
+            $(".value", result).append (
+                "<div property='" + property_uri + "' class='view -edit -search'/>" +
+                "<veda-control property='" + property_uri + "' data-type='multilingualText' class='-view edit search'></veda-control>"
+            );
+          }
+          break;
+        case "xsd:integer":
+        case "xsd:nonNegativeInteger":
+          $(".value", result).append (
+              "<div property='" + property_uri + "' />" +
+              "<veda-control property='" + property_uri + "' data-type='integer' class='-view edit search'></veda-control>"
+          );
+          break;
+        case "xsd:decimal":
+          $(".value", result).append (
+              "<div property='" + property_uri + "' />" +
+              "<veda-control property='" + property_uri + "' data-type='decimal' class='-view edit search'></veda-control>"
+          );
+          break;
+        case "xsd:dateTime":
+          $(".value", result).append (
+              "<div property='" + property_uri + "' />" +
+              "<veda-control property='" + property_uri + "' data-type='dateTime' class='-view edit search'></veda-control>"
+          );
+          break;
+        case "xsd:boolean":
+          $(".name", result).empty();
+          $(".value", result).append (
+              "<div class='checkbox'>" +
+              "<label>" +
+              "<veda-control property='" + property_uri + "' data-type='boolean'></veda-control>" +
+              "<em about='" + property_uri + "' property='rdfs:label' class='text-muted'></em>" +
+              "</label>" +
+              "</div>"
+          );
+          break;
+        case "rdfs:Resource":
+          $(".value", result).append (
+              "<div property='" + property_uri + "' />" +
+              "<veda-control property='" + property_uri + "' data-type='generic' class='-view edit search'></veda-control>"
+          );
+          break;
+        default:
+          if (property_uri === "v-s:attachment") {
+            $(".value", result).append (
+                "<div rel='" + property_uri + "' data-template='v-ui:FileTemplateWithComment' data-embedded='true' />" +
+                "<veda-control rel='" + property_uri + "' data-type='file' class='-view edit -search'></veda-control>"
+            );
+          } else {
+            $(".value", result).append (
+                "<div rel='" + property_uri + "' data-template='v-ui:ClassNameLabelLinkTemplate' />" +
+                "<veda-control rel='" + property_uri + "' data-type='link' class='-view edit search fulltext dropdown'></veda-control>"
+            );
+          }
+          break;
+      }
+      if (index < array.length-1) result.append( $("<hr/>").attr("style", "margin: 10px 0px") );
+
+      return result;
+    })
+  );
+  //# sourceURL=v-ui:generic
+</script>
+<div class="container sheet">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right">
+      <h2 class="text-muted className"></h2>
+    </div>
+    <div class="col-md-8 col-xs-7">
+      <h2 about="@" property="rdfs:label"></h2>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px"/>
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right">
+      <strong class="text-muted">@</strong>
+    </div>
+    <div class="col-md-8 col-xs-7">
+      <a href="#/@"><span property="@"></span></a>
+      <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px"/>
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right">
+      <strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7">
+      <div rel="rdf:type" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control rel="rdf:type" data-type="link" data-template="{individual['rdf:type'][0]['rdfs:label'].join(' ')+': '+individual['rdfs:label'].join(' ')}" class='-view edit search fulltext dropdown'></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px"/>
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right">
+      <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7">
+      <div property="rdfs:label"></div>
+      <veda-control property="rdfs:label" data-type="multilingualString" class='-view edit search'></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px"/>
+  <div id="properties">
+    <div class="row">
+      <div class="col-md-4 col-xs-5 text-right name"></div>
+      <div class="col-md-8 col-xs-7 value"></div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <div class="actions pull-left">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-primary view -edit -search" id="journal" about="v-s:Journal" property="rdfs:label"></button>
+    <div class="btn-group dropup">
+      <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span about="v-s:Send" property="rdfs:label"></span>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" id="standard-tasks"></ul>
+    </div>
+  </div>
+  <div class="pull-right">
+    <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+    <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
+    <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+    <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
+  </div>
+</div>
   """ ;
 .
 
@@ -2114,39 +2310,39 @@ td:AccountTemplate1
   rdfs:label "Account template"@en ;
   v-ui:forClass v-s:Account ;
   v-ui:template """
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-6">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-6">
         <span about="v-s:Account" property="rdfs:label">Имя класса</span>
-        </div>
-        <div class="col-md-6 text-right">
-          <a href="#/@"><span property="@">ID</span></a>
+      </div>
+      <div class="col-md-6 text-right">
+        <a href="#/@"><span property="@">ID</span></a>
       </div>
     </div>
-    </div>
-    <div class="panel-body">
-      <h3 property="rdfs:label"></h3>
-      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-      <em about="v-s:owner" property="rdfs:label">Владелец</em>
-      <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
-      <veda-control rel="v-s:owner" data-type="link" class="-view edit search fullsearch fulltext"></veda-control>
-      <br />
-      <div class="row">
-        <div class="col-md-6">
-             <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
-             <div property="v-s:mailbox"></div>
-             <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
-        </div>
-        <div class="col-md-6">
-             <em about="v-s:login" property="rdfs:label">Логин</em>
-             <div property="v-s:login"></div>
-             <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
-      </div>
-      </div>
-    </div>
-      <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
   </div>
+  <div class="panel-body">
+    <h3 property="rdfs:label"></h3>
+    <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+    <em about="v-s:owner" property="rdfs:label">Владелец</em>
+    <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
+    <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
+    <br />
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
+        <div property="v-s:mailbox"></div>
+        <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:login" property="rdfs:label">Логин</em>
+        <div property="v-s:login"></div>
+        <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+</div>
   """ ;
 .
 

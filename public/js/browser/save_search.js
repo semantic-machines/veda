@@ -25,7 +25,7 @@ veda.Module(function SaveSearch(veda) { "use strict";
         ss["rdfs:label"] = [search.q];
         ss.present(ssContainer, undefined, "edit");
 
-        ss.on("individual:afterSave individual:afterReset", function () {
+        ss.on("afterSave afterReset", function () {
           self.popover("destroy");
         });
 

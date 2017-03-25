@@ -178,7 +178,6 @@ TransactionItem *[] transaction_queue;
 
 public ResultCode commit()
 {
-
     foreach (item; transaction_queue)
     {
         if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
@@ -196,7 +195,7 @@ public ResultCode commit()
 
         if (rc == ResultCode.No_Content)
         {
-        	log.trace ("WARN!: Rejected attempt to save an empty object: %s", item.indv);
+            log.trace("WARN!: Rejected attempt to save an empty object: %s", item.indv);
         }
 
         if (rc != ResultCode.OK && rc != ResultCode.No_Content)
@@ -245,7 +244,7 @@ extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                        int _event_id_length)
 {
-   // writeln("@V8:put_individual");
+    // writeln("@V8:put_individual");
     TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
@@ -397,7 +396,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         Ticket   *ticket = g_context.get_ticket(ticket_id);
 
         string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit, null).result;
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit, null, false).result;
         res = text(icb);
 
         if (icb !is null)
@@ -629,7 +628,7 @@ unittest
     import veda.core.impl.thread_context;
     import std.datetime;
     import veda.onto.lang;
-	import veda.util.tests_tools;    
+    import veda.util.tests_tools;
 
     Logger   log = new Logger("test", "log", "V8");
 
@@ -640,9 +639,9 @@ unittest
 
     assert(script_vm !is null);
 
-	Individual new_indv_A = generate_new_test_individual ();        
+    Individual new_indv_A = generate_new_test_individual();
 
-    string binobj = new_indv_A.serialize();
+    string     binobj = new_indv_A.serialize();
 
     g_document.data   = cast(char *)binobj;
     g_document.length = cast(int)binobj.length;
@@ -678,9 +677,9 @@ unittest
     Individual indv_B;
     indv_B.deserialize(ti1.binobj);
 
-	bool compare_res = new_indv_A.compare(indv_B);
-	if (compare_res == false)
-		writefln ("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
+    bool compare_res = new_indv_A.compare(indv_B);
+    if (compare_res == false)
+        writefln("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
 
     assert(compare_res);
 
