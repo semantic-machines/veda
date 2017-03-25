@@ -1332,6 +1332,25 @@ d:6d6e3b9704994786adf6f7bfed9e0c87
   v-s:registrationNumber "030.090.000"^^xsd:string;
 .
 
+d:nrr2mbraealt9c7rcnpv11lz 
+  a v-s:Sector;
+  v-s:hasParentLink d:6d6e3b9704994786adf6f7bfed9e0c87;
+  rdfs:label "Право собственности и другие вещные права на землю и иные природные ресурсы"^^xsd:string;
+  v-s:registrationNumber "030.090.080"^^xsd:string;
+.
+d:cb7lwopf5ls0p1szg2lp7j9d 
+  a v-s:Sector;
+  v-s:hasParentLink d:6d6e3b9704994786adf6f7bfed9e0c87;
+  rdfs:label "Право собственности и другие вещные права на жилые помещения"^^xsd:string;
+  v-s:registrationNumber "030.090.090"^^xsd:string;
+.
+d:xtwh6kky70mtt2fepi66vg3b
+  a v-s:Sector;
+  v-s:hasParentLink d:6d6e3b9704994786adf6f7bfed9e0c87;
+  rdfs:label "Право собственности на другие объекты"^^xsd:string;
+  v-s:registrationNumber "030.090.100"^^xsd:string;
+.
+
 d:f3b52b177a0047b4a0416162d2ee58b8
   a v-s:Sector;
   rdfs:label "Строительный подряд (в т.ч строительство под ключ)"^^xsd:string;

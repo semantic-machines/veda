@@ -620,7 +620,7 @@ jsWorkflow.ready(function () {
 
     veda.net = net;
 
-    template.on("remove", function () {
+    template.one("remove", function () {
       delete veda.net
     });
 });
@@ -1211,30 +1211,29 @@ v-wf:TaskTemplateAsProperties
   </table>
 </div>
 <script>
-  function handler (property_uri, values) {
-    if (property_uri === "v-wf:join" || property_uri === "v-wf:split") {
-       var $state = $('#' + veda.Util.escape4$(individual.id));
-       $state.removeClass('split-and').removeClass('split-or').removeClass('split-xor');
-       $state.removeClass('join-and').removeClass('join-or').removeClass('join-xor');
-       $state.addClass(veda.net.getSplitJoinType('join', individual));
-       $state.addClass(veda.net.getSplitJoinType('split', individual));
-       veda.net.updateSVGBackground($state);
-    }
-    if (property_uri === "rdfs:label") {
-      var $state = $('#' + veda.Util.escape4$(individual.id));
-      $('.state-name', $state).html(values);
-    }
+  function joinSplitHandler() {
+    var $state = $('#' + veda.Util.escape4$(individual.id));
+    $state.removeClass('split-and').removeClass('split-or').removeClass('split-xor');
+    $state.removeClass('join-and').removeClass('join-or').removeClass('join-xor');
+    $state.addClass(veda.net.getSplitJoinType('join', individual));
+    $state.addClass(veda.net.getSplitJoinType('split', individual));
+    veda.net.updateSVGBackground($state);
   }
-  individual.on("individual:propertyModified", handler);
-
-  template.on("remove", function () {
-    individual.off("individual:propertyModified");
+  function labelHandler(values) {
+    var $state = $('#' + veda.Util.escape4$(individual.id));
+    $('.state-name', $state).html(values);
+  }
+  individual.on("v-wf:join v-wf:split", joinSplitHandler);
+  individual.on("rdfs:label", handler);
+  template.one("remove", function () {
+    individual.off("v-wf:join v-wf:split", joinSplitHandler);
+    individual.off("rdfs:label", handler);
   });
 
   $('#taskTemplateProperties > tbody > tr > td > span[about]').each(function () {
-     if (!individual.hasValue($(this).attr('about'))) {
+    if (!individual.hasValue($(this).attr('about'))) {
       $(this).parent().parent().appendTo($('#taskTemplateProperties'));
-     }
+    }
   });
   //# sourceURL=v-wf:TaskTemplateAsProperties
 </script>
@@ -1292,16 +1291,13 @@ v-wf:ConditionTemplateAsProperties
   </table>
 </div>
 <script>
-  function handler (property_uri, values) {
-    if (property_uri === "rdfs:label") {
-      var $state = $('#' + veda.Util.escape4$(individual.id));
-      $('.state-name', $state).html(values);
-    }
+  function handler (values) {
+    var $state = $('#' + veda.Util.escape4$(individual.id));
+    $('.state-name', $state).html(values);
   }
-  individual.on("individual:propertyModified", handler);
-
-  template.on("remove", function () {
-    individual.off("individual:propertyModified");
+  individual.on("rdfs:label", handler);
+  template.one("remove", function () {
+    individual.off("rdfs:label");
   });
   //# sourceURL=v-wf:ConditionTemplateAsProperties
 </script>
@@ -1353,30 +1349,23 @@ v-wf:FlowTemplateAsProperties
   </table>
 </div>
 <script>
-  function handler (property_uri, values)
-  {
-    if (property_uri === "rdfs:label")
-    {
-      if (veda.net)
-      {
-        $.each(veda.net.getAllConnections(), function (idx, connection)
-        {
-           if(connection.id === individual.id) {
-              var value = (typeof values[0] === 'undefined')?'':values[0];
-              if (connection.getOverlay('flowLabel') == undefined) {
-                connection.addOverlay(["Label", { label: value, location:0.5, id: "flowLabel"} ]);
-              } else {
-                connection.getOverlay('flowLabel').setLabel(value);
-              }
-           }
-        });
-      }
+  function handler (values) {
+    if (veda.net) {
+      $.each(veda.net.getAllConnections(), function (idx, connection) {
+        if(connection.id === individual.id) {
+          var value = (typeof values[0] === "undefined") ? "" : values[0];
+          if (connection.getOverlay("flowLabel") == undefined) {
+            connection.addOverlay(["Label", { label: value, location:0.5, id: "flowLabel"} ]);
+          } else {
+            connection.getOverlay("flowLabel").setLabel(value);
+          }
+        }
+      });
     }
   }
-  individual.on("individual:propertyModified", handler);
-
-  template.on("remove", function () {
-    individual.off("individual:propertyModified");
+  individual.on("rdfs:label", handler);
+  template.one("remove", function () {
+    individual.off("rdfs:label", handler);
   });
   //# sourceURL=v-wf:FlowTemplateAsProperties
 </script>
@@ -1603,19 +1592,19 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div class="hidden"></div>
 <script>
-  individual.one("individual:beforeSave", function () {
+  individual.one("beforeSave", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
       individual["v-wf:read"] = [true];
     }
   });
-  individual.on("individual:afterSave", afterSaveHandler);
+  individual.on("afterSave", afterSaveHandler);
   template.one("remove", function () {
     if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
       individual.reset();
       individual["v-wf:read"] = [true];
       individual.save();
     }
-    individual.off("individual:afterSave", afterSaveHandler);
+    individual.off("afterSave", afterSaveHandler);
   });
   function afterSaveHandler () {
     if ( individual.hasValue("v-wf:takenDecision") ) {
@@ -1705,7 +1694,7 @@ v-wf:replyTo
 v-wf:dateGiven
   rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Контрольный срок"@ru ;
+  rdfs:label "Срок"@ru ;
   rdfs:label "Due date"@en ;
   rdfs:domain v-wf:DecisionForm ;
   rdfs:range xsd:dateTime ;
@@ -3003,33 +2992,25 @@ v-wf:FlowTemplateAsModal
   </table>
 </div>
 <script>
-  function handler (property_uri, values)
-  {
-    if (property_uri === "rdfs:label")
-    {
-      if (veda.net)
-      {
-        $.each(veda.net.getAllConnections(), function (idx, connection)
-        {
-           if(connection.id === individual.id) {
-              var value = (typeof values[0] === 'undefined')?'':values[0];
-              if (connection.getOverlay('flowLabel') == undefined) {
-                connection.addOverlay(["Label", { label: value, location:0.5, id: "flowLabel"} ]);
-              } else {
-                connection.getOverlay('flowLabel').setLabel(value);
-              }
-           }
-        });
-      }
+  function handler (values) {
+    if (veda.net) {
+      $.each(veda.net.getAllConnections(), function (idx, connection) {
+        if(connection.id === individual.id) {
+          var value = (typeof values[0] === "undefined") ? "" : values[0];
+          if (connection.getOverlay("flowLabel") == undefined) {
+            connection.addOverlay(["Label", { label: value, location:0.5, id: "flowLabel"} ]);
+          } else {
+            connection.getOverlay("flowLabel").setLabel(value);
+          }
+        }
+      });
     }
   }
-  individual.on("individual:propertyModified", handler);
-
-  template.on("remove", function () {
-    individual.off("individual:propertyModified");
+  individual.on("rdfs:label", handler);
+  template.one("remove", function () {
+    individual.off("rdfs:label");
   });
   //# sourceURL=v-wf:FlowTemplateAsProperties
 </script>
   """ ;
 .
-

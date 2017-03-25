@@ -337,10 +337,12 @@ v-s:ContractPassport
 v-s:ContractSpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Contract specification"@en ;
   rdfs:label "Детализация контракта"@ru ;
 .
 # v-s:hasSector
+# v-s:hasAsset
 
 # ------------------------------------------------------------
 v-s:MaterialGroup

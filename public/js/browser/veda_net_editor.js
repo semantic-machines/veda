@@ -226,7 +226,7 @@ jsWorkflow.ready = jsPlumb.ready;
             if (mode=='edit') {
               instance.bind("dblclick", function(transition) {
                   var _this = this;
-                riot.route("#/" + transition.id + "///edit", true);
+                riot.route("#/" + transition.id + "///edit");
               });
             }
 
@@ -300,7 +300,7 @@ jsWorkflow.ready = jsPlumb.ready;
               }
               $("<span/>", {
                 "click": (function (instance) {
-                    riot.route('#/'+state['v-wf:subNet'][0].id+'///edit', true);
+                    riot.route('#/'+state['v-wf:subNet'][0].id+'///edit');
                  }),
                  "class" : "glyphicon glyphicon-search subnet-link"
               }).appendTo($state);
@@ -742,14 +742,14 @@ jsWorkflow.ready = jsPlumb.ready;
               instance.remove(element);
               net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', element.id);
               net['v-wf:consistsOf'].forEach(function(state) {
-            	 if (state.hasValue('v-wf:hasFlow')) {
-            		 state['v-wf:hasFlow'].forEach(function(flow) {
-		            	 if (flow.hasValue("v-wf:flowsInto")
-		        			 && flow["v-wf:flowsInto"][0].id == element.id) {
-		            	 	instance.deleteFlow(flow, state);
-		            	 }
-            		 });
-            	 }
+               if (state.hasValue('v-wf:hasFlow')) {
+                 state['v-wf:hasFlow'].forEach(function(flow) {
+                   if (flow.hasValue("v-wf:flowsInto")
+                   && flow["v-wf:flowsInto"][0].id == element.id) {
+                    instance.deleteFlow(flow, state);
+                   }
+                 });
+               }
               });
             };
 
@@ -909,7 +909,7 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.loadProcessWorkItems = function(process, wis, usecache) {
               if (process.hasValue('v-wf:workItemList')) {
                 process['v-wf:workItemList'].forEach(function(wi) {
-                  wis.push(new veda.IndividualModel(wi.id, undefined, undefined, 'view', usecache));
+                  wis.push(new veda.IndividualModel({uri: wi.id, cache: usecache}));
                   instance.loadProcessWorkItems(wi, wis, usecache);
                 });
               }
@@ -1063,7 +1063,7 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('.to-net-editor').on('click', function() {
-              riot.route("#/" + net.id + "///edit", true);
+              riot.route("#/" + net.id + "///edit");
             });
 
             $('.copy-net-element').on('click', function() {

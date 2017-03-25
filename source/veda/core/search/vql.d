@@ -55,7 +55,7 @@ class VQL
     }
 
     public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
-                   ref Individual[] individuals, bool inner_get = false)
+                   ref Individual[] individuals, bool inner_get, bool trace)
     {
         int                       res_count;
 
@@ -90,7 +90,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get, null);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get, null, trace);
         res_count = sr.count;
 
         return res_count;
@@ -98,7 +98,7 @@ class VQL
 
     public SearchResult get(Ticket *ticket, string filter, string freturn, string sort, int from, int top, int limit,
                             void delegate(string uri) prepare_element_event,
-                            bool inner_get = false)
+                            bool inner_get, bool trace)
     {
         string[]                  res;
 
@@ -114,7 +114,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get, prepare_element_event);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get, prepare_element_event, trace);
 
         if (sr.result_code == ResultCode.OK)
             sr.result = res;
@@ -122,7 +122,7 @@ class VQL
         return sr;
     }
 
-    public int get(Ticket *ticket, string query_str, ref Individual[] res, bool inner_get = false)
+    public int get(Ticket *ticket, string query_str, ref Individual[] res, bool inner_get, bool trace)
     {
         split_on_section(query_str);
         int top = 10000;
@@ -194,7 +194,7 @@ class VQL
             }
             dg = &collect_subject;
 
-            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get, null);
+            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get, null, trace);
             res_count = sr.count;
         }
 

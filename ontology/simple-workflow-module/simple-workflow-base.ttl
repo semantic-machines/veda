@@ -995,9 +995,9 @@ if (doc) {
        ) {
        return [new veda.IndividualModel("d:mondi_appointment_00064586_71020091")]; // Байлендер
      }
-     if ( objectOrParent(doc, 'd:5af63e5bbeb54c4a86c2bc72fb4208a5') // (целлюлоза)
+     if ( objectOrParent(doc, 'd:5af63e5bbeb54c4a86c2bc72fb4208a5') // (Целлюлоза)
        || objectOrParent(doc, 'd:3e77773be122494085d07da25fe20076') // (Бумага на втор)
-       || objectOrParent(doc, 'd:d8cf8f89a0694bf9b462deb1bc6d09ab') // (технологич химикаты)
+       || objectOrParent(doc, 'd:d8cf8f89a0694bf9b462deb1bc6d09ab') // (Технологические химикаты)
        || objectOrParent(doc, 'd:f1bba7b333d14ea582942f7d1e1c97c5') // (Вспомогательные вещества)
        || objectOrParent(doc, 'd:61c11dd2137e4916a94eab49ac88565b') // (Крахмал)
        || objectOrParent(doc, 'd:d63df9806ea84691a4587f65cc73a65b') // (Наполнитель)
@@ -1011,16 +1011,16 @@ if (doc) {
        ) {
        return [new veda.IndividualModel("d:mondi_appointment_00009317_71025075")]; // Ирина Константинова : Менеджер по закупке
      }
-     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') //
-       || objectOrParent(doc, 'd:b98840ca4b8f47c2b32a12cc01906208') // (краски)
-       || objectOrParent(doc, 'd:89e8c38865c54b4eaffc5df506fca683') // (краски 2)
-       || objectOrParent(doc, 'd:ed715abf1d80407588efa47ba3c75179') // (краски 3)
-       || objectOrParent(doc, 'd:be0101cddba94f7aaa060aaa058e8a4e') // (материалы для печати)
-       || objectOrParent(doc, 'd:dbf8b6d152f04d20bd1dcae8e163db51') // (Печатные химикаты )
-       || objectOrParent(doc, 'd:51abdbbe8ac94556b4e0455e2374a816') // (полипропилен)
-       || objectOrParent(doc, 'd:a8f18e17ce7647788e8b27e712c5ee39') // (силиконы)
+     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') // (Материал упаковочный)
+       || objectOrParent(doc, 'd:b98840ca4b8f47c2b32a12cc01906208') // (Краски на водной основе)
+       || objectOrParent(doc, 'd:89e8c38865c54b4eaffc5df506fca683') // (Краски на основе растворителей)
+       || objectOrParent(doc, 'd:ed715abf1d80407588efa47ba3c75179') // (Краски УФ-отверждения)
+       || objectOrParent(doc, 'd:be0101cddba94f7aaa060aaa058e8a4e') // (Материалы для печати)
+       || objectOrParent(doc, 'd:dbf8b6d152f04d20bd1dcae8e163db51') // (Печатные химикаты (чистящие средства))
+       || objectOrParent(doc, 'd:51abdbbe8ac94556b4e0455e2374a816') // (Полипропилен)
+       || objectOrParent(doc, 'd:a8f18e17ce7647788e8b27e712c5ee39') // (Силиконы)
        || objectOrParent(doc, 'd:7230749746e943fdb610626e763742fb') // (Standard PE)
-       || objectOrParent(doc, 'd:0ff1b5be8bd849f08ca2bf4ed53b7a16') // (клеи)
+       || objectOrParent(doc, 'd:0ff1b5be8bd849f08ca2bf4ed53b7a16') // (Клеи, Адгезивы)
        ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069224_71024982")]; // Татьяна Румянцева : Руководитель гр.
      }
@@ -1059,9 +1059,9 @@ if (doc) {
        ) {
        return [new veda.IndividualModel("d:mondi_appointment_00064586_71020091")]; // Байлендер
      }
-     if ( objectOrParent(doc, 'd:5af63e5bbeb54c4a86c2bc72fb4208a5') // (целлюлоза)
+     if ( objectOrParent(doc, 'd:5af63e5bbeb54c4a86c2bc72fb4208a5') // (Целлюлоза)
        || objectOrParent(doc, 'd:3e77773be122494085d07da25fe20076') // (Бумага на втор)
-       || objectOrParent(doc, 'd:d8cf8f89a0694bf9b462deb1bc6d09ab') // (технологич химикаты)
+       || objectOrParent(doc, 'd:d8cf8f89a0694bf9b462deb1bc6d09ab') // (Технологические химикаты)
        || objectOrParent(doc, 'd:f1bba7b333d14ea582942f7d1e1c97c5') // (Вспомогательные вещества)
        || objectOrParent(doc, 'd:61c11dd2137e4916a94eab49ac88565b') // (Крахмал)
        || objectOrParent(doc, 'd:d63df9806ea84691a4587f65cc73a65b') // (Наполнитель)
@@ -1075,16 +1075,16 @@ if (doc) {
        ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069193_71025072")]; // Фаина Николаева : Начальник отдела
      }
-     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') //
-       || objectOrParent(doc, 'd:b98840ca4b8f47c2b32a12cc01906208') // (краски)
-       || objectOrParent(doc, 'd:89e8c38865c54b4eaffc5df506fca683') // (краски 2)
-       || objectOrParent(doc, 'd:ed715abf1d80407588efa47ba3c75179') // (краски 3)
-       || objectOrParent(doc, 'd:be0101cddba94f7aaa060aaa058e8a4e') // (материалы для печати)
-       || objectOrParent(doc, 'd:dbf8b6d152f04d20bd1dcae8e163db51') // (Печатные химикаты )
-       || objectOrParent(doc, 'd:51abdbbe8ac94556b4e0455e2374a816') // (полипропилен)
-       || objectOrParent(doc, 'd:a8f18e17ce7647788e8b27e712c5ee39') // (силиконы)
+     if ( objectOrParent(doc, 'd:a6f80eb26bbb4ffcb56691ac5ba511da') // (Материал упаковочный)
+       || objectOrParent(doc, 'd:b98840ca4b8f47c2b32a12cc01906208') // (Краски на водной основе)
+       || objectOrParent(doc, 'd:89e8c38865c54b4eaffc5df506fca683') // (Краски на основе растворителей)
+       || objectOrParent(doc, 'd:ed715abf1d80407588efa47ba3c75179') // (Краски УФ-отверждения)
+       || objectOrParent(doc, 'd:be0101cddba94f7aaa060aaa058e8a4e') // (Материалы для печати)
+       || objectOrParent(doc, 'd:dbf8b6d152f04d20bd1dcae8e163db51') // (Печатные химикаты (чистящие средства))
+       || objectOrParent(doc, 'd:51abdbbe8ac94556b4e0455e2374a816') // (Полипропилен)
+       || objectOrParent(doc, 'd:a8f18e17ce7647788e8b27e712c5ee39') // (Силиконы)
        || objectOrParent(doc, 'd:7230749746e943fdb610626e763742fb') // (Standard PE)
-       || objectOrParent(doc, 'd:0ff1b5be8bd849f08ca2bf4ed53b7a16') // (клеи)
+       || objectOrParent(doc, 'd:0ff1b5be8bd849f08ca2bf4ed53b7a16') // (Клеи, Адгезивы)
        ) {
        return [new veda.IndividualModel("d:mondi_appointment_00069224_71024982")]; // Татьяна Румянцева : Руководитель гр.
      }
@@ -1122,10 +1122,10 @@ if (doc) {
    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
     // Закупка
     if (doc.hasValue('v-s:hasBudgetCategory') && (
-      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' || // CAPEX
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' || // CAPEX SIB | Реконструкция, расширение, техперевооружение
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' || // CAPEX Spare part | Запасные части
+      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) { // CAPEX lease contract | Лизинг
       // CAPEX
       if (doc.hasValue('mnd-s:hasStrategyOfChoice') && doc['mnd-s:hasStrategyOfChoice'][0].id == 'd:a7a1e835a-b23b-8465-cecd-a261a31f78fe') {
         // Стратегия: Проведение конкурса (Тендер)
@@ -1202,14 +1202,19 @@ if (doc) {
         routes['examination'][simple+'editable'] = [true];
         routes['examination'][simple+'deadlineDays'] = [10];
         routes['examination'][simple+'comment'] = [new String('Для информации')];
-     }
-   } else if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
+      }
+    } else if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       // Продажа
-      routes['coordination1'][simple+'participant'] = doc['mnd-s:executorSpecialistOfContract']; // Исполнитель
+      // Исполнитель по договору, если в заявке есть ссылка на договор
+      if ( doc.hasValue('v-s:hasContract') && doc['v-s:hasContract'][0].hasValue("mnd-s:executorSpecialistOfContract") ) {
+        var contractExecutor = doc['v-s:hasContract'][0]["mnd-s:executorSpecialistOfContract"];
+        routes['coordination1'][simple+'participant'] = contractExecutor;
+      }
+      // Руководитель отдела ответственного подразделения
       if (doc.hasValue('v-s:responsibleDepartment')) {
         var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
         if (dep.hasValue('v-s:hasChief')) {
-          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения +
+          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]);
         }
       }
       routes['coordination1'][simple+'visible'] = [true];

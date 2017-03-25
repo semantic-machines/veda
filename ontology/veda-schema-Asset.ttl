@@ -35,15 +35,3 @@ v-s:vinNumber
   rdfs:range xsd:string ;
   rdfs:domain v-s:Asset ;
 .
-
-v-s:PsAssetNumber
-  rdf:type v-ui:DatatypePropertySpecification ;
-  v-ui:forClass v-s:Asset ;
-  v-ui:forProperty v-s:assetNumber ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-required, single value."@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное значение."@ru ;
-  rdfs:label "Some property specification for Asset class"@en ;
-  rdfs:label "Спецификация некоторых cвойств для класса Asset"@ru ;
-.

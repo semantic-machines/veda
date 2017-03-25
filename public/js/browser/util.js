@@ -42,14 +42,6 @@ veda.Module(function Util(veda) { "use strict";
       return [str_ru, str_en];
   };
 
-  veda.Util.construct = function (constr, args) {
-    function F() {
-      return constr.apply(this, args);
-    }
-    F.prototype = constr.prototype;
-    return new F();
-  };
-
   function isInteger(n) { return n % 1 === 0; };
 
   function zeroPref(n) {
@@ -275,7 +267,7 @@ veda.Module(function Util(veda) { "use strict";
               .map( function (value) {
                 return "'" + property_uri + "'=='" + value.data + "'";
               })
-              .join("||");
+              .join(" || ");
             break;
           case "String":
             oneProp = values
@@ -291,7 +283,7 @@ veda.Module(function Util(veda) { "use strict";
                 }
                 return "'" + property_uri + "'=='" + q + "'";
               })
-              .join("||");
+              .join(" || ");
             break;
           case "Uri":
             oneProp = values
@@ -303,14 +295,14 @@ veda.Module(function Util(veda) { "use strict";
                   return "'" + property_uri + "'=='" + value.data + "'";
                 }
               })
-              .join("||");
+              .join(" || ");
             break;
         }
-        return oneProp ? "(" + oneProp + ")" : undefined;
+        return oneProp ? "( " + oneProp + " )" : undefined;
       })
       .filter(function(item){return typeof item !== undefined;})
-      .join("&&");
-    query = allProps ? "(" + allProps + ")" : undefined;
+      .join(" && ");
+    query = allProps ? "( " + allProps + " )" : undefined;
     return query;
   }
 
@@ -575,7 +567,7 @@ veda.Module(function Util(veda) { "use strict";
         var main = $('#main');
         main.empty();
         if (typeof redirectIndividual === 'string') {
-          redirectIndividual = new veda.IndividualModel(redirectIndividual, undefined, undefined, undefined, false);
+          redirectIndividual = new veda.IndividualModel({uri: redirectIndividual, cache: false});
         }
         redirectIndividual.present(main, undefined, redirectIndividualMode);
       }
@@ -587,7 +579,7 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.inSubHierarchy = function (root, element) {
       if (typeof element === 'string') {
-          element = new veda.IndividualModel(element, undefined, undefined, undefined, false);
+          element = new veda.IndividualModel({uri: element, cache: false});
       }
       if (element && element.hasValue('rdf:type') && element['rdf:type'][0].id == 'v-s:Department') {
           if (element.id == root || (element.hasValue(['v-s:parentUnit']) && element['v-s:parentUnit'][0].id == root)) {

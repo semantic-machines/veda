@@ -349,7 +349,7 @@ v-ft:FunctionTasksTemplate
 <script>
   var tasks = individual.tasks;
   tasks.on("afterSearch", renderTasks);
-  template.on("remove", function () {
+  template.one("remove", function () {
     tasks.off("afterSearch", renderTasks);
   });
 

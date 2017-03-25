@@ -195,8 +195,8 @@ v-fs:Find
 .
 v-fs:Results
   rdf:type v-s:Bundle ;
-  rdfs:label "What we found"@en ;
-  rdfs:label "Что нашли"@ru ;
+  rdfs:label "Results"@en ;
+  rdfs:label "Результаты"@ru ;
 .
 v-fs:Empty
   rdf:type v-s:Bundle ;
@@ -329,7 +329,7 @@ v-fs:FulltextRequestModel
     databases = self.hasValue("v-fs:databases") ? self["v-fs:databases"][0] : undefined,
     reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false;
 
-  self.on("individual:propertyModified", function (property_uri, values) {
+  self.on("propertyModified", function (property_uri, values) {
     switch (property_uri) {
       case "v-fs:typeToSearch":
       case "v-fs:fulltextQuery" : q = mkQuery(); break;
@@ -474,11 +474,11 @@ v-fs:FulltextRequestTemplate
   // Define and clean handlers
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
-  self.on("individual:afterSave", updateAspect);
-  template.on("remove", function () {
+  self.on("afterSave", updateAspect);
+  template.one("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
-    self.off("individual:afterSave", updateAspect);
+    self.off("afterSave", updateAspect);
   });
 
   // Present results if query defined
@@ -495,7 +495,7 @@ v-fs:FulltextRequestTemplate
   // Modal for links
   var $objModal = $("#object-modal", template).modal({show: false});
   var cntr = $(".modal-body", $objModal);
-  template.on("remove", function () {
+  template.one("remove", function () {
     $objModal.modal("hide");
   });
   resultsList.on("click", "a[resource]", function (e) {
@@ -624,7 +624,7 @@ v-fs:AttributiveRequestModel
     reopen = self.hasValue("v-fs:reopen")       ? self["v-fs:reopen"][0]    : false,
     q;
 
-  self.on("individual:propertyModified", function (property_uri, values) {
+  self.on("propertyModified", function (property_uri, values) {
     switch (property_uri) {
       case "v-fs:typeToSearch":
         self.form = new veda.IndividualModel();
@@ -633,7 +633,7 @@ v-fs:AttributiveRequestModel
           if ( stopList.indexOf(property_uri) >= 0 ) { continue; }
           self.form[property_uri] = self[property_uri];
         }
-        self.form.on("individual:propertyModified", handler);
+        self.form.on("propertyModified", handler);
         q = mkQuery(self.form);
         break;
       case "v-fs:sortOrder"   : sort = values.length      ? values[0].toString() : undefined; break;
@@ -643,7 +643,7 @@ v-fs:AttributiveRequestModel
   });
 
   if (self.hasValue("v-fs:typeToSearch")) {
-    self.trigger("individual:propertyModified", "v-fs:typeToSearch", self["v-fs:typeToSearch"]);
+    self.trigger("propertyModified", "v-fs:typeToSearch", self["v-fs:typeToSearch"]);
   }
 
   function handler(property_uri, values) {
@@ -795,18 +795,18 @@ v-fs:AttributiveRequestTemplate
   // Define and clean handlers
   self.on("beforeSearch", beforeSearch);
   self.on("afterSearch", afterSearch);
-  self.on("individual:afterSave", updateAspect);
-  self.on("individual:propertyModified", typeChanged);
-  template.on("remove", function () {
+  self.on("afterSave", updateAspect);
+  self.on("v-fs:typeToSearch", typeChanged);
+  template.one("remove", function () {
     self.off("beforeSearch", beforeSearch);
     self.off("afterSearch", afterSearch);
-    self.off("individual:afterSave", updateAspect);
-    self.off("individual:propertyModified", typeChanged);
+    self.off("afterSave", updateAspect);
+    self.off("v-fs:typeToSearch", typeChanged);
   });
 
   // Present form if defined
   if (self.form) {
-    typeChanged("v-fs:typeToSearch", self["v-fs:typeToSearch"]);
+    typeChanged(self["v-fs:typeToSearch"]);
   }
 
   // Present results if query defined
@@ -823,7 +823,7 @@ v-fs:AttributiveRequestTemplate
   // Modal for links
   var $objModal = $("#object-modal", template).modal({show: false});
   var cntr = $(".modal-body", $objModal);
-  template.on("remove", function () {
+  template.one("remove", function () {
     $objModal.modal("hide");
   });
   tBody.on("click", "a[resource]", function (e) {
@@ -837,12 +837,10 @@ v-fs:AttributiveRequestTemplate
   });
 
   // Display search form
-  function typeChanged(property_uri, types) {
-    if (property_uri === "v-fs:typeToSearch") {
-      formHolder.empty();
-      self.form.present(formHolder, undefined, "search");
-      setResultTable(types);
-    }
+  function typeChanged(types) {
+    formHolder.empty();
+    self.form.present(formHolder, undefined, "search");
+    setResultTable(types);
   }
 
   // Set result table
@@ -1002,9 +1000,10 @@ v-fs:AttributiveRequestTemplate
       (function (i) {
         setTimeout(function () {
           var _tmpl = tmpl.replace("###", i+1);
+          var $tmpl = $(_tmpl);
           var result = new veda.IndividualModel( self.result[i] );
-          result.present(tBody, $(_tmpl));
-          _tmpl.dblclick(function (e) {
+          result.present(tBody, $tmpl);
+          $tmpl.dblclick(function (e) {
             riot.route("#/" + result.id);
           });
         }, 0);
@@ -1122,6 +1121,14 @@ v-fs:searchBlank
   rdfs:range v-fc:Blank ;
 .
 
+v-fs:searchOnLoad
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Искать сразу"@ru ;
+  rdfs:label "Search on load"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:boolean ;
+.
+
 v-fs:AttributiveSearchModel
   rdf:type v-s:ClassModel ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -1168,29 +1175,31 @@ v-fs:AttributiveSearchTemplate
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
-  <!--h2 about="@" property="rdfs:label"></h2-->
+  <h2 about="@" property="rdfs:label"></h2>
   <div id="params">
-    <h3 about="v-fs:Params" property="rdfs:label"></h3>
     <div id="search-form"></div>
     <br>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
+    <button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button>
     <button class="btn btn-default xls"><i class="fa fa-table fa-lg"></i></button>
   </div>
   <br>
   <div id="results" class="hidden">
     <hr>
-    <h3><span about="v-fs:Results" property="rdfs:label"></span></h3>
-    <div id="stats-top" class="text-right margin-md">
-      <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
-      <span class="total-found badge">0</span>&nbsp;&nbsp;
-      <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
-      <span class="total-processed badge">0</span>&nbsp;&nbsp;
-      <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
-      <span class="total-authorized badge">0</span>&nbsp;&nbsp;
-    </div>
+    <h3 class="clearfix">
+      <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
+      <small class="stats-top pull-right" style="color:black">
+        <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
+        <span class="total-found badge">0</span>&nbsp;&nbsp;
+        <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
+        <span class="total-processed badge">0</span>&nbsp;&nbsp;
+        <span about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></span>
+        <span class="total-authorized badge">0</span>&nbsp;&nbsp;
+      </small>
+    </h3>
     <div id="search-result" class="search-result table-responsive"></div>
-    <div id="stats-bottom" class="text-right margin-md">
+    <div class="stats-bottom text-right margin-md">
       <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
       <span class="total-found badge">0</span>&nbsp;&nbsp;
       <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
@@ -1216,6 +1225,7 @@ v-fs:AttributiveSearchTemplate
       searchBlankContainer = $("#search-form", template),
       searchResultContainer = $("#search-result", template),
       searchButton = $(".search-button", template),
+      clearButton = $(".clear-button", template),
       moreResults = $("#more-results", template),
       allResults = $("#all-results", template),
       noMoreResults = $("#no-more-results", template),
@@ -1227,7 +1237,8 @@ v-fs:AttributiveSearchTemplate
       totalFound = $(".total-found", template),
       totalProcessed = $(".total-processed", template),
       totalAuthorized = $(".total-authorized", template),
-      statsBottom = $("#stats-bottom", template);
+      statsTop = $(".stats-top", template),
+      statsBottom = $(".stats-bottom", template);
 
   self.cursor = self.cursor || 0;
   self.top = veda.user.displayedElements || 10;
@@ -1249,13 +1260,12 @@ v-fs:AttributiveSearchTemplate
     renderResult(self.result).then(function () {
       scrollTo(self.scroll);
     });
-  }
   // Search on load
-  /*else {
+  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     search().then(function () {
       scrollTo( $("#results").offset().top );
     });
-  }*/
+  }
 
   // Remember scroll position
   template.one("remove", function () {
@@ -1271,6 +1281,17 @@ v-fs:AttributiveSearchTemplate
     search().then(function () {
       scrollTo( $("#results").offset().top );
       toggleSpin($this);
+    });
+  });
+
+  // Clear button handler
+  clearButton.click(function () {
+    var obj = searchBlank.object;
+    Object.keys(obj.properties).map(function (property_uri) {
+      if (property_uri === "@" || property_uri === "rdf:type") {
+        return;
+      }
+      obj[property_uri] = [];
     });
   });
 
