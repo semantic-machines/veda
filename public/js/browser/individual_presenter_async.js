@@ -15,12 +15,6 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
 
     if (container.prop("id") === "main") { container.hide(); }
 
-    // Change location.hash if individual was presented in #main container
-    /*if (container.prop("id") === "main" && location.hash.indexOf(individual.id) < 0) {
-      var hash = ["#", individual.id].join("/");
-      if (hash !== location.hash) riot.route(hash, false);
-    }*/
-
     /*var specs = $.extend.apply (
       {}, [].concat(
         individual["rdf:type"].map( function (_class) {
@@ -61,10 +55,6 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
   });
 
   function renderTemplate(individual, container, template, mode, specs) {
-    container.text(individual.toString());
-  }
-
-  function renderTemplate2(individual, container, template, mode, specs) {
     var pre_render_src,
         pre_render,
         post_render_src,
