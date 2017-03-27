@@ -364,7 +364,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.draft = function () {
     this.trigger("individual:beforeDraft");
-    veda.drafts.set(this.id, this);
+    veda.drafts.set(this);
     this.trigger("individual:afterDraft");
     return this;
   }
