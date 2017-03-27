@@ -1635,7 +1635,7 @@
       });
 
       // Clear values from individual if isSingle && typeAhead was emptied
-      typeAhead.change(function () {
+      typeAhead.on("change keyup", function () {
         if (isSingle && this.value === "") {
           individual[rel_uri] = [];
         }
