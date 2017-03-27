@@ -3316,7 +3316,8 @@ s-wf:map_jrn_decision_b
 
 s-wf:net_coordination
   a v-wf:Net;
-  rdfs:label "Универсальный маршрут 1"@ru;
+  rdfs:label "Универсальный маршрут"@ru;
+  rdfs:label "Universal route"@en;
   v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t1_oc, s-wf:nc_f_t1_rti, s-wf:nc_f_t3_t1;
   v-wf:consistsOf s-wf:nc_return_to_initiator, s-wf:nc_r_to_aur, s-wf:nc_to_aur, s-wf:nc_finish, s-wf:nc_to_finish, s-wf:nc_f_t1_oc, s-wf:nc_f_t1_rti;
   v-wf:consistsOf s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1, s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;
