@@ -2144,11 +2144,11 @@ v-ui:generic
   props.empty();
   var properties = $.extend.apply (
     {}, [].concat(
-      individual["rdf:type"].map( function (_class) {
+      individual["rdf:type"].map( function (type) {
         $(".className", template).append (
-          $("<span/>", {"about": _class.id, "property": "rdfs:label"})
+          $("<span/>", {"about": type.id, "property": "rdfs:label"})
         );
-        return _class.domainProperties;
+        return type.domainProperties;
       })
     )
   );
