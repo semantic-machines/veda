@@ -502,7 +502,7 @@ extern (C++)_Buff * uris_pop(uint consumer_id)
 
     if (cs !is null)
     {
-    	string data = cs.pop();
+        string data = cs.pop();
         tmp_individual.data   = cast(char *)data;
         tmp_individual.length = cast(int)data.length;
         return &tmp_individual;

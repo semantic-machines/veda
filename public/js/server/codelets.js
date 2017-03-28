@@ -342,6 +342,17 @@ function create_use_transformation(process, task)
 // скрипт поиска идентификаторов > 64
 function find_long_terms (ticket, document, execute_script)
 {
+    if (!long_ids)
+    {
+	long_ids = [];
+	long_ids['aaaaaa'] = 'bbbbb';
+	print ('new long_ids');
+    }
+    else
+    {
+	print ('long_ids=', long_ids);
+    }
+
     if (document['@'].length > 64 )
 	print ('$$$$$$$$$$$$$$ find_long_terms:doc= ' + document['@']);
 }

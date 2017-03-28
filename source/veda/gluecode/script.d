@@ -15,7 +15,9 @@ struct ScriptInfo
     string run_at;
 }
 
-void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_order, Individual ss, ScriptVM script_vm, string vars_env, bool trace)
+void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_order, Individual ss, ScriptVM script_vm, string before_vars,
+                    string vars_env, string after_vars,
+                    bool trace)
 {
     if (trace)
         log.trace("prepare_script uri=%s", ss.uri);
@@ -44,12 +46,11 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_o
 
         string str_script =
             "try { var ticket = get_env_str_var ('$ticket');"
-            ~ "var document = get_individual (ticket, '$document');"
-            ~ "if (document) {"
+            ~ before_vars
             ~ "var _script_id = '" ~ ss.uri ~ "';"
             ~ vars_env
             ~ "script();"
-            ~ "};"
+            ~ after_vars
             ~ "function script() {" ~ scripts_text ~ "}; } catch (e) { log_trace (e); }"
         ;
         try
