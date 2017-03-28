@@ -757,6 +757,19 @@ v-s:Deliverable2
   rdfs:label "Deliverable thing"@en ;
   rdfs:label "Доставляемая сущность"@ru ;
 .
+v-s:DeliveryMethod
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Метод доставки"@ru ;
+  rdfs:label "Delivery method"@en ;
+.
+v-s:deliverBy
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Deliverable2 ;
+  rdfs:range v-s:DeliveryMethod ;
+  rdfs:label "Метод доставки"@ru ;
+  rdfs:label "Delivery method"@en ;
+.
 v-s:copyTo
   rdf:type owl:ObjectProperty ;
   rdfs:label "Copy to"@en ;
@@ -813,6 +826,27 @@ v-s:contactInfo
   rdfs:label "Contact Info"@en ;
   rdfs:label "Контактная информация"@ru ;
   rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:signedBy
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Подписавший"@ru ;
+  rdfs:label "Signed by"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:sheetsCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Количество листов"@ru ;
+  rdfs:label "Sheets count"@en ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:dueDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Срок исполнения"@ru ;
+  rdfs:label "Due date"@en ;
+  rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Deliverable2 ;
 .
 ### ------------------------------------------------------
