@@ -1530,6 +1530,7 @@
         create.one("remove", function () {
           individual.off(rel_uri, singleValueHandler);
         });
+        singleValueHandler(individual[rel_uri]);
       }
 
     } else {
