@@ -18,6 +18,7 @@ v-s:Asset
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Vehicle ;
   rdfs:label "Asset"@en ;
   rdfs:label "Основное средство"@ru ;
 .
@@ -28,10 +29,111 @@ v-s:assetNumber
   rdfs:range xsd:string ;
   rdfs:domain v-s:Asset ;
 .
-v-s:vinNumber
+
+#----------------------------------------------------
+v-s:Pts
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Vehicle ;
+  rdfs:label "Pts"@en ;
+  rdfs:label "Паспорт транспортного средства"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+
+v-s:movablesModel
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Fixed asset VIN"@en ;
-  rdfs:label "Идентификатор VIN"@ru ;
+  rdfs:label "Movables model"@en ;
+  rdfs:label "Марка ТС"@ru ;
   rdfs:range xsd:string ;
-  rdfs:domain v-s:Asset ;
+  rdfs:domain v-s:Pts ;
+.
+v-s:movablesType
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Movables type"@en ;
+  rdfs:label "Тип ТС"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
+.
+v-s:movablesCategory
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Movables сategory"@en ;
+  rdfs:label "Категория ТС"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
+.
+v-s:engineModel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Engine model"@en ;
+  rdfs:label "модель, № двигателя"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
+.
+v-s:chassisNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Chassis number"@en ;
+  rdfs:label "шасси (рама) №"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
+.
+v-s:cabinNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Cabin number"@en ;
+  rdfs:label "кузов (кабина,прицеп) №"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
+.
+v-s:movablesColor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Movables color"@en ;
+  rdfs:label "цвет"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
+.
+
+#----------------------------------------------------
+v-s:Psm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Vehicle ;
+  rdfs:label "Psm"@en ;
+  rdfs:label "Паспорт самоходной машины"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+
+
+#----------------------------------------------------
+v-s:RegistrationCertificate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Vehicle ;
+  rdfs:label "Registration сertificate"@en ;
+  rdfs:label "Свидетельство о регистрации"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+v-s:typeOfOwnership
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "type of ownership"@en ;
+  rdfs:label "Вид собственности"@ru ;
+  rdfs:range v-s:Sector ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+
+v-s:PsTypeOfOwnershipForRegistrationCertificate
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:RegistrationCertificate ;
+  v-ui:forProperty v-s:typeOfOwnership ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('@' == 'd:1b0d368c502f4e4db36f0e6cf9513b16' || '@' == 'd:6d6e3b9704994786adf6f7bfed9e0c87')"^^xsd:string ;
+  rdfs:label "Спецификация свойства typeOfOwnership для класса v-s:RegistrationCertificate"@ru ;
+  rdfs:label "typeOfOwnership property specification for v-s:RegistrationCertificate class"@en ;
 .

@@ -1064,3 +1064,18 @@ v-s:hasProject
   rdfs:domain v-s:Projectable ;
   rdfs:range v-s:Initiative ;
 .
+
+### ------------------------------------------------------------
+v-s:Vehicle
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Vehicle"@en ;
+  rdfs:label "Транспортное средство"@ru ;
+.
+v-s:vinNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Fixed asset VIN"@en ;
+  rdfs:label "Идентификатор VIN"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Vehicle ;
+.

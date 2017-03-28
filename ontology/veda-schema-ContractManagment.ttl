@@ -231,11 +231,11 @@ v-s:Contract
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
-v-s:hasContractSpecification
+v-s:hasRequestContractDetail
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Contract specification"@en ;
-  rdfs:label "Детализация контракта"@ru ;
-  rdfs:range v-s:ContractSpecification ;
+  rdfs:label "Request contract detail"@en ;
+  rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:range v-s:RequestContractDetail ;
   rdfs:domain v-s:Contractual ;
 .
 # ------------------------------------------------------------
@@ -334,15 +334,22 @@ v-s:ContractPassport
 # v-s:hasContract
 
 # ------------------------------------------------------------
-v-s:ContractSpecification
+v-s:RequestContractDetail
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
-  rdfs:label "Contract specification"@en ;
-  rdfs:label "Детализация контракта"@ru ;
+  rdfs:label "Request contract detail"@en ;
+  rdfs:label "Детализация заявки на контракт"@ru ;
 .
 # v-s:hasSector
 # v-s:hasAsset
+v-s:hasPts
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Request contract detail"@en ;
+  rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:range v-s:Pts ;
+  rdfs:domain v-s:RequestContractDetail ;
+.
 
 # ------------------------------------------------------------
 v-s:MaterialGroup
