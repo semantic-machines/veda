@@ -937,6 +937,10 @@ WrappedContext::WrappedContext ()
                 v8::FunctionTemplate::New(isolate_, SetInIndividual));
     global->Set(v8::String::NewFromUtf8(isolate_, "remove_from_individual"),
                 v8::FunctionTemplate::New(isolate_, RemoveFromIndividual));
+    global->Set(v8::String::NewFromUtf8(isolate_, "uris_pop"),
+                v8::FunctionTemplate::New(isolate_, UrisPop));
+    global->Set(v8::String::NewFromUtf8(isolate_, "new_uris_consumer"),
+                v8::FunctionTemplate::New(isolate_, NewUrisConsumer));
 
     v8::Handle<v8::Context> context = v8::Context::New(isolate_, NULL, global);
     context_.Reset(isolate_, context);
