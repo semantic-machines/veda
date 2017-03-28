@@ -150,7 +150,10 @@ private void ltrs_thread(string parent_url)
                                    Queue queue = new Queue(uris_db_path, queue_id, Mode.R, log);
                                    if (queue.open())
                                    {
-                                       Consumer cs = new Consumer(queue, tmp_path, "consumer-ltr-scripts", log);
+	                                   UUID new_id = randomUUID();
+							           string consumer_id = "consumer-uris-" ~ new_id.toString();
+							           
+                                       Consumer cs = new Consumer(queue, tmp_path, consumer_id, log);
 
                                        if (cs.open())
                                        {
@@ -209,13 +212,13 @@ private void ltrs_thread(string parent_url)
                         if (uri !is null)
                         {
                             ResultCode rs;
-                            string     data = context.get_individual_as_binobj(&sticket, uri, rs);
+                            string     data = "";//context.get_individual_as_binobj(&sticket, uri, rs);
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);
                             if (res == false)
                             {
-                                writeln("Queue commit fail !!!!");
+                                log.trace("ERR! [%s] commit fail", task.consumer);
                                 break;
                             }
                         }
@@ -227,8 +230,7 @@ private void ltrs_thread(string parent_url)
                             if (tasks.list.length == 0)
                                 tasks_2_priority.remove(priority);
 
-                            //task.consumer.remove();
-                            //task.consumer.queue.remove();
+                            //task.consumer.remove();                            
                         }
                     }
                 }
@@ -358,9 +360,10 @@ class ScriptProcess : VedaModule
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
             return ResultCode.OK;
 
-        string queue_id = "uris-tmp";
-        context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
+        //string queue_id = "uris-tmp";
+        //context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
 
+        string queue_id = "uris-db";
         start_script(new_bin, queue_id);
 
         return ResultCode.OK;

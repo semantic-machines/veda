@@ -453,6 +453,10 @@ remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbo
                        const char *_event_id, int _event_id_length);
 
 void log_trace(const char *_str, int _str_length);
+
+_Buff * uris_pop(uint32_t consumer_id);
+uint32_t new_uris_consumer();
+
 //char *get_resource (int individual_idx, const char* _uri, int _uri_length, int* count_resources, int resource_idx);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -621,6 +625,39 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
     args.GetReturnValue().Set(arr_1);
 }
+
+void
+NewUrisConsumer(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+    uint32_t res = new_uris_consumer ();
+    args.GetReturnValue().Set(res);
+}
+
+void
+UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 1)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+    uint32_t id = args[0]->Uint32Value();
+    _Buff *res = uris_pop (id);
+
+    if (res != NULL)
+    {
+        std::string data(res->data, res->length);
+
+	Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+
+	args.GetReturnValue().Set(oo);
+    }
+}
+
 
 void
 GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)

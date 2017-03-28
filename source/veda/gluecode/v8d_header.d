@@ -5,7 +5,7 @@ module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.core.util.utils;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, std.uuid;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -491,6 +491,50 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
     {
         //writeln ("@p:v8d end read_individual");
     }
+}
+
+Consumer[ uint ] id2consumer;
+uint id2consumer_counter = 0;
+
+extern (C++)_Buff * uris_pop(uint consumer_id)
+{
+    Consumer cs = id2consumer.get(consumer_id, null);
+
+    if (cs !is null)
+    {
+    	string data = cs.pop();
+        tmp_individual.data   = cast(char *)data;
+        tmp_individual.length = cast(int)data.length;
+        return &tmp_individual;
+    }
+
+    tmp_individual.data   = cast(char *)"";
+    tmp_individual.length = cast(int)0;
+    return null;
+}
+
+extern (C++) uint new_uris_consumer()
+{
+    uint  id    = -1;
+    Queue queue = new Queue(uris_db_path, "uris-db", Mode.R, log);
+
+    if (queue.open())
+    {
+        UUID   new_id      = randomUUID();
+        string consumer_id = "consumer-uris-" ~ new_id.toString();
+        id = id2consumer_counter++;
+
+        Consumer cs = new Consumer(queue, tmp_path, consumer_id, log);
+
+        if (cs.open())
+        {
+            id2consumer[ id ] = cs;
+        }
+        else
+            id = -1;
+    }
+
+    return id;
 }
 
 void dump(char *data, int count)
