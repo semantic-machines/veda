@@ -1299,28 +1299,22 @@ v-fs:AttributiveSearchTemplate
   moreResults.click(function () {
     var $this = $(this);
     toggleSpin($this);
-    setTimeout(function () {
-      search(self.cursor).then(function () {
-        toggleSpin($this);
-      });
-    }, 500);
+    search(self.cursor).then(function () {
+      toggleSpin($this);
+    });
   });
 
   // All results button handler
   allResults.click(function () {
     if ( confirm("Вы уверены? / Are you sure?") ) {
-      var $this = $(this);
-      moreResults.addClass("hidden");
-      toggleSpin($this);
-      self.limit = self.top = self.estimated;
-      setTimeout(function () {
-        search(self.cursor).then(function () {
-          toggleSpin($this);
-          $this.addClass("hidden");
-        });
-      }, 500);
+      getAll();
     }
   });
+  function getAll() {
+    if (self.cursor < self.estimated) {
+      return search(self.cursor).then(getAll);
+    }
+  }
 
   // Auto load more results when page bottom reached
 /*  $(window).on("scroll", reachedBottom);
@@ -1368,7 +1362,7 @@ v-fs:AttributiveSearchTemplate
   function renderResult(resultDelta) {
 
     // Stats
-    if (self.result.length < 20) {
+    if (self.result.length < 5) {
       statsBottom.hide();
     } else {
       statsBottom.show();
