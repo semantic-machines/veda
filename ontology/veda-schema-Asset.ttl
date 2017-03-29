@@ -64,13 +64,10 @@ v-s:movablesCategory
   rdfs:range xsd:string ;
   rdfs:domain v-s:Pts ;
 .
-v-s:engineModel
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Engine model"@en ;
-  rdfs:label "модель, № двигателя"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
+# v-s:vinNumber
+# v-s:year
+# v-s:engineModel
+
 v-s:chassisNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Chassis number"@en ;
@@ -85,13 +82,8 @@ v-s:cabinNumber
   rdfs:range xsd:string ;
   rdfs:domain v-s:Pts ;
 .
-v-s:movablesColor
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Movables color"@en ;
-  rdfs:label "цвет"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
+# v-s:movablesColor
+
 
 #----------------------------------------------------
 v-s:Psm
@@ -106,6 +98,37 @@ v-s:Psm
 # v-s:registrationNumber
 # v-s:registrationDate
 
+v-s:machineSerialNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "machine serial number"@en ;
+  rdfs:label "Заводской номер машины (рамы)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Psm ;
+.
+# v-s:engineModel
+# v-s:year
+v-s:transmission
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "transmission"@en ;
+  rdfs:label "Коробка передач"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Psm ;
+.
+v-s:mainDriveAxle
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "main drive axle"@en ;
+  rdfs:label "Основной ведущий мост (номер)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Psm ;
+.
+v-s:thruster
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "thruster"@en ;
+  rdfs:label "Вид движителя"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Psm ;
+.
+# v-s:movablesColor
 
 #----------------------------------------------------
 v-s:RegistrationCertificate
@@ -113,7 +136,7 @@ v-s:RegistrationCertificate
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Vehicle ;
+  rdfs:subClassOf v-s:Spatial ; 
   rdfs:label "Registration сertificate"@en ;
   rdfs:label "Свидетельство о регистрации"@ru ;
 .
@@ -126,7 +149,30 @@ v-s:typeOfOwnership
   rdfs:range v-s:Sector ;
   rdfs:domain v-s:RegistrationCertificate ;
 .
-
+# v-s:postalAddress
+# rdfs:label
+v-s:cadastralNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "cadastrl number"@en ;
+  rdfs:label "Кадастровый номер"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+v-s:cadastralPassport
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Cadastral passport"@en ;
+  rdfs:label "Кадастровый паспорт"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:subPropertyOf v-s:attachment ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+v-s:egrpNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "egrp number"@en ;
+  rdfs:label "ЕГРП номер"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
 v-s:PsTypeOfOwnershipForRegistrationCertificate
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-s:RegistrationCertificate ;

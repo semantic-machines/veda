@@ -343,13 +343,29 @@ v-s:RequestContractDetail
 .
 # v-s:hasSector
 # v-s:hasAsset
+
 v-s:hasPts
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Request contract detail"@en ;
-  rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:label "Pts"@en ;
+  rdfs:label "Паспорт транспортного средства"@ru ;
   rdfs:range v-s:Pts ;
-  rdfs:domain v-s:RequestContractDetail ;
+  rdfs:domain  v-s:RequestContractDetail;
 .
+v-s:hasPsm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Psm"@en ;
+  rdfs:label "Паспорт самоходной машины"@ru ;
+  rdfs:range v-s:Psm ;
+  rdfs:domain  v-s:RequestContractDetail;
+.
+v-s:hasRegistrationCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Registration сertificate"@en ;
+  rdfs:label "Свидетельство о регистрации"@ru ;
+  rdfs:range v-s:RegistrationCertificate ;
+  rdfs:domain  v-s:RequestContractDetail;
+.
+# v-s:hasContract
 
 # ------------------------------------------------------------
 v-s:MaterialGroup

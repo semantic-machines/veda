@@ -1069,6 +1069,7 @@ v-s:hasProject
 v-s:Vehicle
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Vehicle"@en ;
   rdfs:label "Транспортное средство"@ru ;
 .
@@ -1078,4 +1079,19 @@ v-s:vinNumber
   rdfs:label "Идентификатор VIN"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Vehicle ;
+.
+# v-s:year
+v-s:engineModel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Engine model"@en ;
+  rdfs:label "модель, № двигателя"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Vehicle ;
+.
+v-s:movablesColor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Movables color"@en ;
+  rdfs:label "цвет"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
 .
