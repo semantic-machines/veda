@@ -50,9 +50,9 @@ veda.Module(function (veda) { "use strict";
       this["v-s:edited"] = [ now ];
       this["v-s:lastEditor"] = [ user ];
     }
-    if ( this.isNew() ) {
-      this["v-s:created"] = [ now ];
+    if ( !this.hasValue("v-s:creator") ) {
       this["v-s:creator"] = [ user ];
+      this["v-s:created"] = [ now ];
     }
   }
 
