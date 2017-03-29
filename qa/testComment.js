@@ -42,7 +42,7 @@ function check(driver, comment, reply, edit, del) {
 
 function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
-    basic.execute(driver, 'sendKeys', 'textarea[class="form-control"]', "Cannot input comment", somethingUnique);
+    basic.execute(driver, 'sendKeys', 'div[typeof="v-s:Comment"] textarea[class="form-control"]', "Cannot input comment", somethingUnique);
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
     basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "Cannot click  on 'save' button");
     driver.sleep(basic.SLOW_OPERATION/2);
@@ -73,11 +73,30 @@ basic.getDrivers().forEach(function (drv) {
     basic.execute(driver, 'click', '#add-comment', "Cannot click on 'add-comment' button");
     comment(driver, timeStamp);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
-    basic.execute(driver, 'click', '#reply', "Cannot click on 'reply' button");
+    basic.execute(driver, 'click', '#reply', "Cannot click on 'reexply' button");
     comment(driver, timeStamp + 1);
+    driver.sleep(basic.FAST_OPERATION);
+    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
+    basic.execute(driver, 'click', '#reply', "Cannot click on 'reply' button");    
+    driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
 
-    check(driver, 2, 2, 1, 1);
+    //basic.execute(driver, 'sendKeys', 'div[typeof="v-s:Comment"] textarea[class="form-control"]', "Cannot input comment", somethingUnique);
+    driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] textarea[class="form-control"]', 1, "Cannot click on comment field"), 
+        basic.FAST_OPERATION).then(function(result){basic.clickUp(result);});
+
+    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
+    driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] button[id="save"]', 1, "Cannot click on save button"), 
+        basic.FAST_OPERATION).then(function(result){basic.clickUp(result);});
+    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "Cannot find new comment");});
+  
+    check(driver, 3, 3, 2, 2);
     driver.executeScript("document.querySelector('#delete').scrollIntoView(true);");
+    driver.wait(basic.findUp(driver, '#delete', 1, "Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
+        basic.clickUp(result);});
+    driver.switchTo().alert().accept();
+    driver.sleep(basic.SLOW_OPERATION/2);
+    check(driver, 2, 2, 1, 1);
     driver.wait(basic.findUp(driver, '#delete', 1, "Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
