@@ -757,6 +757,20 @@ v-s:Deliverable2
   rdfs:label "Deliverable thing"@en ;
   rdfs:label "Доставляемая сущность"@ru ;
 .
+v-s:hasDelivery
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Deliverable2 ;
+  rdfs:range v-s:Delivery ;
+  rdfs:label "Доставка"@ru ;
+  rdfs:label "Delivery"@en ;
+.
+v-s:Delivery
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Доставка"@ru ;
+  rdfs:label "Delivery"@en ;
+.
 v-s:DeliveryMethod
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -765,7 +779,7 @@ v-s:DeliveryMethod
 .
 v-s:deliverBy
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Deliverable2 ;
+  rdfs:domain v-s:Delivery ;
   rdfs:range v-s:DeliveryMethod ;
   rdfs:label "Метод доставки"@ru ;
   rdfs:label "Delivery method"@en ;

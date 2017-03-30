@@ -123,6 +123,9 @@ em {
 hr.black {
   border-top: 1px solid #233333;
 }
+hr.gray {
+  border-top: 1px solid #ccc;
+}
 
 .checkbox > label > em {
   margin: 0px;
