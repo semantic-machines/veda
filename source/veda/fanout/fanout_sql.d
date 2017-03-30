@@ -187,36 +187,52 @@ class FanoutProcess : VedaModule
                                 {
                                     foreach (rtype; types)
                                     {
-                                        string type = rtype.data;
-
+                                        string      type = rtype.data;
                                         mysql_conn.query("SET NAMES 'utf8'");
 
                                         if (rs.type == DataType.Boolean)
                                         {
                                             if (rs.get!bool == true)
-                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?)", predicate,
-                                                                 new_indv.uri,
-                                                                 type,
-                                                                 created.asString(), 1);
+                                            {
+                                                    mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?)",
+                                                                     predicate,
+                                                                     new_indv.uri,
+                                                                     type,
+                                                                     created.asString(), 1);
+
+                                                log.trace(
+                                                          "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value) VALUES (%s, %s, %s, %s), res=%s",
+                                                          predicate,
+                                                          new_indv.uri, type,
+                                                          created.asString(), 1, mysql_conn.error ());
+                                            }
                                             else
-                                                mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?)", predicate,
-                                                                 new_indv.uri,
-                                                                 type,
-                                                                 created.asString(), 0);
+                                            {
+                                                    mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?)",
+                                                                     predicate,
+                                                                     new_indv.uri,
+                                                                     type,
+                                                                     created.asString(), 0);
+                                                log.trace(
+                                                          "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value) VALUES (%s, %s, %s, %s), res=%s",
+                                                          predicate,
+                                                          new_indv.uri, type,
+                                                          created.asString(), 0, mysql_conn.error ());
+                                            }
                                         }
                                         else
                                         {
                                             mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang) VALUES (?, ?, ?, ?, ?)",
-                                                             predicate,
-                                                             new_indv.uri, type,
-                                                             created.asString(), rs.asString().toUTF8(), text(rs.lang));
-                                        }
+                                                                   predicate,
+                                                                   new_indv.uri, type,
+                                                                   created.asString(), rs.asString().toUTF8(), text(rs.lang));
 
-                                        log.trace(
-                                                  "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value, lang) VALUES (%s, %s, %s, %s, %s)",
-                                                  predicate,
-                                                  new_indv.uri, type,
-                                                  created.asString(), rs.asString().toUTF8(), text(rs.lang));
+                                            log.trace(
+                                                      "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value, lang) VALUES (%s, %s, %s, %s, %s), res=%s",
+                                                      predicate,
+                                                      new_indv.uri, type,
+                                                      created.asString(), rs.asString().toUTF8(), text(rs.lang), mysql_conn.error ());
+                                        }
                                     }
                                 }
                             }
