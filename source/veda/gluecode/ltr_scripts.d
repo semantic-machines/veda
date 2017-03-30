@@ -102,12 +102,15 @@ private void ltrs_thread(string parent_url)
 
 
     vars_for_codelet_script =
-        "var user_uri = get_env_str_var ('$user');"
+        "var uri = get_env_str_var ('$uri');"
+        ~ "var user_uri = get_env_str_var ('$user');"
         ~ "var execute_script = get_individual (ticket, '$execute_script');";
 
     vql = new VQL(context);
 
     script_vm = get_ScriptVM(context);
+
+	script_vm.compile("long_ids = {};");
 
     long recv_wait_dur = 100_000_000;
 
@@ -205,11 +208,11 @@ private void ltrs_thread(string parent_url)
                             continue;
 
                         string uri = task.consumer.pop();
-                        //writeln ("@ data from queue=", data);
                         if (uri !is null)
                         {
+		                    log.trace ("uri=%s", uri);
                             ResultCode rs;
-                            string     data = ""; //context.get_individual_as_binobj(&sticket, uri, rs);
+                            string     data = uri; //context.get_individual_as_binobj(&sticket, uri, rs);
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);
@@ -240,29 +243,18 @@ private void ltrs_thread(string parent_url)
     }
 }
 
-ResultCode execute_script(string user_uri, string msg, string script_uri, string executed_script_binobj)
+ResultCode execute_script(string user_uri, string uri, string script_uri, string executed_script_binobj)
 {
-    if (msg is null || msg.length <= 3 || script_vm is null ||
+    if (uri is null || uri.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         executed_script_binobj is null || executed_script_binobj.length <= 3)
         return ResultCode.OK;
 
-    Individual indv;
-    if (indv.deserialize(msg) < 0)
-    {
-        writeln("ERR msg=", msg);
-        return ResultCode.OK;
-    }
-
     if (onto is null)
         onto = context.get_onto();
 
-    Resources   types = indv.resources.get(rdf__type, Resources.init);
-    MapResource rdfType;
-    setMapResources(types, rdfType);
-
-    g_document.data   = cast(char *)msg;
-    g_document.length = cast(int)msg.length;
+    g_uri.data   = cast(char *)uri;
+    g_uri.length = cast(int)uri.length;
 
     g_execute_script.data   = cast(char *)executed_script_binobj;
     g_execute_script.length = cast(int)executed_script_binobj.length;
@@ -283,25 +275,20 @@ ResultCode execute_script(string user_uri, string msg, string script_uri, string
     g_ticket.data   = cast(char *)sticket_id;
     g_ticket.length = cast(int)sticket_id.length;
 
-    set_g_super_classes(rdfType.keys, onto);
-
     ScriptInfo script = codelet_scripts.get(script_uri, ScriptInfo.init);
 
     if (script is ScriptInfo.init)
     {
         Individual codelet = context.get_individual(&sticket, script_uri);
-        prepare_script(codelet_scripts, codelet_scripts_order, codelet, script_vm, "", vars_for_codelet_script, "", false);
+        prepare_script(codelet_scripts, codelet_scripts_order, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
     }
 
     if (script.compiled_script !is null)
     {
-        if (is_filter_pass(&script, indv.uri, rdfType.keys, onto) == false)
-            return ResultCode.OK;
-
         try
         {
             //if (trace_msg[ 300 ] == 1)
-            log.trace("start exec ltr-script : %s %s", script.id, indv.uri);
+            log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
             ResultCode res = commit();

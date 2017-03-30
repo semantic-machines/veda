@@ -86,7 +86,7 @@ class ScriptProcess : VedaModule
 
         if (prepare_if_is_script)
         {
-            prepare_script(event_scripts, event_scripts_order, new_indv, script_vm, before_vars, vars_for_event_script, after_vars, false);
+            prepare_script(event_scripts, event_scripts_order, new_indv, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
         }
 
         set_g_parent_script_id_etc(event_id);
@@ -256,7 +256,7 @@ class ScriptProcess : VedaModule
                 res, false, false);
 
         foreach (ss; res)
-            prepare_script(event_scripts, event_scripts_order, ss, script_vm, before_vars, vars_for_event_script, after_vars, false);
+            prepare_script(event_scripts, event_scripts_order, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
 
         string scripts_ordered_list;
         foreach (_script_id; event_scripts_order)

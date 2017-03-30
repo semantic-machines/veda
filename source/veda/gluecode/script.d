@@ -15,7 +15,7 @@ struct ScriptInfo
     string run_at;
 }
 
-void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_order, Individual ss, ScriptVM script_vm, string before_vars,
+void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_order, Individual ss, ScriptVM script_vm, string first_section, string before_vars,
                     string vars_env, string after_vars,
                     bool trace)
 {
@@ -44,8 +44,8 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_o
         if (trace)
             log.trace("script_text=%s", scripts_text);
 
-        string str_script =
-            "try { var ticket = get_env_str_var ('$ticket');"
+        string str_script = first_section 
+            ~ "try { var ticket = get_env_str_var ('$ticket');"
             ~ before_vars
             ~ "var _script_id = '" ~ ss.uri ~ "';"
             ~ vars_env

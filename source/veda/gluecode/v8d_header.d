@@ -14,7 +14,7 @@ Logger log;
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
-string[ string ] g_prop;
+string[ string ] g_ht;
 Context g_context;
 
 string  g_vm_id;
@@ -25,10 +25,12 @@ _Buff   g_parent_document_id;
 _Buff   g_prev_state;
 _Buff   g_execute_script;
 _Buff   g_document;
+_Buff   g_uri;
 _Buff   g_user;
 _Buff   g_ticket;
 
 _Buff   tmp_individual;
+_Buff   tmp;
 
 //_Buff      g_script_result;
 //_Buff      g_script_out;
@@ -232,12 +234,22 @@ extern (C++) void log_trace(const char *str, int str_length)
     log.trace("[%s] %s", script_id, sstr);
 }
 
-extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
+extern (C++) _Buff *get_from_ght(const char *name, int name_length)
 {
-    string pn  = cast(string)prop_name[ 0..prop_name_length ];
-    string res = g_prop[ pn ];
+    string pn  = cast(string)name[ 0..name_length ];
+    string res = g_ht[ pn ];
 
-    return cast(char *)res;
+	tmp.data = cast(char*)res;
+	tmp.length = cast(int)res.length;
+
+    return &tmp;
+}
+
+extern (C++) void put_to_ght(const char *name, int name_length, const char *value, int value_length)
+{
+    string pn  = cast(string)name[ 0..name_length ];
+    string vn  = cast(string)value[ 0..value_length ];
+    g_ht[ pn ] = vn;
 }
 
 //чтение неправильное после операции add set
@@ -350,6 +362,10 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
         else if (var_name == "$user")
         {
             return &g_user;
+        }
+        else if (var_name == "$uri")
+        {
+            return &g_uri;
         }
         else if (var_name == "$ticket")
         {
