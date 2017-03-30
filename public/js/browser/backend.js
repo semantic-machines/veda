@@ -91,13 +91,15 @@ veda.Module(function Backend(veda) { "use strict";
                    key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? parseFloat(value) : value;
           }
         );
-      } catch (e) {
+      } catch (err) {
         result = res.responseText;
       } finally {
         return result;
       }
     } else {
-      return $.ajax(params);
+      return $.ajax(params).catch(function (err) {
+        throw new BackendError(err);
+      });
     }
   }
 
