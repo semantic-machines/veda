@@ -210,7 +210,7 @@ private void ltrs_thread(string parent_url)
                         string uri = task.consumer.pop();
                         if (uri !is null)
                         {
-                            log.trace("uri=%s", uri);
+                            //log.trace("uri=%s", uri);
                             ResultCode rs;
                             string     data = uri; //context.get_individual_as_binobj(&sticket, uri, rs);
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
@@ -288,7 +288,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
         try
         {
             //if (trace_msg[ 300 ] == 1)
-            log.trace("start exec ltr-script : %s %s", script.id, uri);
+            //log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
             ResultCode res = commit();
@@ -299,7 +299,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
             }
 
             //if (trace_msg[ 300 ] == 1)
-            log.trace("end exec ltr-script : %s", script.id);
+            //log.trace("end exec ltr-script : %s", script.id);
         }
         catch (Exception ex)
         {

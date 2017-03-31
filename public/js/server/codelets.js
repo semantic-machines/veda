@@ -382,30 +382,31 @@ function find_long_terms(ticket, uri, execute_script)
 
         if (document)
         {
-            for (var key in document)
+            if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
             {
-                var values = document[key];
-                if (key != '@')
+                for (var key in document)
                 {
-                    for (var idx in values)
+                    var values = document[key];
+                    if (key != '@')
                     {
-                        var value = values[idx];
-                        if (get_from_ght(value))
+                        for (var idx in values)
                         {
-                            print("found long value>64, value=" + value);
+                            var value = values[idx];
+                            if (get_from_ght(value.data))
+                            {
+                                print("found long value>64," + uri + " " + key + "=" + value.data);
+                            }
                         }
                     }
-                }
-                else
-                {
+                    else
+                    {
                         if (get_from_ght(values))
                         {
                             print("found long @>64, @=" + values);
                         }
-					
-				}
+                    }
+                }
             }
-
         }
     }
 }
