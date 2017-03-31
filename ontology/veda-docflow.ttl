@@ -145,7 +145,7 @@ v-df:ApprovalTaskTemplate
 .
 
 
-# -- СТАРТОВЫЕ ФОРМЫ СТАНДРАТНЫХ ЗАДАЧ --
+# -- СТАРТОВЫЕ ФОРМЫ СТАНДАРТНЫХ ЗАДАЧ --
 
 v-df:QuestionRouteStartForm
   rdf:type owl:Class ;
@@ -203,7 +203,7 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
-  v-ui:maxCardinality 10 ;
+  v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
   v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
