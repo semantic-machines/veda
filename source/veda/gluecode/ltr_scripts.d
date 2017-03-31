@@ -110,7 +110,7 @@ private void ltrs_thread(string parent_url)
 
     script_vm = get_ScriptVM(context);
 
-	script_vm.compile("long_ids = {};");
+    script_vm.compile("long_ids = {};");
 
     long recv_wait_dur = 100_000_000;
 
@@ -210,7 +210,7 @@ private void ltrs_thread(string parent_url)
                         string uri = task.consumer.pop();
                         if (uri !is null)
                         {
-		                    log.trace ("uri=%s", uri);
+                            log.trace("uri=%s", uri);
                             ResultCode rs;
                             string     data = uri; //context.get_individual_as_binobj(&sticket, uri, rs);
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
