@@ -2,27 +2,35 @@
 
 function down_right_and_store(process, task)
 {
-    return change_rights(process, task, [{"data":"-r--"}]);
+    return change_rights(process, task, [
+    {
+        "data": "-r--"
+    }]);
 }
 
 function change_rights(process, task, rightset)
 {
-    return change_rights_actor(process, task, [{"data":"-r--"}], 'actor');
+    return change_rights_actor(process, task, [
+    {
+        "data": "-r--"
+    }], 'actor');
 }
 
 function change_rights_actor(process, task, rightset, actor)
 {
     try
     {
-//print ("@JS down_right_and_store");
+        //print ("@JS down_right_and_store");
         var doc_id = process.getInputVariable('docId');
-//print ("@JS doc_id=", toJson (doc_id));
-//print ("@JS rightset=", toJson (rightset));
+        //print ("@JS doc_id=", toJson (doc_id));
+        //print ("@JS rightset=", toJson (rightset));
         var rset = [];
-        if (rightset[0].data.indexOf('r')>=0) {
+        if (rightset[0].data.indexOf('r') >= 0)
+        {
             rset.push(can_read);
         }
-        if (rightset[0].data.indexOf('u')>=0) {
+        if (rightset[0].data.indexOf('u') >= 0)
+        {
             rset.push(can_update);
         }
 
@@ -30,17 +38,20 @@ function change_rights_actor(process, task, rightset, actor)
         {
             //print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
             //print ("@JS2 executor=", toJson(process.getExecutor()));
-          var executor = (process.getLocalVariable (actor))? process.getLocalVariable (actor) : process.getExecutor();
+            var executor = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
 
-          executor = get_properties_chain (executor, [{$get:'v-s:occupation'}], executor);
+            executor = get_properties_chain(executor, [
+            {
+                $get: 'v-s:occupation'
+            }], executor);
 
-      if (!executor)
-      {
-    print ("@JS executor undefined, actor=", process.getLocalVariable (actor));
-      }
+            if (!executor)
+            {
+                print("@JS executor undefined, actor=", process.getLocalVariable(actor));
+            }
 
-          if (executor)
-              addRight(ticket, rset, getUri (executor), getUri (doc_id));
+            if (executor)
+                addRight(ticket, rset, getUri(executor), getUri(doc_id));
 
             var instanceOf = getUri(process['v-wf:instanceOf']);
 
@@ -85,17 +96,19 @@ function interrupt_process(ticket, process, _event_id)
 
 function change_process_status(ticket, process, status, _event_id)
 {
-//    print('>>> '+toJson(process));
+    //    print('>>> '+toJson(process));
     var vars = process['v-wf:inVars'];
     if (!vars) return;
     for (var i = 0; i < vars.length; i++)
     {
         var variable = get_individual(process.ticket, vars[i].data);
-        if (variable
-            && variable['v-wf:variableName'][0]
-            && variable['v-wf:variableName'][0].data == 'docId') {
+        if (variable &&
+            variable['v-wf:variableName'][0] &&
+            variable['v-wf:variableName'][0].data == 'docId')
+        {
             var doc = get_individual(ticket, variable['v-wf:variableValue'][0].data);
-            if (doc['v-wf:isProcess'] && doc['v-wf:isProcess'][0].data == process['@']) {
+            if (doc['v-wf:isProcess'] && doc['v-wf:isProcess'][0].data == process['@'])
+            {
                 delete doc['v-wf:isProcess'];
                 doc['v-wf:hasStatusWorkflow'] = newUri(status);
                 put_individual(ticket, doc, _event_id);
@@ -150,9 +163,9 @@ function get_type_of_docId(task)
 function is_in_docflow_and_set_if_true(task)
 {
 
-// # 322
-//// # 285
-//    return [get_new_variable('result', newUri(false))];
+    // # 322
+    //// # 285
+    //    return [get_new_variable('result', newUri(false))];
 
     try
     {
@@ -176,14 +189,14 @@ function is_in_docflow_and_set_if_true(task)
                     var in_doc_flow = get_individual(task.ticket, net_doc_id);
                     //print("[Z3Z] := "+toJson(in_doc_flow));
 
-//                   if (in_doc_flow)
-//                   {
-// # 322
-//                        res = true;
-//                        res = false;
-//
-//                    }
-//                    else
+                    //                   if (in_doc_flow)
+                    //                   {
+                    // # 322
+                    //                        res = true;
+                    //                        res = false;
+                    //
+                    //                    }
+                    //                    else
                     {
                         var new_doc = {
                             '@': net_doc_id,
@@ -199,7 +212,7 @@ function is_in_docflow_and_set_if_true(task)
                             '@': doc_id[0].data,
                             'v-wf:isProcess': newUri(process['@'])
                         };
-                        print('$ add_to_document >>'+toJson(add_to_document));
+                        print('$ add_to_document >>' + toJson(add_to_document));
                         add_to_individual(ticket, add_to_document, _event_id);
                     }
                 }
@@ -221,78 +234,78 @@ function distribution(process, task)
 
 function add_value_to_document(process, task)
 {
-     try
-     {
-         var src;
+    try
+    {
+        var src;
 
-         if (task)
-         {
-             var src_uri = task.getInputVariable('src_uri');
-             var name_uri = task.getInputVariable('name_uri');
-             var value = task.getInputVariable('value');
+        if (task)
+        {
+            var src_uri = task.getInputVariable('src_uri');
+            var name_uri = task.getInputVariable('name_uri');
+            var value = task.getInputVariable('value');
 
-             var src;
+            var src;
 
-             if (name_uri && value)
-             {
-                 src = get_individual(task.ticket, getUri(src_uri));
-                 if (src)
-                 {
-                     name_uri = getUri(name_uri);
-                     var ch_value = src[name_uri];
+            if (name_uri && value)
+            {
+                src = get_individual(task.ticket, getUri(src_uri));
+                if (src)
+                {
+                    name_uri = getUri(name_uri);
+                    var ch_value = src[name_uri];
 
-                     if (!ch_value)
-                         ch_value = [];
+                    if (!ch_value)
+                        ch_value = [];
 
-                     for (var key in value)
-                         ch_value.push(value[key]);
+                    for (var key in value)
+                        ch_value.push(value[key]);
 
-                     src[name_uri] = ch_value;
-                     put_individual(ticket, src, _event_id);
-                 }
-             }
-         }
+                    src[name_uri] = ch_value;
+                    put_individual(ticket, src, _event_id);
+                }
+            }
+        }
 
-         return [get_new_variable('res', src_uri)];
-     }
-     catch (e)
-     {
-         print(e.stack);
-     }
+        return [get_new_variable('res', src_uri)];
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
 }
 
 function set_value_to_document(process, task)
 {
-     try
-     {
-         var src;
+    try
+    {
+        var src;
 
-         if (task)
-         {
-             var src_uri = task.getInputVariable('src_uri');
-             var name_uri = task.getInputVariable('name_uri');
-             var value = task.getInputVariable('value');
+        if (task)
+        {
+            var src_uri = task.getInputVariable('src_uri');
+            var name_uri = task.getInputVariable('name_uri');
+            var value = task.getInputVariable('value');
 
-             var src;
+            var src;
 
-             if (name_uri && value)
-             {
-                 src = get_individual(task.ticket, getUri(src_uri));
-                 if (src)
-                 {
-                     name_uri = getUri(name_uri);
-                     src[name_uri] = value;
-                     put_individual(ticket, src, _event_id);
-                 }
-             }
-         }
+            if (name_uri && value)
+            {
+                src = get_individual(task.ticket, getUri(src_uri));
+                if (src)
+                {
+                    name_uri = getUri(name_uri);
+                    src[name_uri] = value;
+                    put_individual(ticket, src, _event_id);
+                }
+            }
+        }
 
-         return [get_new_variable('res', src_uri)];
-     }
-     catch (e)
-     {
-         print(e.stack);
-     }
+        return [get_new_variable('res', src_uri)];
+    }
+    catch (e)
+    {
+        print(e.stack);
+    }
 }
 
 function create_use_transformation(process, task)
@@ -314,7 +327,7 @@ function create_use_transformation(process, task)
                     var document = get_individual(task.ticket, getUri(src_doc_id));
                     if (document)
                     {
-                        var new_items = transformation(task.ticket, document, transform, null, null, newUri (process.src_data['@']));
+                        var new_items = transformation(task.ticket, document, transform, null, null, newUri(process.src_data['@']));
                         for (var i = 0; i < new_items.length; i++)
                         {
                             put_individual(ticket, new_items[i], _event_id);
@@ -339,28 +352,62 @@ function create_use_transformation(process, task)
 
 }
 
-// скрипт поиска идентификаторов > 64
-function find_long_terms (ticket, uri, execute_script)
+// скрипт поиска в документе uri > 64
+function find_long_terms(ticket, uri, execute_script)
 {
-    var gg = get_from_ght ('ready');
-print ("&1 gg=" + gg);
-    if (!gg)
+    var cid = get_from_ght('cid');
+    //print ("exist cid=" + cid);
+    if (!cid)
     {
-print ("&2");
-	put_to_ght ('ready', '+');
-	var cid = new_uris_consumer ();
-print ("&2.1 cid="+cid);
-	
+        var cid = new_uris_consumer();
+        put_to_ght('cid', cid);
+        print("new cid=" + cid);
+
+        var i_uri = "?";
+        while (i_uri)
+        {
+            i_uri = uris_pop(cid);
+
+            if (i_uri)
+            {
+                uris_commit_and_next(cid, true);
+                if (i_uri.length > 64)
+                    put_to_ght(i_uri, '+');
+            }
+        }
     }
     else
     {
-print ("&3");
+        var document = get_individual(ticket, uri);
 
+        if (document)
+        {
+            for (var key in document)
+            {
+                var values = document[key];
+                if (key != '@')
+                {
+                    for (var idx in values)
+                    {
+                        var value = values[idx];
+                        if (get_from_ght(value))
+                        {
+                            print("found long value>64, value=" + value);
+                        }
+                    }
+                }
+                else
+                {
+                        if (get_from_ght(values))
+                        {
+                            print("found long @>64, @=" + values);
+                        }
+					
+				}
+            }
+
+        }
     }
-print ("&4");
-
-    if (uri.length > 64 )
-	print ('$$$$$$$$$$$$$$ find_long_terms:doc= ' + uri);
 }
 
 
@@ -472,15 +519,15 @@ function onto_rename(ticket, document, execute_script)
             if (is_update)
             {
                 put_individual(ticket, document, "");
-              //print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
-            //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+                //print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+                //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
             }
         }
 
         if (is_replace || is_update)
         {
-//            print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
-//                        print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+            //            print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
+            //                        print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
         }
 
 

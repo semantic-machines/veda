@@ -428,6 +428,7 @@ _Buff* get_from_ght(const char *name, int name_length);
 void put_to_ght(const char *name, int name_length, const char *value, int value_length);
 _Buff* uris_pop(const char *consumer_id, int consumer_id_length);
 _Buff* new_uris_consumer();
+bool uris_commit_and_next(const char *_consumer_id, int _consumer_id_length, bool is_sync_data);
 
 _Buff *
 get_env_str_var(const char *_var_name, int _var_name_length);
@@ -654,7 +655,7 @@ UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     if (args.Length() != 1)
     {
-        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "uris_pop: bad parameters"));
         return;
     }
 
@@ -671,6 +672,27 @@ UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 		args.GetReturnValue().Set(oo);
     }
+}
+
+void
+UrisCommitAndNext(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 2)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "commit_and_next: bad parameters"));
+        return;
+    }
+
+	v8::String::Utf8Value _id(args[ 0 ]);    
+    const char* cid = ToCString(_id);
+    
+    bool is_sync_data = args[1]->BooleanValue();
+
+    bool res = uris_commit_and_next (cid, _id.length(), is_sync_data);
+
+	args.GetReturnValue().Set(res);
 }
 
 /////////////////////
@@ -1003,6 +1025,8 @@ WrappedContext::WrappedContext ()
                 v8::FunctionTemplate::New(isolate_, PutToGHT));
     global->Set(v8::String::NewFromUtf8(isolate_, "get_from_ght"),
                 v8::FunctionTemplate::New(isolate_, GetFromGHT));
+    global->Set(v8::String::NewFromUtf8(isolate_, "uris_commit_and_next"),
+                v8::FunctionTemplate::New(isolate_, UrisCommitAndNext));
 
     v8::Handle<v8::Context> context = v8::Context::New(isolate_, NULL, global);
     context_.Reset(isolate_, context);
