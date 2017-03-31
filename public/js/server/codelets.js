@@ -349,6 +349,7 @@ print ("&1 gg=" + gg);
 print ("&2");
 	put_to_ght ('ready', '+');
 	var cid = new_uris_consumer ();
+print ("&2.1 cid="+cid);
 	
     }
     else

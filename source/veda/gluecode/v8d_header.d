@@ -266,7 +266,7 @@ extern (C++) void put_to_ght(const char *name, int name_length, const char *valu
 ///////////////////
 Consumer[ string ] id2consumer;
 
-extern (C++) _Buff new_uris_consumer()
+extern (C++) _Buff* new_uris_consumer()
 {
     uint  id    = -1;
     Queue queue = new Queue(uris_db_path, "uris-db", Mode.R, log);
@@ -292,8 +292,10 @@ extern (C++) _Buff new_uris_consumer()
     return &tmp;
 }
 
-extern (C++)_Buff * uris_pop(uint consumer_id)
+extern (C++)_Buff * uris_pop(const char *_consumer_id, int _consumer_id_length)
 {
+    string consumer_id = cast(string)_consumer_id[ 0.._consumer_id_length ].dup;
+	
     Consumer cs = id2consumer.get(consumer_id, null);
 
     if (cs !is null)
