@@ -799,6 +799,62 @@ v-s:copyTo
 #  rdfs:range v-s:OrganizationUnit ;
   rdfs:domain v-s:Deliverable2 ;
 .
+v-s:senderOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender organization"@en ;
+  rdfs:label "Организация отправитель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient organization"@en ;
+  rdfs:label "Организация получатель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderOrganizationDescription
+  rdf:type owl:DataypeProperty ;
+  rdfs:label "Sender organization (text)"@en ;
+  rdfs:label "Организация отправитель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientOrganizationDescription
+  rdf:type owl:DataypeProperty ;
+  rdfs:label "Recipient organization (text)"@en ;
+  rdfs:label "Организация получатель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender department"@en ;
+  rdfs:label "Подразделение отправитель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient department"@en ;
+  rdfs:label "Подразделение получатель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderDepartmentDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender department (text)"@en ;
+  rdfs:label "Подразделение отправитель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientDepartmentDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient department (text)"@en ;
+  rdfs:label "Подразделение получатель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
 v-s:sender
   rdf:type owl:ObjectProperty ;
   rdfs:label "Sender"@en ;
@@ -813,6 +869,22 @@ v-s:recipient
   rdfs:label "Получатель"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender (text)"@en ;
+  rdfs:label "Отправитель (текст)"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient (text)"@en ;
+  rdfs:label "Получатель (текст)"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:mailbox
