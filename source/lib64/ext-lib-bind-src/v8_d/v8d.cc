@@ -424,8 +424,10 @@ struct _Buff
     int  allocated_size;
 };
 
-_Buff *get_from_ght(const char *name, int name_length);
+_Buff* get_from_ght(const char *name, int name_length);
 void put_to_ght(const char *name, int name_length, const char *value, int value_length);
+_Buff* uris_pop(const char *consumer_id, int consumer_id_length);
+_Buff* new_uris_consumer();
 
 _Buff *
 get_env_str_var(const char *_var_name, int _var_name_length);
@@ -453,9 +455,6 @@ remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbo
                        const char *_event_id, int _event_id_length);
 
 void log_trace(const char *_str, int _str_length);
-
-_Buff * uris_pop(uint32_t consumer_id);
-uint32_t new_uris_consumer();
 
 //char *get_resource (int individual_idx, const char* _uri, int _uri_length, int* count_resources, int resource_idx);
 
@@ -626,12 +625,26 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
     args.GetReturnValue().Set(arr_1);
 }
 
+////////////////
+
 void
 NewUrisConsumer(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     Isolate *isolate = args.GetIsolate();
-    uint32_t res = new_uris_consumer ();
-    args.GetReturnValue().Set(res);
+ 
+     if (args.Length() != 0)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+    _Buff *res = new_uris_consumer ();
+    if (res != NULL)
+    {
+        std::string data(res->data, res->length);
+		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+		args.GetReturnValue().Set(oo);
+    }
 }
 
 void
@@ -645,8 +658,10 @@ UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
     }
 
-    uint32_t id = args[0]->Uint32Value();
-    _Buff *res = uris_pop (id);
+	v8::String::Utf8Value _id(args[ 0 ]);    
+    const char* cid = ToCString(_id);
+
+    _Buff *res = uris_pop (cid, _id.length());
 
     if (res != NULL)
     {
@@ -673,7 +688,6 @@ void GetFromGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
     const char* cname = ToCString(_name);
     	
     _Buff *res = get_from_ght (cname, _name.length());
-
     if (res != NULL)
     {
         std::string data(res->data, res->length);
