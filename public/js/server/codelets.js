@@ -355,6 +355,7 @@ function create_use_transformation(process, task)
 // скрипт поиска в документе uri > 64
 function find_long_terms(ticket, uri, execute_script)
 {
+	var event_id = '';
     var cid = get_from_ght('cid');
     //print ("exist cid=" + cid);
     if (!cid)
@@ -371,8 +372,21 @@ function find_long_terms(ticket, uri, execute_script)
             if (i_uri)
             {
                 uris_commit_and_next(cid, true);
-                if (i_uri.length > 64)
-                    put_to_ght(i_uri, '+');
+                if (i_uri.length > 4)
+                {
+                    var document = get_individual(ticket, i_uri);
+
+                    if (document)
+                    {
+                        if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
+                        {
+							var hash = Sha256.hash(i_uri);
+							
+							hash = "d:appt_" + hash.substr (0, 50);
+                            put_to_ght(i_uri, hash);
+                        }    
+                    }
+                }
             }
         }
     }
@@ -384,28 +398,50 @@ function find_long_terms(ticket, uri, execute_script)
         {
             if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
             {
+				var is_changed = false;
                 for (var key in document)
                 {
                     var values = document[key];
                     if (key != '@')
                     {
+						var new_values = [];
                         for (var idx in values)
                         {
                             var value = values[idx];
-                            if (get_from_ght(value.data))
+                            var new_uri = get_from_ght(value.data);
+                            if (new_uri)
                             {
-                                print("found long value>64," + uri + " " + key + "=" + value.data);
+								value.data = new_uri;
+                                print("found long value>64," + uri + " " + key + "=" + value.data + " -> " + new_uri);
+                                is_changed = true;
                             }
+                            
+                            new_values.push (value);
                         }
+                        
+						if (is_changed == true)
+							document[key] = new_values;
                     }
                     else
                     {
                         if (get_from_ght(values))
                         {
-                            print("found long @>64, @=" + values);
+                            var new_uri = get_from_ght(values);
+                            if (new_uri)
+                            {
+                                print("found long @>64," + values + "(remove) -> " + new_uri);
+                                document['@'] = new_uri;
+                                remove_individual (ticket, uri, event_id);
+                                is_changed = true;
+							}
                         }
                     }
                 }
+                
+                if (is_changed == true)
+                {
+					put_individual (ticket, document, event_id);
+				}	
             }
         }
     }

@@ -193,7 +193,11 @@ public ResultCode commit()
         //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
         ResultCode rc;
-        rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+
+        if (item.cmd == INDV_OP.REMOVE)
+	        rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, ignore_freeze).result;
+		else
+	        rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
 
         if (rc == ResultCode.No_Content)
         {
