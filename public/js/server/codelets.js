@@ -372,7 +372,7 @@ function find_long_terms(ticket, uri, execute_script)
             if (i_uri)
             {
                 uris_commit_and_next(cid, true);
-                if (i_uri.length > 4)
+                if (i_uri.length > 63)
                 {
                     var document = get_individual(ticket, i_uri);
 
@@ -411,8 +411,8 @@ function find_long_terms(ticket, uri, execute_script)
                             var new_uri = get_from_ght(value.data);
                             if (new_uri)
                             {
-								value.data = new_uri;
                                 print("found long value>64," + uri + " " + key + "=" + value.data + " -> " + new_uri);
+								value.data = new_uri;
                                 is_changed = true;
                             }
                             
