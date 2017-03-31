@@ -424,8 +424,8 @@ struct _Buff
     int  allocated_size;
 };
 
-char *
-get_global_prop(const char *prop_name, int prop_name_length);
+_Buff *get_from_ght(const char *name, int name_length);
+void put_to_ght(const char *name, int name_length, const char *value, int value_length);
 
 _Buff *
 get_env_str_var(const char *_var_name, int _var_name_length);
@@ -652,12 +652,56 @@ UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
     {
         std::string data(res->data, res->length);
 
-	Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
 
-	args.GetReturnValue().Set(oo);
+		args.GetReturnValue().Set(oo);
     }
 }
 
+/////////////////////
+void GetFromGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 1)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+    
+	v8::String::Utf8Value _name(args[ 0 ]);    
+    const char* cname = ToCString(_name);
+    	
+    _Buff *res = get_from_ght (cname, _name.length());
+
+    if (res != NULL)
+    {
+        std::string data(res->data, res->length);
+		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+		args.GetReturnValue().Set(oo);
+    }
+}
+
+void PutToGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 2)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+	v8::String::Utf8Value _name(args[ 0 ]);
+    const char* cname = ToCString(_name);
+
+	v8::String::Utf8Value _value(args[ 1 ]);
+    const char* cvalue = ToCString(_value);
+
+	put_to_ght(cname, _name.length(), cvalue, _value.length());
+}
+
+////////////////////
 
 void
 GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -941,6 +985,10 @@ WrappedContext::WrappedContext ()
                 v8::FunctionTemplate::New(isolate_, UrisPop));
     global->Set(v8::String::NewFromUtf8(isolate_, "new_uris_consumer"),
                 v8::FunctionTemplate::New(isolate_, NewUrisConsumer));
+    global->Set(v8::String::NewFromUtf8(isolate_, "put_to_ght"),
+                v8::FunctionTemplate::New(isolate_, PutToGHT));
+    global->Set(v8::String::NewFromUtf8(isolate_, "get_from_ght"),
+                v8::FunctionTemplate::New(isolate_, GetFromGHT));
 
     v8::Handle<v8::Context> context = v8::Context::New(isolate_, NULL, global);
     context_.Reset(isolate_, context);

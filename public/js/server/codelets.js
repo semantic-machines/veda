@@ -342,18 +342,17 @@ function create_use_transformation(process, task)
 // скрипт поиска идентификаторов > 64
 function find_long_terms (ticket, uri, execute_script)
 {
-print ("&1 long_ids=" + toJson (long_ids));
-    if (!long_ids || !long_ids['ready'])
+    var gg = get_from_ght ('ready');
+print ("&1 gg=" + gg);
+    if (!gg)
     {
 print ("&2");
-	long_ids['ready'] = true;
-print ("&2 long_ids=" + toJson (long_ids));
+	put_to_ght ('ready', '+');
     }
     else
     {
 print ("&3");
 
-	print ('long_ids=', toJson (long_ids));
     }
 print ("&4");
 

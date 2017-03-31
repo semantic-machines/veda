@@ -235,20 +235,28 @@ extern (C++) void log_trace(const char *str, int str_length)
 }
 
 extern (C++) _Buff *get_from_ght(const char *name, int name_length)
-{
+{	
     string pn  = cast(string)name[ 0..name_length ];
-    string res = g_ht[ pn ];
+    string res = g_ht.get (pn, null);
 
-	tmp.data = cast(char*)res;
-	tmp.length = cast(int)res.length;
+	if (res !is null)
+	{
+		tmp.data = cast(char*)res;
+		tmp.length = cast(int)res.length;
+	}
+	else
+	{
+        tmp.data   = cast(char *)empty_uid;
+        tmp.length = cast(int)empty_uid.length;		
+	}
 
     return &tmp;
 }
 
 extern (C++) void put_to_ght(const char *name, int name_length, const char *value, int value_length)
 {
-    string pn  = cast(string)name[ 0..name_length ];
-    string vn  = cast(string)value[ 0..value_length ];
+    string pn  = cast(string)name[ 0..name_length ].dup;
+    string vn  = cast(string)value[ 0..value_length ].dup;
     g_ht[ pn ] = vn;
 }
 
