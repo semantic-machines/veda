@@ -1215,8 +1215,8 @@ v-fs:AttributiveSearchTemplate
       <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
     </div>
     <div class="text-center">
-      <button id="more-results" style="margin-bottom:15%" class="btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
-      <button id="all-results" style="margin-bottom:15%" class="btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      <button id="more-results" class="btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
+      <button id="all-results" class="btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
     </div>
   </div>
 </div>
@@ -1299,31 +1299,25 @@ v-fs:AttributiveSearchTemplate
   moreResults.click(function () {
     var $this = $(this);
     toggleSpin($this);
-    setTimeout(function () {
-      search(self.cursor).then(function () {
-        toggleSpin($this);
-      });
-    }, 500);
+    search(self.cursor).then(function () {
+      toggleSpin($this);
+    });
   });
 
   // All results button handler
   allResults.click(function () {
     if ( confirm("Вы уверены? / Are you sure?") ) {
-      var $this = $(this);
-      moreResults.addClass("hidden");
-      toggleSpin($this);
-      self.limit = self.top = self.estimated;
-      setTimeout(function () {
-        search(self.cursor).then(function () {
-          toggleSpin($this);
-          $this.addClass("hidden");
-        });
-      }, 500);
+      getAll();
     }
   });
+  function getAll() {
+    if (self.cursor < self.estimated) {
+      return search(self.cursor).then(getAll);
+    }
+  }
 
   // Auto load more results when page bottom reached
-  $(window).on("scroll", reachedBottom);
+/*  $(window).on("scroll", reachedBottom);
   template.one("remove", function () {
     $(window).off("scroll", reachedBottom);
   });
@@ -1331,7 +1325,7 @@ v-fs:AttributiveSearchTemplate
     if( $(window).scrollTop() + $(window).height() === $(document).height() && moreResults.is(":visible") ) {
       moreResults.click();
     }
-  }
+  }*/
 
   // Manage sort
   var sortBy = "", dir = "";
@@ -1368,7 +1362,7 @@ v-fs:AttributiveSearchTemplate
   function renderResult(resultDelta) {
 
     // Stats
-    if (self.result.length < 20) {
+    if (self.result.length < 5) {
       statsBottom.hide();
     } else {
       statsBottom.show();

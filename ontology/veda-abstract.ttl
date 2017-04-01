@@ -311,6 +311,13 @@ v-s:UserThing
   rdfs:label "User thing"@en ;
   rdfs:label "Любая пльзовательская сущность"@ru ;
 .
+v-s:hasStatusManual
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Status manual"@en ;
+  rdfs:label "Статус ручной"@ru ;
+  rdfs:range v-s:StatusManual ;
+  rdfs:domain v-s:UserThing ;
+.
 ### -------------------------------------------------------
 v-s:SystemThing
   rdf:type owl:Class ;
@@ -757,12 +764,95 @@ v-s:Deliverable2
   rdfs:label "Deliverable thing"@en ;
   rdfs:label "Доставляемая сущность"@ru ;
 .
+v-s:hasDelivery
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Deliverable2 ;
+  rdfs:range v-s:Delivery ;
+  rdfs:label "Доставка"@ru ;
+  rdfs:label "Delivery"@en ;
+.
+v-s:Delivery
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Доставка"@ru ;
+  rdfs:label "Delivery"@en ;
+.
+v-s:DeliveryMethod
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Метод доставки"@ru ;
+  rdfs:label "Delivery method"@en ;
+.
+v-s:deliverBy
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Delivery ;
+  rdfs:range v-s:DeliveryMethod ;
+  rdfs:label "Метод доставки"@ru ;
+  rdfs:label "Delivery method"@en ;
+.
 v-s:copyTo
   rdf:type owl:ObjectProperty ;
   rdfs:label "Copy to"@en ;
   rdfs:label "В копию"@ru ;
   rdfs:range v-s:Appointment ;
 #  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender organization"@en ;
+  rdfs:label "Организация отправитель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient organization"@en ;
+  rdfs:label "Организация получатель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderOrganizationDescription
+  rdf:type owl:DataypeProperty ;
+  rdfs:label "Sender organization (text)"@en ;
+  rdfs:label "Организация отправитель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientOrganizationDescription
+  rdf:type owl:DataypeProperty ;
+  rdfs:label "Recipient organization (text)"@en ;
+  rdfs:label "Организация получатель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender department"@en ;
+  rdfs:label "Подразделение отправитель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient department"@en ;
+  rdfs:label "Подразделение получатель"@ru ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderDepartmentDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender department (text)"@en ;
+  rdfs:label "Подразделение отправитель (текст)"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientDepartmentDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient department (text)"@en ;
+  rdfs:label "Подразделение получатель (текст)"@ru ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:sender
@@ -779,6 +869,22 @@ v-s:recipient
   rdfs:label "Получатель"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:range v-s:OrganizationUnit ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:senderDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Sender (text)"@en ;
+  rdfs:label "Отправитель (текст)"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:recipientDescription
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Recipient (text)"@en ;
+  rdfs:label "Получатель (текст)"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:mailbox
@@ -813,6 +919,27 @@ v-s:contactInfo
   rdfs:label "Contact Info"@en ;
   rdfs:label "Контактная информация"@ru ;
   rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:signedBy
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Подписавший"@ru ;
+  rdfs:label "Signed by"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:sheetsCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Количество листов"@ru ;
+  rdfs:label "Sheets count"@en ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:dueDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Срок исполнения"@ru ;
+  rdfs:label "Due date"@en ;
+  rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Deliverable2 ;
 .
 ### ------------------------------------------------------
@@ -1029,4 +1156,35 @@ v-s:hasProject
   rdfs:label "Project"@en ;
   rdfs:domain v-s:Projectable ;
   rdfs:range v-s:Initiative ;
+.
+
+### ------------------------------------------------------------
+v-s:Vehicle
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Vehicle"@en ;
+  rdfs:label "Транспортное средство"@ru ;
+.
+v-s:vinNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Fixed asset VIN"@en ;
+  rdfs:label "Идентификатор VIN"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Vehicle ;
+.
+# v-s:year
+v-s:engineModel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Engine model"@en ;
+  rdfs:label "модель, № двигателя"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Vehicle ;
+.
+v-s:movablesColor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Movables color"@en ;
+  rdfs:label "цвет"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Pts ;
 .

@@ -231,11 +231,11 @@ v-s:Contract
   rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
 .
-v-s:hasContractSpecification
+v-s:hasRequestContractDetail
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Contract specification"@en ;
-  rdfs:label "Детализация контракта"@ru ;
-  rdfs:range v-s:ContractSpecification ;
+  rdfs:label "Request contract detail"@en ;
+  rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:range v-s:RequestContractDetail ;
   rdfs:domain v-s:Contractual ;
 .
 # ------------------------------------------------------------
@@ -334,15 +334,38 @@ v-s:ContractPassport
 # v-s:hasContract
 
 # ------------------------------------------------------------
-v-s:ContractSpecification
+v-s:RequestContractDetail
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
-  rdfs:label "Contract specification"@en ;
-  rdfs:label "Детализация контракта"@ru ;
+  rdfs:label "Request contract detail"@en ;
+  rdfs:label "Детализация заявки на контракт"@ru ;
 .
 # v-s:hasSector
 # v-s:hasAsset
+
+v-s:hasPts
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Pts"@en ;
+  rdfs:label "Паспорт транспортного средства"@ru ;
+  rdfs:range v-s:Pts ;
+  rdfs:domain  v-s:RequestContractDetail;
+.
+v-s:hasPsm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Psm"@en ;
+  rdfs:label "Паспорт самоходной машины"@ru ;
+  rdfs:range v-s:Psm ;
+  rdfs:domain  v-s:RequestContractDetail;
+.
+v-s:hasRegistrationCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Registration сertificate"@en ;
+  rdfs:label "Свидетельство о регистрации"@ru ;
+  rdfs:range v-s:RegistrationCertificate ;
+  rdfs:domain  v-s:RequestContractDetail;
+.
+# v-s:hasContract
 
 # ------------------------------------------------------------
 v-s:MaterialGroup

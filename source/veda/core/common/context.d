@@ -162,9 +162,11 @@ public struct Ticket
 
     /// Код результата, если тикет не валидный != ResultCode.Ok
     ResultCode result;
-//    string[] parentUnitIds = new string[ 0 ];
 
-    /// Время жизни тикета в миллисекундах
+    /// Дата начала действия тикета 
+    long start_time;
+
+    /// Дата окончания действия тикета 
     long end_time;
 
     /// Конструктор

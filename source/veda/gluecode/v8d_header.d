@@ -5,7 +5,7 @@ module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.core.util.utils;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, std.uuid;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -14,7 +14,7 @@ Logger log;
 
 // //////////////////////////  call D from C //////////////////////////////////////////
 
-string[ string ] g_prop;
+string[ string ] g_ht;
 Context g_context;
 
 string  g_vm_id;
@@ -25,10 +25,12 @@ _Buff   g_parent_document_id;
 _Buff   g_prev_state;
 _Buff   g_execute_script;
 _Buff   g_document;
+_Buff   g_uri;
 _Buff   g_user;
 _Buff   g_ticket;
 
 _Buff   tmp_individual;
+_Buff   tmp;
 
 //_Buff      g_script_result;
 //_Buff      g_script_out;
@@ -191,7 +193,11 @@ public ResultCode commit()
         //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
         ResultCode rc;
-        rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+
+        if (item.cmd == INDV_OP.REMOVE)
+	        rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, ignore_freeze).result;
+		else
+	        rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
 
         if (rc == ResultCode.No_Content)
         {
@@ -232,13 +238,94 @@ extern (C++) void log_trace(const char *str, int str_length)
     log.trace("[%s] %s", script_id, sstr);
 }
 
-extern (C++) char *get_global_prop(const char *prop_name, int prop_name_length)
-{
-    string pn  = cast(string)prop_name[ 0..prop_name_length ];
-    string res = g_prop[ pn ];
+//////////////////
 
-    return cast(char *)res;
+extern (C++)_Buff * get_from_ght(const char *name, int name_length)
+{
+    string pn  = cast(string)name[ 0..name_length ];
+    string res = g_ht.get(pn, null);
+
+    if (res !is null)
+    {
+        tmp.data   = cast(char *)res;
+        tmp.length = cast(int)res.length;
+    }
+    else
+    {
+        tmp.data   = cast(char *)empty_uid;
+        tmp.length = cast(int)empty_uid.length;
+    }
+
+    return &tmp;
 }
+
+extern (C++) void put_to_ght(const char *name, int name_length, const char *value, int value_length)
+{
+    string pn = cast(string)name[ 0..name_length ].dup;
+    string vn = cast(string)value[ 0..value_length ].dup;
+
+    g_ht[ pn ] = vn;
+}
+
+///////////////////
+Consumer[ string ] id2consumer;
+
+extern (C++)_Buff * new_uris_consumer()
+{
+    uint  id    = -1;
+    Queue queue = new Queue(uris_db_path, "uris-db", Mode.R, log);
+
+    tmp.data   = cast(char *)empty_uid;
+    tmp.length = cast(int)empty_uid.length;
+
+    if (queue.open())
+    {
+        UUID     new_id      = randomUUID();
+        string   consumer_id = "consumer-uris-" ~ new_id.toString();
+
+        Consumer cs = new Consumer(queue, tmp_path, consumer_id, log);
+
+        if (cs.open())
+        {
+            id2consumer[ consumer_id ] = cs;
+            tmp.data                   = cast(char *)consumer_id;
+            tmp.length                 = cast(int)consumer_id.length;
+        }
+    }
+
+    return &tmp;
+}
+
+extern (C++)_Buff * uris_pop(const char *_consumer_id, int _consumer_id_length)
+{
+    string   consumer_id = cast(string)_consumer_id[ 0.._consumer_id_length ].dup;
+    Consumer cs          = id2consumer.get(consumer_id, null);
+
+    if (cs !is null)
+    {
+        string data = cs.pop();
+        tmp.data   = cast(char *)data;
+        tmp.length = cast(int)data.length;
+    }
+    else
+    {
+        tmp.data   = cast(char *)empty_uid;
+        tmp.length = cast(int)empty_uid.length;
+    }
+    return &tmp;
+}
+
+extern (C++) bool uris_commit_and_next(const char *_consumer_id, int _consumer_id_length, bool is_sync_data)
+{
+    string   consumer_id = cast(string)_consumer_id[ 0.._consumer_id_length ].dup;
+    Consumer cs          = id2consumer.get(consumer_id, null);
+
+    if (cs !is null)
+        return cs.commit_and_next(is_sync_data);
+
+    return false;
+}
+//////////////////////
 
 //чтение неправильное после операции add set
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
@@ -350,6 +437,10 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
         else if (var_name == "$user")
         {
             return &g_user;
+        }
+        else if (var_name == "$uri")
+        {
+            return &g_uri;
         }
         else if (var_name == "$ticket")
         {
@@ -492,6 +583,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         //writeln ("@p:v8d end read_individual");
     }
 }
+
 
 void dump(char *data, int count)
 {

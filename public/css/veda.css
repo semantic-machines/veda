@@ -123,6 +123,25 @@ em {
 hr.black {
   border-top: 1px solid #233333;
 }
+.well hr  {
+  border-top: 1px solid #ccc;
+}
+
+.bg-info hr  {
+  border-top: 1px solid #bce8f1;
+}
+
+.bg-success hr  {
+  border-top: 1px solid #d6e9c6;
+}
+
+.bg-warning hr  {
+  border-top: 1px solid #faebcc;
+}
+
+.bg-danger hr  {
+  border-top: 1px solid #ebccd1;
+}
 
 .checkbox > label > em {
   margin: 0px;
