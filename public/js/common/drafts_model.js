@@ -13,6 +13,11 @@ veda.Module(function (veda) { "use strict";
 
   veda.DraftsModel = function () {
 
+    // Singleton pattern
+    if (veda.DraftsModel.prototype._singletonInstance) {
+      return veda.DraftsModel.prototype._singletonInstance;
+    }
+
     var self = this;
 
     var data = {};
@@ -47,9 +52,16 @@ veda.Module(function (veda) { "use strict";
         self.set(individual.id, individual);
       }
     });
+
+    return veda.DraftsModel.prototype._singletonInstance = self;
   };
 
   var proto = veda.DraftsModel.prototype;
+
+  proto.has = function (uri) {
+    var keys = Object.keys(this._);
+    return typeof uri !== "undefined" ? !!this._[uri] : keys;
+  };
 
   proto.get = function (uri) {
     var self = this;
@@ -102,7 +114,7 @@ veda.Module(function (veda) { "use strict";
 
   Object.defineProperty(proto, "length", {
     get: function () {
-      return Object.keys(this).length;
+      return Object.keys(this._).length;
     },
     configurable: false,
     enumerable: false

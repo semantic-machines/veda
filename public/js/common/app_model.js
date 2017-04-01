@@ -28,8 +28,6 @@
     self.logout = function() {
       self.user_uri = self.ticket = self.end_time = "";
       self.cache = {};
-      self.ontology = {};
-      self.drafts = {};
       self.status = "logout";
       self.trigger("logout");
     };

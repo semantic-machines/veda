@@ -84,7 +84,7 @@ v-s:CommentsTemplate
     var _class = new veda.IndividualModel("v-s:Comment"),
         comment = new veda.IndividualModel(),
         cntr = $("<div>").appendTo( $("#new-comment", template) ),
-        tmpl = new veda.IndividualModel("v-s:SingleCommentTemplate");
+        tmpl = "v-s:SingleCommentTemplate";
     comment["rdf:type"] = [_class];
     comment["v-s:backwardTarget"] = [individual];
     comment["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
@@ -174,11 +174,9 @@ v-s:RecursiveCommentTemplate
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
 <script>
-  function commentHandler (values) {
-    values.length ? $("#edit-comment, #delete", template).hide() : $("#edit-comment, #delete", template).show();
-  }
-  function linkedHandler (values) {
-    values.length ? $(".linked-object", template).show() : $(".linked-object", template).hide();
+  var actions = $("#edit-comment, #delete", template);
+  if (!individual.rights.hasValue("v-s:canUpdate", true)) {
+    actions.remove();
   }
   individual.on("v-s:hasComment", commentHandler);
   individual.on("v-s:linkedObject", linkedHandler);
@@ -188,8 +186,12 @@ v-s:RecursiveCommentTemplate
   });
   commentHandler(individual["v-s:hasComment"]);
   linkedHandler(individual["v-s:linkedObject"]);
-  if (!individual.rights.hasValue("v-s:canUpdate", true)) {
-    $("#edit-comment", template).remove();
+
+  function commentHandler (values) {
+    values.length ? actions.hide() : actions.show();
+  }
+  function linkedHandler (values) {
+    values.length ? $(".linked-object", template).show() : $(".linked-object", template).hide();
   }
   //# sourceURL=v-s:RecursiveCommentTemplate
 </script>

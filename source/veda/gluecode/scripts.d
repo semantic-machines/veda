@@ -18,6 +18,8 @@ class ScriptProcess : VedaModule
     private string   empty_uid;
     private string   vars_for_event_script;
     private string   vars_for_codelet_script;
+    private string   before_vars;
+    private string   after_vars;
 
     private ScriptVM script_vm;
     private string   vm_id;
@@ -84,7 +86,7 @@ class ScriptProcess : VedaModule
 
         if (prepare_if_is_script)
         {
-            prepare_script(event_scripts, event_scripts_order, new_indv, script_vm, vars_for_event_script, false);
+            prepare_script(event_scripts, event_scripts_order, new_indv, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
         }
 
         set_g_parent_script_id_etc(event_id);
@@ -218,6 +220,12 @@ class ScriptProcess : VedaModule
             ~ "var super_classes = get_env_str_var ('$super_classes');"
             ~ "var _event_id = document['@'] + '+' + _script_id;";
 
+        before_vars =
+            "var document = get_individual (ticket, '$document');"
+            ~ "if (document) {";
+
+        after_vars = "};";
+
         load_event_scripts();
 
         return true;
@@ -248,7 +256,7 @@ class ScriptProcess : VedaModule
                 res, false, false);
 
         foreach (ss; res)
-            prepare_script(event_scripts, event_scripts_order, ss, script_vm, vars_for_event_script, false);
+            prepare_script(event_scripts, event_scripts_order, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
 
         string scripts_ordered_list;
         foreach (_script_id; event_scripts_order)

@@ -1434,20 +1434,20 @@ if (doc) {
           routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(cr["v-s:author"]); // Автор заявки на контракт
         }
       }
-      if (doc.hasValue('mnd-s:hasContractSpecification') && doc['mnd-s:hasContractSpecification'][0].hasValue('v-s:hasSector')) {
+      if (doc.hasValue('mnd-s:hasRequestContractDetail') && doc['mnd-s:hasRequestContractDetail'][0].hasValue('v-s:hasSector')) {
         var i = 0;
         do {
-          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+          if (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
             routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
           }
-          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+          if (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
             routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
           }
-          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+          if (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
             routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
           }
           i++;
-        } while (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i])
+        } while (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i])
       }
     }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
@@ -3316,7 +3316,8 @@ s-wf:map_jrn_decision_b
 
 s-wf:net_coordination
   a v-wf:Net;
-  rdfs:label "Универсальный маршрут 1"@ru;
+  rdfs:label "Универсальный маршрут"@ru;
+  rdfs:label "Universal route"@en;
   v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t1_oc, s-wf:nc_f_t1_rti, s-wf:nc_f_t3_t1;
   v-wf:consistsOf s-wf:nc_return_to_initiator, s-wf:nc_r_to_aur, s-wf:nc_to_aur, s-wf:nc_finish, s-wf:nc_to_finish, s-wf:nc_f_t1_oc, s-wf:nc_f_t1_rti;
   v-wf:consistsOf s-wf:nc_f_t2_oc, s-wf:nc_f_t2_t1, s-wf:c1, d:abaa42215-965f-a032-aada-31be82a54e95, d:ac2ce1732-d914-c4f9-f4b6-2064864b3f23;

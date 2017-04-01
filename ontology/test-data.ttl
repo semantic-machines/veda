@@ -44,7 +44,7 @@ td:script_find_long_terms
   rdf:type v-s:Codelet ;
   v-s:script
   """
-    find_long_terms (ticket, document, execute_script);
+    find_long_terms (ticket, uri, execute_script);
   """;
 .
 

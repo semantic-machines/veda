@@ -4,7 +4,7 @@ veda.Module(function Backend(veda) { "use strict";
   $.ajaxSetup ({
     dataType: "json",
     cache: false,
-    timeout: 3000,
+    timeout: 30000,
     async: false
   });
 
@@ -64,6 +64,12 @@ veda.Module(function Backend(veda) { "use strict";
     this.name = errorCodes[this.code];
     //this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
+    if (result.status === 0) {
+      serverWatch();
+    }
+    if (result.status === 470 || result.status === 471) {
+      veda.logout();
+    }
   }
   BackendError.prototype = Object.create(Error.prototype);
   BackendError.prototype.constructor = BackendError;
@@ -72,9 +78,6 @@ veda.Module(function Backend(veda) { "use strict";
   function call_server(params) {
     if( !params.async ) {
       var res = $.ajax(params);
-      if (res.status === 0) {
-        serverWatch();
-      }
       if (res.status >= 400) {
         throw new BackendError(res);
       }
@@ -88,13 +91,15 @@ veda.Module(function Backend(veda) { "use strict";
                    key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? parseFloat(value) : value;
           }
         );
-      } catch (e) {
+      } catch (err) {
         result = res.responseText;
       } finally {
         return result;
       }
     } else {
-      return $.ajax(params);
+      return $.ajax(params).catch(function (err) {
+        throw new BackendError(err);
+      });
     }
   }
 
