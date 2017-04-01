@@ -1434,20 +1434,20 @@ if (doc) {
           routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(cr["v-s:author"]); // Автор заявки на контракт
         }
       }
-      if (doc.hasValue('mnd-s:hasContractSpecification') && doc['mnd-s:hasContractSpecification'][0].hasValue('v-s:hasSector')) {
+      if (doc.hasValue('mnd-s:hasRequestContractDetail') && doc['mnd-s:hasRequestContractDetail'][0].hasValue('v-s:hasSector')) {
         var i = 0;
         do {
-          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
+          if (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i].id == 'd:45bb1de686d547098a58ca8b58a8dc5d') { // Механика
             routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71013780")); // Андрей Скрябин - Главный механик
           }
-          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
+          if (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i].id == 'd:66f31c625dbd4b49afec313119d731f4') { // электрика
             routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71012089")); // Андрей Шульгин - Главный электрик
           }
-          if (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
+          if (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i].id == 'd:ba1a7913d52e4a47967645767b6f2604') { // КИПиА
             routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71000234")); // Юрий Исаев:гл. метролог
           }
           i++;
-        } while (doc['mnd-s:hasContractSpecification'][0]['v-s:hasSector'][i])
+        } while (doc['mnd-s:hasRequestContractDetail'][0]['v-s:hasSector'][i])
       }
     }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {

@@ -1081,8 +1081,8 @@ d:Country_ESP
   a v-s:ClassifierCountry;
   v-s:title "ESP" ;
   v-s:shortLabel "ES" ;
-  rdfs:label "Senegal"@en ;
-  rdfs:label "Сенегал"@ru ;
+  rdfs:label "Spain"@en ;
+  rdfs:label "Испания"@ru ;
   v-s:description "The Kingdom of Spain"@en ;
   v-s:description "Королевство Испания"@ru ;
   v-s:registrationNumber "724" ;

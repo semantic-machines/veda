@@ -104,7 +104,7 @@ veda.Module(function (veda) { "use strict";
     // Construct ontology individuals
     Object.keys(ontology).map(function (key) {
       var individual = ontology[key];
-      if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
+      if (individual) self[key] = new veda.IndividualModel( individual, true, false );
     });
 
     // Initialization percentage

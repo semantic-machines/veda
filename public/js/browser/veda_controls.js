@@ -1469,6 +1469,7 @@
       var rel_range = rangeRestriction ? rangeRestriction : (new veda.IndividualModel(rel_uri))["rdfs:range"][0];
       if ( !rel_range.rights.hasValue("v-s:canCreate", true) ) {
         create.addClass("disabled");
+        create.off("click");
       } else {
         create.click( function (e) {
           e.stopPropagation();
@@ -1530,6 +1531,7 @@
         create.one("remove", function () {
           individual.off(rel_uri, singleValueHandler);
         });
+        singleValueHandler(individual[rel_uri]);
       }
 
     } else {

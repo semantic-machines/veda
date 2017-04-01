@@ -1,0 +1,156 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-DeliveryMethod/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-DeliveryMethod>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. Delivery Method"@en ;
+  rdfs:label "Онтология Veda. Способ доставки"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+# ОТПРАВКА --------------------
+
+d:635
+  a v-s:DeliveryMethod;
+  rdfs:label "Факс"@ru;
+  rdfs:label "Fax"@en;
+.
+
+d:644
+  a v-s:DeliveryMethod;
+  rdfs:label "Письмо"@ru;
+  rdfs:label "Letter"@en;
+.
+
+d:653
+  a v-s:DeliveryMethod;
+  rdfs:label "Письмо и факс"@ru;
+  rdfs:label "Letter & Fax"@en;
+.
+
+# ПРИЁМ ----------------------
+
+d:244a40584c814020a7430b2e6005e387
+  a v-s:DeliveryMethod;
+  rdfs:label "Посылка"@ru;
+  rdfs:label "Parcel"@en;
+.
+
+d:14df63a520a0419da8feabbcfa67f183
+  a v-s:DeliveryMethod;
+  rdfs:label "Дежурный звонок"@ru;
+  rdfs:label "Duty call"@en;
+.
+
+d:c4477673ec7946efa0403f80a9eb9bbc
+  a v-s:DeliveryMethod;
+  rdfs:label "Ячейка в канцелярии"@ru;
+  rdfs:label "Office cell"@en;
+.
+
+d:293b8861b53e4467864b7d8cd3a5f4fb
+  a v-s:DeliveryMethod;
+  rdfs:label "Заказная бандероль"@ru;
+  rdfs:label "Ordered parcel"@en;
+.
+
+d:9c31eb7c49654891a8fcf1f3d29af2f4
+  a v-s:DeliveryMethod;
+  rdfs:label "Простая Бандероль"@ru;
+  rdfs:label "Common parcel"@en;
+.
+
+d:dc1ffdcab484464a81eaeea6f81fbc7e
+  a v-s:DeliveryMethod;
+  rdfs:label "Курьерская почта - КСЭ"@ru;
+  rdfs:label "Express mail - CSE"@en;
+.
+
+d:ce7763692dbe4aad97d1ea8408ce8352
+  a v-s:DeliveryMethod;
+  rdfs:label "Курьер (нарочный)"@ru;
+  rdfs:label "Courier"@en;
+.
+
+d:a534c8d79a8c4f8f8bc13d567c8c0237
+  a v-s:DeliveryMethod;
+  rdfs:label "Портал"@ru;
+  rdfs:label "Portal"@en;
+.
+
+d:aac2cc4dad9a47eaa623a6bb4dd61537
+  a v-s:DeliveryMethod;
+  rdfs:label "Система документооборота"@ru;
+  rdfs:label "Document management system"@en;
+.
+
+d:b9d2da6785ee42b2bcb054fd8295c539
+  a v-s:DeliveryMethod;
+  rdfs:label "Телефон"@ru;
+  rdfs:label "Phone"@en;
+.
+
+d:0c4f6f13-d6c6-4e88-9bb9-560bf8f64bf9
+  a v-s:DeliveryMethod;
+  rdfs:label "Ценное письмо"@ru;
+  rdfs:label "Value letter"@en;
+.
+
+d:763
+  a v-s:DeliveryMethod;
+  rdfs:label "Заказное письмо"@ru;
+  rdfs:label "Ordered letter"@en;
+.
+
+d:754
+  a v-s:DeliveryMethod;
+  rdfs:label "Курьерская почта (другая)"@ru;
+  rdfs:label "Express mail - Other"@en;
+.
+
+d:745
+  a v-s:DeliveryMethod;
+  rdfs:label "Курьерская почта - DHL"@ru;
+  rdfs:label "Express mail - DHL"@en;
+.
+
+d:736
+  a v-s:DeliveryMethod;
+  rdfs:label "Курьерская почта - UPS"@ru;
+  rdfs:label "Express mail - UPS"@en;
+.
+
+d:727
+  a v-s:DeliveryMethod;
+  rdfs:label "Лично"@ru;
+  rdfs:label "Personally"@en;
+.
+
+d:718
+  a v-s:DeliveryMethod;
+  rdfs:label "Письмо с уведомлением"@ru;
+  rdfs:label "Letter with notification"@en;
+.
+
+d:700
+  a v-s:DeliveryMethod;
+  rdfs:label "Простое письмо"@ru;
+  rdfs:label "Common letter"@en;
+.
+
+d:692
+  a v-s:DeliveryMethod;
+  rdfs:label "Факс"@ru;
+  rdfs:label "Fax"@en;
+.
+
+d:683
+  a v-s:DeliveryMethod;
+  rdfs:label "Электронная почта"@ru;
+  rdfs:label "E-mail"@en;
+.

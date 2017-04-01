@@ -361,6 +361,8 @@ v-s:taxRegistrationCauseForOrganization
   v-ui:regexp "^[0-9]{9}$";
   rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Organization"@ru ;
+  v-ui:tooltip "Числовое значение, 9 символов, например: 123456789"@ru ;
+  v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
 .
 
 # ------------------------------------------------------------ СТРОКИ --
