@@ -64,7 +64,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       template = template.filter("*:not(script)");
 
       if (pre_render) {
-        pre_render(veda, individual, container, template, mode, specs);
+        pre_render.call(individual, veda, individual, container, template, mode, specs);
       }
 
       template = renderTemplate (individual, container, template, mode, specs);
@@ -75,7 +75,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       setTimeout(function () {
         template.trigger(mode);
         if (post_render) {
-          post_render(veda, individual, container, template, mode, specs);
+          post_render.call(individual, veda, individual, container, template, mode, specs);
         }
       }, 0);
     });

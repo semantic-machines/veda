@@ -188,10 +188,11 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new (string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url = null, Authorization in_acl_indexes = null)
-    {    	
-    	PThreadContext ctx = new PThreadContext ();
-    	
+    public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url = null,
+                                     Authorization in_acl_indexes = null)
+    {
+        PThreadContext ctx = new PThreadContext();
+
         ctx.log = _log;
 
         if (ctx.log is null)
@@ -232,7 +233,7 @@ class PThreadContext : Context
         //ft_local_count  = get_count_indexed();
 
         ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
-        
+
         return ctx;
     }
 
@@ -491,7 +492,10 @@ class PThreadContext : Context
                 log.trace("session ticket %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
                           duration);
 
-            tt.end_time = stringToTime(when) + duration * 10_000_000;
+            long start_time = stringToTime(when);
+
+            tt.start_time = start_time;
+            tt.end_time   = start_time + duration * 10_000_000;
         }
     }
 
@@ -547,9 +551,9 @@ class PThreadContext : Context
 
         version (isServer)
         {
-        	// store ticket
-        	string ss_as_binobj = new_ticket.serialize();
-        	
+            // store ticket
+            string     ss_as_binobj = new_ticket.serialize();
+
             long       op_id;
             ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
             ticket.result = rc;
@@ -560,14 +564,15 @@ class PThreadContext : Context
                 user_of_ticket[ ticket.id ] = new Ticket(ticket);
             }
 
-            if (trace_msg[ T_API_50 ] == 1)
-                log.trace("create_new_ticket, new ticket=%s", ticket);
+            log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(
+                                                                                                                                                      ),
+                      SysTime(ticket.end_time, UTC()).toISOExtString());
         }
 
         version (WebServer)
         {
-                subject2Ticket(new_ticket, &ticket);
-                user_of_ticket[ ticket.id ] = new Ticket(ticket);
+            subject2Ticket(new_ticket, &ticket);
+            user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
 
         return ticket;
@@ -792,7 +797,9 @@ class PThreadContext : Context
                 SysTime now = Clock.currTime();
                 if (now.stdTime >= tt.end_time && !is_systicket)
                 {
-                    log.trace("ticket expired, ticket=[%s], user=[%s]", tt.id, tt.user_uri);
+                    log.trace("ticket %s expired, user=%s, start=%s, end=%s, now=%s", tt.id, tt.user_uri, SysTime(tt.start_time,
+                                                                                                                  UTC()).toISOExtString(),
+                              SysTime(tt.end_time, UTC()).toISOExtString(), now.toISOExtString());
 
                     if (ticket_id == "guest")
                     {
@@ -1250,7 +1257,7 @@ class PThreadContext : Context
 
                     if ((prev_state is null ||
                          prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                        log.trace("ERR! store_individual, cmd=%s: not read prev_state uri=[%s]", text (cmd), indv.uri);
+                        log.trace("ERR! store_individual, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
                 }
                 catch (Exception ex)
                 {
@@ -1327,9 +1334,10 @@ class PThreadContext : Context
                 }
 
                 res.result =
-                    subject_storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter, event_id,
-                                       ignore_freeze,
-                                       res.op_id);
+                    subject_storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter,
+                                               event_id,
+                                               ignore_freeze,
+                                               res.op_id);
                 //log.trace("res.result=%s", res.result);
 
                 if (res.result != ResultCode.OK)

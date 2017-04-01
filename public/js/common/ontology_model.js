@@ -37,6 +37,14 @@ veda.Module(function (veda) { "use strict";
 
   veda.OntologyModel = function () {
 
+    // Singleton pattern
+    if (veda.OntologyModel.prototype._singletonInstance) {
+      return veda.OntologyModel.prototype._singletonInstance;
+    }
+    veda.one("logout", function () {
+      veda.OntologyModel.prototype._singletonInstance = null;
+    });
+
     // Initialization percentage
     veda.trigger("init:progress", 0);
 
@@ -94,7 +102,7 @@ veda.Module(function (veda) { "use strict";
     // Construct ontology individuals
     Object.keys(ontology).map(function (key) {
       var individual = ontology[key];
-      if (individual) self[key] = new veda.IndividualModel( individual, undefined, undefined, undefined, true, false );
+      if (individual) self[key] = new veda.IndividualModel( individual, true, false );
     });
 
     // Initialization percentage
@@ -255,7 +263,7 @@ veda.Module(function (veda) { "use strict";
     //var t2 = new Date();
     //console.log("onto load", (t2-t1)/1000, "sec");
 
-    return self;
+    return veda.OntologyModel.prototype._singletonInstance = self;
 
     // Get ontology from server
     function getOntology () {

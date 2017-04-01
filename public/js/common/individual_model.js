@@ -50,9 +50,9 @@ veda.Module(function (veda) { "use strict";
       this["v-s:edited"] = [ now ];
       this["v-s:lastEditor"] = [ user ];
     }
-    if ( this.isNew() ) {
-      this["v-s:created"] = [ now ];
+    if ( !this.hasValue("v-s:creator") ) {
       this["v-s:creator"] = [ user ];
+      this["v-s:created"] = [ now ];
     }
   }
 
@@ -192,7 +192,7 @@ veda.Module(function (veda) { "use strict";
       }
       try {
         var rightsJSON = get_rights(veda.ticket, this.id);
-        this._.rights = new veda.IndividualModel( rightsJSON, undefined, undefined, undefined, false );
+        this._.rights = new veda.IndividualModel( rightsJSON, false );
       } catch (e) {
         this._.rights = new veda.IndividualModel();
       } finally {
@@ -209,7 +209,7 @@ veda.Module(function (veda) { "use strict";
       try {
         var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
         this._.rightsOrigin = rightsOriginArr.map(function (item) {
-          return new veda.IndividualModel( item, undefined, undefined, undefined, false );
+          return new veda.IndividualModel( item, false );
         });
       } catch (e) {
         this._.rightsOrigin = [];

@@ -76,7 +76,7 @@ veda.Module(function (veda) { "use strict";
             get: function () {
               if (typeof results[i] == 'object') return results[i];
               var cache = !reopen;
-              return results[i] = new veda.IndividualModel(results[i], undefined, undefined, undefined, cache);
+              return results[i] = new veda.IndividualModel(results[i], cache);
             },
             enumerable: true,
             configurable: true

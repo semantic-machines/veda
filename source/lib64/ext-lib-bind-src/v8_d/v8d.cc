@@ -424,8 +424,11 @@ struct _Buff
     int  allocated_size;
 };
 
-char *
-get_global_prop(const char *prop_name, int prop_name_length);
+_Buff* get_from_ght(const char *name, int name_length);
+void put_to_ght(const char *name, int name_length, const char *value, int value_length);
+_Buff* uris_pop(const char *consumer_id, int consumer_id_length);
+_Buff* new_uris_consumer();
+bool uris_commit_and_next(const char *_consumer_id, int _consumer_id_length, bool is_sync_data);
 
 _Buff *
 get_env_str_var(const char *_var_name, int _var_name_length);
@@ -453,6 +456,7 @@ remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbo
                        const char *_event_id, int _event_id_length);
 
 void log_trace(const char *_str, int _str_length);
+
 //char *get_resource (int individual_idx, const char* _uri, int _uri_length, int* count_resources, int resource_idx);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -621,6 +625,119 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
     args.GetReturnValue().Set(arr_1);
 }
+
+////////////////
+
+void
+NewUrisConsumer(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+ 
+     if (args.Length() != 0)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+    _Buff *res = new_uris_consumer ();
+    if (res != NULL)
+    {
+        std::string data(res->data, res->length);
+		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+		args.GetReturnValue().Set(oo);
+    }
+}
+
+void
+UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 1)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "uris_pop: bad parameters"));
+        return;
+    }
+
+	v8::String::Utf8Value _id(args[ 0 ]);    
+    const char* cid = ToCString(_id);
+
+    _Buff *res = uris_pop (cid, _id.length());
+
+    if (res != NULL)
+    {
+        std::string data(res->data, res->length);
+
+		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+
+		args.GetReturnValue().Set(oo);
+    }
+}
+
+void
+UrisCommitAndNext(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 2)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "commit_and_next: bad parameters"));
+        return;
+    }
+
+	v8::String::Utf8Value _id(args[ 0 ]);    
+    const char* cid = ToCString(_id);
+    
+    bool is_sync_data = args[1]->BooleanValue();
+
+    bool res = uris_commit_and_next (cid, _id.length(), is_sync_data);
+
+	args.GetReturnValue().Set(res);
+}
+
+/////////////////////
+void GetFromGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 1)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+    
+	v8::String::Utf8Value _name(args[ 0 ]);    
+    const char* cname = ToCString(_name);
+    	
+    _Buff *res = get_from_ght (cname, _name.length());
+    if (res != NULL)
+    {
+        std::string data(res->data, res->length);
+		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+		args.GetReturnValue().Set(oo);
+    }
+}
+
+void PutToGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 2)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+	v8::String::Utf8Value _name(args[ 0 ]);
+    const char* cname = ToCString(_name);
+
+	v8::String::Utf8Value _value(args[ 1 ]);
+    const char* cvalue = ToCString(_value);
+
+	put_to_ght(cname, _name.length(), cvalue, _value.length());
+}
+
+////////////////////
 
 void
 GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -900,6 +1017,16 @@ WrappedContext::WrappedContext ()
                 v8::FunctionTemplate::New(isolate_, SetInIndividual));
     global->Set(v8::String::NewFromUtf8(isolate_, "remove_from_individual"),
                 v8::FunctionTemplate::New(isolate_, RemoveFromIndividual));
+    global->Set(v8::String::NewFromUtf8(isolate_, "uris_pop"),
+                v8::FunctionTemplate::New(isolate_, UrisPop));
+    global->Set(v8::String::NewFromUtf8(isolate_, "new_uris_consumer"),
+                v8::FunctionTemplate::New(isolate_, NewUrisConsumer));
+    global->Set(v8::String::NewFromUtf8(isolate_, "put_to_ght"),
+                v8::FunctionTemplate::New(isolate_, PutToGHT));
+    global->Set(v8::String::NewFromUtf8(isolate_, "get_from_ght"),
+                v8::FunctionTemplate::New(isolate_, GetFromGHT));
+    global->Set(v8::String::NewFromUtf8(isolate_, "uris_commit_and_next"),
+                v8::FunctionTemplate::New(isolate_, UrisCommitAndNext));
 
     v8::Handle<v8::Context> context = v8::Context::New(isolate_, NULL, global);
     context_.Reset(isolate_, context);

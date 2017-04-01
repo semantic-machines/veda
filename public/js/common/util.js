@@ -938,7 +938,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     try
     {
-      scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
+      scope = new veda.IndividualModel(scope, false);
     }
     catch (e)
     {
@@ -955,7 +955,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     scope['v-s:numerationCommitedInterval'].forEach(function(interval)
     {
-      interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+      interval = new veda.IndividualModel(interval.id, false);
       if (interval['v-s:numerationCommitedIntervalEnd'][0].data > max)
       {
         max = interval['v-s:numerationCommitedIntervalEnd'][0].data;
@@ -966,7 +966,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     scope['v-s:numerationCommitedInterval'].forEach(function(interval)
     {
-      interval = new veda.IndividualModel(interval.id, undefined, undefined, undefined, false);
+      interval = new veda.IndividualModel(interval.id, false);
       if (interval['v-s:numerationCommitedIntervalEnd'][0] > max)
       {
         max = interval['v-s:numerationCommitedIntervalEnd'][0];
@@ -980,7 +980,7 @@ function isNumerationValueAvailable(scope, value)
 {
   if (typeof scope === 'string')
   {
-    scope = new veda.IndividualModel(scope, undefined, undefined, undefined, false);
+    scope = new veda.IndividualModel(scope, false);
   }
   if (typeof window === 'undefined')
   {
@@ -991,7 +991,7 @@ function isNumerationValueAvailable(scope, value)
     if (typeof scope === 'undefined' || typeof scope['v-s:numerationCommitedInterval'] === 'undefined') return true;
     for (var i = 0; i < scope['v-s:numerationCommitedInterval'].length; i++)
     {
-      var interval = new veda.IndividualModel(scope['v-s:numerationCommitedInterval'][i].id, undefined, undefined, undefined, false);
+      var interval = new veda.IndividualModel(scope['v-s:numerationCommitedInterval'][i].id, false);
       if (interval['v-s:numerationCommitedIntervalBegin'][0] <= value && value <= interval['v-s:numerationCommitedIntervalEnd'][0])
       {
         return false;
@@ -1240,13 +1240,13 @@ function removeFromGroup(ticket, group, resource)
 function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 {
     if (subj_uri == undefined || obj_uri == undefined) {
-	var error = new Error();
-	print("ERR! INVALID ARGS IN addRigth");
-	print("subj_uri=", subj_uri);
-	print("obj_uri=", obj_uri);
-	print("Error stack:", error.stack);
+  var error = new Error();
+  print("ERR! INVALID ARGS IN addRigth");
+  print("subj_uri=", subj_uri);
+  print("obj_uri=", obj_uri);
+  print("Error stack:", error.stack);
     }
-	
+
 
   if (new_uri)
   {
