@@ -660,8 +660,8 @@ s-wf:pm_sf
 .
 
 s-wf:SimpleRouteStartFormMinimal_Template
-  rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy s-wf: ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
@@ -677,8 +677,8 @@ s-wf:SimpleRouteStartFormMinimal_Template
 .
 
 s-wf:SimpleRouteStartFormShort_Template
-  rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy s-wf: ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
@@ -697,8 +697,8 @@ s-wf:SimpleRouteStartFormShort_Template
 .
 
 s-wf:SimpleRouteStartFormFull_Template
-  rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy s-wf: ;
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
@@ -746,8 +746,8 @@ s-wf:participantSpecification
 .
 
 s-wf:ComplexRouteStartForm_Template
-  rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy s-wf: ;
   rdfs:label "Шаблон стартовых данных Комплексного маршрута"@ru ;
   rdfs:label "Complex route start form template"@en ;
   v-ui:forClass s-wf:ComplexRouteStartForm ;
@@ -2128,8 +2128,8 @@ s-wf:ComplexRouteTest
 .
 
 s-wf:ComplexRouteTest_Template
-    rdfs:isDefinedBy s-wf: ;
     rdf:type v-ui:ClassTemplate ;
+    rdfs:isDefinedBy s-wf: ;
     rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута"@ru;
     rdfs:label "Template for Complex route test template"@en;
     v-ui:forClass s-wf:ComplexRouteTest ;
@@ -2176,8 +2176,8 @@ s-wf:ComplexRouteTest2
 .
 
 s-wf:ComplexRouteTest2_Template
-  rdfs:isDefinedBy s-wf: ;
   rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy s-wf: ;
   rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута 2"@ru;
   rdfs:label "Template for Complex route test template 2"@en;
   v-ui:forClass s-wf:ComplexRouteTest2 ;
