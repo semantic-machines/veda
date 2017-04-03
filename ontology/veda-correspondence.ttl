@@ -417,36 +417,6 @@ v-s:LetterTemplate
     </div>
   </div>
 </div>
-<script>
-  var self = this;
-  senderHandler.call(this);
-  recipientHandler.call(this);
-  this.on("v-s:sender", senderHandler);
-  this.on("v-s:recipient", recipientHandler);
-  template.one("remove", function () {
-    self.off("v-s:sender", senderHandler);
-    self.off("v-s:recipient", recipientHandler);
-  });
-  function senderHandler () {
-    var mondi = new veda.IndividualModel("d:org_RU1121003135");
-    var enumerated = new veda.IndividualModel("v-s:Enumerated");
-    if ( mode === "edit" && this.hasValue("v-s:sender") && this["v-s:sender"][0].hasValue("v-s:correspondentOrganization", mondi) ) {
-      var regRecord = new veda.IndividualModel();
-      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordSender"), enumerated ];
-      this["v-s:registrationRecordSender"] = [ regRecord ];
-    }
-  }
-  function recipientHandler () {
-    var mondi = new veda.IndividualModel("d:org_RU1121003135");
-    var enumerated = new veda.IndividualModel("v-s:Enumerated");
-    if ( mode === "edit" && this.hasValue("v-s:recipient") && this["v-s:recipient"][0].hasValue("v-s:correspondentOrganization", mondi) ) {
-      var regRecord = new veda.IndividualModel();
-      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordRecipient"), enumerated ];
-      this["v-s:registrationRecordRecipient"] = [ regRecord ];
-    }
-  }
-  //# sourceURL=v-s:LetterTemplate_post
-</script>
   """ ;
 .
 
@@ -465,46 +435,18 @@ v-s:CorrespondentTemplate
       </div>
     </div>
     <veda-control data-type="link" rel="v-s:correspondentOrganization" class="-view edit search fulltext create create-modal margin-md" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:postalAddress'].join(' ')}"></veda-control>
-    <div class="mondi">
-      <hr class="margin-md">
-      <strong about="v-s:correspondentDepartment" property="rdfs:label"></strong>
-      <span rel="v-s:correspondentDepartment" class="view -edit search" data-template="v-ui:LabelTemplate"></span>
-      <veda-control data-type="link" rel="v-s:correspondentDepartment" class="-view edit search fulltext margin-md"></veda-control>
-      <hr class="margin-md">
-      <strong about="v-s:correspondentPerson" property="rdfs:label"></strong>
-      <span rel="v-s:correspondentPerson" class="view -edit search" data-template="v-ui:LabelTemplate"></span>
-      <veda-control data-type="link" rel="v-s:correspondentPerson" class="-view edit search fulltext margin-md"></veda-control>
-    </div>
-    <div class="other">
-      <hr class="margin-md">
-      <strong about="v-s:correspondentDepartmentDescription" property="rdfs:label"></strong>
-      <span property="v-s:correspondentDepartmentDescription" class="view -edit -search"></span>
-      <veda-control data-type="string" property="v-s:correspondentDepartmentDescription" class="-view edit search margin-md"></veda-control>
-      <hr class="margin-md">
-      <strong about="v-s:correspondentPersonDescription" property="rdfs:label"></strong>
-      <span property="v-s:correspondentPersonDescription" class="view -edit -search"></span>
-      <veda-control data-type="string" property="v-s:correspondentPersonDescription" class="-view edit search margin-md"></veda-control>
-    </div>
+    <hr class="margin-md">
+    <strong about="v-s:correspondentDepartmentDescription" property="rdfs:label"></strong>
+    <span property="v-s:correspondentDepartmentDescription" class="view -edit -search"></span>
+    <veda-control data-type="string" property="v-s:correspondentDepartmentDescription" class="-view edit search margin-md"></veda-control>
+    <hr class="margin-md">
+    <strong about="v-s:correspondentPersonDescription" property="rdfs:label"></strong>
+    <span property="v-s:correspondentPersonDescription" class="view -edit -search"></span>
+    <veda-control data-type="string" property="v-s:correspondentPersonDescription" class="-view edit search margin-md"></veda-control>
   </div>
 </div>
 <script>
   var self = this;
-  orgHandler.call(this);
-  this.on("v-s:correspondentOrganization", orgHandler);
-  template.one("remove", function () {
-    self.off("v-s:correspondentOrganization", orgHandler);
-  });
-  function orgHandler () {
-    var mondi = new veda.IndividualModel("d:org_RU1121003135");
-    if ( this.hasValue("v-s:correspondentOrganization", mondi) ) {
-      $(".mondi", template).show();
-      $(".other", template).hide();
-    } else {
-      $(".mondi", template).hide();
-      $(".other", template).show();
-    }
-  }
-
   if ( template.parent().attr("rel") === "v-s:sender" ) {
     template.addClass("panel-info");
     template.children(":first").addClass("bg-info");
