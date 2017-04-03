@@ -360,6 +360,7 @@ function find_long_terms(ticket, uri, execute_script)
     //print ("exist cid=" + cid);
     if (!cid)
     {
+		var count_appts = 0;
         var cid = new_uris_consumer();
         put_to_ght('cid', cid);
         print("new cid=" + cid);
@@ -384,11 +385,15 @@ function find_long_terms(ticket, uri, execute_script)
 							
 							hash = "d:appt_" + hash.substr (0, 50);
                             put_to_ght(i_uri, hash);
+                            count_appts ++;
                         }    
                     }
                 }
             }
         }
+        
+        print ("found appointments : " + count_appts);
+        
     }
     else
     {
@@ -411,7 +416,7 @@ function find_long_terms(ticket, uri, execute_script)
                             var new_uri = get_from_ght(value.data);
                             if (new_uri)
                             {
-                                print("found long value>64," + uri + " " + key + "=" + value.data + " -> " + new_uri);
+                                print("found long value>63," + uri + " " + key + "=" + value.data + " -> " + new_uri);
 								value.data = new_uri;
                                 is_changed = true;
                             }
@@ -429,7 +434,7 @@ function find_long_terms(ticket, uri, execute_script)
                             var new_uri = get_from_ght(values);
                             if (new_uri)
                             {
-                                print("found long @>64," + values + "(remove) -> " + new_uri);
+                                print("found long @>63," + values + "(remove) -> " + new_uri);
                                 document['@'] = new_uri;
                                 remove_individual (ticket, uri, event_id);
                                 is_changed = true;

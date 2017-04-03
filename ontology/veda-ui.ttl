@@ -1134,7 +1134,7 @@ v-ui:TestUITemplate
 <div class="container sheet">
   <div class="clearfix">
     <h2 class="pull-left" about="@" property="rdf:type"></h2>
-    <a class="pull-right" href="#/@"><span property="@"></span></a>
+    <a class="pull-right" href="#/@"><small property="@"></small></a>
   </div>
 
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>

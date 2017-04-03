@@ -1830,6 +1830,30 @@ if (doc) {
     routes['instruction3'][simple+'deadlineDays'] = [10];
     routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
   }
+//----------------------------------------------------------------------------------------------------------------------------------Письмо
+  if (doc['rdf:type'][0].id === "mnd-s:Letter") {
+    var mondi = new veda.IndividualModel("d:org_RU1121003135");
+    // Входящее письмо
+    if ( doc.hasValue("v-s:recipient") && doc["v-s:recipient"][0].hasValue("v-s:correspondentOrganization", mondi) ) {
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [true];
+      routes['review'][simple+'deadlineDays'] = [10];
+      routes['review'][simple+'participant'] = doc["v-s:recipient"][0]["v-s:correspondentPerson"];
+    }
+    // Исходящее письмо
+    if ( doc.hasValue("v-s:sender") && doc["v-s:sender"][0].hasValue("v-s:correspondentOrganization", mondi) ) {
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [3];
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+      routes['coordination2'][simple+'deadlineDays'] = [3];
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'deadlineDays'] = [3];
+      routes['sign'][simple+'participant'] = doc["v-s:sender"][0]["v-s:correspondentPerson"];
+    }
+  }
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {
       routes['coordination1'][simple+'participant'] = [

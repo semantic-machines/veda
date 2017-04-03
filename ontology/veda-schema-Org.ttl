@@ -471,8 +471,8 @@ v-s:OrganizationTemplate
 </script>
 <div class="container sheet">
   <h2>
-    <span about="v-s:Organization" property="rdfs:label"></span>:
-    <span about="@" property="rdfs:label"></span>
+    <span about="v-s:Organization" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
   </h2>
   <hr>
   <div id="mainProperties">
@@ -768,8 +768,8 @@ v-s:SubsidiaryTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="v-s:Subsidiary" property="rdfs:label"></span>:
-    <span about="@" property="rdfs:label"></span>
+    <span about="v-s:Subsidiary" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
   </h2>
   <span about="@" data-template="v-ui:RabbitHole"></span>
   <hr>
@@ -840,8 +840,8 @@ v-s:DepartmentTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="v-s:Department" property="rdfs:label"></span>:
-    <span about="@" property="rdfs:label"></span>
+    <span about="v-s:Department" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
   </h2>
   <hr>
   <div id="mainProperties">
