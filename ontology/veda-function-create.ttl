@@ -21,12 +21,14 @@ v-fc:FunctionCreate
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
+  v-ui:hasModel v-fc:FunctionCreateModel ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
+  v-ui:hasModel v-fc:BlankModel ;
 .
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;

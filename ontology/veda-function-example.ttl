@@ -18,6 +18,7 @@ v-fe:FunctionExample
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Example function"@en ;
   rdfs:label "Функция-пример"@ru ;
+  v-ui:hasModel v-fe:FunctionExampleModel ;
 .
 v-fe:FunctionExample1
   rdf:type v-fe:FunctionExample ;

@@ -30,12 +30,14 @@ v-fs:FulltextRequest
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Fulltext request"@en ;
   rdfs:label "Полнотекстовый запрос"@ru ;
+  v-ui:hasModel v-fs:FulltextRequestModel ;
 .
 v-fs:AttributiveRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Attributive request"@en ;
   rdfs:label "Атрибутивный запрос"@ru ;
+  v-ui:hasModel v-fs:AttributiveRequestModel ;
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;

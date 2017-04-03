@@ -27,6 +27,7 @@ v-s:OrganizationUnit
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:label "Organization unit"@en ;
   rdfs:label "Организационная единица"@ru ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 v-s:OrganizationUnitModel
   rdf:type v-ui:ClassModel ;
@@ -98,6 +99,7 @@ v-s:Organization
   rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
@@ -141,6 +143,7 @@ v-s:Department
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 v-s:parentOrganization
   rdf:type owl:ObjectProperty ;
@@ -157,6 +160,7 @@ v-s:Subsidiary
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Subsidiary"@en ;
   rdfs:label "Филиал"@ru ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 # ------------------------------------------------------------
 v-s:OrgGroup
@@ -165,6 +169,7 @@ v-s:OrgGroup
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Organizational group"@en ;
   rdfs:label "Oрганизационная группа"@ru ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 
 # ------------------------------------------------------------
@@ -173,6 +178,7 @@ v-s:Position
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:label "Position"@en ;
   rdfs:label "Должность"@ru ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 
 # ------------------------------------------------------------
@@ -207,6 +213,7 @@ v-s:Appointment
   rdfs:label "Назначение"@ru ;
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:subClassOf v-s:OrganizationUnit ;
+  v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 v-s:official
   rdf:type owl:DatatypeProperty ;
