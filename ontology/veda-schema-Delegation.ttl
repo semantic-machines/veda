@@ -91,6 +91,7 @@ v-s:PsDelegatedPositionForRequestDelegation
   v-ui:forProperty v-s:delegatedPosition ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 10 ;
+  v-ui:queryPrefix "'rdf:type' === 'v-s:Position' || ( 'rdf:type' === 'v-s:Position' && 'v-s:deleted' == true )" ;
 .
 v-s:PsDatesRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -121,7 +122,7 @@ v-s:RequestDelegationTemplate
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
 <div class="container sheet">
-  <h2 about="v-s:RequestDelegation" property="rdfs:label" class="view edit -search"></h2>
+  <h2 about="v-s:RequestDelegation" property="rdfs:label"></h2>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegator" property="rdfs:label"></em>

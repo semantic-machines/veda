@@ -402,8 +402,8 @@ v-s:ContractorTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="v-s:Contractor" property="rdfs:label"></span>:
-    <span about="@" property="rdfs:label"></span>
+    <span about="v-s:Contractor" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
   </h2>
   <hr>
   <div id="mainProperties">
@@ -538,8 +538,8 @@ v-s:CurrencyExchangeRateTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="v-s:CurrencyExchangeRate" property="rdfs:label"></span>:
-    <span about="@" property="rdfs:label"></span>
+    <span about="v-s:CurrencyExchangeRate" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
   </h2>
   <hr class="margin-sm">
   <div class="row text-center">
