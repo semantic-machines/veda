@@ -407,13 +407,13 @@ class PThreadContext : Context
     }
 
 
-    public string get_from_individual_storage(string uri)
+    public string get_from_individual_storage(string user_id, string uri)
     {
         //writeln ("@ get_individual_as_binobj, uri=", uri);
         string res;
 
         if (inividuals_storage_r !is null)
-            res = inividuals_storage_r.find(uri);
+            res = inividuals_storage_r.find(user_id, uri);
         else
             res = get_from_individual_storage_thread(uri);
 
@@ -720,12 +720,12 @@ class PThreadContext : Context
 
     public string get_ticket_from_storage(string ticket_id)
     {
-        return tickets_storage_r.find(ticket_id);
+        return tickets_storage_r.find(null, ticket_id);
     }
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = tickets_storage_r.find("systicket");
+        string systicket_id = tickets_storage_r.find(null, "systicket");
 
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
@@ -759,7 +759,7 @@ class PThreadContext : Context
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = tickets_storage_r.find(ticket_id);
+                string ticket_str = tickets_storage_r.find(null, ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
@@ -964,7 +964,7 @@ class PThreadContext : Context
 
         try
         {
-            string individual_as_binobj = get_from_individual_storage(uri);
+            string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
             if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
@@ -1013,7 +1013,7 @@ class PThreadContext : Context
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
                 {
                     Individual individual           = Individual.init;
-                    string     individual_as_binobj = get_from_individual_storage(uri);
+                    string     individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
 
                     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
                     {
@@ -1062,7 +1062,7 @@ class PThreadContext : Context
         {
             if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
             {
-                string individual_as_binobj = get_from_individual_storage(uri);
+                string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
 
                 if (individual_as_binobj !is null && individual_as_binobj.length > 1)
                 {
