@@ -11,30 +11,6 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
-  /* owl:Thing && rdfs:Resource domain properties */
-  var stopList = [
-    //"rdf:type",
-    //"rdfs:comment",
-    //"rdfs:label",
-    //"v-s:deleted",
-    "owl:annotatedProperty",
-    "owl:annotatedSource",
-    "owl:annotatedTarget",
-    "owl:bottomDataProperty",
-    "owl:bottomObjectProperty",
-    "owl:deprecated",
-    "owl:differentFrom",
-    "owl:members",
-    //"owl:sameAs",
-    "owl:topObjectProperty",
-    "owl:topDataProperty",
-    "owl:versionInfo"//,
-    //"rdf:value",
-    //"rdfs:isDefinedBy",
-    //"rdfs:member",
-    //"rdfs:seeAlso"
-  ];
-
   veda.OntologyModel = function () {
 
     // Singleton pattern
@@ -52,15 +28,11 @@ veda.Module(function (veda) { "use strict";
 
     var self = this;
 
-    var classes = self.classes = {},
-        properties = self.properties = {},
-        specifications = self.specifications = {},
-        models = self.models = {},
-        templates = self.templates = {},
-        ontologies = self.ontologies = {},
-        datatypes = self.datatypes = {};
+    var ontology,
+        classes = {},
+        properties = {},
+        specifications = {};
 
-    var ontology;
     try {
       ontology = JSON.parse(storage.ontology);
     } catch (e) {
@@ -168,7 +140,6 @@ veda.Module(function (veda) { "use strict";
 
     // Process properties
     Object.keys(properties).map( function (uri) {
-      if (stopList.indexOf(uri) >= 0) return;
       var property = properties[uri];
       if (!property["rdfs:domain"]) return;
       property["rdfs:domain"].map( function ( _class ) {
@@ -280,10 +251,6 @@ veda.Module(function (veda) { "use strict";
           "'rdf:type' === 'owl:ObjectProperty' || " +
           "'rdf:type' === 'owl:OntologyProperty' || " +
           "'rdf:type' === 'owl:AnnotationProperty' || " +
-          /* Models */
-          "'rdf:type' === 'v-s:ClassModel' || " +
-          /* Templates */
-          "'rdf:type' === 'v-ui:ClassTemplate' || " +
           /* Property specifications */
           "'rdf:type' === 'v-ui:PropertySpecification' || " +
           "'rdf:type' === 'v-ui:DatatypePropertySpecification' || " +
