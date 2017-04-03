@@ -634,7 +634,7 @@ cfg:Event_6
   v-s:triggerByType owl:DatatypeProperty ;
   v-s:triggerByType owl:ObjectProperty ;
   v-s:triggerByType owl:Restriction ;
-  v-s:triggerByType v-s:ClassModel ;
+  v-s:triggerByType v-ui:ClassModel ;
   v-s:triggerByType v-ui:ClassTemplate ;
   v-s:triggerByType v-ui:PropertySpecification ;
   v-s:triggerByType v-ui:DatatypePropertySpecification ;

@@ -318,7 +318,7 @@ v-fs:SearchTemplate
 """
 .
 v-fs:FulltextRequestModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "V-fs:FulltextRequest class model"@en ;
   rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
   v-ui:forClass v-fs:FulltextRequest ;
@@ -591,7 +591,7 @@ v-fs:FulltextRequestTemplate
   """
 .
 v-fs:AttributiveRequestModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "V-fs:AttributiveRequest class model"@en ;
   rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
   v-ui:forClass v-fs:AttributiveRequest ;
@@ -927,12 +927,13 @@ v-fs:AttributiveRequestTemplate
 
   // Generic header from class
   function gen_head(type) {
-    var props = Object.getOwnPropertyNames(type.domainProperties);
+    var ontology = new veda.OntologyModel();
+    var props = ontology.getClassProperties(type.id);
     var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
     var tr = $("<tr><th id='count' width='20px'>#</th><th id='zoom' width='20px'><span class='glyphicon glyphicon-search'></span></th><th id='@'>@</th></tr>");
     var header = props.map( function (property_uri) {
       if (property_uri === "rdf:type" || property_uri === "v-s:deleted") { return ""; }
-      var property = type.domainProperties[property_uri];
+      var property = new veda.IndividualModel(property_uri);
       var th = $("<th id='" + property_uri + "'><span class='rdfs-label'>" + property["rdfs:label"].join(", ") + "</span></th>");
       var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : undefined;
       if (literals.indexOf(range) >= 0) {
@@ -1127,14 +1128,6 @@ v-fs:searchOnLoad
   rdfs:label "Search on load"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:boolean ;
-.
-
-v-fs:AttributiveSearchModel
-  rdf:type v-s:ClassModel ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Model for v-fs:AttributiveSearch class"@en ;
-  rdfs:label "Модель для класса v-fs:AttributiveSearch"@ru ;
-  v-s:script "" ;
 .
 
 v-fs:TotalFoundBundle

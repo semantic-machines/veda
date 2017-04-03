@@ -418,17 +418,11 @@ v-s:Version
 .
 
 # ------------------------------------------------------------
-v-s:ClassModel
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Class model"@en ;
-  rdfs:label "Модель класса"@ru ;
-.
 
 # Нужен абстрактный класс
 v-s:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:ClassModel, v-s:Codelet, v-s:Event ;
+  rdfs:domain v-ui:ClassModel, v-s:Codelet, v-s:Event ;
   rdfs:label "Script"@en ;
   rdfs:label "Скрипт"@ru ;
   rdfs:range xsd:string ;

@@ -64,17 +64,32 @@ v-ui:hasTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "Has template"@en ;
-  rdfs:label "Имеет шаблон"@ru ;
+  rdfs:label "Template"@en ;
+  rdfs:label "Шаблон"@ru ;
   rdfs:range v-ui:ClassTemplate ;
 .
 v-ui:hasModel
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "Has model"@en ;
-  rdfs:label "Имеет модель"@ru ;
-  rdfs:range v-s:ClassModel ;
+  rdfs:label "Model"@en ;
+  rdfs:label "Модель"@ru ;
+  rdfs:range v-ui:ClassModel ;
+.
+v-ui:PSModelTemplateForClass
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass rdfs:Class ;
+  v-ui:forClass owl:Class ;
+  v-ui:forProperty v-s:hasModel ;
+  v-ui:forProperty v-s:hasTemplate ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+.
+v-ui:ClassModel
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Class model"@en ;
+  rdfs:label "Модель класса"@ru ;
 .
 v-ui:template
   rdf:type owl:DatatypeProperty ;
@@ -2142,18 +2157,21 @@ v-ui:generic
   var props = $("#properties", template);
   var propTmpl = props.html();
   props.empty();
-  var properties = $.extend.apply (
-    {}, [].concat(
-      individual["rdf:type"].map( function (_class) {
-        $(".className", template).append (
-          $("<span/>", {"about": _class.id, "property": "rdfs:label"})
-        );
-        return _class.domainProperties;
-      })
-    )
+
+  var ontology = new veda.OntologyModel();
+
+  var properties = [].concat.apply(
+    [],
+    individual["rdf:type"].map( function (_class) {
+      $(".className", template).append (
+        $("<span/>", {"about": _class.id, "property": "rdfs:label"})
+      );
+      return ontology.getClassProperties(_class.id);
+    })
   );
+
   props.append (
-    Object.getOwnPropertyNames(properties).map( function (property_uri, index, array) {
+    properties.map( function (property_uri, index, array) {
 
       if (property_uri === "@" || property_uri === "rdfs:label" || property_uri === "rdf:type" || property_uri === "v-s:deleted") { return; }
 

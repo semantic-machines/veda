@@ -29,7 +29,7 @@ v-s:OrganizationUnit
   rdfs:label "Организационная единица"@ru ;
 .
 v-s:OrganizationUnitModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   v-ui:forClass v-s:OrganizationUnit ;
   v-ui:forClass v-s:OrgGroup ;
   v-ui:forClass v-s:Organization ;

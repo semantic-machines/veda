@@ -34,7 +34,7 @@ v-fe:exampleProperty
   rdfs:range xsd:string ;
 .
 v-fe:FunctionExampleModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "Example function model"@en ;
   rdfs:label "Модель Функции-примера"@ru ;
   v-ui:forClass v-fe:FunctionExample ;

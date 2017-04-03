@@ -558,7 +558,7 @@ veda.Module(function (veda) { "use strict";
         }
       });
     });
-    uris = unique( veda.Util.flatten(uris, false) );
+    uris = veda.Util.unique( veda.Util.flatten(uris, false) );
     for (var i = 0; i < depth && uris.length; i++) {
       var result = get_individuals(veda.ticket, uris),
         res_map = result.map(function (value) {
@@ -570,20 +570,9 @@ veda.Module(function (veda) { "use strict";
           }
           return prefetch.apply( obj, [0].concat(allowed_props) );
         });
-      uris = unique( veda.Util.flatten(res_map, false) );
+      uris = veda.Util.unique( veda.Util.flatten(res_map, false) );
     }
     return uris;
   };
-
-  function unique(arr) {
-    var n = {}, r = [];
-    for(var i = 0; i < arr.length; i++) {
-      if (!n[arr[i]]) {
-        n[arr[i]] = true;
-        r.push(arr[i]);
-      }
-    }
-    return r;
-  }
 
 });

@@ -239,6 +239,17 @@ veda.Module(function Util(veda) { "use strict";
     return result;
   };
 
+  veda.Util.unique = function (arr) {
+    var n = {}, r = [];
+    for(var i = 0; i < arr.length; i++) {
+      if (!n[arr[i]]) {
+        n[arr[i]] = true;
+        r.push(arr[i]);
+      }
+    }
+    return r;
+  }
+
   veda.Util.queryFromIndividual = function (individual) {
     var query;
     var flat = flattenIndividual(individual.properties);
