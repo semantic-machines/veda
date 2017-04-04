@@ -25,6 +25,7 @@ v-cal:FunctionCalendar
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
   v-ui:hasModel v-cal:FunctionCalendarModel ;
+  v-ui:hasTemplate v-cal:FunctionCalendarTemplate ;
 .
 v-cal:query
   rdf:type owl:DatatypeProperty ;

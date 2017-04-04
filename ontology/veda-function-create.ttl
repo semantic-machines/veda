@@ -22,6 +22,7 @@ v-fc:FunctionCreate
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
   v-ui:hasModel v-fc:FunctionCreateModel ;
+  v-ui:hasTemplate v-fc:FunctionCreateTemplate ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
@@ -29,6 +30,7 @@ v-fc:Blank
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
   v-ui:hasModel v-fc:BlankModel ;
+  v-ui:hasTemplate v-fc:BlankTemplateShort ;
 .
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;

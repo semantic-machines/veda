@@ -22,6 +22,7 @@ v-s:SavedSearch
   rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Saved search"@en ;
   rdfs:label "Сохраненный запрос"@ru ;
+  v-ui:hasTemplate v-ui:SavedSearchTemplate ;
 .
 
 ### veda-function-search
@@ -126,6 +127,7 @@ v-s:File
   rdfs:subClassOf v-s:Embedded ;
   rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
+  v-ui:hasTemplate v-ui:FileTemplateWithComment ;
 .
 v-s:fileName
   rdf:type owl:DatatypeProperty ;
@@ -199,6 +201,7 @@ v-s:StatusManual
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Status manual"@en ;
   rdfs:label "Статус ручной"@ru ;
+  v-ui:hasTemplate v-s:StatusManualTemplate ;
 .
 # v-s:hasStatus
 # v-s:hasComment
@@ -282,6 +285,7 @@ v-s:Journal
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Journal"@en ;
   rdfs:label "Журнал"@ru ;
+  v-ui:hasTemplate v-ui:JournalTemplate ;
 .
 v-s:childRecord
   rdf:type owl:ObjectProperty ;
@@ -345,6 +349,7 @@ v-s:DocumentCreated
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ создан"@ru ;
   rdfs:label "Document created"@en ;
+  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 v-s:DocumentUpdated
   rdf:type owl:Class ;
@@ -352,6 +357,7 @@ v-s:DocumentUpdated
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ изменен"@ru ;
   rdfs:label "Document updated"@en ;
+  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 v-s:DocumentDeleted
   rdf:type owl:Class ;
@@ -359,6 +365,7 @@ v-s:DocumentDeleted
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Документ удален"@ru ;
   rdfs:label "Document deleted"@en ;
+  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 v-s:processJournal
   rdf:type owl:ObjectProperty ;
@@ -372,6 +379,7 @@ v-s:ProcessStarted
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Process was started"@en ;
+  v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
 ####################################################################################
 
@@ -382,6 +390,7 @@ v-s:DocumentLinkRules
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Правило связи двух документов"@ru ;
   rdfs:label "Documents link rules"@en ;
+  v-ui:hasTemplate v-s:DocumentLinkRulesTemplate ;
 .
 v-s:classFrom
   rdf:type owl:ObjectProperty ;
@@ -572,7 +581,7 @@ v-s:StatusManualTemplate
 	  <em about="v-s:hasStatus" property="rdfs:label"></em>
 	  <div rel="v-s:hasStatus" data-template="v-ui:LabelLinkTemplate"></div>
 	  <veda-control rel="v-s:hasStatus" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-	  
+
 	 <br>
        <div about="@" data-template="v-s:CommentsTemplate" class="view edit -search"></div>
   </div>

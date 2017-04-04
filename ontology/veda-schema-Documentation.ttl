@@ -15,28 +15,6 @@
 .
 #-- Классы --
 #---------------------------------------------------------
-v-s:Letter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Letter"@en ;
-  rdfs:label "Письмо"@ru ;
-.
-#---------------------------------------------------------
-v-s:IncomingLetter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Letter ;
-  rdfs:label "Incoming letter"@en ;
-  rdfs:label "Входящее письмо"@ru ;
-.
-#---------------------------------------------------------
-v-s:OutcomingLetter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Letter ;
-  rdfs:label "Outcoming letter"@en ;
-  rdfs:label "Исходящее письмо"@ru ;
-.
-#---------------------------------------------------------
 v-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;

@@ -455,8 +455,8 @@ veda.Module(function (veda) { "use strict";
   proto.init = function () {
     var self = this;
     self["rdf:type"].map(function (_class) {
-      if (_class.model) {
-        var model = new Function(_class.model["v-s:script"][0]);
+      if ( _class.hasValue("v-ui:hasModel") && _class["v-ui:hasModel"][0].hasValue("v-s:script") ) {
+        var model = new Function(_class["v-ui:hasModel"][0]["v-s:script"][0]);
         model.call(self);
       }
     });

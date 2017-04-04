@@ -4,6 +4,7 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-core>
@@ -132,6 +133,7 @@ v-s:Account
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
+  v-ui:hasTemplate td:AccountTemplate1 ;
 .
 
 v-s:Credential
@@ -333,6 +335,7 @@ v-s:PermissionStatement
   rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
   rdfs:label "Permissions record"@en ;
   rdfs:label "Запись о выдаче прав"@ru ;
+  v-ui:hasTemplate v-ui:PermissionStatementTemplate ;
 .
 
 # Нужен суперкласс
@@ -415,6 +418,7 @@ v-s:Version
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Version"@en ;
   rdfs:label "Версия"@ru ;
+  v-ui:hasTemplate v-ui:VersionTemplate ;
 .
 
 # ------------------------------------------------------------

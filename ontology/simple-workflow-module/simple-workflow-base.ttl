@@ -397,6 +397,7 @@ s-wf:ComplexRouteStartForm
   rdfs:label "Стартовая форма сети Комплексный маршрут"@ru ;
   rdfs:label "Complex route start form"@en ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate s-wf:ComplexRouteStartForm_Template ;
 .
 
 s-wf:SimpleRouteStartForm
@@ -2125,6 +2126,7 @@ s-wf:ComplexRouteTest
     rdfs:label "Тестовый шаблон комплексного маршурута"@ru;
     rdfs:label "Complex route test template"@en;
     rdfs:isDefinedBy s-wf: ;
+    v-ui:hasTemplate s-wf:ComplexRouteTest_Template ;
 .
 
 s-wf:ComplexRouteTest_Template
@@ -2173,6 +2175,7 @@ s-wf:ComplexRouteTest2
   rdfs:label "Тестовый шаблон комплексного маршурута 2"@ru;
   rdfs:label "Complex route test template 2"@en;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate s-wf:ComplexRouteTest2_Template ;
 .
 
 s-wf:ComplexRouteTest2_Template
@@ -2506,6 +2509,7 @@ s-wf:UserTaskForm
   rdfs:subClassOf v-wf:DecisionForm ;
   rdfs:label "Форма ответа на задачу"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate s-wf:UserTaskFormTemplate ;
 .
 # ------------------------------------------------------------------------------------------
 
@@ -2625,6 +2629,7 @@ v-wf:DecisionGoSign
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к этапу подписания"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoApproval
@@ -2632,6 +2637,7 @@ v-wf:DecisionGoApproval
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к этапу утверждения"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination1
@@ -2639,6 +2645,7 @@ v-wf:DecisionGoCoordination1
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к 1 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination2
@@ -2646,6 +2653,7 @@ v-wf:DecisionGoCoordination2
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к 2 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination3
@@ -2653,6 +2661,7 @@ v-wf:DecisionGoCoordination3
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к 3 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination4
@@ -2660,6 +2669,7 @@ v-wf:DecisionGoCoordination4
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к 4 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination5
@@ -2667,6 +2677,7 @@ v-wf:DecisionGoCoordination5
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к 5 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination6
@@ -2674,6 +2685,7 @@ v-wf:DecisionGoCoordination6
   rdfs:subClassOf v-wf:Decision ;
   rdfs:label "Перейти к 6 этапу согласования"@ru ;
   rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 #----------------------- Coordination Net ------------------------------

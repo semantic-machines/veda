@@ -24,6 +24,7 @@ v-fs:FunctionSearch
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function Search"@en ;
   rdfs:label "Функция Поиск"@ru ;
+  v-ui:hasTemplate v-fs:SearchTemplate ;
 .
 v-fs:FulltextRequest
   rdf:type owl:Class ;
@@ -31,6 +32,7 @@ v-fs:FulltextRequest
   rdfs:label "Fulltext request"@en ;
   rdfs:label "Полнотекстовый запрос"@ru ;
   v-ui:hasModel v-fs:FulltextRequestModel ;
+  v-ui:hasTemplate v-fs:FulltextRequestTemplate ;
 .
 v-fs:AttributiveRequest
   rdf:type owl:Class ;
@@ -38,6 +40,7 @@ v-fs:AttributiveRequest
   rdfs:label "Attributive request"@en ;
   rdfs:label "Атрибутивный запрос"@ru ;
   v-ui:hasModel v-fs:AttributiveRequestModel ;
+  v-ui:hasTemplate v-fs:AttributiveRequestTemplate ;
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;
@@ -1098,6 +1101,7 @@ v-fs:AttributiveSearch
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Attributive search"@en ;
   rdfs:label "Атрибутивный поиск"@ru ;
+  v-ui:hasTemplate v-fs:AttributiveSearchTemplate ;
 .
 
 v-fs:searchBlankTemplate

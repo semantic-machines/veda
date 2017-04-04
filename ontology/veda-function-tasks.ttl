@@ -24,6 +24,7 @@ v-ft:FunctionTasks
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
   v-ui:hasModel v-ft:FunctionTasksModel ;
+  v-ui:hasTemplate v-ft:FunctionTasksTemplate ;
 .
 v-ft:query
   rdf:type owl:DatatypeProperty ;
