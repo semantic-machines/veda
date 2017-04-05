@@ -30,105 +30,6 @@ v-s:assetNumber
   rdfs:domain v-s:Asset ;
 .
 
-#----------------------------------------------------
-v-s:Pts
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Vehicle ;
-  rdfs:label "Pts"@en ;
-  rdfs:label "Паспорт транспортного средства"@ru ;
-.
-# v-s:registrationNumber
-# v-s:registrationDate
-
-v-s:movablesModel
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Movables model"@en ;
-  rdfs:label "Марка ТС"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
-v-s:movablesType
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Movables type"@en ;
-  rdfs:label "Тип ТС"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
-v-s:movablesCategory
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Movables сategory"@en ;
-  rdfs:label "Категория ТС"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
-# v-s:vinNumber
-# v-s:year
-# v-s:engineModel
-
-v-s:chassisNumber
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Chassis number"@en ;
-  rdfs:label "шасси (рама) №"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
-v-s:cabinNumber
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Cabin number"@en ;
-  rdfs:label "кузов (кабина,прицеп) №"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Pts ;
-.
-# v-s:movablesColor
-
-
-#----------------------------------------------------
-v-s:Psm
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Vehicle ;
-  rdfs:label "Psm"@en ;
-  rdfs:label "Паспорт самоходной машины"@ru ;
-.
-# v-s:registrationNumber
-# v-s:registrationDate
-
-v-s:machineSerialNumber
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "machine serial number"@en ;
-  rdfs:label "Заводской номер машины (рамы)"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Psm ;
-.
-# v-s:engineModel
-# v-s:year
-v-s:transmission
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "transmission"@en ;
-  rdfs:label "Коробка передач"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Psm ;
-.
-v-s:mainDriveAxle
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "main drive axle"@en ;
-  rdfs:label "Основной ведущий мост (номер)"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Psm ;
-.
-v-s:thruster
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "thruster"@en ;
-  rdfs:label "Вид движителя"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Psm ;
-.
-# v-s:movablesColor
 
 #----------------------------------------------------
 v-s:RegistrationCertificate
@@ -136,7 +37,7 @@ v-s:RegistrationCertificate
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Spatial ; 
+  rdfs:subClassOf v-s:Spatial ;
   rdfs:label "Registration сertificate"@en ;
   rdfs:label "Свидетельство о регистрации"@ru ;
 .

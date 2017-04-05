@@ -16,118 +16,7 @@
   v-s:loadPriority 6 ;
 .
 
-### -------------------------------------------------------
-v-s:Deliverable2
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Deliverable thing"@en ;
-  rdfs:label "Доставляемая сущность"@ru ;
-.
-v-s:hasDelivery
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Deliverable2 ;
-  rdfs:range v-s:Delivery ;
-  rdfs:label "Доставка"@ru ;
-  rdfs:label "Delivery"@en ;
-.
-v-s:Delivery
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Доставка"@ru ;
-  rdfs:label "Delivery"@en ;
-.
-v-s:DeliveryMethod
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Метод доставки"@ru ;
-  rdfs:label "Delivery method"@en ;
-.
-v-s:deliverBy
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Delivery ;
-  rdfs:range v-s:DeliveryMethod ;
-  rdfs:label "Метод доставки"@ru ;
-  rdfs:label "Delivery method"@en ;
-.
-v-s:sender
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Sender"@en ;
-  rdfs:label "Отправитель"@ru ;
-  rdfs:range v-s:Correspondent ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:recipient
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Recipient"@en ;
-  rdfs:label "Получатель"@ru ;
-  rdfs:range v-s:Correspondent ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:copyTo
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Copy to"@en ;
-  rdfs:label "В копию"@ru ;
-  rdfs:range v-s:Correspondent ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:mailbox
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Mailbox"@en ;
-  rdfs:comment "Адрес электронной почты"@ru ;
-  rdfs:label "Mailbox"@en ;
-  rdfs:label "Адрес эл. почты"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:fax
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Fax"@en ;
-  rdfs:comment "Номер факса"@ru ;
-  rdfs:label "Fax"@en ;
-  rdfs:label "Номер факса"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:phone
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Phone"@en ;
-  rdfs:comment "Номер телефона"@ru ;
-  rdfs:label "Phone"@en ;
-  rdfs:label "Номер телефона"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:contactInfo
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Contact Info"@en ;
-  rdfs:label "Контактная информация"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:signedBy
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Подписавший"@ru ;
-  rdfs:label "Signed by"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:sheetsCount
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Количество листов"@ru ;
-  rdfs:label "Sheets count"@en ;
-  rdfs:range xsd:integer ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-v-s:dueDate
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Срок исполнения"@ru ;
-  rdfs:label "Due date"@en ;
-  rdfs:range xsd:dateTime ;
-  rdfs:domain v-s:Deliverable2 ;
-.
-
-### -------------------------------------------------------
+# ------------------------------------------------------------ КЛАССЫ --
 v-s:Correspondent
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -179,9 +68,6 @@ v-s:correspondentPersonDescription
 .
 
 ### -------------------------------------------------------
-
-# КЛАССЫ---------------------------------------
-
 v-s:Letter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -189,6 +75,21 @@ v-s:Letter
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
 .
+v-s:hasLetterRegistrationRecordSender
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:LetterRegistrationRecordSender ;
+  rdfs:label "Регистрационная запись отправителя"@ru ;
+  rdfs:label "Registration record sender"@en ;
+.
+v-s:hasLetterRegistrationRecordRecipient
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:LetterRegistrationRecordRecipient ;
+  rdfs:label "Регистрационная запись получателя"@ru ;
+  rdfs:label "Registration record recipient"@en ;
+.
+
 # rdfs:label
 # v-s:hasRegistrationRecord
 # v-s:sender
@@ -202,13 +103,35 @@ v-s:Letter
 # rdfs:comment
 # v-s:attachment
 
+### -------------------------------------------------------
+v-s:Delivery
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Доставка"@ru ;
+  rdfs:label "Delivery"@en ;
+.
+
+### -------------------------------------------------------
+v-s:DeliveryMethod
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Метод доставки"@ru ;
+  rdfs:label "Delivery method"@en ;
+.
+
+### -------------------------------------------------------
 v-s:RegistrationRecord
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:label "Регистрационная запись"@ru ;
   rdfs:label "Registration record"@en ;
 .
 
+### -------------------------------------------------------
 v-s:LetterRegistrationRecordSender
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:RegistrationRecord ;
@@ -217,6 +140,7 @@ v-s:LetterRegistrationRecordSender
   v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
 .
 
+### -------------------------------------------------------
 v-s:LetterRegistrationRecordRecipient
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:RegistrationRecord ;
@@ -229,26 +153,7 @@ v-s:LetterRegistrationRecordRecipient
 # v-s:registrationDate
 
 
-# СВОЙСТВА-------------------------------------
-
-v-s:registrationRecordSender
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Letter ;
-  rdfs:range v-s:LetterRegistrationRecordSender ;
-  rdfs:label "Регистрационная запись отправителя"@ru ;
-  rdfs:label "Registration record sender"@en ;
-.
-
-v-s:registrationRecordRecipient
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Letter ;
-  rdfs:range v-s:LetterRegistrationRecordRecipient ;
-  rdfs:label "Регистрационная запись получателя"@ru ;
-  rdfs:label "Registration record recipient"@en ;
-.
-
-
-# СПЕЦИФИКАЦИИ---------------------------------
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasDocumentKindForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -281,12 +186,12 @@ v-s:PsSenderRecipientForLetter
 v-s:PsRegistrationRecordForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Letter ;
-  v-ui:forProperty v-s:registrationRecordSender ;
-  v-ui:forProperty v-s:registrationRecordRecipient ;
+  v-ui:forProperty v-s:hasLetterRegistrationRecordSender ;
+  v-ui:forProperty v-s:hasLetterRegistrationRecordRecipient ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  rdfs:label "v-s:registrationRecordSender, v-s:registrationRecordRecipient specification for v-s:Letter class"@en ;
-  rdfs:label "Спецификация v-s:registrationRecordSender, v-s:registrationRecordRecipient для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient specification for v-s:Letter class"@en ;
+  rdfs:label "Спецификация v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient для класса v-s:Letter"@ru ;
 .
 v-s:PsOrganizationForCorrespondent
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -298,7 +203,7 @@ v-s:PsOrganizationForCorrespondent
   rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
 .
 
-# СТРОКИ---------------------------------------
+# ------------------------------------------------------------ СТРОКИ --
 
 v-s:AutomaticallyBundle
   rdf:type v-s:Bundle ;
@@ -312,9 +217,9 @@ v-s:ManuallyBundle
   rdfs:label "Manually"@en ;
 .
 
-# УПРАВЛЕНИЕ_ПРАВАМИ---------------------------
+# ------------------------------------------------------------ УПРАВЛЕНИЕ_ПРАВАМИ --
 
-# ШАБЛОНЫ--------------------------------------
+# ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:LetterTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -334,10 +239,10 @@ v-s:LetterTemplate
       this["v-s:sender"][0]["v-s:correspondentOrganization"][0]["rdfs:label"].join(" ") : "";
     var recipientOrg = this.hasValue("v-s:recipient") && this["v-s:sender"][0].hasValue("v-s:correspondentOrganization") ?
       this["v-s:recipient"][0]["v-s:correspondentOrganization"][0]["rdfs:label"].join(" ") : "";
-    var senderRegNum = this.hasValue("v-s:registrationRecordSender") ? this["v-s:registrationRecordSender"][0]["v-s:registrationNumber"].join(" ") : "";
-    var senderRegDate = this.hasValue("v-s:registrationRecordSender") && this["v-s:registrationRecordSender"][0].hasValue("v-s:registrationDate") ? this["v-s:registrationRecordSender"][0]["v-s:registrationDate"][0].toISOString().substr(0, 10) : "";
-    var recipientRegNum = this.hasValue("v-s:registrationRecordRecipient") ? this["v-s:registrationRecordRecipient"][0]["v-s:registrationNumber"].join(" ") : "";
-    var recipientRegDate = this.hasValue("v-s:registrationRecordRecipient") && this["v-s:registrationRecordRecipient"][0].hasValue("v-s:registrationDate") ? this["v-s:registrationRecordRecipient"][0]["v-s:registrationDate"][0].toISOString().substr(0, 10) : "";
+    var senderRegNum = this.hasValue("v-s:hasLetterRegistrationRecordSender") ? this["v-s:hasLetterRegistrationRecordSender"][0]["v-s:registrationNumber"].join(" ") : "";
+    var senderRegDate = this.hasValue("v-s:hasLetterRegistrationRecordSender") && this["v-s:hasLetterRegistrationRecordSender"][0].hasValue("v-s:registrationDate") ? this["v-s:hasLetterRegistrationRecordSender"][0]["v-s:registrationDate"][0].toISOString().substr(0, 10) : "";
+    var recipientRegNum = this.hasValue("v-s:hasLetterRegistrationRecordRecipient") ? this["v-s:hasLetterRegistrationRecordRecipient"][0]["v-s:registrationNumber"].join(" ") : "";
+    var recipientRegDate = this.hasValue("v-s:hasLetterRegistrationRecordRecipient") && this["v-s:hasLetterRegistrationRecordRecipient"][0].hasValue("v-s:registrationDate") ? this["v-s:hasLetterRegistrationRecordRecipient"][0]["v-s:registrationDate"][0].toISOString().substr(0, 10) : "";
     var description = this["v-s:description"].join(" ");
     this["rdfs:label"] = [docKind + " - " + senderOrg + " (№" + senderRegNum + ", " + senderRegDate + ")" + " -> " + recipientOrg + " (№" + recipientRegNum + ", " + recipientRegDate + ")" + " - " + description];
   }
@@ -356,8 +261,8 @@ v-s:LetterTemplate
       <veda-control data-type="link" rel="v-s:sender" class="-view edit search create"></veda-control>
       <hr>
       <em about="v-s:RegistrationRecord" property="rdfs:label"></em>
-      <div rel="v-s:registrationRecordSender" class="view edit search" data-template="v-s:LetterRegistrationRecordTemplate" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-s:registrationRecordSender" class="-view edit search create"></veda-control>
+      <div rel="v-s:hasLetterRegistrationRecordSender" class="view edit search" data-template="v-s:LetterRegistrationRecordTemplate" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-s:hasLetterRegistrationRecordSender" class="-view edit search create"></veda-control>
     </div>
     <div class="col-sm-6">
       <h3 about="v-s:recipient" property="rdfs:label"></h3>
@@ -365,8 +270,8 @@ v-s:LetterTemplate
       <veda-control data-type="link" rel="v-s:recipient" class="-view edit search create"></veda-control>
       <hr>
       <em about="v-s:RegistrationRecord" property="rdfs:label"></em>
-      <div rel="v-s:registrationRecordRecipient" class="view edit search" data-template="v-s:LetterRegistrationRecordTemplate" data-embedded="true"></div>
-      <veda-control data-type="link" rel="v-s:registrationRecordRecipient" class="-view edit search create"></veda-control>
+      <div rel="v-s:hasLetterRegistrationRecordRecipient" class="view edit search" data-template="v-s:LetterRegistrationRecordTemplate" data-embedded="true"></div>
+      <veda-control data-type="link" rel="v-s:hasLetterRegistrationRecordRecipient" class="-view edit search create"></veda-control>
     </div>
   </div>
   <div class="row">
@@ -536,10 +441,10 @@ v-s:LetterRegistrationRecordTemplate
     }
   }
 
-  if ( template.parent().attr("rel") === "v-s:registrationRecordSender" ) {
+  if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
     template.addClass("panel-info");
     template.children(":first").addClass("bg-info");
-  } else if ( template.parent().attr("rel") === "v-s:registrationRecordRecipient" ) {
+  } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
     template.addClass("panel-success");
     template.children(":first").addClass("bg-success");
   }
@@ -555,13 +460,13 @@ v-s:LetterRegistrationRecordTemplate
 v-s:LetterRegistrationRecordSenderIndex
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:registrationRecordSender ;
+  vdi:forProperty v-s:hasLetterRegistrationRecordSender ;
   vdi:inherited_index v-s:RegistrationRecordIndex ;
 .
 v-s:LetterRegistrationRecordRecipientIndex
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:registrationRecordRecipient ;
+  vdi:forProperty v-s:hasLetterRegistrationRecordRecipient ;
   vdi:inherited_index v-s:RegistrationRecordIndex ;
 .
 v-s:RegistrationRecordIndex
@@ -625,9 +530,9 @@ v-s:LetterRegistryResultTemplate
     <tr class="active">
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:sender"><span about="v-s:sender" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:registrationRecordSender.v-s:registrationNumber"><span about="v-s:registrationRecordSender" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordSender" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:recipient"><span about="v-s:recipient" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:registrationRecordRecipient.v-s:registrationNumber"><span about="v-s:registrationRecordRecipient" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordRecipient" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:hasDocumentKind"><span about="v-s:hasDocumentKind" property="rdfs:label"></span></th>
       <th width="10%"class="orderby" data-orderby="v-s:dueDate"><span about="v-s:dueDate" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:description"><span about="v-s:description" property="rdfs:label"></span></th>
@@ -642,14 +547,14 @@ v-s:LetterRegistryResultTemplate
           <span property="v-s:correspondentOrganizationDescription"></span>
         </div>
       </td>
-      <td rel="v-s:registrationRecordSender"><span property="v-s:registrationNumber"></span></td>
+      <td rel="v-s:hasLetterRegistrationRecordSender"><span property="v-s:registrationNumber"></span></td>
       <td rel="v-s:recipient">
         <div>
           <span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"></span>
           <span property="v-s:correspondentOrganizationDescription"></span>
         </div>
       </td>
-      <td rel="v-s:registrationRecordRecipient"><span property="v-s:registrationNumber"></span></td>
+      <td rel="v-s:hasLetterRegistrationRecordRecipient"><span property="v-s:registrationNumber"></span></td>
       <td rel="v-s:hasDocumentKind" data-template="v-ui:LabelTemplate"></td>
       <td property="v-s:dueDate"></td>
       <td property="v-s:description"></td>
