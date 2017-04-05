@@ -933,4 +933,31 @@ for (i = 0; i < 1; i++)
           }
 
         });
+
+    test("#019 Individual A, B, C store and read use individual", function()
+    {
+        var ticket = get_user1_ticket();
+
+        var A = create_test_document1(ticket);
+        var B = create_test_document1(ticket);
+        var C = create_test_document1(ticket);
+
+        var new_idividuals = [A, B, C];
+
+        var res = get_individuals(ticket.id, [A['@'], B['@'], C['@']]);
+
+        ok(res.length == 3);
+
+        for (var idx = 0; idx < 3; idx++)
+        {
+            for (var idx2 = 0; idx2 < 3; idx2++)
+            {
+                if (res[idx]['@'] == new_idividuals[idx2]['@'])
+                {
+                    ok(compare(res[idx], new_idividuals[idx2]));
+                }
+            }
+        }
+
+    });
 }
