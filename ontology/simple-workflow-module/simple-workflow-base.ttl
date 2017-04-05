@@ -753,6 +753,8 @@ s-wf:ComplexRouteStartForm_Template
   v-ui:forClass s-wf:ComplexRouteStartForm ;
   v-ui:template """
 <script>
+if (mode !== "edit") { return; }
+
 var stages = [ // Default values fill
   'informing',
   'introduction',
@@ -2083,40 +2085,7 @@ $('#save_and_start_process', template).on('click', function () {
     <button type="button" class="action btn btn-warning" id="save_and_start_process" about="v-s:Send" property="rdfs:label"></button>
     <button type="button" class="action btn btn-default" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
   </div>
-
 </div>
-<script>
-/*
-  var stages = [ // Default values fill
-    'informing',
-    'coordination1',
-    'coordination2',
-    'coordination3',
-    'coordination4',
-    'coordination5',
-    'coordination6',
-    'sign',
-    'approval',
-    'review',
-    'instruction',
-    'instruction2',
-    'instruction3',
-    'examination',
-    'distribution',
-    'auto_instruction'
-  ]; sourceURL=s-wf:ComplexRouteStartForm_Template
-    var complex = 's-wf:ComplexRouteStartForm_';
-    var simple = 's-wf:SimpleRouteStartForm_';
-    stages.forEach(function(stage) {
-      var routeid = complex+stage;
-      individual[routeid] = [routes[stage]];
-      var sub = individual[routeid][0];
-      if (!sub.hasValue(simple+'editable') || sub[simple+'editable'][0] == false) {
-        $('veda-control[rel="s-wf:ComplexRouteStartForm_'+stage+'"]').hide();
-      }
-    });
-*/
-</script>
   """ ;
 .
 
