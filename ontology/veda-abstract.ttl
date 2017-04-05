@@ -756,6 +756,14 @@ v-s:registrationNumberAdd
   rdfs:range xsd:string ;
   rdfs:domain v-s:Registered ;
 .
+v-s:hasOriginalSource
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Original source"@en ;
+  rdfs:label "Источник оригинала"@ru ;
+  rdfs:range v-s:OriginalSource ;
+  rdfs:domain v-s:Registered ;
+.
+
 ### ------------------------------------------------------
 v-s:Measurable
   rdf:type owl:Class ;
