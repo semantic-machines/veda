@@ -763,6 +763,13 @@ v-s:hasOriginalSource
   rdfs:range v-s:OriginalSource ;
   rdfs:domain v-s:Registered ;
 .
+v-s:hasRegistrationRecord
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:RegistrationRecord ;
+  rdfs:label "Регистрационная запись"@ru ;
+  rdfs:label "Registration record"@en ;
+  rdfs:domain v-s:Registered ;
+.
 
 ### ------------------------------------------------------
 v-s:Measurable
