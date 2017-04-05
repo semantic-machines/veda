@@ -273,4 +273,5 @@ v-s:Addendum
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Addendum local regulatory document"@en ;
   rdfs:label "Приложение ЛНД"@ru ;
+  v-ui:hasTemplate v-s:AddendumTemplate ;
 .

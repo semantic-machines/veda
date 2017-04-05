@@ -21,6 +21,7 @@ v-s:Asset
   rdfs:subClassOf v-s:Vehicle ;
   rdfs:label "Asset"@en ;
   rdfs:label "Основное средство"@ru ;
+  v-ui:hasTemplate mnd-s:AssetTemplate ;
 .
 v-s:assetNumber
   rdf:type owl:DatatypeProperty ;
@@ -39,6 +40,7 @@ v-s:Pts
   rdfs:subClassOf v-s:Vehicle ;
   rdfs:label "Pts"@en ;
   rdfs:label "Паспорт транспортного средства"@ru ;
+  v-ui:hasTemplate mnd-s:PtsTemplate ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate
@@ -94,6 +96,7 @@ v-s:Psm
   rdfs:subClassOf v-s:Vehicle ;
   rdfs:label "Psm"@en ;
   rdfs:label "Паспорт самоходной машины"@ru ;
+  v-ui:hasTemplate mnd-s:PsmTemplate ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate
@@ -136,9 +139,10 @@ v-s:RegistrationCertificate
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Spatial ; 
+  rdfs:subClassOf v-s:Spatial ;
   rdfs:label "Registration сertificate"@en ;
   rdfs:label "Свидетельство о регистрации"@ru ;
+  v-ui:hasTemplate mnd-s:RegistrationCertificateTemplate ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate

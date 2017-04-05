@@ -43,6 +43,7 @@ v-s:ContractorProfile
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Contractor profile"@en ;
   rdfs:label "Досье контрагента"@ru ;
+  v-ui:hasTemplate mnd-s:ContractorProfileTemplate ;
 .
 # ------------------------------------------------------------
 v-s:ContractorProfileFile
