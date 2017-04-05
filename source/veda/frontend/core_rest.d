@@ -705,12 +705,17 @@ class VedaStorageRest : VedaStorageRest_API
 
             try
             {
-                foreach (indv; context.get_individuals(ticket, uris))
+                foreach (uri; uris)
                 {
-                    Json jj = individual_to_json(indv);
-                    res ~= jj;
-                    args ~= indv.uri;
-                }
+                    string cb = context.get_individual_as_binobj(ticket, uri, rc);
+                    if (rc == ResultCode.OK)
+                    {
+                        Json res_i = Json.emptyObject;
+                        cbor2json(&res_i, cb);
+	                    res ~= res_i;
+	                    args ~= uri;
+                    }
+                }                            	
             }
             catch (Throwable ex)
             {
@@ -768,7 +773,6 @@ class VedaStorageRest : VedaStorageRest_API
                     }
 
                     string cb = context.get_individual_as_binobj(ticket, uri, rc);
-
                     if (rc == ResultCode.OK)
                     {
                         res = Json.emptyObject;

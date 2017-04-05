@@ -355,12 +355,12 @@ function create_use_transformation(process, task)
 // скрипт поиска в документе uri > 64
 function find_long_terms(ticket, uri, execute_script)
 {
-	var event_id = '';
+    var event_id = '';
     var cid = get_from_ght('cid');
     //print ("exist cid=" + cid);
     if (!cid)
     {
-		var count_appts = 0;
+        var count_appts = 0;
         var cid = new_uris_consumer();
         put_to_ght('cid', cid);
         print("new cid=" + cid);
@@ -381,19 +381,19 @@ function find_long_terms(ticket, uri, execute_script)
                     {
                         if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
                         {
-							var hash = Sha256.hash(i_uri);
-							
-							hash = "d:appt_" + hash.substr (0, 50);
+                            var hash = Sha256.hash(i_uri);
+
+                            hash = "d:appt_" + hash.substr(0, 50);
                             put_to_ght(i_uri, hash);
-                            count_appts ++;
-                        }    
+                            count_appts++;
+                        }
                     }
                 }
             }
         }
-        
-        print ("found appointments : " + count_appts);
-        
+
+        print("found appointments : " + count_appts);
+
     }
     else
     {
@@ -401,54 +401,52 @@ function find_long_terms(ticket, uri, execute_script)
 
         if (document)
         {
-            if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
+            var is_changed = false;
+            for (var key in document)
             {
-				var is_changed = false;
-                for (var key in document)
+                var values = document[key];
+                if (key != '@')
                 {
-                    var values = document[key];
-                    if (key != '@')
+                    var new_values = [];
+                    for (var idx in values)
                     {
-						var new_values = [];
-                        for (var idx in values)
+                        var value = values[idx];
+                        var new_uri = get_from_ght(value.data);
+                        if (new_uri)
                         {
-                            var value = values[idx];
-                            var new_uri = get_from_ght(value.data);
-                            if (new_uri)
-                            {
-                                print("found long value>63," + uri + " " + key + "=" + value.data + " -> " + new_uri);
-								value.data = new_uri;
-                                is_changed = true;
-                            }
-                            
-                            new_values.push (value);
+                            print("found: value>63," + uri + " " + key + "=" + value.data + " -> " + new_uri);
+                            value.data = new_uri;
+                            is_changed = true;
                         }
-                        
-						if (is_changed == true)
-							document[key] = new_values;
+
+                        new_values.push(value);
                     }
-                    else
+
+                    if (is_changed == true)
+                        document[key] = new_values;
+                }
+                else
+                {
+                    if (get_from_ght(values))
                     {
-                        if (get_from_ght(values))
+                        var new_uri = get_from_ght(values);
+                        if (new_uri)
                         {
-                            var new_uri = get_from_ght(values);
-                            if (new_uri)
-                            {
-                                print("found long @>63," + values + "(remove) -> " + new_uri);
-                                document['@'] = new_uri;
-                                remove_individual (ticket, uri, event_id);
-                                is_changed = true;
-							}
+                            print("found: uri>63," + values + "(remove) -> " + new_uri);
+                            document['@'] = new_uri;
+                            put_individual(ticket, document, event_id);
+                            remove_individual(ticket, uri, event_id);
                         }
                     }
                 }
-                
-                if (is_changed == true)
-                {
-					put_individual (ticket, document, event_id);
-				}	
+            }
+
+            if (is_changed == true)
+            {
+                put_individual(ticket, document, event_id);
             }
         }
+
     }
 }
 
