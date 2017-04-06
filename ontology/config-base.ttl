@@ -172,6 +172,13 @@ cfg:User_position
 .
 
 ### -------------------------------------------------------
+cfg:Permission_ntlmu_r_tau
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject cfg:TrustedAuthenticationUserGroup ;
+  v-s:permissionSubject cfg:VedaNTLMFilter ;
+.
+
 cfg:Permission_VedaSystem_allRead
   rdf:type v-s:PermissionStatement ;
   v-s:canRead "true"^^xsd:boolean ;
@@ -193,11 +200,11 @@ cfg:SuperUser
   rdfs:label "Супер админ"@ru ;
 .
 
-cfg:TrustedAuthenticationUser
+cfg:TrustedAuthenticationUserGroup
   rdf:type v-s:Group ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Trusted Authentication User"@en ;
-  rdfs:label "Trusted Authentication Потзователи"@ru ;
+  rdfs:label "Trusted Authentication Пользователи"@ru ;
 .
 
 cfg:TTLResourcesGroup
@@ -234,7 +241,7 @@ cfg:Membership_tau
   rdf:type v-s:Membership ;
   v-s:author cfg:VedaSystem ;
   v-s:resource cfg:VedaNTLMFilter ;
-  v-s:memberOf cfg:TrustedAuthenticationUser ;
+  v-s:memberOf cfg:TrustedAuthenticationUserGroup ;
 .
 
 ### -------------------------------------------------------
