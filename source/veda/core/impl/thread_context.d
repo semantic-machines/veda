@@ -617,7 +617,7 @@ class PThreadContext : Context
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
-            	log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
+            	//log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
                 if (subject_group == allow_trusted_group)
                     is_allow_trusted = true;
             }
