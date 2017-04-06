@@ -1175,6 +1175,7 @@ v-fs:AttributiveSearchTemplate
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
+  <h2 about="@" property="rdfs:label"></h2>
   <div id="params">
     <div id="search-form"></div>
     <br>
@@ -1310,7 +1311,7 @@ v-fs:AttributiveSearchTemplate
     }
   });
   function getAll() {
-    if (self.cursor < self.estimated) {
+    if (self.cursor < self.estimated && template.is(":visible")) {
       return search(self.cursor).then(getAll);
     }
   }
