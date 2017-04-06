@@ -578,6 +578,8 @@ class PThreadContext : Context
         return ticket;
     }
 
+	string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
+
     Ticket get_ticket_trusted(string tr_ticket_id, string login)
     {
         Ticket ticket;
@@ -611,17 +613,18 @@ class PThreadContext : Context
         Ticket *tr_ticket = get_ticket(tr_ticket_id);
         if (tr_ticket.result == ResultCode.OK)
         {
-            bool is_superadmin = false;
+            bool is_allow_trusted = false;
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
-                if (subject_group == "cfg:SuperUser")
-                    is_superadmin = true;
+            	log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
+                if (subject_group == allow_trusted_group)
+                    is_allow_trusted = true;
             }
 
-            get_rights_origin_from_acl(tr_ticket, "cfg:SuperUser", &trace_acl);
+            get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl);
 
-            if (is_superadmin)
+            if (is_allow_trusted)
             {
                 login = replaceAll(login, regex(r"[-]", "g"), " +");
 
@@ -638,6 +641,10 @@ class PThreadContext : Context
                     log.trace("trusted authenticate, result ticket=[%s]", ticket);
                     return ticket;
                 }
+            }
+            else
+            {
+	            log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);            	
             }
         }
         else
