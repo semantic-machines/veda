@@ -279,7 +279,7 @@ class XapianVQL
                         else
                         {
                             int slot;
-                            if (rs !is null && get_count_alpha_and_digit(rs) > 3 && rs[ 0 ] == '*')
+                            if (rs !is null && rs[ 0 ] == '*' && is_good_token(rs))
                                 slot = key2slot.get(ls ~ "#F", -1);
                             else
                                 slot = key2slot.get(ls, -1);
@@ -309,11 +309,9 @@ class XapianVQL
                                 }
                                 else
                                 {
-                                    if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && get_count_alpha_and_digit(rs) > 3)
+                                    if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0 && is_good_token(rs)))
                                     {
-                                        if ((indexOf(rs,
-                                                     '*') >= 0) &&
-                                            ((rs[ 0 ] == '+' && get_count_alpha_and_digit(rs) < 3) || get_count_alpha_and_digit(rs) < 4))
+                                        if ((indexOf(rs, '*') >= 0) && (rs[ 0 ] == '+' && !is_good_token (rs)))
                                         {
                                             rs = rs.removechars("*");
                                         }
@@ -434,7 +432,7 @@ class XapianVQL
                         xtr = to_lower_and_replace_delimeters(rs);
                         //writeln("xtr=", xtr);
 
-                        if (indexOf(xtr, '*') > 0 && get_count_alpha_and_digit(xtr) > 3)
+                        if (indexOf(xtr, '*') > 0 && is_good_token(xtr))
                         {
                             feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD | feature_flag.FLAG_PHRASE;
                             if (tta.op == "!=")
@@ -767,20 +765,29 @@ class XapianVQL
         return "NULL";
     }
 
-    int get_count_alpha_and_digit(string str)
+    bool is_good_token(string str)
     {
-        int  count_cc = 0;
+        int  count_alpha = 0;
+        int  count_number = 0;
         long count    = utf.count(str);
 
         for (size_t idx; idx < count; idx)
         {
             dchar dd = utf.decode(str, idx);
-            if (isAlpha(dd) || isNumber(dd))
-                count_cc++;
+            if (isAlpha(dd))
+                count_alpha++;
+            if (isNumber(dd))
+                count_number++;
         }
 
         //log.trace ("@get_count_alpha, str=[%s], count_alpha=[%d]", str, count_alpha);
 
-        return count_cc;
+		if (count_alpha + count_number < 3) 
+			return false;	 	
+
+		if (count_alpha + count_number < 4 && count_number == 3) 
+			return false;	 	
+			
+		return true;	
     }
 }
