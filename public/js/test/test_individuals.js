@@ -934,7 +934,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    test("#019 Individual A, B, C store and read use individual", function()
+    test("#019 Individual A, B, C store and read use get_individuals", function()
     {
         var ticket = get_user1_ticket();
 
@@ -959,5 +959,24 @@ for (i = 0; i < 1; i++)
             }
         }
 
+    });
+
+    test("#020 test search on invalid query", function()
+    {
+        var ticket = get_user1_ticket();
+
+        var A = create_test_document1(ticket);
+
+          var params_q1 = {
+            ticket: ticket.id,
+            query: "(('rdf:type' == 'v-s:Department')) && ('*' == '.;u*')",
+            sort: "",
+            top: 3,
+            from: 0
+          };
+
+        var res = query(params_q1);
+
+        ok(res.result.length == 0);
     });
 }

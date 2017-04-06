@@ -4,7 +4,7 @@
 
 module veda.core.search.xapian_vql;
 
-import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm, utf = std.utf;
+import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm, std.uni, utf = std.utf;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
 import veda.core.search.vel;
@@ -279,7 +279,7 @@ class XapianVQL
                         else
                         {
                             int slot;
-                            if (rs !is null && utf.count(rs) > 3 && rs[ 0 ] == '*')
+                            if (rs !is null && get_count_alpha_and_digit(rs) > 3 && rs[ 0 ] == '*')
                                 slot = key2slot.get(ls ~ "#F", -1);
                             else
                                 slot = key2slot.get(ls, -1);
@@ -309,13 +309,15 @@ class XapianVQL
                                 }
                                 else
                                 {
-                                    if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && utf.count(rs) > 3)
+                                    if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0) && get_count_alpha_and_digit(rs) > 3)
                                     {
-                                    	if ((indexOf(rs, '*') >= 0) && ((rs[ 0 ] == '+' && utf.count(rs) < 3) || utf.count(rs) < 4))
-                                    	{
-                                    		rs = rs.removechars ("*");
-                                    	}	
-	                                    	
+                                        if ((indexOf(rs,
+                                                     '*') >= 0) &&
+                                            ((rs[ 0 ] == '+' && get_count_alpha_and_digit(rs) < 3) || get_count_alpha_and_digit(rs) < 4))
+                                        {
+                                            rs = rs.removechars("*");
+                                        }
+
                                         char[] query_str = to_lower_and_replace_delimeters(rs).dup;
                                         if (rs[ 0 ] == '*')
                                             reverse(query_str);
@@ -432,7 +434,7 @@ class XapianVQL
                         xtr = to_lower_and_replace_delimeters(rs);
                         //writeln("xtr=", xtr);
 
-                        if (indexOf(xtr, '*') > 0 && utf.count(xtr) > 3)
+                        if (indexOf(xtr, '*') > 0 && get_count_alpha_and_digit(xtr) > 3)
                         {
                             feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD | feature_flag.FLAG_PHRASE;
                             if (tta.op == "!=")
@@ -587,7 +589,7 @@ class XapianVQL
                     _transform_vql_to_xapian(ctx, tta.R, tta.op, dummy, dummy, query_r, key2slot, rd, level + 1, qp, trace);
 
                 if (tta.L !is null)
-                    _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace );
+                    _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
 
                 if (query_l !is null)
                     query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
@@ -669,7 +671,7 @@ class XapianVQL
         if (matches !is null)
         {
             sr.estimated = matches.get_matches_estimated(&err);
-            
+
             if (prepare_element_event !is null)
                 prepare_element_event("");
 
@@ -763,5 +765,22 @@ class XapianVQL
                 return "no content";
         }
         return "NULL";
+    }
+
+    int get_count_alpha_and_digit(string str)
+    {
+        int  count_cc = 0;
+        long count    = utf.count(str);
+
+        for (size_t idx; idx < count; idx)
+        {
+            dchar dd = utf.decode(str, idx);
+            if (isAlpha(dd) || isNumber(dd))
+                count_cc++;
+        }
+
+        //log.trace ("@get_count_alpha, str=[%s], count_alpha=[%d]", str, count_alpha);
+
+        return count_cc;
     }
 }
