@@ -667,18 +667,18 @@ if (!membership) {
     'rdf:type'     : newUri('v-s:Membership'),
     'v-s:resource' : newUri(doc_uri),
     'v-s:memberOf' : newUri('cfg:AllUsersGroup'),
-    'rdfs:comment' : newStr('выдан cfg:Event_5')
+    'rdfs:comment' : newStr('выдан cfg:Event_5'),
+    'v-s:deleted'  : newBool(deleted);
   };
-  if (deleted) {
-    membership['v-s:deleted'] = newBool(true);
-  }
   put_individual (ticket, membership, _event_id);
   return;
 }
 
-if (deleted) {
-  membership['v-s:deleted'] = newBool(true);
-  put_individual (ticket, membership, _event_id);
+var membership_deleted = hasValue(membership, 'v-s:deleted', { data: true, type: _Boolean});
+
+if ( deleted !== membership_deleted ) {
+  membership['v-s:deleted'] = newBool(deleted);
+  put_individual(ticket, membership, _event_id);
 }
   """ ;
 .
