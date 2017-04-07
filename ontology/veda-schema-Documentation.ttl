@@ -296,3 +296,17 @@ v-s:Addendum
   rdfs:label "Addendum local regulatory document"@en ;
   rdfs:label "Приложение ЛНД"@ru ;
 .
+#-------------------------------------------------
+# -- Нужно будет удалить после замены на v-s:OriginalSource
+mnd-s:OriginalSource
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Original source"@en ;
+  rdfs:label "Источник оригинала"@ru ;
+.
+v-s:OriginalSource
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Original source"@en ;
+  rdfs:label "Источник оригинала"@ru ;
+.

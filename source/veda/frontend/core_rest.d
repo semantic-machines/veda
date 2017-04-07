@@ -1,6 +1,6 @@
 module veda.frontend.core_rest;
 
-import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
 import core.vararg, core.stdc.stdarg, core.atomic;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd, TrailDB;
@@ -183,7 +183,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     void fileManager(HTTPServerRequest req, HTTPServerResponse res)
     {
-        //log.trace ("@v req.path=%s", req.path);
+        //log.trace ("fileManager: req=%s", req);
 
         string uri;
         // uri субьекта
@@ -245,8 +245,12 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-                    res.headers[ "Content-Disposition" ] = "attachment; filename=\"" ~ originFileName ~ "\"";
+					string ss = "attachment; filename*=UTF-8''" ~ std.uri.encode (originFileName);
 
+                    res.headers[ "Content-Disposition" ] = ss;
+
+					//log.trace ("fileManager: res.headers=%s", res.headers);
+					
                     res.contentType = getMimeTypeForFile(originFileName);
                     dg(req, res);
                 }
@@ -705,12 +709,17 @@ class VedaStorageRest : VedaStorageRest_API
 
             try
             {
-                foreach (indv; context.get_individuals(ticket, uris))
+                foreach (uri; uris)
                 {
-                    Json jj = individual_to_json(indv);
-                    res ~= jj;
-                    args ~= indv.uri;
-                }
+                    string cb = context.get_individual_as_binobj(ticket, uri, rc);
+                    if (rc == ResultCode.OK)
+                    {
+                        Json res_i = Json.emptyObject;
+                        cbor2json(&res_i, cb);
+	                    res ~= res_i;
+	                    args ~= uri;
+                    }
+                }                            	
             }
             catch (Throwable ex)
             {
@@ -768,7 +777,6 @@ class VedaStorageRest : VedaStorageRest_API
                     }
 
                     string cb = context.get_individual_as_binobj(ticket, uri, rc);
-
                     if (rc == ResultCode.OK)
                     {
                         res = Json.emptyObject;

@@ -407,13 +407,13 @@ class PThreadContext : Context
     }
 
 
-    public string get_from_individual_storage(string uri)
+    public string get_from_individual_storage(string user_id, string uri)
     {
         //writeln ("@ get_individual_as_binobj, uri=", uri);
         string res;
 
         if (inividuals_storage_r !is null)
-            res = inividuals_storage_r.find(uri);
+            res = inividuals_storage_r.find(user_id, uri);
         else
             res = get_from_individual_storage_thread(uri);
 
@@ -578,6 +578,8 @@ class PThreadContext : Context
         return ticket;
     }
 
+	string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
+
     Ticket get_ticket_trusted(string tr_ticket_id, string login)
     {
         Ticket ticket;
@@ -611,17 +613,18 @@ class PThreadContext : Context
         Ticket *tr_ticket = get_ticket(tr_ticket_id);
         if (tr_ticket.result == ResultCode.OK)
         {
-            bool is_superadmin = false;
+            bool is_allow_trusted = false;
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
-                if (subject_group == "cfg:SuperUser")
-                    is_superadmin = true;
+            	//log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
+                if (subject_group == allow_trusted_group)
+                    is_allow_trusted = true;
             }
 
-            get_rights_origin_from_acl(tr_ticket, "cfg:SuperUser", &trace_acl);
+            get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl);
 
-            if (is_superadmin)
+            if (is_allow_trusted)
             {
                 login = replaceAll(login, regex(r"[-]", "g"), " +");
 
@@ -638,6 +641,10 @@ class PThreadContext : Context
                     log.trace("trusted authenticate, result ticket=[%s]", ticket);
                     return ticket;
                 }
+            }
+            else
+            {
+	            log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);            	
             }
         }
         else
@@ -720,12 +727,12 @@ class PThreadContext : Context
 
     public string get_ticket_from_storage(string ticket_id)
     {
-        return tickets_storage_r.find(ticket_id);
+        return tickets_storage_r.find(null, ticket_id);
     }
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = tickets_storage_r.find("systicket");
+        string systicket_id = tickets_storage_r.find(null, "systicket");
 
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
@@ -759,7 +766,7 @@ class PThreadContext : Context
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = tickets_storage_r.find(ticket_id);
+                string ticket_str = tickets_storage_r.find(null, ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
@@ -964,7 +971,7 @@ class PThreadContext : Context
 
         try
         {
-            string individual_as_binobj = get_from_individual_storage(uri);
+            string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
             if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
@@ -1013,7 +1020,7 @@ class PThreadContext : Context
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
                 {
                     Individual individual           = Individual.init;
-                    string     individual_as_binobj = get_from_individual_storage(uri);
+                    string     individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
 
                     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
                     {
@@ -1062,7 +1069,7 @@ class PThreadContext : Context
         {
             if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
             {
-                string individual_as_binobj = get_from_individual_storage(uri);
+                string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
 
                 if (individual_as_binobj !is null && individual_as_binobj.length > 1)
                 {
@@ -1100,26 +1107,6 @@ class PThreadContext : Context
 
         try
         {
-            EVENT      ev = EVENT.REMOVE;
-
-            string     prev_state;
-            Individual indv;
-            Individual prev_indv;
-
-            prev_state = get_from_individual_storage_thread(uri);
-            if (prev_state !is null)
-            {
-                int code = prev_indv.deserialize(prev_state);
-                if (code < 0)
-                {
-                    log.trace("ERR! store_individual: invalid prev_state [%s]", prev_state);
-                    res.result = ResultCode.Unprocessable_Entity;
-                    return res;
-                }
-
-                prev_indv.addResource("v-s:deleted", Resource(true));
-            }
-
             version (isModule)
             {
                 JSONValue req_body;
@@ -1135,24 +1122,50 @@ class PThreadContext : Context
 
             version (isServer)
             {
+	            EVENT      ev = EVENT.REMOVE;
+
+	            string     prev_state;
+	            Individual indv;
+	            Individual prev_indv;
+
+	            prev_state = get_from_individual_storage_thread(uri);
+	            if (prev_state !is null)
+	            {
+	                int code = prev_indv.deserialize(prev_state);
+	                if (code < 0)
+	                {
+	                    log.trace("ERR! remove_individual: invalid prev_state [%s]", prev_state);
+	                    res.result = ResultCode.Unprocessable_Entity;
+	                    return res;
+	                }
+
+	                prev_indv.setResources("v-s:deleted", [Resource(true)]);
+	            }
+
                 OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
 
-                if (oprc.result == ResultCode.OK)
+                if (oprc.result != ResultCode.OK)
+                {
+                    res.result = oprc.result;
+	                log.trace("ERR! remove_individual: fail set [v-s:deleted], :uri=%s, errcode=[%s]", prev_indv.uri, res.result);
+                }
+                else
                 {
                     res.result = subject_storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
                 }
-                else
-                    res.result = oprc.result;
+                    
+                if (res.result == ResultCode.OK)
+				{
+	                Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
+	                MapResource rdfType;
+	                setMapResources(_types, rdfType);
 
-                Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
-                MapResource rdfType;
-                setMapResources(_types, rdfType);
-
-                if (rdfType.anyExists(owl_tags) == true)
-                {
-                    // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-                    inc_count_onto_update();
-                }
+	                if (rdfType.anyExists(owl_tags) == true)
+	                {
+	                    // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+	                    inc_count_onto_update();
+	                }
+				}
             }
 
             return res;
@@ -1160,7 +1173,7 @@ class PThreadContext : Context
         finally
         {
             if (res.result != ResultCode.OK)
-                log.trace("ERR! no remove subject :uri=%s, errcode=[%s], ticket=[%s]",
+                log.trace("ERR! remove_individual :uri=%s, errcode=[%s], ticket=[%s]",
                           uri, text(res.result), ticket !is null ? text(*ticket) : "null");
 
             if (trace_msg[ T_API_210 ] == 1)

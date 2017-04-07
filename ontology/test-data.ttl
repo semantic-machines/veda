@@ -739,3 +739,10 @@ d:test-field-v-s:classFrom
   v-s:classFrom cfg:VedaSystem;
   rdfs:label "этот индивид служит для добавления в поиск поля v-s:classFrom, нужно для тестов" ;
 .
+d:Membership_71014133_71025564
+  rdf:type v-s:Membership ;
+  v-s:memberOf d:mondi_position_71025564 ;
+  v-s:resource d:mondi_position_71014133 ;
+  rdfs:label "Начальник управления - в группу Начальник службы"@en ;
+  rdfs:label "Начальник управления - в группу Начальник службы"@ru ;
+.
