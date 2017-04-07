@@ -488,9 +488,14 @@ veda.Module(function Util(veda) { "use strict";
         hiddenField.setAttribute("name", key.replace(':','_'));
         var value = '';
         individual[key].forEach(function(item, i, arr) {
-            if (i>0) value+=',';
-            value+=(individual[key][i] instanceof veda.IndividualModel)?individual[key][i].id:individual[key][i];
+          if (i>0) value+=',';
+          value += (
+            individual[key][i] instanceof veda.IndividualModel ? individual[key][i].id :
+            individual[key][i] instanceof Date ? individual[key][i].toISOString() :
+            individual[key][i]
+          );
         });
+        console.log(key, value);
         hiddenField.setAttribute("value", value);
         form.appendChild(hiddenField);
       }
