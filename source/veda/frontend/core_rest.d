@@ -720,7 +720,7 @@ class VedaStorageRest : VedaStorageRest_API
                     }
                     else
                     {
-                        log.trace("ERR! fail read uri=%s, code=%s", uri, rc);
+                        log.trace("ERR! get_individuals: fail read uri=%s, code=%s", uri, rc);
                     }
                 }
                 catch (Throwable ex)
