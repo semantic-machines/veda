@@ -6,6 +6,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
 
 <http://semantic-machines.com/veda/veda-schema-Org>
   rdf:type owl:Ontology ;
@@ -30,7 +31,14 @@ v-s:OrganizationUnit
   v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 v-s:OrganizationUnitModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:forClass v-s:OrgGroup ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forClass v-s:Subsidiary ;
+  v-ui:forClass v-s:Department ;
+  v-ui:forClass v-s:Position ;
+  v-ui:forClass v-s:Appointment ;
   rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
   rdfs:comment "Модель для класса v-s:OrganizationUnit"@ru ;
   rdfs:label "Organization unit model"@en ;
@@ -93,6 +101,7 @@ v-s:Organization
   rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
+  v-ui:hasTemplate v-s:OrganizationTemplate ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
@@ -137,6 +146,7 @@ v-s:Department
   rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
+  v-ui:hasTemplate v-s:DepartmentTemplate ;
 .
 v-s:parentOrganization
   rdf:type owl:ObjectProperty ;
@@ -154,6 +164,7 @@ v-s:Subsidiary
   rdfs:label "Subsidiary"@en ;
   rdfs:label "Филиал"@ru ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
+  v-ui:hasTemplate v-s:SubsidiaryTemplate ;
 .
 # ------------------------------------------------------------
 v-s:OrgGroup
@@ -233,6 +244,7 @@ v-s:Person
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Person"@en ;
   rdfs:label "Персона"@ru ;
+  v-ui:hasTemplate td:PersonTemplate1 ;
 .
 v-s:birthday
   rdf:type owl:DatatypeProperty ;

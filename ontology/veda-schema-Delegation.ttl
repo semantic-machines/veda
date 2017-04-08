@@ -25,6 +25,7 @@ v-s:RequestDelegation
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:subClassOf v-s:Temporal ;
+  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 v-s:delegator
   rdf:type owl:ObjectProperty ;
@@ -59,12 +60,14 @@ v-s:RequestDelegationUser
   rdfs:label "Request delegation for user"@en ;
   rdfs:label "Заявка на делегирование для пользователя"@ru ;
   rdfs:subClassOf v-s:RequestDelegation ;
+  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 v-s:RequestDelegationAdmin
   rdf:type owl:Class ;
   rdfs:label "Request delegation for admin"@en ;
   rdfs:label "Заявка на делегирование для администратора"@ru ;
   rdfs:subClassOf v-s:RequestDelegation ;
+  v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --

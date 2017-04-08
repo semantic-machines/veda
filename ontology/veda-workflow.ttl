@@ -31,6 +31,7 @@ v-wf:Net
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Net"@en ;
   rdfs:label "Сеть"@ru ;
+  v-ui:hasTemplate v-wf:NetTemplate ;
 .
 v-wf:NetElement
   rdf:type owl:Class ;
@@ -45,6 +46,7 @@ v-wf:Condition
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Condition"@en ;
   rdfs:label "Состояние"@ru ;
+  v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:InputCondition
   rdf:type owl:Class ;
@@ -52,6 +54,7 @@ v-wf:InputCondition
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Input condition"@en ;
   rdfs:label "Входное состояние"@ru ;
+  v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:OutputCondition
   rdf:type owl:Class ;
@@ -59,6 +62,7 @@ v-wf:OutputCondition
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Output condition"@en ;
   rdfs:label "Выходное состояние"@ru ;
+  v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:Task
   rdf:type owl:Class ;
@@ -66,6 +70,7 @@ v-wf:Task
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Task"@en ;
   rdfs:label "Задача"@ru ;
+  v-ui:hasTemplate v-wf:TaskTemplateAsProperties ;
 .
 v-wf:Flow
   rdf:type owl:Class ;
@@ -73,6 +78,7 @@ v-wf:Flow
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Flow"@en ;
   rdfs:label "Поток"@ru ;
+  v-ui:hasTemplate v-wf:FlowTemplateAsProperties ;
 .
 v-wf:ExecutorDefinition
   rdf:type owl:Class ;
@@ -350,6 +356,7 @@ v-wf:Variable
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Variable"@en ;
   rdfs:label "Переменная"@ru ;
+  v-ui:hasTemplate v-wf:VariableTemplate ;
 .
 
 v-wf:variableName
@@ -1624,6 +1631,7 @@ v-wf:DecisionForm
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Форма решения"@ru ;
   rdfs:label "Decision form"@en ;
+  v-ui:hasTemplate v-wf:DecisionFormTemplate ;
 .
 
 v-wf:onWorkOrder
@@ -1855,6 +1863,7 @@ v-wf:Process
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Процесс"@ru ;
   rdfs:label "Process"@en ;
+  v-ui:hasTemplate v-wf:ProcessTemplate ;
 .
 v-wf:instanceOf
   rdf:type rdf:Property ;
@@ -1906,6 +1915,7 @@ v-wf:WorkItem
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выполняемая задача"@ru ;
   rdfs:label "Work item"@en ;
+  v-ui:hasTemplate v-wf:WorkItemTemplate ;
 .
 
 v-wf:forProcess
@@ -1981,6 +1991,7 @@ v-wf:WorkOrder
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Work order"@en ;
   rdfs:label "Рабочее задание"@ru ;
+  v-ui:hasTemplate v-wf:WorkOrderTemplate ;
 .
 
 v-wf:forWorkItem
@@ -2202,6 +2213,7 @@ v-wf:ProcessStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен процесс"@ru ;
   rdfs:label "Process was started"@en ;
+  v-ui:hasTemplate v-wf:ProcessEventTemplate ;
 .
 v-wf:ProcessStopped
   rdf:type owl:Class ;
@@ -2209,6 +2221,7 @@ v-wf:ProcessStopped
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Процесс прерван"@ru ;
   rdfs:label "Process was stopped"@en ;
+  v-ui:hasTemplate v-wf:ProcessEventTemplate ;
 .
 
 v-wf:SubProcessStarted
@@ -2217,6 +2230,7 @@ v-wf:SubProcessStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен подпроцесс"@ru ;
   rdfs:label "Subprocess started"@en ;
+  v-ui:hasTemplate v-wf:SubProcessStartedEventTemplate ;
 .
 
 v-wf:WorkItemStarted
@@ -2225,6 +2239,7 @@ v-wf:WorkItemStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущен блок"@ru ;
   rdfs:label "Item was started"@en ;
+  v-ui:hasTemplate v-wf:WorkItemStartedEventTemplate ;
 .
 
 v-wf:DecisionFormStarted
@@ -2232,6 +2247,7 @@ v-wf:DecisionFormStarted
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision Form Started"@en ;
+  v-ui:hasTemplate v-wf:DecisionFormStartedEventTemplate ;
 .
 
 v-wf:WorkOrderStarted
@@ -2240,6 +2256,7 @@ v-wf:WorkOrderStarted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Запущено действие"@ru ;
   rdfs:label "Order was started"@en ;
+  v-ui:hasTemplate v-wf:WorkOrderStartedEventTemplate ;
 .
 
 v-wf:ProcessCompleted
@@ -2248,6 +2265,7 @@ v-wf:ProcessCompleted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Завершен процесс"@ru ;
   rdfs:label "Process completed"@en ;
+  v-ui:hasTemplate v-wf:ProcessEventTemplate ;
 .
 v-wf:TaskGiven
   rdf:type owl:Class ;
@@ -2255,6 +2273,7 @@ v-wf:TaskGiven
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выдана задача"@ru ;
   rdfs:label "Task given"@en ;
+  v-ui:hasTemplate v-wf:TaskGivenTemplate ;
 .
 v-wf:TaskCompleted
   rdf:type owl:Class ;
@@ -2262,12 +2281,14 @@ v-wf:TaskCompleted
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Задача выполнена"@ru ;
   rdfs:label "Task completed"@en ;
+  v-ui:hasTemplate v-wf:TaskCompletedTemplate ;
 .
 v-wf:TraceRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:JournalRecord ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Trace Record"@en ;
+  v-ui:hasTemplate v-wf:TraceRecordTemplate ;
 .
 v-wf:takenDecision
   rdf:type owl:ObjectProperty ;
@@ -2293,7 +2314,7 @@ v-wf:traceJournal
 
 
 #################################################################################### JOURNAL UI
-v-ui:TaskGivenTemplate
+v-wf:TaskGivenTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события по задаче"@ru ;
   rdfs:label "Task event template"@en ;
@@ -2329,7 +2350,7 @@ v-ui:TaskGivenTemplate
   """ ;
 .
 
-v-ui:TaskCompletedTemplate
+v-wf:TaskCompletedTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события по задаче"@ru ;
   rdfs:label "Task event template"@en ;
@@ -2382,7 +2403,7 @@ v-ui:TaskCompletedTemplate
 </div>
   """ ;
 .
-v-ui:ProcessEventTemplate
+v-wf:ProcessEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события процесса"@ru ;
   rdfs:label "Process event template"@en ;
@@ -2413,7 +2434,7 @@ v-ui:ProcessEventTemplate
   """ ;
 .
 
-v-ui:SubProcessStartedEventTemplate
+v-wf:SubProcessStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон события запуска подпроцесса"@ru ;
   rdfs:label "Subprocess start event template"@en ;
@@ -2423,7 +2444,7 @@ v-ui:SubProcessStartedEventTemplate
   """ ;
 .
 
-v-ui:WorkItemStartedEventTemplate
+v-wf:WorkItemStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkItemStarted ;
@@ -2460,7 +2481,7 @@ v-ui:WorkItemStartedEventTemplate
   """ ;
 .
 
-v-ui:WorkOrderStartedEventTemplate
+v-wf:WorkOrderStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkOrderStarted ;
@@ -2469,7 +2490,7 @@ v-ui:WorkOrderStartedEventTemplate
   """ ;
 .
 
-v-ui:DecisionFormStartedEventTemplate
+v-wf:DecisionFormStartedEventTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:DecisionFormStarted ;
@@ -2506,7 +2527,7 @@ v-ui:DecisionFormStartedEventTemplate
   """ ;
 .
 
-v-ui:TraceEventTemplate
+v-wf:TraceRecordTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Trace event template"@en ;
   v-ui:forClass v-wf:TraceRecord;
@@ -2582,7 +2603,6 @@ v-wf:TaskTemplateAsModal
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Шаблон для класса Задача (модальное окно)"@ru ;
   rdfs:label "Template for Task class (modal window)"@en ;
-  v-ui:forClass v-wf:Task ;
   v-ui:template """
 <div>
   <strong><span about="@" property="@"></span></strong>

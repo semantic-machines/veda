@@ -22,6 +22,7 @@ v-fc:FunctionCreate
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
   v-ui:hasModel v-fc:FunctionCreateModel ;
+  v-ui:hasTemplate v-fc:FunctionCreateTemplate ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
@@ -29,6 +30,7 @@ v-fc:Blank
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
   v-ui:hasModel v-fc:BlankModel ;
+  v-ui:hasTemplate v-fc:BlankTemplateShort ;
 .
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;
@@ -80,6 +82,16 @@ v-fc:LabelSpec
   v-ui:tooltip "Mandatory. Arbitrary length string."@en ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
+.
+v-fc:FunctionCreateModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "V-fc:FunctionCreate class model"@en ;
+  rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
+  v-ui:forClass v-fc:FunctionCreate ;
+  v-s:script """
+var self = this;
+//# sourceURL=v-fc:FunctionCreateModel
+  """
 .
 v-fc:FunctionCreateTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -137,9 +149,10 @@ v-fc:FunctionCreateTemplate
 .
 
 v-fc:BlankModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "v-fc:Blank class model"@en ;
   rdfs:label "Модель класса v-fc:Blank"@ru ;
+  v-ui:forClass v-fc:Blank ;
   v-s:script """
 var self = this,
   asp = veda.user.aspect;

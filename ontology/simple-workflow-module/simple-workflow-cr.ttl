@@ -207,7 +207,7 @@ s-wf:cr_c1 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c1_to_c2, s-wf:crf_c1_to_jp;
   v-wf:executor s-wf:executor_coordination1 ;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   rdfs:label "Согласование 1"^^xsd:string;
 .
 
@@ -235,7 +235,7 @@ s-wf:cr_c2 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c2_to_c3, s-wf:crf_c2_to_jp;
   v-wf:executor s-wf:executor_coordination2 ;
   rdfs:label "Согласование 2"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -263,7 +263,7 @@ s-wf:cr_c3 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c3_to_c4, s-wf:crf_c3_to_jp;
   v-wf:executor s-wf:executor_coordination3 ;
   rdfs:label "Согласование 3"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -291,7 +291,7 @@ s-wf:cr_c4 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c4_to_c5, s-wf:crf_c4_to_jp;
   v-wf:executor s-wf:executor_coordination4 ;
   rdfs:label "Согласование 4"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -319,7 +319,7 @@ s-wf:cr_c5 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c5_to_c6, s-wf:crf_c5_to_jp;
   v-wf:executor s-wf:executor_coordination5 ;
   rdfs:label "Согласование 5"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -347,7 +347,7 @@ s-wf:cr_c6 a v-wf:Task;
   v-wf:hasFlow s-wf:crf_c6_to_jp, s-wf:crf_c6_to_s;
   v-wf:executor s-wf:executor_coordination6 ;
   rdfs:label "Согласование 6"^^xsd:string;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
 .
 
@@ -393,7 +393,7 @@ s-wf:cr_sign a v-wf:Task;
   rdfs:label "Подписание"^^xsd:string;
   v-wf:executor s-wf:executor_sign ;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:startDecisionTransform s-wf:tr_sign_form;
 .
 
@@ -422,7 +422,7 @@ s-wf:cr_approval a v-wf:Task;
   rdfs:label "Утверждение"^^xsd:string;
   v-wf:executor s-wf:executor_approval;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;  
+  v-wf:completedMapping s-wf:m_result_f_out_var, s-wf:map_decision_of_set_responsible;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_approv_form;
 .
@@ -480,7 +480,7 @@ s-wf:cr_rework a v-wf:Task;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_rework, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
-  v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;  
+  v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
 .
 
 s-wf:crf_rework_to_c1 a v-wf:Flow;
@@ -576,7 +576,7 @@ s-wf:cr_instruction a v-wf:Task;
   v-wf:startDecisionTransform s-wf:tr_instruct_form;
   rdfs:label "Поручение"^^xsd:string;
 .
-  
+
 s-wf:cr_instruction2 a v-wf:Task;
   rdfs:isDefinedBy s-wfc: ;
   v-wf:join v-wf:AND;
@@ -603,14 +603,14 @@ s-wf:cr_instruction3 a v-wf:Task;
   v-wf:startDecisionTransform s-wf:tr_instruct_form;
   rdfs:label "Поручение"^^xsd:string;
 .
-  
+
 s-wf:crf_i_to_i2 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
   v-wf:predicate "true"^^xsd:string;
   v-wf:flowsInto s-wf:cr_instruction2;
 .
-  
+
 s-wf:crf_i2_to_i3 a v-wf:Flow;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label ""^^xsd:string;
@@ -650,7 +650,7 @@ s-wf:cr_auto_instruction a v-wf:Task;
   v-wf:locationX "1500"^^xsd:integer;
   v-wf:locationY "-100"^^xsd:integer;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
-  v-wf:subNet d:MeetingNet;    
+  v-wf:subNet d:MeetingNet;
 #  v-wf:executor s-wf:executor_auto_instruction;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:startDecisionTransform s-wf:tr_approv_form;
@@ -1375,6 +1375,7 @@ v-wf:DecisionGoCoordination1
   rdfs:subClassOf v-wf:Decision ;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label "Перейти к этапу согласования 1"@ru ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination2
@@ -1382,6 +1383,7 @@ v-wf:DecisionGoCoordination2
   rdfs:subClassOf v-wf:Decision ;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label "Перейти к этапу согласования 2"@ru ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionGoCoordination3
@@ -1389,6 +1391,7 @@ v-wf:DecisionGoCoordination3
   rdfs:subClassOf v-wf:Decision ;
   rdfs:isDefinedBy s-wfc: ;
   rdfs:label "Перейти к этапу согласования 3"@ru ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 s-wf:ss2 a v-s:SavedSearch;
@@ -1500,8 +1503,8 @@ s-wf:adf43bae5-d0ce-62e4-5e11-e127df46ecc4
   """;
   v-wf:mapToVariable s-wf:var_result;
   rdfs:label "map for s-wf:InterlayerNet_t";
-. 
-        
+.
+
 s-wf:InterlayerNet
   a v-wf:Net;
   v-wf:inputVariable s-wf:var_doc_id, s-wf:var_journal_initiator;
@@ -1524,7 +1527,7 @@ s-wf:InterlayerNet_t
   a v-wf:Task;
   v-wf:subNet s-wf:net_coordination;
   v-wf:split v-wf:None;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:InterlayerNet_task_action, s-wf:InterlayerNet_task_form_type, s-wf:InterlayerNet_task_comment, s-wf:InterlayerNet_task_date_to, s-wf:InterlayerNet_task_controller, s-wf:InterlayerNet_task_possible_decisions; 
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:InterlayerNet_task_action, s-wf:InterlayerNet_task_form_type, s-wf:InterlayerNet_task_comment, s-wf:InterlayerNet_task_date_to, s-wf:InterlayerNet_task_controller, s-wf:InterlayerNet_task_possible_decisions;
   v-wf:join v-wf:None;
   v-wf:completedMapping s-wf:adf43bae5-d0ce-62e4-5e11-e127df46ecc4;
   v-wf:executor s-wf:InterlayerNet_executor;
@@ -1540,7 +1543,7 @@ s-wf:InterlayerNet_ic_to_t
   v-wf:predicate "true"^^xsd:string;
   v-wf:flowsInto s-wf:InterlayerNet_t;
   rdfs:label ""^^xsd:string.
-  
+
 s-wf:InterlayerNet_t_to_oc
   a v-wf:Flow;
   v-wf:predicate "true"^^xsd:string;
@@ -1558,7 +1561,7 @@ s-wf:InterlayerNet_executor
 s-wf:InterlayerNet_task_action
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_actor_task_action ;
-  v-wf:mappingExpression  
+  v-wf:mappingExpression
   """
     get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_task_label'}])
   """;
