@@ -15,14 +15,15 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
 
     if (container.prop("id") === "main") { container.hide(); }
 
-    /*var specs = $.extend.apply (
+    var ontology = new veda.OntologyModel();
+
+    var specs = $.extend.apply (
       {}, [].concat(
         individual["rdf:type"].map( function (_class) {
-          return _class.specsByProps;
+          return ontology.getClassSpecifications(_class.id);
         })
       )
-    );*/
-    var specs = {};
+    );
 
     if (template) {
       if (template instanceof veda.IndividualModelAsync) {
@@ -51,6 +52,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           });
       });
     }
+
     if (container.prop("id") === "main") { container.show("fade", 250); }
   });
 
@@ -165,6 +167,9 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       template.trigger("view");
       if (parent !== individual.id) {
         individual.reset();
+        if (container.prop("id") === "main") {
+          window.history.back();
+        }
       }
       e.stopPropagation();
     }
@@ -195,11 +200,11 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
         });
       }
     }
-    individual.on("individual:afterRecover", afterRecoverHandler);
-    individual.on("individual:afterDelete", afterDeleteHandler);
+    individual.on("afterRecover", afterRecoverHandler);
+    individual.on("afterDelete", afterDeleteHandler);
     template.one("remove", function () {
-      individual.off("individual:afterRecover", afterRecoverHandler);
-      individual.off("individual:afterDelete", afterDeleteHandler);
+      individual.off("afterRecover", afterRecoverHandler);
+      individual.off("afterDelete", afterDeleteHandler);
     });
 
     function deleteHandler (e, parent) {
@@ -317,9 +322,9 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
         }
       }
     }
-    individual.on("individual:propertyModified", isDraftHandler);
-    template.on("remove", function () {
-      individual.off("individual:propertyModified", isDraftHandler);
+    individual.on("propertyModified", isDraftHandler);
+    template.one("remove", function () {
+      individual.off("propertyModified", isDraftHandler);
       draftLabel = null;
     });
 
@@ -410,21 +415,20 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
-          spec = specs[property_uri];
+          spec = new veda.IndividualModel( specs[property_uri] );
       if (property_uri === "@") {
         propertyContainer.text(individual.id);
         return;
       }
-      propertyModifiedHandler(property_uri);
-      // Re-render all property values at propertyModified event from model
-      function propertyModifiedHandler(doc_property_uri) {
-        if (doc_property_uri === property_uri) {
-          renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
-        }
+      renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
+
+      // Re-render all property values if model's property was changed
+      function propertyModifiedHandler() {
+        renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
       }
-      individual.on("individual:propertyModified", propertyModifiedHandler);
+      individual.on(property_uri, propertyModifiedHandler);
       template.one("remove", function () {
-        individual.off("individual:propertyModified", propertyModifiedHandler);
+        individual.off(property_uri, propertyModifiedHandler);
       });
     });
 
@@ -464,7 +468,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           about = relContainer.attr("about"),
           rel_uri = relContainer.attr("rel"),
           isEmbedded = relContainer.attr("data-embedded") === "true",
-          spec = specs[rel_uri],
+          spec = new veda.IndividualModel( specs[rel_uri] ),
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
           relTemplate,
@@ -532,56 +536,54 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
 
       relContainer.empty();
 
-      propertyModifiedHandler(rel_uri, values);
-      about.on("individual:propertyModified", propertyModifiedHandler);
+      propertyModifiedHandler(values);
+      about.on(rel_uri, propertyModifiedHandler);
       template.one("remove", function () {
-        about.off("individual:propertyModified", propertyModifiedHandler);
+        about.off(rel_uri, propertyModifiedHandler);
       });
 
       if (isEmbedded) {
-        embeddedHandler(rel_uri, values);
-        about.on("individual:propertyModified", embeddedHandler);
+        embeddedHandler(values);
+        about.on(rel_uri, embeddedHandler);
         template.one("remove", function () {
-          about.off("individual:propertyModified", embeddedHandler);
+          about.off(rel_uri, embeddedHandler);
         });
       }
 
       // Re-render link property if its' values were changed
-      function propertyModifiedHandler (doc_rel_uri, values) {
-        if (doc_rel_uri === rel_uri) {
-          ++counter;
-          try {
-            if (values.length) {
-              values.map(function (value) {
-                if (value.id in rendered) {
-                  rendered[value.id].cnt = counter;
-                  return;
-                }
-                setTimeout (function () {
-                  var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
-                  rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-                }, 0);
-              });
-            } else {
-              relContainer.empty();
-            }
-          } catch (error) {
-            if (error instanceof TypeError) {
-              var notify = veda.Notify ? new veda.Notify() : function () {};
-              notify("warning", {name: "Error", message: "Attribute undefined: " + rel_uri});
-            }
+      function propertyModifiedHandler (values) {
+        ++counter;
+        try {
+          if (values.length) {
+            values.map(function (value) {
+              if (value.id in rendered) {
+                rendered[value.id].cnt = counter;
+                return;
+              }
+              setTimeout (function () {
+                var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
+                rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
+              }, 0);
+            });
+          } else {
+            relContainer.empty();
           }
-          // Remove rendered templates for removed values
-          for (var i in rendered) {
-            if (rendered[i].cnt === counter) continue;
-            rendered[i].tmpl.remove();
-            delete rendered[i];
+        } catch (error) {
+          if (error instanceof TypeError) {
+            var notify = veda.Notify ? new veda.Notify() : function () {};
+            notify("warning", {name: "Error", message: "Attribute undefined: " + rel_uri});
           }
+        }
+        // Remove rendered templates for removed values
+        for (var i in rendered) {
+          if (rendered[i].cnt === counter) continue;
+          rendered[i].tmpl.remove();
+          delete rendered[i];
         }
       }
 
-      function embeddedHandler(doc_rel_uri, values) {
-        if (doc_rel_uri === rel_uri && mode === "edit") {
+      function embeddedHandler(values) {
+        if (mode === "edit") {
           values.map(function (value) {
             if (
                 value.id !== about.id // prevent self parent
@@ -636,20 +638,17 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       } else {
         about = new veda.IndividualModel(propertyContainer.attr("about"));
       }
-      propertyModifiedHandler(property_uri);
-      function propertyModifiedHandler(doc_property_uri) {
-        if (doc_property_uri === property_uri) {
-          if (property_uri === "@") {
-            propertyContainer.text( about.id );
-          } else if (about[property_uri] !== undefined) {
-            var formatted = about[property_uri].map(veda.Util.formatValue).join(" ");
-            propertyContainer.text( formatted );
-          }
+      propertyModifiedHandler();
+
+      function propertyModifiedHandler() {
+        if (about[property_uri] !== undefined) {
+          var formatted = about[property_uri].map(veda.Util.formatValue).join(" ");
+          propertyContainer.text( formatted );
         }
       }
-      about.on("individual:propertyModified", propertyModifiedHandler);
+      about.on(property_uri, propertyModifiedHandler);
       template.one("remove", function () {
-        about.off("individual:propertyModified", propertyModifiedHandler);
+        about.off(property_uri, propertyModifiedHandler);
       });
       /*veda.on("language:changed", langWatch);
       template.one("remove", function () {
@@ -681,7 +680,8 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       if (mode === "edit") {
         Object.keys(validation).map( function (property_uri) {
           if (property_uri === "state") { return; }
-          validation[property_uri] = validate(individual, property_uri, specs[property_uri]);
+          var spec = new veda.IndividualModel( specs[property_uri] );
+          validation[property_uri] = validate(individual, property_uri, spec);
         });
         template.trigger("validate");
         validation.state = Object.keys(validation).reduce( function (acc, property_uri) {
@@ -706,9 +706,9 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
         template.trigger("internal-validate");
       }
     };
-    individual.on("individual:propertyModified", triggerValidation);
+    individual.on("propertyModified", triggerValidation);
     template.one("remove", function () {
-      individual.off("individual:propertyModified", triggerValidation);
+      individual.off("propertyModified", triggerValidation);
     });
     template.on("edit", triggerValidation);
 
@@ -752,7 +752,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           property_uri = control.attr("property"),
           property = new veda.IndividualModel(property_uri),
           type = control.attr("data-type") || property["rdfs:range"][0].id,
-          spec = specs[property_uri],
+          spec = new veda.IndividualModel( specs[property_uri] ),
           controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_generic;
 
       //control.removeAttr("property");
@@ -816,7 +816,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
 
       var control = $(this),
           rel_uri = control.attr("rel"),
-          spec = specs[rel_uri],
+          spec = new veda.IndividualModel( specs[rel_uri] ),
           rel = new veda.IndividualModel(rel_uri),
           controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_link;
 
@@ -935,7 +935,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       valTemplate = $("[resource='" + value.id + "']", relContainer).first();
       valTemplate.data("isEmbedded", true);
       embedded.push(valTemplate);
-      valTemplate.on("remove", function () {
+      valTemplate.one("remove", function () {
         if (embedded.length) {
           var index = embedded.indexOf(valTemplate);
           if ( index >= 0 ) embedded.splice(index, 1);
