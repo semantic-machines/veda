@@ -43,17 +43,11 @@ veda.Module(function (veda) { "use strict";
     }
     this.filtered = {};
 
-    this.on("individual:propertyModified", typeChangedHandler);
-    this.on("individual:beforeSave", beforeSaveHandler);
+    this.on("rdf:type", this.init);
+    this.on("beforeSave", beforeSaveHandler);
 
     return this;
   };
-
-  function typeChangedHandler (property_uri) {
-    if (property_uri === "rdf:type") {
-      this.init();
-    }
-  }
 
   function beforeSaveHandler() {
     var now = new Date();
@@ -67,9 +61,9 @@ veda.Module(function (veda) { "use strict";
       this["v-s:edited"] = [ now ];
       this["v-s:lastEditor"] = [ user ];
     }
-    if ( this.isNew() ) {
-      this["v-s:created"] = [ now ];
+    if ( !this.hasValue("v-s:creator") ) {
       this["v-s:creator"] = [ user ];
+      this["v-s:created"] = [ now ];
     }
   }
 
@@ -100,16 +94,16 @@ veda.Module(function (veda) { "use strict";
         return values;
       },
       set: function (values) {
-        var self = this;
         this.isSync(false);
-        var notNull = values.filter(function (i) { return i != undefined });
+        values = values.filter(function (i) { return i != undefined });
         var serialized = notNull.map( serializer );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
         if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
           this.properties[property_uri] = serialized;
-          this.trigger("individual:propertyModified", property_uri, notNull);
+          this.trigger("propertyModified", property_uri, values);
+          this.trigger(property_uri, values);
         }
       },
       configurable: false,
@@ -173,7 +167,7 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       this.properties["@"] = value;
-      this.trigger("individual:idChanged", value);
+      this.trigger("idChanged", value);
     }
   });
 
@@ -246,13 +240,13 @@ veda.Module(function (veda) { "use strict";
   proto.load = function () {
     var uri = this._.uri;
     var self = this;
-    this.trigger("individual:beforeLoad");
+    this.trigger("beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
 
       if (this._.cache && veda.cache[uri]) {
         if ( veda.cache[uri] instanceof veda.IndividualModelAsync ) {
-          this.trigger("individual:afterLoad", veda.cache[uri]);
+          this.trigger("afterLoad", veda.cache[uri]);
           return Promise.resolve(veda.cache[uri]);
         } else if ( veda.cache[uri] instanceof veda.IndividualModel ) {
           var asyncModel = new veda.IndividualModelAsync( veda.cache[uri].properties );
@@ -267,7 +261,7 @@ veda.Module(function (veda) { "use strict";
           self.isSync(true);
           if (self._.cache) veda.cache[self.id] = self;
           if (self._.init) self.init();
-          self.trigger("individual:afterLoad", self);
+          self.trigger("afterLoad", self);
           return self;
         })
         .catch(function (error) {
@@ -314,7 +308,7 @@ veda.Module(function (veda) { "use strict";
     }
     if (this._.cache) veda.cache[this.id] = this;
     if (this._.init) this.init();
-    this.trigger("individual:afterLoad", this);
+    this.trigger("afterLoad", this);
     return Promise.resolve(this);
   };
 
@@ -328,7 +322,7 @@ veda.Module(function (veda) { "use strict";
     if (self.isSync()) {
       return Promise.resolve(self);
     }
-    self.trigger("individual:beforeSave");
+    self.trigger("beforeSave");
     if ( self.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(self.id);
     }
@@ -345,7 +339,7 @@ veda.Module(function (veda) { "use strict";
         self.isNew(false);
         self.isSync(true);
         if (self._.cache) veda.cache[self.id] = self;
-        self.trigger("individual:afterSave");
+        self.trigger("afterSave");
         return self;
       })
       .catch(function (error) {
@@ -363,9 +357,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual without validation and without adding new version
    */
   proto.draft = function () {
-    this.trigger("individual:beforeDraft");
+    this.trigger("beforeDraft");
     veda.drafts.set(this.id, this);
-    this.trigger("individual:afterDraft");
+    this.trigger("afterDraft");
     return this;
   }
 
@@ -375,10 +369,10 @@ veda.Module(function (veda) { "use strict";
    */
   proto.reset = function () {
     var self = this;
-    this.trigger("individual:beforeReset");
+    this.trigger("beforeReset");
     return this.update()
       .then(function (self) {
-        self.trigger("individual:afterReset");
+        self.trigger("afterReset");
         return self;
       });
   };
@@ -388,7 +382,7 @@ veda.Module(function (veda) { "use strict";
    * Update current individual with values from database & merge with local changes
    */
   proto.update = function () {
-    this.trigger("individual:beforeUpdate");
+    this.trigger("beforeUpdate");
     var self = this;
     if (!this.isNew()) {
       this.filtered = {};
@@ -396,7 +390,7 @@ veda.Module(function (veda) { "use strict";
         .then(function (original) {
           merge.call(self, original);
           veda.drafts.remove(self.id);
-          self.trigger("individual:afterUpdate");
+          self.trigger("afterUpdate");
           return self;
         })
         .catch(function (error) {
@@ -406,7 +400,7 @@ veda.Module(function (veda) { "use strict";
         });
     }
     veda.drafts.remove(this.id);
-    this.trigger("individual:afterUpdate");
+    this.trigger("afterUpdate");
     return Promise.resolve(this);
   };
 
@@ -436,7 +430,7 @@ veda.Module(function (veda) { "use strict";
    * Mark current individual as deleted in database (add v-s:deleted property)
    */
   proto.delete = function () {
-    this.trigger("individual:beforeDelete");
+    this.trigger("beforeDelete");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -444,11 +438,11 @@ veda.Module(function (veda) { "use strict";
       this["v-s:deleted"] = [ true ];
       return this.save()
         .then( function (self) {
-          self.trigger("individual:afterDelete");
+          self.trigger("afterDelete");
           return self;
         });
     }
-    this.trigger("individual:afterDelete");
+    this.trigger("afterDelete");
     return Promise.resolve(this);
   };
 
@@ -457,7 +451,7 @@ veda.Module(function (veda) { "use strict";
    * Recover current individual in database (remove v-s:deleted property)
    */
   proto.recover = function () {
-    this.trigger("individual:beforeRecover");
+    this.trigger("beforeRecover");
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
@@ -465,11 +459,11 @@ veda.Module(function (veda) { "use strict";
       this["v-s:deleted"] = [];
       return this.save()
         .then( function (self) {
-          self.trigger("individual:afterRecover");
+          self.trigger("afterRecover");
           return self;
         });
       }
-    this.trigger("individual:afterRecover");
+    this.trigger("afterRecover");
     return Promise.resolve(this);
   };
 
