@@ -13,7 +13,7 @@
   rdfs:label "Онтология системы Veda. Управление контрактами"@ru ;
   v-s:loadPriority 11 ;
 .
-#-- Классы --
+# ------------------------------------------------------------ КЛАССЫ --
 
 v-s:Contractor
   rdf:type owl:Class ;
@@ -212,7 +212,6 @@ v-s:PShasPriceCost
 # v-s:description
 
 # ------------------------------------------------------------
-
 v-s:Contract
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -393,7 +392,7 @@ v-s:AccountingDoc
   rdfs:label "Первичный документ"@ru ;
 .
 
-#------------------------------------------------------------
+# ------------------------------------------------------------ ШАБЛОНЫ --
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;

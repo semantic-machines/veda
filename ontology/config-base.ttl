@@ -20,21 +20,7 @@
   v-s:loadPriority 2 ;
 .
 
-td:pm_pa_au
-  rdf:type v-s:PermissionStatement ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:permissionObject v-s:PersonalAspect, v-ui:Preferences, v-s:File, v-s:Version;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-.
-
-cfg:User_position
-  a v-s:Position;
-  v-s:updateCounter "1"^^xsd:integer;
-  v-s:origin "manual"^^xsd:string;
-  rdfs:label "Пользователь"@ru;
-  rdfs:label "User"@en;
-.
-
+### -------------------------------------------------------
 cfg:Guest
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
@@ -48,15 +34,18 @@ cfg:GuestAccount
   rdf:type v-s:Account ;
   rdfs:label "Guest account"@en ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
-  rdfs:label "Гостевая учетная запись"@ru ;
+  rdfs:label "Guest. Учетная запись"@ru ;
+  rdfs:label "Guest. Account"@ru ;
 .
 cfg:GuestAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:Guest ;
-  rdfs:label "Guest"@ru ;
+  rdfs:label "Guest. Назначение"@ru ;
+  rdfs:label "Guest. Appointment"@en ;
 .
 
+### -------------------------------------------------------
 cfg:ImportDMSToVeda
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
@@ -72,7 +61,8 @@ cfg:ImportDMSToVedaAccount
   v-s:owner cfg:ImportDMSToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   v-s:login "ImportDMSToVeda" ;
-  rdfs:label "Утилита импорта DMS to Veda. Учетная запись"@ru ;
+  rdfs:label "ImportDMSToVeda. Учетная запись"@ru ;
+  rdfs:label "ImportDMSToVeda. Account"@en ;
 .
 cfg:ImportDMSToVedaAppointment
   rdf:type v-s:Appointment ;
@@ -80,9 +70,42 @@ cfg:ImportDMSToVedaAppointment
   v-s:employee cfg:ImportDMSToVeda ;
   v-s:occupation cfg:User_position;
   v-s:official "false"^^xsd:boolean;
-  rdfs:label "Утилита DMS To Veda"@ru ;
+  rdfs:label "ImportDMSToVeda. Назначение"@ru ;
+  rdfs:label "ImportDMSToVeda. Appointment"@en ;
+.
+### -------------------------------------------------------
+
+cfg:VedaNTLMFilter
+  rdf:type v-s:Person ;
+  v-s:author cfg:VedaSystem ;
+  v-s:firstName "Veda NTLM Filter"@en ;
+  v-s:firstName "Veda NTLM Фильтр"@ru ;
+  v-s:hasAccount cfg:VedaNTLMFilterAccount ;
+  rdfs:label "Veda NTLM Filter"@en ;
+  rdfs:label "Veda NTLM Фильтр"@ru ;
 .
 
+cfg:VedaNTLMFilterAccount
+  rdf:type v-s:Account ;
+  rdfs:label "VedaNTLMFilter account"@en ;
+  v-s:owner cfg:VedaNTLMFilter;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  v-s:login "VedaNTLMFilter" ;
+  rdfs:label "VedaNTLMFilter. Учетная запись"@ru ;
+  rdfs:label "VedaNTLMFilter. Account"@en ;
+.
+
+cfg:VedaNTLMFilterAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:VedaNTLMFilter ;
+  v-s:occupation cfg:User_position;
+  v-s:official "false"^^xsd:boolean;
+  rdfs:label "VedaNTLMFilter. Назначение"@ru ;
+  rdfs:label "VedaNTLMFilter. Appointment"@en ;
+.
+
+### -------------------------------------------------------
 cfg:VedaSystem
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
@@ -102,8 +125,8 @@ cfg:VedaSystemAccount
   v-s:login "veda" ;
   v-s:password "4d1af0e10dab5fe07ae8d23bad5650b46804fb110cfb92f119213bc86aa03d34" ;
   v-s:owner cfg:VedaSystem ;
-  rdfs:label "Veda System account"@en ;
-  rdfs:label "Учетная запись системы Веда"@ru ;
+  rdfs:label "VedaSystem. Account"@en ;
+  rdfs:label "VedaSystem. Учетная запись"@ru ;
   v-s:mailbox "DocFlow.Syktyvkar@mondigroup.com" ;
 .
 cfg:VedaSystemAppointment
@@ -111,15 +134,10 @@ cfg:VedaSystemAppointment
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
   rdfs:label "Система Optiflow"@ru ;
+  rdfs:label "System Optiflow"@en ;
 .
 
-cfg:Permission_VedaSystem_allRead
-  rdf:type v-s:PermissionStatement ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:permissionObject cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-.
-
+### -------------------------------------------------------
 cfg:Administrator
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
@@ -137,20 +155,62 @@ cfg:AdministratorAccount
   v-s:login "admin" ;
   v-s:password "4d1af0e10dab5fe07ae8d23bad5650b46804fb110cfb92f119213bc86aa03d34" ;
   v-s:owner cfg:Administrator ;
-  rdfs:label "Administrator account"@en ;
-  rdfs:label "Учетная запись администратора"@ru ;
+  rdfs:label "Administrator. Account"@en ;
+  rdfs:label "Administrator. Учетная запись"@ru ;
 .
 cfg:AdministratorAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:Administrator ;
+  rdfs:label "Administrator. Назначение"@ru ;
+  rdfs:label "Administrator. Appointment"@en ;
 .
+### -------------------------------------------------------
+cfg:User_position
+  a v-s:Position;
+  v-s:updateCounter "1"^^xsd:integer;
+  v-s:origin "manual"^^xsd:string;
+  rdfs:label "Пользователь"@ru;
+  rdfs:label "User"@en;
+.
+
+### -------------------------------------------------------
+
+cfg:Permission_ntlmu_r_tau
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject cfg:VedaNTLMFilter ;
+  v-s:permissionSubject cfg:TrustedAuthenticationUserGroup ;
+.
+
+cfg:Permission_VedaSystem_allRead
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject cfg:VedaSystem ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
+td:pm_pa_au
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-s:PersonalAspect, v-ui:Preferences, v-s:File, v-s:Version;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
+### -------------------------------------------------------
 
 cfg:SuperUser
   rdf:type v-s:Group ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Super admin"@en ;
   rdfs:label "Супер админ"@ru ;
+.
+
+cfg:TrustedAuthenticationUserGroup
+  rdf:type v-s:Group ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Trusted Authentication User"@en ;
+  rdfs:label "Trusted Authentication Пользователи"@ru ;
 .
 
 cfg:TTLResourcesGroup
@@ -174,6 +234,7 @@ cfg:OntologyGroup
   rdfs:label "Группа для индивидов онтологии"@ru ;
 .
 
+### -------------------------------------------------------
 cfg:Membership_su
   rdf:type v-s:Membership ;
   v-s:author cfg:VedaSystem ;
@@ -183,6 +244,14 @@ cfg:Membership_su
   v-s:memberOf cfg:SuperUser ;
 .
 
+cfg:Membership_tau
+  rdf:type v-s:Membership ;
+  v-s:author cfg:VedaSystem ;
+  v-s:resource cfg:VedaNTLMFilter ;
+  v-s:memberOf cfg:TrustedAuthenticationUserGroup ;
+.
+
+### -------------------------------------------------------
 cfg:Permission_su
   rdf:type v-s:PermissionStatement ;
   v-s:author cfg:VedaSystem ;

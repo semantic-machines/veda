@@ -381,14 +381,14 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         {
                             if (cmd == CMD_PUT_KEY2SLOT)
                             {
-                                storage.put(key, msg, -1);
+                                storage.put(null, key, msg, -1);
                             }
                         },
                         (byte cmd, string arg, Tid tid_response_reciever)
                         {
                             if (cmd == CMD_FIND)
                             {
-                                string res = storage.find(arg);
+                                string res = storage.find(null, arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
@@ -405,7 +405,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             {
                                 if (cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(uri) == ResultCode.OK)
+                                    if (storage.remove(null, uri) == ResultCode.OK)
                                         rc = ResultCode.OK;
                                     else
                                         rc = ResultCode.Fail_Store;

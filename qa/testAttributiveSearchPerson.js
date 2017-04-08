@@ -58,7 +58,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
     //Создание документов типа "Персона"
-    var first = "xGIo5", last = "GhiOJ", middle = "NE1UC";
+    var first = "xGIo5f", last = "GhiOJe", middle = "NE1UCD";
     var now = new Date();
     person.createPerson(driver, drv, 'a' + last, first + 'bcc', 'T' + middle,
         ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
@@ -90,7 +90,7 @@ basic.getDrivers().forEach(function (drv) {
     }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "+'Персона'+" from dropdown");});
     var birthday = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
     search(driver, ['v-s:lastName'], ["a" + last], 1);
-    search(driver, ['v-s:firstName'], [first.substring(0,3) + "*"], 2);
+    search(driver, ['v-s:firstName'], [first.substring(0,4) + "*"], 2);
     search(driver, ['v-s:firstName'], [first + "ccc"], 0);
     search(driver, ['v-s:middleName'], [middle], 1);
     search(driver, ['v-s:birthday'], [birthday], 2);

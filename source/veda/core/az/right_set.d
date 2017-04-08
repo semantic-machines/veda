@@ -230,7 +230,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
     {
         RightSet new_right_set = new RightSet(log);
 
-        string   prev_data_str = storage.find(prefix ~ rs.uri);
+        string   prev_data_str = storage.find(null, prefix ~ rs.uri);
         if (prev_data_str !is null)
             rights_from_string(prev_data_str, new_right_set);
 
@@ -264,7 +264,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
         else
             key = prefix ~ rs.uri;
 
-        ResultCode res = storage.put(key, new_record, op_id);
+        ResultCode res = storage.put(null, key, new_record, op_id);
 
         if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
@@ -287,7 +287,7 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
 
     Resource   permissionObject = new_ind.getFirstResource(veda_schema__permissionObject);
 
-    ResultCode res = storage.put(filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
+    ResultCode res = storage.put(null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
 
     if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);
