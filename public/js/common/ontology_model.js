@@ -74,6 +74,9 @@ veda.Module(function (veda) { "use strict";
           if ( !veda.IndividualModel.prototype.hasOwnProperty(uri) ) {
             veda.IndividualModel.defineProperty(uri);
           }
+          if ( !veda.IndividualModelAsync.prototype.hasOwnProperty(uri) ) {
+            veda.IndividualModelAsync.defineProperty(uri);
+          }
           break;
         case "v-ui:PropertySpecification" :
         case "v-ui:DatatypePropertySpecification" :
