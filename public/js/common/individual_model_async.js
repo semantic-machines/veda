@@ -96,7 +96,7 @@ veda.Module(function (veda) { "use strict";
       set: function (values) {
         this.isSync(false);
         values = values.filter(function (i) { return i != undefined });
-        var serialized = notNull.map( serializer );
+        var serialized = values.map( serializer );
         if (this.filtered[property_uri] && this.filtered[property_uri].length) {
           serialized = serialized.concat( this.filtered[property_uri] );
         }
