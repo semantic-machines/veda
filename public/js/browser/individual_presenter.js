@@ -35,11 +35,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       individual["rdf:type"].map(function (type) {
         if ( type.template ) {
           template = type.template;
-          template = $( template["v-ui:template"][0].toString() );
         } else {
           template = new veda.IndividualModel("v-ui:generic");
-          template = $( template["v-ui:template"][0].toString() );
         }
+        template = $( template["v-ui:template"][0].toString() );
         renderTemplate(individual, container, template, mode, specs);
       });
     }
