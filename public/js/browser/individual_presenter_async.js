@@ -44,7 +44,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       individual["rdf:type"].map(function (type) {
         type.load()
           .then(function (type) {
-            return type.template ? type.template.load() : (new veda.IndividualModelAsync("v-ui:generic")).load();
+            return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : (new veda.IndividualModelAsync("v-ui:generic")).load();
           })
           .then(function (template) {
             template = $( template["v-ui:template"][0].toString() );
