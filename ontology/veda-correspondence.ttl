@@ -499,11 +499,16 @@ v-s:DeliveryIndex
 
 # Index correspondent in letter
 
-v-s:LetterCorrespondentIndex
+v-s:LetterSenderIndex
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Letter ;
   vdi:forProperty v-s:sender ;
-  vdi:forProperty v-s:receiver ;
+  vdi:inherited_index v-s:CorrespondentIndex ;
+.
+v-s:LetterRecipientIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Letter ;
+  vdi:forProperty v-s:recipient ;
   vdi:inherited_index v-s:CorrespondentIndex ;
 .
 v-s:CorrespondentIndex

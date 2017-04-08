@@ -245,12 +245,12 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-					string ss = "attachment; filename*=UTF-8''" ~ std.uri.encode (originFileName);
+                    string ss = "attachment; filename*=UTF-8''" ~ std.uri.encode(originFileName);
 
                     res.headers[ "Content-Disposition" ] = ss;
 
-					//log.trace ("fileManager: res.headers=%s", res.headers);
-					
+                    //log.trace ("fileManager: res.headers=%s", res.headers);
+
                     res.contentType = getMimeTypeForFile(originFileName);
                     dg(req, res);
                 }
@@ -684,9 +684,9 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "limit" ]     = limit;
 
             trail(_ticket, ticket.user_uri, "query", jreq, text(sr.result), rc, timestamp);
-            
+
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc, text(rc));            
+                throw new HTTPStatusException(rc, text(rc));
         }
     }
 
@@ -703,29 +703,33 @@ class VedaStorageRest : VedaStorageRest_API
         {
             ticket = context.get_ticket(_ticket);
             rc     = ticket.result;
-            
             if (rc != ResultCode.OK)
                 return res;
 
-            try
+            foreach (uri; uris)
             {
-                foreach (uri; uris)
+                try
                 {
                     string cb = context.get_individual_as_binobj(ticket, uri, rc);
                     if (rc == ResultCode.OK)
                     {
                         Json res_i = Json.emptyObject;
                         cbor2json(&res_i, cb);
-	                    res ~= res_i;
-	                    args ~= uri;
+                        res ~= res_i;
+                        args ~= uri;
                     }
-                }                            	
+                    else
+                    {
+                        log.trace("ERR! get_individuals: fail read uri=%s, code=%s", uri, rc);
+                    }
+                }
+                catch (Throwable ex)
+                {
+                    rc = ResultCode.Internal_Server_Error;
+                }
             }
-            catch (Throwable ex)
-            {
-            	rc = ResultCode.Internal_Server_Error;
-                return res;
-            }
+
+            rc = ResultCode.OK;
 
             return res;
         }
@@ -734,9 +738,9 @@ class VedaStorageRest : VedaStorageRest_API
             Json jreq = Json.emptyObject;
             jreq[ "uris" ] = args;
             trail(_ticket, ticket.user_uri, "get_individuals", jreq, text(res), rc, timestamp);
-            
+
             if (rc != ResultCode.OK)
-                throw new HTTPStatusException(rc, text(rc));            
+                throw new HTTPStatusException(rc, text(rc));
         }
     }
 
@@ -745,7 +749,7 @@ class VedaStorageRest : VedaStorageRest_API
         ulong      timestamp = Clock.currTime().stdTime() / 10;
 
         Json       res = Json.emptyObject;
-        ResultCode rc = ResultCode.Internal_Server_Error;
+        ResultCode rc  = ResultCode.Internal_Server_Error;
         Ticket     *ticket;
 
         try
@@ -754,7 +758,7 @@ class VedaStorageRest : VedaStorageRest_API
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
-	            return res;
+                return res;
 
             try
             {
@@ -786,7 +790,7 @@ class VedaStorageRest : VedaStorageRest_API
             }
             catch (Throwable ex)
             {
-            	return res;
+                return res;
                 //throw new HTTPStatusException(rc, ex.msg);
             }
 
@@ -981,8 +985,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 
             log.trace("open trail db");
 
-			string now = Clock.currTime().toISOExtString();
-		    now = now[ 0..indexOf(now, '.') + 4 ];
+            string now = Clock.currTime().toISOExtString();
+            now = now[ 0..indexOf(now, '.') + 4 ];
 
             tdb_cons =
                 new TrailDBConstructor(trails_path ~ "/rest_trails_" ~ now,
