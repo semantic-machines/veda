@@ -11,6 +11,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     if (typeof container === "string") {
       container = $(container).empty();
     }
+
     mode = mode || "view";
 
     if (container.prop("id") === "main") { container.hide(); }
@@ -99,11 +100,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var _view = $(".-view", wrapper);
     var _edit = $(".-edit", wrapper);
     var _search = $(".-search", wrapper);
-
-    // Apply mode to template to show/hide elements in different modes
-    function modeHandler (e) {
-      mode = e.type;
-      template.data("mode", mode);
+    function showHideHandler (e) {
       switch (e.type) {
         case "view": view.show(); _view.hide(); break;
         case "edit": edit.show(); _edit.hide(); break;
@@ -111,13 +108,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       e.stopPropagation();
     }
-    template.on("view edit search", modeHandler);
+    template.on("view edit search", showHideHandler);
 
     // Embedded templates list
     var embedded = [];
 
     // Trigger same events for embedded templates
-    function syncEmbedded (e) {
+    function syncEmbedded (e, parent) {
       embedded.map(function (item) {
         item.trigger(e.type, individual.id);
       });
@@ -163,30 +160,36 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("cancel", cancelHandler);
 
     // Deleted alert
-    function deletedRecoveredHandler() {
-      if ( individual.hasValue("v-s:deleted", true) ) {
-        template.addClass("deleted");
-        if ( container.prop("id") === "main" ) {
-          $("<div class='deleted-alert alert alert-warning no-margin' role='alert'>\
-               <p>Объект удален.  <button class='btn btn-default btn-sm'>Восстановить</button></p>\
-             </div>")
-          .prependTo(template)
-          .find("button").click(function () {
-            template.trigger("recover");
-          });
-        }
-      } else {
-        template.removeClass("deleted");
-        if ( container.prop("id") === "main" ) {
-          $(".deleted-alert", template).remove();
-        }
+    var deletedAlert;
+    if ( individual.hasValue("v-s:deleted", true) ) {
+      afterDeleteHandler();
+    }
+    function afterRecoverHandler() {
+      if ( container.prop("id") === "main" ) {
+        deletedAlert.remove();
+      }
+      template.removeClass("deleted");
+    }
+    function afterDeleteHandler() {
+      template.addClass("deleted");
+      if ( container.prop("id") === "main" ) {
+        deletedAlert = $(
+          '<div class="alert alert-warning no-margin" role="alert">\
+            <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>\
+          </div>'
+        );
+        template.prepend(deletedAlert);
+        $("button", deletedAlert).click(function () {
+          template.trigger("recover");
+        });
       }
     }
-    individual.on("v-s:deleted", deletedRecoveredHandler);
+    individual.on("afterRecover", afterRecoverHandler);
+    individual.on("afterDelete", afterDeleteHandler);
     template.one("remove", function () {
-      individual.off("v-s:deleted", deletedRecoveredHandler);
+      individual.off("afterRecover", afterRecoverHandler);
+      individual.off("afterDelete", afterDeleteHandler);
     });
-    deletedRecoveredHandler();
 
     function deleteHandler (e, parent) {
       if (parent !== individual.id) {
@@ -213,17 +216,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         $delete = $("#delete.action", wrapper);
 
     // Check rights to manage buttons
-    var canUpdate = individual.rights.hasValue("v-s:canUpdate", true);
-    var canDelete = individual.rights.hasValue("v-s:canDelete", true);
-    if (!canUpdate) {
-      $edit.remove();
-      $save.remove();
-      $draft.remove();
-      $cancel.remove();
-    }
-    if (!canDelete || individual.isNew()) {
-      $delete.remove();
-    }
+    // Update
+    if ($edit.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
+    if ($save.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $save.remove();
+    if ($draft.length  && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $draft.remove();
+    if ($cancel.length && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
+    // Delete
+    if ($delete.length && ( !(individual.rights && individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) || individual.isNew() ) ) $delete.remove();
 
     // Buttons handlers
     // Edit
@@ -261,6 +260,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       e.preventDefault();
       if ( confirm("Вы уверены? / Are you sure?") ) { template.trigger("delete"); }
     });
+    if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
+
 
     // Standart buttons labels change for drafts
     var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
@@ -314,6 +315,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     setTimeout( function () {
       isDraftHandler("v-s:isDraft");
     }, 100);
+
+    // Apply mode to template to show/hide elements in different modes
+    function modeHandler (e) {
+      mode = e.type;
+      mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
+          mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
+              mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
+                  true;
+      template.data("mode", mode);
+      e.stopPropagation();
+    }
+    template.on("view edit search", modeHandler);
 
     // Additional actions buttons
     var $send = $("#send.action", wrapper);
@@ -621,7 +634,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       template.one("remove", function () {
         about.off(property_uri, propertyModifiedHandler);
       });
-
+      /*veda.on("language:changed", langWatch);
+      template.one("remove", function () {
+        veda.off("language:changed", langWatch);
+      });
+      function langWatch () {
+        propertyModifiedHandler(property_uri);
+      }*/
       var updateService = new veda.UpdateService();
       updateService.subscribe(about.id);
       template.one("remove", function () {
@@ -720,6 +739,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           spec = new veda.IndividualModel( specs[property_uri] ),
           controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_generic;
 
+      //control.removeAttr("property");
+
       // Initial validation state
       validation[property_uri] = {state: true, cause: []};
 
@@ -782,6 +803,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           spec = new veda.IndividualModel( specs[rel_uri] ),
           rel = new veda.IndividualModel(rel_uri),
           controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_link;
+
+      //control.removeAttr("rel");
 
       // Initial validation state
       validation[rel_uri] = {state: true, cause: []};
@@ -976,8 +999,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       // filter empty values
       values.length === values.filter(function(item) {
         return (
-          typeof item === "boolean" ? true :
-          typeof item === "number" ? true : !!item
+            typeof item === "boolean" ? true :
+                typeof item === "number" ? true : !!item
         ) ;
       }).length);
       result.state = result.state && minCardinalityState;
@@ -987,14 +1010,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     if (spec.hasValue("v-ui:maxCardinality")) {
       var maxCardinalityState = (
-        values.length <= spec["v-ui:maxCardinality"][0] &&
-        // filter empty values
-        values.length === values.filter(function(item) {
-          return (
-            typeof item === "boolean" ? true :
-            typeof item === "number" ? true : !!item
-          );
-        }).length
+          values.length <= spec["v-ui:maxCardinality"][0] &&
+          // filter empty values
+          values.length === values.filter(function(item) {
+            return (
+                typeof item === "boolean" ? true :
+                    typeof item === "number" ? true : !!item
+            ) ;
+          }).length
       );
       result.state = result.state && maxCardinalityState;
       if (!maxCardinalityState) {
@@ -1003,52 +1026,52 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     // check each value
     result = result && values.reduce(function (result, value) {
-      // regexp check
-      if (spec.hasValue("v-ui:regexp")) {
-        var regexp = new RegExp(spec["v-ui:regexp"][0]);
-        var regexpState = regexp.test(value.toString());
-        result.state = result.state && regexpState;
-        if (!regexpState) {
-          result.cause.push("v-ui:regexp");
-        }
-      }
-      // range check
-      switch (spec["rdf:type"][0].id) {
-        case "v-ui:DatatypePropertySpecification" :
-          if (spec.hasValue("v-ui:minValue")) {
-            var minValueState = (value >= spec["v-ui:minValue"][0]);
-            result.state = result.state && minValueState;
-            if (!minValueState) {
-              result.cause.push("v-ui:minValue");
+          // regexp check
+          if (spec.hasValue("v-ui:regexp")) {
+            var regexp = new RegExp(spec["v-ui:regexp"][0]);
+            var regexpState = regexp.test(value.toString());
+            result.state = result.state && regexpState;
+            if (!regexpState) {
+              result.cause.push("v-ui:regexp");
             }
           }
-          if (spec.hasValue("v-ui:maxValue")) {
-            var maxValueState = (value <= spec["v-ui:maxValue"][0]);
-            result.state = result.state && maxValueState;
-            if (!maxValueState) {
-              result.cause.push("v-ui:maxValue");
-            }
+          // range check
+          switch (spec["rdf:type"][0].id) {
+            case "v-ui:DatatypePropertySpecification" :
+              if (spec.hasValue("v-ui:minValue")) {
+                var minValueState = (value >= spec["v-ui:minValue"][0]);
+                result.state = result.state && minValueState;
+                if (!minValueState) {
+                  result.cause.push("v-ui:minValue");
+                }
+              }
+              if (spec.hasValue("v-ui:maxValue")) {
+                var maxValueState = (value <= spec["v-ui:maxValue"][0]);
+                result.state = result.state && maxValueState;
+                if (!maxValueState) {
+                  result.cause.push("v-ui:maxValue");
+                }
+              }
+              if (spec.hasValue("v-ui:minLength")) {
+                var minLengthState = (value.toString().length >= spec["v-ui:minLength"][0]);
+                result.state = result.state && minLengthState;
+                if (!minLengthState) {
+                  result.cause.push("v-ui:minLength");
+                }
+              }
+              if (spec.hasValue("v-ui:maxLength")) {
+                var maxLengthState = (value.toString().length <= spec["v-ui:maxLength"][0]);
+                result.state = result.state && maxLengthState;
+                if (!maxLengthState) {
+                  result.cause.push("v-ui:maxLength");
+                }
+              }
+              break;
+            case "v-ui:ObjectPropertySpecification" :
+              break;
           }
-          if (spec.hasValue("v-ui:minLength")) {
-            var minLengthState = (value.toString().length >= spec["v-ui:minLength"][0]);
-            result.state = result.state && minLengthState;
-            if (!minLengthState) {
-              result.cause.push("v-ui:minLength");
-            }
-          }
-          if (spec.hasValue("v-ui:maxLength")) {
-            var maxLengthState = (value.toString().length <= spec["v-ui:maxLength"][0]);
-            result.state = result.state && maxLengthState;
-            if (!maxLengthState) {
-              result.cause.push("v-ui:maxLength");
-            }
-          }
-          break;
-        case "v-ui:ObjectPropertySpecification" :
-          break;
-      }
-      return result;
-    }, result);
+          return result;
+        }, result);
     return result;
   }
 
