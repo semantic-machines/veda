@@ -11,7 +11,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     if (typeof container === "string") {
       container = $(container).empty();
     }
-
     mode = mode || "view";
 
     if (container.prop("id") === "main") { container.hide(); }
@@ -100,15 +99,19 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var _view = $(".-view", wrapper);
     var _edit = $(".-edit", wrapper);
     var _search = $(".-search", wrapper);
-    function showHideHandler (e) {
-      switch (e.type) {
+
+    // Apply mode to template to show/hide elements in different modes
+    function modeHandler (e) {
+      mode = e.type;
+      template.data("mode", mode);
+      switch (mode) {
         case "view": view.show(); _view.hide(); break;
         case "edit": edit.show(); _edit.hide(); break;
         case "search": search.show(); _search.hide(); break;
       }
       e.stopPropagation();
     }
-    template.on("view edit search", showHideHandler);
+    template.on("view edit search", modeHandler);
 
     // Embedded templates list
     var embedded = [];
@@ -315,18 +318,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     setTimeout( function () {
       isDraftHandler("v-s:isDraft");
     }, 100);
-
-    // Apply mode to template to show/hide elements in different modes
-    function modeHandler (e) {
-      mode = e.type;
-      mode === "view" ? template.addClass("mode-view").removeClass("mode-edit mode-search") :
-          mode === "edit" && (individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ? template.addClass("mode-edit").removeClass("mode-view mode-search") :
-              mode === "search" ? template.addClass("mode-search").removeClass("mode-view mode-edit") :
-                  true;
-      template.data("mode", mode);
-      e.stopPropagation();
-    }
-    template.on("view edit search", modeHandler);
 
     // Additional actions buttons
     var $send = $("#send.action", wrapper);
