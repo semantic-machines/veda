@@ -11,7 +11,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     if (typeof container === "string") {
       container = $(container).empty();
     }
-
     mode = mode || "view";
 
     if (container.prop("id") === "main") { container.hide(); }
