@@ -37,6 +37,11 @@ func main() {
 	fmt.Println("DIMENSION count_ws_sessions 'count ws sessions' absolute 1 1" +
 		" '' area 1000 5")
 
+	fmt.Println("CHART netdata.plugin_vedad_count_ws_hosts '' 'Veda count_ws_hosts' 'count' " +
+		"veda.d '' area 1000 5")
+	fmt.Println("DIMENSION count_ws_hosts 'count ws hosts' absolute 1 1" +
+		" '' area 1000 5")
+
 	fmt.Println("CHART netdata.plugin_vedad_dt_count_updates '' 'Veda dt_count_updates' 'count' " +
 		"veda.d '' area 1000 5")
 	fmt.Println("DIMENSION dt_count_updates 'dt count updates' absolute 1 1")
@@ -86,6 +91,10 @@ func main() {
 		fmt.Printf("SET count_ws_sessions=%v\n", vedaData["count_ws_sessions"])
 		fmt.Println("END")
 
+		fmt.Println("BEGIN netdata.plugin_vedad_count_ws_hosts")
+		fmt.Printf("SET count_ws_hosts=%v\n", vedaData["count_ws_hosts"])
+		fmt.Println("END")
+
 		fmt.Println("BEGIN netdata.plugin_vedad_dt_count_updates")
 		fmt.Printf("SET dt_count_updates=%v\n", vedaData["dt_count_updates"])
 		fmt.Println("END")
@@ -94,7 +103,7 @@ func main() {
 		time.Sleep(5000 * time.Millisecond)
 	}
 
-	/*	                    sys.stdout.write(
+	/*  sys.stdout.write(
 	    "CHART netdata.plugin_pythond_" +
 	    chart +
 	    " '' 'Execution time for " +
