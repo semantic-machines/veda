@@ -75,7 +75,7 @@ func collector_stat(ch1 chan infoConn) {
 		select {
 
 		case gg = <-ch1:
-			var host, _, _ = net.SplitHostPort(gg.addr.String ());
+			var host, _, _ = net.SplitHostPort(gg.addr.String())
 			if gg.activity == REQUEST {
 				sessions[gg.addr] = sessions[gg.addr] + 1
 				hosts[host] = hosts[host] + 1
