@@ -401,31 +401,22 @@ if (is_new && !is_ontology) {
 */
 
 var doc_uri = document['@'],
-  owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
+    owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
 
 owner_properties.map(function (property_uri) {
   var owner_uri = getUri( document[property_uri] );
   if (owner_uri) {
     var owner = get_individual(ticket, owner_uri);
     if (owner) {
-      var owner_type = getUri(owner['rdf:type']);
-      if (owner_type == 'v-s:Person') {
+      var owner_type = getUri(owner["rdf:type"]);
+      if (owner_type === "v-s:Person" || owner_type === "v-s:Position") {
         var new_right_uri = doc_uri + "_" + owner_uri;
         addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, new_right_uri);
-        //print("Event 2: rights for person", owner_uri, "to doc", doc_uri);
-      } else {
-        var ff = get_property_chain (ticket, document, property_uri, 'v-s:occupation');
-        if (ff) {
-          var position_uri = getUri (ff['field']);
-          var first_doc = ff['first'];
-          if (first_doc) {
-            doc_uri = first_doc['@'];
-            if (position_uri) {
-              new_right_uri = doc_uri + "_" + position_uri;
-              addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
-              //print("Event 2: rights for position", position_uri, "to doc", doc_uri);
-            }
-          }
+      } else if (owner_type === "v-s:Appointment") {
+        var position_uri = getUri(owner["v-s:occupation"]);
+        if (position_uri) {
+          var new_right_uri = doc_uri + "_" + position_uri;
+          addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
         }
       }
     }

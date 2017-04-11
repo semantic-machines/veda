@@ -5,6 +5,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
@@ -14,6 +15,274 @@
   rdfs:label "Онтология функции 'Задачи' системы Веда"@ru ;
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
+.
+
+########## TASKS COUNTERS ###########
+
+v-ft:TaskCounter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Task counter"@en ;
+  rdfs:label "Счетчик задач"@ru ;
+.
+v-ft:inboxCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество входящих"@en ;
+  rdfs:label "inbox сount"@ru ;
+.
+v-ft:inboxWeekCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество входящих на текущую неделю"@en ;
+  rdfs:label "inbox сount for current week"@ru ;
+.
+v-ft:outboxCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество исходящих"@en ;
+  rdfs:label "outbox сount"@ru ;
+.
+v-ft:completedCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество выполненных"@en ;
+  rdfs:label "completed сount"@ru ;
+.
+
+v-ft:Event_UpdateTaskCounter
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обновления счетчиков задач" ;
+  v-s:triggerByType v-wf:DecisionForm ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+var task = document,
+    task_uri = document["@"],
+    to = getUri(task["v-wf:to"]),
+    from = getUri(task["v-wf:from"]),
+    isNew = !prev_state,
+    isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: _Boolean, data: true}) && hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
+    isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: _Boolean, data: true}) && hasValue(task, "v-s:deleted", {type: _Boolean, data: true}),
+    toCounterUri,
+    fromCounterUri,
+    toCounter,
+    fromCounter,
+    updateTo,
+    updateFrom;
+
+// get or create task counter
+if (to) {
+  toCounterUri = "d:taskCounter_" + to.split(':').join('_');
+  toCounter = get_individual(ticket, toCounterUri) || createTaskCounter(to);
+}
+if (from) {
+  fromCounterUri = "d:taskCounter_" + from.split(':').join('_');
+  fromCounter = get_individual(ticket, fromCounterUri) || createTaskCounter(from);
+}
+// task sender === task receiver
+if (to === from) {
+  fromCounter = toCounter;
+}
+
+updateTo = !!toCounter,
+updateFrom = !!fromCounter;
+
+var today = new Date(),
+    monday = new Date(),
+    sunday = new Date();
+
+monday.setDate(monday.getDate() - monday.getDay() + 1);
+sunday.setDate(sunday.getDate() + 7 - sunday.getDay());
+monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
+
+var isThisWeekTask = hasValue(task, "v-wf:dateGiven") && (monday < task["v-wf:dateGiven"][0].data && task["v-wf:dateGiven"][0].data < sunday);
+
+print("************************** START **************************");
+print("task =", task_uri, "| from =", from, "| to =", to, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted, "| isThisWeekTask =", isThisWeekTask);
+
+if ( isNew || isDeleted || isCompleted ) {
+  if (updateTo) {
+    var toInboxCount = toCounter["v-ft:inboxCount"][0],
+        toInboxWeekCount = toCounter["v-ft:inboxWeekCount"][0],
+        toOutboxCount = toCounter["v-ft:outboxCount"][0],
+        toCompletedCount = toCounter["v-ft:completedCount"][0];
+    switch (true) {
+      case isNew:
+        toInboxCount.data++;
+        if (isThisWeekTask) {
+          toInboxWeekCount.data++;
+        }
+        break;
+      case isCompleted:
+        toInboxCount.data--;
+        toCompletedCount.data++;
+        if (isThisWeekTask) {
+          toInboxWeekCount.data--;
+        }
+        break;
+      case isDeleted:
+        toInboxCount.data--;
+        if (isThisWeekTask) {
+          toInboxWeekCount.data--;
+        }
+        break;
+    }
+    put_individual(ticket, toCounter, _event_id);
+    print("toCounter updated =", JSON.stringify(toCounter));
+  }
+
+  if (updateFrom) {
+    var fromInboxCount = fromCounter["v-ft:inboxCount"][0],
+        fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
+        fromCompletedCount = fromCounter["v-ft:completedCount"][0];
+    switch (true) {
+      case isNew:
+        fromOutboxCount.data++;
+        break;
+      case isCompleted:
+        fromOutboxCount.data--;
+        break;
+      case isDeleted:
+        fromOutboxCount.data--;
+        break;
+    }
+    put_individual(ticket, fromCounter, _event_id);
+    print("fromCounter updated =", JSON.stringify(fromCounter));
+  }
+}
+print("************************** END **************************");
+
+function createTaskCounter(owner) {
+  if (owner === null) { return; }
+  var uri = "d:taskCounter_" + owner.split(':').join('_'),
+      inbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "')"),
+      inboxCount = inbox[0] ? inbox.length : 0,
+      outbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + owner + "')"),
+      outboxCount = outbox[0] ? outbox.length : 0,
+      completed = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + owner + "')"),
+      completedCount = completed[0] ? completed.length : 0;
+
+  var today = new Date(),
+      monday = new Date(),
+      sunday = new Date();
+
+  monday.setDate(monday.getDate() - monday.getDay() + 1);
+  sunday.setDate(sunday.getDate() + 7 - sunday.getDay());
+  monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+  sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
+
+  var inboxWeek = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "' && 'v-wf:dateGiven' == [" + monday.toISOString() +  "," + sunday.toISOString() + "])"),
+      inboxWeekCount = inboxWeek[0] ? inboxWeek.length : 0;
+
+  var taskCounter = {
+    "@": uri,
+    "rdf:type": newUri('v-ft:TaskCounter'),
+    "v-s:owner": newUri(owner),
+    "v-ft:inboxCount": newInt(inboxCount),
+    "v-ft:inboxWeekCount": newInt(inboxWeekCount),
+    "v-ft:outboxCount": newInt(outboxCount),
+    "v-ft:completedCount": newInt(completedCount),
+    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateAllTaskCounters")
+  };
+  put_individual(ticket, taskCounter, _event_id);
+  if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
+    print(
+      "Calculated counters:", uri,
+      "| inbox =", JSON.stringify(inbox), "| inboxCount =", inboxCount,
+      "| outbox =", JSON.stringify(outbox), "| outboxCount =", outboxCount,
+      "| completed =", JSON.stringify(completed), "| completedCount =", completedCount,
+      "| inboxWeek =", JSON.stringify(inboxWeek), "| inboxWeekCount =", inboxWeekCount
+    );
+  }
+  return taskCounter;
+}
+  """ ;
+.
+
+v-ft:Event_UpdateAllTaskCounters
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Еженедельный скрипт обновления счетчиков задач для всех должностей и назначений" ;
+  v-s:triggerByUid cfg:weekly ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ */
+print("************************** START **************************");
+
+var owners = query(ticket, "'rdf:type'==='v-s:Position' || 'rdf:type'==='v-s:Appointment'");
+print("owners count =", owners.length);
+
+owners.forEach(createTaskCounter);
+
+print("************************** END **************************");
+
+function createTaskCounter(owner) {
+  if (owner === null) { return; }
+  var uri = "d:taskCounter_" + owner.split(':').join('_'),
+      inbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "')"),
+      inboxCount = inbox[0] ? inbox.length : 0,
+      outbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + owner + "')"),
+      outboxCount = outbox[0] ? outbox.length : 0,
+      completed = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + owner + "')"),
+      completedCount = completed[0] ? completed.length : 0;
+
+  var today = new Date(),
+      monday = new Date(),
+      sunday = new Date();
+
+  monday.setDate(monday.getDate() - monday.getDay() + 1);
+  sunday.setDate(sunday.getDate() + 7 - sunday.getDay());
+  monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+  sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
+
+  var inboxWeek = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "' && 'v-wf:dateGiven' == [" + monday.toISOString() +  "," + sunday.toISOString() + "])"),
+      inboxWeekCount = inboxWeek[0] ? inboxWeek.length : 0;
+
+  var taskCounter = {
+    "@": uri,
+    "rdf:type": newUri('v-ft:TaskCounter'),
+    "v-s:owner": newUri(owner),
+    "v-ft:inboxCount": newInt(inboxCount),
+    "v-ft:inboxWeekCount": newInt(inboxWeekCount),
+    "v-ft:outboxCount": newInt(outboxCount),
+    "v-ft:completedCount": newInt(completedCount),
+    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateAllTaskCounters")
+  };
+  put_individual(ticket, taskCounter, _event_id);
+  if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
+    print(
+      "Calculated counters:", uri,
+      "| inbox =", JSON.stringify(inbox), "| inboxCount =", inboxCount,
+      "| outbox =", JSON.stringify(outbox), "| outboxCount =", outboxCount,
+      "| completed =", JSON.stringify(completed), "| completedCount =", completedCount,
+      "| inboxWeek =", JSON.stringify(inboxWeek), "| inboxWeekCount =", inboxWeekCount
+    );
+  }
+  return taskCounter;
+}
+  """ ;
 .
 
 ########## TASKS FUNCTION ###########
@@ -57,21 +326,21 @@ v-ft:Inbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '$2')"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:to' == '$1' || 'v-wf:to' == '$2'))"^^xsd:string ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '$2')"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:from' == '$1' || 'v-wf:from' == '$2'))"^^xsd:string ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$1') || ('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '$2')"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && ('v-wf:to' == '$1' || 'v-wf:to' == '$2'))"^^xsd:string ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
@@ -200,13 +469,15 @@ v-ft:FunctionTasksTemplate
       }
 
       for (var result, _tmpl, i = tasks.page * veda.user.displayedElements; i < (tasks.page + 1) * veda.user.displayedElements && i < tasks.count; i++) {
-        result = new veda.IndividualModel( tasks.result[i] );
-        if (individual.id === "v-ft:Inbox" && result.hasValue("v-wf:takenDecision") && result.isSync()) {
-          tasks.result.splice(i--, 1);
-          continue;
-        } else {
-          _tmpl = tmpl.replace("###", i+1);
-          result.present(cnt, $(_tmpl));
+        result = tasks.result[i] ? new veda.IndividualModel( tasks.result[i] ) : undefined;
+        if (result) {
+          if (individual.id === "v-ft:Inbox" && result.hasValue("v-wf:takenDecision") && result.isSync()) {
+            tasks.result.splice(i--, 1);
+            continue;
+          } else {
+            _tmpl = tmpl.replace("###", i+1);
+            result.present(cnt, $(_tmpl));
+          }
         }
       }
 
@@ -264,7 +535,7 @@ v-ft:TaskTemplate
   });
   //# sourceURL=v-ft:TaskTemplate
 </script>
-  """
+  """ ;
 .
 
 v-ft:FunctionTasksIndicatorTemplate
@@ -272,42 +543,18 @@ v-ft:FunctionTasksIndicatorTemplate
   rdfs:label "V-ft:FunctionInbox indicator template"@en ;
   rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
   v-ui:template """
-<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
-  <span class="fa fa-envelope-o fa-lg"></span> <span class="label label-danger" id="counter"></span>
-  <span about="@" property="rdfs:label" style="display:none"></span>
-</a>
 <script>
-  //popover
+  var pos_uri = veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0].id : undefined,
+      pos_counter_uri = pos_uri ? "d:taskCounter_" + pos_uri.split(":").join("_") : undefined;
+  $(".label", template).attr("about", pos_counter_uri);
   template.tooltip({
     container: template,
-    html: true,
-    title: function () {
-      return template.children("[property]").clone().show();
-    }
+    title: individual["rdfs:label"].join(" ")
   });
-  var tasks = individual.tasks;
-  var counter = $("#counter", template);
-  tasks.search();
-  counter.text(tasks.count);
-  var interval = setInterval(function () {
-    tasks.search();
-    counter.text(tasks.count);
-  }, 1000*60*3);
-  veda.on("task:completed", taskCompletedHandler);
-  template.one("remove", function () {
-    clearInterval(interval);
-    veda.off("task:completed", taskCompletedHandler);
-  });
-  function taskCompletedHandler(task_id) {
-    var test = tasks.result.filter(function (item) {
-      return item === task_id;
-    }).length;
-    if ( test ) {
-      var tmp = parseInt( counter.text() );
-      counter.text(tmp ? tmp - 1 : tmp);
-    }
-  }
-  //# sourceURL=v-ft:FunctionTasksIndicatorTemplate
+  //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre
 </script>
-  """
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-envelope-o fa-lg"></span> <span id="counter" class="label label-danger" property="v-ft:inboxCount">0</span>
+</a>
+  """ ;
 .
