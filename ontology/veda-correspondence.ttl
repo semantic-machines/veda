@@ -74,6 +74,7 @@ v-s:Letter
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
+  v-ui:hasTemplate v-s:LetterTemplate ;
 .
 v-s:hasLetterRegistrationRecordSender
   rdf:type owl:ObjectProperty ;

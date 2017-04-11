@@ -30,6 +30,7 @@ v-s:PersonalAspect
   rdfs:subClassOf v-s:Aspect ;
   rdfs:label "Personal aspect"@en ;
   rdfs:label "Персональный аспект"@ru ;
+  v-ui:hasTemplate v-s:PersonalAspectTemplate ;
 .
 
 v-s:BusinessAspect
