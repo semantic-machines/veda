@@ -26,6 +26,7 @@ v-l:MainPage
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Page"@en ;
   rdfs:label "Страница"@ru ;
+  v-ui:hasTemplate v-l:MainPageTemplate ;
 .
 v-l:MainPageTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -182,6 +183,7 @@ v-l:WelcomeAspect
   rdfs:subClassOf v-s:Aspect ;
   rdfs:label "Welcome aspect"@en ;
   rdfs:label "Приветственный аспект"@ru ;
+  v-ui:hasTemplate v-l:WelcomeAspectTemplate ;
 .
 v-l:WelcomeAspectTemplate
   rdf:type v-ui:ClassTemplate ;

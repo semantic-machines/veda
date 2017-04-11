@@ -21,6 +21,7 @@ v-s:Comment
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Comment"@en ;
   rdfs:label "Комментарий "@ru ;
+  v-ui:hasTemplate v-s:SingleCommentTemplate ;
 .
 
 #-- Спецификации --

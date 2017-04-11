@@ -24,6 +24,8 @@ v-cal:FunctionCalendar
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
+  v-ui:hasModel v-cal:FunctionCalendarModel ;
+  v-ui:hasTemplate v-cal:FunctionCalendarTemplate ;
 .
 v-cal:query
   rdf:type owl:DatatypeProperty ;
@@ -36,7 +38,7 @@ v-cal:sortOrder
   rdfs:range xsd:string ;
 .
 v-cal:FunctionCalendarModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "v-cal:FunctionCalendar class template"@en ;
   rdfs:label "Шаблон для класса v-cal:FunctionCalendar"@ru ;
   v-ui:forClass v-cal:FunctionCalendar ;

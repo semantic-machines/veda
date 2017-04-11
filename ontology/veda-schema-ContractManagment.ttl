@@ -22,6 +22,7 @@ v-s:Contractor
   rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;
+  v-ui:hasTemplate v-s:ContractorTemplate ;
 .
 v-s:linkedOrganization
   rdf:type owl:ObjectProperty ;
@@ -42,6 +43,7 @@ v-s:ContractorProfile
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Contractor profile"@en ;
   rdfs:label "Досье контрагента"@ru ;
+  v-ui:hasTemplate mnd-s:ContractorProfileTemplate ;
 .
 # ------------------------------------------------------------
 v-s:ContractorProfileFile
@@ -80,6 +82,7 @@ v-s:CurrencyExchangeRate
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Курс обмена валюты"@ru ;
   rdfs:label "Currency exchange rate"@en ;
+  v-ui:hasTemplate v-s:CurrencyExchangeRateTemplate ;
 .
 
 v-s:PsHasCurrency_CurrencyExchangeRate

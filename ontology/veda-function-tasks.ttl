@@ -23,6 +23,8 @@ v-ft:FunctionTasks
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
+  v-ui:hasModel v-ft:FunctionTasksModel ;
+  v-ui:hasTemplate v-ft:FunctionTasksTemplate ;
 .
 v-ft:query
   rdf:type owl:DatatypeProperty ;
@@ -35,7 +37,7 @@ v-ft:sortOrder
   rdfs:range xsd:string ;
 .
 v-ft:FunctionTasksModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "V-ft:FunctionTasks class template"@en ;
   rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
