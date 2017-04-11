@@ -302,6 +302,9 @@ for (i = 0; i < 1; i++)
             {
                 ok (true);
             }
+            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
 
     test(
@@ -333,6 +336,10 @@ for (i = 0; i < 1; i++)
             read_individual = get_individual(a_ticket.id, new_test_doc1_uri);
             ok(compare(new_test_doc1, read_individual));
 
+            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+
         });
 
     test("#007 Individual store and read, test datatype", function()
@@ -343,6 +350,10 @@ for (i = 0; i < 1; i++)
 
         var read_individual = get_individual(ticket.id, new_test_doc1['@']);
         ok(compare(new_test_doc1, read_individual));
+
+        read_individual = remove_individual (ticket.id, new_test_doc1['@']);
+        wait_module(condition, read_individual.op_id);
+        test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
     });
 
     test("#008 test [v-s:PermissionStatement]: user1 store file, user2 not read file, add right for user2, add cant read right for user2",
@@ -367,6 +378,10 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
 
             res = test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1, true);
+
+            res = remove_individual (ticket1.id, new_test_doc1['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket1, new_test_doc1['@'], new_test_doc1);
         });
 
     test(
@@ -418,6 +433,10 @@ for (i = 0; i < 1; i++)
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);
+
+            read_individual = remove_individual(ticket.id, new_test_doc3['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
         });
 
     test("#010 Individual of [v-s:Membership]",
@@ -449,6 +468,10 @@ for (i = 0; i < 1; i++)
             wait_module(acl_manager, res[1].op_id);
 
             test_fail_read(ticket2, new_test_doc1['@'], new_test_doc1, true);
+
+            res = remove_individual (ticket1.id, new_test_doc1['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket1, new_test_doc1['@'], new_test_doc1);
         });
 
     test("#011 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",
@@ -496,6 +519,17 @@ for (i = 0; i < 1; i++)
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
             ok((read_individual['@'] == new_test_doc3_uri) == true);
+
+
+            // read_individual = remove_individual (ticket.id, new_test_doc1['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
+            // read_individual = remove_individual (ticket.id, new_test_doc2['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket, new_test_doc2['@'], new_test_doc2);
+            // read_individual = remove_individual (ticket.id, new_test_doc3['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
         });
 
     test(
@@ -582,6 +616,19 @@ for (i = 0; i < 1; i++)
 
             data = query(ticket_user1.id, "'v-s:test_fieldB' === 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' === 'BBB" + test_data_uid + "'", undefined, undefined, true).result;
             ok(compare(data.length, 2));
+
+            // res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+            // res = remove_individual (ticket_user1.id, new_test_doc2['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
+            // res = remove_individual (ticket_user1.id, new_test_doc3['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
+            // res = remove_individual (ticket_user1.id, new_test_doc4['@']);
+            // wait_module(condition, res.op_id);
+            // test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
 
     test(
@@ -664,6 +711,19 @@ for (i = 0; i < 1; i++)
                 "'v-s:test_datetime1' === [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
             ok(compare(data.length, 2));
             ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
+
+            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+            res = remove_individual (ticket_user1.id, new_test_doc2['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
+            res = remove_individual (ticket_user1.id, new_test_doc3['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
+            res = remove_individual (ticket_user1.id, new_test_doc4['@']);
+            wait_module(condition, res.op_id);
+            test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
 
 
