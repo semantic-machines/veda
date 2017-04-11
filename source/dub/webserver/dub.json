@@ -2,7 +2,7 @@
 	"name": "veda-webserver",
 	"description": "veda-webserver",
 	"dependencies": {
-		"vibe-d": "0.7.30",
+		"vibe-d": "0.7.31",
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2",
 		"traildb": "0.0.2"
