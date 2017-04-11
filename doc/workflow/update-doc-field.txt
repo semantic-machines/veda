@@ -1,0 +1,49 @@
+Чтобы автоматизировать процесс обновления полей документа
+сначала нужно создать все локальные переменные внутри задачи.
+Создать локальную переменную позволяет v-wf:Mapping,
+индивид этого типа с помощью выражения  v-wf:mappingExpression  "process.getInputVariable ('var_name')" ;
+выполняет отображение переменной процесса var_name на переменную
+v-wf:mapToVariable d:var_mapped_name ;
+
+:test-map-docid
+  rdfs:label "Маппинг docid"@ru;
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable d:var_docid ;
+  v-wf:mappingExpression  "process.getInputVariable ('docid')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+:test-map-initiator
+  rdfs:label "Маппинг initiator"@ru;
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable d:var_initiator ;
+  v-wf:mappingExpression  "process.getInputVariable ('initiator')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+d:var_docid
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "src_uri" ;
+  rdfs:label "src_uri" ;
+  v-wf:varDefineScope v-wf:Net ;
+.
+
+d:var_initiator
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "value" ;
+  rdfs:label "value" ;
+  v-wf:varDefineScope v-wf:Net ;
+.
+
+Для автоматизации задачи, её исполнителем можно назначить v-s:Codelet.
+Все уже созданные функции кодлетов находятся в директории public/js.
+Для добавления значения поля в документ, можно использовать кодлет
+add_value_to_document. Ему неободимо знать документ src_uri, поле name_uri и значение value.
+
+src_uri и value можно заполнить с помощью маппингов, описанных выше. Если name_uri ‒ конкретное значение, например, 
+v-s:creator, то его необходимо создать с помощью функции newUri стартовым преобразованием 
+name_uri=newUri('v-s:creator'). Просто присвоение name_uri='v-s:creator', работать не будет.
+
+После выполнения описанных действий можно создавать стартовую форму для сети с данным преобразованием.
+При работе с ttl следует быть внимательным к синтаксису, парсинг ttl перекращается после ошибки.
+Сообщения об ошибках парсера можно найти в log/veda-ttlreader-stderr.log
