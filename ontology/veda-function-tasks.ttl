@@ -549,6 +549,7 @@ v-ft:FunctionTasksIndicatorTemplate
     container: template,
     title: individual["rdfs:label"].join(" ")
   });
+
   //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
