@@ -1025,7 +1025,7 @@ v-s:copyTo
   rdf:type owl:ObjectProperty ;
   rdfs:label "Copy to"@en ;
   rdfs:label "В копию"@ru ;
-  rdfs:range v-s:Correspondent ;
+  rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:mailbox

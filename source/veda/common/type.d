@@ -224,6 +224,11 @@ struct decimal
                 mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
                 exponent = -sfp;
             }
+            else if (ff.length == 1)
+            {
+                mantissa = to!long (num);
+                exponent = 0;
+            }
         }
     }
 

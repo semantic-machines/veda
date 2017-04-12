@@ -4,7 +4,7 @@
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
-GO_VER=go1.7.5
+GO_VER=go1.8.1
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
