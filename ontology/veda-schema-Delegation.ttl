@@ -126,6 +126,7 @@ v-s:RequestDelegationTemplate
 </script>
 <div class="container sheet">
   <h2 about="v-s:RequestDelegation" property="rdfs:label"></h2>
+  <hr>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegator" property="rdfs:label"></em>
