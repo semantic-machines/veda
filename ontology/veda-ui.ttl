@@ -330,22 +330,17 @@ v-ui:DraftsIndicatorTemplate
   rdfs:label "Шаблон переключения языка"@ru ;
   rdfs:label "Language switch template"@en ;
   v-ui:template """
-<a href="#/drafts" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
-  <span class="fa fa-file-text-o fa-lg"></span> <span class="label label-default" id="drafts-counter"></span>
-  <span about="@" property="rdfs:label" style="display:none"></span>
-</a>
 <script>
   $("#drafts-counter", template).text(veda.drafts.length);
-  //popover
   template.tooltip({
     container: template,
-    html: true,
-    title: function () {
-      return template.children("[property]").clone().show();
-    }
+    title: individual["rdfs:label"].join(" ")
   });
-  //# sourceURL=v-ui:DraftsIndicatorTemplate
+  //# sourceURL=v-ui:DraftsIndicatorTemplate_pre
 </script>
+<a href="#/drafts" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-file-text-o fa-lg"></span> <span class="label label-default" id="drafts-counter"></span>
+</a>
   """
 .
 v-ui:LanguageSwitchTemplate

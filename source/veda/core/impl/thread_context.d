@@ -309,7 +309,7 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
-                    ticket_storage_module.put(P_MODULE.ticket_manager, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
+                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -413,7 +413,7 @@ class PThreadContext : Context
         string res;
 
         if (inividuals_storage_r !is null)
-            res = inividuals_storage_r.find(user_id, uri);
+            res = inividuals_storage_r.find(true, user_id, uri);
         else
             res = get_from_individual_storage_thread(uri);
 
@@ -555,7 +555,7 @@ class PThreadContext : Context
             string     ss_as_binobj = new_ticket.serialize();
 
             long       op_id;
-            ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
+            ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -727,12 +727,12 @@ class PThreadContext : Context
 
     public string get_ticket_from_storage(string ticket_id)
     {
-        return tickets_storage_r.find(null, ticket_id);
+        return tickets_storage_r.find(false, null, ticket_id);
     }
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = tickets_storage_r.find(null, "systicket");
+        string systicket_id = tickets_storage_r.find(false, null, "systicket");
 
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
@@ -766,7 +766,7 @@ class PThreadContext : Context
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = tickets_storage_r.find(null, ticket_id);
+                string ticket_str = tickets_storage_r.find(false, null, ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
@@ -1151,7 +1151,7 @@ class PThreadContext : Context
                 }
                 else
                 {
-                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, uri, ignore_freeze, res.op_id);
+                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, ignore_freeze, res.op_id);
                 }
                     
                 if (res.result == ResultCode.OK)
@@ -1347,7 +1347,7 @@ class PThreadContext : Context
                 }
 
                 res.result =
-                    subject_storage_module.put(P_MODULE.subject_manager, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter,
+                    subject_storage_module.put(P_MODULE.subject_manager, is_api_request, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter,
                                                event_id,
                                                ignore_freeze,
                                                res.op_id);

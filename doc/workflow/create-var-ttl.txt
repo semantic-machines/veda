@@ -1,0 +1,27 @@
+Создадим трансформацию test-tr1 и присвоим ей правило test-tr1-rule-initiator. 
+Чтобы создать переменную необходимо добавить в объект uri слуедующим образом:
+v-wf:aggregate "putUri ('rdf:type', 'v-wf:Variable')"^^xsd:string;
+Далее добавим значение переменной: "putValue ('v-wf:variableValue')"^^xsd:string;
+Теперь присвоим переменной имя initiator: 
+v-wf:aggregate "putString ('v-wf:variableName', 'initiator')"^^xsd:string;
+Теперь можно выделить из входного объекта (в данном случае из стартовой формы),
+нужное поле: v-wf:segregateElement "contentName('v-s:creator')" ;
+
+Чтобы увидеть результат работы преобразования, создадим простую сеть как в примере 2.
+Создадим для неё стартовую форму и добавим начальное преобразование.
+После сохранения найдём запущенный маршрут, кликнем в любое свободное место,
+чтобы отображалась информация о сети. Теперь там есть входящая переменная initiator.
+
+:test-tr1
+    rdf:type v-wf:Transform ;
+    rdfs:label "пробная трансформация"^^xsd:string;
+    v-wf:transformRule :test-tr1-rule-initiator;
+.
+
+:test-tr1-rule-initiator
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-wf:Variable')"^^xsd:string;
+  v-wf:aggregate "putValue ('v-wf:variableValue')"^^xsd:string;
+  v-wf:aggregate "putString ('v-wf:variableName', 'initiator')"^^xsd:string;
+  v-wf:segregateElement "contentName('v-s:creator')" ;
+.

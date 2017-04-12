@@ -173,7 +173,7 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter,
+public ResultCode put(P_MODULE storage_id, bool need_auth, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter,
                       string event_id,
                       bool ignore_freeze,
                       out long op_id)
@@ -183,7 +183,7 @@ public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, stri
 
     if (tid != Tid.init)
     {
-        send(tid, INDV_OP.PUT, user_uri, indv_uri, prev_state, new_state, update_counter, event_id, ignore_freeze, thisTid);
+        send(tid, INDV_OP.PUT, need_auth, user_uri, indv_uri, prev_state, new_state, update_counter, event_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -196,7 +196,7 @@ public ResultCode put(P_MODULE storage_id, string user_uri, Resources type, stri
     return rc;
 }
 
-public ResultCode remove(P_MODULE storage_id, string uri, bool ignore_freeze, out long op_id)
+public ResultCode remove(P_MODULE storage_id, bool need_auth, string user_uri, string uri, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
@@ -381,14 +381,14 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         {
                             if (cmd == CMD_PUT_KEY2SLOT)
                             {
-                                storage.put(null, key, msg, -1);
+                                storage.put(false, null, key, msg, -1);
                             }
                         },
                         (byte cmd, string arg, Tid tid_response_reciever)
                         {
                             if (cmd == CMD_FIND)
                             {
-                                string res = storage.find(null, arg);
+                                string res = storage.find(false, null, arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
@@ -405,7 +405,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             {
                                 if (cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(null, uri) == ResultCode.OK)
+                                    if (storage.remove(false, null, uri) == ResultCode.OK)
                                         rc = ResultCode.OK;
                                     else
                                         rc = ResultCode.Fail_Store;
@@ -421,7 +421,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (INDV_OP cmd, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter, string event_id,
+                        (INDV_OP cmd, bool need_auth, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter, string event_id,
                          bool ignore_freeze,
                          Tid tid_response_reciever)
                         {

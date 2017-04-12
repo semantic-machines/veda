@@ -825,6 +825,7 @@ if (doc) {
       routes['instruction'][simple+'editable'] = [true];
       routes['instruction'][simple+'deadlineDays'] = [10];
       routes['instruction'][simple+'comment'] = [new String('Провести необходимое расследование')];
+      routes['instruction'][simple+'controller'] = [new veda.IndividualModel("d:mondi_appointment_00058240_71024477")];
     } else {
       // если [action] не пусто, то согласование 1 - [member] + [chief], подписание - пусто, утверждение - Технический директор + Директор по производству
       routes['coordination1'][simple+'visible'] = [true];
