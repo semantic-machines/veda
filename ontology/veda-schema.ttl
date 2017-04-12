@@ -581,11 +581,9 @@ v-s:StatusManualTemplate
         <div class="col-md-6">
           <strong about="v-s:hasStatus" property="rdfs:label"></strong>
         </div>
-        
         <div class="col-md-6">
           <button class="btn btn-link action view -edit -search" id="edit"></button>
         </div>
-        
       </div>
       <br class="-view edit search">
       <div rel="v-s:hasStatus" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
