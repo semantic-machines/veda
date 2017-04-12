@@ -25,6 +25,7 @@ v-df:ApprovalTask
   rdfs:label "Approval document"@en ;
   rdfs:label "Утвердить документ"@ru ;
   rdfs:comment "Форма ответа на задачу утверждения"@ru ;
+  v-ui:hasTemplate v-df:ApprovalTaskTemplate ;
 .
 v-df:PsApprovalTask_from
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -154,6 +155,7 @@ v-df:QuestionRouteStartForm
   rdfs:label "Question document"@en ;
   rdfs:label "Задать вопрос"@ru ;
   rdfs:comment "Задача задать вопрос"@ru ;
+  v-ui:hasTemplate v-df:QuestionRouteStartFormTemplate ;
 .
 v-df:InstructionRouteStartForm
   rdf:type owl:Class ;
@@ -162,6 +164,7 @@ v-df:InstructionRouteStartForm
   rdfs:label "Instruction document"@en ;
   rdfs:label "Исполнить поручение"@ru ;
   rdfs:comment "Задача исполнить поручение"@ru ;
+  v-ui:hasTemplate v-df:InstructionRouteStartFormTemplate ;
 .
 v-df:TaskRouteStartForm
   rdf:type owl:Class ;
@@ -170,6 +173,7 @@ v-df:TaskRouteStartForm
   rdfs:label "Introduction"@en ;
   rdfs:label "На ознакомление"@ru ;
   rdfs:comment "Задача ознакомиться"@ru ;
+  v-ui:hasTemplate v-df:TaskRouteStartFormTemplate ;
 .
 v-df:DistributionRouteStartForm
   rdf:type owl:Class ;
@@ -178,6 +182,7 @@ v-df:DistributionRouteStartForm
   rdfs:label "Distribution"@en ;
   rdfs:label "Рассылка"@ru ;
   rdfs:comment "Задача рассылки"@ru ;
+  v-ui:hasTemplate v-df:DistributionRouteStartFormTemplate ;
 .
 v-df:CoordinationRouteStartForm
   rdf:type owl:Class ;
@@ -186,6 +191,7 @@ v-df:CoordinationRouteStartForm
   rdfs:label "Coordination"@en ;
   rdfs:label "На согласование"@ru ;
   rdfs:comment "Задача согласования"@ru ;
+  v-ui:hasTemplate v-df:CoordinationRouteStartFormTemplate ;
 .
 
 v-s:hasAppointment
@@ -1104,6 +1110,7 @@ v-wf:DecisionAgreed
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Согласовано"@ru ;
   rdfs:label "Approved"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionAgreedToProject
@@ -1112,6 +1119,7 @@ v-wf:DecisionAgreedToProject
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Начать проект"@ru ;
   rdfs:label "Start project"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionAgreedToExecute
@@ -1120,6 +1128,7 @@ v-wf:DecisionAgreedToExecute
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Согласовано в реализацию"@ru ;
   rdfs:label "Approved for implementation"@en ;
+  v-ui:hasTemplate v-df:DecisionTemplate2 ;
 .
 
 v-wf:DecisionAgreedToExecuteComment
@@ -1128,6 +1137,7 @@ v-wf:DecisionAgreedToExecuteComment
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Согласовано в реализацию"@ru ;
   rdfs:label "Approved for implementation"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionSign
@@ -1136,6 +1146,7 @@ v-wf:DecisionSign
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Подписано"@ru ;
   rdfs:label "Signed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionApprove
@@ -1144,6 +1155,7 @@ v-wf:DecisionApprove
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Утверждено"@ru ;
   rdfs:label "Approved"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionReview
@@ -1152,6 +1164,7 @@ v-wf:DecisionReview
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Рассмотрено"@ru ;
   rdfs:label "Reviewed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionRejected
@@ -1160,6 +1173,7 @@ v-wf:DecisionRejected
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Отклонено"@ru ;
   rdfs:label "Declined"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionDeclined
@@ -1168,6 +1182,7 @@ v-wf:DecisionDeclined
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Отклонено"@ru ;
   rdfs:label "Declined"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionRemake
@@ -1176,6 +1191,7 @@ v-wf:DecisionRemake
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Доработать"@ru ;
   rdfs:label "Rework"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionRemaked
@@ -1184,6 +1200,7 @@ v-wf:DecisionRemaked
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Доработано"@ru ;
   rdfs:label "Reworked"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionNotForMe
@@ -1192,6 +1209,7 @@ v-wf:DecisionNotForMe
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Ошибочный исполнитель"@ru ;
   rdfs:label "Wrong executor"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionBreak
@@ -1200,6 +1218,7 @@ v-wf:DecisionBreak
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Прервать маршрут"@ru ;
   rdfs:label "Cancel route"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionExamined
@@ -1208,6 +1227,7 @@ v-wf:DecisionExamined
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Ознакомлен"@ru ;
   rdfs:label "Examined"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionReturnedToReview
@@ -1216,6 +1236,7 @@ v-wf:DecisionReturnedToReview
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Вернуть на рассмотрение"@ru ;
   rdfs:label "Returned to review"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionAchieved
@@ -1224,6 +1245,7 @@ v-wf:DecisionAchieved
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Выполнено"@ru ;
   rdfs:label "Completed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionNotPerformed
@@ -1232,6 +1254,7 @@ v-wf:DecisionNotPerformed
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Не выполнено"@ru ;
   rdfs:label "Not completed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionConfirm
@@ -1240,6 +1263,7 @@ v-wf:DecisionConfirm
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Подтверждено"@ru ;
   rdfs:label "Confirmed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionRedirect
@@ -1248,6 +1272,7 @@ v-wf:DecisionRedirect
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Перенаправить другому"@ru ;
   rdfs:label "Redirect"@en ;
+  v-ui:hasTemplate v-wf:DecisionRedirectTemplate ;
 .
 
 v-wf:DecisionPostponed
@@ -1256,6 +1281,7 @@ v-wf:DecisionPostponed
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Отложено"@ru ;
   rdfs:label "Postponed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionCalculationsPerformed
@@ -1264,6 +1290,7 @@ v-wf:DecisionCalculationsPerformed
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Расчет выполнен"@ru ;
   rdfs:label "Calculations performed"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
 
 v-wf:DecisionRedirectTemplate

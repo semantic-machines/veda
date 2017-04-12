@@ -21,12 +21,16 @@ v-fc:FunctionCreate
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
+  v-ui:hasModel v-fc:FunctionCreateModel ;
+  v-ui:hasTemplate v-fc:FunctionCreateTemplate ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
+  v-ui:hasModel v-fc:BlankModel ;
+  v-ui:hasTemplate v-fc:BlankTemplateShort ;
 .
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;
@@ -80,7 +84,7 @@ v-fc:LabelSpec
   v-ui:minCardinality "1"^^xsd:integer ;
 .
 v-fc:FunctionCreateModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "V-fc:FunctionCreate class model"@en ;
   rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
   v-ui:forClass v-fc:FunctionCreate ;
@@ -145,7 +149,7 @@ v-fc:FunctionCreateTemplate
 .
 
 v-fc:BlankModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "v-fc:Blank class model"@en ;
   rdfs:label "Модель класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;

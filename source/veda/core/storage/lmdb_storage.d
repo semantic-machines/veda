@@ -171,7 +171,7 @@ public class LmdbStorage : Storage
 
             if (rc == 0)
             {
-                string   data_str = find(null, summ_hash_this_db_id);
+                string   data_str = find(false, null, summ_hash_this_db_id);
 
                 string[] dataff = data_str.split(',');
                 string   hash_str;
@@ -226,7 +226,7 @@ public class LmdbStorage : Storage
         return rc;
     }
 
-    public ResultCode put(string user_uri, string in_key, string in_value, long op_id)
+    public ResultCode put(bool need_auth, string user_uri, string in_key, string in_value, long op_id)
     {
         if (db_is_opened == false)
             open_db();
@@ -282,7 +282,7 @@ public class LmdbStorage : Storage
                 growth_db(env, txn);
 
                 // retry
-                return put(user_uri, _key, value, op_id);
+                return put(need_auth, user_uri, _key, value, op_id);
             }
             if (rc != 0)
             {
@@ -298,7 +298,7 @@ public class LmdbStorage : Storage
                 growth_db(env, null);
 
                 // retry
-                return put(user_uri, _key, value, op_id);
+                return put(need_auth, user_uri, _key, value, op_id);
             }
 
             if (rc != 0)
@@ -320,7 +320,7 @@ public class LmdbStorage : Storage
         }
     }
 
-    public ResultCode remove(string user_uri, string in_key)
+    public ResultCode remove(bool need_auth, string user_uri, string in_key)
     {
         if (db_is_opened == false)
             open_db();
@@ -369,7 +369,7 @@ public class LmdbStorage : Storage
                 growth_db(env, txn);
 
                 // retry
-                return remove(user_uri, _key);
+                return remove(need_auth, user_uri, _key);
             }
             if (rc != 0)
             {
@@ -386,7 +386,7 @@ public class LmdbStorage : Storage
                 growth_db(env, null);
 
                 // retry
-                return remove(user_uri, _key);
+                return remove(need_auth, user_uri, _key);
             }
 
             if (rc != 0)
@@ -415,7 +415,7 @@ public class LmdbStorage : Storage
             //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
             if (mode == DBMode.RW && last_op_id > committed_last_op_id)
             {
-                put(null, summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
+                put(false, null, summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
                 committed_last_op_id = last_op_id;
             }
 
@@ -627,13 +627,13 @@ public class LmdbStorage : Storage
 
     public bool is_exists(string uri)
     {
-        if (find(null, uri, false) !is null)
+        if (find(false, null, uri, false) !is null)
             return true;
         else
             return false;
     }
 
-    public string find(string user_uri, string _uri, bool return_value = true)
+    public string find(bool need_auth, string user_uri, string _uri, bool return_value = true)
     {
         string uri = _uri.idup;
 
@@ -673,7 +673,7 @@ public class LmdbStorage : Storage
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
-                return find(user_uri, uri);
+                return find(need_auth, user_uri, uri);
             }
             else if (rc == MDB_BAD_RSLOT)
             {

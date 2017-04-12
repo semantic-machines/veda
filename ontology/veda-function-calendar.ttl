@@ -24,6 +24,8 @@ v-cal:FunctionCalendar
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
+  v-ui:hasModel v-cal:FunctionCalendarModel ;
+  v-ui:hasTemplate v-cal:FunctionCalendarTemplate ;
 .
 v-cal:query
   rdf:type owl:DatatypeProperty ;
@@ -36,7 +38,7 @@ v-cal:sortOrder
   rdfs:range xsd:string ;
 .
 v-cal:FunctionCalendarModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "v-cal:FunctionCalendar class template"@en ;
   rdfs:label "Шаблон для класса v-cal:FunctionCalendar"@ru ;
   v-ui:forClass v-cal:FunctionCalendar ;
@@ -72,6 +74,7 @@ v-cal:FunctionCalendarModel
       var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
       var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
       var dueDate = event["v-wf:dateGiven"][0];
+      var now = new Date();
       switch (true) {
         case (dueDate < today) :
           className = "fc-danger";
@@ -88,8 +91,8 @@ v-cal:FunctionCalendarModel
         "title": label,
         "url": "#/" + event.id,
         "className": className,
-        "start": event["v-wf:dateGiven"][0].valueOf(),
-        "end": event["v-wf:dateGiven"][0].valueOf() + 60 * 60 * 1000
+        "start": dueDate ? dueDate.valueOf() : now.valueOf(),
+        "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
       }
     });
   }
@@ -169,47 +172,18 @@ v-cal:FunctionCalendarIndicatorTemplate
   rdfs:label "v-cal:FunctionCalendar indicator template"@en ;
   rdfs:label "Шаблон индикатора для v-cal:FunctionCalendar"@ru ;
   v-ui:template """
-<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
-  <span class="fa fa-calendar fa-lg"></span> <span class="label label-danger" id="counter"></span>
-  <span about="@" property="rdfs:label" style="display:none"></span>
-</a>
 <script>
-  //popover
+  var pos_uri = veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0].id : undefined,
+      pos_counter_uri = pos_uri ? "d:taskCounter_" + pos_uri.split(":").join("_") : undefined;
+  $(".label", template).attr("about", pos_counter_uri);
   template.tooltip({
     container: template,
-    html: true,
-    title: function () {
-      return template.children("[property]").clone().show();
-    }
+    title: individual["rdfs:label"].join(" ")
   });
-  var interval = setInterval(setEventsCounter, 1000*60*3);
-  var events = [];
-  var counter = $("#counter", template);
-  setEventsCounter();
-  veda.on("task:completed", taskCompletedHandler);
-  template.one("remove", function () {
-    clearInterval(interval);
-    veda.off("task:completed", taskCompletedHandler);
-  });
-  function setEventsCounter() {
-    var start = new Date();
-    var end = new Date();
-    var firstDay = start.getDate() - start.getDay();
-    start.setDate( firstDay + 1);
-    end.setDate( firstDay + 7 );
-    events = individual.getEvents(start, end);
-    counter.text(events.length);
-  }
-  function taskCompletedHandler(task_id) {
-    var test = events.filter(function (item) {
-      return item.id === task_id;
-    }).length;
-    if ( test ) {
-      var tmp = parseInt( counter.text() );
-      counter.text(tmp ? tmp - 1 : tmp);
-    }
-  }
-  //# sourceURL=v-cal:FunctionCalendarIndicatorTemplate
+  //# sourceURL=v-cal:FunctionCalendarIndicatorTemplate_pre
 </script>
-  """
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-calendar fa-lg"></span> <span class="label label-danger" property="v-ft:inboxWeekCount">0</span>
+</a>
+  """ ;
 .

@@ -18,6 +18,8 @@ v-fe:FunctionExample
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Example function"@en ;
   rdfs:label "Функция-пример"@ru ;
+  v-ui:hasModel v-fe:FunctionExampleModel ;
+  v-ui:hasTemplate v-fe:FunctionExampleTemplate ;
 .
 v-fe:FunctionExample1
   rdf:type v-fe:FunctionExample ;
@@ -34,7 +36,7 @@ v-fe:exampleProperty
   rdfs:range xsd:string ;
 .
 v-fe:FunctionExampleModel
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "Example function model"@en ;
   rdfs:label "Модель Функции-примера"@ru ;
   v-ui:forClass v-fe:FunctionExample ;

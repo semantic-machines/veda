@@ -62,6 +62,7 @@ func collector_stat(ch1 chan infoConn) {
 	log.Printf("spawn stat collector")
 
 	var sessions map[net.Addr]int = make(map[net.Addr]int)
+	var hosts map[string]int = make(map[string]int)
 
 	count_spawned := 0
 	count_closed := 0
@@ -74,18 +75,24 @@ func collector_stat(ch1 chan infoConn) {
 		select {
 
 		case gg = <-ch1:
+			var host, _, _ = net.SplitHostPort(gg.addr.String())
 			if gg.activity == REQUEST {
 				sessions[gg.addr] = sessions[gg.addr] + 1
+				hosts[host] = hosts[host] + 1
 				dt_count_request++
 			} else if gg.activity == SPAWN {
 				sessions[gg.addr] = 0
+				hosts[host] = 0
 				count_spawned++
 				g_count_ws_sessions.Set(int64(len(sessions)))
+				g_count_ws_hosts.Set(int64(len(hosts)))
 				log.Printf("stat collector: ws spawn: total count ws connections: %d (%d)", len(sessions), count_spawned)
 			} else if gg.activity == DROP {
 				delete(sessions, gg.addr)
+				delete(hosts, host)
 				count_closed++
 				g_count_ws_sessions.Set(int64(len(sessions)))
+				g_count_ws_hosts.Set(int64(len(hosts)))
 				log.Printf("stat collector: ws drop: total count ws connections: %d (%d)", len(sessions), count_spawned)
 			}
 			break
@@ -236,6 +243,7 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 var g_dt_count_updates *expvar.Int
 var g_count_updates *expvar.Int
 var g_count_ws_sessions *expvar.Int
+var g_count_ws_hosts *expvar.Int
 var g_count_request *expvar.Int
 
 func main() {
@@ -250,6 +258,7 @@ func main() {
 	g_dt_count_updates = expvar.NewInt("dt_count_updates")
 	g_count_updates = expvar.NewInt("count_updates")
 	g_count_ws_sessions = expvar.NewInt("count_ws_sessions")
+	g_count_ws_hosts = expvar.NewInt("count_ws_hosts")
 	g_count_request = expvar.NewInt("count_request")
 
 	log.Printf("Listen and serve: %s", WS_LISTEN_ADDR)
