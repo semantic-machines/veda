@@ -23,7 +23,7 @@ v-ft:TaskCounter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Task counter"@en ;
-  rdfs:label "Счетчик задач"@ru ;
+  rdfs:label "Счетчик задач "@ru ;
 .
 v-ft:inboxCount
   rdf:type owl:DatatypeProperty ;
