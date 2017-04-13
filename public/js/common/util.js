@@ -1107,19 +1107,6 @@ function getUri(field)
   }
 }
 
-function isExists(field, value)
-{
-  if (field)
-  {
-    for (var i in field)
-    {
-      if (field[i].data == value.data && field[i].type == value.type)
-        return true;
-    }
-  }
-  return false;
-}
-
 function getFirstValue(field)
 {
   if (field && field.length > 0)

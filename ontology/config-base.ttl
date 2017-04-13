@@ -458,7 +458,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
   if (!publisher) { return; }
 
   var employee_uri;
-  if (isExists(publisher['rdf:type'], newUri('v-s:Appointment')))
+  if ( hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: _Uri}) )
   {
     employee_uri = publisher['v-s:employee'];
     if (!employee_uri) { return; }
