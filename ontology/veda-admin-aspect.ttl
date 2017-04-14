@@ -19,6 +19,7 @@ v-s:UserScript
   rdf:type owl:Class ;
   rdfs:label "User script"@en ;
   rdfs:label "Пользовательский скрипт"@ru ;
+  v-ui:hasTemplate v-s:UserScriptTemplate ;
 .
 
 v-s:scriptOutput
@@ -195,6 +196,7 @@ v-s:AdministrationAspect
   rdfs:label "Администрирование"@ru ;
   rdfs:comment "Administration aspect"@en ;
   rdfs:comment "Аспект администрирования"@ru ;
+  v-ui:hasTemplate v-s:AdministrationAspectTemplate ;
 .
 
 v-s:AdministrationAspect1
