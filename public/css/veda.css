@@ -68,14 +68,18 @@ body {
 .file-card .file-description {
   display: inline-block;
   vertical-align: top;
-  width: 165px;
   word-wrap: break-word;
 }
 .file-card .file-thumbnail:empty + .file-description {
   width: 310px;
 }
-
-
+.file-card .file-thumbnail:not(:empty) + .file-description {
+  width: 202px;
+}
+.file-card .file-name {
+  max-height:60px;
+  overflow:hidden;
+}
 
 /* Gray tooltip */
 .tooltip-inner {

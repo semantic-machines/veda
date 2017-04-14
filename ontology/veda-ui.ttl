@@ -1229,12 +1229,26 @@ v-ui:TestUITemplate
   """ ;
 .
 v-ui:PsCommentFile
-  rdf:type v-ui:PropertySpecification ;
+  rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-s:File ;
   v-ui:forProperty rdfs:comment ;
-  v-ui:minCardinality "0"^^xsd:integer ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:maxLength 100 ;
+  v-ui:tooltip "Максимум 100 символов"@ru ;
+  v-ui:tooltip "100 characters maximum"@en ;
 .
+
+v-ui:PSAttachmentThing
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:attachment для класса v-s:Thing"@ru ;
+  rdfs:label "Specification v-s:attachment for v-s:Thing class"@en ;
+  v-ui:forClass v-s:Thing ;
+  v-ui:forProperty v-s:attachment ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+
 v-ui:FileTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -1258,16 +1272,6 @@ v-ui:FileTemplate
   """ ;
 .
 
-v-ui:PSAttachmentThing
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:attachment для класса v-s:Thing"@ru ;
-  rdfs:label "Specification v-s:attachment for v-s:Thing class"@en ;
-  v-ui:forClass v-s:Thing ;
-  v-ui:forProperty v-s:attachment ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 100 ;
-.
-
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -1284,7 +1288,7 @@ v-ui:FileTemplateWithComment
     <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
     <br>
     <hr class="margin-sm view -edit -search">
-    <div>
+    <div class="file-name">
       <span id="icon" class="label label-primary"></span>
       <a href="/files/@">
         <span about="@" property="v-s:fileName"></span>
@@ -1295,25 +1299,6 @@ v-ui:FileTemplateWithComment
     </div>
   </div>
 </div>
-<!--div class="panel panel-default" style="word-wrap:break-word; width:185px; display: inline-block; margin:0 20px 20px 0; overflow: hidden">
-  <div class="panel-body clearfix">
-    <div about="@" rel="v-s:thumbnail" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
-    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-    <strong property="rdfs:comment" class="view -edit -search"></strong>
-    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-    <br>
-    <hr class="margin-sm view -edit -search">
-    <div>
-      <span id="icon" class="label label-primary"></span>
-      <a href="/files/@">
-        <span about="@" id="fn" property="v-s:fileName"></span>
-      </a>
-    </div>
-    <div class="view -edit -search" style="font-style:italic">
-      <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
-    </div>
-  </div>
-</div-->
 <script>
   var fn = individual["v-s:fileName"][0];
   if (typeof fn === "string" || fn instanceof String) {

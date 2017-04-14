@@ -458,7 +458,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
   if (!publisher) { return; }
 
   var employee_uri;
-  if (isExists(publisher['rdf:type'], newUri('v-s:Appointment')))
+  if ( hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: _Uri}) )
   {
     employee_uri = publisher['v-s:employee'];
     if (!employee_uri) { return; }
@@ -637,45 +637,45 @@ cfg:Event_5
  * parent_document_id = id of the document that triggered this event.
  */
 
-var doc_uri = document['@'],
-  deleted = hasValue(document, 'v-s:deleted', { data: true, type: _Boolean}),
-  uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_AllUsersGroup',
-  membership;
+var doc_uri = document["@"],
+    deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean}),
+    uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + "cfg_AllUsersGroup",
+    membership;
 
-if (doc_uri === 'cfg:Guest') { return; }
+if (doc_uri === "cfg:Guest") { return; }
 
-// Delete accounts of deleted person
-if (deleted) {
-  var accounts_uris = getUris(document["v-s:hasAccount"]);
-  accounts_uris.map(function (account_uri) {
-    var account = get_individual(ticket, account_uri);
-    if (account) {
-      account['v-s:deleted'] = newBool(true);
+// Manage accounts (delete or restore)
+var accounts_uris = getUris(document["v-s:hasAccount"]);
+accounts_uris.map(function (account_uri) {
+  var account = get_individual(ticket, account_uri);
+  if (account) {
+    var account_deleted = hasValue(account, "v-s:deleted", { data: true, type: _Boolean});
+    if (deleted !== account_deleted) {
+      account["v-s:deleted"] = newBool( deleted );
       put_individual (ticket, account, _event_id);
     }
-  });
-}
+  }
+});
 
-// Manage memberships
+// Manage membership (delete or restore)
 membership = get_individual(ticket, uri);
 
 if (!membership) {
   membership = {
-    '@' : uri,
-    'rdf:type'     : newUri('v-s:Membership'),
-    'v-s:resource' : newUri(doc_uri),
-    'v-s:memberOf' : newUri('cfg:AllUsersGroup'),
-    'rdfs:comment' : newStr('выдан cfg:Event_5')
+    "@" : uri,
+    "rdf:type"     : newUri("v-s:Membership"),
+    "v-s:resource" : newUri(doc_uri),
+    "v-s:memberOf" : newUri("cfg:AllUsersGroup"),
+    "rdfs:comment" : newStr("выдан cfg:Event_5"),
+    "v-s:deleted"  : newBool( deleted )
   };
-  if (deleted) {
-    membership['v-s:deleted'] = newBool(true);
-  }
   put_individual (ticket, membership, _event_id);
   return;
 }
 
-if (deleted) {
-  membership['v-s:deleted'] = newBool(true);
+var membership_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
+if (deleted !== membership_deleted) {
+  membership["v-s:deleted"] = newBool( deleted );
   put_individual (ticket, membership, _event_id);
 }
   """ ;
