@@ -427,7 +427,7 @@ v-s:Version
 
 v-s:script
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Event, v-s:Codelet, v-s:ClassModel, v-s:UserScript ;
+  rdfs:domain v-s:Event, v-s:Codelet, v-ui:ClassModel, v-s:UserScript ;
   rdfs:label "Script"@en ;
   rdfs:label "Скрипт"@ru ;
   rdfs:range xsd:string ;
