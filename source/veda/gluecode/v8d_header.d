@@ -178,7 +178,7 @@ struct TransactionItem
 TransactionItem *[ string ] transaction_buff;
 TransactionItem *[] transaction_queue;
 
-public ResultCode commit(string transaction_id)
+public ResultCode commit(long transaction_id)
 {
     foreach (item; transaction_queue)
     {

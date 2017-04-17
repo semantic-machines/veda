@@ -287,12 +287,11 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     {
         try
         {
-			string transaction_id = randomUUID().toString();
             //if (trace_msg[ 300 ] == 1)
             //log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
-            ResultCode res = commit(transaction_id);
+            ResultCode res = commit(-1);
             if (res != ResultCode.OK)
             {
                 log.trace("fail exec event script : %s", script.id);
@@ -334,7 +333,7 @@ class ScriptProcess : VedaModule
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, string transaction_id, long op_id)
+                                string event_id, long transaction_id, long op_id)
     {
         committed_op_id = op_id;
 

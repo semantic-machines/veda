@@ -51,7 +51,7 @@ class ScriptProcess : VedaModule
 
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, string parent_transaction_id, 
+                                string event_id, long transaction_id, 
                                 long op_id)
     {
         if (script_vm is null)
@@ -118,9 +118,6 @@ class ScriptProcess : VedaModule
         //log.trace ("indv=%s, indv_types=%s", individual_id, indv_types);
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
-	    string transaction_id = randomUUID().toString();
-
-
         foreach (_script_id; event_scripts_order)
         {
             script_id = _script_id;
@@ -165,7 +162,7 @@ class ScriptProcess : VedaModule
                                         count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
-                    log.trace("start: %s %s %d %s ptnx=%s, tnx=%s", script_id, individual_id, op_id, event_id, parent_transaction_id, transaction_id);
+                    log.trace("start: %s %s %d %s tnx=%d", script_id, individual_id, op_id, event_id, transaction_id);
 
                     //count++;
                     script.compiled_script.run();

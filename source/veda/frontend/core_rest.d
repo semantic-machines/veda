@@ -829,7 +829,6 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "uri" ]            = uri;
             jreq[ "prepare_events" ] = prepare_events;
             jreq[ "event_id" ]       = event_id;
-            jreq[ "transaction_id" ] = randomUUID().toString ();
 
             vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
             vibe.core.concurrency.receive((string res){ op_res = parseOpResults(res); });
@@ -1052,7 +1051,6 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
     jreq[ "individuals" ]    = individuals_json;
     jreq[ "prepare_events" ] = prepare_events;
     jreq[ "event_id" ]       = event_id;
-    jreq[ "transaction_id" ] = randomUUID().toString ();
 
     vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
     vibe.core.concurrency.receive((string _res){ res = _res; op_res = parseOpResults(_res); });

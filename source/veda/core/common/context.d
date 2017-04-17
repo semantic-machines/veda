@@ -380,26 +380,26 @@ interface Context
        Returns:
                 Код результата операции
      */
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                    bool ignore_freeze = false,
                                    bool is_api_request = true);
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, string transaction_id, bool ignore_freeze =
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze =
                                           false,
                                       bool is_api_request = true);
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze =
                                           false,
                                       bool is_api_request = true);
 
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze =
                                           false,
                                       bool is_api_request = true);
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           string transaction_id,
+                                           long transaction_id,
                                            bool ignore_freeze = false,
                                            bool is_api_request = true);
 
