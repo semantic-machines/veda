@@ -262,35 +262,6 @@ class PThreadContext : Context
         tickets_storage_r.close_db();
     }
 
-    string begin_transaction()
-    {
-        string res;
-
-        version (isServer)
-        {
-            res = subject_storage_module.begin_transaction(P_MODULE.subject_manager);
-        }
-
-        return res;
-    }
-
-    void commit_transaction(string transaction_id)
-    {
-        version (isServer)
-        {
-            subject_storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
-        }
-    }
-
-    void abort_transaction(string transaction_id)
-    {
-        version (isServer)
-        {
-            subject_storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
-        }
-    }
-
-
     bool isReadyAPI()
     {
         return API_ready;
@@ -327,7 +298,8 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
-                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, false,
+                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, null,
+                                              false,
                                               op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
@@ -337,7 +309,8 @@ class PThreadContext : Context
                     sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
                     sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
                     sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
-                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", false, false);
+                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", null, false,
+                                                         false);
 
                     if (opres.result == ResultCode.OK)
                         log.trace("permission [%s] was created", sys_account_permission);
@@ -574,8 +547,9 @@ class PThreadContext : Context
             string     ss_as_binobj = new_ticket.serialize();
 
             long       op_id;
-            ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false,
-                                                      op_id);
+            ResultCode rc =
+                ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, null, false,
+                                          op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -718,11 +692,11 @@ class PThreadContext : Context
                     i_usesCredential.uri = user.uri ~ "-crdt";
                     i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
                     i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", false, true);
+                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", null, false, true);
                     log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                     user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
                     user.removeResource("v-s:password");
-                    op_res = this.put_individual(&sticket, user.uri, user, false, "", false, true);
+                    op_res = this.put_individual(&sticket, user.uri, user, false, "", null, false, true);
                     log.trace("authenticate: update user[%s], res=%s", user, op_res);
                 }
 
@@ -1121,7 +1095,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, bool ignore_freeze)
+    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, string transaction_id, bool ignore_freeze)
     {
         OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
@@ -1135,7 +1109,7 @@ class PThreadContext : Context
                 req_body[ "uri" ]            = uri;
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "transaction_id" ] = "";
+                req_body[ "transaction_id" ] = transaction_id;
 
                 res = reqrep_2_main_module(req_body)[ 0 ];
             }
@@ -1162,7 +1136,7 @@ class PThreadContext : Context
                     prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
                 }
 
-                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
+                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, transaction_id, ignore_freeze, true);
 
                 if (oprc.result != ResultCode.OK)
                 {
@@ -1171,7 +1145,7 @@ class PThreadContext : Context
                 }
                 else
                 {
-                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, ignore_freeze, res.op_id);
+                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, transaction_id, ignore_freeze, res.op_id);
                 }
 
                 if (res.result == ResultCode.OK)
@@ -1209,7 +1183,8 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
+    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, string transaction_id,
+                                      bool ignore_freeze,
                                       bool is_api_request)
     {
         //if (trace_msg[ T_API_230 ] == 1)
@@ -1255,7 +1230,7 @@ class PThreadContext : Context
                 req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "transaction_id" ] = "";
+                req_body[ "transaction_id" ] = transaction_id;
 
                 //log.trace("[%s] store_individual: (isModule), req=(%s)", name, req_body.toString());
 
@@ -1368,10 +1343,7 @@ class PThreadContext : Context
 
                 res.result =
                     subject_storage_module.put(P_MODULE.subject_manager, is_api_request, ticket.user_uri, _types, indv.uri, prev_state, new_state,
-                                               update_counter,
-                                               event_id,
-                                               ignore_freeze,
-                                               res.op_id);
+                                               update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
                 //log.trace("res.result=%s", res.result);
 
                 if (res.result != ResultCode.OK)
@@ -1436,37 +1408,45 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+                                   bool ignore_freeze = false,
                                    bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze, bool is_api_request = true)
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, string transaction_id, bool ignore_freeze,
+                                      bool is_api_request = true)
     {
-        return _remove_individual(ticket, uri, prepareEvents, event_id, ignore_freeze);
+        return _remove_individual(ticket, uri, prepareEvents, event_id, transaction_id, ignore_freeze);
     }
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true)
-    {
-        individual.uri = uri;
-        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
-    }
-
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true)
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+                                      bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+    }
+
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+                                      bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true)
+    {
+        individual.uri = uri;
+        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           bool ignore_freeze = false, bool is_api_request = true)
+                                           string transaction_id,
+                                           bool ignore_freeze = false,
+                                           bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1817,7 +1797,8 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                            rc ~= this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
+                                                      true);
                         }
                     }
                     else if (sfn == "add_to")
@@ -1827,7 +1808,8 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                            rc ~= this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
+                                                         true);
                         }
                     }
                     else if (sfn == "set_in")
@@ -1837,7 +1819,8 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                            rc ~= this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
+                                                         true);
                         }
                     }
                     else if (sfn == "remove_from")
@@ -1847,13 +1830,15 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                            rc ~=
+                            this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
+                                                        true);
                         }
                     }
                     else if (sfn == "remove")
                     {
                         JSONValue uri = jsn[ "uri" ];
-                        rc ~= this.remove_individual(ticket, uri.str, prepare_events, event_id.str, false, true);
+                        rc ~= this.remove_individual(ticket, uri.str, prepare_events, event_id.str, transaction_id.str, false, true);
                     }
 
                     JSONValue[] all_res;

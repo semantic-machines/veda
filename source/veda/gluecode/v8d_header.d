@@ -180,6 +180,8 @@ TransactionItem *[] transaction_queue;
 
 public ResultCode commit()
 {
+    string transaction_id = randomUUID().toString();
+
     foreach (item; transaction_queue)
     {
         if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
@@ -195,9 +197,9 @@ public ResultCode commit()
         ResultCode rc;
 
         if (item.cmd == INDV_OP.REMOVE)
-	        rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, ignore_freeze).result;
-		else
-	        rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, ignore_freeze).result;
+            rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, transaction_id, ignore_freeze).result;
+        else
+            rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, transaction_id, ignore_freeze).result;
 
         if (rc == ResultCode.No_Content)
         {
