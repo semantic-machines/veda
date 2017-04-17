@@ -135,12 +135,12 @@ class PThreadContext : Context
             }
         }
 
-        private OpResult reqrep_2_main_module(ref JSONValue jreq)
+        private OpResult[] reqrep_2_main_module(ref JSONValue jreq)
         {
-            OpResult res;
-            string   req = jreq.toString();
+            OpResult[] ress;
+            string     req = jreq.toString();
 
-            int      sock = get_sock_2_main_module();
+            int        sock = get_sock_2_main_module();
 
             if (sock >= 0)
             {
@@ -159,8 +159,26 @@ class PThreadContext : Context
 
                     if (jres[ "type" ].str == "OpResult")
                     {
-                        res.op_id  = jres[ "op_id" ].integer;
-                        res.result = cast(ResultCode)jres[ "result" ].integer;
+                        JSONValue data = jres[ "data" ];
+                        if (data !is JSONValue.init)
+                        {
+                            foreach (ii; data.array)
+                            {
+                                OpResult res;
+
+
+                                res.op_id  = ii[ "op_id" ].integer;
+                                res.result = cast(ResultCode)ii[ "result" ].integer;
+                                ress ~= res;
+                            }
+                        }
+                        else
+                        {
+                            OpResult res;
+                            res.op_id  = jres[ "op_id" ].integer;
+                            res.result = cast(ResultCode)jres[ "result" ].integer;
+                            ress ~= res;
+                        }
                     }
 
                     nn_freemsg(buf);
@@ -171,7 +189,7 @@ class PThreadContext : Context
                 log.trace("ERR! N_CHANNEL: invalid socket");
             }
 
-            return res;
+            return ress;
         }
     }
 
@@ -244,35 +262,6 @@ class PThreadContext : Context
         tickets_storage_r.close_db();
     }
 
-    string begin_transaction()
-    {
-        string res;
-
-        version (isServer)
-        {
-            res = subject_storage_module.begin_transaction(P_MODULE.subject_manager);
-        }
-
-        return res;
-    }
-
-    void commit_transaction(string transaction_id)
-    {
-        version (isServer)
-        {
-            subject_storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
-        }
-    }
-
-    void abort_transaction(string transaction_id)
-    {
-        version (isServer)
-        {
-            subject_storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
-        }
-    }
-
-
     bool isReadyAPI()
     {
         return API_ready;
@@ -309,7 +298,9 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
-                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
+                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, null,
+                                              false,
+                                              op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -318,7 +309,8 @@ class PThreadContext : Context
                     sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
                     sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
                     sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
-                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", false, false);
+                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", null, false,
+                                                         false);
 
                     if (opres.result == ResultCode.OK)
                         log.trace("permission [%s] was created", sys_account_permission);
@@ -555,7 +547,9 @@ class PThreadContext : Context
             string     ss_as_binobj = new_ticket.serialize();
 
             long       op_id;
-            ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
+            ResultCode rc =
+                ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, null, false,
+                                          op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -578,7 +572,7 @@ class PThreadContext : Context
         return ticket;
     }
 
-	string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
+    string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
 
     Ticket get_ticket_trusted(string tr_ticket_id, string login)
     {
@@ -617,7 +611,7 @@ class PThreadContext : Context
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
-            	//log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
+                //log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
                 if (subject_group == allow_trusted_group)
                     is_allow_trusted = true;
             }
@@ -644,7 +638,7 @@ class PThreadContext : Context
             }
             else
             {
-	            log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);            	
+                log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
             }
         }
         else
@@ -698,11 +692,11 @@ class PThreadContext : Context
                     i_usesCredential.uri = user.uri ~ "-crdt";
                     i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
                     i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", false, true);
+                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", null, false, true);
                     log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                     user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
                     user.removeResource("v-s:password");
-                    op_res = this.put_individual(&sticket, user.uri, user, false, "", false, true);
+                    op_res = this.put_individual(&sticket, user.uri, user, false, "", null, false, true);
                     log.trace("authenticate: update user[%s], res=%s", user, op_res);
                 }
 
@@ -1101,7 +1095,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, bool ignore_freeze)
+    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, string transaction_id, bool ignore_freeze)
     {
         OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
@@ -1115,57 +1109,57 @@ class PThreadContext : Context
                 req_body[ "uri" ]            = uri;
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "transaction_id" ] = "";
+                req_body[ "transaction_id" ] = transaction_id;
 
-                res = reqrep_2_main_module(req_body);
+                res = reqrep_2_main_module(req_body)[ 0 ];
             }
 
             version (isServer)
             {
-	            EVENT      ev = EVENT.REMOVE;
+                EVENT      ev = EVENT.REMOVE;
 
-	            string     prev_state;
-	            Individual indv;
-	            Individual prev_indv;
+                string     prev_state;
+                Individual indv;
+                Individual prev_indv;
 
-	            prev_state = get_from_individual_storage_thread(uri);
-	            if (prev_state !is null)
-	            {
-	                int code = prev_indv.deserialize(prev_state);
-	                if (code < 0)
-	                {
-	                    log.trace("ERR! remove_individual: invalid prev_state [%s]", prev_state);
-	                    res.result = ResultCode.Unprocessable_Entity;
-	                    return res;
-	                }
+                prev_state = get_from_individual_storage_thread(uri);
+                if (prev_state !is null)
+                {
+                    int code = prev_indv.deserialize(prev_state);
+                    if (code < 0)
+                    {
+                        log.trace("ERR! remove_individual: invalid prev_state [%s]", prev_state);
+                        res.result = ResultCode.Unprocessable_Entity;
+                        return res;
+                    }
 
-	                prev_indv.setResources("v-s:deleted", [Resource(true)]);
-	            }
+                    prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
+                }
 
-                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
+                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, transaction_id, ignore_freeze, true);
 
                 if (oprc.result != ResultCode.OK)
                 {
                     res.result = oprc.result;
-	                log.trace("ERR! remove_individual: fail set [v-s:deleted], :uri=%s, errcode=[%s]", prev_indv.uri, res.result);
+                    log.trace("ERR! remove_individual: fail set [v-s:deleted], :uri=%s, errcode=[%s]", prev_indv.uri, res.result);
                 }
                 else
                 {
-                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, ignore_freeze, res.op_id);
+                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, transaction_id, ignore_freeze, res.op_id);
                 }
-                    
-                if (res.result == ResultCode.OK)
-				{
-	                Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
-	                MapResource rdfType;
-	                setMapResources(_types, rdfType);
 
-	                if (rdfType.anyExists(owl_tags) == true)
-	                {
-	                    // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-	                    inc_count_onto_update();
-	                }
-				}
+                if (res.result == ResultCode.OK)
+                {
+                    Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
+                    MapResource rdfType;
+                    setMapResources(_types, rdfType);
+
+                    if (rdfType.anyExists(owl_tags) == true)
+                    {
+                        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                        inc_count_onto_update();
+                    }
+                }
             }
 
             return res;
@@ -1189,7 +1183,8 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
+    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, string transaction_id,
+                                      bool ignore_freeze,
                                       bool is_api_request)
     {
         //if (trace_msg[ T_API_230 ] == 1)
@@ -1232,14 +1227,14 @@ class PThreadContext : Context
                 JSONValue req_body;
                 req_body[ "function" ]       = scmd;
                 req_body[ "ticket" ]         = ticket.id;
-                req_body[ "individual" ]     = individual_to_json(*indv);
+                req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "transaction_id" ] = "";
+                req_body[ "transaction_id" ] = transaction_id;
 
                 //log.trace("[%s] store_individual: (isModule), req=(%s)", name, req_body.toString());
 
-                res = reqrep_2_main_module(req_body);
+                res = reqrep_2_main_module(req_body)[ 0 ];
                 //log.trace("[%s] store_individual: (isModule), rep=(%s)", name, res);
             }
 
@@ -1347,10 +1342,8 @@ class PThreadContext : Context
                 }
 
                 res.result =
-                    subject_storage_module.put(P_MODULE.subject_manager, is_api_request, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter,
-                                               event_id,
-                                               ignore_freeze,
-                                               res.op_id);
+                    subject_storage_module.put(P_MODULE.subject_manager, is_api_request, ticket.user_uri, _types, indv.uri, prev_state, new_state,
+                                               update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
                 //log.trace("res.result=%s", res.result);
 
                 if (res.result != ResultCode.OK)
@@ -1415,37 +1408,38 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
-                                   bool is_api_request = true)
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+                                   bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze, bool is_api_request = true)
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, string transaction_id, bool ignore_freeze,
+                                      bool is_api_request = true)
     {
-        return _remove_individual(ticket, uri, prepareEvents, event_id, ignore_freeze);
+        return _remove_individual(ticket, uri, prepareEvents, event_id, transaction_id, ignore_freeze);
     }
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true)
-    {
-        individual.uri = uri;
-        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
-    }
-
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true)
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+                                      bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+    }
+
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
+                                      bool ignore_freeze = false, bool is_api_request = true)
+    {
+        individual.uri = uri;
+        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           bool ignore_freeze = false, bool is_api_request = true)
+                                           string transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1557,7 +1551,7 @@ class PThreadContext : Context
         {
             JSONValue req_body;
             req_body[ "function" ] = "freeze";
-            OpResult  res = reqrep_2_main_module(req_body);
+            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
         }
     }
 
@@ -1571,7 +1565,7 @@ class PThreadContext : Context
         {
             JSONValue req_body;
             req_body[ "function" ] = "unfreeze";
-            OpResult  res = reqrep_2_main_module(req_body);
+            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
         }
     }
 
@@ -1739,154 +1733,190 @@ class PThreadContext : Context
                 return res.toString();
             }
             //log.trace("get msg=%s", jsn);
-
-            JSONValue fn = jsn[ "function" ];
-
-            string    sfn = fn.str();
-
-            if (sfn == "authenticate")
+            try
             {
-                JSONValue login    = jsn[ "login" ];
-                JSONValue password = jsn[ "password" ];
+                JSONValue fn = jsn[ "function" ];
 
-                Ticket    ticket = this.authenticate(login.str, password.str);
+                string    sfn = fn.str();
 
-                res[ "type" ]     = "ticket";
-                res[ "id" ]       = ticket.id;
-                res[ "user_uri" ] = ticket.user_uri;
-                res[ "result" ]   = ticket.result;
-                res[ "end_time" ] = ticket.end_time;
-
-                //log.trace("authenticate: res=%s", res);
-            }
-            else if (sfn == "get_ticket_trusted")
-            {
-                JSONValue ticket_id = jsn[ "ticket" ];
-                JSONValue login     = jsn[ "login" ];
-
-                Ticket    ticket = this.get_ticket_trusted(ticket_id.str, login.str);
-
-                res[ "type" ]     = "ticket";
-                res[ "id" ]       = ticket.id;
-                res[ "user_uri" ] = ticket.user_uri;
-                res[ "result" ]   = ticket.result;
-                res[ "end_time" ] = ticket.end_time;
-            }
-            else if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
-            {
-                OpResult  rc;
-
-                JSONValue _ticket         = jsn[ "ticket" ];
-                JSONValue jprepare_events = jsn[ "prepare_events" ];
-
-                bool      prepare_events;
-                if (jprepare_events.type() == JSON_TYPE.TRUE)
-                    prepare_events = true;
-
-                JSONValue event_id       = jsn[ "event_id" ];
-                JSONValue transaction_id = jsn[ "transaction_id" ];
-
-                Ticket    *ticket = this.get_ticket(_ticket.str);
-
-                if (sfn == "put")
+                if (sfn == "authenticate")
                 {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                    JSONValue login    = jsn[ "login" ];
+                    JSONValue password = jsn[ "password" ];
+
+                    Ticket    ticket = this.authenticate(login.str, password.str);
+
+                    res[ "type" ]     = "ticket";
+                    res[ "id" ]       = ticket.id;
+                    res[ "user_uri" ] = ticket.user_uri;
+                    res[ "result" ]   = ticket.result;
+                    res[ "end_time" ] = ticket.end_time;
+
+                    //log.trace("authenticate: res=%s", res);
                 }
-                else if (sfn == "add_to")
+                else if (sfn == "get_ticket_trusted")
                 {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                    JSONValue ticket_id = jsn[ "ticket" ];
+                    JSONValue login     = jsn[ "login" ];
+
+                    Ticket    ticket = this.get_ticket_trusted(ticket_id.str, login.str);
+
+                    res[ "type" ]     = "ticket";
+                    res[ "id" ]       = ticket.id;
+                    res[ "user_uri" ] = ticket.user_uri;
+                    res[ "result" ]   = ticket.result;
+                    res[ "end_time" ] = ticket.end_time;
                 }
-                else if (sfn == "set_in")
+                else if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
                 {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
+                    OpResult[] rc;
+
+                    JSONValue  _ticket         = jsn[ "ticket" ];
+                    JSONValue  jprepare_events = jsn[ "prepare_events" ];
+
+                    bool       prepare_events;
+                    if (jprepare_events.type() == JSON_TYPE.TRUE)
+                        prepare_events = true;
+
+                    JSONValue event_id       = jsn[ "event_id" ];
+                    JSONValue transaction_id = jsn[ "transaction_id" ];
+
+                    Ticket    *ticket = this.get_ticket(_ticket.str);
+
+                    if (sfn == "put")
+                    {
+                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
+
+                        foreach (individual_json; individuals_json)
+                        {
+                            Individual individual = json_to_individual(individual_json);
+                            rc ~= this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
+                        }
+                    }
+                    else if (sfn == "add_to")
+                    {
+                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
+
+                        foreach (individual_json; individuals_json)
+                        {
+                            Individual individual = json_to_individual(individual_json);
+                            rc ~= this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
+                        }
+                    }
+                    else if (sfn == "set_in")
+                    {
+                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
+
+                        foreach (individual_json; individuals_json)
+                        {
+                            Individual individual = json_to_individual(individual_json);
+                            rc ~= this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
+                        }
+                    }
+                    else if (sfn == "remove_from")
+                    {
+                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
+
+                        foreach (individual_json; individuals_json)
+                        {
+                            Individual individual = json_to_individual(individual_json);
+                            rc ~= this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
+                        }
+                    }
+                    else if (sfn == "remove")
+                    {
+                        JSONValue uri = jsn[ "uri" ];
+                        rc ~= this.remove_individual(ticket, uri.str, prepare_events, event_id.str, transaction_id.str, false, true);
+                    }
+
+                    JSONValue[] all_res;
+
+                    foreach (rr; rc)
+                    {
+                        JSONValue ires;
+                        ires[ "result" ] = rr.result;
+                        ires[ "op_id" ]  = rr.op_id;
+                        all_res ~= ires;
+                    }
+
+                    res[ "type" ] = "OpResult";
+                    res[ "data" ] = all_res;
                 }
-                else if (sfn == "remove_from")
+                else if (sfn == "flush")
                 {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
-                }
-                else if (sfn == "remove")
-                {
-                    JSONValue uri = jsn[ "uri" ];
-                    rc = this.remove_individual(ticket, uri.str, prepare_events, event_id.str, false, true);
-                }
+                    P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
+                    long       wait_op_id  = jsn[ "wait_op_id" ].integer;
 
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = rc.result;
-                res[ "op_id" ]  = rc.op_id;
-            }
-            else if (sfn == "flush")
-            {
-                P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                long       wait_op_id  = jsn[ "wait_op_id" ].integer;
+                    ResultCode rc;
 
-                ResultCode rc;
+                    if (f_module_id == P_MODULE.subject_manager)
+                        rc = subject_storage_module.flush_int_module(P_MODULE.subject_manager, false);
+                    else if (f_module_id == P_MODULE.acl_preparer)
+                        rc = acl_module.flush(false);
+                    else if (f_module_id == P_MODULE.fulltext_indexer)
+                        subject_storage_module.flush_ext_module(f_module_id, wait_op_id);
 
-                if (f_module_id == P_MODULE.subject_manager)
-                    rc = subject_storage_module.flush_int_module(P_MODULE.subject_manager, false);
-                else if (f_module_id == P_MODULE.acl_preparer)
-                    rc = acl_module.flush(false);
-                else if (f_module_id == P_MODULE.fulltext_indexer)
-                    subject_storage_module.flush_ext_module(f_module_id, wait_op_id);
-
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else if (sfn == "send_to_module")
-            {
-                P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                string     msg         = jsn[ "msg" ].str;
-
-                ResultCode rc;
-
-                subject_storage_module.msg_to_module(f_module_id, msg, false);
-
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else if (sfn == "backup")
-            {
-                bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-                bool rc        = this.backup(to_binlog, 0);
-
-                res[ "type" ] = "OpResult";
-                if (rc == true)
+                    res[ "type" ]   = "OpResult";
                     res[ "result" ] = ResultCode.OK;
-                else
-                    res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ] = -1;
-            }
-            else if (sfn == "freeze")
-            {
-                this.freeze();
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else if (sfn == "unfreeze")
-            {
-                this.unfreeze();
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else
-            {
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.Bad_Request;
-                res[ "op_id" ]  = -1;
-            }
+                    res[ "op_id" ]  = -1;
+                }
+                else if (sfn == "send_to_module")
+                {
+                    P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
+                    string     msg         = jsn[ "msg" ].str;
 
-            return res.toString();
+                    ResultCode rc;
+
+                    subject_storage_module.msg_to_module(f_module_id, msg, false);
+
+                    res[ "type" ]   = "OpResult";
+                    res[ "result" ] = ResultCode.OK;
+                    res[ "op_id" ]  = -1;
+                }
+                else if (sfn == "backup")
+                {
+                    bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
+                    bool rc        = this.backup(to_binlog, 0);
+
+                    res[ "type" ] = "OpResult";
+                    if (rc == true)
+                        res[ "result" ] = ResultCode.OK;
+                    else
+                        res[ "result" ] = ResultCode.Internal_Server_Error;
+                    res[ "op_id" ] = -1;
+                }
+                else if (sfn == "freeze")
+                {
+                    this.freeze();
+                    res[ "type" ]   = "OpResult";
+                    res[ "result" ] = ResultCode.OK;
+                    res[ "op_id" ]  = -1;
+                }
+                else if (sfn == "unfreeze")
+                {
+                    this.unfreeze();
+                    res[ "type" ]   = "OpResult";
+                    res[ "result" ] = ResultCode.OK;
+                    res[ "op_id" ]  = -1;
+                }
+                else
+                {
+                    res[ "type" ]   = "OpResult";
+                    res[ "result" ] = ResultCode.Bad_Request;
+                    res[ "op_id" ]  = -1;
+                }
+
+                return res.toString();
+            }
+            catch (Throwable tr)
+            {
+                log.trace("ERR! fail execute msg=%s, err=%s", in_msg, tr.msg);
+                res[ "type" ]   = "OpResult";
+                res[ "result" ] = ResultCode.Internal_Server_Error;
+                res[ "op_id" ]  = -1;
+
+                return res.toString();
+            }
         }
     }
 }

@@ -304,7 +304,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           $cancel.text(Cancel);
         }
       } else {
-        if (mode === "edit") {
+        if ( mode === "edit" && individual.is("v-s:UserThing") ) {
           individual.draft();
         }
       }

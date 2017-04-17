@@ -151,21 +151,27 @@ veda.Module(function Util(veda) { "use strict";
               type = item.type,
               lang = item.lang;
           switch (type) {
+            case 4:
             case "Integer":
               triple.object = '"' + value + '"^^' + prefixer("xsd:integer");
               break;
+            case 32:
             case "Decimal":
               triple.object = '"' + value + '"^^' + prefixer("xsd:decimal");
               break;
+            case 64:
             case "Boolean":
               triple.object = '"' + value + '"^^' + prefixer("xsd:boolean");
               break;
+            case 2:
             case "String":
               triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
               break;
+            case 8:
             case "Datetime":
               triple.object = '"' + ( value instanceof Date ? value.toISOString() : value ) + '"^^' + prefixer("xsd:dateTime");
               break;
+            case 1:
             case "Uri":
               triple.object = prefixer(value);
               break;
@@ -187,7 +193,7 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.applyTransform = function (individualList, transform) {
-    return transformation(null, individualList, transform, null, null);
+    return transformation(veda.ticket, individualList, transform, null, null);
   };
 
   veda.Util.forSubIndividual = function (net, property, id, func) {
@@ -413,7 +419,7 @@ veda.Module(function Util(veda) { "use strict";
    * @returns veda.IndividualModel - start form
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    var transfromResult = veda.Util.applyTransform(individual, transform);
+    var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
     var startForm = new veda.IndividualModel();
     Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
     {

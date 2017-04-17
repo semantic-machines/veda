@@ -87,6 +87,33 @@ JSONValue individual_to_json(Individual individual)
     return json;
 }
 
+JSONValue[] individuals_to_json(Individual[] individuals)
+{
+//    writeln ("\nINDIVIDUAL->:", individual);
+    JSONValue[] res;
+    JSONValue   json;
+
+    foreach (individual; individuals)
+    {
+        json[ "@" ] = individual.uri;
+        foreach (property_name, property_values; individual.resources)
+        {
+            JSONValue[] jsonVals;
+
+            foreach (property_value; property_values)
+                jsonVals ~= resource_to_json(cast(Resource)property_value);
+
+            JSONValue resources_json;
+            resources_json.array = jsonVals;
+
+            json[ property_name ] = resources_json;
+        }
+        res ~= json;
+    }
+//    writeln ("->JSON:", json);
+    return res;
+}
+
 Individual json_to_individual(ref JSONValue individual_json)
 {
     //log.trace ("\nJSON->:%s", individual_json);
