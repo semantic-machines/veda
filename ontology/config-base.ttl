@@ -612,8 +612,15 @@ if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: _Uri }) ) {
       'rdf:type'     : newUri('v-s:Membership'),
       'v-s:memberOf' : newUri(position_uri),
       'v-s:resource' : newUri(person_uri),
-      'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_4')
+      'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_4'),
+      'v-s:deleted'  : newBool(deleted)
     };
+    put_individual (ticket, membership, _event_id);
+    return;
+  }
+  var membership_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean });
+  if (deleted !== membership_deleted) {
+    membership["v-s:deleted"] = newBool(deleted);
     put_individual (ticket, membership, _event_id);
   }
 }
