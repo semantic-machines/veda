@@ -112,14 +112,14 @@ veda.Module(function (veda) { "use strict";
   }
 
   function parser (value) {
-    if (value.type === "String") {
+    if (value.type === "String" || value.type === 2) {
       var string = new String(value.data);
       if (value.lang !== "NONE") { string.language = value.lang };
       return string;
-    } else if (value.type === "Uri") {
+    } else if (value.type === "Uri" || value.type === 1) {
       if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
       return new veda.IndividualModelAsync({uri: value.data});
-    } else if (value.type === "Datetime") {
+    } else if (value.type === "Datetime" || value.type === 8) {
       return new Date(Date.parse(value.data));
     } else {
       return value.data;
@@ -268,17 +268,17 @@ veda.Module(function (veda) { "use strict";
           var notify = veda.Notify ? new veda.Notify() : function () {};
           notify("danger", error);
           if (error.code === 422) {
-            this.isNew(true);
-            this.isSync(false);
-            this.properties = {
+            self.isNew(true);
+            self.isSync(false);
+            self.properties = {
               "@": uri,
               "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
               "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
             };
           } else if (error.code === 472) {
-            this.isNew(false);
-            this.isSync(false);
-            this.properties = {
+            self.isNew(false);
+            self.isSync(false);
+            self.properties = {
               "@": uri,
               "rdfs:label": [
                 {type: "String", data: "No rights", lang: "EN"},
@@ -287,9 +287,9 @@ veda.Module(function (veda) { "use strict";
               "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
             };
           } else {
-            this.isNew(false);
-            this.isSync(false);
-            this.properties = {
+            self.isNew(false);
+            self.isSync(false);
+            self.properties = {
               "@": uri,
               "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
               "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
@@ -517,15 +517,15 @@ veda.Module(function (veda) { "use strict";
         var models_promises = [];
         types.map( function (type) {
           if ( type.hasValue("v-ui:hasModel") ) {
-            models_promises.push( type["v-ui:hasModel"] );
+            models_promises.push( type["v-ui:hasModel"][0] );
           }
         });
         return Promise.all( models_promises );
       })
       .then( function (models) {
         models.map(function (model) {
-          var model_fn = new Function(model["v-s:script"][0]);
-          model.call(self);
+          var model_fn = new Function( model["v-s:script"][0] );
+          model_fn.call(self);
         });
         return self;
       });

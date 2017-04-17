@@ -31,6 +31,9 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           template = $( template["v-ui:template"][0].toString() );
           renderTemplate(individual, container, template, mode, specs);
         });
+      } else if (template instanceof veda.IndividualModel) {
+        template = $( template["v-ui:template"][0].toString() );
+        renderTemplate(individual, container, template, mode, specs);
       } else if (typeof template === "string") {
         template = new veda.IndividualModelAsync(template);
         template.load().then(function (template) {
@@ -83,12 +86,10 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     individual.trigger("individual:templateReady", template);
 
     // Timeout to wait all related individuals to render
-    setTimeout(function () {
-      template.trigger(mode);
-      if (post_render) {
-        post_render.call(individual, veda, individual, container, template, mode, specs);
-      }
-    }, 0);
+    template.trigger(mode);
+    if (post_render) {
+      post_render.call(individual, veda, individual, container, template, mode, specs);
+    }
   }
 
   function processTemplate (individual, container, template, mode, specs) {
@@ -328,9 +329,9 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       draftLabel = null;
     });
 
-    setTimeout( function () {
+    setTimeout(function () {
       isDraftHandler("v-s:isDraft");
-    }, 100);
+    }, 0);
 
     // Additional actions buttons
     var $send = $("#send.action", wrapper);
@@ -403,7 +404,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
-          spec = new veda.IndividualModel( specs[property_uri] );
+          spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
       if (property_uri === "@") {
         propertyContainer.text(individual.id);
         return;
@@ -456,7 +457,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           about = relContainer.attr("about"),
           rel_uri = relContainer.attr("rel"),
           isEmbedded = relContainer.attr("data-embedded") === "true",
-          spec = new veda.IndividualModel( specs[rel_uri] ),
+          spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
           relTemplate,
@@ -548,10 +549,10 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
                 rendered[value.id].cnt = counter;
                 return;
               }
-              setTimeout (function () {
+              value.load().then(function (value) {
                 var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
                 rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-              }, 0);
+              })
             });
           } else {
             relContainer.empty();
@@ -662,7 +663,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
       if (mode === "edit") {
         Object.keys(validation).map( function (property_uri) {
           if (property_uri === "state") { return; }
-          var spec = new veda.IndividualModel( specs[property_uri] );
+          var spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
           validation[property_uri] = validate(individual, property_uri, spec);
         });
         template.trigger("validate");
@@ -734,7 +735,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
           property_uri = control.attr("property"),
           property = new veda.IndividualModel(property_uri),
           type = control.attr("data-type") || property["rdfs:range"][0].id,
-          spec = new veda.IndividualModel( specs[property_uri] ),
+          spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined,
           controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_generic;
 
       // Initial validation state
@@ -796,7 +797,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
 
       var control = $(this),
           rel_uri = control.attr("rel"),
-          spec = new veda.IndividualModel( specs[rel_uri] ),
+          spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
           rel = new veda.IndividualModel(rel_uri),
           controlType = control.attr("data-type") ? $.fn["veda_" + control.attr("data-type")] : $.fn.veda_link;
 
