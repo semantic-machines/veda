@@ -178,10 +178,8 @@ struct TransactionItem
 TransactionItem *[ string ] transaction_buff;
 TransactionItem *[] transaction_queue;
 
-public ResultCode commit()
+public ResultCode commit(string transaction_id)
 {
-    string transaction_id = randomUUID().toString();
-
     foreach (item; transaction_queue)
     {
         if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)

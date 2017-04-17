@@ -3,7 +3,7 @@
  */
 module veda.gluecode.scripts;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
@@ -51,7 +51,7 @@ class ScriptProcess : VedaModule
 
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, string transaction_id, 
+                                string event_id, string parent_transaction_id, 
                                 long op_id)
     {
         if (script_vm is null)
@@ -118,6 +118,8 @@ class ScriptProcess : VedaModule
         //log.trace ("indv=%s, indv_types=%s", individual_id, indv_types);
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
+	    string transaction_id = randomUUID().toString();
+
 
         foreach (_script_id; event_scripts_order)
         {
@@ -163,12 +165,12 @@ class ScriptProcess : VedaModule
                                         count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
-                    log.trace("start exec event script : %s %s %d %s %s", script_id, individual_id, op_id, event_id, transaction_id);
+                    log.trace("start: %s %s %d %s ptnx=%s, tnx=%s", script_id, individual_id, op_id, event_id, parent_transaction_id, transaction_id);
 
                     //count++;
                     script.compiled_script.run();
 
-                    ResultCode res = commit();
+                    ResultCode res = commit(transaction_id);
                     if (res != ResultCode.OK)
                     {
                         log.trace("fail exec event script : %s", script_id);
@@ -176,7 +178,7 @@ class ScriptProcess : VedaModule
                     }
 
                     //if (trace_msg[ 300 ] == 1)
-                    log.trace("end exec event script : %s", script_id);
+                    log.trace("end: %s", script_id);
 
 
                     //*(cast(char*)script_vm) = 0;

@@ -8,7 +8,7 @@ module veda.gluecode.ltr_scripts;
 private
 {
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
-    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
@@ -287,11 +287,12 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     {
         try
         {
+			string transaction_id = randomUUID().toString();
             //if (trace_msg[ 300 ] == 1)
             //log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
-            ResultCode res = commit();
+            ResultCode res = commit(transaction_id);
             if (res != ResultCode.OK)
             {
                 log.trace("fail exec event script : %s", script.id);
