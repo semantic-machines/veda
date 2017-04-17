@@ -101,14 +101,14 @@ veda.Module(function (veda) { "use strict";
   }
 
   function parser(value) {
-    if (value.type === "String") {
+    if (value.type === "String" || value.type === 2) {
       var string = new String(value.data);
       if (value.lang !== "NONE") { string.language = value.lang };
       return string;
-    } else if (value.type === "Uri") {
+    } else if (value.type === "Uri" || value.type === 1) {
       if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
       return new veda.IndividualModel(value.data);
-    } else if (value.type === "Datetime") {
+    } else if (value.type === "Datetime" || value.type === 8) {
       return new Date(Date.parse(value.data));
     } else {
       return value.data;

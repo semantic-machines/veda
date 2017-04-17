@@ -195,28 +195,25 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 
     var rules = transform['v-wf:transformRule'];
 
-    if (!rules)
+    if (!rules || !rules.length)
       return;
 
-    if (typeof window === "undefined")
+    //print ("@B start transform");
+    var tmp_rules = [];
+    //print ("rules_in=", toJson (rules));
+    //print ("individuals=", toJson (individuals));
+    for (var i in rules)
     {
-      //print ("@B start transform");
-      var tmp_rules = [];
-      //print ("rules_in=", toJson (rules));
-      //print ("individuals=", toJson (individuals));
-      for (var i in rules)
+      var rul = get_individual(ticket, rules[i].data);
+      if (!rul)
       {
-        var rul = get_individual(ticket, rules[i].data);
-        if (!rul)
-        {
-          print("not read rule [", toJson(rul), "]");
-          continue;
-        }
-        else
-          tmp_rules.push(rul);
+        print("not read rule [", toJson(rul), "]");
+        continue;
       }
-      rules = tmp_rules;
+      else
+        tmp_rules.push(rul);
     }
+    rules = tmp_rules;
 
     var out_data0_el = {};
 
@@ -287,10 +284,6 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         data: value,
         type: _Uri
       }];
-
-      //if (typeof window === "undefined")
-      //  print ("@1 out_data0_el=", toJson (out_data0_el));
-      //print ("@1 out_data0_el[",name, "]=", toJson (out_data0_el[name]));
     }
 
     var putString = (function()
@@ -548,7 +541,6 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
     {
       //print("#1 key=", key);
       var individual = individuals[key];
-      if (typeof window !== "undefined") individual['@'] = individual['id']; // sly hack
 
       //print("#1.1 key=", key);
       var objectContentStrValue = (function()
@@ -558,41 +550,19 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           if (individual[name])
           {
             var result = false;
-            if (typeof window === "undefined")
+            for (var i in individual[name])
             {
-              for (var i in individual[name])
+              if (value === individual[name][i].data)
               {
-                if (value === individual[name][i].data)
-                {
-                  result = true;
-                }
-              }
-            }
-            else
-            {
-              for (var i in individual[name])
-              {
-                if (value === individual[name][i])
-                {
-                  result = true;
-                }
+                result = true;
               }
             }
             return result;
           }
-          /*
-          //print("individual[name]=", toJson(individual[name]));
-          var str = individual[name][0].data;
-          //print("str=", str);
-          if (str == value)
-            return true;
-          else
-            return false;
-          */
         }
       })();
 
-      var iteratedObject = (typeof window === "undefined") ? Object.getOwnPropertyNames(individual) : Object.getOwnPropertyNames(individual.properties);
+      var iteratedObject = Object.keys(individual);
 
       for (var key2 = 0; key2 < iteratedObject.length; key2++)
       {
@@ -649,52 +619,16 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 
             var curelem;
 
-            curelem = (typeof window === "undefined") ? get_individual(ticket, element_uri) : new veda.IndividualModel(element_uri);
+            curelem = get_individual(ticket, element_uri);
 
             for (var i = 0; i < path.length - 1; i++)
             {
               if (!curelem || !curelem[path[i]]) return;
-
-              if (typeof window === "undefined") {
-                curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
-              } else {
-                curelem = curelem[path[i]][0];
-              }
+              curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
             }
             if (!curelem || !curelem[path[path.length - 1]]) return;
 
-            if (typeof window === "undefined") {
-                out_data0_el_arr.push(curelem[path[path.length - 1]]);
-            } else {
-              curelem[path[path.length - 1]].forEach(
-                function(item) {
-                  var value = item;
-                  var valueType = _Uri;
-
-                  if (value instanceof String) { valueType = _String; }
-                  else if (value instanceof Date) { valueType = _Datetime; }
-                  else if (value instanceof Number) { valueType = _Decimal; }
-                  else if (value instanceof Boolean) { valueType = _Boolean; }
-                  else value = value.id;
-
-                  if (valueType == _Uri && typeof transform != 'undefined') {
-                    if (transform == 'clone') {
-                      value = value.clone();
-                    } else {
-                      value = veda.Util.buildStartFormByTransformation(value, new veda.IndividualModel(transform));
-                    }
-                  }
-
-                  if (typeof value !== "undefined") {
-                    out_data0_el_arr.push(
-                    {
-                      data: value,
-                      type: valueType
-                    });
-                  }
-                }
-              );
-            }
+            out_data0_el_arr.push(curelem[path[path.length - 1]]);
 
             out_data0_el[name] = out_data0_el_arr;
           }
@@ -776,9 +710,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           {
             if (iteratedObject[key2] !== name)
               return false;
-            //print("individual[name]=", toJson(individual[name]));
-            var str = typeof window === "undefined" ? element[0].data : element[0].id;
-            //print("str=", str);
+            var str = element[0].data;
             if (str == value)
               return true;
             else
@@ -799,7 +731,6 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         // выполняем все rules
         for (var key3 in rules)
         {
-          //print("#3 key3=", key3);
           var rule = rules[key3];
           // 1. v-wf:segregateObject
           var segregateObject = rule['v-wf:segregateObject'];
@@ -812,37 +743,17 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 
           if (segregateObject)
           {
-            if (typeof window === "undefined")
-            {
-              res = eval(segregateObject[0].data)
-            }
-            else if (segregateObject[0] != undefined)
-            {
-              res = eval(segregateObject[0].toString());
-            }
+            res = eval(segregateObject[0].data)
             if (res == false)
               continue;
           }
 
           if (segregateElement)
           {
-            if (typeof window === "undefined")
-            {
-              res = eval(segregateElement[0].data)
-            }
-            else if (segregateElement[0] != undefined)
-            {
-              res = eval(segregateElement[0].toString());
-            }
+            res = eval(segregateElement[0].data)
             if (res == false)
               continue;
           }
-
-          //print("#7 key=", key);
-          //print("#7 element=", toJson(element));
-
-          //if (segregateElement)
-          //  print("#8 segregateElement=", segregateElement[0].data);
 
           // 3. v-wf:aggregate
           var group_key;
@@ -856,7 +767,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             var useExistsUid = false;
             for (var i in grouping)
             {
-              var gk = typeof window === "undefined" ? grouping[i].data : grouping[i];
+              var gk = grouping[i].data;
               if (gk == '@')
                 useExistsUid = true;
               else
@@ -877,14 +788,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           var agregate = rule['v-wf:aggregate'];
           for (var i2 = 0; i2 < agregate.length; i2++)
           {
-            if (typeof window === "undefined")
-            {
-              eval(agregate[i2].data);
-            }
-            else if (agregate[i2] != undefined)
-            {
-              eval(agregate[i2].toString());
-            }
+            eval(agregate[i2].data);
           }
 
           if (!grouping)
@@ -898,9 +802,6 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         }
       }
     }
-
-    //if (typeof window === "undefined")
-    //  print("@E out_data0=", toJson (out_data0));
 
     var out_data = [];
     for (var key in out_data0)
