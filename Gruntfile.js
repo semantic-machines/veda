@@ -81,7 +81,9 @@ module.exports = function(grunt) {
 			all : {
 				options : {
 					urls : [ 'http://localhost:8080/tests?coverage=true&lcovReport' ],
-					noGlobals : true
+					noGlobals : true,
+					stack : true,
+					timeout: 120000
 				}
 			}
 		},
@@ -95,3 +97,4 @@ module.exports = function(grunt) {
 		}
 	});
 }
+
