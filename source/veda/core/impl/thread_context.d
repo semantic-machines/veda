@@ -1409,8 +1409,7 @@ class PThreadContext : Context
     }
 
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
-                                   bool ignore_freeze = false,
-                                   bool is_api_request = true)
+                                   bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
@@ -1423,27 +1422,21 @@ class PThreadContext : Context
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
-                                      bool ignore_freeze =
-                                          false,
-                                      bool is_api_request = true)
+                                      bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, string transaction_id,
-                                      bool ignore_freeze =
-                                          false,
-                                      bool is_api_request = true)
+                                      bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           string transaction_id,
-                                           bool ignore_freeze = false,
-                                           bool is_api_request = true)
+                                           string transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
         return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
@@ -1797,8 +1790,7 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
-                                                      true);
+                            rc ~= this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
                         }
                     }
                     else if (sfn == "add_to")
@@ -1808,8 +1800,7 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
-                                                         true);
+                            rc ~= this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
                         }
                     }
                     else if (sfn == "set_in")
@@ -1819,8 +1810,7 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
-                                                         true);
+                            rc ~= this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
                         }
                     }
                     else if (sfn == "remove_from")
@@ -1830,9 +1820,7 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~=
-                            this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false,
-                                                        true);
+                            rc ~= this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.str, false, true);
                         }
                     }
                     else if (sfn == "remove")
