@@ -203,7 +203,7 @@ veda.Module(function (veda) { "use strict";
       }
       try {
         var rightsJSON = get_rights(veda.ticket, this.id);
-        this._.rights = new veda.IndividualModelAsync( rightsJSON, undefined, undefined, undefined, false );
+        this._.rights = new veda.IndividualModelAsync({ uri: rightsJSON, cache: false });
       } catch (e) {
         this._.rights = new veda.IndividualModelAsync();
       } finally {
@@ -219,8 +219,8 @@ veda.Module(function (veda) { "use strict";
       if (this._.rightsOrigin) return this._.rightsOrigin;
       try {
         var rightsOriginArr = get_rights_origin(veda.ticket, this.id);
-        this._.rightsOrigin = rightsOriginArr.map(function (item) {
-          return new veda.IndividualModelAsync( item, undefined, undefined, undefined, false );
+        this._.rightsOrigin = rightsOriginArr.map(function (origin) {
+          return new veda.IndividualModelAsync({ uri: origin, cache: false });
         });
       } catch (e) {
         this._.rightsOrigin = [];
