@@ -51,7 +51,7 @@ class ScriptProcess : VedaModule
 
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id,
+                                string event_id, string transaction_id, 
                                 long op_id)
     {
         if (script_vm is null)
@@ -163,7 +163,7 @@ class ScriptProcess : VedaModule
                                         count_sckip--;
  */
                     //if (trace_msg[ 300 ] == 1)
-                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                    log.trace("start exec event script : %s %s %d %s %s", script_id, individual_id, op_id, event_id, transaction_id);
 
                     //count++;
                     script.compiled_script.run();
