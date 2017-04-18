@@ -110,8 +110,6 @@ class ScriptProcess : VedaModule
         g_ticket.data   = cast(char *)sticket;
         g_ticket.length = cast(int)sticket.length;
 
-        //writeln ("@S1 sticket=", sticket);
-
         set_g_super_classes(indv_types, context.get_onto());
 
         //log.trace("-------------------");

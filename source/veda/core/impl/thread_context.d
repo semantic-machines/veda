@@ -1183,7 +1183,7 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, long transaction_id,
+    private OpResult store_individual(INDV_OP cmd, Ticket* ticket, Individual* indv, bool prepare_events, string event_id, long transaction_id,
                                       bool ignore_freeze,
                                       bool is_api_request)
     {
@@ -1206,8 +1206,6 @@ class PThreadContext : Context
                 res.result = ResultCode.No_Content;
                 return res;
             }
-
-            //log.trace ("context:store_individual #2 main_module_url=%s", main_module_url);
 
             version (isModule)
             {
@@ -1238,7 +1236,6 @@ class PThreadContext : Context
                 //log.trace("[%s] store_individual: (isModule), rep=(%s)", name, res);
             }
 
-            //                  writeln("context:store_individual #5 ", process_name);
             version (isServer)
             {
                 //log.trace("[%s] store_individual: (isServer)", name);
@@ -1366,25 +1363,6 @@ class PThreadContext : Context
                         }
                     }
 
-/*
-                        version (libV8)
-                        {
-                            if (rdfType.anyExists("v-s:ExecuteScript"))
-                            {
-                                // передать вызов отдельной нити по выполнению Long Time Run Scripts
-                                veda.core.glue_code.ltrs.execute_script(new_state);
-                            }
-                        }
- */
-//                    if (event_id != "fanout")
-/*
-                        version (WebServer)
-                        {
-                            veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, indv.uri, new_state, prev_state, event_id,
-                                                                               res.op_id,
-                                                                               update_counter);
-                        }
- */
                     res.result = ResultCode.OK;
                 }
                 else
