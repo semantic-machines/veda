@@ -3,9 +3,9 @@
  */
 module veda.gluecode.v8d_header;
 
-import std.stdio, std.conv, std.file, std.path;
+import std.stdio, std.conv, std.file, std.path, std.uuid;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, std.uuid;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -168,47 +168,6 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 
 
 Transaction tnx;
-
-public ResultCode commit(long transaction_id)
-{
-    foreach (item; tnx.queue)
-    {
-        if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
-            continue;
-
-        if (item.rc != ResultCode.OK)
-            return item.rc;
-
-        Ticket *ticket = g_context.get_ticket(item.ticket_id);
-
-        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-        ResultCode rc;
-
-        if (item.cmd == INDV_OP.REMOVE)
-            rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, transaction_id, ignore_freeze).result;
-        else
-            rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, transaction_id, ignore_freeze).result;
-
-        if (rc == ResultCode.No_Content)
-        {
-            log.trace("WARN!: Rejected attempt to save an empty object: %s", item.indv);
-        }
-
-        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-        {
-            log.trace("FAIL COMMIT");
-            return rc;
-        }
-        //else
-        //log.trace ("SUCCESS COMMIT");
-    }
-
-    tnx.buff  = tnx.buff.init;
-    tnx.queue = tnx.queue.init;
-
-    return ResultCode.OK;
-}
 
 extern (C++)
 {
@@ -611,8 +570,6 @@ void run_WrappedScript(WrappedContext _context, WrappedScript ws, _Buff *_res = 
 //alias WrappedScript      Script;
 //alias run_WrappedScript  run;
 //alias new_WrappedScript  compile;
-
-bool ignore_freeze;
 
 class JsVM : ScriptVM
 {
