@@ -208,6 +208,17 @@ public enum Result
     Nothing
 }
 
+struct TransactionItem
+{
+    INDV_OP    cmd;
+    string     ticket_id;
+    string     event_id;
+    ResultCode rc;
+
+    string     binobj;
+    Individual indv;
+}
+
 interface Storage
 {
     public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);

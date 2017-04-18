@@ -112,18 +112,6 @@ void set_g_super_classes(string[] indv_types, Onto onto)
     g_super_classes.length = cast(int)superclasses_str.length;
 }
 
-
-struct TransactionItem
-{
-    INDV_OP    cmd;
-    string     binobj;
-    string     ticket_id;
-    string     event_id;
-    ResultCode rc;
-
-    Individual indv;
-}
-
 private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
 {
     TransactionItem *ti = new TransactionItem();
