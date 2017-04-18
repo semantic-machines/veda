@@ -219,6 +219,12 @@ struct TransactionItem
     Individual indv;
 }
 
+struct Transaction
+{ 
+	TransactionItem *[ string ] buff;
+	TransactionItem *[] queue;
+}
+
 interface Storage
 {
     public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);

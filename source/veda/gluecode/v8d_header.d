@@ -143,7 +143,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
         {
             Individual      prev_indv;
 
-            TransactionItem *ti1 = transaction_buff.get(ti.indv.uri, null);
+            TransactionItem *ti1 = tnx.buff.get(ti.indv.uri, null);
             if (ti1 !is null && ti1.binobj.length > 0)
             {
                 prev_indv = ti1.indv;
@@ -167,12 +167,11 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 }
 
 
-TransactionItem *[ string ] transaction_buff;
-TransactionItem *[] transaction_queue;
+Transaction tnx;
 
 public ResultCode commit(long transaction_id)
 {
-    foreach (item; transaction_queue)
+    foreach (item; tnx.queue)
     {
         if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
             continue;
@@ -205,8 +204,8 @@ public ResultCode commit(long transaction_id)
         //log.trace ("SUCCESS COMMIT");
     }
 
-    transaction_buff  = transaction_buff.init;
-    transaction_queue = transaction_queue.init;
+    tnx.buff  = tnx.buff.init;
+    tnx.queue = tnx.queue.init;
 
     return ResultCode.OK;
 }
@@ -329,8 +328,8 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
 
     if (ti.rc == ResultCode.OK)
     {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
+        tnx.buff[ ti.indv.uri ] = ti;
+        tnx.queue ~= ti;
         return ResultCode.OK;
     }
     else
@@ -347,8 +346,8 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
 
     if (ti.rc == ResultCode.OK)
     {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
+        tnx.buff[ ti.indv.uri ] = ti;
+        tnx.queue ~= ti;
         return ResultCode.OK;
     }
     else
@@ -365,8 +364,8 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
 
     if (ti.rc == ResultCode.OK)
     {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
+        tnx.buff[ ti.indv.uri ] = ti;
+        tnx.queue ~= ti;
         return ResultCode.OK;
     }
     else
@@ -384,8 +383,8 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
 
     if (ti.rc == ResultCode.OK)
     {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
+        tnx.buff[ ti.indv.uri ] = ti;
+        tnx.queue ~= ti;
         return ResultCode.OK;
     }
     else
@@ -401,8 +400,8 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
 
     if (ti.rc == ResultCode.OK)
     {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
+        tnx.buff[ ti.indv.uri ] = ti;
+        tnx.queue ~= ti;
         return ResultCode.OK;
     }
     else
@@ -529,7 +528,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else
         {
-            TransactionItem *ti = transaction_buff.get(uri, null);
+            TransactionItem *ti = tnx.buff.get(uri, null);
             if (ti !is null && ti.binobj.length > 0)
             {
                 tmp_individual.data   = cast(char *)ti.binobj;
