@@ -1109,7 +1109,7 @@ class PThreadContext : Context
                 req_body[ "uri" ]            = uri;
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ] = transaction_id;
+                req_body[ "tnx_id" ]         = transaction_id;
 
                 res = reqrep_2_main_module(req_body)[ 0 ];
             }
@@ -1230,7 +1230,7 @@ class PThreadContext : Context
                 req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ] = transaction_id;
+                req_body[ "tnx_id" ]         = transaction_id;
 
                 //log.trace("[%s] store_individual: (isModule), req=(%s)", name, req_body.toString());
 
@@ -1716,7 +1716,6 @@ class PThreadContext : Context
         public string execute(string in_msg)
         {
             JSONValue res;
-
             JSONValue jsn;
 
             try
@@ -1779,7 +1778,7 @@ class PThreadContext : Context
                         prepare_events = true;
 
                     JSONValue event_id       = jsn[ "event_id" ];
-                    JSONValue transaction_id = jsn[ "tnx_id" ];
+                    long      transaction_id = 0;
 
                     Ticket    *ticket = this.get_ticket(_ticket.str);
 
@@ -1790,7 +1789,10 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.integer, false, true);
+                            OpResult   ires       = this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false, true);
+                            rc ~= ires;
+                            if (transaction_id <= 0)
+                                transaction_id = ires.op_id;
                         }
                     }
                     else if (sfn == "add_to")
@@ -1800,7 +1802,10 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.integer, false, true);
+                            OpResult   ires       = this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false, true);
+                            rc ~= ires;
+                            if (transaction_id <= 0)
+                                transaction_id = ires.op_id;
                         }
                     }
                     else if (sfn == "set_in")
@@ -1810,7 +1815,10 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.integer, false, true);
+                            OpResult   ires       = this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false, true);
+                            rc ~= ires;
+                            if (transaction_id <= 0)
+                                transaction_id = ires.op_id;
                         }
                     }
                     else if (sfn == "remove_from")
@@ -1820,13 +1828,20 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            rc ~= this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id.integer, false, true);
+                            OpResult   ires       = this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
+                                                                                true);
+                            rc ~= ires;
+                            if (transaction_id <= 0)
+                                transaction_id = ires.op_id;
                         }
                     }
                     else if (sfn == "remove")
                     {
-                        JSONValue uri = jsn[ "uri" ];
-                        rc ~= this.remove_individual(ticket, uri.str, prepare_events, event_id.str, transaction_id.integer, false, true);
+                        JSONValue uri  = jsn[ "uri" ];
+                        OpResult  ires = this.remove_individual(ticket, uri.str, prepare_events, event_id.str, transaction_id, false, true);
+                        rc ~= ires;
+                        if (transaction_id <= 0)
+                            transaction_id = ires.op_id;
                     }
 
                     JSONValue[] all_res;

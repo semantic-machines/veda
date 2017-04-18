@@ -462,8 +462,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             if (event_id !is null && event_id.length > 0)
                                                 imm.addResource("event_id", Resource(DataType.String, event_id));
 
-                                            if (transaction_id > 0)
-                                                imm.addResource("tnx_id", Resource(transaction_id));
+                                            if (transaction_id <= 0)
+	                                            transaction_id = op_id;
+                                            
+                                            imm.addResource("tnx_id", Resource(transaction_id));
 
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(update_counter));
