@@ -15,12 +15,18 @@ struct TransactionItem
 }
 
 struct Transaction
-{ 
-	TransactionItem *[ string ] buff;
-	TransactionItem *[] queue;
+{
+    TransactionItem *[ string ] buff;
+    TransactionItem *[] queue;
+
+    public void         add(TransactionItem *ti)
+    {
+        buff[ ti.indv.uri ] = ti;
+        queue ~= ti;
+    }
 }
 
-public ResultCode commit(long transaction_id, Transaction* _tnx, Context ctx)
+public ResultCode commit(long transaction_id, Transaction *_tnx, Context ctx)
 {
     foreach (item; _tnx.queue)
     {
