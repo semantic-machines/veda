@@ -117,7 +117,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var embedded = [];
 
     // Trigger same events for embedded templates
-    function syncEmbedded (e, parent) {
+    function syncEmbedded (e) {
       embedded.map(function (item) {
         item.trigger(e.type, individual.id);
       });
@@ -126,19 +126,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("view edit search save cancel delete recover draft", syncEmbedded);
 
     // Define handlers
-    function saveHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.save();
-      }
+    function saveHandler (e) {
+      individual.save();
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
 
-    function draftHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.draft();
-      }
+    function draftHandler (e) {
+      individual.draft();
       template.trigger("view");
       e.stopPropagation();
     }
@@ -150,13 +146,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("showRights", showRightsHandler);
 
-    function cancelHandler (e, parent) {
+    function cancelHandler (e) {
       template.trigger("view");
-      if (parent !== individual.id) {
-        individual.reset();
-        if (container.prop("id") === "main") {
-          window.history.back();
-        }
+      individual.reset();
+      if (container.prop("id") === "main") {
+        window.history.back();
       }
       e.stopPropagation();
     }
@@ -194,86 +188,21 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       individual.off("afterDelete", afterDeleteHandler);
     });
 
-    function deleteHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.delete();
-      }
+    function deleteHandler (e) {
+      individual.delete();
       e.stopPropagation();
     }
     template.on("delete", deleteHandler);
 
-    function recoverHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.recover();
-      }
+    function recoverHandler (e) {
+      individual.recover();
       e.stopPropagation();
     }
     template.on("recover", recoverHandler);
 
-    // Actions
-    var $edit = $("#edit.action", wrapper),
-        $save = $("#save.action", wrapper),
-        $draft = $("#draft.action", wrapper),
-        $showRights = $("#rightsOrigin.action", wrapper),
-        $cancel = $("#cancel.action", wrapper),
-        $delete = $("#delete.action", wrapper);
-
-    // Check rights to manage buttons
-    // Update
-    if ($edit.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $edit.remove();
-    if ($save.length   && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $save.remove();
-    if ($draft.length  && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $draft.remove();
-    if ($cancel.length && !(individual.rights && individual.rights.hasValue("v-s:canUpdate") && individual.rights["v-s:canUpdate"][0] == true) ) $cancel.remove();
-    // Delete
-    if ($delete.length && ( !(individual.rights && individual.rights.hasValue("v-s:canDelete") && individual.rights["v-s:canDelete"][0] == true) || individual.isNew() ) ) $delete.remove();
-
-    // Buttons handlers
-    // Edit
-    $edit.on("click", function (e) {
-      e.preventDefault();
-      template.trigger("edit");
-    });
-
-    // Save
-    $save.on("click", function (e) {
-      e.preventDefault();
-      template.trigger("save");
-    });
-
-    // Draft
-    $draft.on("click", function (e) {
-      e.preventDefault();
-      template.trigger("draft");
-    });
-
-    // Show rights
-    $showRights.on("click", function (e) {
-      e.preventDefault();
-      template.trigger("showRights");
-    });
-
-    //  Cancel
-    $cancel.on("click", function (e) {
-      e.preventDefault();
-      template.trigger("cancel");
-    });
-
-    //  Delete
-    $delete.on("click", function (e) {
-      e.preventDefault();
-      if ( confirm("Вы уверены? / Are you sure?") ) { template.trigger("delete"); }
-    });
-    if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
-
-
-    // Standart buttons labels change for drafts
-    var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
-    var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
-    var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
-    var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
-
-    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:comment"].join(" ");
+    // Draft label
     var draftLabel = null;
+    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:comment"].join(" ");
     function isDraftHandler(property_uri) {
       if (property_uri === "v-s:isDraft") {
         // If individual is draft
@@ -285,23 +214,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
               cell.css("position", "relative").append(draftLabel);
             } else {
               template.css("position", "relative");
-              // It is important to append buttons skipping script element in template!
+              // It is important to skip script element in template!
               template.not("script").append(draftLabel);
             }
-            //Rename "Edit" -> "Continue edit"
-            $edit.text(ContinueEdit);
-            //Rename "Cancel" -> "Delete draft"
-            $cancel.text(DeleteDraft);
           }
         } else {
           if (draftLabel) {
             draftLabel.remove();
             draftLabel = null;
           }
-          //Rename "Continue edit" -> Edit"
-          $edit.text(Edit);
-          //Rename "Delete draft" -> "Cancel"
-          $cancel.text(Cancel);
         }
       } else {
         if ( mode === "edit" && individual.is("v-s:UserThing") ) {
@@ -318,57 +239,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     setTimeout( function () {
       isDraftHandler("v-s:isDraft");
     }, 100);
-
-    // Additional actions buttons
-    var $send = $("#send.action", wrapper);
-    var $sendButtons = $(".sendbutton", wrapper);
-    var $createReport = $("#createReport.action", wrapper);
-    var $createReportButtons = $(".create-report-button", wrapper);
-    var $showRights = $("#rightsOrigin.action", wrapper);
-    var $journal = $("#journal.action", wrapper);
-
-    $send.on("click", function () {veda.Util.send(individual, template);});
-    $createReport.on("click", function () {veda.Util.createReport(individual);});
-    $showRights.on("click", function () {veda.Util.showRights(individual);});
-    $journal.on("click", function() {
-      var journal_uri = individual.id + "j",
-          journal = new veda.IndividualModel(journal_uri);
-      if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
-        riot.route("#/" + journal_uri);
-      } else {
-        alert("Журнал отсутсвует / Journal empty");
-      }
-    });
-
-    // standard tasks
-    $('ul#standard-tasks', template).each(function() {
-      var stask = $(this);
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:Question')['rdfs:label'].join(" "))+'</a>'
-      }));
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:Instruction')['rdfs:label'].join(" "))+'</a>'
-      }));
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:Introduction')['rdfs:label'].join(" "))+'</a>'
-      }));
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:Distribution')['rdfs:label'].join(" "))+'</a>'
-      }));
-      stask.append($('<li/>', {
-        style:'cursor:pointer',
-        click: function() {veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true)},
-        html: '<a>'+(new veda.IndividualModel('v-s:Coordination')['rdfs:label'].join(" "))+'</a>'
-      }));
-    });
 
     // Process RDFa compliant template
 
@@ -701,23 +571,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         });
         validation.state = validation.state && validationResult.state;
       }
-    });
-
-    template.on("internal-validated", function (e) {
-      if (validation.state) {
-        $save.removeAttr("disabled");
-        $send.removeAttr("disabled");
-        $sendButtons.removeAttr("disabled");
-        $createReport.removeAttr("disabled");
-        $createReportButtons.removeAttr("disabled");
-      } else {
-        $save.attr("disabled", "disabled");
-        $send.attr("disabled", "disabled");
-        $sendButtons.attr("disabled", "disabled");
-        $createReport.attr("disabled", "disabled");
-        $createReportButtons.attr("disabled", "disabled");
-      }
-      e.stopPropagation();
     });
 
     // Property control

@@ -148,6 +148,12 @@ v-s:SingleCommentTemplate
   rdfs:label "Template for v-s:Comment class"@en ;
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
+<script>
+  $(".action", template).click(function (e) {
+    e.preventDefault();
+    template.trigger(this.id);
+  });
+</script>
 <div class="panel panel-default" style="margin-top: 20px">
   <div class="panel-body">
     <em about="rdfs:comment" property="rdfs:label"></em>
@@ -179,6 +185,11 @@ v-s:RecursiveCommentTemplate
   if (!individual.rights.hasValue("v-s:canUpdate", true)) {
     actions.remove();
   }
+  $(".action", template).click(function (e) {
+    e.preventDefault();
+    template.trigger(this.id);
+  });
+
   individual.on("v-s:hasComment", commentHandler);
   individual.on("v-s:linkedObject", linkedHandler);
   template.one("remove", function () {
