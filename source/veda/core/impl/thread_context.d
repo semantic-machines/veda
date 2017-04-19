@@ -1093,88 +1093,6 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, long transaction_id, bool ignore_freeze, bool is_api_request)
-    {
-        OpResult res = OpResult(ResultCode.Fail_Store, -1);
-
-        try
-        {
-            version (isModule)
-            {
-                JSONValue req_body;
-                req_body[ "function" ]       = "remove";
-                req_body[ "ticket" ]         = ticket.id;
-                req_body[ "uri" ]            = uri;
-                req_body[ "prepare_events" ] = prepare_events;
-                req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ]         = transaction_id;
-
-                res = reqrep_2_main_module(req_body)[ 0 ];
-            }
-
-            version (isServer)
-            {
-                EVENT      ev = EVENT.REMOVE;
-
-                string     prev_state;
-                Individual indv;
-                Individual prev_indv;
-
-                prev_state = get_from_individual_storage_thread(uri);
-                if (prev_state !is null)
-                {
-                    int code = prev_indv.deserialize(prev_state);
-                    if (code < 0)
-                    {
-                        log.trace("ERR! remove_individual: invalid prev_state [%s]", prev_state);
-                        res.result = ResultCode.Unprocessable_Entity;
-                        return res;
-                    }
-
-                    prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
-                }
-
-                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, transaction_id, ignore_freeze, true);
-
-                if (oprc.result != ResultCode.OK)
-                {
-                    res.result = oprc.result;
-                    log.trace("ERR! remove_individual: fail set [v-s:deleted], :uri=%s, errcode=[%s]", prev_indv.uri, res.result);
-                }
-                else
-                {
-                    //res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, transaction_id, ignore_freeze, res.op_id);
-                    res.result = subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.REMOVE, ticket.user_uri, uri, null, null,
-                                                               0, event_id, transaction_id, ignore_freeze, res.op_id);
-                }
-
-                if (res.result == ResultCode.OK)
-                {
-                    Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
-                    MapResource rdfType;
-                    setMapResources(_types, rdfType);
-
-                    if (rdfType.anyExists(owl_tags) == true)
-                    {
-                        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-                        inc_count_onto_update();
-                    }
-                }
-            }
-
-            return res;
-        }
-        finally
-        {
-            if (res.result != ResultCode.OK)
-                log.trace("ERR! remove_individual :uri=%s, errcode=[%s], ticket=[%s]",
-                          uri, text(res.result), ticket !is null ? text(*ticket) : "null");
-
-            if (trace_msg[ T_API_210 ] == 1)
-                log.trace("[%s] remove_individual [%s] uri = %s", name, uri, res);
-        }
-    }
-
     public void subject_storage_commmit(bool isWait = true)
     {
         version (isServer)
@@ -1183,12 +1101,12 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, long transaction_id,
-                                      bool ignore_freeze,
-                                      bool is_api_request)
+    private OpResult update_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, long transaction_id,
+                                       bool ignore_freeze,
+                                       bool is_api_request)
     {
         //if (trace_msg[ T_API_230 ] == 1)
-        //log.trace("[%s] store_individual: %s %s", name, text(cmd), *indv);
+        //log.trace("[%s] update_individual: %s %s", name, text(cmd), *indv);
 
         StopWatch sw; sw.start;
 
@@ -1201,7 +1119,7 @@ class PThreadContext : Context
                 res.result = ResultCode.Invalid_Identifier;
                 return res;
             }
-            if (indv is null || indv.resources.length == 0)
+            if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
             {
                 res.result = ResultCode.No_Content;
                 return res;
@@ -1209,7 +1127,7 @@ class PThreadContext : Context
 
             version (isModule)
             {
-                //log.trace("[%s] store_individual: isModule", name);
+                //log.trace("[%s] update_individual: isModule", name);
 
                 string scmd;
 
@@ -1230,15 +1148,15 @@ class PThreadContext : Context
                 req_body[ "event_id" ]       = event_id;
                 req_body[ "tnx_id" ]         = transaction_id;
 
-                //log.trace("[%s] store_individual: (isModule), req=(%s)", name, req_body.toString());
+                //log.trace("[%s] update_individual: (isModule), req=(%s)", name, req_body.toString());
 
                 res = reqrep_2_main_module(req_body)[ 0 ];
-                //log.trace("[%s] store_individual: (isModule), rep=(%s)", name, res);
+                //log.trace("[%s] update_individual: (isModule), rep=(%s)", name, res);
             }
 
             version (isServer)
             {
-                //log.trace("[%s] store_individual: (isServer)", name);
+                //log.trace("[%s] update_individual: (isServer)", name);
                 Tid       tid_subject_manager;
                 Tid       tid_acl;
 
@@ -1262,11 +1180,11 @@ class PThreadContext : Context
 
                     if ((prev_state is null ||
                          prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                        log.trace("ERR! store_individual, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+                        log.trace("ERR! update_individual, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
                 }
                 catch (Exception ex)
                 {
-                    log.trace("ERR! store_individual: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
+                    log.trace("ERR! update_individual: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                     return res;
                 }
 
@@ -1276,12 +1194,12 @@ class PThreadContext : Context
                     int code = prev_indv.deserialize(prev_state);
                     if (code < 0)
                     {
-                        log.trace("ERR! store_individual: invalid prev_state [%s]", prev_state);
+                        log.trace("ERR! update_individual: invalid prev_state [%s]", prev_state);
                         res.result = ResultCode.Unprocessable_Entity;
                         return res;
                     }
 
-                    if (is_api_request)
+                    if (is_api_request && cmd != INDV_OP.REMOVE)
                     {
                         // для обновляемого индивида проверим доступность бита Update
                         if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null) != Access.can_update)
@@ -1303,7 +1221,7 @@ class PThreadContext : Context
                     }
                 }
 
-                if (is_api_request)
+                if (is_api_request && cmd != INDV_OP.REMOVE)
                 {
                     // для новых типов проверим доступность бита Create
                     foreach (key, rr; rdfType)
@@ -1319,29 +1237,57 @@ class PThreadContext : Context
                     }
                 }
 
-                if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
-                {
-                    //log.trace("[%s] ++ store_individual, prev_indv: %s", name, prev_indv);
-                    indv = indv_apply_cmd(cmd, &prev_indv, indv);
-                    //log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);
-                }
-
-                long update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
+                long   update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
                 update_counter++;
-                indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
+                string new_state;
 
-                string new_state = indv.serialize();
-
-                if (new_state.length > max_size_of_individual)
+                if (cmd == INDV_OP.REMOVE)
                 {
-                    res.result = ResultCode.Size_too_large;
-                    return res;
-                }
+                    prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
-                res.result =
-                    subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state,
-                                                  update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
-                //log.trace("res.result=%s", res.result);
+                    new_state = prev_indv.serialize();
+
+                    if (new_state.length > max_size_of_individual)
+                    {
+                        res.result = ResultCode.Size_too_large;
+                        return res;
+                    }
+
+                    res.result =
+                        subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state,
+                                                      update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
+
+                    if (res.result == ResultCode.OK)
+                    {
+                        res.result =
+                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null,
+                                                          update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
+                    }
+                }
+                else
+                {
+                    if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
+                    {
+                        //log.trace("[%s] ++ update_individual, prev_indv: %s", name, prev_indv);
+                        indv = indv_apply_cmd(cmd, &prev_indv, indv);
+                        //log.trace("[%s] ++ update_individual, final indv: %s", name, *indv);
+                    }
+
+                    indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
+
+                    new_state = indv.serialize();
+
+                    if (new_state.length > max_size_of_individual)
+                    {
+                        res.result = ResultCode.Size_too_large;
+                        return res;
+                    }
+
+                    res.result =
+                        subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state,
+                                                      update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
+                    //log.trace("res.result=%s", res.result);
+                }
 
                 if (res.result != ResultCode.OK)
                     return res;
@@ -1380,7 +1326,7 @@ class PThreadContext : Context
                           text(res.result), ticket !is null ? text(*ticket) : "null");
 
             if (trace_msg[ T_API_240 ] == 1)
-                log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
+                log.trace("[%s] update_individual [%s] = %s", name, indv.uri, res);
 
             stat(CMD_PUT, sw);
         }
@@ -1390,34 +1336,37 @@ class PThreadContext : Context
                                    bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
                                       bool is_api_request = true)
     {
-        return _remove_individual(ticket, uri, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        Individual individual;
+
+        individual.uri = uri;
+        return update_individual(INDV_OP.REMOVE, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
