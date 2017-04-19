@@ -289,7 +289,8 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
             log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
-            ResultCode res = commit(-1, &tnx, g_context);
+            tnx.id = -1;            
+            ResultCode res = commit(&tnx, g_context);
             tnx.buff  = tnx.buff.init;
 		    tnx.queue = tnx.queue.init;
             

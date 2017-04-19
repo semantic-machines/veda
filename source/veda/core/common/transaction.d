@@ -16,6 +16,7 @@ struct TransactionItem
 
 struct Transaction
 {
+	long id;
     TransactionItem *[ string ] buff;
     TransactionItem *[] queue;
 
@@ -26,7 +27,7 @@ struct Transaction
     }
 }
 
-public ResultCode commit(long transaction_id, Transaction *_tnx, Context ctx)
+public ResultCode commit(Transaction *_tnx, Context ctx)
 {
     foreach (item; _tnx.queue)
     {
@@ -43,9 +44,9 @@ public ResultCode commit(long transaction_id, Transaction *_tnx, Context ctx)
         ResultCode rc;
 
         if (item.cmd == INDV_OP.REMOVE)
-            rc = ctx.remove_individual(ticket, item.binobj, true, item.event_id, transaction_id, false).result;
+            rc = ctx.remove_individual(ticket, item.binobj, true, item.event_id, _tnx.id, false).result;
         else
-            rc = ctx.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, transaction_id, false).result;
+            rc = ctx.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, _tnx.id, false).result;
 
         if (rc == ResultCode.No_Content)
         {

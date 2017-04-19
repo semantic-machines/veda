@@ -163,8 +163,9 @@ class ScriptProcess : VedaModule
 
                     //count++;
                     script.compiled_script.run();
-
-                    ResultCode res = commit(transaction_id, &tnx, g_context);                    
+					
+					tnx.id = transaction_id;
+                    ResultCode res = commit(&tnx, g_context);                    
                     tnx.buff  = tnx.buff.init;
 				    tnx.queue = tnx.queue.init;
 
