@@ -16,9 +16,12 @@ struct TransactionItem
 
 struct Transaction
 {
-    long                        id;
+    bool                        is_autocommit = false;
     private TransactionItem *[ string ] buff;
     private TransactionItem *[] queue;
+
+    long                        id;
+    ResultCode                  rc;
 
     public void                 add(TransactionItem *ti)
     {
@@ -40,6 +43,9 @@ struct Transaction
 
 public ResultCode commit(Transaction *_tnx, Context ctx)
 {
+    Transaction normalized_tnx;
+
+    normalized_tnx.id = _tnx.id;
     foreach (item; _tnx.queue)
     {
         if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
@@ -54,7 +60,7 @@ public ResultCode commit(Transaction *_tnx, Context ctx)
 
         ResultCode rc;
 
-        rc = ctx.update_individual(ticket, item.cmd, &item.indv, true, item.event_id, _tnx.id, false, true).result;
+        rc = ctx.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.indv, true, item.event_id, false, true).result;
 
         if (rc == ResultCode.No_Content)
         {

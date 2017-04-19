@@ -13,7 +13,7 @@ private
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.common.log_msg, veda.util.module_info;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
-    import veda.core.az.acl, veda.core.search.vql;
+    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction;
     import veda.util.module_info;
     import veda.common.logger;
 
@@ -298,7 +298,8 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
-                    ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null, -1, false, op_id);
+                    ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null, -1, false,
+                                                 op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -546,7 +547,8 @@ class PThreadContext : Context
 
             long       op_id;
             ResultCode rc =
-                ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null, -1, false,
+                ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null, -1,
+                                             false,
                                              op_id);
             ticket.result = rc;
 
@@ -1101,12 +1103,11 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult update_individual(Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id, long transaction_id,
+    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
                                        bool is_api_request)
     {
-        //if (trace_msg[ T_API_230 ] == 1)
-        //log.trace("[%s] update_individual: %s %s", name, text(cmd), *indv);
+        //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
         StopWatch sw; sw.start;
 
@@ -1127,7 +1128,7 @@ class PThreadContext : Context
 
             version (isModule)
             {
-                //log.trace("[%s] update_individual: isModule", name);
+                //log.trace("[%s] add_to_transaction: isModule", name);
 
                 string scmd;
 
@@ -1146,17 +1147,17 @@ class PThreadContext : Context
                 req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ]         = transaction_id;
+                req_body[ "tnx_id" ]         = tnx.id;
 
-                //log.trace("[%s] update_individual: (isModule), req=(%s)", name, req_body.toString());
+                //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
                 res = reqrep_2_main_module(req_body)[ 0 ];
-                //log.trace("[%s] update_individual: (isModule), rep=(%s)", name, res);
+                //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
             version (isServer)
             {
-                //log.trace("[%s] update_individual: (isServer)", name);
+                //log.trace("[%s] add_to_transaction: (isServer)", name);
                 Tid       tid_subject_manager;
                 Tid       tid_acl;
 
@@ -1180,11 +1181,11 @@ class PThreadContext : Context
 
                     if ((prev_state is null ||
                          prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                        log.trace("ERR! update_individual, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+                        log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
                 }
                 catch (Exception ex)
                 {
-                    log.trace("ERR! update_individual: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
+                    log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                     return res;
                 }
 
@@ -1194,7 +1195,7 @@ class PThreadContext : Context
                     int code = prev_indv.deserialize(prev_state);
                     if (code < 0)
                     {
-                        log.trace("ERR! update_individual: invalid prev_state [%s]", prev_state);
+                        log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
                         res.result = ResultCode.Unprocessable_Entity;
                         return res;
                     }
@@ -1253,24 +1254,31 @@ class PThreadContext : Context
                         return res;
                     }
 
-                    res.result =
-                        subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state,
-                                                      update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
-
-                    if (res.result == ResultCode.OK)
+                    if (tnx.is_autocommit)
                     {
                         res.result =
-                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null,
-                                                          update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
+                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri,
+                                                          prev_state, new_state,
+                                                          update_counter, event_id, tnx.id, ignore_freeze,
+                                                          res.op_id);
+
+                        if (res.result == ResultCode.OK)
+                        {
+                            res.result =
+                                subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.REMOVE, ticket.user_uri, indv.uri,
+                                                              prev_state, null,
+                                                              update_counter, event_id, tnx.id, ignore_freeze,
+                                                              res.op_id);
+                        }
                     }
                 }
                 else
                 {
                     if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
                     {
-                        //log.trace("[%s] ++ update_individual, prev_indv: %s", name, prev_indv);
+                        //log.trace("[%s] ++ add_to_transaction, prev_indv: %s", name, prev_indv);
                         indv = indv_apply_cmd(cmd, &prev_indv, indv);
-                        //log.trace("[%s] ++ update_individual, final indv: %s", name, *indv);
+                        //log.trace("[%s] ++ add_to_transaction, final indv: %s", name, *indv);
                     }
 
                     indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
@@ -1283,9 +1291,14 @@ class PThreadContext : Context
                         return res;
                     }
 
-                    res.result =
-                        subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state,
-                                                      update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
+                    if (tnx.is_autocommit)
+                    {
+                        res.result =
+                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri,
+                                                          prev_state, new_state,
+                                                          update_counter, event_id, tnx.id, ignore_freeze,
+                                                          res.op_id);
+                    }
                     //log.trace("res.result=%s", res.result);
                 }
 
@@ -1326,7 +1339,7 @@ class PThreadContext : Context
                           text(res.result), ticket !is null ? text(*ticket) : "null");
 
             if (trace_msg[ T_API_240 ] == 1)
-                log.trace("[%s] update_individual [%s] = %s", name, indv.uri, res);
+                log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);
 
             stat(CMD_PUT, sw);
         }
@@ -1336,7 +1349,10 @@ class PThreadContext : Context
                                    bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
@@ -1345,28 +1361,40 @@ class PThreadContext : Context
         Individual individual;
 
         individual.uri = uri;
-        return update_individual(ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1716,7 +1744,9 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       = this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false, true);
+                            OpResult   ires       =
+                                this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
+                                                    true);
                             rc ~= ires;
                             if (transaction_id <= 0)
                                 transaction_id = ires.op_id;
@@ -1729,7 +1759,9 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       = this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false, true);
+                            OpResult   ires       =
+                                this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
+                                                       true);
                             rc ~= ires;
                             if (transaction_id <= 0)
                                 transaction_id = ires.op_id;
@@ -1742,7 +1774,9 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       = this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false, true);
+                            OpResult   ires       =
+                                this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
+                                                       true);
                             rc ~= ires;
                             if (transaction_id <= 0)
                                 transaction_id = ires.op_id;
@@ -1755,8 +1789,9 @@ class PThreadContext : Context
                         foreach (individual_json; individuals_json)
                         {
                             Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       = this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                                                                true);
+                            OpResult   ires       =
+                                this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
+                                                            true);
                             rc ~= ires;
                             if (transaction_id <= 0)
                                 transaction_id = ires.op_id;
