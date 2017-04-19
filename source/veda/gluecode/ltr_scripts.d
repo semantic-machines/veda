@@ -12,7 +12,7 @@ private
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-    import veda.vmodule.vmodule;
+    import veda.vmodule.vmodule, veda.core.common.transaction;
     import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
@@ -99,7 +99,6 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", individuals_db_path, log, parent_url);
-
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
@@ -287,19 +286,21 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     {
         try
         {
-            //if (trace_msg[ 300 ] == 1)
-            //log.trace("start exec ltr-script : %s %s", script.id, uri);
+            log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
-            ResultCode res = commit(-1);
+            tnx.id = -1;            
+            ResultCode res = commit(&tnx, g_context);
+            tnx.buff  = tnx.buff.init;
+		    tnx.queue = tnx.queue.init;
+            
             if (res != ResultCode.OK)
             {
                 log.trace("fail exec event script : %s", script.id);
                 return res;
             }
 
-            //if (trace_msg[ 300 ] == 1)
-            //log.trace("end exec ltr-script : %s", script.id);
+            log.trace("end exec ltr-script : %s", script.id);
         }
         catch (Exception ex)
         {
