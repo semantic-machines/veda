@@ -143,7 +143,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
         {
             Individual      prev_indv;
 
-            TransactionItem *ti1 = tnx.buff.get(ti.indv.uri, null);
+            TransactionItem *ti1 = tnx.get(ti.indv.uri);
             if (ti1 !is null && ti1.binobj.length > 0)
             {
                 prev_indv = ti1.indv;
@@ -463,7 +463,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else
         {
-            TransactionItem *ti = tnx.buff.get(uri, null);
+            TransactionItem *ti = tnx.get(uri);
             if (ti !is null && ti.binobj.length > 0)
             {
                 tmp_individual.data   = cast(char *)ti.binobj;

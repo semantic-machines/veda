@@ -16,14 +16,25 @@ struct TransactionItem
 
 struct Transaction
 {
-	long id;
-    TransactionItem *[ string ] buff;
-    TransactionItem *[] queue;
+    long                        id;
+    private TransactionItem *[ string ] buff;
+    private TransactionItem *[] queue;
 
-    public void         add(TransactionItem *ti)
+    public void                 add(TransactionItem *ti)
     {
         buff[ ti.indv.uri ] = ti;
         queue ~= ti;
+    }
+
+    public void reset()
+    {
+        buff  = buff.init;
+        queue = queue.init;
+    }
+
+    public TransactionItem *get(string uri)
+    {
+        return buff.get(uri, null);
     }
 }
 

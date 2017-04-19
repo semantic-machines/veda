@@ -51,7 +51,7 @@ class ScriptProcess : VedaModule
 
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, 
+                                string event_id, long transaction_id,
                                 long op_id)
     {
         if (script_vm is null)
@@ -163,11 +163,10 @@ class ScriptProcess : VedaModule
 
                     //count++;
                     script.compiled_script.run();
-					
-					tnx.id = transaction_id;
-                    ResultCode res = commit(&tnx, g_context);                    
-                    tnx.buff  = tnx.buff.init;
-				    tnx.queue = tnx.queue.init;
+
+                    tnx.id = transaction_id;
+                    ResultCode res = commit(&tnx, g_context);
+                    tnx.reset();
 
                     if (res != ResultCode.OK)
                     {
