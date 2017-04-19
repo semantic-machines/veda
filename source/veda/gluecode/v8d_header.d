@@ -123,6 +123,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 
     if (ti.cmd == INDV_OP.REMOVE)
     {
+    	ti.indv.uri = _binobj;
         ti.rc = ResultCode.OK;
     }
     else

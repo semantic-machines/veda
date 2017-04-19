@@ -54,10 +54,7 @@ public ResultCode commit(Transaction *_tnx, Context ctx)
 
         ResultCode rc;
 
-        if (item.cmd == INDV_OP.REMOVE)
-            rc = ctx.remove_individual(ticket, item.binobj, true, item.event_id, _tnx.id, false).result;
-        else
-            rc = ctx.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, _tnx.id, false).result;
+        rc = ctx.update_individual(ticket, item.cmd, &item.indv, true, item.event_id, _tnx.id, false, true).result;
 
         if (rc == ResultCode.No_Content)
         {

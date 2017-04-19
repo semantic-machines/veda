@@ -1101,7 +1101,7 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult update_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, long transaction_id,
+    public OpResult update_individual(Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id, long transaction_id,
                                        bool ignore_freeze,
                                        bool is_api_request)
     {
@@ -1336,7 +1336,7 @@ class PThreadContext : Context
                                    bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
@@ -1345,28 +1345,28 @@ class PThreadContext : Context
         Individual individual;
 
         individual.uri = uri;
-        return update_individual(INDV_OP.REMOVE, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return update_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
+        return update_individual(ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)

@@ -270,6 +270,10 @@ interface Context
         public string execute(string in_msg);
     }
 
+    public OpResult update_individual(Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id, long transaction_id,
+                                       bool ignore_freeze,
+                                       bool is_api_request);
+
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
 
 
