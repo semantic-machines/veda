@@ -298,9 +298,7 @@ class PThreadContext : Context
                     ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
                     long op_id;
-                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, -1,
-                                              false,
-                                              op_id);
+                    ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null, -1, false, op_id);
                     log.trace("systicket [%s] was created", ticket.id);
 
                     Individual sys_account_permission;
@@ -548,8 +546,8 @@ class PThreadContext : Context
 
             long       op_id;
             ResultCode rc =
-                ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, -1, false,
-                                          op_id);
+                ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null, -1, false,
+                                             op_id);
             ticket.result = rc;
 
             if (rc == ResultCode.OK)
@@ -1095,7 +1093,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, long transaction_id, bool ignore_freeze)
+    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, long transaction_id, bool ignore_freeze, bool is_api_request)
     {
         OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
@@ -1145,7 +1143,9 @@ class PThreadContext : Context
                 }
                 else
                 {
-                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, transaction_id, ignore_freeze, res.op_id);
+                    //res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, transaction_id, ignore_freeze, res.op_id);
+                    res.result = subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.REMOVE, ticket.user_uri, uri, null, null,
+                                                               0, event_id, transaction_id, ignore_freeze, res.op_id);
                 }
 
                 if (res.result == ResultCode.OK)
@@ -1183,7 +1183,7 @@ class PThreadContext : Context
         }
     }
 
-    private OpResult store_individual(INDV_OP cmd, Ticket* ticket, Individual* indv, bool prepare_events, string event_id, long transaction_id,
+    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, long transaction_id,
                                       bool ignore_freeze,
                                       bool is_api_request)
     {
@@ -1339,8 +1339,8 @@ class PThreadContext : Context
                 }
 
                 res.result =
-                    subject_storage_module.put(P_MODULE.subject_manager, is_api_request, ticket.user_uri, _types, indv.uri, prev_state, new_state,
-                                               update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
+                    subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state,
+                                                  update_counter, event_id, transaction_id, ignore_freeze, res.op_id);
                 //log.trace("res.result=%s", res.result);
 
                 if (res.result != ResultCode.OK)
@@ -1396,7 +1396,7 @@ class PThreadContext : Context
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
                                       bool is_api_request = true)
     {
-        return _remove_individual(ticket, uri, prepareEvents, event_id, transaction_id, ignore_freeze);
+        return _remove_individual(ticket, uri, prepareEvents, event_id, transaction_id, ignore_freeze, is_api_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
