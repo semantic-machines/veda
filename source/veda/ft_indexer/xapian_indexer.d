@@ -191,7 +191,7 @@ public class IndexerContext
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
 
-        if (is_deleted == false && indv.isExists(veda_schema__deleted, true) == true)
+        if (is_deleted == false && indv.exists(veda_schema__deleted, true) == true)
             is_deleted = true;
 
         try

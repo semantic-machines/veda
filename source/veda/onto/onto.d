@@ -201,7 +201,7 @@ class Onto
         bool   is_class = false;
         bool   is_prop  = false;
 
-        bool   is_deleted = indv.isExists("v-s:deleted", true);
+        bool   is_deleted = indv.exists("v-s:deleted", true);
 
         if (is_deleted)
         {

@@ -90,6 +90,13 @@ v-s:hasLetterRegistrationRecordRecipient
   rdfs:label "Регистрационная запись получателя"@ru ;
   rdfs:label "Registration record recipient"@en ;
 .
+v-s:hasRelatedLetter
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:Letter ;
+  rdfs:label "Связанные письма"@ru ;
+  rdfs:label "Related letter"@en ;
+.
 
 # rdfs:label
 # v-s:hasRegistrationRecord
