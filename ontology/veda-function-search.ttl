@@ -636,7 +636,7 @@ v-fs:AttributiveRequestModel
         self.form["rdf:type"] = values;
         for (var property_uri in self.properties) {
           if ( stopList.indexOf(property_uri) >= 0 ) { continue; }
-          self.form[property_uri] = self[property_uri];
+          self.form.set(property_uri, self.get(property_uri));
         }
         self.form.on("propertyModified", handler);
         q = mkQuery(self.form);
@@ -653,7 +653,7 @@ v-fs:AttributiveRequestModel
 
   function handler(property_uri, values) {
     if ( stopList.indexOf(property_uri) < 0 ) {
-      self[property_uri] = values;
+      self.set(property_uri, values);
     }
     q = mkQuery(self.form);
   }
@@ -1290,7 +1290,7 @@ v-fs:AttributiveSearchTemplate
       if (property_uri === "@" || property_uri === "rdf:type") {
         return;
       }
-      obj[property_uri] = [];
+      obj.set(property_uri, []);
     });
   });
 
