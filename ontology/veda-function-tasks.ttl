@@ -5,6 +5,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
@@ -330,14 +331,24 @@ v-ft:FunctionTasksModel
   rdfs:label "Шаблон для класса v-ft:FunctionTasks"@ru ;
   v-ui:forClass v-ft:FunctionTasks ;
   v-s:script """
-  var self = this;
-  var q = self["v-ft:query"][0].replace("$1", veda.appointment ? veda.appointment.id : veda.user.id).replace("$2", veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id);
-  self["v-ft:query"] = [q];
+  var q = format (
+    this["v-ft:query"][0],
+    veda.appointment ? veda.appointment.id : veda.user.id,
+    veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id
+  );
+  this["v-ft:query"] = [q];
   var tasks = new veda.IndividualModel();
   tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-  tasks["v-fs:fulltextQuery"] = self["v-ft:query"].slice(0);
-  tasks["v-fs:sortOrder"] = self["v-ft:sortOrder"].slice(0);
-  self.tasks = tasks;
+  tasks["v-fs:fulltextQuery"] = this["v-ft:query"].slice(0);
+  tasks["v-fs:sortOrder"] = this["v-ft:sortOrder"].slice(0);
+  this.tasks = tasks;
+
+  function format(str) {
+    var args = arguments;
+    return str.replace(/{([0-9]+)}/gi, function (match, position) {
+      return typeof args[position] !== "undefined" ? args[position] : match ;
+    });
+  }
   //# sourceURL=v-ft:FunctionTasksModel
   """
 .
@@ -345,21 +356,21 @@ v-ft:Inbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:to' == '$1' || 'v-wf:to' == '$2'))"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Outbox
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && ('v-wf:from' == '$1' || 'v-wf:from' == '$2'))"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:from' == '{1}' || 'v-wf:from' == '{2}')" ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:Completed
   rdf:type v-ft:FunctionTasks ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && ('v-wf:to' == '$1' || 'v-wf:to' == '$2'))"^^xsd:string ;
+  v-ft:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
   v-ft:sortOrder "'v-s:created' desc"^^xsd:string ;
 .
 v-ft:TasksNotFound
@@ -576,4 +587,197 @@ v-ft:FunctionTasksIndicatorTemplate
   <span class="fa fa-envelope-o fa-lg"></span> <span id="counter" class="label label-danger" property="v-ft:inboxCount">0</span>
 </a>
   """ ;
+.
+
+########## STANDARD ATTRIBUTIVE SEARCH IMPELMENTATION ###########
+
+v-ft:PSfrom_to_DecisionForm
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойств v-wf:to v-wf:from для класса v-wf:DecisionForm"@ru ;
+  rdfs:label "v-wf:to v-wf:from properties specification for v-wf:DecisionForm class"@en ;
+  v-ui:forClass v-wf:DecisionForm ;
+  v-ui:forProperty v-wf:to ;
+  v-ui:forProperty v-wf:from ;
+  v-ui:rangeRestriction v-s:Position ;
+  v-ui:maxCardinality 1 ;
+.
+
+v-ft:Inbox2
+  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-ft:FunctionTasks2 ;
+  rdfs:label "Inbox"@en ;
+  rdfs:label "Входящие"@ru ;
+  v-fs:searchBlank v-ft:InboxBlank ;
+  v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
+  v-fs:sortOrder "'v-s:created' desc" ;
+  v-fs:searchOnLoad true ;
+.
+v-ft:InboxBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк входящих задач"@ru ;
+  rdfs:label "Blank inbox task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted false ;
+.
+
+v-ft:Outbox2
+  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-ft:FunctionTasks2 ;
+  rdfs:label "Outbox"@en ;
+  rdfs:label "Исходящие"@ru ;
+  v-fs:searchBlank v-ft:OutboxBlank ;
+  v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:from' == '{1}' || 'v-wf:from' == '{2}')" ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-fs:searchOnLoad true ;
+.
+v-ft:OutboxBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк исходящих задач"@ru ;
+  rdfs:label "Blank outbox task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted false ;
+.
+
+v-ft:Completed2
+  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-ft:FunctionTasks2 ;
+  rdfs:label "Completed"@en ;
+  rdfs:label "Выполненные"@ru ;
+  v-fs:searchBlank v-ft:CompletedBlank ;
+  v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-fs:searchOnLoad true ;
+.
+v-ft:CompletedBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк выполненных задач"@ru ;
+  rdfs:label "Blank completed task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted true ;
+.
+
+v-ft:TaskBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка задачи"@ru ;
+  rdfs:label "Task blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <div class="col-md-2">
+    <em about="v-wf:from" property="rdfs:label"></em>
+    <veda-control rel="v-wf:from" data-type="link" class="fulltext"></veda-control>
+    <div rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
+  </div>
+  <div class="col-md-2">
+    <em about="v-wf:to" property="rdfs:label"></em>
+    <veda-control rel="v-wf:to" data-type="link" class="fulltext"></veda-control>
+    <div rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:description" property="rdfs:label"></em>
+    <veda-control property="rdfs:label" data-type="string"></veda-control>
+  </div>
+  <div class="col-md-3">
+    <em about="v-wf:onDocument" property="rdfs:label"></em>
+    <veda-control rel="v-wf:onDocument" data-type="link" class="fulltext"></veda-control>
+    <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate"></div>
+  </div>
+  <div class="col-md-2">
+    <em about="v-wf:dateGiven" property="rdfs:label"></em>
+    <veda-control property="v-wf:dateGiven" data-type="dateTime"></veda-control>
+    <div property="v-wf:dateGiven"></div>
+  </div>
+</div>
+  """ ;
+.
+
+v-ft:TaskResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "V-ft:FunctionInbox class template"@en ;
+  rdfs:label "Шаблон для класса v-ft:FunctionInbox"@ru ;
+  v-ui:template """
+<table class="table table-condensed table-bordered table-striped">
+  <thead>
+    <tr>
+      <th width="20px">#</th>
+      <th width="20px"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:from"><span about="v-wf:from" property="rdfs:label"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:to"><span about="v-wf:to" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-wf:onDocument"><span about="v-wf:onDocument" property="rdfs:label"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
+      <td><a href="#/@" property="rdfs:label"></a></td>
+      <td rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
+      <td property="v-wf:dateGiven"></td>
+    </tr>
+    <script>
+      if ( !individual.hasValue("v-wf:read") || individual["v-wf:read"][0] !== true) {
+        template.css("font-weight", "bold");
+      }
+      individual.on("individual:propertyModified", handler);
+      template.one("remove", function () {
+        individual.off("individual:propertyModified", handler);
+      });
+      function handler (property_uri, values) {
+        if (property_uri === "v-wf:isCompleted" && values[0] === true) {
+          template.remove();
+        }
+      }
+      //# sourceURL=v-ft:TaskResultTemplate_inline
+    </script>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-ft:FunctionTasks2
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Function 'Tasks'2"@en ;
+  rdfs:label "Функция 'Задачи'2"@ru ;
+  v-ui:hasModel v-ft:FunctionTasks2Model ;
+  v-ui:hasTemplate v-ft:FunctionTasks2Template ;
+.
+v-ft:FunctionTasks2Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "v-ft:FunctionTasks2 class template"@en ;
+  rdfs:label "Шаблон для класса v-ft:FunctionTasks2"@ru ;
+  v-ui:forClass v-ft:FunctionTasks2 ;
+  v-ui:template """
+<div class="hidden"></div>
+  """
+.
+v-ft:FunctionTasks2Model
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "v-ft:FunctionTasks2 class model"@en ;
+  rdfs:label "Модель для класса v-ft:FunctionTasks2"@ru ;
+  v-ui:forClass v-ft:FunctionTasks2 ;
+  v-s:script """
+  var q = format (
+    this["v-fs:fulltextQuery"][0],
+    veda.appointment ? veda.appointment.id : veda.user.id,
+    veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id
+  );
+  this["v-fs:fulltextQuery"] = [q];
+  function format(str) {
+    var args = arguments;
+    return str.replace(/{([0-9]+)}/gi, function (match, position) {
+      return typeof args[position] !== "undefined" ? args[position] : match ;
+    });
+  }
+  //# sourceURL=v-ft:FunctionTasks2Model
+  """
 .
