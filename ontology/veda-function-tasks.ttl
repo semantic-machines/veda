@@ -667,30 +667,52 @@ v-ft:TaskBlankTemplate
   rdfs:label "Шаблон бланка задачи"@ru ;
   rdfs:label "Task blank template"@en ;
   v-ui:template """
-<div class="row">
-  <div class="col-md-2">
-    <em about="v-wf:from" property="rdfs:label"></em>
-    <veda-control rel="v-wf:from" data-type="link" class="fulltext"></veda-control>
-    <div rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
-  </div>
-  <div class="col-md-2">
-    <em about="v-wf:to" property="rdfs:label"></em>
-    <veda-control rel="v-wf:to" data-type="link" class="fulltext"></veda-control>
-    <div rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
-  </div>
-  <div class="col-md-3">
-    <em about="v-s:description" property="rdfs:label"></em>
-    <veda-control property="rdfs:label" data-type="string"></veda-control>
-  </div>
-  <div class="col-md-3">
-    <em about="v-wf:onDocument" property="rdfs:label"></em>
-    <veda-control rel="v-wf:onDocument" data-type="link" class="fulltext"></veda-control>
-    <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate"></div>
-  </div>
-  <div class="col-md-2">
-    <em about="v-wf:dateGiven" property="rdfs:label"></em>
-    <veda-control property="v-wf:dateGiven" data-type="dateTime"></veda-control>
-    <div property="v-wf:dateGiven"></div>
+<script>
+  var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+  $("#folder", template).attr("about", folder);
+  $("#box-tabs", template)
+    .find("a")
+    .filter(function () { return this.hash.substr(2) === folder; })
+    .parent()
+    .addClass("active");
+  //# sourceURL=v-ft:TaskBlankTemplate_pre
+
+  // fulltext query example = "'rdf:type' === 'v-wf:DecisionForm' && ('rdfs:label' == '1111' || 'v-wf:from.rdfs:label' == '1111' || 'v-wf:to.rdfs:label' == '1111' || 'v-wf:onDocument.rdfs:label' == '1111')"
+</script>
+<div>
+  <br>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
+    <!--li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li-->
+    <li role="presentation"><a href="#/v-ft:Completed2" about="v-ft:Completed" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Outbox2" about="v-ft:Outbox" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Inbox2" about="v-ft:Inbox" property="rdfs:label"></a></li>
+  </ul>
+  <div class="row">
+    <div class="col-md-2">
+      <em about="v-wf:from" property="rdfs:label"></em>
+      <veda-control rel="v-wf:from" data-type="link" class="fulltext"></veda-control>
+      <div rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
+    </div>
+    <div class="col-md-2">
+      <em about="v-wf:to" property="rdfs:label"></em>
+      <veda-control rel="v-wf:to" data-type="link" class="fulltext"></veda-control>
+      <div rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
+    </div>
+    <div class="col-md-3">
+      <em about="v-s:description" property="rdfs:label"></em>
+      <veda-control property="rdfs:label" data-type="string"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-wf:onDocument" property="rdfs:label"></em>
+      <veda-control rel="v-wf:onDocument" data-type="link" class="fulltext"></veda-control>
+      <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate"></div>
+    </div>
+    <div class="col-md-2">
+      <em about="v-wf:dateGiven" property="rdfs:label"></em>
+      <veda-control property="v-wf:dateGiven" data-type="dateTime"></veda-control>
+      <div property="v-wf:dateGiven"></div>
+    </div>
   </div>
 </div>
   """ ;
