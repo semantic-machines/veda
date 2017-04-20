@@ -303,7 +303,8 @@ class Onto
         foreach (elementz; list)
         {
             superelementes[ elementz.uri ] = true;
-            prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
+            if (elementz.uri != look_cl)
+	            prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
         }
     }
 }

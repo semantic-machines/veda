@@ -52,20 +52,6 @@ struct TransactionItem
 TransactionItem *[ string ] transaction_buff;
 TransactionItem *[] transaction_queue;
 
-
-string begin_transaction(P_MODULE storage_id)
-{
-    return "";
-}
-
-void commit_transaction(P_MODULE storage_id, string transaction_id)
-{
-}
-
-void abort_transaction(P_MODULE storage_id, string transaction_id)
-{
-}
-
 public void freeze(P_MODULE storage_id)
 {
     writeln("FREEZE");
@@ -173,17 +159,17 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode put(P_MODULE storage_id, bool need_auth, string user_uri, Resources type, string indv_uri, string prev_state, string new_state, long update_counter,
-                      string event_id,
-                      bool ignore_freeze,
-                      out long op_id)
+public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, string user_uri, string indv_uri, string prev_state, string new_state,
+                         long update_counter,
+                         string event_id, long transaction_id, bool ignore_freeze,
+                         out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, INDV_OP.PUT, need_auth, user_uri, indv_uri, prev_state, new_state, update_counter, event_id, ignore_freeze, thisTid);
+        send(tid, cmd, need_auth, user_uri, indv_uri, prev_state, new_state, update_counter, event_id, transaction_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -195,27 +181,6 @@ public ResultCode put(P_MODULE storage_id, bool need_auth, string user_uri, Reso
     }
     return rc;
 }
-
-public ResultCode remove(P_MODULE storage_id, bool need_auth, string user_uri, string uri, bool ignore_freeze, out long op_id)
-{
-    ResultCode rc;
-    Tid        tid = getTid(storage_id);
-
-    if (tid != Tid.init)
-    {
-        send(tid, INDV_OP.REMOVE, uri, ignore_freeze, thisTid);
-
-        receive((ResultCode _rc, Tid from)
-                {
-                    if (from == getTid(storage_id))
-                        rc = _rc;
-                    op_id = get_subject_manager_op_id();
-                    return true;
-                });
-    }
-    return rc;
-}
-
 
 public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
 {
@@ -394,36 +359,9 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (INDV_OP cmd, string uri, bool ignore_freeze, Tid tid_response_reciever)
-                        {
-                            ResultCode rc = ResultCode.Not_Ready;
-
-                            if (!ignore_freeze && is_freeze && cmd == INDV_OP.REMOVE)
-                                send(tid_response_reciever, rc, thisTid);
-
-                            try
-                            {
-                                if (cmd == INDV_OP.REMOVE)
-                                {
-                                    if (storage.remove(false, null, uri) == ResultCode.OK)
-                                        rc = ResultCode.OK;
-                                    else
-                                        rc = ResultCode.Fail_Store;
-
-                                    send(tid_response_reciever, rc, thisTid);
-
-                                    return;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                send(tid_response_reciever, ResultCode.Fail_Commit, thisTid);
-                                return;
-                            }
-                        },
-                        (INDV_OP cmd, bool need_auth, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter, string event_id,
-                         bool ignore_freeze,
-                         Tid tid_response_reciever)
+                        (INDV_OP cmd, bool need_auth, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter,
+                         string event_id,
+                         long transaction_id, bool ignore_freeze, Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.Not_Ready;
 
@@ -432,7 +370,18 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                             try
                             {
-                                if (cmd == INDV_OP.PUT)
+                                if (cmd == INDV_OP.REMOVE)
+                                {
+                                    if (storage.remove(false, null, indv_uri) == ResultCode.OK)
+                                        rc = ResultCode.OK;
+                                    else
+                                        rc = ResultCode.Fail_Store;
+
+                                    send(tid_response_reciever, rc, thisTid);
+
+                                    return;
+                                }
+                                else if (cmd == INDV_OP.PUT)
                                 {
                                     string new_hash;
                                     //log.trace ("storage_manager:PUT %s", indv_uri);
@@ -470,11 +419,16 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             if (prev_state !is null && prev_state.length > 0)
                                                 imm.addResource("prev_state", Resource(DataType.String, prev_state));
-                                            else    
-	                                            uris_queue.push(indv_uri);
+                                            else
+                                                uris_queue.push(indv_uri);
 
                                             if (event_id !is null && event_id.length > 0)
                                                 imm.addResource("event_id", Resource(DataType.String, event_id));
+
+                                            if (transaction_id <= 0)
+                                                transaction_id = op_id;
+
+                                            imm.addResource("tnx_id", Resource(transaction_id));
 
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(update_counter));
@@ -490,13 +444,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);
 //                                          log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_channel_url);
-
-                                            //Tid tid_ccus_channel = getTid(P_MODULE.ccus_channel);
-                                            //if (tid_ccus_channel !is Tid.init)
-                                            //{
-                                            //    //log.trace("SEND SIGNAL TO CCUS %s", msg_to_modules);
-                                            //    send(tid_ccus_channel, msg_to_modules);
-                                            //}
                                         }
                                     }
 

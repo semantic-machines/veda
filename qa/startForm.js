@@ -19,6 +19,7 @@ module.exports = {
         basic.isEnabled(driver, '#save', basic.FAST_OPERATION);
         basic.execute(driver, 'click', '#save', "Cannot click on save button");
         //Смотрим на процесс
+        driver.sleep(basic.FAST_OPERATION * 2);
         driver.executeScript("location.reload();");
         driver.wait
         (

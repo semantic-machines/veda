@@ -3,10 +3,10 @@
  */
 module veda.gluecode.scripts;
 
-private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread;
+private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
-private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto, veda.core.common.transaction;
 private import veda.vmodule.vmodule, veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 
 class ScriptProcess : VedaModule
@@ -51,7 +51,7 @@ class ScriptProcess : VedaModule
 
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id,
+                                string event_id, long transaction_id,
                                 long op_id)
     {
         if (script_vm is null)
@@ -110,14 +110,11 @@ class ScriptProcess : VedaModule
         g_ticket.data   = cast(char *)sticket;
         g_ticket.length = cast(int)sticket.length;
 
-        //writeln ("@S1 sticket=", sticket);
-
         set_g_super_classes(indv_types, context.get_onto());
 
         //log.trace("-------------------");
         //log.trace ("indv=%s, indv_types=%s", individual_id, indv_types);
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
-
 
         foreach (_script_id; event_scripts_order)
         {
@@ -162,24 +159,22 @@ class ScriptProcess : VedaModule
                                     if (count_sckip > 0)
                                         count_sckip--;
  */
-                    //if (trace_msg[ 300 ] == 1)
-                    log.trace("start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
+                    log.trace("start: %s %s %d %s tnx=%d", script_id, individual_id, op_id, event_id, transaction_id);
 
                     //count++;
                     script.compiled_script.run();
 
-                    ResultCode res = commit();
+                    tnx.id = transaction_id;
+                    ResultCode res = commit(&tnx, g_context);
+                    tnx.reset();
+
                     if (res != ResultCode.OK)
                     {
                         log.trace("fail exec event script : %s", script_id);
                         return res;
                     }
 
-                    //if (trace_msg[ 300 ] == 1)
-                    log.trace("end exec event script : %s", script_id);
-
-
-                    //*(cast(char*)script_vm) = 0;
+                    log.trace("end: %s", script_id);
                 }
                 catch (Exception ex)
                 {

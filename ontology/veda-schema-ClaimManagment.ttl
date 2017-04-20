@@ -55,10 +55,17 @@ v-s:claimVolume
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Claim ;
 .
+v-s:requirementSum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Requirement sum"@en ;
+  rdfs:label "Требуемая сумма"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Claim ;
+.
 v-s:compensationSum
   rdf:type owl:ObjectProperty ;
   rdfs:label "Compaensation sum"@en ;
-  rdfs:label "Сумма к возмещению"@ru ;
+  rdfs:label "Возмещенная сумма"@ru ;
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Claim ;
 .

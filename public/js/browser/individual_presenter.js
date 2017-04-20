@@ -163,36 +163,32 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("cancel", cancelHandler);
 
     // Deleted alert
-    var deletedAlert;
-    if ( individual.hasValue("v-s:deleted", true) ) {
-      afterDeleteHandler();
-    }
-    function afterRecoverHandler() {
-      if ( container.prop("id") === "main" ) {
-        deletedAlert.remove();
-      }
-      template.removeClass("deleted");
-    }
-    function afterDeleteHandler() {
-      template.addClass("deleted");
-      if ( container.prop("id") === "main" ) {
-        deletedAlert = $(
-          '<div class="alert alert-warning no-margin" role="alert">\
-            <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>\
-          </div>'
-        );
-        template.prepend(deletedAlert);
-        $("button", deletedAlert).click(function () {
-          template.trigger("recover");
-        });
+    function deletedHandler () {
+      if ( this.hasValue("v-s:deleted", true) ) {
+        template.addClass("deleted");
+        if ( container.prop("id") === "main" ) {
+          var deletedAlert = $(
+            '<div id="deleted-alert" class="alert alert-warning no-margin" role="alert">\
+              <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>\
+            </div>'
+          );
+          template.prepend(deletedAlert);
+          $("button", deletedAlert).click(function () {
+            template.trigger("recover");
+          });
+        }
+      } else {
+        template.removeClass("deleted");
+        if ( container.prop("id") === "main" ) {
+          $("#deleted-alert", template).remove();
+        }
       }
     }
-    individual.on("afterRecover", afterRecoverHandler);
-    individual.on("afterDelete", afterDeleteHandler);
+    individual.on("v-s:deleted", deletedHandler);
     template.one("remove", function () {
-      individual.off("afterRecover", afterRecoverHandler);
-      individual.off("afterDelete", afterDeleteHandler);
+      individual.off("v-s:deleted", deletedHandler);
     });
+    deletedHandler.call(individual);
 
     function deleteHandler (e, parent) {
       if (parent !== individual.id) {
@@ -304,7 +300,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           $cancel.text(Cancel);
         }
       } else {
-        if (mode === "edit") {
+        if ( mode === "edit" && individual.is("v-s:UserThing") ) {
           individual.draft();
         }
       }

@@ -191,8 +191,7 @@ class VedaModule
 
     // if return [false] then, no commit prepared message, and repeate
     abstract ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id,
-                                long op_id);
+                                string event_id, long transaction_id, long op_id);
 
     abstract bool configure();
     abstract bool close();
@@ -316,6 +315,7 @@ class VedaModule
             {
                 if (prepareall_cs !is null)
                 {
+                	// prepareall_cs, обход по очереди всех индивидов 
                     data = prepareall_cs.pop();
                     if (data is null)
                     {
@@ -336,7 +336,7 @@ class VedaModule
 
                         try
                         {
-                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1);
+                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1);
                         }
                         catch (Throwable tr)
                         {
@@ -368,6 +368,7 @@ class VedaModule
             string  prev_bin = imm.getFirstLiteral("prev_state");
             string  user_uri = imm.getFirstLiteral("user_uri");
             string  event_id = imm.getFirstLiteral("event_id");
+            long  transaction_id = imm.getFirstInteger("tnx_id");
             INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
             op_id = imm.getFirstInteger("op_id");
 
@@ -398,7 +399,7 @@ class VedaModule
 
             try
             {
-                ResultCode res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, op_id);
+                ResultCode res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id);
 
                 if (res == ResultCode.OK)
                 {
