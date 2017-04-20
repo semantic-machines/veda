@@ -179,8 +179,8 @@ this._init = function () {
   self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
   Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( self.hasValue(property_uri) && self[property_uri][0] instanceof veda.IndividualModel && self[property_uri][0].is("v-fc:Blank") ) {
-      self.object[property_uri] = self[property_uri].map(function (item) {
+    if ( self.hasValue(property_uri) && self.get(property_uri)[0] instanceof veda.IndividualModel && self.get(property_uri)[0].is("v-fc:Blank") ) {
+      self.object.set(property_uri, self.get(property_uri).map(function (item) {
         // Embedded blanks are for v-s:Embedded objects only
         // Prevent mutual v-s:parent links
         item._init();
@@ -188,9 +188,9 @@ this._init = function () {
           item.object["v-s:parent"] = [ self.object ];
         }
         return item.object;
-      });
+      }));
     } else {
-      self.object[property_uri] = self[property_uri].slice(0);
+      self.object.set(property_uri, self.get(property_uri).slice(0));
     }
   });
 }
@@ -201,8 +201,8 @@ self.on("beforeSave", updateBlank);
 function updateBlank() {
   Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( self.object.hasValue(property_uri) && self.object[property_uri][0] instanceof veda.IndividualModel && self.object[property_uri][0].is("v-s:Embedded")) {
-      self[property_uri] = self.object[property_uri].map(function (item) {
+    if ( self.object.hasValue(property_uri) && self.object.get(property_uri)[0] instanceof veda.IndividualModel && self.object.get(property_uri)[0].is("v-s:Embedded")) {
+      self.set(property_uri, self.object.get(property_uri).map(function (item) {
         var blank = item.clone();
         var types = blank["rdf:type"];
         blank["v-fc:targetType"] = types;
@@ -210,9 +210,9 @@ function updateBlank() {
         blank["v-s:parent"] = [ self ];
         blank.save();
         return blank;
-      });
+      }));
     } else {
-      self[property_uri] = self.object[property_uri].slice(0);
+      self.set(property_uri, self.object.get(property_uri).slice(0));
     }
   });
 }
