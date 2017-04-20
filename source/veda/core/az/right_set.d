@@ -141,7 +141,7 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
                        long op_id,
                        Storage storage)
 {
-    bool     is_deleted = new_ind.isExists("v-s:deleted", true);
+    bool     is_deleted = new_ind.exists("v-s:deleted", true);
 
     ubyte    access;
     Resource canCreate = new_ind.getFirstResource("v-s:canCreate");

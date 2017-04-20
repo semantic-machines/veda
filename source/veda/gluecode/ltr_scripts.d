@@ -337,7 +337,7 @@ class ScriptProcess : VedaModule
     {
         committed_op_id = op_id;
 
-        if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
+        if (new_indv.exists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return ResultCode.OK;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)

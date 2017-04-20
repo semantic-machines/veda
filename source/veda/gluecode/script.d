@@ -25,7 +25,7 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_o
 
     try
     {
-        if (ss.isExists(veda_schema__deleted, true) || ss.isExists("v-s:disabled", true))
+        if (ss.exists(veda_schema__deleted, true) || ss.exists("v-s:disabled", true))
         {
             //writeln ("@S0 SCRIPT OFF, uri=", ss.uri);
             ScriptInfo script = scripts.get(ss.uri, ScriptInfo.init);
