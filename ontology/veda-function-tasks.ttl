@@ -20,24 +20,20 @@
 
 ########## TASKS INDEX ###########
 
-v-ft:UserTaskFormIndex
+v-ft:UserTaskFormIndex_1
   rdf:type vdi:ClassIndex ;
+  vdi:forClass v-wf:DecisionForm ;
   vdi:forProperty v-wf:to ;
   vdi:forProperty v-wf:from ;
-  vdi:inherited_index v-ft:UserTaskFormIndex_Appointment ;
-  vdi:inherited_index v-ft:UserTaskFormIndex_Position ;
+  vdi:forProperty v-wf:onDocument ;
+  vdi:inherited_index v-ft:UserTaskFormIndex_1_1 ;
 .
-v-ft:UserTaskFormIndex_Appointment
+v-ft:UserTaskFormIndex_1_1
   rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Appointment ;
   vdi:indexed_field rdf:type ;
+  vdi:indexed_field rdfs:label ;
   vdi:indexed_field v-s:occupation ;
   vdi:indexed_field v-s:employee ;
-.
-v-ft:UserTaskFormIndex_Position
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Position ;
-  vdi:indexed_field rdf:type ;
 .
 
 ########## TASKS COUNTERS ###########
