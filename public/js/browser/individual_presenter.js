@@ -615,7 +615,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       propertyModifiedHandler();
 
       function propertyModifiedHandler() {
-        if (about.get(property_uri) !== undefined) {
+        if (property_uri === "@") {
+          propertyContainer.text( about.id );
+        } else {
           var formatted = about.get(property_uri).map(veda.Util.formatValue).join(" ");
           propertyContainer.text( formatted );
         }
