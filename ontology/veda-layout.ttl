@@ -46,7 +46,7 @@ v-l:MainPageTemplate
       <div class="collapse navbar-collapse" id="navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
-          <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
+          <li about="v-ft:Inbox2" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li about="v-s:Drafts" data-template="v-ui:DraftsIndicatorTemplate"></li>
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-l:MainMenu" data-template="v-l:MenuTemplate"></li>
@@ -267,7 +267,7 @@ v-l:Inbox
   rdf:type v-l:Menu ;
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
-  v-l:objectLink v-ft:Inbox ;
+  v-l:objectLink v-ft:Inbox2 ;
 .
 v-l:Outbox
   rdf:type v-l:Menu ;

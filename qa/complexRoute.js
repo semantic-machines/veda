@@ -9,7 +9,7 @@ function welcome(driver) {
 module.exports = {
     /**
      * Проверка сообщений
-     * @param driver 
+     * @param driver
      * @param count - количество сообщений
      * @param login       |
      * @param password    | Данные для входа
@@ -18,7 +18,7 @@ module.exports = {
     */
     checkTask: function (driver, count, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
-        driver.findElement({css:'li[about="v-ft:Inbox"] span[id=counter]'}).getText().then(function (result) {
+        driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).getText().then(function (result) {
             assert.equal(count, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
         welcome(driver);
@@ -27,7 +27,7 @@ module.exports = {
 
     /**
      * Ответ на сообщение
-     * @param driver 
+     * @param driver
      * @param decision - номер решения
      * @param commentValue - статус комментирования
      * @param chooseValue - статут выбора Персоны
