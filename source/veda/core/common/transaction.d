@@ -13,6 +13,7 @@ struct TransactionItem
     string     uri;
 
     long       update_counter;
+    long       op_id;
 
     string     prev_binobj;
     string     new_binobj;
@@ -48,51 +49,9 @@ struct Transaction
     {
         return buff.get(uri, null);
     }
-}
 
-public ResultCode commit(Transaction *_tnx, Context ctx)
-{
-    Transaction normalized_tnx;
-
-    normalized_tnx.id = _tnx.id;
-    foreach (item; _tnx.queue)
+    public TransactionItem *[] get_queue()
     {
-        if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
-            continue;
-
-        if (item.rc != ResultCode.OK)
-            return item.rc;
-
-        Ticket *ticket = ctx.get_ticket(item.ticket_id);
-
-        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-        ResultCode rc;
-
-        rc = ctx.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
-
-        if (rc == ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
-        }
-
-        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("FAIL COMMIT");
-            return rc;
-        }
-        //else
-        //log.trace ("SUCCESS COMMIT");
+        return queue;
     }
-/*
-    foreach (item; normalized_tnx.queue)
-    {
-        item.rc = subject_storage_module.update(P_MODULE.subject_manager, is_api_request, item.cmd, item.user_uri, item.uri,
-                                                              item.prev_state, item.new_state,
-                                                              update_counter, event_id, tnx.id, ignore_freeze,
-                                                              res.op_id);
-
-    }
- */
-    return ResultCode.OK;
 }

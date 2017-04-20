@@ -165,7 +165,7 @@ class ScriptProcess : VedaModule
                     script.compiled_script.run();
 
                     tnx.id = transaction_id;
-                    ResultCode res = commit(&tnx, g_context);
+                    ResultCode res = g_context.commit(&tnx);
                     tnx.reset();
 
                     if (res != ResultCode.OK)
