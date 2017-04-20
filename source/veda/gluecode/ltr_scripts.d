@@ -290,7 +290,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
 
             script.compiled_script.run();
             tnx.id = -1;
-            ResultCode res = commit(&tnx, g_context);
+            ResultCode res = g_context.commit(&tnx);
             tnx.reset();
 
             if (res != ResultCode.OK)

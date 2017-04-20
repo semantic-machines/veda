@@ -1700,6 +1700,54 @@ class PThreadContext : Context
         return true;
     }
 
+    public ResultCode commit(Transaction *in_tnx)
+    {
+        Transaction normalized_tnx;
+
+        normalized_tnx.id = in_tnx.id;
+        foreach (item; in_tnx.get_queue())
+        {
+            if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
+                continue;
+
+            if (item.rc != ResultCode.OK)
+                return item.rc;
+
+            Ticket *ticket = this.get_ticket(item.ticket_id);
+
+            //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+
+            ResultCode rc;
+
+            rc = this.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+
+            if (rc == ResultCode.No_Content)
+            {
+                this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
+            }
+
+            if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+            {
+                this.get_logger().trace("FAIL COMMIT");
+                return rc;
+            }
+            //else
+            //log.trace ("SUCCESS COMMIT");
+        }
+
+        if (in_tnx.is_autocommit == false)
+        {
+            foreach (item; normalized_tnx.get_queue())
+            {
+                //item.rc = subject_storage_module.update(P_MODULE.subject_manager, true, item.cmd, item.user_id, item.uri,
+                //                                                      item.prev_binobj, item.new_binobj,
+                //                                                      item.update_counter, item.event_id, in_tnx.id, false,
+                //                                                      item.op_id);
+            }
+        }
+        return ResultCode.OK;
+    }
+
     version (isServer)
     {
         public string execute(string in_msg)

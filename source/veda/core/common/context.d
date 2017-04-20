@@ -265,6 +265,8 @@ interface Context
 
     public Logger get_logger();
 
+    public ResultCode commit(Transaction *in_tnx);
+
     version (isServer)
     {
         public string execute(string in_msg);
