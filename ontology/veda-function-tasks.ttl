@@ -752,6 +752,8 @@ v-ft:FunctionTasks2
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Function 'Tasks'2"@en ;
   rdfs:label "Функция 'Задачи'2"@ru ;
+  v-ui:hasModel v-ft:FunctionTasks2Model ;
+  v-ui:hasTemplate v-ft:FunctionTasks2Template ;
 .
 v-ft:FunctionTasks2Template
   rdf:type v-ui:ClassTemplate ;
@@ -763,7 +765,7 @@ v-ft:FunctionTasks2Template
   """
 .
 v-ft:FunctionTasks2Model
-  rdf:type v-s:ClassModel ;
+  rdf:type v-ui:ClassModel ;
   rdfs:label "v-ft:FunctionTasks2 class model"@en ;
   rdfs:label "Модель для класса v-ft:FunctionTasks2"@ru ;
   v-ui:forClass v-ft:FunctionTasks2 ;
