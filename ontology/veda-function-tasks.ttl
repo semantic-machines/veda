@@ -6,6 +6,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 @prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
@@ -15,6 +16,28 @@
   rdfs:label "Онтология функции 'Задачи' системы Веда"@ru ;
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
+.
+
+########## TASKS INDEX ###########
+
+v-ft:UserTaskFormIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forProperty v-wf:to ;
+  vdi:forProperty v-wf:from ;
+  vdi:inherited_index v-ft:UserTaskFormIndex_Appointment ;
+  vdi:inherited_index v-ft:UserTaskFormIndex_Position ;
+.
+v-ft:UserTaskFormIndex_Appointment
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Appointment ;
+  vdi:indexed_field rdf:type ;
+  vdi:indexed_field v-s:occupation ;
+  vdi:indexed_field v-s:employee ;
+.
+v-ft:UserTaskFormIndex_Position
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Position ;
+  vdi:indexed_field rdf:type ;
 .
 
 ########## TASKS COUNTERS ###########
