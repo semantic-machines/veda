@@ -682,9 +682,9 @@ v-ft:TaskBlankTemplate
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
     <!--li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li-->
-    <li role="presentation"><a href="#/v-ft:Completed2" about="v-ft:Completed" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#/v-ft:Outbox2" about="v-ft:Outbox" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#/v-ft:Inbox2" about="v-ft:Inbox" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Completed2" about="v-ft:Completed2" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Outbox2" about="v-ft:Outbox2" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Inbox2" about="v-ft:Inbox2" property="rdfs:label"></a></li>
   </ul>
   <div class="row">
     <div class="col-md-2">

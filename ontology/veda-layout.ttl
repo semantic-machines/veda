@@ -273,13 +273,13 @@ v-l:Outbox
   rdf:type v-l:Menu ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
-  v-l:objectLink v-ft:Outbox ;
+  v-l:objectLink v-ft:Outbox2 ;
 .
 v-l:Completed
   rdf:type v-l:Menu ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-l:objectLink v-ft:Completed ;
+  v-l:objectLink v-ft:Completed2 ;
 .
 v-l:Create
   rdf:type v-l:Menu ;
