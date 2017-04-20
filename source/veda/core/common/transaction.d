@@ -8,10 +8,17 @@ struct TransactionItem
     INDV_OP    cmd;
     string     ticket_id;
     string     event_id;
-    ResultCode rc;
+    string	   user_id;	
 
-    string     binobj;
-    Individual indv;
+	string 	   uri;	
+
+    string     prev_binobj;
+    string     new_binobj;
+
+    Individual prev_indv;
+    Individual new_indv;
+
+    ResultCode rc;
 }
 
 struct Transaction
@@ -25,7 +32,7 @@ struct Transaction
 
     public void                 add(TransactionItem *ti)
     {
-        buff[ ti.indv.uri ] = ti;
+        buff[ ti.new_indv.uri ] = ti;
         queue ~= ti;
     }
 
@@ -48,7 +55,7 @@ public ResultCode commit(Transaction *_tnx, Context ctx)
     normalized_tnx.id = _tnx.id;
     foreach (item; _tnx.queue)
     {
-        if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
+        if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
             continue;
 
         if (item.rc != ResultCode.OK)
@@ -60,11 +67,11 @@ public ResultCode commit(Transaction *_tnx, Context ctx)
 
         ResultCode rc;
 
-        rc = ctx.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.indv, true, item.event_id, false, true).result;
+        rc = ctx.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
 
         if (rc == ResultCode.No_Content)
         {
-            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.indv);
+            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
         }
 
         if (rc != ResultCode.OK && rc != ResultCode.No_Content)
