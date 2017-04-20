@@ -611,7 +611,7 @@ v-ft:Inbox2
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
-  v-fs:sortOrder "'v-s:created' desc" ;
+  v-fs:sortOrder "'v-wf:dateGiven' desc" ;
   v-fs:searchOnLoad true ;
 .
 v-ft:InboxBlank
@@ -631,7 +631,7 @@ v-ft:Outbox2
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:from' == '{1}' || 'v-wf:from' == '{2}')" ;
-  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-fs:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
   v-fs:searchOnLoad true ;
 .
 v-ft:OutboxBlank
@@ -651,7 +651,7 @@ v-ft:Completed2
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
-  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-fs:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
   v-fs:searchOnLoad true ;
 .
 v-ft:CompletedBlank
@@ -676,8 +676,6 @@ v-ft:TaskBlankTemplate
     .parent()
     .addClass("active");
   //# sourceURL=v-ft:TaskBlankTemplate_pre
-
-  // fulltext query example = "'rdf:type' === 'v-wf:DecisionForm' && ('rdfs:label' == '1111' || 'v-wf:from.rdfs:label' == '1111' || 'v-wf:to.rdfs:label' == '1111' || 'v-wf:onDocument.rdfs:label' == '1111')"
 </script>
 <div>
   <br>
@@ -691,13 +689,11 @@ v-ft:TaskBlankTemplate
   <div class="row">
     <div class="col-md-2">
       <em about="v-wf:from" property="rdfs:label"></em>
-      <veda-control rel="v-wf:from" data-type="link" class="fulltext"></veda-control>
-      <div rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
+      <veda-control property="v-wf:from.rdfs:label" data-type="string"></veda-control>
     </div>
     <div class="col-md-2">
       <em about="v-wf:to" property="rdfs:label"></em>
-      <veda-control rel="v-wf:to" data-type="link" class="fulltext"></veda-control>
-      <div rel="v-wf:to" data-template="v-ui:LabelTemplate"></div>
+      <veda-control property="v-wf:to.rdfs:label" data-type="string"></veda-control>
     </div>
     <div class="col-md-3">
       <em about="v-s:description" property="rdfs:label"></em>
@@ -705,12 +701,11 @@ v-ft:TaskBlankTemplate
     </div>
     <div class="col-md-3">
       <em about="v-wf:onDocument" property="rdfs:label"></em>
-      <veda-control rel="v-wf:onDocument" data-type="link" class="fulltext"></veda-control>
-      <div rel="v-wf:onDocument" data-template="v-ui:LabelTemplate"></div>
+      <veda-control property="v-wf:onDocument.rdfs:label" data-type="string"></veda-control>
     </div>
     <div class="col-md-2">
       <em about="v-wf:dateGiven" property="rdfs:label"></em>
-      <veda-control property="v-wf:dateGiven" data-type="dateTime"></veda-control>
+      <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
       <div property="v-wf:dateGiven"></div>
     </div>
   </div>
@@ -749,16 +744,18 @@ v-ft:TaskResultTemplate
       if ( !individual.hasValue("v-wf:read") || individual["v-wf:read"][0] !== true) {
         template.css("font-weight", "bold");
       }
-      individual.on("individual:propertyModified", handler);
+      individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
-        individual.off("individual:propertyModified", handler);
+        individual.off("v-wf:isCompleted", removeCompleted);
       });
-      function handler (property_uri, values) {
-        if (property_uri === "v-wf:isCompleted" && values[0] === true) {
+      var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+      var remove = (folder === "v-ft:Inbox2") || (folder === "v-ft:Outbox2");
+      removeCompleted(individual["v-wf:isCompleted"]);
+      function removeCompleted(values) {
+        if (remove && values[0] === true) {
           template.remove();
         }
       }
-      //# sourceURL=v-ft:TaskResultTemplate_inline
     </script>
   </tbody>
 </table>
