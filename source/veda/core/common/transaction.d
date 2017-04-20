@@ -8,9 +8,11 @@ struct TransactionItem
     INDV_OP    cmd;
     string     ticket_id;
     string     event_id;
-    string	   user_id;	
+    string     user_id;
 
-	string 	   uri;	
+    string     uri;
+
+    long       update_counter;
 
     string     prev_binobj;
     string     new_binobj;
@@ -82,6 +84,15 @@ public ResultCode commit(Transaction *_tnx, Context ctx)
         //else
         //log.trace ("SUCCESS COMMIT");
     }
+/*
+    foreach (item; normalized_tnx.queue)
+    {
+        item.rc = subject_storage_module.update(P_MODULE.subject_manager, is_api_request, item.cmd, item.user_uri, item.uri,
+                                                              item.prev_state, item.new_state,
+                                                              update_counter, event_id, tnx.id, ignore_freeze,
+                                                              res.op_id);
 
+    }
+ */
     return ResultCode.OK;
 }

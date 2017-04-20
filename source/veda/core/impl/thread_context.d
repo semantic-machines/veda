@@ -1273,23 +1273,25 @@ class PThreadContext : Context
                     }
                     else
                     {
-                    	TransactionItem ti;
-                    	ti.cmd = INDV_OP.PUT;
-                    	ti.event_id = event_id;
-                    	ti.uri = indv.uri;
-                    	ti.prev_binobj = prev_state;
-                    	ti.new_binobj = new_state;
-                    	ti.user_id = ticket.user_uri;                    	
-                    	tnx.add(&ti);          
-                    	          	
-                    	TransactionItem ti1;
-                    	ti1.cmd = INDV_OP.REMOVE;
-                    	ti1.event_id = event_id;
-                    	ti1.prev_binobj = prev_state;
-                    	ti1.new_binobj = null;
-                    	ti1.uri = indv.uri;
-                    	ti1.user_id = ticket.user_uri;                    	
-                    	tnx.add(&ti1);                    	
+                        TransactionItem ti;
+                        ti.cmd            = INDV_OP.PUT;
+                        ti.event_id       = event_id;
+                        ti.uri            = indv.uri;
+                        ti.prev_binobj    = prev_state;
+                        ti.new_binobj     = new_state;
+                        ti.user_id        = ticket.user_uri;
+                        ti.update_counter = update_counter;
+                        tnx.add(&ti);
+
+                        TransactionItem ti1;
+                        ti1.cmd            = INDV_OP.REMOVE;
+                        ti1.event_id       = event_id;
+                        ti1.prev_binobj    = prev_state;
+                        ti1.new_binobj     = null;
+                        ti1.uri            = indv.uri;
+                        ti1.user_id        = ticket.user_uri;
+                        ti1.update_counter = update_counter;
+                        tnx.add(&ti1);
                     }
                 }
                 else
@@ -1321,14 +1323,15 @@ class PThreadContext : Context
                     }
                     else
                     {
-                    	                    	TransactionItem ti;
-                    	ti.cmd = INDV_OP.PUT;
-                    	ti.uri = indv.uri;
-                    	ti.event_id = event_id;
-                    	ti.prev_binobj = prev_state;
-                    	ti.new_binobj = new_state;
-                    	ti.user_id = ticket.user_uri;                    	
-                    	tnx.add(&ti);          
+                        TransactionItem ti;
+                        ti.cmd            = INDV_OP.PUT;
+                        ti.uri            = indv.uri;
+                        ti.event_id       = event_id;
+                        ti.prev_binobj    = prev_state;
+                        ti.new_binobj     = new_state;
+                        ti.user_id        = ticket.user_uri;
+                        ti.update_counter = update_counter;
+                        tnx.add(&ti);
                     }
                     //log.trace("res.result=%s", res.result);
                 }
