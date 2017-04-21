@@ -1254,44 +1254,27 @@ class PThreadContext : Context
                         return res;
                     }
 
+                    immutable TransactionItem ti = immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter, event_id);
+
+                    immutable TransactionItem ti1 = immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter, event_id);
+
                     if (tnx.is_autocommit)
                     {
                         res.result =
-                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri,
-                                                          prev_state, new_state,
-                                                          update_counter, event_id, tnx.id, ignore_freeze,
+                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
                                                           res.op_id);
 
                         if (res.result == ResultCode.OK)
                         {
                             res.result =
-                                subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.REMOVE, ticket.user_uri, indv.uri,
-                                                              prev_state, null,
-                                                              update_counter, event_id, tnx.id, ignore_freeze,
+                                subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti1 ], tnx.id, ignore_freeze,
                                                               res.op_id);
                         }
                     }
                     else
                     {
-                        TransactionItem ti;
-                        ti.cmd            = INDV_OP.PUT;
-                        ti.event_id       = event_id;
-                        ti.uri            = indv.uri;
-                        ti.prev_binobj    = prev_state;
-                        ti.new_binobj     = new_state;
-                        ti.user_uri        = ticket.user_uri;
-                        ti.update_counter = update_counter;
-                        tnx.add(&ti);
-
-                        TransactionItem ti1;
-                        ti1.cmd            = INDV_OP.REMOVE;
-                        ti1.event_id       = event_id;
-                        ti1.prev_binobj    = prev_state;
-                        ti1.new_binobj     = null;
-                        ti1.uri            = indv.uri;
-                        ti1.user_uri        = ticket.user_uri;
-                        ti1.update_counter = update_counter;
-                        tnx.add(&ti1);
+                        tnx.add(ti);
+                        tnx.add(ti1);
                     }
                 }
                 else
@@ -1313,25 +1296,17 @@ class PThreadContext : Context
                         return res;
                     }
 
+                    immutable TransactionItem ti = immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter, event_id);
+
                     if (tnx.is_autocommit)
                     {
                         res.result =
-                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, INDV_OP.PUT, ticket.user_uri, indv.uri,
-                                                          prev_state, new_state,
-                                                          update_counter, event_id, tnx.id, ignore_freeze,
+                            subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
                                                           res.op_id);
                     }
                     else
                     {
-                        TransactionItem ti;
-                        ti.cmd            = INDV_OP.PUT;
-                        ti.uri            = indv.uri;
-                        ti.event_id       = event_id;
-                        ti.prev_binobj    = prev_state;
-                        ti.new_binobj     = new_state;
-                        ti.user_uri        = ticket.user_uri;
-                        ti.update_counter = update_counter;
-                        tnx.add(&ti);
+                        tnx.add(ti);
                     }
                     //log.trace("res.result=%s", res.result);
                 }

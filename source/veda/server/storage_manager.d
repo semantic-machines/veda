@@ -133,6 +133,29 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
+public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (TransactionItem)[] _ti, long transaction_id, bool ignore_freeze,
+                         out long op_id)
+{
+    ResultCode rc;
+    Tid        tid = getTid(storage_id);
+
+    if (tid != Tid.init)
+    {
+        //immutable(TransactionItem) ti = immutable TransactionItem(_ti);
+
+        send(tid, need_auth, _ti, transaction_id, ignore_freeze, thisTid);
+
+        receive((ResultCode _rc, Tid from)
+                {
+                    if (from == getTid(storage_id))
+                        rc = _rc;
+                    op_id = get_subject_manager_op_id();
+                    return true;
+                });
+    }
+    return rc;
+}
+
 public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj, string new_binobj,
                          long update_counter,
                          string event_id, long transaction_id, bool ignore_freeze,

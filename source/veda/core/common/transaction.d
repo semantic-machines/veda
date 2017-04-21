@@ -33,6 +33,31 @@ struct TransactionItem
         update_counter = _update_counter;
         event_id       = _event_id;
     }
+
+    immutable this(TransactionItem ti)
+    {
+        cmd            = ti.cmd;
+        user_uri       = ti.user_uri;
+        uri            = ti.uri;
+        prev_binobj    = ti.prev_binobj;
+        new_binobj     = ti.new_binobj;
+        update_counter = ti.update_counter;
+        event_id       = ti.event_id;
+    }
+}
+
+TransactionItem copy_from_immutable(immutable TransactionItem ti)
+{
+    TransactionItem res;
+
+    res.cmd            = ti.cmd;
+    res.user_uri       = ti.user_uri;
+    res.uri            = ti.uri;
+    res.prev_binobj    = ti.prev_binobj;
+    res.new_binobj     = ti.new_binobj;
+    res.update_counter = ti.update_counter;
+    res.event_id       = ti.event_id;
+    return res;
 }
 
 struct Transaction
@@ -44,7 +69,15 @@ struct Transaction
     long                        id;
     ResultCode                  rc;
 
-    public void                 add(TransactionItem *ti)
+    public void                 add(ref immutable TransactionItem _ti)
+    {
+        TransactionItem ti = copy_from_immutable(_ti);
+
+        buff[ ti.new_indv.uri ] = &ti;
+        queue ~= &ti;
+    }
+
+    public void add(TransactionItem *ti)
     {
         buff[ ti.new_indv.uri ] = ti;
         queue ~= ti;
