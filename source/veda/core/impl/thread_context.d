@@ -1677,6 +1677,9 @@ class PThreadContext : Context
 
     public ResultCode commit(Transaction *in_tnx)
     {
+        ResultCode  rc;
+        long        op_id;
+
         Transaction normalized_tnx;
 
         normalized_tnx.id = in_tnx.id;
@@ -1691,8 +1694,6 @@ class PThreadContext : Context
             Ticket *ticket = this.get_ticket(item.ticket_id);
 
             //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-            ResultCode rc;
 
             rc = this.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
 
@@ -1712,12 +1713,26 @@ class PThreadContext : Context
 
         if (in_tnx.is_autocommit == false)
         {
-            foreach (item; normalized_tnx.get_queue())
+            version (isModule)
             {
-                //item.rc = subject_storage_module.update(P_MODULE.subject_manager, true, item.cmd, item.user_id, item.uri,
-                //                                                      item.prev_binobj, item.new_binobj,
-                //                                                      item.update_counter, item.event_id, in_tnx.id, false,
-                //                                                      item.op_id);
+                //log.trace("[%s] add_to_transaction: isModule", name);
+
+                string    scmd = "commit";
+
+                JSONValue req_body;
+                req_body[ "function" ] = scmd;
+                req_body[ "tnx_id" ]   = in_tnx.id;
+                req_body[ "items" ]    = to_json(in_tnx.get_immutable_queue);
+
+                log.trace("[%s] commit: (isModule), req=(%s)", name, req_body.toString());
+
+                OpResult res = reqrep_2_main_module(req_body)[ 0 ];
+                log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
+            }
+
+            version (isServer)
+            {
+                rc = subject_storage_module.update(P_MODULE.subject_manager, true, in_tnx.get_immutable_queue(), in_tnx.id, true, op_id);
             }
         }
         return ResultCode.OK;

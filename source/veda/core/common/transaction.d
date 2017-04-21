@@ -1,6 +1,6 @@
 module veda.core.common.transaction;
 
-import std.stdio;
+import std.stdio, std.json;
 import veda.core.common.context, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
 
 struct TransactionItem
@@ -60,21 +60,60 @@ TransactionItem copy_from_immutable(immutable TransactionItem ti)
     return res;
 }
 
+JSONValue to_json(immutable TransactionItem ti)
+{
+    JSONValue res;
+
+    res[ "cmd" ]            = ti.cmd;
+    res[ "user_uri" ]       = ti.user_uri;
+    res[ "uri" ]            = ti.uri;
+    res[ "prev_binobj" ]    = ti.prev_binobj;
+    res[ "new_binobj" ]     = ti.new_binobj;
+    res[ "update_counter" ] = ti.update_counter;
+    res[ "event_id" ]       = ti.event_id;
+
+    return res;
+}
+
+
+public JSONValue to_json(ref immutable(TransactionItem)[] immutable_queue)
+{
+    JSONValue res;
+
+    foreach (ti; immutable_queue)
+    {
+        res ~= to_json(ti);
+    }
+
+    return res;
+}
+
 struct Transaction
 {
-    bool                        is_autocommit = false;
-    private TransactionItem *[ string ] buff;
-    private TransactionItem *[] queue;
+    private
+    {
+        TransactionItem *[ string ] buff;
+        TransactionItem *[]          queue;
+        immutable(TransactionItem)[] immutable_queue;
+    }
 
-    long                        id;
-    ResultCode                  rc;
+    bool       is_autocommit = true;
+    long       id;
+    ResultCode rc;
 
+/*
     public void                 add(ref immutable TransactionItem _ti)
     {
         TransactionItem ti = copy_from_immutable(_ti);
 
         buff[ ti.new_indv.uri ] = &ti;
         queue ~= &ti;
+    }
+ */
+
+    public void add(ref immutable TransactionItem _ti)
+    {
+        immutable_queue ~= _ti;
     }
 
     public void add(TransactionItem *ti)
@@ -97,5 +136,10 @@ struct Transaction
     public TransactionItem *[] get_queue()
     {
         return queue;
+    }
+
+    public ref immutable(TransactionItem)[] get_immutable_queue()
+    {
+        return immutable_queue;
     }
 }

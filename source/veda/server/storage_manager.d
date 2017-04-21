@@ -133,17 +133,14 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (TransactionItem)[] _ti, long transaction_id, bool ignore_freeze,
-                         out long op_id)
+public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (TransactionItem)[] _ti, long tnx_id, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        //immutable(TransactionItem) ti = immutable TransactionItem(_ti);
-
-        send(tid, need_auth, _ti, transaction_id, ignore_freeze, thisTid);
+        send(tid, need_auth, _ti, tnx_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -158,7 +155,7 @@ public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (Transac
 
 public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj, string new_binobj,
                          long update_counter,
-                         string event_id, long transaction_id, bool ignore_freeze,
+                         string event_id, long tnx_id, bool ignore_freeze,
                          out long op_id)
 {
     ResultCode rc;
@@ -168,7 +165,7 @@ public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, strin
     {
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id);
 
-        send(tid, need_auth, [ ti ], transaction_id, ignore_freeze, thisTid);
+        send(tid, need_auth, [ ti ], tnx_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -358,7 +355,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (bool need_auth, immutable(TransactionItem)[] tiz, long transaction_id, bool ignore_freeze, Tid tid_response_reciever)
+                        (bool need_auth, immutable(TransactionItem)[] tiz, long tnx_id, bool ignore_freeze, Tid tid_response_reciever)
                         {
                             immutable TransactionItem ti = tiz[ 0 ];
 
@@ -424,10 +421,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             if (ti.event_id !is null && ti.event_id.length > 0)
                                                 imm.addResource("event_id", Resource(DataType.String, ti.event_id));
 
-                                            if (transaction_id <= 0)
-                                                transaction_id = op_id;
+                                            if (tnx_id <= 0)
+                                                tnx_id = op_id;
 
-                                            imm.addResource("tnx_id", Resource(transaction_id));
+                                            imm.addResource("tnx_id", Resource(tnx_id));
 
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
