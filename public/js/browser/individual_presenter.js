@@ -498,7 +498,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
             if ( valueType.length ) {
               emptyValue["rdf:type"] = valueType;
             }
-            individual.set(rel_uri, emptyValue);
+            individual.set(rel_uri, [emptyValue]);
           }
         } else if (e.type === "search") {
           relContainer.sortable("enable");
