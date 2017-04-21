@@ -1455,7 +1455,7 @@ if (doc) {
       }
     }
     if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
-      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003202")) {
+      if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50003202")) {
         routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020138")); // Гл инженер УЛО (Навратил С)
         routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71025127")); // Зам директора УЛО (Кухоткин)
       }
@@ -1535,19 +1535,19 @@ if (doc) {
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [10];
     if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50001781")) {
+      if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50001781")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017804")); // Технический директор
       }
-      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50001780")) {
+      if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50001780")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71015289")); // Финансовый директор
       }
-      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003102")) {
+      if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50003102")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018870")); // Директор по производству
       }
-      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50003202")) {
+      if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50003202")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017819")); // Директор по ЛО
       }
-      if (doc.hasValue('v-s:initiator') && new veda.IndividualModel(doc['v-s:initiator'][0].id).isSubUnitOf("d:mondi_department_50002528")) {
+      if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50002528")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71019086")); // Директор по перс
       }
       if (doc.hasValue('mnd-s:hasCriterionOfContractApprovalNecessity')) {
