@@ -8,7 +8,7 @@ struct TransactionItem
     INDV_OP    cmd;
     string     ticket_id;
     string     event_id;
-    string     user_id;
+    string     user_uri;
 
     string     uri;
 
@@ -22,6 +22,17 @@ struct TransactionItem
     Individual new_indv;
 
     ResultCode rc;
+
+    immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id)
+    {
+        cmd            = _cmd;
+        user_uri       = _user_uri;
+        uri            = _uri;
+        prev_binobj    = _prev_binobj;
+        new_binobj     = _new_binobj;
+        update_counter = _update_counter;
+        event_id       = _event_id;
+    }
 }
 
 struct Transaction

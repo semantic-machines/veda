@@ -1279,7 +1279,7 @@ class PThreadContext : Context
                         ti.uri            = indv.uri;
                         ti.prev_binobj    = prev_state;
                         ti.new_binobj     = new_state;
-                        ti.user_id        = ticket.user_uri;
+                        ti.user_uri        = ticket.user_uri;
                         ti.update_counter = update_counter;
                         tnx.add(&ti);
 
@@ -1289,7 +1289,7 @@ class PThreadContext : Context
                         ti1.prev_binobj    = prev_state;
                         ti1.new_binobj     = null;
                         ti1.uri            = indv.uri;
-                        ti1.user_id        = ticket.user_uri;
+                        ti1.user_uri        = ticket.user_uri;
                         ti1.update_counter = update_counter;
                         tnx.add(&ti1);
                     }
@@ -1329,7 +1329,7 @@ class PThreadContext : Context
                         ti.event_id       = event_id;
                         ti.prev_binobj    = prev_state;
                         ti.new_binobj     = new_state;
-                        ti.user_id        = ticket.user_uri;
+                        ti.user_uri        = ticket.user_uri;
                         ti.update_counter = update_counter;
                         tnx.add(&ti);
                     }
