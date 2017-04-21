@@ -54,7 +54,7 @@ script:
   - grunt test --stack --verbose
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
-  - node ./qa/testSendGet.js
+#  - node ./qa/testSendGet.js
   - node ./qa/testLogin.js
   - node ./qa/testPerson.js
   - node ./qa/testDrafts.js
