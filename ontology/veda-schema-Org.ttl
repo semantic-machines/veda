@@ -435,7 +435,7 @@ v-s:OrganizationTemplate
     if ( !individual.hasValue("v-s:hasClassifierCountry") || individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
       regexp = /^([0-9]{10}|[0-9]{12})$/gi;
     } else if ( individual.hasValue("v-s:hasClassifierCountry") ) {
-      regexp = /^[A-Z]{2,3}[0-9]{4,}$/gi;
+      regexp = /^[A-Z]{1,3}[0-9]{4,}$/gi;
     }
     if ( !individual.hasValue("v-s:taxId") ) {
       result["v-s:taxId"] = {
