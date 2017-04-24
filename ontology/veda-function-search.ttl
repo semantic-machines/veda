@@ -1193,7 +1193,7 @@ v-fs:AttributiveSearchTemplate
         <span class="total-found badge">0</span>&nbsp;&nbsp;
         <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
         <span class="total-processed badge">0</span>&nbsp;&nbsp;
-        <span about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></span>
+        <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
         <span class="total-authorized badge">0</span>&nbsp;&nbsp;
       </small>
     </h3>
@@ -1250,8 +1250,16 @@ v-fs:AttributiveSearchTemplate
   if ( searchBlank ) {
     searchBlank._init();
     searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
+    searchBlank.object.on("search", formHandler);
+    template.one("remove", function () {
+      searchBlank.object.off("search", formHandler);
+    });
   } else {
     $("#params", template).remove();
+  }
+  function formHandler () {
+    self.top = veda.user.displayedElements || 10;
+    search();
   }
 
   // Show results on load if they are available (e.g. if we came back)
@@ -1262,7 +1270,7 @@ v-fs:AttributiveSearchTemplate
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     search().then(function () {
-      scrollTo( $("#results").offset().top );
+      scrollTo( $("#results", template).offset().top );
     });
   }
 
@@ -1278,7 +1286,7 @@ v-fs:AttributiveSearchTemplate
     self.top = veda.user.displayedElements || 10;
     toggleSpin($this);
     search().then(function () {
-      scrollTo( $("#results").offset().top );
+      scrollTo( $("#results", template).offset().top );
       toggleSpin($this);
     });
   });
@@ -1351,7 +1359,7 @@ v-fs:AttributiveSearchTemplate
       self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
       toggleSpin($this);
       search().then(function () {
-        scrollTo( $("#results").offset().top );
+        scrollTo( $("#results", template).offset().top );
         toggleSpin($this);
       });
     });
@@ -1379,6 +1387,7 @@ v-fs:AttributiveSearchTemplate
     } else {
       moreResults.removeClass("hidden");
       allResults.removeClass("hidden");
+      noMoreResults.addClass("hidden");
     }
     // Toggle "not found" alert & "no more results" alert
     if (self.result.length) {

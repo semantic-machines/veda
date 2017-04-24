@@ -574,9 +574,8 @@ v-ft:FunctionTasksIndicatorTemplate
   rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
   v-ui:template """
 <script>
-  var pos_uri = veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0].id : undefined,
-      pos_counter_uri = pos_uri ? "d:taskCounter_" + pos_uri.split(":").join("_") : undefined;
-  $(".label", template).attr("about", pos_counter_uri);
+  var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  $(".label", template).attr("about", counter_uri);
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")
@@ -610,7 +609,6 @@ v-ft:Inbox2
   v-fs:searchBlank v-ft:InboxBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
-  v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
   v-fs:sortOrder "'v-wf:dateGiven' desc" ;
   v-fs:searchOnLoad true ;
 .
@@ -630,7 +628,6 @@ v-ft:Outbox2
   v-fs:searchBlank v-ft:OutboxBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
-  v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false ) && ('v-wf:from' == '{1}' || 'v-wf:from' == '{2}')" ;
   v-fs:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
   v-fs:searchOnLoad true ;
 .
@@ -650,7 +647,6 @@ v-ft:Completed2
   v-fs:searchBlank v-ft:CompletedBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
-  v-fs:fulltextQuery "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true ) && ('v-wf:to' == '{1}' || 'v-wf:to' == '{2}')" ;
   v-fs:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
   v-fs:searchOnLoad true ;
 .
@@ -661,7 +657,11 @@ v-ft:CompletedBlank
   v-fc:targetType v-wf:DecisionForm ;
   v-wf:isCompleted true ;
 .
-
+v-ft:MyBundle
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Мои"@ru ;
+  rdfs:label "My"@en ;
+.
 v-ft:TaskBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка задачи"@ru ;
@@ -678,14 +678,14 @@ v-ft:TaskBlankTemplate
   //# sourceURL=v-ft:TaskBlankTemplate_pre
 </script>
 <div>
-  <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
-    <!--li role="presentation"><a id="refresh" href="#refresh"><i class="fa fa-refresh fa-lg"></i></a></li-->
     <li role="presentation"><a href="#/v-ft:Completed2" about="v-ft:Completed2" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Outbox2" about="v-ft:Outbox2" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Inbox2" about="v-ft:Inbox2" property="rdfs:label"></a></li>
   </ul>
+  <br>
+  <div about="@" data-template="v-ft:ActorFilterTemplate"></div>
   <div class="row">
     <div class="col-md-2">
       <em about="v-wf:from" property="rdfs:label"></em>
@@ -710,6 +710,59 @@ v-ft:TaskBlankTemplate
     </div>
   </div>
 </div>
+  """ ;
+.
+
+v-ft:ActorFilterTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон фильтра актора"@ru ;
+  rdfs:label "Actor filter template"@en ;
+  v-ui:template """
+<script>
+  var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+  var actor_property = folder === "v-ft:Outbox2" ? "v-wf:from" : "v-wf:to";
+  var counter_prop = folder === "v-ft:Inbox2" ? "v-ft:inboxCount" :
+                     folder === "v-ft:Outbox2" ? "v-ft:outboxCount" :
+                     folder === "v-ft:Completed2" ? "v-ft:completedCount" : "";
+
+  if (!individual.hasValue(actor_property)) {
+    individual[actor_property] = [veda.user];
+  }
+
+  var actors_uris = [ veda.user.id ];
+  var appointments_uris = query({
+    ticket: veda.ticket,
+    query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "')"
+  }).result;
+
+  var appointments = get_individuals(veda.ticket, appointments_uris);
+  appointments.map(function (app) { actors_uris.push( app["v-s:occupation"][0].data ); });
+
+  actors_uris.map(function (actor_uri) {
+    var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+    var actor_template =
+      "<li " + (individual.hasValue(actor_property, actor_uri) ? "class='active'" : "") + ">" +
+        "<a href='#'>" +
+          "<span id='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
+          "<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
+        "</a>" +
+      "</li>";
+    template.append(actor_template);
+  });
+
+  template.on("click", "li a", function (e) {
+    e.preventDefault();
+    var $this = $(this);
+    $("li", template).removeClass("active");
+    $this.parent().addClass("active");
+    var actor_uri = $this.children("#actor").attr("about");
+    individual[actor_property] = [new veda.IndividualModel(actor_uri)];
+    individual.trigger("search");
+  });
+
+  //# sourceURL=v-ft:ActorFilterTemplate_pre
+</script>
+<ul class="nav nav-pills" role="tablist"></ul>
   """ ;
 .
 
@@ -785,18 +838,6 @@ v-ft:FunctionTasks2Model
   rdfs:label "Модель для класса v-ft:FunctionTasks2"@ru ;
   v-ui:forClass v-ft:FunctionTasks2 ;
   v-s:script """
-  var q = format (
-    this["v-fs:fulltextQuery"][0],
-    veda.appointment ? veda.appointment.id : veda.user.id,
-    veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id
-  );
-  this["v-fs:fulltextQuery"] = [q];
-  function format(str) {
-    var args = arguments;
-    return str.replace(/{([0-9]+)}/gi, function (match, position) {
-      return typeof args[position] !== "undefined" ? args[position] : match ;
-    });
-  }
   //# sourceURL=v-ft:FunctionTasks2Model
   """
 .
