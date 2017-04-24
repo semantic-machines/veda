@@ -1,19 +1,19 @@
 /**
- * core main thread
+ * master storage
  */
-module veda.core.srv.server;
+module veda.mstorage.server;
 
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import veda.bind.libwebsocketd, veda.server.wslink;
+    import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json,
            veda.common.logger,
            veda.core.util.utils;
-    import veda.server.load_info, veda.server.acl_manager, veda.server.storage_manager, veda.server.nanomsg_channel;
+    import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -22,7 +22,7 @@ Logger _log;
 Logger log()
 {
     if (_log is null)
-        _log = new Logger("veda-core-server", "log", "server");
+        _log = new Logger("veda-core-mstorage", "log", "mstorage");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -37,7 +37,7 @@ enum CMD : byte
 
 static this()
 {
-    io_msg = new Logger("pacahon", "io", "server");
+    io_msg = new Logger("pacahon", "io", "mstorage");
     bsd_signal(SIGINT, &handleTermination2);
 }
 
@@ -62,7 +62,7 @@ Context l_context;
 void main(char[][] args)
 {
     Tid[ P_MODULE ] tids;
-    process_name = "server";
+    process_name = "mstorage";
     string node_id = null;
 
     tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, individuals_db_path, node_id);
@@ -157,7 +157,7 @@ class VedaServer : WSClient
     {
         host = _host;
         port = _port;
-        super(host, port, "/ws", "module-name=server", log);
+        super(host, port, "/ws", "module-name=mstorage", log);
     }
 
     Context init(string node_id)
@@ -169,7 +169,7 @@ class VedaServer : WSClient
 
         Backtrace.install(stderr);
 
-        io_msg = new Logger("pacahon", "io", "server");
+        io_msg = new Logger("pacahon", "io", "mstorage");
 
         try
         {
@@ -274,8 +274,8 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        veda.server.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-        veda.server.acl_manager.flush(false);
-        veda.server.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
+        veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+        veda.mstorage.acl_manager.flush(false);
+        veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }

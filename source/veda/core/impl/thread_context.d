@@ -17,12 +17,12 @@ private
     import veda.util.module_info;
     import veda.common.logger;
 
-    version (isServer)
+    version (isMStorage)
     {
-        alias veda.server.storage_manager ticket_storage_module;
-        alias veda.server.storage_manager subject_storage_module;
-        alias veda.server.acl_manager     acl_module;
-        alias veda.server.load_info       load_info;
+        alias veda.mstorage.storage_manager ticket_storage_module;
+        alias veda.mstorage.storage_manager subject_storage_module;
+        alias veda.mstorage.acl_manager     acl_module;
+        alias veda.mstorage.load_info       load_info;
     }
 }
 
@@ -289,7 +289,7 @@ class PThreadContext : Context
             set_global_systicket(ticket);
         }
 
-        version (isServer)
+        version (isMStorage)
         {
             if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
             {
@@ -492,7 +492,7 @@ class PThreadContext : Context
 
     public void stat(byte command_type, ref StopWatch sw) nothrow
     {
-        version (isServer)
+        version (isMStorage)
             load_info.stat(command_type, sw);
     }
 
@@ -540,7 +540,7 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        version (isServer)
+        version (isMStorage)
         {
             // store ticket
             string     ss_as_binobj = new_ticket.serialize();
@@ -578,9 +578,9 @@ class PThreadContext : Context
     {
         Ticket ticket;
 
-        version (isServer)
+        version (isMStorage)
         {
-            log.trace("is server");
+            log.trace("is mstorage");
         }
 
         version (isModule)
@@ -1097,7 +1097,7 @@ class PThreadContext : Context
 
     public void subject_storage_commmit(bool isWait = true)
     {
-        version (isServer)
+        version (isMStorage)
         {
             subject_storage_module.flush_int_module(P_MODULE.subject_manager, isWait);
         }
@@ -1155,9 +1155,9 @@ class PThreadContext : Context
                 //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
-            version (isServer)
+            version (isMStorage)
             {
-                //log.trace("[%s] add_to_transaction: (isServer)", name);
+                //log.trace("[%s] add_to_transaction: (isMStorage)", name);
                 Tid       tid_subject_manager;
                 Tid       tid_acl;
 
@@ -1423,7 +1423,7 @@ class PThreadContext : Context
     {
         bool result = false;
 
-        version (isServer)
+        version (isMStorage)
         {
             if (level == 0)
                 freeze();
@@ -1507,7 +1507,7 @@ class PThreadContext : Context
 
     public void freeze()
     {
-        version (isServer)
+        version (isMStorage)
         {
             subject_storage_module.freeze(P_MODULE.subject_manager);
         }
@@ -1521,7 +1521,7 @@ class PThreadContext : Context
 
     public void unfreeze()
     {
-        version (isServer)
+        version (isMStorage)
         {
             subject_storage_module.unfreeze(P_MODULE.subject_manager);
         }
@@ -1537,7 +1537,7 @@ class PThreadContext : Context
     {
         string res;
 
-        version (isServer)
+        version (isMStorage)
         {
             res = subject_storage_module.find(P_MODULE.subject_manager, uri);
         }
@@ -1565,7 +1565,7 @@ class PThreadContext : Context
     {
         long res = -1;
 
-        version (isServer)
+        version (isMStorage)
         {
             if (module_id == P_MODULE.acl_preparer)
             {
@@ -1624,7 +1624,7 @@ class PThreadContext : Context
 
     public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
     {
-        version (isServer)
+        version (isMStorage)
         {
             if (module_id == P_MODULE.scripts_main || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||
                 module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
@@ -1730,7 +1730,7 @@ class PThreadContext : Context
                 log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
             }
 
-            version (isServer)
+            version (isMStorage)
             {
                 rc = subject_storage_module.update(P_MODULE.subject_manager, true, in_tnx.get_immutable_queue(), in_tnx.id, true, op_id);
             }
@@ -1738,7 +1738,7 @@ class PThreadContext : Context
         return ResultCode.OK;
     }
 
-    version (isServer)
+    version (isMStorage)
     {
         public string execute(string in_msg)
         {

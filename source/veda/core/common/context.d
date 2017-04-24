@@ -267,7 +267,7 @@ interface Context
 
     public ResultCode commit(Transaction *in_tnx);
 
-    version (isServer)
+    version (isMStorage)
     {
         public string execute(string in_msg);
     }

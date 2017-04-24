@@ -1,7 +1,7 @@
 /**
  * процесс отвечающий за хранение
  */
-module veda.server.storage_manager;
+module veda.mstorage.storage_manager;
 
 private
 {
@@ -13,7 +13,7 @@ private
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd;
-    import veda.server.wslink, veda.core.common.transaction;
+    import veda.mstorage.wslink, veda.core.common.transaction;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -22,7 +22,7 @@ Logger _log;
 Logger log()
 {
     if (_log is null)
-        _log = new Logger("veda-core-server", "log", "STORAGE-MANAGER");
+        _log = new Logger("veda-core-mstorage", "log", "STORAGE-MANAGER");
     return _log;
 }
 

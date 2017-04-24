@@ -36,8 +36,8 @@ if [ -z $1 ] || [ $1 == "webserver" ] || [ $1 == "veda-webserver" ] ; then
     ./build-component.sh veda-webserver webserver
 fi
 
-if [ -z $1 ] || [ $1 == "server" ] || [ $1 == "veda-server" ] ; then
-    ./build-component.sh veda-server server
+if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
+    ./build-component.sh veda-mstorage mstorage
 fi
 
 if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] ; then
