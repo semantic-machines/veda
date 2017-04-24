@@ -15,23 +15,23 @@
 
 # ОТПРАВКА --------------------
 
-d:635
-  a v-s:DeliveryMethod;
-  rdfs:label "Факс"@ru;
-  rdfs:label "Fax"@en;
-.
+#d:635
+#  a v-s:DeliveryMethod;
+#  rdfs:label "Факс"@ru;
+#  rdfs:label "Fax"@en;
+#.
 
-d:644
-  a v-s:DeliveryMethod;
-  rdfs:label "Письмо"@ru;
-  rdfs:label "Letter"@en;
-.
+#d:644
+#  a v-s:DeliveryMethod;
+#  rdfs:label "Письмо"@ru;
+#  rdfs:label "Letter"@en;
+#.
 
-d:653
-  a v-s:DeliveryMethod;
-  rdfs:label "Письмо и факс"@ru;
-  rdfs:label "Letter & Fax"@en;
-.
+#d:653
+#  a v-s:DeliveryMethod;
+#  rdfs:label "Письмо и факс"@ru;
+#  rdfs:label "Letter & Fax"@en;
+#.
 
 # ПРИЁМ ----------------------
 
