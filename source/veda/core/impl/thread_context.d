@@ -813,10 +813,10 @@ class PThreadContext : Context
             tickets_storage_r.reopen_db();
     }
 
-	public VQL get_vql ()
-	{
-		return _vql;
-	}
+    public VQL get_vql()
+    {
+        return _vql;
+    }
 
     public void reopen_ro_fulltext_indexer_db()
     {
@@ -1673,6 +1673,4 @@ class PThreadContext : Context
         }
         return ResultCode.OK;
     }
-
-    
 }

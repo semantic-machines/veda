@@ -120,7 +120,7 @@ private void ws_interface(short ws_port)
 {
     log.trace("start ws channel");
     VedaServer veda_server = new VedaServer("127.0.0.1", ws_port, log);
-    veda_server.init(null);
+    init(null);
     veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
 }
 
@@ -157,9 +157,8 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 
 class VedaServer : WSClient
 {
-    ushort  port;
-    string  host;
-    Context core_context;
+    ushort port;
+    string host;
 
     this(string _host, ushort _port, Logger log)
     {
@@ -167,56 +166,58 @@ class VedaServer : WSClient
         port = _port;
         super(host, port, "/ws", "module-name=mstorage", log);
     }
+}
 
-    void init(string node_id)
+void init(string node_id)
+{
+    Context core_context;
+
+    if (node_id is null || node_id.length < 2)
+        node_id = "cfg:standart_node";
+
+    log.trace("init_core: node_id=[%s]", node_id);
+
+    Backtrace.install(stderr);
+
+    io_msg = new Logger("pacahon", "io", "mstorage");
+
+    try
     {
-        if (node_id is null || node_id.length < 2)
-            node_id = "cfg:standart_node";
+        Individual node;
 
-        log.trace("init_core: node_id=[%s]", node_id);
+        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log);
+        l_context            = core_context;
+        inividuals_storage_r = l_context.get_subject_storage_db();      //new LmdbStorage(individuals_db_path, DBMode.R, "mstorage:inividuals", log);
+        vql_r                = l_context.get_vql();
 
-        Backtrace.install(stderr);
+        sticket = core_context.sys_ticket();
+        node    = core_context.get_configuration();
+        if (node.getStatus() == ResultCode.OK)
+            log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
-        io_msg = new Logger("pacahon", "io", "mstorage");
+        log.trace("init core");
 
-        try
+        sticket = core_context.sys_ticket(true);
+        string guest_ticket = core_context.get_ticket_from_storage("guest");
+
+        if (guest_ticket is null)
+            core_context.create_new_ticket("cfg:Guest", "900000000", "guest");
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (node.getStatus() != ResultCode.OK)
         {
-            Individual node;
+            core_context.reopen_ro_subject_storage_db();
+            core_context.reopen_ro_acl_storage_db();
+            node = core_context.get_individual(&sticket, node_id);
 
-            core_context         = PThreadContext.create_new(node_id, "core_context-" ~ text(port), individuals_db_path, log);
-            l_context            = core_context;
-            inividuals_storage_r = l_context.get_subject_storage_db();  //new LmdbStorage(individuals_db_path, DBMode.R, "mstorage:inividuals", log);
-            vql_r                = l_context.get_vql();
-
-            sticket = core_context.sys_ticket();
-            node    = core_context.get_configuration();
-            if (node.getStatus() == ResultCode.OK)
-                log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
-
-            log.trace("init core");
-
-            sticket = core_context.sys_ticket(true);
-            string guest_ticket = core_context.get_ticket_from_storage("guest");
-
-            if (guest_ticket is null)
-                core_context.create_new_ticket("cfg:Guest", "900000000", "guest");
-
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////
-            if (node.getStatus() != ResultCode.OK)
-            {
-                core_context.reopen_ro_subject_storage_db();
-                core_context.reopen_ro_acl_storage_db();
-                node = core_context.get_individual(&sticket, node_id);
-
-                log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
-            }
-
-            return;
-        } catch (Throwable ex)
-        {
-            writeln("Exception: ", ex.msg);
-            return;
+            log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }
+
+        return;
+    } catch (Throwable ex)
+    {
+        writeln("Exception: ", ex.msg);
+        return;
     }
 }
 
