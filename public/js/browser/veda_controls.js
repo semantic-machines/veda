@@ -1481,6 +1481,7 @@
             modal.modal("show");
             create.one("remove", function () {
               modal.modal("hide").remove();
+              $(document).off("keyup", escHandler);
             });
             var ok = $("#ok", modal).click(function (e) {
               select(newVal);
@@ -1504,7 +1505,7 @@
               select(newVal);
               modal.modal("hide").remove();
             });
-            var tmpl = newVal["rdf:type"][0].template ? $( newVal["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+            var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
             $(".action", tmpl).remove();
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
