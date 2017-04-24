@@ -5,7 +5,7 @@ private
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
-    import veda.core.util.utils, veda.common.logger;
+    import veda.core.util.utils, veda.common.logger, veda.common.ticket;
     import veda.core.storage.lmdb_storage, veda.core.az.right_set;
     import veda.util.container, veda.util.module_info;
 }

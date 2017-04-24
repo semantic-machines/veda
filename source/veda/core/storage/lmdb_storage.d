@@ -13,16 +13,6 @@ private
     alias core.thread.Thread core_thread;
 }
 
-/// Режим работы хранилища
-enum DBMode
-{
-    /// чтение
-    R  = true,
-
-    /// чтение/запись
-    RW = false
-}
-
 public bool[ string ] db_is_open;
 
 /// key-value хранилище на lmdb

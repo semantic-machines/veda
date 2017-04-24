@@ -12,7 +12,7 @@ private
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.common.log_msg, veda.util.module_info;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage, veda.common.ticket;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction;
     import veda.util.module_info;
     import veda.common.logger;

@@ -7,7 +7,7 @@ module veda.core.search.xapian_reader;
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.common.type;
-import veda.core.common.log_msg, veda.common.logger;
+import veda.core.common.log_msg, veda.common.logger, veda.common.ticket;
 import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
 
 protected byte err;

@@ -11,7 +11,7 @@ private
     import std.stdio, std.datetime, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                            : SwapStrategy;
     import veda.onto.resource, veda.onto.individual;
-    import veda.core.util.utils, veda.util.container, veda.common.logger;
+    import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.ticket;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
