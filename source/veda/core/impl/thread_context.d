@@ -650,75 +650,6 @@ class PThreadContext : Context
         return ticket;
     }
 
-    public Ticket authenticate(string login, string password)
-    {
-        StopWatch sw; sw.start;
-
-        Ticket    ticket;
-
-        if (trace_msg[ T_API_70 ] == 1)
-            log.trace("authenticate, login=[%s] password=[%s]", login, password);
-
-        try
-        {
-            ticket.result = ResultCode.Authentication_Failed;
-
-            if (login == null || login.length < 1 || password == null || password.length < 6)
-                return ticket;
-
-            login = replaceAll(login, regex(r"[-]", "g"), " +");
-
-            Ticket       sticket         = sys_ticket;
-            Individual[] candidate_users = this.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
-            foreach (user; candidate_users)
-            {
-                string user_id = user.getFirstResource(veda_schema__owner).uri;
-                if (user_id is null)
-                    continue;
-
-                string pass;
-                string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
-                if (usesCredential_uri !is null)
-                {
-                    log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-                    Individual i_usesCredential = this.get_individual(&sticket, usesCredential_uri);
-                    pass = i_usesCredential.getFirstLiteral("v-s:password");
-                }
-                else
-                {
-                    pass = user.getFirstLiteral("v-s:password");
-
-                    Individual i_usesCredential;
-                    i_usesCredential.uri = user.uri ~ "-crdt";
-                    i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
-                    i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", -1, false, true);
-                    log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
-                    user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
-                    user.removeResource("v-s:password");
-                    op_res = this.put_individual(&sticket, user.uri, user, false, "", -1, false, true);
-                    log.trace("authenticate: update user[%s], res=%s", user, op_res);
-                }
-
-                if (pass !is null && pass == password)
-                {
-                    ticket = create_new_ticket(user_id);
-                    return ticket;
-                }
-            }
-
-            log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-
-            ticket.result = ResultCode.Authentication_Failed;
-
-            return ticket;
-        }
-        finally
-        {
-            stat(CMD_PUT, sw);
-        }
-    }
-
     public string get_ticket_from_storage(string ticket_id)
     {
         return tickets_storage_r.find(false, null, ticket_id);
@@ -881,6 +812,11 @@ class PThreadContext : Context
         if (tickets_storage_r !is null)
             tickets_storage_r.reopen_db();
     }
+
+	public VQL get_vql ()
+	{
+		return _vql;
+	}
 
     public void reopen_ro_fulltext_indexer_db()
     {

@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql;
 
 /**
  * Обьект - сессионный тикет
@@ -121,6 +121,7 @@ interface Context
     //{
     //    public string execute(string in_msg);
     //}
+	public VQL get_vql ();
 
     public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
@@ -140,7 +141,7 @@ interface Context
        Returns:
                 экземпляр структуры Ticket
      */
-    public Ticket authenticate(string login, string password);
+    //public Ticket authenticate(string login, string password);
 
     /**
        Доверенная аутентификация

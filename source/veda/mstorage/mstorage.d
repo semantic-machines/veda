@@ -6,11 +6,11 @@ module veda.mstorage.server;
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
-    import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json;
+    import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json, std.regex;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context;
-    import veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context;
+    import veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
@@ -63,6 +63,9 @@ extern (C) void handleTermination2(int _signal)
 }
 
 Context l_context;
+Storage inividuals_storage_r;
+VQL     vql_r;
+Ticket  sticket;
 
 void main(char[][] args)
 {
@@ -180,10 +183,10 @@ class VedaServer : WSClient
         {
             Individual node;
 
-            Ticket     sticket;
-
-            core_context = PThreadContext.create_new(node_id, "core_context-" ~ text(port), individuals_db_path, log);
-            l_context    = core_context;
+            core_context         = PThreadContext.create_new(node_id, "core_context-" ~ text(port), individuals_db_path, log);
+            l_context            = core_context;
+            inividuals_storage_r = l_context.get_subject_storage_db();  //new LmdbStorage(individuals_db_path, DBMode.R, "mstorage:inividuals", log);
+            vql_r                = l_context.get_vql();
 
             sticket = core_context.sys_ticket();
             node    = core_context.get_configuration();
@@ -285,6 +288,120 @@ void commiter(string thread_name)
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+public Individual get_individual(Ticket *ticket, string uri)
+{
+    Individual individual = Individual.init;
+
+    if (ticket is null)
+    {
+        log.trace("get_individual, uri=%s, ticket is null", uri);
+        return individual;
+    }
+
+    string individual_as_binobj = inividuals_storage_r.find(true, ticket.user_uri, uri);
+    if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+    {
+//                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
+        {
+            if (individual.deserialize(individual_as_binobj) > 0)
+                individual.setStatus(ResultCode.OK);
+            else
+            {
+                individual.setStatus(ResultCode.Unprocessable_Entity);
+                writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
+            }
+        }
+//                else
+//                {
+//                    if (trace_msg[ T_API_160 ] == 1)
+//                        log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
+//                    individual.setStatus(ResultCode.Not_Authorized);
+//                }
+    }
+    else
+    {
+        individual.setStatus(ResultCode.Unprocessable_Entity);
+        //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
+    }
+
+    return individual;
+}
+
+public Ticket authenticate(string login, string password)
+{
+    StopWatch sw; sw.start;
+
+    Ticket    ticket;
+
+    if (trace_msg[ T_API_70 ] == 1)
+        log.trace("authenticate, login=[%s] password=[%s]", login, password);
+
+    try
+    {
+        ticket.result = ResultCode.Authentication_Failed;
+
+        if (login == null || login.length < 1 || password == null || password.length < 6)
+            return ticket;
+
+        login = replaceAll(login, regex(r"[-]", "g"), " +");
+
+        //Ticket       sticket         = sys_ticket;
+        Individual[] candidate_users;
+        vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, false, false);
+        foreach (user; candidate_users)
+        {
+            string user_id = user.getFirstResource(veda_schema__owner).uri;
+            if (user_id is null)
+                continue;
+
+            string pass;
+            string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+            if (usesCredential_uri !is null)
+            {
+                log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
+                Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
+                pass = i_usesCredential.getFirstLiteral("v-s:password");
+            }
+            else
+            {
+                pass = user.getFirstLiteral("v-s:password");
+
+                Individual i_usesCredential;
+                i_usesCredential.uri = user.uri ~ "-crdt";
+                i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
+                i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
+                OpResult op_res = l_context.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", -1, false, true);
+                log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
+                user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
+                user.removeResource("v-s:password");
+                op_res = l_context.put_individual(&sticket, user.uri, user, false, "", -1, false, true);
+                log.trace("authenticate: update user[%s], res=%s", user, op_res);
+            }
+
+            if (pass !is null && pass == password)
+            {
+                ticket = l_context.create_new_ticket(user_id);
+                return ticket;
+            }
+        }
+
+        log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
+
+        ticket.result = ResultCode.Authentication_Failed;
+
+        return ticket;
+    }
+    finally
+    {
+        stat(CMD_PUT, sw);
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 public string execute(string in_msg, Context ctx)
 {
     JSONValue res;
@@ -315,7 +432,7 @@ public string execute(string in_msg, Context ctx)
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
 
-            Ticket    ticket = ctx.authenticate(login.str, password.str);
+            Ticket    ticket = authenticate(login.str, password.str);
 
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
