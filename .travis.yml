@@ -47,7 +47,7 @@ before_script:
   - cat $PWD/logs/veda-ttlreader-stderr.log
   - cat $PWD/logs/veda-webserver-stderr.log 
   - cat $PWD/veda_s.log
-  - cat $PWD/logs/veda-core-server_*.log          
+  - cat $PWD/logs/veda-core-mstorage_*.log          
 
 # Run API & integration test
 script:
@@ -88,7 +88,7 @@ after_script:
   - cat logs/veda-core-fulltext_indexer_*.log
   - cat logs/veda-core-ltr_scripts_*.log
 #  - cat veda-core-scripts_*.log
-  - cat logs/veda-core-server_*.log
+  - cat logs/veda-core-mstorage_*.log
   - cat logs/veda-core-ttl_reader_*.log
   - cat logs/veda-core-webserver_*.log 
   
