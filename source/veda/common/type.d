@@ -9,6 +9,57 @@ module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
+/// Имена процессов
+public enum P_MODULE : byte
+{
+    /// Выдача и проверка тикетов
+    ticket_manager  = 0,
+
+    /// Чтение и сохранение индивидуалов
+    subject_manager = 1,
+
+    /// Индексирование прав
+    acl_preparer    = 2,
+
+    /// Полнотекстовое индексирование
+    //xapian_thread_context      = 3,
+
+    /// Полнотекстовое индексирование
+    fulltext_indexer           = 4,
+
+    /// Сбор статистики
+    statistic_data_accumulator = 5,
+
+    /// исполнение скриптов
+    scripts_main               = 6,
+
+    /// Сохранение накопленных данных в полнотекстовом индексаторе
+    commiter                   = 7,
+
+    /// Вывод статистики
+    print_statistic            = 8,
+
+    /// Загрузка из файлов
+    file_reader                = 10,
+
+    zmq_listener               = 11,
+
+    fanout_email               = 12,
+
+    //// data change signal
+    fanout_sql                 = 13,
+
+    ltr_scripts                = 14,
+
+    webserver                  = 15,
+
+    n_channel                  = 16,
+
+    ccus_channel               = 17,
+
+    nop                        = 99
+}
+
 /**
  * Коды результата выполнения
  */

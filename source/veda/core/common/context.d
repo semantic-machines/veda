@@ -12,57 +12,6 @@ private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
                veda.common.logger, veda.core.common.transaction;
 
-/// Имена процессов
-public enum P_MODULE : byte
-{
-    /// Выдача и проверка тикетов
-    ticket_manager  = 0,
-
-    /// Чтение и сохранение индивидуалов
-    subject_manager = 1,
-
-    /// Индексирование прав
-    acl_preparer    = 2,
-
-    /// Полнотекстовое индексирование
-    //xapian_thread_context      = 3,
-
-    /// Полнотекстовое индексирование
-    fulltext_indexer           = 4,
-
-    /// Сбор статистики
-    statistic_data_accumulator = 5,
-
-    /// исполнение скриптов
-    scripts_main               = 6,
-
-    /// Сохранение накопленных данных в полнотекстовом индексаторе
-    commiter                   = 7,
-
-    /// Вывод статистики
-    print_statistic            = 8,
-
-    /// Загрузка из файлов
-    file_reader                = 10,
-
-    zmq_listener               = 11,
-
-    fanout_email               = 12,
-
-    //// data change signal
-    fanout_sql                 = 13,
-
-    ltr_scripts                = 14,
-
-    webserver                  = 15,
-
-    n_channel                  = 16,
-
-    ccus_channel               = 17,
-
-    nop                        = 99
-}
-
 /**
  * Обьект - сессионный тикет
  */
@@ -168,10 +117,10 @@ interface Context
 
     public ResultCode commit(Transaction *in_tnx);
 
-    version (isMStorage)
-    {
-        public string execute(string in_msg);
-    }
+    //version (isMStorage)
+    //{
+    //    public string execute(string in_msg);
+    //}
 
     public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
