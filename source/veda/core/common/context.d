@@ -64,92 +64,6 @@ public enum P_MODULE : byte
 }
 
 /**
- * Коды результата выполнения
- */
-public enum ResultCode
-{
-    /// 0
-    zero                  = 0,
-
-    /// 200
-    OK                    = 200,
-
-    /// 201
-    Created               = 201,
-
-    /// 204
-    No_Content            = 204,
-
-    /// 400
-    Bad_Request           = 400,
-
-    /// 403
-    Forbidden             = 403,
-
-    /// 404
-    Not_Found             = 404,
-
-    /// 422
-    Unprocessable_Entity  = 422,
-
-    /// 429
-    Too_Many_Requests     = 429,
-
-    /// 470
-    Ticket_not_found      = 470,
-
-    /// 471
-    Ticket_expired        = 471,
-
-    /// 472
-    Not_Authorized        = 472,
-
-    /// 473
-    Authentication_Failed = 473,
-
-    /// 474
-    Not_Ready             = 474,
-
-    /// 475
-    Fail_Open_Transaction = 475,
-
-    /// 476
-    Fail_Commit           = 476,
-
-    /// 477
-    Fail_Store            = 477,
-
-    /// 500
-    Internal_Server_Error = 500,
-
-    /// 501
-    Not_Implemented       = 501,
-
-    /// 503
-    Service_Unavailable   = 503,
-
-    Invalid_Identifier    = 904,
-
-    /// 1021
-    Disk_Full             = 1021,
-
-    /// 1022
-    Duplicate_Key         = 1022,
-
-    /// 1118
-    Size_too_large        = 1118,
-
-    /// 4000
-    Connect_Error         = 4000
-}
-
-public struct OpResult
-{
-    ResultCode result;
-    long       op_id;
-}
-
-/**
  * Обьект - сессионный тикет
  */
 public struct Ticket
@@ -193,19 +107,6 @@ public struct SearchResult
     int        processed;
     long       cursor;
     ResultCode result_code = ResultCode.Not_Ready;
-}
-
-/// Результат
-public enum Result
-{
-    /// OK
-    Ok,
-
-    /// Ошибка
-    Err,
-
-    /// Ничего
-    Nothing
 }
 
 interface Storage
