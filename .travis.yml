@@ -43,7 +43,7 @@ before_script:
   - cat $PWD/logs/veda-ltr-scripts-stderr.log
   - cat $PWD/logs/veda-scripts-lp-stderr.log
   - cat $PWD/logs/veda-scripts-main-stderr.log
-  - cat $PWD/logs/veda-server-stderr.log
+  - cat $PWD/logs/veda-mstorage-stderr.log
   - cat $PWD/logs/veda-ttlreader-stderr.log
   - cat $PWD/logs/veda-webserver-stderr.log 
   - cat $PWD/veda_s.log
