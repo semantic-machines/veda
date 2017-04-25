@@ -244,7 +244,7 @@ class PThreadContext : Context
 
         ctx._vql = new VQL(ctx);
 
-        ctx.onto = new Onto(ctx);
+        ctx.onto = new Onto(ctx.sys_ticket(true), ctx.get_vql(), ctx.get_subject_storage_db(), ctx.get_logger());
         ctx.onto.load();
 
         ctx.local_count_put = get_subject_manager_op_id();

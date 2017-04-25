@@ -10,7 +10,7 @@ private
 {
     import std.stdio, std.datetime, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                            : SwapStrategy;
-    import veda.onto.resource, veda.onto.individual;
+    import veda.onto.resource, veda.onto.individual, veda.core.search.vql, veda.common.type;
     import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.ticket;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
@@ -91,19 +91,28 @@ private class Bdathe
 
 class Onto
 {
-    private Context context;
-    private Logger  log;
-    public int      reload_count = 0;
+    //private Context context;
+    private Logger log;
+    Ticket         ticket;
+    VQL            vql;
+    Storage        inividuals_storage_r;
 
-    private         Individual[ string ] individuals;
+    public int     reload_count = 0;
 
-    private Bdathe  _class;
-    private Bdathe  _property;
+    private        Individual[ string ] individuals;
 
-    public this(Context _context)
+    private Bdathe _class;
+    private Bdathe _property;
+
+    public this(Ticket _ticket, VQL _vql, Storage _inividuals_storage_r, Logger _logger)
     {
-        context   = _context;
-        log       = context.get_logger();
+        //context   = _context;
+        //log       = context.get_logger();
+        vql                  = _vql;
+        ticket               = _ticket;
+        inividuals_storage_r = _inividuals_storage_r;
+        log                  = _logger;
+
         _class    = new Bdathe();
         _property = new Bdathe();
     }
@@ -159,21 +168,22 @@ class Onto
 
         reload_count++;
         if (trace_msg[ 20 ] == 1)
-            log.trace_log_and_console("[%s] load onto..", context.get_name);
+            log.trace_log_and_console("load onto..");
 
-        context.reopen_ro_subject_storage_db();
-        context.reopen_ro_fulltext_indexer_db();
+        inividuals_storage_r.reopen_db();
+        vql.reopen_db();
 
-        Ticket       sticket = context.sys_ticket();
+        //Ticket       sticket = context.sys_ticket();
 
-        Individual[] l_individuals = context.get_individuals_via_query(
-                                                                       &sticket,
-                                                                       "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
-                                                                       true, 10000, 10000);
+        Individual[] l_individuals;
+        vql.get(
+                &ticket,
+                "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
+                "", "", 10000, 10000, l_individuals, true, false);
 
         sw1.stop();
 
-        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", context.get_name, l_individuals.length, sw1.peek().usecs);
+        log.trace_log_and_console("load onto, count individuals: %d, time=%d µs", l_individuals.length, sw1.peek().usecs);
 
 
         foreach (indv; l_individuals)
@@ -188,7 +198,7 @@ class Onto
         sw1.stop();
 
         //if (trace_msg[ 20 ] == 1)
-        log.trace_log_and_console("[%s] update hierarhy in mem, time=%d µs", context.get_name, sw1.peek().usecs);
+        log.trace_log_and_console("update hierarhy in mem, time=%d µs", sw1.peek().usecs);
 
         //log.trace ("LOAD *** class *** \n%s", _class.toString());
         //log.trace ("LOAD *** property *** \n%s", _property.toString());
@@ -304,7 +314,7 @@ class Onto
         {
             superelementes[ elementz.uri ] = true;
             if (elementz.uri != look_cl)
-	            prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
+                prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
         }
     }
 }
