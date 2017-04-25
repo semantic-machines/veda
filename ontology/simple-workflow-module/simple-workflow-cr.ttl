@@ -32,8 +32,8 @@ s-wf:net_complex_route a v-wf:Net;
     s-wf:cr_decrease_rights,
     s-wf:crf_dr_to_i,
     s-wf:cr_informing_task,
-	s-wf:cr_introduction,
-	s-wf:crf_i_to_intro,
+  s-wf:cr_introduction,
+  s-wf:crf_i_to_intro,
     s-wf:crf_i_to_c1,
     s-wf:cr_c1,
     s-wf:crf_c1_to_c2,
@@ -1244,7 +1244,9 @@ s-wf:rul_transform21_0
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:DecisionForm')";
   v-wf:aggregate  "putUri ('rdf:type', 's-wf:UserTaskForm')";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate   "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate   "putString ('rdfs:label', 'Доработать')";
@@ -1578,8 +1580,8 @@ s-wf:InterlayerNet_task_date_to
   v-wf:mapToVariable s-wf:var_actor_task_date_to ;
   v-wf:mappingExpression  """
     (get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_deadlineDays'}]) && get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_deadlineDays'}])[0])?
-	newDate(new Date(new Date().getTime()+(get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_deadlineDays'}])[0].data*24*60*60*1000))):
-	get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_deadlineDate'}]);
+  newDate(new Date(new Date().getTime()+(get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_deadlineDays'}])[0].data*24*60*60*1000))):
+  get_properties_chain ( process.getExecutor(), [{$get:'s-wf:SimpleRouteStartForm_deadlineDate'}]);
   """ ;
 .
 
