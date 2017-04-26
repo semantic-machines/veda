@@ -88,8 +88,6 @@ interface Context
 {
     string get_name();
 
-    int[ string ] get_key2slot();
-
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();

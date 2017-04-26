@@ -1,7 +1,7 @@
 module veda.frontend.core_rest;
 
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
-import core.vararg, core.stdc.stdarg, core.atomic;
+import core.vararg, core.stdc.stdarg, core.atomic, std.uri;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd, TrailDB;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
@@ -237,7 +237,7 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-                    string ss = "attachment; filename*=UTF-8''" ~ std.uri.encode(originFileName);
+                    string ss = "attachment; filename*=UTF-8''" ~ encode(originFileName);
 
                     res.headers[ "Content-Disposition" ] = ss;
 
