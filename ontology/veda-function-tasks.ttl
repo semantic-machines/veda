@@ -731,6 +731,29 @@ v-ft:ActorFilterTemplate
         "</a>" +
       "</li>";
     template.append(actor_template);
+
+    var interval;
+    var counter = new veda.IndividualModel(counter_uri);
+    var previousCount = counter[counter_prop] && counter[counter_prop][0];
+    counter.on(counter_prop, counterUpdateHandler);
+    template.one("remove", function () {
+      if (interval) {
+        interval = clearInterval(interval);
+      }
+      counter.off(counter_prop, counterUpdateHandler);
+    });
+    function counterUpdateHandler(values) {
+      var owner = individual[actor_property] && individual[actor_property][0];
+      if ( this.hasValue("v-s:owner", owner) && values.length && values[0] >= previousCount) {
+        previousCount = values[0];
+        interval = setTimeout( function () {
+          if (interval) {
+            interval = clearInterval(interval);
+          }
+          individual.trigger("search");
+        }, 5000);
+      }
+    }
   });
 
   template.on("click", "li a", function (e) {
