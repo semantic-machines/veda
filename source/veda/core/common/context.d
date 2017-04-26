@@ -285,16 +285,8 @@ interface Context
      */
     public void get_membership_from_acl(Ticket *ticket, string uri,
                                         void delegate(string resource_group) trace_group);
+    
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
-
-    /**
-       Ожидать, пока завершится выполнение операции
-       Params:
-                 module_id = id процесса из перечисления P_MODULE
-                 op_id - id операции изменения данных, если 0, то ожидание организуется через внутреннюю очередь модуля
-     */
-
-    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000);
 
     /**
        Перезагрузить модуль
@@ -315,11 +307,6 @@ interface Context
        Количество индивидуалов в базе данных
      */
     public long count_individuals();
-
-    /**
-       Выполнить бэкапирование базы данных
-     */
-    public bool backup(bool to_binlog, int level = 0);
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются

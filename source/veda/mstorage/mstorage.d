@@ -6,7 +6,8 @@ module veda.mstorage.server;
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
-    import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json, std.regex;
+    import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
+           std.regex, std.uuid;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context;
@@ -187,17 +188,17 @@ void init(string node_id)
 
         core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log);
         l_context            = core_context;
-        inividuals_storage_r = l_context.get_inividuals_storage_r();    
+        inividuals_storage_r = l_context.get_inividuals_storage_r();
         vql_r                = l_context.get_vql();
 
-        sticket = core_context.sys_ticket();
+        sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
         if (node.getStatus() == ResultCode.OK)
             log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
         log.trace("init core");
 
-        sticket = core_context.sys_ticket(true);
+        sticket = sys_ticket(core_context, true);
         string guest_ticket = core_context.get_ticket_from_storage("guest");
 
         if (guest_ticket is null)
@@ -588,7 +589,7 @@ public string execute(string in_msg, Context ctx)
         else if (sfn == "backup")
         {
             bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-            bool rc        = ctx.backup(to_binlog, 0);
+            bool rc        = backup(ctx, to_binlog, 0);
 
             res[ "type" ] = "OpResult";
             if (rc == true)
@@ -630,4 +631,134 @@ public string execute(string in_msg, Context ctx)
         return res.toString();
     }
 }
+
+public void freeze()
+{
+    subject_storage_module.freeze(P_MODULE.subject_manager);
+}
+
+public void unfreeze()
+{
+    subject_storage_module.unfreeze(P_MODULE.subject_manager);
+}
+
+private Ticket *[ string ] user_of_ticket;
+
+public Ticket sys_ticket(Context ctx, bool is_new = false)
+{
+    Ticket ticket = get_global_systicket();
+
+    if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
+    {
+        try
+        {
+            ticket = ctx.create_new_ticket("cfg:VedaSystem", "90000000");
+
+            long op_id;
+            ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null, -1, false,
+                                         op_id);
+            log.trace("systicket [%s] was created", ticket.id);
+
+            Individual sys_account_permission;
+            sys_account_permission.uri = "p:" ~ ticket.id;
+            sys_account_permission.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
+            sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
+            sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
+            sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
+            OpResult opres = ctx.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", -1, false,
+                                                false);
+
+            if (opres.result == ResultCode.OK)
+                log.trace("permission [%s] was created", sys_account_permission);
+        }
+        catch (Exception ex)
+        {
+            //printPrettyTrace(stderr);
+            log.trace("context.sys_ticket:EX!%s", ex.msg);
+        }
+
+        if (ticket.user_uri == "")
+            ticket.user_uri = "cfg:VedaSystem";
+
+        set_global_systicket(ticket);
+    }
+
+    return ticket;
+}
+
+public bool backup(Context ctx, bool to_binlog, int level = 0)
+{
+    bool result = false;
+
+    if (level == 0)
+        freeze();
+
+    Ticket sticket = sys_ticket(ctx);
+
+    try
+    {
+        string backup_id = "to_binlog";
+
+        if (to_binlog)
+        {
+            long count = ctx.get_inividuals_storage_r.dump_to_binlog();
+            if (count > 0)
+                result = true;
+        }
+        else
+        {
+            backup_id = subject_storage_module.backup(P_MODULE.subject_manager);
+
+            if (backup_id != "")
+            {
+                result = true;
+
+                string res;         // = veda.core.threads.acl_manager.backup(backup_id);
+
+                if (res == "")
+                    result = false;
+                else
+                {
+                    Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
+                    send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
+                    receive((string _res) { res = _res; });
+                    if (res == "")
+                        result = false;
+                    else
+                    {
+                        //res = veda.core.threads.xapian_indexer.backup(backup_id);
+
+                        if (res == "")
+                            result = false;
+                    }
+                }
+            }
+
+            if (result == false)
+            {
+                if (level < 10)
+                {
+                    log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
+
+                    core.thread.Thread.sleep(dur!("msecs")(500));
+                    return backup(ctx, to_binlog, level + 1);
+                }
+                else
+                    log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
+            }
+        }
+
+        if (result == true)
+            log.trace_log_and_console("BACKUP Ok, %s", backup_id);
+    }
+    finally
+    {
+        if (level == 0)
+            unfreeze();
+    }
+
+    return result;
+}
+
+
 

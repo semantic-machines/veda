@@ -232,7 +232,7 @@ class PThreadContext : Context
         return inividuals_storage_r;
     }
 
-    @property
+
     public Ticket sys_ticket(bool is_new = false)
     {
         Ticket ticket = get_global_systicket();
@@ -249,43 +249,6 @@ class PThreadContext : Context
             set_global_systicket(ticket);
         }
 
-        version (isMStorage)
-        {
-            if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
-            {
-                try
-                {
-                    ticket = create_new_ticket("cfg:VedaSystem", "90000000");
-
-                    long op_id;
-                    ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null, -1, false,
-                                                 op_id);
-                    log.trace("systicket [%s] was created", ticket.id);
-
-                    Individual sys_account_permission;
-                    sys_account_permission.uri = "p:" ~ ticket.id;
-                    sys_account_permission.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
-                    sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
-                    sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
-                    sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
-                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", -1, false,
-                                                         false);
-
-                    if (opres.result == ResultCode.OK)
-                        log.trace("permission [%s] was created", sys_account_permission);
-                }
-                catch (Exception ex)
-                {
-                    //printPrettyTrace(stderr);
-                    log.trace("context.sys_ticket:EX!%s", ex.msg);
-                }
-
-                if (ticket.user_uri == "")
-                    ticket.user_uri = "cfg:VedaSystem";
-
-                set_global_systicket(ticket);
-            }
-        }
         return ticket;
     }
 
@@ -384,51 +347,6 @@ class PThreadContext : Context
         foreach (key, value; arg)
         {
             prefix_map[ key ] = value;
-        }
-    }
-
-    private void subject2Ticket(ref Individual ticket, Ticket *tt)
-    {
-        string when;
-        long   duration;
-
-        tt.id       = ticket.uri;
-        tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
-        when        = ticket.getFirstLiteral(ticket__when);
-        string dd = ticket.getFirstLiteral(ticket__duration);
-
-        try
-        {
-            duration = parse!uint (dd);
-        }
-        catch (Exception ex)
-        {
-            writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
-        }
-
-        if (tt.user_uri is null)
-        {
-            if (trace_msg[ T_API_10 ] == 1)
-                log.trace("found a session ticket is not complete, the user can not be found.");
-        }
-
-        if (tt.user_uri !is null && (when is null || duration < 10))
-        {
-            if (trace_msg[ T_API_20 ] == 1)
-                log.trace("found a session ticket is not complete, we believe that the user has not been found.");
-            tt.user_uri = null;
-        }
-
-        if (when !is null)
-        {
-            if (trace_msg[ T_API_30 ] == 1)
-                log.trace("session ticket %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
-                          duration);
-
-            long start_time = stringToTime(when);
-
-            tt.start_time = start_time;
-            tt.end_time   = start_time + duration * 10_000_000;
         }
     }
 
@@ -744,13 +662,6 @@ class PThreadContext : Context
 
     public void reopen_ro_ticket_manager_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.ticket_manager) != Tid.init)
-//                this.wait_operation_complete(P_MODULE.ticket_manager, 0);
-//        }
-//        catch (Exception ex) {}
-
         if (tickets_storage_r !is null)
             tickets_storage_r.reopen_db();
     }
@@ -768,26 +679,12 @@ class PThreadContext : Context
 
     public void reopen_ro_individuals_storage_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.subject_manager) != Tid.init)
-//                this.wait_operation_complete(P_MODULE.subject_manager, 0);
-//        }
-//        catch (Exception ex) {}
-
         if (inividuals_storage_r !is null)
             inividuals_storage_r.reopen_db();
     }
 
     public void reopen_ro_acl_storage_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.acl_preparer) != Tid.init)
-//                this.wait_operation_complete(P_MODULE.acl_preparer, 0);
-//        }
-//        catch (Exception ex) {}
-
         if (acl_indexes !is null)
             acl_indexes.reopen_db();
         //log.trace ("reopen_ro_acl_storage_db");
@@ -1289,82 +1186,6 @@ class PThreadContext : Context
 //        veda.core.log_msg.set_trace(idx, state);
     }
 
-    public bool backup(bool to_binlog, int level = 0)
-    {
-        bool result = false;
-
-        version (isMStorage)
-        {
-            if (level == 0)
-                freeze();
-
-            Ticket sticket = sys_ticket();
-
-            try
-            {
-                string backup_id = "to_binlog";
-
-                if (to_binlog)
-                {
-                    long count = this.inividuals_storage_r.dump_to_binlog();
-                    if (count > 0)
-                        result = true;
-                }
-                else
-                {
-                    backup_id = subject_storage_module.backup(P_MODULE.subject_manager);
-
-                    if (backup_id != "")
-                    {
-                        result = true;
-
-                        string res; // = veda.core.threads.acl_manager.backup(backup_id);
-
-                        if (res == "")
-                            result = false;
-                        else
-                        {
-                            Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                            send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
-                            receive((string _res) { res = _res; });
-                            if (res == "")
-                                result = false;
-                            else
-                            {
-                                //res = veda.core.threads.xapian_indexer.backup(backup_id);
-
-                                if (res == "")
-                                    result = false;
-                            }
-                        }
-                    }
-
-                    if (result == false)
-                    {
-                        if (level < 10)
-                        {
-                            log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
-
-                            core.thread.Thread.sleep(dur!("msecs")(500));
-                            return backup(to_binlog, level + 1);
-                        }
-                        else
-                            log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
-                    }
-                }
-
-                if (result == true)
-                    log.trace_log_and_console("BACKUP Ok, %s", backup_id);
-            }
-            finally
-            {
-                if (level == 0)
-                    unfreeze();
-            }
-        }
-        return result;
-    }
-
     public long count_individuals()
     {
         long count = 0;
@@ -1377,10 +1198,6 @@ class PThreadContext : Context
 
     public void freeze()
     {
-        version (isMStorage)
-        {
-            subject_storage_module.freeze(P_MODULE.subject_manager);
-        }
         version (isModule)
         {
             JSONValue req_body;
@@ -1391,10 +1208,6 @@ class PThreadContext : Context
 
     public void unfreeze()
     {
-        version (isMStorage)
-        {
-            subject_storage_module.unfreeze(P_MODULE.subject_manager);
-        }
         version (isModule)
         {
             JSONValue req_body;
@@ -1489,30 +1302,6 @@ class PThreadContext : Context
     public long restart_module(P_MODULE module_id)
     {
         return 0;
-    }
-
-
-    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
-    {
-        version (isMStorage)
-        {
-            if (module_id == P_MODULE.scripts_main || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||
-                module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
-            {
-                return wait_module(module_id, op_id, timeout);
-            }
-            else
-            {
-                Tid tid = getTid(module_id);
-                if (tid != Tid.init)
-                {
-                    send(tid, CMD_NOP, thisTid);
-                    //                receiveTimeout(1000.msecs, (bool res) {});
-                    receive((bool res) {});
-                }
-            }
-        }
-        return true;
     }
 
     private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
