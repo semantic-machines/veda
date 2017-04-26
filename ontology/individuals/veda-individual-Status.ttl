@@ -23,6 +23,31 @@ v-s:StatusImplementation
   rdfs:label "Implementation"@en ;
   rdfs:label "Реализация"@ru ;
 .
+v-s:StatusPreparationAnswer
+  rdf:type v-s:Status ;
+  rdfs:label "Preparation of the answer"@en ;
+  rdfs:label "Подготовка ответа"@ru ;
+.
+v-s:StatusPreparationRegistrationForm
+  rdf:type v-s:Status ;
+  rdfs:label "Preparation of the registration form"@en ;
+  rdfs:label "Подготовка учетной формы"@ru ;
+.
+v-s:StatusPreparationTechnicalOpinion
+  rdf:type v-s:Status ;
+  rdfs:label "Preparation of technical opinion"@en ;
+  rdfs:label "Подготовка технического заключения"@ru ;
+.
+v-s:StatusPreparationLegalOpinion
+  rdf:type v-s:Status ;
+  rdfs:label "Preparation of a legal opinion"@en ;
+  rdfs:label "Подготовка юридического заключения"@ru ;
+.
+v-s:StatusFulfillmentConditions
+  rdf:type v-s:Status ;
+  rdfs:label "Fulfillment of conditions"@en ;
+  rdfs:label "Выполнение условий"@ru ;
+.
 v-s:StatusPreparation
   rdf:type v-s:Status ;
   rdfs:label "Preparation"@en ;
@@ -82,6 +107,11 @@ v-s:StatusPaymentPending
   rdf:type v-s:Status ;
   rdfs:label "Payment pending"@en ;
   rdfs:label "Ожидает оплаты"@ru ;
+.
+v-s:StatusMoreInformationPending
+  rdf:type v-s:Status ;
+  rdfs:label "More information pending"@en ;
+  rdfs:label "Ожидание дополнительной информации"@ru ;
 .
 v-s:StatusPaid
   rdf:type v-s:Status ;
@@ -163,4 +193,14 @@ v-s:StatusNotConfirmed
   rdf:type v-s:Status ;
   rdfs:label "Status not confirmed"@en ;
   rdfs:label "Не подтверждено"@ru ;
+.
+v-s:StatusAccepted
+  rdf:type v-s:Status ;
+  rdfs:label "Accepted"@en ;
+  rdfs:label "Принято"@ru ;
+.
+v-s:StatusAcceptedPartially
+  rdf:type v-s:Status ;
+  rdfs:label "Accepted partially"@en ;
+  rdfs:label "Принято частично"@ru ;
 .

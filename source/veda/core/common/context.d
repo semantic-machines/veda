@@ -10,180 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction;
-
-/// Имена процессов
-public enum P_MODULE : byte
-{
-    /// Выдача и проверка тикетов
-    ticket_manager  = 0,
-
-    /// Чтение и сохранение индивидуалов
-    subject_manager = 1,
-
-    /// Индексирование прав
-    acl_preparer    = 2,
-
-    /// Полнотекстовое индексирование
-    //xapian_thread_context      = 3,
-
-    /// Полнотекстовое индексирование
-    fulltext_indexer           = 4,
-
-    /// Сбор статистики
-    statistic_data_accumulator = 5,
-
-    /// исполнение скриптов
-    scripts_main               = 6,
-
-    /// Сохранение накопленных данных в полнотекстовом индексаторе
-    commiter                   = 7,
-
-    /// Вывод статистики
-    print_statistic            = 8,
-
-    /// Загрузка из файлов
-    file_reader                = 10,
-
-    zmq_listener               = 11,
-
-    fanout_email               = 12,
-
-    //// data change signal
-    fanout_sql                 = 13,
-
-    ltr_scripts                = 14,
-
-    webserver                  = 15,
-
-    n_channel                  = 16,
-
-    ccus_channel               = 17,
-
-    nop                        = 99
-}
-
-/**
- * Коды результата выполнения
- */
-public enum ResultCode
-{
-    /// 0
-    zero                  = 0,
-
-    /// 200
-    OK                    = 200,
-
-    /// 201
-    Created               = 201,
-
-    /// 204
-    No_Content            = 204,
-
-    /// 400
-    Bad_Request           = 400,
-
-    /// 403
-    Forbidden             = 403,
-
-    /// 404
-    Not_Found             = 404,
-
-    /// 422
-    Unprocessable_Entity  = 422,
-
-    /// 429
-    Too_Many_Requests     = 429,
-
-    /// 470
-    Ticket_not_found      = 470,
-
-    /// 471
-    Ticket_expired        = 471,
-
-    /// 472
-    Not_Authorized        = 472,
-
-    /// 473
-    Authentication_Failed = 473,
-
-    /// 474
-    Not_Ready             = 474,
-
-    /// 475
-    Fail_Open_Transaction = 475,
-
-    /// 476
-    Fail_Commit           = 476,
-
-    /// 477
-    Fail_Store            = 477,
-
-    /// 500
-    Internal_Server_Error = 500,
-
-    /// 501
-    Not_Implemented       = 501,
-
-    /// 503
-    Service_Unavailable   = 503,
-
-    Invalid_Identifier    = 904,
-
-    /// 1021
-    Disk_Full             = 1021,
-
-    /// 1022
-    Duplicate_Key         = 1022,
-
-    /// 1118
-    Size_too_large        = 1118,
-
-    /// 4000
-    Connect_Error         = 4000
-}
-
-public struct OpResult
-{
-    ResultCode result;
-    long       op_id;
-}
-
-/**
- * Обьект - сессионный тикет
- */
-public struct Ticket
-{
-    /// ID
-    string     id;
-
-    /// Uri пользователя
-    string     user_uri;
-
-    /// Код результата, если тикет не валидный != ResultCode.Ok
-    ResultCode result;
-
-    /// Дата начала действия тикета
-    long       start_time;
-
-    /// Дата окончания действия тикета
-    long       end_time;
-
-    /// Конструктор
-    this(Ticket tt)
-    {
-        id       = tt.id.dup;
-        user_uri = tt.user_uri.dup;
-        end_time = tt.end_time;
-    }
-
-    this(string _id, string _user_uri, long _end_time)
-    {
-        id       = _id;
-        user_uri = _user_uri;
-        end_time = _end_time;
-    }
-}
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.common.ticket;
 
 public struct SearchResult
 {
@@ -193,32 +20,6 @@ public struct SearchResult
     int        processed;
     long       cursor;
     ResultCode result_code = ResultCode.Not_Ready;
-}
-
-/// Результат
-public enum Result
-{
-    /// OK
-    Ok,
-
-    /// Ошибка
-    Err,
-
-    /// Ничего
-    Nothing
-}
-
-interface Storage
-{
-    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
-    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
-    public ResultCode remove(bool need_auth, string user_id, string in_key);
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
-    public void unload_to_queue(string path, string queue_id, bool only_ids);
-    public long count_entries();
-    public void reopen_db();
-    public void close_db();
-    public long dump_to_binlog();
 }
 
 interface ScriptVM
@@ -267,10 +68,12 @@ interface Context
 
     public ResultCode commit(Transaction *in_tnx);
 
-    version (isMStorage)
-    {
-        public string execute(string in_msg);
-    }
+    //version (isMStorage)
+    //{
+    //    public string execute(string in_msg);
+    //}
+	public VQL get_vql ();
+    public Authorization acl_indexes();
 
     public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
@@ -290,7 +93,7 @@ interface Context
        Returns:
                 экземпляр структуры Ticket
      */
-    public Ticket authenticate(string login, string password);
+    //public Ticket authenticate(string login, string password);
 
     /**
        Доверенная аутентификация

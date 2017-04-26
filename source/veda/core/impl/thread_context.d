@@ -12,7 +12,7 @@ private
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.common.log_msg, veda.util.module_info;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage, veda.common.ticket;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction;
     import veda.util.module_info;
     import veda.common.logger;
@@ -244,7 +244,7 @@ class PThreadContext : Context
 
         ctx._vql = new VQL(ctx);
 
-        ctx.onto = new Onto(ctx);
+        ctx.onto = new Onto(ctx.sys_ticket(true), ctx.get_vql(), ctx.get_subject_storage_db(), ctx.get_logger());
         ctx.onto.load();
 
         ctx.local_count_put = get_subject_manager_op_id();
@@ -650,75 +650,6 @@ class PThreadContext : Context
         return ticket;
     }
 
-    public Ticket authenticate(string login, string password)
-    {
-        StopWatch sw; sw.start;
-
-        Ticket    ticket;
-
-        if (trace_msg[ T_API_70 ] == 1)
-            log.trace("authenticate, login=[%s] password=[%s]", login, password);
-
-        try
-        {
-            ticket.result = ResultCode.Authentication_Failed;
-
-            if (login == null || login.length < 1 || password == null || password.length < 6)
-                return ticket;
-
-            login = replaceAll(login, regex(r"[-]", "g"), " +");
-
-            Ticket       sticket         = sys_ticket;
-            Individual[] candidate_users = this.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
-            foreach (user; candidate_users)
-            {
-                string user_id = user.getFirstResource(veda_schema__owner).uri;
-                if (user_id is null)
-                    continue;
-
-                string pass;
-                string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
-                if (usesCredential_uri !is null)
-                {
-                    log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-                    Individual i_usesCredential = this.get_individual(&sticket, usesCredential_uri);
-                    pass = i_usesCredential.getFirstLiteral("v-s:password");
-                }
-                else
-                {
-                    pass = user.getFirstLiteral("v-s:password");
-
-                    Individual i_usesCredential;
-                    i_usesCredential.uri = user.uri ~ "-crdt";
-                    i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
-                    i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", -1, false, true);
-                    log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
-                    user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
-                    user.removeResource("v-s:password");
-                    op_res = this.put_individual(&sticket, user.uri, user, false, "", -1, false, true);
-                    log.trace("authenticate: update user[%s], res=%s", user, op_res);
-                }
-
-                if (pass !is null && pass == password)
-                {
-                    ticket = create_new_ticket(user_id);
-                    return ticket;
-                }
-            }
-
-            log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-
-            ticket.result = ResultCode.Authentication_Failed;
-
-            return ticket;
-        }
-        finally
-        {
-            stat(CMD_PUT, sw);
-        }
-    }
-
     public string get_ticket_from_storage(string ticket_id)
     {
         return tickets_storage_r.find(false, null, ticket_id);
@@ -880,6 +811,11 @@ class PThreadContext : Context
 
         if (tickets_storage_r !is null)
             tickets_storage_r.reopen_db();
+    }
+
+    public VQL get_vql()
+    {
+        return _vql;
     }
 
     public void reopen_ro_fulltext_indexer_db()
@@ -1736,236 +1672,5 @@ class PThreadContext : Context
             }
         }
         return ResultCode.OK;
-    }
-
-    version (isMStorage)
-    {
-        public string execute(string in_msg)
-        {
-            JSONValue res;
-            JSONValue jsn;
-
-            try
-            {
-                jsn = parseJSON(in_msg);
-            }
-            catch (Throwable tr)
-            {
-                log.trace("ERR! fail parse msg=%s, err=%s", in_msg, tr.msg);
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ]  = -1;
-
-                return res.toString();
-            }
-            //log.trace("get msg=%s", jsn);
-            try
-            {
-                JSONValue fn = jsn[ "function" ];
-
-                string    sfn = fn.str();
-
-                if (sfn == "authenticate")
-                {
-                    JSONValue login    = jsn[ "login" ];
-                    JSONValue password = jsn[ "password" ];
-
-                    Ticket    ticket = this.authenticate(login.str, password.str);
-
-                    res[ "type" ]     = "ticket";
-                    res[ "id" ]       = ticket.id;
-                    res[ "user_uri" ] = ticket.user_uri;
-                    res[ "result" ]   = ticket.result;
-                    res[ "end_time" ] = ticket.end_time;
-
-                    //log.trace("authenticate: res=%s", res);
-                }
-                else if (sfn == "get_ticket_trusted")
-                {
-                    JSONValue ticket_id = jsn[ "ticket" ];
-                    JSONValue login     = jsn[ "login" ];
-
-                    Ticket    ticket = this.get_ticket_trusted(ticket_id.str, login.str);
-
-                    res[ "type" ]     = "ticket";
-                    res[ "id" ]       = ticket.id;
-                    res[ "user_uri" ] = ticket.user_uri;
-                    res[ "result" ]   = ticket.result;
-                    res[ "end_time" ] = ticket.end_time;
-                }
-                else if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
-                {
-                    OpResult[] rc;
-
-                    JSONValue  _ticket         = jsn[ "ticket" ];
-                    JSONValue  jprepare_events = jsn[ "prepare_events" ];
-
-                    bool       prepare_events;
-                    if (jprepare_events.type() == JSON_TYPE.TRUE)
-                        prepare_events = true;
-
-                    JSONValue event_id       = jsn[ "event_id" ];
-                    long      transaction_id = 0;
-
-                    Ticket    *ticket = this.get_ticket(_ticket.str);
-
-                    if (sfn == "put")
-                    {
-                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
-
-                        foreach (individual_json; individuals_json)
-                        {
-                            Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       =
-                                this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                                    true);
-                            rc ~= ires;
-                            if (transaction_id <= 0)
-                                transaction_id = ires.op_id;
-                        }
-                    }
-                    else if (sfn == "add_to")
-                    {
-                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
-
-                        foreach (individual_json; individuals_json)
-                        {
-                            Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       =
-                                this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                                       true);
-                            rc ~= ires;
-                            if (transaction_id <= 0)
-                                transaction_id = ires.op_id;
-                        }
-                    }
-                    else if (sfn == "set_in")
-                    {
-                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
-
-                        foreach (individual_json; individuals_json)
-                        {
-                            Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       =
-                                this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                                       true);
-                            rc ~= ires;
-                            if (transaction_id <= 0)
-                                transaction_id = ires.op_id;
-                        }
-                    }
-                    else if (sfn == "remove_from")
-                    {
-                        JSONValue[] individuals_json = jsn[ "individuals" ].array;
-
-                        foreach (individual_json; individuals_json)
-                        {
-                            Individual individual = json_to_individual(individual_json);
-                            OpResult   ires       =
-                                this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                                            true);
-                            rc ~= ires;
-                            if (transaction_id <= 0)
-                                transaction_id = ires.op_id;
-                        }
-                    }
-                    else if (sfn == "remove")
-                    {
-                        JSONValue uri  = jsn[ "uri" ];
-                        OpResult  ires = this.remove_individual(ticket, uri.str, prepare_events, event_id.str, transaction_id, false, true);
-                        rc ~= ires;
-                        if (transaction_id <= 0)
-                            transaction_id = ires.op_id;
-                    }
-
-                    JSONValue[] all_res;
-
-                    foreach (rr; rc)
-                    {
-                        JSONValue ires;
-                        ires[ "result" ] = rr.result;
-                        ires[ "op_id" ]  = rr.op_id;
-                        all_res ~= ires;
-                    }
-
-                    res[ "type" ] = "OpResult";
-                    res[ "data" ] = all_res;
-                }
-                else if (sfn == "flush")
-                {
-                    P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                    long       wait_op_id  = jsn[ "wait_op_id" ].integer;
-
-                    ResultCode rc;
-
-                    if (f_module_id == P_MODULE.subject_manager)
-                        rc = subject_storage_module.flush_int_module(P_MODULE.subject_manager, false);
-                    else if (f_module_id == P_MODULE.acl_preparer)
-                        rc = acl_module.flush(false);
-                    else if (f_module_id == P_MODULE.fulltext_indexer)
-                        subject_storage_module.flush_ext_module(f_module_id, wait_op_id);
-
-                    res[ "type" ]   = "OpResult";
-                    res[ "result" ] = ResultCode.OK;
-                    res[ "op_id" ]  = -1;
-                }
-                else if (sfn == "send_to_module")
-                {
-                    P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                    string     msg         = jsn[ "msg" ].str;
-
-                    ResultCode rc;
-
-                    subject_storage_module.msg_to_module(f_module_id, msg, false);
-
-                    res[ "type" ]   = "OpResult";
-                    res[ "result" ] = ResultCode.OK;
-                    res[ "op_id" ]  = -1;
-                }
-                else if (sfn == "backup")
-                {
-                    bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-                    bool rc        = this.backup(to_binlog, 0);
-
-                    res[ "type" ] = "OpResult";
-                    if (rc == true)
-                        res[ "result" ] = ResultCode.OK;
-                    else
-                        res[ "result" ] = ResultCode.Internal_Server_Error;
-                    res[ "op_id" ] = -1;
-                }
-                else if (sfn == "freeze")
-                {
-                    this.freeze();
-                    res[ "type" ]   = "OpResult";
-                    res[ "result" ] = ResultCode.OK;
-                    res[ "op_id" ]  = -1;
-                }
-                else if (sfn == "unfreeze")
-                {
-                    this.unfreeze();
-                    res[ "type" ]   = "OpResult";
-                    res[ "result" ] = ResultCode.OK;
-                    res[ "op_id" ]  = -1;
-                }
-                else
-                {
-                    res[ "type" ]   = "OpResult";
-                    res[ "result" ] = ResultCode.Bad_Request;
-                    res[ "op_id" ]  = -1;
-                }
-
-                return res.toString();
-            }
-            catch (Throwable tr)
-            {
-                log.trace("ERR! fail execute msg=%s, err=%s", in_msg, tr.msg);
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ]  = -1;
-
-                return res.toString();
-            }
-        }
     }
 }

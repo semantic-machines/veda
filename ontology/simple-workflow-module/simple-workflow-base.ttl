@@ -1123,66 +1123,75 @@ if (doc) {
   }
 
   if (doc['rdf:type'][0].id === "mnd-s:ContractRequest") {
-   if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-    // Закупка
-    if (doc.hasValue('v-s:hasBudgetCategory') && (
-      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' || // CAPEX
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' || // CAPEX SIB | Реконструкция, расширение, техперевооружение
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' || // CAPEX Spare part | Запасные части
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) { // CAPEX lease contract | Лизинг
-      // CAPEX
-      if (doc.hasValue('mnd-s:hasStrategyOfChoice') && doc['mnd-s:hasStrategyOfChoice'][0].id == 'd:a7a1e835a-b23b-8465-cecd-a261a31f78fe') {
-        // Стратегия: Проведение конкурса (Тендер)
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+      // Закупка
+      if (
+        doc.hasValue('v-s:hasBudgetCategory')
+        && (
+          doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' || // CAPEX
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' || // CAPEX SIB | Реконструкция, расширение, техперевооружение
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' || // CAPEX Spare part | Запасные части
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625' // CAPEX lease contract | Лизинг
+        )
+      ) {
+        // CAPEX
+        if (doc.hasValue('mnd-s:hasStrategyOfChoice') && doc['mnd-s:hasStrategyOfChoice'][0].id == 'd:a7a1e835a-b23b-8465-cecd-a261a31f78fe') {
+          // Стратегия: Проведение конкурса (Тендер)
+          routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
+          routes['coordination1'][simple+'visible'] = [true];
+          routes['coordination1'][simple+'editable'] = [true];
+          routes['coordination1'][simple+'deadlineDays'] = [10];
+          routes['coordination1'][simple+'comment'] = [new String('Согласовать список участников тендера')];
 
-        routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
-        routes['coordination1'][simple+'visible'] = [true];
-        routes['coordination1'][simple+'editable'] = [true];
-        routes['coordination1'][simple+'deadlineDays'] = [10];
-        routes['coordination1'][simple+'comment'] = [new String('Согласовать список участников тендера')];
+          routes['coordination2'][simple+'participant'] = [
+            new veda.IndividualModel("d:mondi_appointment_00061450_71018045"), // Сергей Валуев : Начальник отдела
+            new veda.IndividualModel("d:mondi_appointment_00061421_71020115"), // Юлия Рембе : Начальник управления
+            new veda.IndividualModel("d:mondi_appointment_00068750_71017804"), // Владимир Дружков : Технический директор
+            new veda.IndividualModel("d:mondi_appointment_00047788_71024461")]; // Алексей Мокрецов : Начальник отдела
+          routes['coordination2'][simple+'visible'] = [true];
+          routes['coordination2'][simple+'editable'] = [true];
+          routes['coordination2'][simple+'deadlineDays'] = [10];
+          routes['coordination2'][simple+'comment'] = [new String('Согласовать список участников тендера')];
 
-        routes['coordination2'][simple+'participant'] = [
-          new veda.IndividualModel("d:mondi_appointment_00061450_71018045"), // Сергей Валуев : Начальник отдела
-          new veda.IndividualModel("d:mondi_appointment_00061421_71020115"), // Юлия Рембе : Начальник управления
-          new veda.IndividualModel("d:mondi_appointment_00068750_71017804"), // Владимир Дружков : Технический директор
-          new veda.IndividualModel("d:mondi_appointment_00047788_71024461")]; // Алексей Мокрецов : Начальник отдела
-        routes['coordination2'][simple+'visible'] = [true];
-        routes['coordination2'][simple+'editable'] = [true];
-        routes['coordination2'][simple+'deadlineDays'] = [10];
-        routes['coordination2'][simple+'comment'] = [new String('Согласовать список участников тендера')];
+          routes['coordination3'][simple+'participant'] = doc['v-s:creator']; // Заявитель
+          routes['coordination3'][simple+'visible'] = [true];
+          routes['coordination3'][simple+'editable'] = [true];
+          routes['coordination3'][simple+'deadlineDays'] = [10];
+          routes['coordination3'][simple+'comment'] = [new String('Разослать ТКП')];
 
-        routes['coordination3'][simple+'participant'] = doc['v-s:creator']; // Заявитель
-        routes['coordination3'][simple+'visible'] = [true];
-        routes['coordination3'][simple+'editable'] = [true];
-        routes['coordination3'][simple+'deadlineDays'] = [10];
-        routes['coordination3'][simple+'comment'] = [new String('Разослать ТКП')];
-
-        routes['review'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
-        routes['review'][simple+'visible'] = [true];
-        routes['review'][simple+'editable'] = [true];
-        routes['review'][simple+'deadlineDays'] = [10];
-        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
-      } else {
+          routes['review'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
+          routes['review'][simple+'visible'] = [true];
+          routes['review'][simple+'editable'] = [true];
+          routes['review'][simple+'deadlineDays'] = [10];
+          routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
+        } else {
         // Стратегия: Безальтернативная основа
-
-        routes['coordination1'][simple+'participant'] = [
-          new veda.IndividualModel("d:mondi_appointment_00068750_71017804"), // Владимир Дружков : Технический директор
-          new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
-        routes['coordination1'][simple+'visible'] = [true];
-        routes['coordination1'][simple+'editable'] = [true];
-        routes['coordination1'][simple+'deadlineDays'] = [10];
-        routes['coordination1'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];
-/*
-        routes['coordination2'][simple+'visible'] = [true];
-        routes['coordination2'][simple+'editable'] = [true];
-        routes['coordination2'][simple+'deadlineDays'] = [10];
-*/
-        routes['review'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
-        routes['review'][simple+'visible'] = [true];
-        routes['review'][simple+'editable'] = [true];
-        routes['review'][simple+'deadlineDays'] = [10];
-        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
-      }
-    } else if (doc.hasValue('v-s:hasBudgetCategory') && doc['v-s:hasBudgetCategory'][0].id == 'd:a193b366b-aaeb-c1f2-b101-89c95b10a6c8') {
+          routes['coordination1'][simple+'participant'] = [
+            new veda.IndividualModel("d:mondi_appointment_00068750_71017804"), // Владимир Дружков : Технический директор
+            new veda.IndividualModel("d:mondi_appointment_00061421_71020115")]; // Юлия Рембе : Начальник управления
+          routes['coordination1'][simple+'visible'] = [true];
+          routes['coordination1'][simple+'editable'] = [true];
+          routes['coordination1'][simple+'deadlineDays'] = [10];
+          routes['coordination1'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];
+          /*
+          routes['coordination2'][simple+'visible'] = [true];
+          routes['coordination2'][simple+'editable'] = [true];
+          routes['coordination2'][simple+'deadlineDays'] = [10];
+          */
+          routes['review'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
+          routes['review'][simple+'visible'] = [true];
+          routes['review'][simple+'editable'] = [true];
+          routes['review'][simple+'deadlineDays'] = [10];
+          routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
+        }
+      } else if (
+        doc.hasValue('v-s:hasBudgetCategory')
+        && (
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a193b366b-aaeb-c1f2-b101-89c95b10a6c8' // OPEX
+          || doc['v-s:hasBudgetCategory'][0].id == 'd:75707d6d68e04df5b77d9dcfc6fa7db4' // OPEX Предпроектная подготовка
+          || doc['v-s:hasBudgetCategory'][0].id == 'd:8bf1002899a5496e901d50bd9f4b8ae5' // OPEX Демонтаж
+        )
+      ) {
         // OPEX
         if (doc.hasValue('v-s:responsibleDepartment')) {
           var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
@@ -1206,6 +1215,7 @@ if (doc) {
         routes['examination'][simple+'editable'] = [true];
         routes['examination'][simple+'deadlineDays'] = [10];
         routes['examination'][simple+'comment'] = [new String('Для информации')];
+
       }
     } else if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       // Продажа
@@ -1239,7 +1249,7 @@ if (doc) {
       routes['instruction'][simple+'visible'] = [true];
       routes['instruction'][simple+'editable'] = [true];
       routes['instruction'][simple+'deadlineDays'] = [10];
-      routes['instruction'][simple+'comment'] = [new String('Рассмотреть заявку')];
+      routes['instruction'][simple+'comment'] = [new String('Исполнить заявку')];
 
       routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00057948_71018986")]; // Игорь Наумов : начальник отдела спец. Продаж
       routes['examination'][simple+'visible'] = [true];

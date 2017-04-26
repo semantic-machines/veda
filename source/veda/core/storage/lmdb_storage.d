@@ -6,21 +6,11 @@ module veda.core.storage.lmdb_storage;
 private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
-    import veda.bind.lmdb_header, veda.onto.individual;
+    import veda.bind.lmdb_header, veda.onto.individual, veda.common.type;
     import veda.common.logger, veda.core.util.utils, veda.core.common.context, veda.core.common.define;
     import veda.core.storage.binlog_tools, veda.util.queue;
 
     alias core.thread.Thread core_thread;
-}
-
-/// Режим работы хранилища
-enum DBMode
-{
-    /// чтение
-    R  = true,
-
-    /// чтение/запись
-    RW = false
 }
 
 public bool[ string ] db_is_open;

@@ -213,6 +213,20 @@ v-s:PsOrganizationForCorrespondent
   rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
 .
 
+v-s:PsDepartmentForCorrespondent
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Correspondent ;
+  v-ui:forProperty v-s:correspondentDepartment ;
+  v-ui:forProperty v-s:correspondentPerson ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "v-s:correspondentDepartment specification for v-s:Correspondent class"@en ;
+  rdfs:label "Спецификация v-s:correspondentDepartment для класса v-s:Correspondent"@ru ;
+.
+
+
+
+
 # ------------------------------------------------------------ СТРОКИ --
 
 v-s:AutomaticallyBundle
