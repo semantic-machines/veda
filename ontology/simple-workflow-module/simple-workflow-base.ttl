@@ -1407,17 +1407,28 @@ if (doc) {
     if (doc.hasValue('mnd-s:supportSpecialistOfContract') && doc['mnd-s:supportSpecialistOfContract']) {
       routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(doc['mnd-s:supportSpecialistOfContract']); // Исполнитель по контракту
     }
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && doc.hasValue('v-s:hasBudgetCategory') && (
-        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
-        routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71023848")); // Руководитель гр CAPEX ОТЗ
+    if (
+      doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135'
+      && doc.hasValue('v-s:hasBudgetCategory')
+      && (
+        doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+      )
+    ) {
+      routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71023848")); // Руководитель гр CAPEX ОТЗ
     } else {
       if (doc.hasValue('v-s:responsibleDepartment')) {
-        var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
+        var dep = doc['v-s:responsibleDepartment'][0];
         if (dep.hasValue('v-s:hasChief')) {
-          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель отдела ответственного подразделения
+          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель ответственного подразделения
+        }
+      }
+      if (doc.hasValue('v-s:initiator')) {
+        var dep = doc['v-s:initiator'][0];
+        if (dep.hasValue('v-s:hasChief')) {
+          routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(dep["v-s:hasChief"]); // Руководитель подразделения заказчика
         }
       }
     }
@@ -1427,11 +1438,16 @@ if (doc) {
     routes['coordination2'][simple+'visible'] = [true];
     routes['coordination2'][simple+'editable'] = [true];
     routes['coordination2'][simple+'deadlineDays'] = [10];
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && doc.hasValue('v-s:hasBudgetCategory') && (
-      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+    if (
+      doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135'
+      && doc.hasValue('v-s:hasBudgetCategory')
+      && (
+        doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+      )
+    ) {
       if (doc.hasValue('mnd-s:hasContractRequest')) {
         var cr = new veda.IndividualModel(doc['mnd-s:hasContractRequest'][0].id);
         if (cr.hasValue('v-s:author')) {
@@ -1469,15 +1485,22 @@ if (doc) {
     routes['coordination3'][simple+'visible'] = [true];
     routes['coordination3'][simple+'editable'] = [true];
     routes['coordination3'][simple+'deadlineDays'] = [10];
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135' && doc.hasValue('v-s:hasBudgetCategory') && (
-      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625') && doc.hasValue('mnd-s:hasContractDirection') && doc['mnd-s:hasContractDirection'][0].id == 'd:d4cf39d06aec4a9aafcd4663f7996125') {
+    if (
+      doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135'
+      && doc.hasValue('v-s:hasBudgetCategory')
+      && (
+        doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+      )
+      && doc.hasValue('mnd-s:hasContractDirection')
+      && doc['mnd-s:hasContractDirection'][0].id === 'd:d4cf39d06aec4a9aafcd4663f7996125'
+    ) {
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71005342")); // Нач ОТО
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71014233")); // Нач Казнач отд
     }
-    if (!doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination') && doc.hasValue('v-s:hasContractScope') && doc['v-s:hasContractScope'][0].id != 'd:f1ef19aec63145dcbc9cac8087682efd') {
+    if ( !doc.hasValue('mnd-s:hasCriterionOfSimplifiedCoordination') ) {
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:351a59f7-0f25-4f66-8f24-201d1ff95237")); // ПУ. Согласование контрактов
       routes['coordination3'][simple+'participant'] = routes['coordination3'][simple+'participant'].concat(new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa")); // Бух. Согласование контрактов
     }
@@ -1487,18 +1510,22 @@ if (doc) {
     routes['coordination4'][simple+'visible'] = [true];
     routes['coordination4'][simple+'editable'] = [true];
     routes['coordination4'][simple+'deadlineDays'] = [10];
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-      if (doc.hasValue('v-s:hasBudgetCategory') && (
-        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135') {
+      if (
+        doc.hasValue('v-s:hasBudgetCategory')
+        && (
+          doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+        )
+      ) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
           routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
         }
       }
     }
-    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
+    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 7000000) {
         routes['coordination4'][simple+'participant'] = routes['coordination4'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
       }
@@ -1509,12 +1536,16 @@ if (doc) {
     routes['coordination5'][simple+'visible'] = [true];
     routes['coordination5'][simple+'editable'] = [true];
     routes['coordination5'][simple+'deadlineDays'] = [10];
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-      if (doc.hasValue('v-s:hasBudgetCategory') && (
-        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135') {
+      if (
+        doc.hasValue('v-s:hasBudgetCategory')
+        && (
+          doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+        )
+      ) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
           routes['coordination5'][simple+'participant'] = routes['coordination5'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71021843")); // Нач УриР
         }
@@ -1534,7 +1565,7 @@ if (doc) {
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [10];
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:initiator') && (new veda.IndividualModel(doc['v-s:initiator'][0].id)).isSubUnitOf("d:mondi_department_50001781")) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017804")); // Технический директор
       }
@@ -1554,17 +1585,21 @@ if (doc) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:21cb0985-e473-455c-b173-f61a208ebaf4")); // Холдинг
       }
     }
-    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
+    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] > 700000) {
           routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_70006692")); // Гл Бухгалтер
       }
     }
-    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
-      if (doc.hasValue('v-s:hasBudgetCategory') && (
-        doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-        doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+    if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135') {
+      if (
+        doc.hasValue('v-s:hasBudgetCategory')
+        && (
+          doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+          doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+        )
+      ) {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
           routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018045")); // Нач ОТЗ
         }
@@ -1573,7 +1608,7 @@ if (doc) {
         }
       } else {
         if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 700000) {
-          if (doc.hasValue('v-s:hasContractScope') && doc['v-s:hasContractScope'][0].id == 'd:f1ef19aec63145dcbc9cac8087682efd') {
+          if (doc.hasValue('v-s:hasContractScope') && doc['v-s:hasContractScope'][0].id === 'd:f1ef19aec63145dcbc9cac8087682efd') {
             if (doc.hasValue('v-s:responsibleDepartment')) {
               var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
               if (dep.hasValue('v-s:hasChief')) {
@@ -1582,14 +1617,14 @@ if (doc) {
             }
             routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020115")); // Нач УЗ
           }
-          if (doc.hasValue('v-s:hasContractObject') && doc['v-s:hasContractObject'][0].id == 'd:190e002c6beb4c62bfd877df4a151334') {
+          if (doc.hasValue('v-s:hasContractObject') && doc['v-s:hasContractObject'][0].id === 'd:190e002c6beb4c62bfd877df4a151334') {
             routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71009274")); // Руководитель ЛПО
             routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71020115")); // Нач УЗ
           }
         }
       }
     }
-    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
+    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135') {
       if (doc.hasValue('v-s:hasPrice') && doc['v-s:hasPrice'][0].hasValue('v-s:sum') && doc['v-s:hasPrice'][0]['v-s:sum'][0] <= 7000000) {
         routes['sign'][simple+'participant'] = routes['sign'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71018986")); // Нач ОСП
       }
@@ -1629,29 +1664,39 @@ if (doc) {
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['mnd-s:executorSpecialistOfContract']); // Исполнитель по контракту
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['mnd-s:supportSpecialistOfContract']); // Специалист по сопровождению
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:47ba4b3a-da9a-412f-bd42-b11b0c847229')); // ПУ Регистратор контрактов
-    if (doc.hasValue('mnd-s:hasContractDirection') && doc['mnd-s:hasContractDirection'][0].id == 'd:d4cf39d06aec4a9aafcd4663f7996125') {
-      if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id == 'd:org_RU1121003135') {
+    if (
+      doc.hasValue('mnd-s:hasContractDirection')
+      && doc['mnd-s:hasContractDirection'][0].id === 'd:d4cf39d06aec4a9aafcd4663f7996125'
+    ) {
+      if (doc.hasValue('v-s:customer') && doc['v-s:customer'][0].id === 'd:org_RU1121003135') {
         routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:4ec5dead-aab6-4789-bdd1-94e036ae4a16')); // Специалист ОТО имп
       }
-      if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
+      if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135') {
         routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:SYK-CCDG_position')); // Специалист ОТО эксп
       }
     }
-    if (doc.hasValue('v-s:hasBudgetCategory') && (
-      doc['v-s:hasBudgetCategory'][0].id == 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
-      doc['v-s:hasBudgetCategory'][0].id == 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625')) {
+    if (
+      doc.hasValue('v-s:hasBudgetCategory')
+      && (
+        doc['v-s:hasBudgetCategory'][0].id === 'd:add478ffd-4996-ca11-8d8c-51bf810357c7' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a486cc102-8ec8-3f09-b326-6fabeec30882' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a0bfac3cc-ecf3-7847-59b2-5793ebd73879' ||
+        doc['v-s:hasBudgetCategory'][0].id === 'd:a58764c7b-9730-2baa-68a4-da7b9fa36625'
+      )
+    ) {
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:ff670646-d509-4ff9-92f2-482c255441e8')); // Спец ОУП
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:554f8555-af9a-436d-ada9-09458614e878')); // Спец по ИЗ
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71021843')); // Нач УриР
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71024461')); // Нач ОКС УриР
     }
-
-    if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile') && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
-      && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length == 1
+    if (
+      doc.hasValue('v-s:supplier')
+      && doc['v-s:supplier'][0].hasValue('v-s:hasContractorProfile')
+      && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0].hasValue('mnd-s:hasContractorCategoryRequest')
+      && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'].length === 1
       && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0].hasValue('mnd-s:hasContractorInteractionCategory')
-      && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id == 'd:3dcd8dd19b8f4ab193ea2d8f469771cb') {
+      && doc['v-s:supplier'][0]['v-s:hasContractorProfile'][0]['mnd-s:hasContractorCategoryRequest'][0]['mnd-s:hasContractorInteractionCategory'][0].id === 'd:3dcd8dd19b8f4ab193ea2d8f469771cb'
+    ) {
       routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')); // Специалист по ведению кредиторов
     }
 
