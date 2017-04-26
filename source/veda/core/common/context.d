@@ -10,7 +10,43 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.common.ticket;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl;
+
+/**
+ * Обьект - сессионный тикет
+ */
+public struct Ticket
+{
+    /// ID
+    string     id;
+
+    /// Uri пользователя
+    string     user_uri;
+
+    /// Код результата, если тикет не валидный != ResultCode.Ok
+    ResultCode result;
+
+    /// Дата начала действия тикета
+    long       start_time;
+
+    /// Дата окончания действия тикета
+    long       end_time;
+
+    /// Конструктор
+    this(Ticket tt)
+    {
+        id       = tt.id.dup;
+        user_uri = tt.user_uri.dup;
+        end_time = tt.end_time;
+    }
+
+    this(string _id, string _user_uri, long _end_time)
+    {
+        id       = _id;
+        user_uri = _user_uri;
+        end_time = _end_time;
+    }
+}
 
 public struct SearchResult
 {
@@ -20,6 +56,19 @@ public struct SearchResult
     int        processed;
     long       cursor;
     ResultCode result_code = ResultCode.Not_Ready;
+}
+
+interface Storage
+{
+    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
+    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
+    public ResultCode remove(bool need_auth, string user_id, string in_key);
+    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
+    public void unload_to_queue(string path, string queue_id, bool only_ids);
+    public long count_entries();
+    public void reopen_db();
+    public void close_db();
+    public long dump_to_binlog();
 }
 
 interface ScriptVM

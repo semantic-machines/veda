@@ -12,7 +12,7 @@ private
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
            veda.core.common.log_msg, veda.util.module_info;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage, veda.common.ticket;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction;
     import veda.util.module_info;
     import veda.common.logger;
@@ -244,7 +244,7 @@ class PThreadContext : Context
 
         ctx._vql = new VQL(ctx);
 
-        ctx.onto = new Onto(ctx.sys_ticket(true), ctx.get_vql(), ctx.get_subject_storage_db(), ctx.get_logger());
+        ctx.onto = new Onto(ctx);
         ctx.onto.load();
 
         ctx.local_count_put = get_subject_manager_op_id();

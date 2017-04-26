@@ -4,7 +4,7 @@ import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, co
 import core.vararg, core.stdc.stdarg, core.atomic;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd, TrailDB;
-import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg, veda.common.ticket;
+import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 import veda.frontend.cbor8vjson;
 

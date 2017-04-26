@@ -5,32 +5,24 @@
 module veda.core.search.indexer_property;
 
 private import std.conv, std.stdio;
-private import veda.core.common.log_msg;
-private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.ticket, veda.common.type;
-private import veda.common.logger, veda.core.search.vql;
+private import veda.core.common.context, veda.core.common.log_msg;
+private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define;
+private import veda.common.logger;
 
 class IndexerProperty
 {
+    private Context context;
+
     private         Individual[ string ] class_property__2__indiviual;
     private         string[ string ] class__2__database;
     private         Individual[ string ] uri__2__indiviual;
     private         bool[ string ]  database__2__true;
-
     private Logger  log;
-    private Storage inividuals_storage_r;
-    VQL             vql;
-    Ticket          sticket;
 
-    this(Ticket _ticket, Logger _log, Storage _inividuals_storage_r, VQL _vql)
+    this(Context _context)
     {
-        log = _log;
-        vql = _vql;
-
-        if (vql is null)
-            stderr.writeln("ERR! IndexerProperty : vql is null");
-
-        inividuals_storage_r = _inividuals_storage_r;
-        sticket              = _ticket;
+        context = _context;
+        log     = context.get_logger();
     }
 
     bool[ string ] get_dbnames()
@@ -96,12 +88,13 @@ class IndexerProperty
     {
         if (class_property__2__indiviual.length == 0 || force)
         {
-            inividuals_storage_r.reopen_db();
-            vql.reopen_db();
+            context.reopen_ro_subject_storage_db();
+            context.reopen_ro_fulltext_indexer_db();
 
-            Individual[] l_individuals;
+//            context.vql().reopen_db();
+            Ticket       sticket = context.sys_ticket();
 
-            vql.get(&sticket, "'rdf:type' === 'vdi:ClassIndex'", "", "", 10000, 10000, l_individuals, true, false);
+            Individual[] l_individuals = context.get_individuals_via_query(&sticket, "'rdf:type' === 'vdi:ClassIndex'", true, 10000, 10000);
 
             foreach (indv; l_individuals)
             {

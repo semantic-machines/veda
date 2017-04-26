@@ -9,7 +9,7 @@ private
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.common.type;
     import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates;
-    import veda.core.search.vel, veda.core.search.xapian_reader, veda.common.ticket;
+    import veda.core.search.vel, veda.core.search.xapian_reader;
     import veda.onto.individual, veda.core.az.acl;
 }
 
@@ -41,7 +41,7 @@ class VQL
 
         context = _context;
         log     = context.get_logger();
-        xr      = new XapianReader(_context, this);
+        xr      = new XapianReader(_context);
     }
 
     public bool close_db()

@@ -9,29 +9,6 @@ module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
-/// Режим работы хранилища
-enum DBMode
-{
-    /// чтение
-    R  = true,
-
-    /// чтение/запись
-    RW = false
-}
-
-interface Storage
-{
-    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
-    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
-    public ResultCode remove(bool need_auth, string user_id, string in_key);
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
-    public void unload_to_queue(string path, string queue_id, bool only_ids);
-    public long count_entries();
-    public void reopen_db();
-    public void close_db();
-    public long dump_to_binlog();
-}
-
 /// Имена процессов
 public enum P_MODULE : byte
 {

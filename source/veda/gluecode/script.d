@@ -1,7 +1,7 @@
 module veda.gluecode.script;
 
 import std.stdio, std.path, std.container.array, std.algorithm, std.conv, std.range;
-import veda.gluecode.v8d_header, veda.core.common.context, veda.common.ticket, veda.onto.individual, veda.core.common.log_msg, veda.core.common.know_predicates,
+import veda.gluecode.v8d_header, veda.core.common.context, veda.onto.individual, veda.core.common.log_msg, veda.core.common.know_predicates,
        veda.onto.resource;
 
 struct ScriptInfo
