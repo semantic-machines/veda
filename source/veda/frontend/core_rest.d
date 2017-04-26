@@ -769,7 +769,7 @@ class VedaStorageRest : VedaStorageRest_API
                     if (reopen)
                     {
                         context.reopen_ro_acl_storage_db();
-                        context.reopen_ro_subject_storage_db();
+                        context.reopen_ro_individuals_storage_db();
                     }
 
                     string cb = context.get_individual_as_binobj(ticket, uri, rc);

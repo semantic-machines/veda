@@ -115,10 +115,6 @@ interface Context
 
     public ResultCode commit(Transaction *in_tnx);
 
-    //version (isMStorage)
-    //{
-    //    public string execute(string in_msg);
-    //}
 	public VQL get_vql ();
     public Authorization acl_indexes();
 
@@ -184,13 +180,11 @@ interface Context
                                                       bool trace);
 
     public void reopen_ro_fulltext_indexer_db();
-    public void reopen_ro_subject_storage_db();
+    public void reopen_ro_individuals_storage_db();
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
 
-    public void subject_storage_commmit(bool isWait = true);
-
-    public Storage get_subject_storage_db();
+    public Storage get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri

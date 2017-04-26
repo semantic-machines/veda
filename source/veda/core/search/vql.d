@@ -179,7 +179,7 @@ class VQL
                     else
                     {
                         //writeln("ERR! invalid individual=", uri);
-                        context.reopen_ro_subject_storage_db();
+                        context.reopen_ro_individuals_storage_db();
                         data = context.get_from_individual_storage(ticket.user_uri, uri);
                         if (ind.deserialize(data) > 0)
                         {

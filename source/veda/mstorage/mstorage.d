@@ -187,7 +187,7 @@ void init(string node_id)
 
         core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log);
         l_context            = core_context;
-        inividuals_storage_r = l_context.get_subject_storage_db();      //new LmdbStorage(individuals_db_path, DBMode.R, "mstorage:inividuals", log);
+        inividuals_storage_r = l_context.get_inividuals_storage_r();    
         vql_r                = l_context.get_vql();
 
         sticket = core_context.sys_ticket();
@@ -206,7 +206,7 @@ void init(string node_id)
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (node.getStatus() != ResultCode.OK)
         {
-            core_context.reopen_ro_subject_storage_db();
+            core_context.reopen_ro_individuals_storage_db();
             core_context.reopen_ro_acl_storage_db();
             node = core_context.get_individual(&sticket, node_id);
 

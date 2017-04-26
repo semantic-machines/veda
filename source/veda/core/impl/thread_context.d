@@ -227,7 +227,7 @@ class PThreadContext : Context
         return API_ready;
     }
 
-    public Storage get_subject_storage_db()
+    public Storage get_inividuals_storage_r()
     {
         return inividuals_storage_r;
     }
@@ -293,7 +293,7 @@ class PThreadContext : Context
     {
         if (node == Individual.init && node_id !is null)
         {
-            this.reopen_ro_subject_storage_db();
+            this.reopen_ro_individuals_storage_db();
             Ticket sticket = sys_ticket();
 
             node = get_individual(&sticket, node_id);
@@ -766,7 +766,7 @@ class PThreadContext : Context
             _vql.reopen_db();
     }
 
-    public void reopen_ro_subject_storage_db()
+    public void reopen_ro_individuals_storage_db()
     {
 //        try
 //        {
@@ -972,14 +972,6 @@ class PThreadContext : Context
 
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
-
-    public void subject_storage_commmit(bool isWait = true)
-    {
-        version (isMStorage)
-        {
-            subject_storage_module.flush_int_module(P_MODULE.subject_manager, isWait);
-        }
-    }
 
     public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
@@ -1468,7 +1460,7 @@ class PThreadContext : Context
         version (isModule)
         {
             if (module_id == P_MODULE.subject_manager)
-                this.reopen_ro_subject_storage_db();
+                this.reopen_ro_individuals_storage_db();
 
             if (module_id == P_MODULE.acl_preparer)
                 this.reopen_ro_acl_storage_db();
@@ -1480,7 +1472,7 @@ class PThreadContext : Context
         version (WebServer)
         {
             if (module_id == P_MODULE.subject_manager)
-                this.reopen_ro_subject_storage_db();
+                this.reopen_ro_individuals_storage_db();
 
             if (module_id == P_MODULE.acl_preparer)
                 this.reopen_ro_acl_storage_db();

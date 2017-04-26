@@ -161,7 +161,7 @@ class Onto
         if (trace_msg[ 20 ] == 1)
             log.trace_log_and_console("[%s] load onto..", context.get_name);
 
-        context.reopen_ro_subject_storage_db();
+        context.reopen_ro_individuals_storage_db();
         context.reopen_ro_fulltext_indexer_db();
 
         Ticket       sticket = context.sys_ticket();
