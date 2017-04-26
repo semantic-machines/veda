@@ -197,7 +197,7 @@ public class IndexerContext
         try
         {
             if (iproperty is null)
-                iproperty = new IndexerProperty(context);
+                iproperty = new IndexerProperty(context.sys_ticket(), context.get_logger(), context.get_subject_storage_db(), context.get_vql());
 
             iproperty.load(false);
 

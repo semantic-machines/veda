@@ -41,7 +41,7 @@ class VQL
 
         context = _context;
         log     = context.get_logger();
-        xr      = new XapianReader(_context);
+        xr      = new XapianReader(_context, this);
     }
 
     public bool close_db()
