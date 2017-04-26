@@ -1239,7 +1239,7 @@ if (doc) {
       routes['instruction'][simple+'visible'] = [true];
       routes['instruction'][simple+'editable'] = [true];
       routes['instruction'][simple+'deadlineDays'] = [10];
-      routes['instruction'][simple+'comment'] = [new String('Рассмотреть заявку')];
+      routes['instruction'][simple+'comment'] = [new String('Исполнить заявку')];
 
       routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00057948_71018986")]; // Игорь Наумов : начальник отдела спец. Продаж
       routes['examination'][simple+'visible'] = [true];
