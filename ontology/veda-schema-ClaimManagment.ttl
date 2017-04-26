@@ -65,7 +65,7 @@ v-s:claimRequirement
 v-s:claimCircumstanceDescription
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Claim circumstance description"@en ;
-  rdfs:label "Описание обстоятельствпретензии"@ru ;
+  rdfs:label "Описание обстоятельств претензии"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
