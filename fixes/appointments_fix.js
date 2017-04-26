@@ -30,3 +30,31 @@ apps.forEach(function (app, i) {
     }
   }
 });
+
+
+
+// Индекс задач Ольги Римерт
+
+var apps_uris = query({
+  ticket: veda.ticket,
+  query: "'rdf:type'==='v-s:Appointment' && 'v-s:employee'=='d:mondi_employee_00051114'"
+}).result
+
+var apps = get_individuals(veda.ticket, apps_uris);
+
+var tasks_count = 0;
+
+apps.forEach(function (app) {
+  var pos_uri = app["v-s:occupation"][0].data;
+  var tasks_uris = query({
+    ticket: veda.ticket,
+    query: "'rdf:type'==='v-wf:DecisionForm' && ('v-wf:to'=='" + pos_uri + "' || 'v-wf:from'=='" + pos_uri + "')"
+  }).result
+  var tasks = get_individuals(veda.ticket, tasks_uris);
+  tasks.forEach(function (task) {
+    //console.log(++tasks_count, "task", JSON.stringify(task));
+    ++tasks_count;
+    put_individual(veda.ticket, task);
+  });
+});
+console.log("tasks_count =", tasks_count);

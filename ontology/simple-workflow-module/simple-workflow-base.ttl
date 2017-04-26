@@ -2294,7 +2294,9 @@ s-wf:rul_transform22_2
   v-wf:aggregate  "putString ('rdfs:label', 'подписание документа ' + getElement ()[0].data)";
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionSign')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')";
@@ -2319,7 +2321,9 @@ s-wf:rul_transform23_5
   v-wf:aggregate  "putString ('rdfs:label', 'рассмотрение по документу ' + getElement ()[0].data)";
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionReview')";
   v-wf:grouping "1";
@@ -2342,7 +2346,9 @@ s-wf:rul_transform23_4
   v-wf:aggregate  "putString ('rdfs:label', 'поручение по документу ' + getElement ()[0].data)";
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
@@ -2366,7 +2372,9 @@ s-wf:rul_transform23_3
   v-wf:aggregate  "putString ('rdfs:label', 'ознакомление по документу ' + getElement ()[0].data)";
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionExamined')";
   v-wf:grouping "1";
@@ -2398,7 +2406,9 @@ s-wf:rul_transform23_2
   v-wf:aggregate  "putString ('rdfs:label', 'утверждение подписанного документа ' + getElement ()[0].data)";
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionApprove')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')";
@@ -2769,7 +2779,9 @@ s-wf:rul_tr_form_1
 # v-wf:aggregate  "putFieldOfIndividFromElement ('rdfs:label', 'rdfs:label')";
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
-  v-wf:aggregate  "putExecutor ('v-wf:to')";
+#  v-wf:aggregate  "putExecutor ('v-wf:to')";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
+  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
@@ -2790,6 +2802,7 @@ s-wf:rul_tr_form_2
   rdf:type v-wf:Rule ;
   v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
   v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:employee'])";
   v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:occupation'])";
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
@@ -3248,13 +3261,13 @@ s-wf:transformation_uri
 
 s-wf:def_exec_actor
   rdf:type v-wf:ExecutorDefinition ;
-  v-wf:executorExpression "get_properties_chain (process.getLocalVariable ('actor'), [{$get:'v-s:occupation'}], process.getLocalVariable ('actor'))" ;
+  v-wf:executorExpression "process.getLocalVariable ('actor')" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
 s-wf:def_exec_controller
   rdf:type v-wf:ExecutorDefinition ;
-  v-wf:executorExpression "get_properties_chain (process.getLocalVariable ('controller'), [{$get:'v-s:occupation'}], process.getLocalVariable ('controller'))" ;
+  v-wf:executorExpression "process.getLocalVariable ('controller')" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -3266,7 +3279,7 @@ s-wf:def_exec_initiator
 
 s-wf:def_exec_responsible
   rdf:type v-wf:ExecutorDefinition ;
-  v-wf:executorExpression "process.getLocalVariable ('responsible')?process.getLocalVariable ('responsible'):process.getLocalVariable ('initiator')" ;
+  v-wf:executorExpression "process.getLocalVariable ('responsible') ? process.getLocalVariable ('responsible') : process.getLocalVariable ('initiator')" ;
   rdfs:isDefinedBy s-wf: ;
 .
 

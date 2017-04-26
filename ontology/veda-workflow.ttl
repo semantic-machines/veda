@@ -1599,24 +1599,19 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div class="hidden"></div>
 <script>
-  individual.one("beforeSave", function () {
-    if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
-      individual["v-wf:read"] = [true];
-    }
-  });
-  individual.on("afterSave", afterSaveHandler);
-  template.one("remove", function () {
-    if ( (individual["v-wf:to"][0].id === veda.appointment.id || individual["v-wf:to"][0].id === veda.appointment["v-s:occupation"][0].id) && !individual.hasValue("v-wf:read")) {
-      individual.reset();
-      individual["v-wf:read"] = [true];
-      individual.save();
-    }
-    individual.off("afterSave", afterSaveHandler);
-  });
-  function afterSaveHandler () {
-    if ( individual.hasValue("v-wf:takenDecision") ) {
-      veda.trigger("task:completed", individual.id);
-    }
+  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
+    individual.one("beforeSave", function () {
+      if ( !individual.hasValue("v-wf:read", true) ) {
+        individual["v-wf:read"] = [true];
+      }
+    });
+    template.one("remove", function () {
+      if ( !individual.hasValue("v-wf:read", true) ) {
+        individual.reset();
+        individual["v-wf:read"] = [true];
+        individual.save();
+      }
+    });
   }
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>

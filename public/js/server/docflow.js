@@ -122,7 +122,7 @@ function prepare_work_order(ticket, document)
         var net_element = get_individual(ticket, getUri(forNetElement));
         if (!net_element) return;
 
-//		print ("[WORKFLOW] #1 net_element.uri=", net_element['@'], ", work_order=", toJson (_work_order));
+//    print ("[WORKFLOW] #1 net_element.uri=", net_element['@'], ", work_order=", toJson (_work_order));
 
         var f_local_outVars = document['v-wf:outVars'];
         var task_output_vars = [];
@@ -131,13 +131,13 @@ function prepare_work_order(ticket, document)
 
         if (!f_local_outVars)
         {
-//			print ("[WORKFLOW] #2 net_element.uri=", net_element['@']);
+//      print ("[WORKFLOW] #2 net_element.uri=", net_element['@']);
             journal_uri = create_new_subjournal(f_forWorkItem, _work_order['@'], net_element['rdfs:label'], 'v-wf:WorkOrderStarted');
 
-			if (!executor)
-			{
-				mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');			
-			}	
+      if (!executor)
+      {
+        mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
+      }
 
                 // берем только необработанные рабочие задания
             if (!executor)
@@ -187,7 +187,7 @@ function prepare_work_order(ticket, document)
 
                 if (is_codelet)
                 {
-					mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
+          mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
 
                     //print("[WORKFLOW][WO1.2] executor=" + getUri(f_executor) + ", is codelet");
 
@@ -345,12 +345,18 @@ function prepare_work_order(ticket, document)
                             // выдадим права отвечающему на эту форму
                             if (is_appointment)
                             {
+                                //print("[WORKFLOW][WO2.2] appointment=" + toJson(executor));
                                 var employee = executor['v-s:employee'];
                                 if (employee)
                                 {
                                     //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
-
                                     addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+                                }
+                                var position = executor['v-s:occupation'];
+                                if (position)
+                                {
+                                    //print("[WORKFLOW][WO2.2] position=" + toJson(position));
+                                    addRight(ticket, [can_read, can_update], position[0].data, transform_result[i]['@']);
                                 }
                             }
                             if (is_position)
@@ -623,7 +629,7 @@ function prepare_work_item(ticket, document)
     var work_item = document;
 
     try
-    {		
+    {
         var forProcess = getUri(work_item['v-wf:forProcess']);
         var _process = get_individual(ticket, forProcess);
         if (!_process) return;
@@ -637,7 +643,7 @@ function prepare_work_item(ticket, document)
         if (!netElement) return;
 
         var trace_journal_uri;
-		
+
         var isCompleted = document['v-wf:isCompleted'];
         if (isCompleted)
         {
@@ -695,17 +701,17 @@ function prepare_work_item(ticket, document)
 
             // нужно обойти все дерево и найти незавершенные WorkItem соответсвующие текущей net_element
             var fne = find_in_work_item_tree(ticket, _process, 'v-wf:forNetElement', getUri(forNetElement));
-			if (fne.length > in_flows.length)
-			{
-				print ('ERR! AND join: check v-wf:consistsOf in net['+instanceOf+'] for net element ['+getUri(forNetElement)+']');					
-			}	
-			
+      if (fne.length > in_flows.length)
+      {
+        print ('ERR! AND join: check v-wf:consistsOf in net['+instanceOf+'] for net element ['+getUri(forNetElement)+']');
+      }
+
             if (fne.length != in_flows.length)
                 return;
 
             // проверим соответствие найденных WorkItem со схемой
             var and_join_count_complete = 0;
-			var isExecuted;
+      var isExecuted;
 
             for (var idx = 0; idx < in_flows.length; idx++)
             {
@@ -714,12 +720,12 @@ function prepare_work_item(ticket, document)
                 {
                     var found_out_task = getUri(fne[idx1].parent['v-wf:forNetElement']);
                     isExecuted = fne[idx1].work_item['v-s:isExecuted']
-           		    //print ("[WORKFLOW] found_out_task=", toJson (fne[idx1].work_item));
-					if (isExecuted)
-					{
-						// встретился уже выполняемый work_item, по этой задаче, остальные отбрасываем
-						return;
-					}	
+                  //print ("[WORKFLOW] found_out_task=", toJson (fne[idx1].work_item));
+          if (isExecuted)
+          {
+            // встретился уже выполняемый work_item, по этой задаче, остальные отбрасываем
+            return;
+          }
 
                     if (shema_out_task == found_out_task)
                     {
@@ -729,18 +735,18 @@ function prepare_work_item(ticket, document)
                 }
             }
 
-			//print ("[WORKFLOW] and_join_count_complete=", and_join_count_complete, ", in_flows.length=", in_flows.length);
+      //print ("[WORKFLOW] and_join_count_complete=", and_join_count_complete, ", in_flows.length=", in_flows.length);
 
             if (and_join_count_complete != in_flows.length)
                 return;
-                                    
-		    //print ("[WORKFLOW] prepare_work_item uri=", document['@']);
-			//print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
+
+        //print ("[WORKFLOW] prepare_work_item uri=", document['@']);
+      //print ("[WORKFLOW] and join is complete and_join_count_complete=", and_join_count_complete);
         }
 
-		document['v-s:isExecuted'] = newBool (true);			
+    document['v-s:isExecuted'] = newBool (true);
         put_individual(ticket, document, _event_id);
-		//print ("[WORKFLOW] UPDATE document=", toJson (document));
+    //print ("[WORKFLOW] UPDATE document=", toJson (document));
 
         var is_completed = false;
         var workItemList = [];
@@ -990,9 +996,9 @@ function prepare_work_item(ticket, document)
                         type: _Uri
                     });
                     document['v-wf:isCompleted'] = newBool (true);
-					document['v-s:isExecuted'] = newBool (false);			
+          document['v-s:isExecuted'] = newBool (false);
                     document['v-s:created'] = newDate (new Date ());
-                    
+
                     is_completed = true;
 
                     ////print("[WO12] document=", toJson(document));
@@ -1256,7 +1262,7 @@ function prepare_start_form(ticket, document)
 //    var user = get_individual(ticket, author_uri);
 //    if (user['v-s:hasAppointment'])
 //    {
-      if (creator_f)	
+      if (creator_f)
         journalRecord['v-s:actor'] = creator_f;
 //    }
 
