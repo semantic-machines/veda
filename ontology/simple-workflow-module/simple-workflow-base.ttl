@@ -1184,7 +1184,14 @@ if (doc) {
           routes['review'][simple+'deadlineDays'] = [10];
           routes['review'][simple+'comment'] = [new String('Рассмотреть заявку на контракт')];
         }
-      } else if (doc.hasValue('v-s:hasBudgetCategory') && doc['v-s:hasBudgetCategory'][0].id == 'd:a193b366b-aaeb-c1f2-b101-89c95b10a6c8') {
+      } else if (
+        doc.hasValue('v-s:hasBudgetCategory')
+        && (
+          doc['v-s:hasBudgetCategory'][0].id == 'd:a193b366b-aaeb-c1f2-b101-89c95b10a6c8' // OPEX
+          || doc['v-s:hasBudgetCategory'][0].id == 'd:75707d6d68e04df5b77d9dcfc6fa7db4' // OPEX Предпроектная подготовка
+          || doc['v-s:hasBudgetCategory'][0].id == 'd:8bf1002899a5496e901d50bd9f4b8ae5' // OPEX Демонтаж
+        )
+      ) {
         // OPEX
         if (doc.hasValue('v-s:responsibleDepartment')) {
           var dep = new veda.IndividualModel(doc['v-s:responsibleDepartment'][0].id);
@@ -1209,22 +1216,6 @@ if (doc) {
         routes['examination'][simple+'deadlineDays'] = [10];
         routes['examination'][simple+'comment'] = [new String('Для информации')];
 
-      } else {
-
-        routes['coordination1'][simple+'visible'] = [true];
-        routes['coordination1'][simple+'editable'] = [true];
-        routes['coordination1'][simple+'deadlineDays'] = [10];
-        routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку')];
-
-        routes['review'][simple+'visible'] = [true];
-        routes['review'][simple+'editable'] = [true];
-        routes['review'][simple+'deadlineDays'] = [10];
-        routes['review'][simple+'comment'] = [new String('Рассмотреть заявку')];
-
-        routes['examination'][simple+'visible'] = [true];
-        routes['examination'][simple+'editable'] = [true];
-        routes['examination'][simple+'deadlineDays'] = [10];
-        routes['examination'][simple+'comment'] = [new String('Для информации')];
       }
     } else if (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id == 'd:org_RU1121003135') {
       // Продажа
