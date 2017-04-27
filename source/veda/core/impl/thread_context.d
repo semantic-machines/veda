@@ -9,31 +9,21 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json, std.regex;
     import veda.bind.xapian_d_header;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
-    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
-           veda.core.common.log_msg, veda.util.module_info;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg, veda.util.module_info;
+    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
-    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction;
-    import veda.util.module_info;
-    import veda.common.logger;
+    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
 
     version (isMStorage)
     {
         alias veda.mstorage.storage_manager ticket_storage_module;
         alias veda.mstorage.storage_manager subject_storage_module;
-        alias veda.mstorage.acl_manager     acl_module;
-        alias veda.mstorage.load_info       load_info;
     }
 }
-
-Tid            dummy_tid;
-
 
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    long local_count_put;
-
     bool[ P_MODULE ] is_traced_module;
 
     private Ticket *[ string ] user_of_ticket;
@@ -196,9 +186,6 @@ class PThreadContext : Context
 
         ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
         ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
-//        is_traced_module[ P_MODULE.acl_preparer ]      = true;
-//        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
-//        is_traced_module[ P_MODULE.scripts ]          = true;
 
         ctx.get_configuration();
 
@@ -206,9 +193,6 @@ class PThreadContext : Context
 
         ctx.onto = new Onto(ctx);
         ctx.onto.load();
-
-        ctx.local_count_put = get_subject_manager_op_id();
-        //ft_local_count  = get_count_indexed();
 
         ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
 
@@ -328,8 +312,6 @@ class PThreadContext : Context
 
         if (inividuals_storage_r !is null)
             res = inividuals_storage_r.find(true, user_id, uri);
-        else
-            res = get_from_individual_storage_thread(uri);
 
         if (res !is null && res.length < 10)
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
@@ -348,12 +330,6 @@ class PThreadContext : Context
         {
             prefix_map[ key ] = value;
         }
-    }
-
-    public void stat(byte command_type, ref StopWatch sw) nothrow
-    {
-        version (isMStorage)
-            load_info.stat(command_type, sw);
     }
 
     // *************************************************** external api *********************************** //
@@ -810,7 +786,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD_GET, sw);
+            //stat(CMD_GET, sw);
         }
     }
 
@@ -861,7 +837,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD_GET, sw);
+            //stat(CMD_GET, sw);
             if (trace_msg[ T_API_200 ] == 1)
                 log.trace("get_individual as binobj: end, uri=%s", uri);
         }
@@ -944,7 +920,7 @@ class PThreadContext : Context
 
                 try
                 {
-                    prev_state = get_from_individual_storage_thread(indv.uri);
+                    prev_state = subject_storage_module.find(P_MODULE.subject_manager, indv.uri);
 
                     if ((prev_state is null ||
                          prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
@@ -1117,7 +1093,7 @@ class PThreadContext : Context
             if (trace_msg[ T_API_240 ] == 1)
                 log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);
 
-            stat(CMD_PUT, sw);
+            //stat(CMD_PUT, sw);
         }
     }
 
@@ -1216,17 +1192,6 @@ class PThreadContext : Context
         }
     }
 
-    private string get_from_individual_storage_thread(string uri)
-    {
-        string res;
-
-        version (isMStorage)
-        {
-            res = subject_storage_module.find(P_MODULE.subject_manager, uri);
-        }
-        return res;
-    }
-
     //////////////////////////////////////////////// MODULES INTERACTION
 
     private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
@@ -1268,18 +1233,6 @@ class PThreadContext : Context
                 res = info.committed_op_id;
             else
                 res = info.op_id;
-        }
-
-        version (isModule)
-        {
-            if (module_id == P_MODULE.subject_manager)
-                this.reopen_ro_individuals_storage_db();
-
-            if (module_id == P_MODULE.acl_preparer)
-                this.reopen_ro_acl_storage_db();
-
-            if (module_id == P_MODULE.fulltext_indexer)
-                this.reopen_ro_fulltext_indexer_db();
         }
 
         version (WebServer)

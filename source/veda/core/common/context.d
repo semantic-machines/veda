@@ -106,7 +106,6 @@ interface Context
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
     void add_prefix_map(ref string[ string ] arg);
-    public void stat(byte command_type, ref StopWatch sw) nothrow;
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
