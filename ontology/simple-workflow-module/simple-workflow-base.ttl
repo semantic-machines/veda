@@ -3609,7 +3609,7 @@ s-wf:nc_oc
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_journal_to_4_PLV_actor, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_from_actor, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
   v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
@@ -3712,7 +3712,7 @@ s-wf:map_t2_sm3
 s-wf:map_t2_sm_control
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_actor_task_comment ;
-  v-wf:mappingExpression  "newStr('Принять отчёт')";
+  v-wf:mappingExpression  "newStr('Принять отчёт, ' + getFirstValue(process.getLocalVariable ('actor_task_comment')))";
   rdfs:isDefinedBy s-wf: ;
 .
 
