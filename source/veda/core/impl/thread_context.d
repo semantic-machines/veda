@@ -9,7 +9,8 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json, std.regex;
     import veda.bind.xapian_d_header;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg, veda.util.module_info;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
+           veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
@@ -375,29 +376,6 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
-
-        version (isMStorage)
-        {
-            // store ticket
-            string     ss_as_binobj = new_ticket.serialize();
-
-            long       op_id;
-            ResultCode rc =
-                ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null, -1,
-                                             false,
-                                             op_id);
-            ticket.result = rc;
-
-            if (rc == ResultCode.OK)
-            {
-                subject2Ticket(new_ticket, &ticket);
-                user_of_ticket[ ticket.id ] = new Ticket(ticket);
-            }
-
-            log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(
-                                                                                                                                                      ),
-                      SysTime(ticket.end_time, UTC()).toISOExtString());
-        }
 
         version (WebServer)
         {
@@ -992,9 +970,13 @@ class PThreadContext : Context
                         return res;
                     }
 
-                    immutable TransactionItem ti = immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter, event_id);
+                    immutable TransactionItem ti =
+                        immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
+                                                  event_id);
 
-                    immutable TransactionItem ti1 = immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter, event_id);
+                    immutable TransactionItem ti1 =
+                        immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
+                                                  event_id);
 
                     if (tnx.is_autocommit)
                     {
@@ -1034,7 +1016,9 @@ class PThreadContext : Context
                         return res;
                     }
 
-                    immutable TransactionItem ti = immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter, event_id);
+                    immutable TransactionItem ti =
+                        immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
+                                                  event_id);
 
                     if (tnx.is_autocommit)
                     {
@@ -1206,7 +1190,7 @@ class PThreadContext : Context
 
     public long get_operation_state(P_MODULE module_id, long wait_op_id)
     {
-        long res = -1;
+        long  res = -1;
 
         MInfo info = get_info(module_id);
 
