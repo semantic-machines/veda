@@ -79,6 +79,7 @@ v-ft:Event_UpdateTaskCounter
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обновления счетчиков задач" ;
   v-s:triggerByType v-wf:DecisionForm ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -200,7 +201,7 @@ function createTaskCounter(owner) {
     "v-ft:inboxWeekCount": newInt(inboxWeekCount),
     "v-ft:outboxCount": newInt(outboxCount),
     "v-ft:completedCount": newInt(completedCount),
-    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateAllTaskCounters")
+    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateTaskCounter")
   };
   put_individual(ticket, taskCounter, _event_id);
   if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
@@ -223,6 +224,7 @@ v-ft:Event_UpdateAllTaskCounters
   rdfs:label "Еженедельный скрипт обновления счетчиков задач для всех должностей и назначений" ;
   v-s:triggerByUid cfg:weekly ;
   v-s:runAt "V8.LowPriority" ;
+  v-s:deleted true ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
