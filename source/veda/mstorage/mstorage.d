@@ -202,7 +202,7 @@ void init(string node_id)
         string guest_ticket = core_context.get_ticket_from_storage("guest");
 
         if (guest_ticket is null)
-            core_context.create_new_ticket("cfg:Guest", "900000000", "guest");
+            create_new_ticket("cfg:Guest", "900000000", "guest");
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (node.getStatus() != ResultCode.OK)
@@ -331,6 +331,58 @@ public Individual get_individual(Ticket *ticket, string uri)
     return individual;
 }
 
+public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
+{
+    if (trace_msg[ T_API_50 ] == 1)
+        log.trace("create_new_ticket, ticket__accessor=%s", user_id);
+
+    Ticket     ticket;
+    Individual new_ticket;
+
+    ticket.result = ResultCode.Fail_Store;
+
+    Resources type = [ Resource(ticket__Ticket) ];
+
+    new_ticket.resources[ rdf__type ] = type;
+
+    if (ticket_id !is null && ticket_id.length > 0)
+        new_ticket.uri = ticket_id;
+    else
+    {
+        UUID new_id = randomUUID();
+        new_ticket.uri = new_id.toString();
+    }
+
+    new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
+    new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
+    new_ticket.resources[ ticket__duration ] ~= Resource(duration);
+
+    version (isMStorage)
+    {
+        // store ticket
+        string     ss_as_binobj = new_ticket.serialize();
+
+        long       op_id;
+        ResultCode rc =
+            ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null, -1,
+                                         false,
+                                         op_id);
+        ticket.result = rc;
+
+        if (rc == ResultCode.OK)
+        {
+            subject2Ticket(new_ticket, &ticket);
+            user_of_ticket[ ticket.id ] = new Ticket(ticket);
+        }
+
+        log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(
+                                                                                                                                                  ),
+                  SysTime(ticket.end_time, UTC()).toISOExtString());
+    }
+
+    return ticket;
+}
+
 public Ticket authenticate(string login, string password)
 {
     StopWatch sw; sw.start;
@@ -384,7 +436,7 @@ public Ticket authenticate(string login, string password)
 
             if (pass !is null && pass == password)
             {
-                ticket = l_context.create_new_ticket(user_id);
+                ticket = create_new_ticket(user_id);
                 return ticket;
             }
         }
@@ -652,7 +704,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     {
         try
         {
-            ticket = ctx.create_new_ticket("cfg:VedaSystem", "90000000");
+            ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
             long op_id;
             ticket_storage_module.update(P_MODULE.ticket_manager, false, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null, -1, false,
