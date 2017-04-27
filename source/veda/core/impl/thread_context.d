@@ -414,11 +414,6 @@ class PThreadContext : Context
     {
         Ticket ticket;
 
-        version (isMStorage)
-        {
-            log.trace("is mstorage");
-        }
-
         version (isModule)
         {
             log.trace("is module");
@@ -1213,18 +1208,6 @@ class PThreadContext : Context
     {
         long res = -1;
 
-        version (isMStorage)
-        {
-            if (module_id == P_MODULE.acl_preparer)
-            {
-                return get_acl_manager_op_id;
-            }
-            else if (module_id == P_MODULE.subject_manager)
-            {
-                return get_subject_manager_op_id;
-            }
-        }
-
         MInfo info = get_info(module_id);
 
         if (info.is_Ok)
@@ -1250,11 +1233,6 @@ class PThreadContext : Context
         log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);
 
         return res;
-    }
-
-    public long restart_module(P_MODULE module_id)
-    {
-        return 0;
     }
 
     private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
