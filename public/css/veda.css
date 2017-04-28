@@ -8,6 +8,32 @@ body {
 .bg-default {
   background-color: #f5f5f5;
 }
+/*button up*/
+.go-up {
+ display: none;
+ position: fixed; /*позиционирование*/
+ z-index: 9999; /*поверх все элементов на странице*/
+ right: 5%; /*положение на странице, если слева - left*/
+ background: #4F4F4F;
+ border: 1px solid #ccc;
+ border-radius: 5px;
+ cursor: pointer;
+ color: #fff;
+ text-align: center;
+ font: normal normal 42px/42px sans-serif;
+ text-shadow: 0 2px 2px #000;
+ opacity: 0.2;
+ padding: 2px;
+ margin-bottom: 5px;
+ width:  42px;
+ height: 42px;
+}
+.go-up { bottom: 60px; }
+.go-up:hover {
+ opacity: 0.7;
+ box-shadow: 0 5px 0.5em -1px #666;
+}
+
 
 /* Sheets */
 
