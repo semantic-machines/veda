@@ -43,7 +43,8 @@
   <body>
     <!-- Application container -->
     <div id="app"></div>
-
+    
+    <div class="go-up" title="Вверх" id='ToTop'><small class="glyphicon glyphicon-chevron-up"></small></div>
     <!-- Login form -->
     <div id="login-container" class="hidden"></div>
 
@@ -544,4 +545,17 @@
       } catch(e) { window.attachEvent("onload", $buo_f) }
     </script>
   </body>
+  <script>
+    $(function(){
+      if ($(window).scrollTop()>="250") $("#ToTop").fadeIn("slow")
+      $(window).scroll(function(){
+        if ($(window).scrollTop()<="250") $("#ToTop").fadeOut("slow")
+        else $("#ToTop").fadeIn("slow")
+      });
+      
+
+      $("#ToTop").click(function(){$("html,body").animate({scrollTop:0},"slow")})
+  
+    });
+  </script>
 </html>

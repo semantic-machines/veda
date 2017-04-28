@@ -1181,7 +1181,7 @@ v-fs:AttributiveSearchTemplate
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button>
-    <button class="btn btn-default xls"><i class="fa fa-table fa-lg"></i></button>
+    <button class="btn btn-default xls"><span>Excel</span> <font color="#1b926c"><span class="fa fa-file-excel-o"></span></font></button>
   </div>
   <br>
   <div id="results" class="hidden">
