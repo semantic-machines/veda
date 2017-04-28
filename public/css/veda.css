@@ -11,29 +11,16 @@ body {
 /*button up*/
 .go-up {
  display: none;
- position: fixed; /*позиционирование*/
- z-index: 9999; /*поверх все элементов на странице*/
- right: 5%; /*положение на странице, если слева - left*/
- background: #4F4F4F;
- border: 1px solid #ccc;
- border-radius: 5px;
+ position: fixed;
+ z-index: 9999;
+ right: 4%;
+ bottom: 8%;
  cursor: pointer;
- color: #fff;
- text-align: center;
- font: normal normal 42px/42px sans-serif;
- text-shadow: 0 2px 2px #000;
- opacity: 0.2;
- padding: 2px;
- margin-bottom: 5px;
- width:  42px;
- height: 42px;
+ opacity: 0.5;
 }
-.go-up { bottom: 60px; }
 .go-up:hover {
- opacity: 0.7;
- box-shadow: 0 5px 0.5em -1px #666;
+ opacity: 1;
 }
-
 
 /* Sheets */
 
