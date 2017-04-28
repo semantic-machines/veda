@@ -51,13 +51,17 @@ function change_rights_actor(process, task, rightset, actor)
             }
 
             if (executor)
-                addRight(ticket, rset, getUri(executor), getUri(doc_id));
+            {
+                var executor_uri = getUri(executor);
+                if (executor_uri)
+                    addRight(ticket, rset, executor_uri, getUri(doc_id));
+                else
+                    print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+            }
 
-            var instanceOf = getUri(process['v-wf:instanceOf']);
-
-            var net_doc_id = instanceOf + "_" + doc_id[0].data;
+            //var instanceOf = getUri(process['v-wf:instanceOf']);
+            //var net_doc_id = instanceOf + "_" + doc_id[0].data;
             //print("[WORKFLOW]:down_right_and_store, find=", net_doc_id);
-
         }
         return [get_new_variable('right', newStr('acl1'))];
     }

@@ -2079,8 +2079,14 @@ v-wf:event_df4
   v-s:triggerByType v-wf:WorkOrder ;
   v-s:script """
 
+  var enforce_processing = document['v-wf:enforceProcessing'];
+  if (enforce_processing && getFirstValue(enforce_processing) == true)
+    enforce_processing = true;
+  else
+    enforce_processing = false;
+
   //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if ((parent_script_id &&
+  if (enforce_processing == true || (parent_script_id &&
     (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
      parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
   {
