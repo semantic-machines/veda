@@ -52,6 +52,11 @@ v-fc:ChooseType
   rdfs:label "Choose a type to create"@en ;
   rdfs:label "Выберите тип объекта"@ru ;
 .
+v-fc:CreateBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Create"@en ;
+  rdfs:label "Создание"@ru ;
+.
 v-fc:targetType
   rdf:type owl:ObjectProperty ;
   rdfs:label "Type"@en ;
@@ -307,7 +312,11 @@ v-fc:BlankTemplateShort
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<div>
+<div class="container sheet">
+  <br>
+  <div class="ribbon-wrapper top-left">
+    <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
+  </div>
   <div id="object-container"></div>
   <div id="no-rights" class="alert alert-warning container hidden">
     <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
