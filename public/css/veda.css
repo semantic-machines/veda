@@ -26,8 +26,8 @@ body {
 
 .ribbon-wrapper {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 75px;
+  height: 75px;
   overflow: hidden;
   top: 0px;
   left: 0px;
