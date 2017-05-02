@@ -16,6 +16,6 @@ basic.getDrivers().forEach (function (drv) {
 	basic.openPage(driver, drv);
 	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
-	console.time("testLogin");
+	console.timeEnd("testLogin");
 	driver.quit();	
 });
