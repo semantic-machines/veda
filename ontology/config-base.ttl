@@ -405,7 +405,7 @@ var doc_uri = document['@'],
 
 owner_properties.map(function (property_uri) {
   var owner_uri = getUri( document[property_uri] );
-  if (owner_uri) {
+  if (owner_uri && owner_uri !== "cfg:VedaSystem") {
     var owner = get_individual(ticket, owner_uri);
     if (owner) {
       var owner_type = getUri(owner["rdf:type"]);
