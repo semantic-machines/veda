@@ -2295,8 +2295,18 @@ s-wf:rul_transform22_2
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionSign')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')";
@@ -2322,8 +2332,18 @@ s-wf:rul_transform23_5
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionReview')";
   v-wf:grouping "1";
@@ -2347,8 +2367,18 @@ s-wf:rul_transform23_4
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionNotPerformed')";
@@ -2373,8 +2403,18 @@ s-wf:rul_transform23_3
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionExamined')";
   v-wf:grouping "1";
@@ -2407,8 +2447,18 @@ s-wf:rul_transform23_2
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionApprove')";
   v-wf:aggregate  "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionRemake')";
@@ -2780,8 +2830,18 @@ s-wf:rul_tr_form_1
   v-wf:aggregate  "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;

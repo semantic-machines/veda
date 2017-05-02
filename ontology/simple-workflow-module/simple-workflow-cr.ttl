@@ -1245,8 +1245,18 @@ s-wf:rul_transform21_0
   v-wf:aggregate  "putUri ('rdf:type', 's-wf:UserTaskForm')";
   v-wf:aggregate  "putValue ('v-wf:onDocument')";
 #  v-wf:aggregate  "putExecutor ('v-wf:to')";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])))";
-  v-wf:aggregate  "putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])))";
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));
+    } else {
+      putExecutor ('v-wf:to');
+    }
+  """;
+  v-wf:aggregate  """
+    if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {
+      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:occupation'}], [executor])));
+    }
+  """;
   v-wf:aggregate  "putWorkOrder ('v-wf:onWorkOrder')";
   v-wf:aggregate   "putBoolean ('v-wf:isCompleted', false)";
   v-wf:aggregate   "putString ('rdfs:label', 'Доработать')";
