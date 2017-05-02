@@ -1154,6 +1154,12 @@ v-fs:TotalAuthorizedBundle
   rdfs:label "Вам доступно"@ru ;
 .
 
+v-fs:CtrlEnterBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Нажмите 'Ctrl + Enter' чтобы начать поиск"@ru ;
+  rdfs:label "Press 'Ctrl + Enter' to begin search"@en ;
+.
+
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -1182,6 +1188,7 @@ v-fs:AttributiveSearchTemplate
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
     <button class="btn btn-default xls"><span>Excel</span></button>
+    <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
   </div>
   <br>
   <div id="results" class="hidden">
@@ -1289,6 +1296,20 @@ v-fs:AttributiveSearchTemplate
       scrollTo( $("#results", template).offset().top );
       toggleSpin($this);
     });
+  });
+
+  function ctrlEnterHandler (e) {
+    if (e.ctrlKey && e.keyCode === 13) {
+      self.top = veda.user.displayedElements || 10;
+      search().then(function () {
+        scrollTo( $("#results", template).offset().top );
+        toggleSpin($this);
+      });
+    }
+  }
+  $(window).on("keyup", ctrlEnterHandler);
+  template.one("remove", function () {
+    $(window).off("keyup", ctrlEnterHandler);
   });
 
   // Clear button handler
@@ -1428,7 +1449,7 @@ v-fs:AttributiveSearchTemplate
             }
           });
           tmpl.show();
-        }, 0);
+        }, 300);
       });
     });
 
