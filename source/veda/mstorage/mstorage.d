@@ -923,10 +923,18 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
  */
     if (in_tnx.is_autocommit == false)
     {
-        rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
+        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
 
-        //if (rc == ResultCode.OK)
-        //    rc = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
+        rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, items, in_tnx.id, false, op_id);
+
+        if (rc == ResultCode.OK)
+        {
+            foreach (item; items)
+            {
+                if (item.rc == ResultCode.OK)
+                    rc = prepare_event(ev, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+            }
+        }
     }
     return rc;
 }
@@ -957,10 +965,13 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             return res;
         }
 
-        Tid tid_subject_manager;
+        Tid  tid_subject_manager;
+
+        bool is_acl_element;
+        bool is_onto;
 
         //MapResource rdfType;
-        set_map_of_type(indv, rdfType);
+        set_map_of_type(indv, rdfType, is_acl_element, is_onto);
 
         EVENT      ev = EVENT.CREATE;
 
@@ -1050,11 +1061,11 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id);
+                                          event_id, is_acl_element, is_onto);
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
-                                          event_id);
+                                          event_id, is_acl_element, is_onto);
 
             if (tnx.is_autocommit)
             {
@@ -1096,7 +1107,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id);
+                                          event_id, is_acl_element, is_onto);
 
             if (tnx.is_autocommit)
             {
@@ -1112,7 +1123,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.OK)
-            res.result = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
+            res.result = prepare_event(ev, prev_state, new_state, is_acl_element, is_onto, res.op_id);
 
         return res;
     }
@@ -1128,20 +1139,20 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     }
 }
 
-private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_binobj, string new_binobj, long op_id)
+private ResultCode prepare_event(EVENT ev, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto, long op_id)
 {
     ResultCode res;
 
     if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
     {
         Tid tid_acl;
-        if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
+        if (is_onto == true && new_binobj != prev_binobj)
         {
             // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
             inc_count_onto_update();
         }
 
-        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+        if (is_acl_element == true)
         {
             tid_acl = getTid(P_MODULE.acl_preparer);
             if (tid_acl != Tid.init)
@@ -1159,11 +1170,21 @@ private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_
     return res;
 }
 
-private void set_map_of_type(Individual *indv, ref MapResource rdfType)
+private void set_map_of_type(Individual *indv, ref MapResource rdfType, out bool is_acl_element, out bool is_onto)
 {
     Resources _types = indv.resources.get(rdf__type, Resources.init);
 
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
+
+    if (rdfType.anyExists(owl_tags) == true)
+    {
+        is_onto = true;
+    }
+
+    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+    {
+        is_acl_element = true;
+    }
 }

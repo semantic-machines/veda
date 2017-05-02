@@ -21,9 +21,13 @@ struct TransactionItem
     Individual prev_indv;
     Individual new_indv;
 
+    bool       is_acl_element;
+    bool       is_onto;
+
     ResultCode rc;
 
-    immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id)
+    immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id,
+                   bool is_acl_element, bool is_onto)
     {
         cmd            = _cmd;
         user_uri       = _user_uri;
@@ -43,6 +47,8 @@ struct TransactionItem
         new_binobj     = ti.new_binobj;
         update_counter = ti.update_counter;
         event_id       = ti.event_id;
+        is_acl_element = ti.is_acl_element;
+        is_onto        = ti.is_onto;
     }
 }
 
