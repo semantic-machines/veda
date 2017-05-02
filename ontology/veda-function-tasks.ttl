@@ -663,6 +663,7 @@ v-ft:TaskBlankTemplate
   //# sourceURL=v-ft:TaskBlankTemplate_pre
 </script>
 <div>
+  <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
     <li role="presentation"><a href="#/v-ft:Completed2" about="v-ft:Completed2" property="rdfs:label"></a></li>
