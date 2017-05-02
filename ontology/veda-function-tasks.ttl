@@ -589,8 +589,8 @@ v-ft:PSfrom_to_DecisionForm
 v-ft:Inbox2
   rdf:type v-fs:AttributiveSearch ;
   rdf:type v-ft:FunctionTasks2 ;
-  rdfs:label "Inbox"@en ;
-  rdfs:label "Входящие"@ru ;
+  rdfs:label "Inbox tasks"@en ;
+  rdfs:label "Входящие задачи"@ru ;
   v-fs:searchBlank v-ft:InboxBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
@@ -608,8 +608,8 @@ v-ft:InboxBlank
 v-ft:Outbox2
   rdf:type v-fs:AttributiveSearch ;
   rdf:type v-ft:FunctionTasks2 ;
-  rdfs:label "Outbox"@en ;
-  rdfs:label "Исходящие"@ru ;
+  rdfs:label "Outbox tasks"@en ;
+  rdfs:label "Исходящие задачи"@ru ;
   v-fs:searchBlank v-ft:OutboxBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
@@ -627,8 +627,8 @@ v-ft:OutboxBlank
 v-ft:Completed2
   rdf:type v-fs:AttributiveSearch ;
   rdf:type v-ft:FunctionTasks2 ;
-  rdfs:label "Completed"@en ;
-  rdfs:label "Выполненные"@ru ;
+  rdfs:label "Completed tasks"@en ;
+  rdfs:label "Выполненные задачи"@ru ;
   v-fs:searchBlank v-ft:CompletedBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
