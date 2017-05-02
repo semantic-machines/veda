@@ -1,3 +1,4 @@
+var console = require('console');
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     person = require('./person.js'),
