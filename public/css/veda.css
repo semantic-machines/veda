@@ -58,18 +58,16 @@ body {
 .file-card {
   width: 330px;
   height: 150px;
-  display: inline-block;
+  display: inline-table;
   vertical-align: top;
   margin: 0px 10px 10px 0px;
   border-radius: 4px;
   border: 1px solid #ddd;
-  padding: 10px;
-  overflow: hidden;
+  border-spacing: 10px;
 }
 .file-card .file-thumbnail {
-  display: inline-block;
+  display: table-cell;
   vertical-align: top;
-  margin-right: 10px;
 }
 .file-card .file-thumbnail:empty {
   display: none;
@@ -79,19 +77,12 @@ body {
   max-height: 128px;
 }
 .file-card .file-description {
-  display: inline-block;
-  vertical-align: top;
+  display: table-cell;
   word-wrap: break-word;
+  vertical-align: top;
 }
-.file-card .file-thumbnail:empty + .file-description {
-  width: 310px;
-}
-.file-card .file-thumbnail:not(:empty) + .file-description {
-  width: 202px;
-}
-.file-card .file-name {
-  max-height:60px;
-  overflow:hidden;
+.file-card .comment:empty + hr {
+  display: none!important;
 }
 
 /* Gray tooltip */

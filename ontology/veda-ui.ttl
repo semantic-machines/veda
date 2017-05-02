@@ -1289,10 +1289,9 @@ v-ui:FileTemplateWithComment
     <img src="/files/@">
   </div>
   <div class="file-description">
-    <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-    <strong property="rdfs:comment" class="view -edit -search"></strong>
-    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-    <br>
+    <strong about="rdfs:comment" property="rdfs:label" class="-view edit search"></strong>
+    <veda-control data-type="string" property="rdfs:comment" class="-view edit search margin-sm"></veda-control>
+    <strong property="rdfs:comment" class="view -edit -search comment"></strong>
     <hr class="margin-sm view -edit -search">
     <div class="file-name">
       <span id="icon" class="label label-primary"></span>
