@@ -1303,11 +1303,6 @@ class PThreadContext : Context
                 OpResult res = reqrep_2_main_module(req_body)[ 0 ];
                 log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
             }
-
-            version (isMStorage)
-            {
-                rc = subject_storage_module.update(P_MODULE.subject_manager, true, in_tnx.get_immutable_queue(), in_tnx.id, true, op_id);
-            }
         }
         return ResultCode.OK;
     }

@@ -13,7 +13,7 @@ private
     import veda.core.common.context;
     import veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
-    import veda.common.logger, veda.core.util.utils;
+    import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
 }
 
@@ -810,6 +810,49 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     }
 
     return result;
+}
+
+public ResultCode commit(Transaction *in_tnx, Context ctx)
+{
+    ResultCode  rc;
+    long        op_id;
+
+    Transaction normalized_tnx;
+
+    normalized_tnx.id = in_tnx.id;
+    foreach (item; in_tnx.get_queue())
+    {
+        if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
+            continue;
+
+        if (item.rc != ResultCode.OK)
+            return item.rc;
+
+        Ticket *ticket = ctx.get_ticket(item.ticket_id);
+
+        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+
+        rc = ctx.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+
+        if (rc == ResultCode.No_Content)
+        {
+            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
+        }
+
+        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+        {
+            ctx.get_logger().trace("FAIL COMMIT");
+            return rc;
+        }
+        //else
+        //log.trace ("SUCCESS COMMIT");
+    }
+
+    if (in_tnx.is_autocommit == false)
+    {
+        rc = subject_storage_module.update(P_MODULE.subject_manager, true, in_tnx.get_immutable_queue(), in_tnx.id, true, op_id);
+    }
+    return ResultCode.OK;
 }
 
 
