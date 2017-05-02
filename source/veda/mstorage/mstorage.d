@@ -18,7 +18,7 @@ private
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
-alias veda.mstorage.storage_manager subject_storage_module;
+alias veda.mstorage.storage_manager indv_storage_thread;
 alias veda.mstorage.acl_manager     acl_module;
 alias veda.mstorage.load_info       load_info;
 
@@ -432,6 +432,7 @@ public Ticket authenticate(string login, string password)
                 tnx.is_autocommit = true;
                 OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true);
 
+
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                 user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
                 user.removeResource("v-s:password");
@@ -549,6 +550,8 @@ public string execute(string in_msg, Context ctx)
                                                        ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
                                                        true);
 
+                    //commit (false, tnx);
+
                     rc ~= ires;
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
@@ -655,11 +658,11 @@ public string execute(string in_msg, Context ctx)
             ResultCode rc;
 
             if (f_module_id == P_MODULE.subject_manager)
-                rc = subject_storage_module.flush_int_module(P_MODULE.subject_manager, false);
+                rc = indv_storage_thread.flush_int_module(P_MODULE.subject_manager, false);
             else if (f_module_id == P_MODULE.acl_preparer)
                 rc = acl_module.flush(false);
             else if (f_module_id == P_MODULE.fulltext_indexer)
-                subject_storage_module.flush_ext_module(f_module_id, wait_op_id);
+                indv_storage_thread.flush_ext_module(f_module_id, wait_op_id);
 
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.OK;
@@ -672,7 +675,7 @@ public string execute(string in_msg, Context ctx)
 
             ResultCode rc;
 
-            subject_storage_module.msg_to_module(f_module_id, msg, false);
+            indv_storage_thread.msg_to_module(f_module_id, msg, false);
 
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.OK;
@@ -726,12 +729,12 @@ public string execute(string in_msg, Context ctx)
 
 public void freeze()
 {
-    subject_storage_module.freeze(P_MODULE.subject_manager);
+    indv_storage_thread.freeze(P_MODULE.subject_manager);
 }
 
 public void unfreeze()
 {
-    subject_storage_module.unfreeze(P_MODULE.subject_manager);
+    indv_storage_thread.unfreeze(P_MODULE.subject_manager);
 }
 
 private Ticket *[ string ] user_of_ticket;
@@ -803,7 +806,7 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
         }
         else
         {
-            backup_id = subject_storage_module.backup(P_MODULE.subject_manager);
+            backup_id = indv_storage_thread.backup(P_MODULE.subject_manager);
 
             if (backup_id != "")
             {
@@ -856,11 +859,12 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     return result;
 }
 
-public ResultCode commit(Transaction *in_tnx, Context ctx)
+public ResultCode commit(bool is_api_request, ref Transaction in_tnx)
 {
-    ResultCode  rc;
-    long        op_id;
+    ResultCode rc;
+    long       op_id;
 
+/*
     Transaction normalized_tnx;
 
     normalized_tnx.id = in_tnx.id;
@@ -891,10 +895,10 @@ public ResultCode commit(Transaction *in_tnx, Context ctx)
         //else
         //log.trace ("SUCCESS COMMIT");
     }
-
+ */
     if (in_tnx.is_autocommit == false)
     {
-        rc = subject_storage_module.update(P_MODULE.subject_manager, true, in_tnx.get_immutable_queue(), in_tnx.id, true, op_id);
+        rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
     }
     return ResultCode.OK;
 }
@@ -909,9 +913,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 {
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
-    StopWatch sw; sw.start;
-
-    OpResult  res = OpResult(ResultCode.Fail_Store, -1);
+    OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
     try
     {
@@ -927,7 +929,6 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
 
         Tid       tid_subject_manager;
-        Tid       tid_acl;
 
         Resources _types = indv.resources.get(rdf__type, Resources.init);
         foreach (idx, rs; _types)
@@ -945,7 +946,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
         try
         {
-            prev_state = subject_storage_module.find(P_MODULE.subject_manager, indv.uri);
+            prev_state = indv_storage_thread.find(P_MODULE.subject_manager, indv.uri);
 
             if ((prev_state is null ||
                  prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
@@ -1033,20 +1034,20 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
-                                                  res.op_id);
+                    indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
+                                               res.op_id);
 
                 if (res.result == ResultCode.OK)
                 {
                     res.result =
-                        subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti1 ], tnx.id, ignore_freeze,
-                                                      res.op_id);
+                        indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, [ ti1 ], tnx.id, ignore_freeze,
+                                                   res.op_id);
                 }
             }
             else
             {
-                tnx.add(ti);
-                tnx.add(ti1);
+                tnx.add_immutable(ti);
+                tnx.add_immutable(ti1);
             }
         }
         else
@@ -1075,42 +1076,18 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
-                                                  res.op_id);
+                    indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
+                                               res.op_id);
             }
             else
             {
-                tnx.add(ti);
+                tnx.add_immutable(ti);
             }
             //log.trace("res.result=%s", res.result);
         }
 
-        if (res.result != ResultCode.OK)
-            return res;
-
-        if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
-        {
-            if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
-            {
-                // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-                inc_count_onto_update();
-            }
-
-            if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-            {
-                tid_acl = getTid(P_MODULE.acl_preparer);
-                if (tid_acl != Tid.init)
-                {
-                    send(tid_acl, CMD_PUT, ev, prev_state, new_state, res.op_id);
-                }
-            }
-
-            res.result = ResultCode.OK;
-        }
-        else
-        {
-            res.result = ResultCode.Internal_Server_Error;
-        }
+        if (tnx.is_autocommit && res.result == ResultCode.OK)
+            res.result = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
 
         return res;
     }
@@ -1123,9 +1100,36 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
         if (trace_msg[ T_API_240 ] == 1)
             log.trace("add_to_transaction [%s] = %s", indv.uri, res);
-
-        //stat(CMD_PUT, sw);
     }
 }
 
+private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_binobj, string new_binobj, long op_id)
+{
+    ResultCode res;
 
+    if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
+    {
+        Tid tid_acl;
+        if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
+        {
+            // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+            inc_count_onto_update();
+        }
+
+        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+        {
+            tid_acl = getTid(P_MODULE.acl_preparer);
+            if (tid_acl != Tid.init)
+            {
+                send(tid_acl, CMD_PUT, ev, prev_binobj, new_binobj, op_id);
+            }
+        }
+
+        res = ResultCode.OK;
+    }
+    else
+    {
+        res = ResultCode.Internal_Server_Error;
+    }
+    return res;
+}

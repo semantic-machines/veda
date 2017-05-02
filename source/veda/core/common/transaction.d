@@ -111,7 +111,7 @@ struct Transaction
     }
  */
 
-    public void add(ref immutable TransactionItem _ti)
+    public void add_immutable(ref immutable TransactionItem _ti)
     {
         immutable_queue ~= _ti;
     }
