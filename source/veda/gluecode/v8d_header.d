@@ -116,15 +116,15 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 {
     TransactionItem *ti = new TransactionItem();
 
-    ti.cmd       = _cmd;
-    ti.new_binobj    = _binobj;
-    ti.ticket_id = _ticket_id;
-    ti.event_id  = _event_id;
+    ti.cmd        = _cmd;
+    ti.new_binobj = _binobj;
+    ti.ticket_id  = _ticket_id;
+    ti.event_id   = _event_id;
 
     if (ti.cmd == INDV_OP.REMOVE)
     {
-    	ti.new_indv.uri = _binobj;
-        ti.rc = ResultCode.OK;
+        ti.new_indv.uri = _binobj;
+        ti.rc           = ResultCode.OK;
     }
     else
     {
@@ -161,7 +161,8 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
             if (prev_indv.getStatus() == ResultCode.OK)
                 ti.new_indv = *indv_apply_cmd(ti.cmd, &prev_indv, &ti.new_indv);
             else
-                log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri, prev_indv.getStatus());
+                log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri,
+                          prev_indv.getStatus());
         }
     }
     return ti;
