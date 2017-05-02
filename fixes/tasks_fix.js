@@ -143,3 +143,222 @@ var deleted_unique = unique(deleted);
 
 console.log("deleted", deleted.length, JSON.stringify(deleted));
 console.log("deleted_unique", deleted_unique.length, JSON.stringify(deleted_unique));
+
+
+
+
+
+/* Переиндексировать задачи и перевыдать задачи на персону и должность
+ * Выбрать все задачи
+ * Для каждой задачи:
+ *  1) Добавить в полях v-wf:from, v-wf:to персон соответсвующих должности (взять из v-wf:WorkItem)
+ *  2) Выдать права на чтение найденным персонам
+ *  3) Вписать дату создания задачи
+ *  4) Вписать автора задачи = системная учетка
+ */
+
+var tasks_uris = query({
+  ticket: veda.ticket,
+  query: "'rdf:type'==='v-wf:DecisionForm'",
+  top: 1000000,
+  limit: 1000000
+}).result;
+console.log("total to process", tasks_uris.length);
+
+var err = 0;
+
+process(tasks_uris, 100, 10000, processTask);
+
+function processTask(task_uri) {
+  var task = get_individual(veda.ticket, task_uri);
+  task["v-s:creator"] = [{type: "Uri", data: "cfg:VedaSystem"}];
+
+  var doc_uri = task["v-wf:onDocument"] && task["v-wf:onDocument"][0].data;
+  if (!doc_uri) { console.log(++err, "no doc_uri found for task", task["@"]); return; }
+  var doc = get_individual(veda.ticket, doc_uri);
+  if (!doc) { console.log(++err, "no doc found for task", task["@"]); return; }
+  task["v-s:created"] = doc["v-s:created"];
+
+  var work_order_uri = task["v-wf:onWorkOrder"] && task["v-wf:onWorkOrder"][0].data;
+  if (!work_order_uri) { console.log(++err, "no work_order_uri found for task", task["@"]); return; }
+  var work_order = get_individual(veda.ticket, work_order_uri);
+  if (!work_order) { console.log(++err, "no work_order found for task", task["@"]); return; }
+
+  var work_item_uri = work_order["v-wf:forWorkItem"] && work_order["v-wf:forWorkItem"][0].data;
+  if (!work_item_uri) { console.log(++err, "no work_item_uri found for task", task["@"]); return; }
+  var work_item = get_individual(veda.ticket, work_item_uri);
+  if (!work_item) { console.log(++err, "no work_item found for task", task["@"]); return; }
+
+  var process_uri = work_item["v-wf:forProcess"] && work_item["v-wf:forProcess"][0].data;
+  if (!process_uri) { console.log(++err, "no process_uri found for task", task["@"]); return; }
+  var process = get_individual(veda.ticket, process_uri);
+  if (!process) { console.log(++err, "no process found for task", task["@"]); return; }
+
+  var local_vars = process["v-wf:localVars"];
+  if (!local_vars) { console.log(++err, "no local_vars found for task", task["@"]); return; }
+
+  var initiator;
+  var actor;
+
+  for (var i = 0, variable_obj; (variable_obj = local_vars[i]); i++) {
+    var variable_uri = variable_obj.data;
+    var variable = get_individual(veda.ticket, variable_uri);
+    var name = variable["v-wf:variableName"] && variable["v-wf:variableName"][0].data;
+    if ( name === "initiator" ) {
+      initiator = variable["v-wf:variableValue"] && variable["v-wf:variableValue"][0].data;
+    }
+    if ( name === "actor" ) {
+      actor = variable["v-wf:variableValue"] && variable["v-wf:variableValue"][0].data;
+    }
+  }
+  if (!initiator) { console.log(++err, "no initiator found for task", task["@"]); return; }
+  if (!actor) { console.log(++err, "no actor found for task", task["@"]); return; }
+
+  var initiator_person = initiator["v-s:employee"] && initiator["v-s:employee"][0];
+  var initiator_position = initiator["v-s:occupation"] && initiator["v-s:occupation"][0];
+  if (!initiator_person || !initiator_position) { console.log(++err, "no initiator_person || initiator_position found for task", task["@"]); return; }
+  console.log( "right for initiator person =", initiator_person.data );
+  //addRight(veda.ticket, [can_read], initiator_person.data, task_uri);
+
+  var actor_person = actor["v-s:employee"] && actor["v-s:employee"][0];
+  var actor_position = actor["v-s:occupation"] && actor["v-s:occupation"][0];
+  if (!actor_person || !actor_position) { console.log(++err, "no actor_person || actor_position found for task", task["@"]); return; }
+  console.log( "right for actor person =", actor_person.data );
+  //addRight(veda.ticket, [can_read], actor_person.data, task_uri);
+
+  task["v-wf:from"] = [initiator_person, initiator_position];
+  task["v-wf:to"] = [actor_person, actor_position];
+
+  console.log( "task update =", JSON.stringify(task) );
+  //put_individual(veda.ticket, task);
+}
+
+function process(uris, delta, pause, fn) {
+  var portion = uris.splice(-delta);
+  portion.forEach( fn );
+  if (uris.length) {
+    console.log("left to process", uris.length);
+    setTimeout(process, pause, uris, delta, pause, fn);
+  } else {
+    console.log("all done", uris.length);
+  }
+}
+
+
+// re-index tasks
+var tasks_uris = query({
+  ticket: veda.ticket,
+  query: "'rdf:type' === 'v-wf:DecisionForm'",
+  top: 100000,
+  limit: 100000
+}).result;
+
+process(tasks_uris, 100, 5000, reindexTask);
+
+function reindexTask (task_uri) {
+  var task = get_individual(veda.ticket, task_uri);
+  //console.log("task_uri", task_uri);
+  put_individual(veda.ticket, task);
+}
+
+function process(uris, delta, pause, fn) {
+  console.log("left to process", uris.length);
+  var portion = uris.splice(-delta);
+  portion.forEach( fn );
+  if (uris.length) {
+    setTimeout(process, pause, uris, delta, pause, fn);
+  } else {
+    console.log("all done", uris.length);
+  }
+}
+
+// re-index tasks
+var tasks_uris = query({
+  ticket: veda.ticket,
+  query: "'rdf:type' === 'v-wf:DecisionForm'",
+  top: 100000,
+  limit: 100000
+}).result;
+
+processResult(tasks_uris, 100, 5000, reindexTask);
+
+function reindexTask (task_uri) {
+  var task = get_individual(veda.ticket, task_uri);
+  //console.log("task_uri", task_uri);
+  put_individual(veda.ticket, task);
+}
+
+function processResult(uris, delta, pause, fn) {
+  console.log("left to process", uris.length);
+  var portion = uris.splice(-delta);
+  portion.forEach( fn );
+  if (uris.length) {
+    setTimeout(process, pause, uris, delta, pause, fn);
+  } else {
+    console.log("all done", uris.length);
+  }
+}
+
+
+
+
+
+// re-index tasks
+
+process("'rdf:type' === 'v-wf:DecisionForm'", 100000, 100, 10000, refreshTask);
+
+function refreshTask(task_uri) {
+  var task = get_individual(veda.ticket, task_uri);
+  //console.log("task_uri", task_uri);
+  put_individual(veda.ticket, task);
+}
+
+function process(q, limit, delta, pause, fn) {
+
+  console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
+  var result = [], append = [].push, progress = 0;
+
+  getAll(0);
+
+  function getAll(cursor) {
+    query({
+      ticket: veda.ticket,
+      query: q,
+      from: cursor,
+      top: delta,
+      limit: limit,
+      async: true
+    }).then(function (query_result) {
+      if (limit > query_result.estimated) {
+        limit = query_result.estimated;
+      }
+
+      append.apply(result, query_result.result);
+
+      if (cursor/limit - progress >= 0.05) {
+        progress = cursor/limit;
+        console.log("query progress:", (progress * 100).toFixed() + "%");
+      }
+
+      if (query_result.cursor === query_result.estimated || query_result.cursor >= limit) {
+        processResult(result, delta, pause, fn);
+      } else {
+        getAll(query_result.cursor);
+      }
+    });
+  }
+
+  function processResult(uris, delta, pause, fn) {
+    console.log("left to process", uris.length);
+    var portion = uris.splice(-delta);
+    portion.forEach( fn );
+    if (uris.length) {
+      setTimeout(processResult, pause, uris, delta, pause, fn);
+    } else {
+      console.log("all done", uris.length);
+    }
+  }
+}
+
+
+
