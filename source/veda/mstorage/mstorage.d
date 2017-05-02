@@ -859,7 +859,7 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     return result;
 }
 
-public ResultCode commit(bool is_api_request, ref Transaction in_tnx)
+public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
 {
     ResultCode rc;
     long       op_id;
@@ -899,8 +899,11 @@ public ResultCode commit(bool is_api_request, ref Transaction in_tnx)
     if (in_tnx.is_autocommit == false)
     {
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
+
+        //if (rc == ResultCode.OK)
+        //    rc = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
     }
-    return ResultCode.OK;
+    return rc;
 }
 
 static const byte NEW_TYPE    = 0;
@@ -928,16 +931,10 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             return res;
         }
 
-        Tid       tid_subject_manager;
-
-        Resources _types = indv.resources.get(rdf__type, Resources.init);
-        foreach (idx, rs; _types)
-        {
-            _types[ idx ].info = NEW_TYPE;
-        }
+        Tid         tid_subject_manager;
 
         MapResource rdfType;
-        setMapResources(_types, rdfType);
+        Resources _types = set_map_of_type(indv, rdfType);
 
         EVENT      ev = EVENT.CREATE;
 
@@ -1132,4 +1129,15 @@ private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_
         res = ResultCode.Internal_Server_Error;
     }
     return res;
+}
+
+private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
+{
+    Resources _types = indv.resources.get(rdf__type, Resources.init);
+
+    foreach (idx, rs; _types)
+        _types[ idx ].info = NEW_TYPE;
+    setMapResources(_types, rdfType);
+
+    return _types;
 }
