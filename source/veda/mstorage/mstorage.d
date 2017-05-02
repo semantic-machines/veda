@@ -984,7 +984,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if ((prev_state is null ||
                  prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+                log.trace("ERR! add_to_transaction: cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
         }
         catch (Exception ex)
         {
@@ -1130,7 +1130,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]",
+            log.trace("ERR! add_to_transaction: no store subject :%s, errcode=[%s], ticket=[%s]",
                       indv !is null ? text(*indv) : "null",
                       text(res.result), ticket !is null ? text(*ticket) : "null");
 
