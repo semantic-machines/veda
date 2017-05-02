@@ -15,6 +15,8 @@ var webdriver = require('selenium-webdriver'),
  */
 
 basic.getDrivers().forEach (function (drv) {
+        console.time("testPerson");
+
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
 	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
@@ -43,5 +45,7 @@ basic.getDrivers().forEach (function (drv) {
 	  basic.FAST_OPERATION
 	).thenCatch(function (e) {basic.errorHandler(e, "Found person differs from saved person");});
 	
+        console.timeEnd("testPerson");
+
 	driver.quit();
 });
