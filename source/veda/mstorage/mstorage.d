@@ -13,7 +13,7 @@ private
     import veda.core.common.context;
     import veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
-    import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
+    import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
 }
 
@@ -426,11 +426,20 @@ public Ticket authenticate(string login, string password)
                 i_usesCredential.uri = user.uri ~ "-crdt";
                 i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
                 i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-                OpResult op_res = l_context.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", -1, false, true);
+
+                Transaction tnx;
+                tnx.id            = -1;
+                tnx.is_autocommit = true;
+                OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true);
+
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                 user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
                 user.removeResource("v-s:password");
-                op_res = l_context.put_individual(&sticket, user.uri, user, false, "", -1, false, true);
+
+                tnx.id            = -1;
+                tnx.is_autocommit = true;
+                op_res            = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", false, true);
+
                 log.trace("authenticate: update user[%s], res=%s", user, op_res);
             }
 
@@ -531,10 +540,15 @@ public string execute(string in_msg, Context ctx)
 
                 foreach (individual_json; individuals_json)
                 {
-                    Individual individual = json_to_individual(individual_json);
-                    OpResult   ires       =
-                        ctx.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                           true);
+                    Individual  individual = json_to_individual(individual_json);
+
+                    Transaction tnx;
+                    tnx.id            = transaction_id;
+                    tnx.is_autocommit = true;
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
+                                                       true);
+
                     rc ~= ires;
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
@@ -546,10 +560,15 @@ public string execute(string in_msg, Context ctx)
 
                 foreach (individual_json; individuals_json)
                 {
-                    Individual individual = json_to_individual(individual_json);
-                    OpResult   ires       =
-                        ctx.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                              true);
+                    Individual  individual = json_to_individual(individual_json);
+
+                    Transaction tnx;
+                    tnx.id            = transaction_id;
+                    tnx.is_autocommit = true;
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
+                                                       false, true);
+
                     rc ~= ires;
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
@@ -561,10 +580,15 @@ public string execute(string in_msg, Context ctx)
 
                 foreach (individual_json; individuals_json)
                 {
-                    Individual individual = json_to_individual(individual_json);
-                    OpResult   ires       =
-                        ctx.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                              true);
+                    Individual  individual = json_to_individual(individual_json);
+
+                    Transaction tnx;
+                    tnx.id            = transaction_id;
+                    tnx.is_autocommit = true;
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
+                                                       false, true);
+
                     rc ~= ires;
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
@@ -576,10 +600,15 @@ public string execute(string in_msg, Context ctx)
 
                 foreach (individual_json; individuals_json)
                 {
-                    Individual individual = json_to_individual(individual_json);
-                    OpResult   ires       =
-                        ctx.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, transaction_id, false,
-                                                   true);
+                    Individual  individual = json_to_individual(individual_json);
+
+                    Transaction tnx;
+                    tnx.id            = transaction_id;
+                    tnx.is_autocommit = true;
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
+                                                       false, true);
+
                     rc ~= ires;
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
@@ -587,8 +616,19 @@ public string execute(string in_msg, Context ctx)
             }
             else if (sfn == "remove")
             {
-                JSONValue uri  = jsn[ "uri" ];
-                OpResult  ires = ctx.remove_individual(ticket, uri.str, prepare_events, event_id.str, transaction_id, false, true);
+                JSONValue  uri = jsn[ "uri" ];
+
+                Individual individual;
+
+                individual.uri = uri.str();
+
+                Transaction tnx;
+                tnx.id            = transaction_id;
+                tnx.is_autocommit = true;
+                OpResult ires = add_to_transaction(
+                                                   ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
+                                                   true);
+
                 rc ~= ires;
                 if (transaction_id <= 0)
                     transaction_id = ires.op_id;
@@ -717,8 +757,12 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
             sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
             sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
             sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
-            OpResult opres = ctx.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", -1, false,
-                                                false);
+
+            Transaction tnx;
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            OpResult opres = add_to_transaction(ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false);
+
 
             if (opres.result == ResultCode.OK)
                 log.trace("permission [%s] was created", sys_account_permission);
@@ -832,7 +876,7 @@ public ResultCode commit(Transaction *in_tnx, Context ctx)
 
         //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
-        rc = ctx.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+        rc = add_to_transaction(ctx.acl_indexes(), normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
 
         if (rc == ResultCode.No_Content)
         {
@@ -855,5 +899,233 @@ public ResultCode commit(Transaction *in_tnx, Context ctx)
     return ResultCode.OK;
 }
 
+static const byte NEW_TYPE    = 0;
+static const byte EXISTS_TYPE = 1;
+
+public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events,
+                                   string event_id,
+                                   bool ignore_freeze,
+                                   bool is_api_request)
+{
+    //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
+
+    StopWatch sw; sw.start;
+
+    OpResult  res = OpResult(ResultCode.Fail_Store, -1);
+
+    try
+    {
+        if (indv !is null && (indv.uri is null || indv.uri.length < 2))
+        {
+            res.result = ResultCode.Invalid_Identifier;
+            return res;
+        }
+        if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
+        {
+            res.result = ResultCode.No_Content;
+            return res;
+        }
+
+        Tid       tid_subject_manager;
+        Tid       tid_acl;
+
+        Resources _types = indv.resources.get(rdf__type, Resources.init);
+        foreach (idx, rs; _types)
+        {
+            _types[ idx ].info = NEW_TYPE;
+        }
+
+        MapResource rdfType;
+        setMapResources(_types, rdfType);
+
+        EVENT      ev = EVENT.CREATE;
+
+        string     prev_state;
+        Individual prev_indv;
+
+        try
+        {
+            prev_state = subject_storage_module.find(P_MODULE.subject_manager, indv.uri);
+
+            if ((prev_state is null ||
+                 prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
+                log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+        }
+        catch (Exception ex)
+        {
+            log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
+            return res;
+        }
+
+        if (prev_state !is null)
+        {
+            ev = EVENT.UPDATE;
+            int code = prev_indv.deserialize(prev_state);
+            if (code < 0)
+            {
+                log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
+                res.result = ResultCode.Unprocessable_Entity;
+                return res;
+            }
+
+            if (is_api_request && cmd != INDV_OP.REMOVE)
+            {
+                // для обновляемого индивида проверим доступность бита Update
+                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null) != Access.can_update)
+                {
+                    res.result = ResultCode.Not_Authorized;
+                    return res;
+                }
+
+                // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                foreach (rs; _types)
+                {
+                    string   itype = rs.get!string;
+
+                    Resource *rr = rdfType.get(itype, null);
+
+                    if (rr !is null)
+                        rr.info = EXISTS_TYPE;
+                }
+            }
+        }
+
+        if (is_api_request && cmd != INDV_OP.REMOVE)
+        {
+            // для новых типов проверим доступность бита Create
+            foreach (key, rr; rdfType)
+            {
+                if (rr.info == NEW_TYPE)
+                {
+                    if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null) != Access.can_create)
+                    {
+                        res.result = ResultCode.Not_Authorized;
+                        return res;
+                    }
+                }
+            }
+        }
+
+        long   update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
+        update_counter++;
+        string new_state;
+
+        if (cmd == INDV_OP.REMOVE)
+        {
+            prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
+
+            new_state = prev_indv.serialize();
+
+            if (new_state.length > max_size_of_individual)
+            {
+                res.result = ResultCode.Size_too_large;
+                return res;
+            }
+
+            immutable TransactionItem ti =
+                immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
+                                          event_id);
+
+            immutable TransactionItem ti1 =
+                immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
+                                          event_id);
+
+            if (tnx.is_autocommit)
+            {
+                res.result =
+                    subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
+                                                  res.op_id);
+
+                if (res.result == ResultCode.OK)
+                {
+                    res.result =
+                        subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti1 ], tnx.id, ignore_freeze,
+                                                      res.op_id);
+                }
+            }
+            else
+            {
+                tnx.add(ti);
+                tnx.add(ti1);
+            }
+        }
+        else
+        {
+            if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
+            {
+                //log.trace("++ add_to_transaction, prev_indv: %s", prev_indv);
+                indv = indv_apply_cmd(cmd, &prev_indv, indv);
+                //log.trace("++ add_to_transaction, final indv: %s", *indv);
+            }
+
+            indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
+
+            new_state = indv.serialize();
+
+            if (new_state.length > max_size_of_individual)
+            {
+                res.result = ResultCode.Size_too_large;
+                return res;
+            }
+
+            immutable TransactionItem ti =
+                immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
+                                          event_id);
+
+            if (tnx.is_autocommit)
+            {
+                res.result =
+                    subject_storage_module.update(P_MODULE.subject_manager, is_api_request, [ ti ], tnx.id, ignore_freeze,
+                                                  res.op_id);
+            }
+            else
+            {
+                tnx.add(ti);
+            }
+            //log.trace("res.result=%s", res.result);
+        }
+
+        if (res.result != ResultCode.OK)
+            return res;
+
+        if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
+        {
+            if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
+            {
+                // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+                inc_count_onto_update();
+            }
+
+            if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+            {
+                tid_acl = getTid(P_MODULE.acl_preparer);
+                if (tid_acl != Tid.init)
+                {
+                    send(tid_acl, CMD_PUT, ev, prev_state, new_state, res.op_id);
+                }
+            }
+
+            res.result = ResultCode.OK;
+        }
+        else
+        {
+            res.result = ResultCode.Internal_Server_Error;
+        }
+
+        return res;
+    }
+    finally
+    {
+        if (res.result != ResultCode.OK)
+            log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]",
+                      indv !is null ? text(*indv) : "null",
+                      text(res.result), ticket !is null ? text(*ticket) : "null");
+
+        if (trace_msg[ T_API_240 ] == 1)
+            log.trace("add_to_transaction [%s] = %s", indv.uri, res);
+
+        //stat(CMD_PUT, sw);
+    }
+}
 
 
