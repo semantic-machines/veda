@@ -1,4 +1,5 @@
 var basic = require('./basic.js');
+var console = require('console');
 
 /**
  * 1.Open Page -> Login(as karpovrt);
