@@ -931,10 +931,13 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             return res;
         }
 
-        Tid         tid_subject_manager;
+        Tid  tid_subject_manager;
+
+        bool is_acl_element;
+        bool is_onto;
 
         MapResource rdfType;
-        Resources _types = set_map_of_type(indv, rdfType);
+        set_map_of_type(indv, rdfType, is_acl_element, is_onto);
 
         EVENT      ev = EVENT.CREATE;
 
@@ -947,7 +950,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if ((prev_state is null ||
                  prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+                log.trace("ERR! add_to_transaction: cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
         }
         catch (Exception ex)
         {
@@ -976,6 +979,8 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                 }
 
                 // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                Resources _types = indv.resources.get(rdf__type, Resources.init);
+
                 foreach (rs; _types)
                 {
                     string   itype = rs.get!string;
@@ -1022,11 +1027,11 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id);
+                                          event_id, is_acl_element, is_onto);
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
-                                          event_id);
+                                          event_id, is_acl_element, is_onto);
 
             if (tnx.is_autocommit)
             {
@@ -1068,7 +1073,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id);
+                                          event_id, is_acl_element, is_onto);
 
             if (tnx.is_autocommit)
             {
@@ -1091,7 +1096,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]",
+            log.trace("ERR! add_to_transaction: no store subject :%s, errcode=[%s], ticket=[%s]",
                       indv !is null ? text(*indv) : "null",
                       text(res.result), ticket !is null ? text(*ticket) : "null");
 
@@ -1131,7 +1136,7 @@ private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_
     return res;
 }
 
-private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
+private void set_map_of_type(Individual *indv, ref MapResource rdfType, out bool is_acl_element, out bool is_onto)
 {
     Resources _types = indv.resources.get(rdf__type, Resources.init);
 
@@ -1139,5 +1144,13 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
 
-    return _types;
+    if (rdfType.anyExists(owl_tags) == true)
+    {
+        is_onto = true;
+    }
+
+    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+    {
+        is_acl_element = true;
+    }
 }

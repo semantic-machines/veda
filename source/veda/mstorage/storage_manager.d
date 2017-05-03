@@ -163,8 +163,8 @@ public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, strin
 
     if (tid != Tid.init)
     {
-        immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id/*, false,
-                                                                  false*/);
+        immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
+                                                                  false);
 
         send(tid, need_auth, [ ti ], tnx_id, ignore_freeze, thisTid);
 
