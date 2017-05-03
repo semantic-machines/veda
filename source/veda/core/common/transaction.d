@@ -37,7 +37,7 @@ struct TransactionItem
         update_counter = _update_counter;
         event_id       = _event_id;
         is_acl_element = _is_acl_element;
-        is_onto        = _is_onto;        
+        is_onto        = _is_onto;
     }
 
     immutable this(TransactionItem ti)

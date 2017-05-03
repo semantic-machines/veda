@@ -931,18 +931,18 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             return res;
         }
 
-        Tid  tid_subject_manager;
+        Tid         tid_subject_manager;
 
-        bool is_acl_element;
-        bool is_onto;
+        bool        is_acl_element;
+        bool        is_onto;
 
         MapResource rdfType;
-        Resources _types = set_map_of_type(indv, rdfType);
+        Resources   _types = set_map_of_type(indv, rdfType);
 
-        EVENT      ev = EVENT.CREATE;
+        EVENT       ev = EVENT.CREATE;
 
-        string     prev_state;
-        Individual prev_indv;
+        string      prev_state;
+        Individual  prev_indv;
 
         try
         {

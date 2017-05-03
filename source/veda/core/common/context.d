@@ -114,7 +114,7 @@ interface Context
 
     public ResultCode commit(Transaction *in_tnx);
 
-	public VQL get_vql ();
+    public VQL get_vql();
     public Authorization acl_indexes();
 
     public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
@@ -284,7 +284,7 @@ interface Context
      */
     public void get_membership_from_acl(Ticket *ticket, string uri,
                                         void delegate(string resource_group) trace_group);
-    
+
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 
     /**
