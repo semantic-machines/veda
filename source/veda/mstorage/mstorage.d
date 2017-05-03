@@ -937,7 +937,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         bool is_onto;
 
         MapResource rdfType;
-        Resources _types = set_map_of_type(indv, rdfType);
+        Resources _types = set_map_of_type(indv, rdfType, is_acl_element, is_onto);
 
         EVENT      ev = EVENT.CREATE;
 
@@ -1134,13 +1134,23 @@ private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_
     return res;
 }
 
-private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
+private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out bool is_acl_element, out bool is_onto)
 {
     Resources _types = indv.resources.get(rdf__type, Resources.init);
 
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
+
+	if (rdfType.anyExists(owl_tags) == true)
+    {
+        is_onto = true;
+    }
+
+    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+    {
+        is_acl_element = true;
+    }
 
     return _types;
 }
