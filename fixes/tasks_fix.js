@@ -300,65 +300,75 @@ function processResult(uris, delta, pause, fn) {
 }
 
 
-
-
-
-// re-index tasks
-
-process("'rdf:type' === 'v-wf:DecisionForm'", 100000, 100, 10000, refreshTask);
-
-function refreshTask(task_uri) {
+// DONE: re-index tasks
+veda.Util.processQuery("'rdf:type'==='v-wf:DecisionForm'", 100000, 100, 10000, function (task_uri) {
   var task = get_individual(veda.ticket, task_uri);
-  //console.log("task_uri", task_uri);
   put_individual(veda.ticket, task);
-}
+});
 
-function process(q, limit, delta, pause, fn) {
 
-  console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
-  var result = [], append = [].push, progress = 0;
-
-  getAll(0);
-
-  function getAll(cursor) {
-    query({
-      ticket: veda.ticket,
-      query: q,
-      from: cursor,
-      top: delta,
-      limit: limit,
-      async: true
-    }).then(function (query_result) {
-      if (limit > query_result.estimated) {
-        limit = query_result.estimated;
-      }
-
-      append.apply(result, query_result.result);
-
-      if (cursor/limit - progress >= 0.05) {
-        progress = cursor/limit;
-        console.log("query progress:", (progress * 100).toFixed() + "%");
-      }
-
-      if (query_result.cursor === query_result.estimated || query_result.cursor >= limit) {
-        processResult(result, delta, pause, fn);
-      } else {
-        getAll(query_result.cursor);
-      }
-    });
+// DONE: fix 'v-wf:to.rdf:type'==='v-s:Appointment' -> v-wf:to = person + position
+veda.Util.processQuery("'rdf:type'==='v-wf:DecisionForm' && 'v-wf:to.rdf:type'==='v-s:Appointment'", 100000, 100, 10000, function (task_uri) {
+  var task = get_individual(veda.ticket, task_uri);
+  var app_uri = task["v-wf:to"] && task["v-wf:to"][0].data;
+  var app = get_individual(veda.ticket, app_uri);
+  var emp = app["v-s:employee"];
+  var pos = app["v-s:occupation"];
+  if (emp && pos) {
+    task["v-wf:to"] = [].concat(emp, pos);
+    //console.log("fixed task:", JSON.stringify(task));
+    put_individual(veda.ticket, task);
+  } else {
+    console.log("error in task:", task_uri);
   }
+});
 
-  function processResult(uris, delta, pause, fn) {
-    console.log("left to process", uris.length);
-    var portion = uris.splice(-delta);
-    portion.forEach( fn );
-    if (uris.length) {
-      setTimeout(processResult, pause, uris, delta, pause, fn);
-    } else {
-      console.log("all done", uris.length);
+
+// DONE: fix 'v-wf:from.rdf:type'==='v-s:Appointment' -> v-wf:from = person + position
+veda.Util.processQuery("'rdf:type'==='v-wf:DecisionForm' && 'v-wf:from.rdf:type'==='v-s:Appointment'", 100000, 100, 15000, function (task_uri) {
+  var task = get_individual(veda.ticket, task_uri);
+  var app_uri = task["v-wf:from"] && task["v-wf:from"][0].data;
+  var app = get_individual(veda.ticket, app_uri);
+  var emp = app["v-s:employee"];
+  var pos = app["v-s:occupation"];
+  if (emp && pos) {
+    task["v-wf:from"] = [].concat(emp, pos);
+    //console.log("fixed task:", JSON.stringify(task));
+    put_individual(veda.ticket, task);
+  } else {
+    console.log("error in task:", task_uri);
+  }
+});
+
+
+// DONE: fix 'v-wf:to.rdf:type'==='v-s:Position' -> v-wf:to = person + position
+veda.Util.processQuery("'rdf:type'==='v-wf:DecisionForm' && ('v-wf:to.rdf:type'==='v-s:Position' && 'v-wf:to.rdf:type'!='v-s:Person')", 1000, 100, 0, function (task_uri, index) {
+  try {
+
+    var task = get_individual(veda.ticket, task_uri);
+
+    var work_order_uri = getUri(task["v-wf:onWorkOrder"]);
+    var work_order = get_individual(veda.ticket, work_order_uri);
+
+    var work_item_uri = getUri(work_order["v-wf:forWorkItem"]);
+    var work_item = get_individual(veda.ticket, work_item_uri);
+
+    var process_uri = getUri(work_item["v-wf:forProcess"]);
+    var process = get_individual(veda.ticket, process_uri);
+
+    var executor_uri = getUri(process["v-wf:executor"]);
+    var executor = get_individual(veda.ticket, executor_uri);
+
+    var emp = executor["v-s:employee"];
+    var pos = executor["v-s:occupation"];
+
+    if (emp && pos) {
+      task["v-wf:to"] = [].concat(emp, pos);
+      console.log("fixed task:", task_uri, "v-wf:to", JSON.stringify(task["v-wf:to"]));
+      //put_individual(veda.ticket, task);
     }
+
+  } catch (err) {
+    console.log("Error.", "| task_uri", task_uri, "| work_order_uri:", work_order_uri, "| work_item_uri", work_item_uri, "| process_uri", process_uri, "| executor_uri", executor_uri);
   }
-}
-
-
-
+});
