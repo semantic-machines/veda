@@ -430,11 +430,7 @@ public Ticket authenticate(string login, string password)
                 Transaction tnx;
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-
-                MapResource rdfType;
-                OpResult    op_res = add_to_transaction(
-                                                        l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, rdfType, false, "",
-                                                        false, true);
+                OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true);
 
 
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
@@ -443,9 +439,7 @@ public Ticket authenticate(string login, string password)
 
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-
-                MapResource rdfType1;
-                op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, rdfType1, false, "", false, true);
+                op_res            = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", false, true);
 
                 log.trace("authenticate: update user[%s], res=%s", user, op_res);
             }
@@ -552,12 +546,9 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-
-                    MapResource rdfType;
-                    OpResult    ires = add_to_transaction(
-                                                          ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, rdfType, prepare_events,
-                                                          event_id.str, false,
-                                                          true);
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
+                                                       true);
 
                     //commit (false, tnx);
 
@@ -577,12 +568,9 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-
-                    MapResource rdfType;
-                    OpResult    ires = add_to_transaction(
-                                                          ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, rdfType, prepare_events,
-                                                          event_id.str,
-                                                          false, true);
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
+                                                       false, true);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -600,12 +588,9 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-
-                    MapResource rdfType;
-                    OpResult    ires = add_to_transaction(
-                                                          ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, rdfType, prepare_events,
-                                                          event_id.str,
-                                                          false, true);
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
+                                                       false, true);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -623,12 +608,9 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-
-                    MapResource rdfType;
-                    OpResult    ires = add_to_transaction(
-                                                          ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, rdfType, prepare_events,
-                                                          event_id.str,
-                                                          false, true);
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
+                                                       false, true);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -646,12 +628,9 @@ public string execute(string in_msg, Context ctx)
                 Transaction tnx;
                 tnx.id            = transaction_id;
                 tnx.is_autocommit = true;
-
-                MapResource rdfType;
-                OpResult    ires = add_to_transaction(
-                                                      ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, rdfType, prepare_events,
-                                                      event_id.str, false,
-                                                      true);
+                OpResult ires = add_to_transaction(
+                                                   ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
+                                                   true);
 
                 rc ~= ires;
                 if (transaction_id <= 0)
@@ -785,11 +764,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
             Transaction tnx;
             tnx.id            = -1;
             tnx.is_autocommit = true;
-
-            MapResource rdfType;
-            OpResult    opres = add_to_transaction(
-                                                   ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, rdfType, false, "srv",
-                                                   false, false);
+            OpResult opres = add_to_transaction(ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false);
 
 
             if (opres.result == ResultCode.OK)
@@ -923,18 +898,10 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
  */
     if (in_tnx.is_autocommit == false)
     {
-        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
+        rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
 
-        rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, items, in_tnx.id, false, op_id);
-
-        if (rc == ResultCode.OK)
-        {
-            foreach (item; items)
-            {
-                if (item.rc == ResultCode.OK)
-                    rc = prepare_event(ev, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
-            }
-        }
+        //if (rc == ResultCode.OK)
+        //    rc = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
     }
     return rc;
 }
@@ -942,8 +909,7 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
-public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
-                                   ref MapResource rdfType, bool prepare_events,
+public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events,
                                    string event_id,
                                    bool ignore_freeze,
                                    bool is_api_request)
@@ -965,13 +931,10 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             return res;
         }
 
-        Tid  tid_subject_manager;
+        Tid         tid_subject_manager;
 
-        bool is_acl_element;
-        bool is_onto;
-
-        //MapResource rdfType;
-        set_map_of_type(indv, rdfType, is_acl_element, is_onto);
+        MapResource rdfType;
+        Resources _types = set_map_of_type(indv, rdfType);
 
         EVENT      ev = EVENT.CREATE;
 
@@ -984,7 +947,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if ((prev_state is null ||
                  prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                log.trace("ERR! add_to_transaction: cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+                log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
         }
         catch (Exception ex)
         {
@@ -1013,8 +976,6 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                 }
 
                 // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                Resources _types = indv.resources.get(rdf__type, Resources.init);
-
                 foreach (rs; _types)
                 {
                     string   itype = rs.get!string;
@@ -1061,11 +1022,11 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto);
+                                          event_id);
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
-                                          event_id, is_acl_element, is_onto);
+                                          event_id);
 
             if (tnx.is_autocommit)
             {
@@ -1107,7 +1068,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto);
+                                          event_id);
 
             if (tnx.is_autocommit)
             {
@@ -1123,14 +1084,14 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.OK)
-            res.result = prepare_event(ev, prev_state, new_state, is_acl_element, is_onto, res.op_id);
+            res.result = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
 
         return res;
     }
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! add_to_transaction: no store subject :%s, errcode=[%s], ticket=[%s]",
+            log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]",
                       indv !is null ? text(*indv) : "null",
                       text(res.result), ticket !is null ? text(*ticket) : "null");
 
@@ -1139,20 +1100,20 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     }
 }
 
-private ResultCode prepare_event(EVENT ev, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto, long op_id)
+private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_binobj, string new_binobj, long op_id)
 {
     ResultCode res;
 
     if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
     {
         Tid tid_acl;
-        if (is_onto == true && new_binobj != prev_binobj)
+        if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
         {
             // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
             inc_count_onto_update();
         }
 
-        if (is_acl_element == true)
+        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
         {
             tid_acl = getTid(P_MODULE.acl_preparer);
             if (tid_acl != Tid.init)
@@ -1170,7 +1131,7 @@ private ResultCode prepare_event(EVENT ev, string prev_binobj, string new_binobj
     return res;
 }
 
-private void set_map_of_type(Individual *indv, ref MapResource rdfType, out bool is_acl_element, out bool is_onto)
+private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
 {
     Resources _types = indv.resources.get(rdf__type, Resources.init);
 
@@ -1178,13 +1139,5 @@ private void set_map_of_type(Individual *indv, ref MapResource rdfType, out bool
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
 
-    if (rdfType.anyExists(owl_tags) == true)
-    {
-        is_onto = true;
-    }
-
-    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-    {
-        is_acl_element = true;
-    }
+    return _types;
 }
