@@ -55,7 +55,9 @@ script:
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
 #  - node ./qa/testSendGet.js
+  - setsid ./qa/uptime-to-log.sh
   - node ./qa/testLogin.js
+  - cat ./uptime.log
   - node ./qa/testPerson.js
   - node ./qa/testDrafts.js
   - node ./qa/testDeleteAndRecovery.js
