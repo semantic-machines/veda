@@ -29,16 +29,19 @@ veda.Module(function Util(veda) { "use strict";
         limit: limit,
         async: true
       }).then(function (query_result) {
-        if (limit > query_result.estimated) {
-          limit = query_result.estimated;
+        var cursor = query_result.cursor;
+        var estimated = query_result.estimated;
+        if ( limit > estimated ) {
+          limit = estimated;
         }
         append.apply(result, query_result.result);
-        if (cursor/limit - fetchingProgress >= 0.05) {
+        if ( cursor/limit - fetchingProgress >= 0.05 ) {
           fetchingProgress = cursor/limit;
-          console.log("fetching progress:", (fetchingProgress * 100).toFixed() + "%", "(" + cursor, "of", limit + ")");
+          console.log("fetching progress:", Math.floor(fetchingProgress * 100) + "%", "(" + cursor, "of", limit + ")");
         }
-        if (query_result.cursor === query_result.estimated || query_result.cursor >= limit) {
-          console.log("fetching done:", result.length);
+        if ( cursor === estimated || cursor >= limit ) {
+          console.log("fetching done:", limit);
+          result.splice(limit - cursor || limit); // cut result to limit
           processResult(result);
         } else {
           fetchResult(query_result.cursor);
@@ -48,11 +51,11 @@ veda.Module(function Util(veda) { "use strict";
     function processResult(result) {
       var portion = result.splice(-delta);
       portion.forEach( fn );
-      if ( (limit - result.length) / limit - processingProgress >= 0.05) {
+      if ( (limit - result.length) / limit - processingProgress >= 0.05 ) {
         processingProgress = (limit - result.length) / limit;
-        console.log("processing progress:", (processingProgress * 100).toFixed() + "%", "(" + (limit - result.length), "of", limit + ")");
+        console.log("processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (limit - result.length), "of", limit + ")");
       }
-      if (result.length) {
+      if ( result.length ) {
         setTimeout(processResult, pause, result);
       } else {
         console.log("processing done:", limit);
