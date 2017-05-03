@@ -48,7 +48,7 @@ before_script:
   - cat $PWD/logs/veda-webserver-stderr.log 
   - cat $PWD/veda_s.log
   - cat $PWD/logs/veda-core-mstorage_*.log          
-  - setsid ./qa/uptime-to-log.sh
+  - setsid ./qa/uptime-to-log.sh&
   - cat ./uptime.log
 
 # Run API & integration test
