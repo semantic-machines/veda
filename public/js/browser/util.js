@@ -13,6 +13,52 @@ veda.Module(function Util(veda) { "use strict";
     }
   }
 
+  veda.Util.processQuery = function (q, limit, delta, pause, fn) {
+    console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
+    var result = [], append = [].push, progress = 0;
+    getAll();
+    return;
+
+    function getAll(cursor) {
+      var from = cursor || 0;
+      query({
+        ticket: veda.ticket,
+        query: q,
+        from: from,
+        top: delta,
+        limit: limit,
+        async: true
+      }).then(function (query_result) {
+        if (limit > query_result.estimated) {
+          limit = query_result.estimated;
+        }
+
+        append.apply(result, query_result.result);
+
+        if (cursor/limit - progress >= 0.05) {
+          progress = cursor/limit;
+          console.log("query progress:", (progress * 100).toFixed() + "%");
+        }
+
+        if (query_result.cursor === query_result.estimated || query_result.cursor >= limit) {
+          processResult(result, delta, pause, fn);
+        } else {
+          getAll(query_result.cursor);
+        }
+      });
+    }
+    function processResult(uris, delta, pause, fn) {
+      console.log("left to process", uris.length);
+      var portion = uris.splice(-delta);
+      portion.forEach( fn );
+      if (uris.length) {
+        setTimeout(processResult, pause, uris, delta, pause, fn);
+      } else {
+        console.log("all done", uris.length);
+      }
+    }
+  }
+
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
     if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
