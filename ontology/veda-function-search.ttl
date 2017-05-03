@@ -1312,7 +1312,6 @@ v-fs:AttributiveSearchTemplate
       self.top = veda.user.displayedElements || 10;
       search().then(function () {
         scrollTo( $("#results", template).offset().top );
-        toggleSpin($this);
       });
     }
   }
