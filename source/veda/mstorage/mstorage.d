@@ -902,7 +902,25 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
 
         //if (rc == ResultCode.OK)
         //    rc = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
+
+        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
+
+        //if (rc == ResultCode.OK)
+        //    rc = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
+        rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, items, in_tnx.id, false, op_id);
+
+        if (rc == ResultCode.OK)
+        {
+            MapResource rdfType;
+
+            foreach (item; items)
+            {
+                if (item.rc == ResultCode.OK)
+                    rc = prepare_event(ev, rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+            }
+        }
     }
+
     return rc;
 }
 
@@ -937,7 +955,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         bool        is_onto;
 
         MapResource rdfType;
-        Resources   _types = set_map_of_type(indv, rdfType);
+        Resources   _types = set_map_of_type(indv, rdfType, is_acl_element, is_onto);
 
         EVENT       ev = EVENT.CREATE;
 
@@ -1087,7 +1105,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.OK)
-            res.result = prepare_event(ev, rdfType, prev_state, new_state, res.op_id);
+            res.result = prepare_event(ev, rdfType, prev_state, new_state, is_acl_element, is_onto, res.op_id);
 
         return res;
     }
@@ -1103,7 +1121,8 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     }
 }
 
-private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_binobj, string new_binobj, long op_id)
+private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto,
+                                 long op_id)
 {
     ResultCode res;
 
@@ -1134,13 +1153,23 @@ private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_
     return res;
 }
 
-private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
+private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out bool is_acl_element, out bool is_onto)
 {
     Resources _types = indv.resources.get(rdf__type, Resources.init);
 
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
+
+    if (rdfType.anyExists(owl_tags) == true)
+    {
+        is_onto = true;
+    }
+
+    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+    {
+        is_acl_element = true;
+    }
 
     return _types;
 }
