@@ -1,7 +1,7 @@
 /**
  * процесс отвечающий за хранение
  */
-module veda.server.storage_manager;
+module veda.mstorage.storage_manager;
 
 private
 {
@@ -13,7 +13,7 @@ private
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd;
-    import veda.server.wslink;
+    import veda.mstorage.wslink, veda.core.common.transaction;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -22,35 +22,9 @@ Logger _log;
 Logger log()
 {
     if (_log is null)
-        _log = new Logger("veda-core-server", "log", "STORAGE-MANAGER");
+        _log = new Logger("veda-core-mstorage", "log", "STORAGE-MANAGER");
     return _log;
 }
-
-struct TransactionItem
-{
-    byte       cmd;
-    string     indv_serl;
-    string     ticket_id;
-    string     event_id;
-
-    Individual indv;
-
-    this(byte _cmd, string _indv_serl, string _ticket_id, string _event_id)
-    {
-        cmd       = _cmd;
-        indv_serl = _indv_serl;
-        ticket_id = _ticket_id;
-        event_id  = _event_id;
-
-        int code = indv.deserialize(indv_serl);
-        if (code < 0)
-        {
-            log.trace("ERR:v8d:transaction:deserialize [%s]", indv_serl);
-        }
-    }
-}
-TransactionItem *[ string ] transaction_buff;
-TransactionItem *[] transaction_queue;
 
 public void freeze(P_MODULE storage_id)
 {
@@ -159,17 +133,14 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode put(P_MODULE storage_id, bool need_auth, string user_uri, Resources type, string indv_uri, string prev_state, string new_state,
-                      long update_counter,
-                      string event_id, string transaction_id, bool ignore_freeze,
-                      out long op_id)
+public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (TransactionItem)[] _ti, long tnx_id, bool ignore_freeze, out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, INDV_OP.PUT, need_auth, user_uri, indv_uri, prev_state, new_state, update_counter, event_id, transaction_id, ignore_freeze, thisTid);
+        send(tid, need_auth, _ti, tnx_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -182,14 +153,20 @@ public ResultCode put(P_MODULE storage_id, bool need_auth, string user_uri, Reso
     return rc;
 }
 
-public ResultCode remove(P_MODULE storage_id, bool need_auth, string user_uri, string uri, string transaction_id, bool ignore_freeze, out long op_id)
+public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj, string new_binobj,
+                         long update_counter,
+                         string event_id, long tnx_id, bool ignore_freeze,
+                         out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, INDV_OP.REMOVE, uri, transaction_id, ignore_freeze, thisTid);
+        immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
+                                                                  false);
+
+        send(tid, need_auth, [ ti ], tnx_id, ignore_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -201,7 +178,6 @@ public ResultCode remove(P_MODULE storage_id, bool need_auth, string user_uri, s
     }
     return rc;
 }
-
 
 public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
 {
@@ -380,18 +356,20 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (INDV_OP cmd, string uri, string transaction_id, bool ignore_freeze, Tid tid_response_reciever)
+                        (bool need_auth, immutable(TransactionItem)[] tiz, long tnx_id, bool ignore_freeze, Tid tid_response_reciever)
                         {
+                            immutable TransactionItem ti = tiz[ 0 ];
+
                             ResultCode rc = ResultCode.Not_Ready;
 
-                            if (!ignore_freeze && is_freeze && cmd == INDV_OP.REMOVE)
+                            if (!ignore_freeze && is_freeze && ti.cmd == INDV_OP.PUT)
                                 send(tid_response_reciever, rc, thisTid);
 
                             try
                             {
-                                if (cmd == INDV_OP.REMOVE)
+                                if (ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(false, null, uri) == ResultCode.OK)
+                                    if (storage.remove(false, null, ti.uri) == ResultCode.OK)
                                         rc = ResultCode.OK;
                                     else
                                         rc = ResultCode.Fail_Store;
@@ -400,29 +378,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                     return;
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                send(tid_response_reciever, ResultCode.Fail_Commit, thisTid);
-                                return;
-                            }
-                        },
-                        (INDV_OP cmd, bool need_auth, string user_uri, string indv_uri, string prev_state, string new_state, long update_counter,
-                         string event_id,
-                         string transaction_id, bool ignore_freeze, Tid tid_response_reciever)
-                        {
-                            ResultCode rc = ResultCode.Not_Ready;
-
-                            if (!ignore_freeze && is_freeze && cmd == INDV_OP.PUT)
-                                send(tid_response_reciever, rc, thisTid);
-
-                            try
-                            {
-                                if (cmd == INDV_OP.PUT)
+                                else if (ti.cmd == INDV_OP.PUT)
                                 {
                                     string new_hash;
                                     //log.trace ("storage_manager:PUT %s", indv_uri);
-                                    if (storage.update_or_create(indv_uri, new_state, op_id, new_hash) == 0)
+                                    if (storage.update_or_create(ti.uri, ti.new_binobj, op_id, new_hash) == 0)
                                     {
                                         rc = ResultCode.OK;
                                         op_id++;
@@ -439,34 +399,36 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                     {
                                         module_info.put_info(op_id, committed_op_id);
 
-                                        bin_log_name = write_in_binlog(new_state, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
+                                        bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
 
                                         if (storage_id == P_MODULE.subject_manager)
                                         {
                                             Individual imm;
                                             imm.uri = text(op_id);
-                                            imm.addResource("cmd", Resource(cmd));
+                                            imm.addResource("cmd", Resource(ti.cmd));
 
-                                            imm.addResource("uri", Resource(DataType.Uri, indv_uri));
+                                            imm.addResource("uri", Resource(DataType.Uri, ti.uri));
 
-                                            if (user_uri !is null && user_uri.length > 0)
-                                                imm.addResource("user_uri", Resource(DataType.Uri, user_uri));
+                                            if (ti.user_uri !is null && ti.user_uri.length > 0)
+                                                imm.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
 
-                                            imm.addResource("new_state", Resource(DataType.String, new_state));
+                                            imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
 
-                                            if (prev_state !is null && prev_state.length > 0)
-                                                imm.addResource("prev_state", Resource(DataType.String, prev_state));
+                                            if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+                                                imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
                                             else
-                                                uris_queue.push(indv_uri);
+                                                uris_queue.push(ti.uri);
 
-                                            if (event_id !is null && event_id.length > 0)
-                                                imm.addResource("event_id", Resource(DataType.String, event_id));
+                                            if (ti.event_id !is null && ti.event_id.length > 0)
+                                                imm.addResource("event_id", Resource(DataType.String, ti.event_id));
 
-                                            if (transaction_id !is null && transaction_id.length > 0)
-                                                imm.addResource("transaction_id", Resource(DataType.String, event_id));
+                                            if (tnx_id <= 0)
+                                                tnx_id = op_id;
+
+                                            imm.addResource("tnx_id", Resource(tnx_id));
 
                                             imm.addResource("op_id", Resource(op_id));
-                                            imm.addResource("u_count", Resource(update_counter));
+                                            imm.addResource("u_count", Resource(ti.update_counter));
 
                                             //writeln ("*imm=[", imm, "]");
 
@@ -475,17 +437,10 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             individual_queue.push(binobj);
 //                                          string msg_to_modules = indv_uri ~ ";" ~ text(update_counter) ~ ";" ~ text (op_id) ~ "\0";
-                                            string msg_to_modules = format("#%s;%d;%d", indv_uri, update_counter, op_id);
+                                            string msg_to_modules = format("#%s;%d;%d", ti.uri, ti.update_counter, op_id);
 
                                             int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);
 //                                          log.trace("SEND %d bytes UPDATE SIGNAL TO %s", bytes, notify_channel_url);
-
-                                            //Tid tid_ccus_channel = getTid(P_MODULE.ccus_channel);
-                                            //if (tid_ccus_channel !is Tid.init)
-                                            //{
-                                            //    //log.trace("SEND SIGNAL TO CCUS %s", msg_to_modules);
-                                            //    send(tid_ccus_channel, msg_to_modules);
-                                            //}
                                         }
                                     }
 

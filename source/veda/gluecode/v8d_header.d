@@ -3,9 +3,9 @@
  */
 module veda.gluecode.v8d_header;
 
-import std.stdio, std.conv, std.file, std.path;
+import std.stdio, std.conv, std.file, std.path, std.uuid;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, std.uuid;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -112,114 +112,64 @@ void set_g_super_classes(string[] indv_types, Onto onto)
     g_super_classes.length = cast(int)superclasses_str.length;
 }
 
-
-struct TransactionItem
+private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
 {
-    INDV_OP    cmd;
-    string     binobj;
-    string     ticket_id;
-    string     event_id;
-    ResultCode rc;
+    TransactionItem *ti = new TransactionItem();
 
-    Individual indv;
+    ti.cmd        = _cmd;
+    ti.new_binobj = _binobj;
+    ti.ticket_id  = _ticket_id;
+    ti.event_id   = _event_id;
 
-    this(INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
+    if (ti.cmd == INDV_OP.REMOVE)
     {
-        cmd       = _cmd;
-        binobj    = _binobj;
-        ticket_id = _ticket_id;
-        event_id  = _event_id;
-
-        if (cmd == INDV_OP.REMOVE)
+        ti.new_indv.uri = _binobj;
+        ti.rc           = ResultCode.OK;
+    }
+    else
+    {
+        int code = ti.new_indv.deserialize(ti.new_binobj);
+        if (code < 0)
         {
-            rc = ResultCode.OK;
+            ti.rc = ResultCode.Unprocessable_Entity;
+            log.trace("ERR! v8d:transaction:deserialize [%s]", ti.new_binobj);
+            return ti;
         }
         else
+            ti.rc = ResultCode.OK;
+
+        ti.new_indv.setStatus(ti.rc);
+
+        if (ti.rc == ResultCode.OK && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
         {
-            int code = indv.deserialize(binobj);
-            if (code < 0)
+            Individual      prev_indv;
+
+            TransactionItem *ti1 = tnx.get(ti.new_indv.uri);
+            if (ti1 !is null && ti1.new_binobj.length > 0)
             {
-                rc = ResultCode.Unprocessable_Entity;
-                log.trace("ERR! v8d:transaction:deserialize [%s]", binobj);
-                return;
+                prev_indv = ti1.new_indv;
             }
             else
-                rc = ResultCode.OK;
-
-            indv.setStatus(rc);
-
-            if (rc == ResultCode.OK && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
             {
-                Individual      prev_indv;
-
-                TransactionItem *ti = transaction_buff.get(indv.uri, null);
-                if (ti !is null && ti.binobj.length > 0)
-                {
-                    prev_indv = ti.indv;
-                }
-                else
-                {
-                    Ticket *ticket = g_context.get_ticket(ticket_id);
-                    prev_indv = g_context.get_individual(ticket, indv.uri);
-                }
-
-                if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
-                    rc = prev_indv.getStatus();
-
-                if (prev_indv.getStatus() == ResultCode.OK)
-                    indv = *indv_apply_cmd(cmd, &prev_indv, &indv);
-                else
-                    log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", cmd, indv.uri, prev_indv.getStatus());
+                Ticket *ticket = g_context.get_ticket(ti.ticket_id);
+                prev_indv = g_context.get_individual(ticket, ti.new_indv.uri);
             }
+
+            if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
+                ti.rc = prev_indv.getStatus();
+
+            if (prev_indv.getStatus() == ResultCode.OK)
+                ti.new_indv = *indv_apply_cmd(ti.cmd, &prev_indv, &ti.new_indv);
+            else
+                log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri,
+                          prev_indv.getStatus());
         }
     }
+    return ti;
 }
 
-TransactionItem *[ string ] transaction_buff;
-TransactionItem *[] transaction_queue;
 
-public ResultCode commit()
-{
-    string transaction_id = randomUUID().toString();
-
-    foreach (item; transaction_queue)
-    {
-        if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
-            continue;
-
-        if (item.rc != ResultCode.OK)
-            return item.rc;
-
-        Ticket *ticket = g_context.get_ticket(item.ticket_id);
-
-        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-        ResultCode rc;
-
-        if (item.cmd == INDV_OP.REMOVE)
-            rc = g_context.remove_individual(ticket, item.binobj, true, item.event_id, transaction_id, ignore_freeze).result;
-        else
-            rc = g_context.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, transaction_id, ignore_freeze).result;
-
-        if (rc == ResultCode.No_Content)
-        {
-            log.trace("WARN!: Rejected attempt to save an empty object: %s", item.indv);
-        }
-
-        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-        {
-            log.trace("FAIL COMMIT");
-            return rc;
-        }
-        //else
-        //log.trace ("SUCCESS COMMIT");
-    }
-
-    transaction_buff  = transaction_buff.init;
-    transaction_queue = transaction_queue.init;
-
-    return ResultCode.OK;
-}
+Transaction tnx;
 
 extern (C++)
 {
@@ -334,53 +284,39 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
                                        int _event_id_length)
 {
     // writeln("@V8:put_individual");
-    TransactionItem *ti = new TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new_TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
-    {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
-        return ResultCode.OK;
-    }
-    else
-        return ti.rc;
+        tnx.add(ti);
+
+    return ti.rc;
 }
 
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
     TransactionItem *ti =
-        new TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+        new_TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                             cast(string)_event_id[ 0.._event_id_length ].dup);
 
-
     if (ti.rc == ResultCode.OK)
-    {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
-        return ResultCode.OK;
-    }
-    else
-        return ti.rc;
+        tnx.add(ti);
+
+    return ti.rc;
 }
 
 extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
     TransactionItem *ti =
-        new TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+        new_TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                             cast(string)_event_id[ 0.._event_id_length ].dup);
 
-
     if (ti.rc == ResultCode.OK)
-    {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
-        return ResultCode.OK;
-    }
-    else
-        return ti.rc;
+        tnx.add(ti);
+
+    return ti.rc;
 }
 
 extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length,
@@ -388,35 +324,25 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
                                                int _event_id_length)
 {
     TransactionItem *ti =
-        new TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+        new_TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                             cast(string)_event_id[ 0.._event_id_length ].dup);
 
-
     if (ti.rc == ResultCode.OK)
-    {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
-        return ResultCode.OK;
-    }
-    else
-        return ti.rc;
+        tnx.add(ti);
+
+    return ti.rc;
 }
 
 extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+    TransactionItem *ti = new_TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                                               cast(string)_event_id[ 0.._event_id_length ].dup);
 
-
     if (ti.rc == ResultCode.OK)
-    {
-        transaction_buff[ ti.indv.uri ] = ti;
-        transaction_queue ~= ti;
-        return ResultCode.OK;
-    }
-    else
-        return ti.rc;
+        tnx.add(ti);
+
+    return ti.rc;
 }
 
 ////
@@ -539,11 +465,11 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else
         {
-            TransactionItem *ti = transaction_buff.get(uri, null);
-            if (ti !is null && ti.binobj.length > 0)
+            TransactionItem *ti = tnx.get(uri);
+            if (ti !is null && ti.new_binobj.length > 0)
             {
-                tmp_individual.data   = cast(char *)ti.binobj;
-                tmp_individual.length = cast(int)ti.binobj.length;
+                tmp_individual.data   = cast(char *)ti.new_binobj;
+                tmp_individual.length = cast(int)ti.new_binobj.length;
                 return &tmp_individual;
             }
 
@@ -622,8 +548,6 @@ void run_WrappedScript(WrappedContext _context, WrappedScript ws, _Buff *_res = 
 //alias WrappedScript      Script;
 //alias run_WrappedScript  run;
 //alias new_WrappedScript  compile;
-
-bool ignore_freeze;
 
 class JsVM : ScriptVM
 {

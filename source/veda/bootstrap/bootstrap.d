@@ -154,7 +154,7 @@ void main(string[] args)
 
     string[] modules =
     [
-        "veda", "veda-ccus", "veda-server", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main",
+        "veda", "veda-ccus", "veda-mstorage", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-scripts-main",
         "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts"
     ];
     int[][ string ] command_2_pid;
@@ -229,7 +229,7 @@ void main(string[] args)
                                      std.stdio.stdout,
                                      _logFile, env, Config.suppressConsole);
 
-            if (ml == "veda-server")
+            if (ml == "veda-mstorage")
             {
                 server_pid = _pid;
             }
@@ -274,7 +274,7 @@ void main(string[] args)
     exit_code = wait(server_pid);
 
     if (exit_code == -SIGKILL)
-        writeln("veda-server terminated, code=", exit_code);
+        writeln("veda-mstorage terminated, code=", exit_code);
 
     kill_prev_instance(modules, command_2_pid);
 

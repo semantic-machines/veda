@@ -35,7 +35,7 @@ basic.getDrivers().forEach(function (drv) {
     var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
     //var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
-    basic.execute(driver, 'sendKeys', 'input[type="file"]', "Cannot find this '" + filePath + "' file", filePath);
+    basic.execute(driver, 'sendKeys', 'input[type="file"]', "Cannot find '" + filePath + "' file", filePath);
     driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
     basic.execute(driver, 'click', 'button[id="save"]', "Cannot click on 'save' button");
 

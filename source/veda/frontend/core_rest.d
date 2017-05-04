@@ -1,7 +1,7 @@
 module veda.frontend.core_rest;
 
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
-import core.vararg, core.stdc.stdarg, core.atomic;
+import core.vararg, core.stdc.stdarg, core.atomic, std.uri;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import properd, TrailDB;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
@@ -237,7 +237,7 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-                    string ss = "attachment; filename*=UTF-8''" ~ std.uri.encode(originFileName);
+                    string ss = "attachment; filename*=UTF-8''" ~ encode(originFileName);
 
                     res.headers[ "Content-Disposition" ] = ss;
 
@@ -769,7 +769,7 @@ class VedaStorageRest : VedaStorageRest_API
                     if (reopen)
                     {
                         context.reopen_ro_acl_storage_db();
-                        context.reopen_ro_subject_storage_db();
+                        context.reopen_ro_individuals_storage_db();
                     }
 
                     string cb = context.get_individual_as_binobj(ticket, uri, rc);
@@ -829,7 +829,6 @@ class VedaStorageRest : VedaStorageRest_API
             jreq[ "uri" ]            = uri;
             jreq[ "prepare_events" ] = prepare_events;
             jreq[ "event_id" ]       = event_id;
-            jreq[ "transaction_id" ] = randomUUID().toString ();
 
             vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
             vibe.core.concurrency.receive((string res){ op_res = parseOpResults(res); });
@@ -1052,7 +1051,6 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
     jreq[ "individuals" ]    = individuals_json;
     jreq[ "prepare_events" ] = prepare_events;
     jreq[ "event_id" ]       = event_id;
-    jreq[ "transaction_id" ] = randomUUID().toString ();
 
     vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
     vibe.core.concurrency.receive((string _res){ res = _res; op_res = parseOpResults(_res); });

@@ -33,7 +33,7 @@ class FanoutProcess : VedaModule
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, string transaction_id, long op_id)
+                                string event_id, long transaction_id, long op_id)
     {
         ResultCode rc;
 
@@ -92,7 +92,7 @@ class FanoutProcess : VedaModule
         configure();
     }
 
-    bool[ string ] isExistsTable;
+    bool[ string ] existsTable;
 
     private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
@@ -101,10 +101,10 @@ class FanoutProcess : VedaModule
 
         try
         {
-            isExistsTable = isExistsTable.init;
+            existsTable = existsTable.init;
             //log.trace("push_to_mysql: prev_indv=%s", prev_indv);
             //log.trace("push_to_mysql: new_indv=%s", new_indv);
-            bool   is_deleted = new_indv.isExists("v-s:deleted", true);
+            bool   is_deleted = new_indv.exists("v-s:deleted", true);
 
             string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
             string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");
@@ -260,7 +260,7 @@ class FanoutProcess : VedaModule
         if (mysql_conn is null)
             return false;
 
-        if (isExistsTable.get(predicate, false) == true)
+        if (existsTable.get(predicate, false) == true)
             return true;
 
         auto rows = mysql_conn.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?;", database_name,
@@ -311,7 +311,7 @@ class FanoutProcess : VedaModule
                                  " PRIMARY KEY (`ID`), " ~
                                  " INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) " ~ sql_value_index ~
                                  ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
-                isExistsTable[ predicate ] = true;
+                existsTable[ predicate ] = true;
                 log.trace("create table [%s]", predicate);
             }
             catch (Exception ex)
@@ -323,7 +323,7 @@ class FanoutProcess : VedaModule
         }
         else
         {
-            isExistsTable[ predicate ] = true;
+            existsTable[ predicate ] = true;
             return true;
         }
     }

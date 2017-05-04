@@ -405,7 +405,7 @@ var doc_uri = document['@'],
 
 owner_properties.map(function (property_uri) {
   var owner_uri = getUri( document[property_uri] );
-  if (owner_uri) {
+  if (owner_uri && owner_uri !== "cfg:VedaSystem") {
     var owner = get_individual(ticket, owner_uri);
     if (owner) {
       var owner_type = getUri(owner["rdf:type"]);
@@ -417,6 +417,11 @@ owner_properties.map(function (property_uri) {
         if (position_uri) {
           var new_right_uri = doc_uri + "_" + position_uri;
           addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
+        }
+        var person_uri = getUri(owner["v-s:employee"]);
+        if (person_uri) {
+          var new_right_uri = doc_uri + "_" + person_uri;
+          addRight(ticket, [can_read, can_update, can_delete], person_uri, doc_uri, new_right_uri);
         }
       }
     }

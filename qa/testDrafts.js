@@ -1,3 +1,4 @@
+var console = require('console');
 var webdriver = require('selenium-webdriver'),
     basic = require('./basic.js'),
     firstName = ''+Math.round(+new Date()/1000),
@@ -12,10 +13,10 @@ var webdriver = require('selenium-webdriver'),
 function check(driver, count) {
     basic.menu(driver, 'Drafts');
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElements({css:'div[id="drafts"] span[typeof="v-s:Person"]'}).then(function(elements_arr){
+    driver.findElements({css:'div[id="drafts"] [typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
             if (count == "true") {
-                basic.execute(driver, 'click', 'div[id="drafts"] span[typeof="v-s:Person"]', "Cannot click on selected draft");
+                basic.execute(driver, 'click', 'div[id="drafts"] [typeof="v-s:Person"]', "Cannot click on selected draft");
             }
             if (count == "false") {
                 console.trace("Expected number of drafts is 0, but get 1");
@@ -61,6 +62,8 @@ function fillProperty(driver, property, something) {
 
 
 basic.getDrivers().forEach(function(drv) {
+    console.time("testDrafts");
+
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
@@ -94,5 +97,6 @@ basic.getDrivers().forEach(function(drv) {
 
     check(driver, "false");
 
+    console.timeEnd("testDrafts");
     driver.quit();
 })

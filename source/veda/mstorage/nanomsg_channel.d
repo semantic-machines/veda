@@ -1,8 +1,8 @@
-module veda.server.nanomsg_channel;
+module veda.mstorage.nanomsg_channel;
 
 import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.path, std.json;
 import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.onto.onto, veda.core.impl.thread_context, veda.core.common.define;
-import kaleidic.nanomsg.nano;
+import kaleidic.nanomsg.nano, veda.mstorage.server;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -10,7 +10,7 @@ Logger _log;
 Logger log()
 {
     if (_log is null)
-        _log = new Logger("veda-core-server", "log", "N-CHANNEL");
+        _log = new Logger("veda-core-mstorage", "log", "N-CHANNEL");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
@@ -59,7 +59,7 @@ void nanomsg_channel(string thread_name)
                     string req = to!string(buf);
 //                    log.trace("RECEIVED (%s)", req);
 
-                    string rep = context.execute(req);
+                    string rep = execute(req, context);
 
                     nn_freemsg(buf);
 

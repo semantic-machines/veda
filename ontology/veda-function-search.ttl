@@ -634,7 +634,7 @@ v-fs:AttributiveRequestModel
         self.form["rdf:type"] = values;
         for (var property_uri in self.properties) {
           if ( stopList.indexOf(property_uri) >= 0 ) { continue; }
-          self.form[property_uri] = self[property_uri];
+          self.form.set(property_uri, self.get(property_uri));
         }
         self.form.on("propertyModified", handler);
         q = mkQuery(self.form);
@@ -651,7 +651,7 @@ v-fs:AttributiveRequestModel
 
   function handler(property_uri, values) {
     if ( stopList.indexOf(property_uri) < 0 ) {
-      self[property_uri] = values;
+      self.set(property_uri, values);
     }
     q = mkQuery(self.form);
   }
@@ -1152,6 +1152,18 @@ v-fs:TotalAuthorizedBundle
   rdfs:label "Вам доступно"@ru ;
 .
 
+v-fs:SearchBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Поиск"@ru ;
+  rdfs:label "Search"@en ;
+.
+
+v-fs:CtrlEnterBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Нажмите 'Ctrl + Enter' чтобы начать поиск"@ru ;
+  rdfs:label "Press 'Ctrl + Enter' to begin search"@en ;
+.
+
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -1172,17 +1184,21 @@ v-fs:AttributiveSearchTemplate
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
-  <!--h2 about="@" property="rdfs:label"></h2-->
+  <br>
+  <div class="ribbon-wrapper top-left">
+    <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
+  </div>
   <div id="params">
     <div id="search-form"></div>
     <br>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-    <button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button>
-    <button class="btn btn-default xls"><i class="fa fa-table fa-lg"></i></button>
+    <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
+    <button class="btn btn-default xls"><span>Excel</span></button>
+    <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
   </div>
-  <br>
   <div id="results" class="hidden">
+    <br>
     <hr>
     <h3 class="clearfix">
       <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
@@ -1191,7 +1207,7 @@ v-fs:AttributiveSearchTemplate
         <span class="total-found badge">0</span>&nbsp;&nbsp;
         <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
         <span class="total-processed badge">0</span>&nbsp;&nbsp;
-        <span about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></span>
+        <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
         <span class="total-authorized badge">0</span>&nbsp;&nbsp;
       </small>
     </h3>
@@ -1248,8 +1264,16 @@ v-fs:AttributiveSearchTemplate
   if ( searchBlank ) {
     searchBlank._init();
     searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
+    searchBlank.object.on("search", formHandler);
+    template.one("remove", function () {
+      searchBlank.object.off("search", formHandler);
+    });
   } else {
     $("#params", template).remove();
+  }
+  function formHandler () {
+    self.top = veda.user.displayedElements || 10;
+    search();
   }
 
   // Show results on load if they are available (e.g. if we came back)
@@ -1260,7 +1284,7 @@ v-fs:AttributiveSearchTemplate
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     search().then(function () {
-      scrollTo( $("#results").offset().top );
+      scrollTo( $("#results", template).offset().top );
     });
   }
 
@@ -1276,9 +1300,22 @@ v-fs:AttributiveSearchTemplate
     self.top = veda.user.displayedElements || 10;
     toggleSpin($this);
     search().then(function () {
-      scrollTo( $("#results").offset().top );
+      scrollTo( $("#results", template).offset().top );
       toggleSpin($this);
     });
+  });
+
+  function ctrlEnterHandler (e) {
+    if (e.ctrlKey && e.keyCode === 13) {
+      self.top = veda.user.displayedElements || 10;
+      search().then(function () {
+        scrollTo( $("#results", template).offset().top );
+      });
+    }
+  }
+  $(window).on("keyup", ctrlEnterHandler);
+  template.one("remove", function () {
+    $(window).off("keyup", ctrlEnterHandler);
   });
 
   // Clear button handler
@@ -1288,7 +1325,7 @@ v-fs:AttributiveSearchTemplate
       if (property_uri === "@" || property_uri === "rdf:type") {
         return;
       }
-      obj[property_uri] = [];
+      obj.set(property_uri, []);
     });
   });
 
@@ -1349,7 +1386,7 @@ v-fs:AttributiveSearchTemplate
       self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
       toggleSpin($this);
       search().then(function () {
-        scrollTo( $("#results").offset().top );
+        scrollTo( $("#results", template).offset().top );
         toggleSpin($this);
       });
     });
@@ -1377,6 +1414,7 @@ v-fs:AttributiveSearchTemplate
     } else {
       moreResults.removeClass("hidden");
       allResults.removeClass("hidden");
+      noMoreResults.addClass("hidden");
     }
     // Toggle "not found" alert & "no more results" alert
     if (self.result.length) {
@@ -1417,7 +1455,7 @@ v-fs:AttributiveSearchTemplate
             }
           });
           tmpl.show();
-        }, 0);
+        }, 300);
       });
     });
 

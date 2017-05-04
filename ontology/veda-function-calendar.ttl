@@ -173,9 +173,8 @@ v-cal:FunctionCalendarIndicatorTemplate
   rdfs:label "Шаблон индикатора для v-cal:FunctionCalendar"@ru ;
   v-ui:template """
 <script>
-  var pos_uri = veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0].id : undefined,
-      pos_counter_uri = pos_uri ? "d:taskCounter_" + pos_uri.split(":").join("_") : undefined;
-  $(".label", template).attr("about", pos_counter_uri);
+  var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  $(".label", template).attr("about", counter_uri);
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")

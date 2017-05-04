@@ -8,11 +8,11 @@ module veda.gluecode.ltr_scripts;
 private
 {
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
-    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-    import veda.vmodule.vmodule;
+    import veda.vmodule.vmodule, veda.core.common.transaction;
     import veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
@@ -99,7 +99,6 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", individuals_db_path, log, parent_url);
-
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
@@ -287,19 +286,20 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     {
         try
         {
-            //if (trace_msg[ 300 ] == 1)
-            //log.trace("start exec ltr-script : %s %s", script.id, uri);
+            log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
-            ResultCode res = commit();
+            tnx.id = -1;
+            ResultCode res = g_context.commit(&tnx);
+            tnx.reset();
+
             if (res != ResultCode.OK)
             {
                 log.trace("fail exec event script : %s", script.id);
                 return res;
             }
 
-            //if (trace_msg[ 300 ] == 1)
-            //log.trace("end exec ltr-script : %s", script.id);
+            log.trace("end exec ltr-script : %s", script.id);
         }
         catch (Exception ex)
         {
@@ -333,11 +333,11 @@ class ScriptProcess : VedaModule
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, string transaction_id, long op_id)
+                                string event_id, long transaction_id, long op_id)
     {
         committed_op_id = op_id;
 
-        if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
+        if (new_indv.exists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return ResultCode.OK;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)

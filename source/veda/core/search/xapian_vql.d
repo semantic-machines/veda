@@ -70,6 +70,8 @@ class XapianVQL
     {
         TokenType res = TokenType.TEXT;
 
+        //log.trace ("token=[%s]", token);
+
         token = token.strip();
 
         if (token == "true")
@@ -311,7 +313,7 @@ class XapianVQL
                                 {
                                     if (tta.R.token_decor == Decor.QUOTED || (indexOf(rs, '*') >= 0 && is_good_token(rs)))
                                     {
-                                        if ((indexOf(rs, '*') >= 0) && (rs[ 0 ] == '+' && !is_good_token (rs)))
+                                        if ((indexOf(rs, '*') >= 0) && (rs[ 0 ] == '+' && !is_good_token(rs)))
                                         {
                                             rs = rs.removechars("*");
                                         }
@@ -767,9 +769,9 @@ class XapianVQL
 
     bool is_good_token(string str)
     {
-        int  count_alpha = 0;
+        int  count_alpha  = 0;
         int  count_number = 0;
-        long count    = utf.count(str);
+        long count        = utf.count(str);
 
         for (size_t idx; idx < count; idx)
         {
@@ -782,12 +784,12 @@ class XapianVQL
 
         //log.trace ("@get_count_alpha, str=[%s], count_alpha=[%d]", str, count_alpha);
 
-		if (count_alpha + count_number < 3) 
-			return false;	 	
+        if (count_alpha + count_number < 3)
+            return false;
 
-		if (count_alpha + count_number < 4 && count_number == 3) 
-			return false;	 	
-			
-		return true;	
+        if (count_alpha + count_number < 4 && count_number == 3)
+            return false;
+
+        return true;
     }
 }

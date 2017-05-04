@@ -1,11 +1,11 @@
 {
-	"name": "veda-server",
-	"description": "veda-server",
+	"name": "veda-mstorage",
+	"description": "veda-mstorage",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2"
 	},
-	"versions": ["isServer"],	
+	"versions": ["isMStorage"],	
         "libs": [
                     "websockets", "nanomsg"
         ],
@@ -24,7 +24,7 @@
 	"../../veda/util/tests_tools.d"
  	],
 	"sourcePaths":[
-	    "../../veda/server", 
+	    "../../veda/mstorage", 
 	    "../../veda/common", 
 	    "../../veda/core",  
 	    "../../veda/onto", 

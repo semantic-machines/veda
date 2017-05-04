@@ -34,7 +34,21 @@ v-s:claimDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
+v-s:claimObjectDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Claim description"@en ;
+  rdfs:label "Описание объекта претензии"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Claim ;
+.
 v-s:claimObject
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Claim object"@en ;
+  rdfs:label "Объект претензии"@ru ;
+  rdfs:range v-s:MaterialGroup ;
+  rdfs:domain v-s:Claim ;
+.
+v-s:hasClaimObject
   rdf:type owl:ObjectProperty ;
   rdfs:label "Claim object"@en ;
   rdfs:label "Объект претензии"@ru ;
@@ -48,6 +62,13 @@ v-s:claimRequirement
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
+v-s:claimCircumstanceDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Claim circumstance description"@en ;
+  rdfs:label "Описание обстоятельств претензии"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Claim ;
+.
 v-s:claimVolume
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Claim volume"@en ;
@@ -55,11 +76,25 @@ v-s:claimVolume
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Claim ;
 .
+v-s:requirementSum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Requirement sum"@en ;
+  rdfs:label "Требуемая сумма"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Claim ;
+.
 v-s:compensationSum
   rdf:type owl:ObjectProperty ;
   rdfs:label "Compaensation sum"@en ;
-  rdfs:label "Сумма к возмещению"@ru ;
+  rdfs:label "Возмещенная сумма"@ru ;
   rdfs:range v-s:Price ;
+  rdfs:domain v-s:Claim ;
+.
+v-s:hasClaimCircumstance
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Claim circumstancem"@en ;
+  rdfs:label "Обстоятельства претензии"@ru ;
+  rdfs:range v-s:ClaimCircumstance ;
   rdfs:domain v-s:Claim ;
 .
 # ------------------------------------------------------------

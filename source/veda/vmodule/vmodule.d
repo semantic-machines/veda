@@ -191,7 +191,7 @@ class VedaModule
 
     // if return [false] then, no commit prepared message, and repeate
     abstract ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, string transaction_id, long op_id);
+                                string event_id, long transaction_id, long op_id);
 
     abstract bool configure();
     abstract bool close();
@@ -217,7 +217,7 @@ class VedaModule
 
     public void prepare_all()
     {
-        long  total_count    = context.get_subject_storage_db().count_entries();
+        long  total_count    = context.get_inividuals_storage_r().count_entries();
         long  count_prepared = 0;
 
         long  count;
@@ -239,7 +239,7 @@ class VedaModule
         log.trace_console("start prepare_all");
         context.freeze();
         log.trace_console("start create queue");
-        context.get_subject_storage_db().get_of_cursor(&add_to_queue, false);
+        context.get_inividuals_storage_r().get_of_cursor(&add_to_queue, false);
         log.trace_console("end create queue, count: %d", queue.count_pushed);
         queue.close();
         context.unfreeze();
@@ -336,7 +336,7 @@ class VedaModule
 
                         try
                         {
-                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", null, -1);
+                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1);
                         }
                         catch (Throwable tr)
                         {
@@ -368,7 +368,7 @@ class VedaModule
             string  prev_bin = imm.getFirstLiteral("prev_state");
             string  user_uri = imm.getFirstLiteral("user_uri");
             string  event_id = imm.getFirstLiteral("event_id");
-            string  transaction_id = imm.getFirstLiteral("transaction_id");
+            long  transaction_id = imm.getFirstInteger("tnx_id");
             INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
             op_id = imm.getFirstInteger("op_id");
 
