@@ -10,144 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger;
-
-/// Имена процессов
-public enum P_MODULE : byte
-{
-    /// Выдача и проверка тикетов
-    ticket_manager  = 0,
-
-    /// Чтение и сохранение индивидуалов
-    subject_manager = 1,
-
-    /// Индексирование прав
-    acl_preparer    = 2,
-
-    /// Полнотекстовое индексирование
-    //xapian_thread_context      = 3,
-
-    /// Полнотекстовое индексирование
-    fulltext_indexer           = 4,
-
-    /// Сбор статистики
-    statistic_data_accumulator = 5,
-
-    /// исполнение скриптов
-    scripts_main               = 6,
-
-    /// Сохранение накопленных данных в полнотекстовом индексаторе
-    commiter                   = 7,
-
-    /// Вывод статистики
-    print_statistic            = 8,
-
-    /// Загрузка из файлов
-    file_reader                = 10,
-
-    zmq_listener               = 11,
-
-    fanout_email               = 12,
-
-    //// data change signal
-    fanout_sql                 = 13,
-
-    ltr_scripts                = 14,
-
-    webserver                  = 15,
-
-    n_channel                  = 16,
-
-    ccus_channel               = 17,
-
-    nop                        = 99
-}
-
-/**
- * Коды результата выполнения
- */
-public enum ResultCode
-{
-    /// 0
-    zero                  = 0,
-
-    /// 200
-    OK                    = 200,
-
-    /// 201
-    Created               = 201,
-
-    /// 204
-    No_Content            = 204,
-
-    /// 400
-    Bad_Request           = 400,
-
-    /// 403
-    Forbidden             = 403,
-
-    /// 404
-    Not_Found             = 404,
-
-    /// 422
-    Unprocessable_Entity  = 422,
-
-    /// 429
-    Too_Many_Requests     = 429,
-
-    /// 470
-    Ticket_not_found      = 470,
-
-    /// 471
-    Ticket_expired        = 471,
-
-    /// 472
-    Not_Authorized        = 472,
-
-    /// 473
-    Authentication_Failed = 473,
-
-    /// 474
-    Not_Ready             = 474,
-
-    /// 475
-    Fail_Open_Transaction = 475,
-
-    /// 476
-    Fail_Commit           = 476,
-
-    /// 477
-    Fail_Store            = 477,
-
-    /// 500
-    Internal_Server_Error = 500,
-
-    /// 501
-    Not_Implemented       = 501,
-
-    /// 503
-    Service_Unavailable   = 503,
-
-    Invalid_Identifier    = 904,
-
-    /// 1021
-    Disk_Full             = 1021,
-
-    /// 1022
-    Duplicate_Key         = 1022,
-
-    /// 1118
-    Size_too_large        = 1118,
-
-    /// 4000
-    Connect_Error         = 4000
-}
-
-public struct OpResult
-{
-    ResultCode result;
-    long       op_id;
-}
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl;
 
 /**
  * Обьект - сессионный тикет
@@ -163,11 +26,11 @@ public struct Ticket
     /// Код результата, если тикет не валидный != ResultCode.Ok
     ResultCode result;
 
-    /// Дата начала действия тикета 
-    long start_time;
+    /// Дата начала действия тикета
+    long       start_time;
 
-    /// Дата окончания действия тикета 
-    long end_time;
+    /// Дата окончания действия тикета
+    long       end_time;
 
     /// Конструктор
     this(Ticket tt)
@@ -195,26 +58,13 @@ public struct SearchResult
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
-/// Результат
-public enum Result
-{
-    /// OK
-    Ok,
-
-    /// Ошибка
-    Err,
-
-    /// Ничего
-    Nothing
-}
-
 interface Storage
 {
-    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);    
+    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
     public string find(bool need_auth, string user_id, string uri, bool return_value = true);
     public ResultCode remove(bool need_auth, string user_id, string in_key);
     public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
-	public void unload_to_queue (string path, string queue_id, bool only_ids);    
+    public void unload_to_queue(string path, string queue_id, bool only_ids);
     public long count_entries();
     public void reopen_db();
     public void close_db();
@@ -238,8 +88,6 @@ interface Context
 {
     string get_name();
 
-    int[ string ] get_key2slot();
-
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();
@@ -258,17 +106,20 @@ interface Context
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
     void add_prefix_map(ref string[ string ] arg);
-    public void stat(byte command_type, ref StopWatch sw) nothrow;
     // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
 
     public Logger get_logger();
 
-    version (isServer)
-    {
-        public string execute(string in_msg);
-    }
+    public ResultCode commit(Transaction *in_tnx);
+
+    public VQL get_vql();
+    public Authorization acl_indexes();
+
+    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+                                       bool ignore_freeze,
+                                       bool is_api_request);
 
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
 
@@ -284,7 +135,7 @@ interface Context
        Returns:
                 экземпляр структуры Ticket
      */
-    public Ticket authenticate(string login, string password);
+    //public Ticket authenticate(string login, string password);
 
     /**
        Доверенная аутентификация
@@ -316,23 +167,23 @@ interface Context
                 sort_str = порядок сортировки
                 db_str = базы данных используемые в запросе
                 from = начинать обработку с ..
-                top = сколько вернуть положительно авторизованных элементов  
+                top = сколько вернуть положительно авторизованных элементов
                 limit = максимальное количество найденных элементов
                 prepare_element_event = делегат для дополнительных действий извне
 
        Returns:
                 список авторизованных uri
      */
-    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit, void delegate(string uri) prepare_element_event, bool trace);
+    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
+                                                      void delegate(string uri) prepare_element_event,
+                                                      bool trace);
 
     public void reopen_ro_fulltext_indexer_db();
-    public void reopen_ro_subject_storage_db();
+    public void reopen_ro_individuals_storage_db();
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
 
-    public void subject_storage_commmit(bool isWait = true);
-
-    public Storage get_subject_storage_db();
+    public Storage get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
@@ -378,24 +229,28 @@ interface Context
        Returns:
                 Код результата операции
      */
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+                                   bool ignore_freeze = false,
                                    bool is_api_request = true);
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze = false,
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze =
+                                          false,
                                       bool is_api_request = true);
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true);
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+                                      bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true);
 
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true);
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+                                      bool ignore_freeze =
+                                          false,
+                                      bool is_api_request = true);
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           bool ignore_freeze = false, bool is_api_request = true);
-
-    string begin_transaction();
-    void commit_transaction(string transaction_id);
-    void abort_transaction(string transaction_id);
+                                           long transaction_id,
+                                           bool ignore_freeze = false,
+                                           bool is_api_request = true);
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**
@@ -429,23 +284,8 @@ interface Context
      */
     public void get_membership_from_acl(Ticket *ticket, string uri,
                                         void delegate(string resource_group) trace_group);
+
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
-
-    /**
-       Ожидать, пока завершится выполнение операции
-       Params:
-                 module_id = id процесса из перечисления P_MODULE
-                 op_id - id операции изменения данных, если 0, то ожидание организуется через внутреннюю очередь модуля
-     */
-
-    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000);
-
-    /**
-       Перезагрузить модуль
-       Params:
-                 thread_id = id процесса из перечисления P_MODULE
-     */
-    public long restart_module(P_MODULE module_id);
 
     /**
        Включить/выключить отладочные сообщения
@@ -459,11 +299,6 @@ interface Context
        Количество индивидуалов в базе данных
      */
     public long count_individuals();
-
-    /**
-       Выполнить бэкапирование базы данных
-     */
-    public bool backup(bool to_binlog, int level = 0);
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются

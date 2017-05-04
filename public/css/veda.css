@@ -8,10 +8,120 @@ body {
 .bg-default {
   background-color: #f5f5f5;
 }
+/*button up*/
+.go-up {
+ display: none;
+ position: fixed;
+ z-index: 9999;
+ right: 4%;
+ bottom: 8%;
+ cursor: pointer;
+ opacity: 0.5;
+}
+.go-up:hover {
+ opacity: 1;
+}
+
+/* The ribbons */
+
+.ribbon-wrapper {
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  overflow: hidden;
+  top: 0px;
+  left: 0px;
+}
+.ribbon-wrapper.top-left {
+  top: 0px;
+  left: 0px;
+}
+.ribbon-wrapper.top-right {
+  left: auto;
+  top: 0px;
+  right: 0px;
+}
+.ribbon-wrapper.bottom-left {
+  top: auto;
+  bottom: 0px;
+  left: 0px;
+}
+.ribbon-wrapper.bottom-right {
+  right: 0px;
+  bottom: 0px;
+  top: auto;
+  left: auto;
+}
+.ribbon {
+  width: 105px;
+  background: #e43;
+  position: absolute;
+  top: 10px;
+  left: -25px;
+  text-align: center;
+  line-height: 25px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9em;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  z-index: 10000;
+}
+
+/* Ribbons */
+
+.ribbon.sticky {
+  position: fixed;
+}
+.ribbon.shadow {
+  box-shadow: 0 0 3px rgba(0,0,0,.3);
+}
+
+/* Different positions */
+.ribbon.top-left {
+  top: 15px;
+  left: -25px;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.ribbon.top-right {
+  top: 15px;
+  right: -25px;
+  left: auto;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.ribbon.bottom-left {
+  top: auto;
+  bottom: 15px;
+  left: -25px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.ribbon.bottom-right {
+  top: auto;
+  right: -25px;
+  bottom: 15px;
+  left: auto;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+/* Colors */
+.ribbon.default { background: #777; }
+.ribbon.primary { background: #337ab7; }
+.ribbon.info { background: #5bc0de; }
+.ribbon.success { background: #5cb85c; }
+.ribbon.warning { background: #f0ad4e; }
+.ribbon.danger { background: #d9534f; }
+
 
 /* Sheets */
-
 .sheet {
+  position: relative;
   background-color: #fff;
   border-radius: 4px;
   border: 1px solid #ddd;
@@ -21,6 +131,7 @@ body {
 .sheet .sheet {
   border: none!important;
   padding: 0!important;
+  position: static!important;
 }
 
 .modal .sheet {
@@ -45,18 +156,16 @@ body {
 .file-card {
   width: 330px;
   height: 150px;
-  display: inline-block;
+  display: inline-table;
   vertical-align: top;
   margin: 0px 10px 10px 0px;
   border-radius: 4px;
   border: 1px solid #ddd;
-  padding: 10px;
-  overflow: hidden;
+  border-spacing: 10px;
 }
 .file-card .file-thumbnail {
-  display: inline-block;
+  display: table-cell;
   vertical-align: top;
-  margin-right: 10px;
 }
 .file-card .file-thumbnail:empty {
   display: none;
@@ -66,19 +175,12 @@ body {
   max-height: 128px;
 }
 .file-card .file-description {
-  display: inline-block;
-  vertical-align: top;
+  display: table-cell;
   word-wrap: break-word;
+  vertical-align: top;
 }
-.file-card .file-thumbnail:empty + .file-description {
-  width: 310px;
-}
-.file-card .file-thumbnail:not(:empty) + .file-description {
-  width: 202px;
-}
-.file-card .file-name {
-  max-height:60px;
-  overflow:hidden;
+.file-card .comment:empty + hr {
+  display: none!important;
 }
 
 /* Gray tooltip */
@@ -710,6 +812,7 @@ td > #rel-actions {
   top: 0px;
   left:0px;
   z-index: 99;
+  padding: 2px 4px;
   opacity: 0.7;
 }
 .sortable-placeholder {
@@ -1162,3 +1265,11 @@ svg.process-path-highlight path
 .fc-event .fc-bg {opacity: 0;}
 
 /* Fullcalendar END */
+
+/* Templates */
+
+.label-template {
+  display: inline-block;
+  margin-right: 7px;
+  margin-bottom: 7px;
+}

@@ -260,6 +260,13 @@ v-s:hasStatus
   rdfs:range v-s:Status ;
   rdfs:domain v-s:Thing ;
 .
+v-s:hasDecision
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Decision"@en ;
+  rdfs:label "Решение"@ru ;
+  rdfs:range v-s:Status ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:hasSector
   rdf:type owl:ObjectProperty ;
   rdfs:label "Sector"@en ;
@@ -977,7 +984,7 @@ v-s:Projectable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Projectable thing"@en ;
-  rdfs:label "Проектируемая сущность"@ru ;
+  rdfs:label "Проектная сущность"@ru ;
 .
 v-s:hasProject
   rdf:type owl:ObjectProperty ;

@@ -87,14 +87,14 @@ void main(char[][] args)
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
-            context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
+            context.remove_individual(&sticket, uri, true, "ttl-reader", -1, true, false);
         }
 
         uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, false).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
-            res = context.remove_individual(&sticket, uri, true, "ttl-reader", true, false);
+            res = context.remove_individual(&sticket, uri, true, "ttl-reader", -1, true, false);
         }
 
         bool complete_ft      = false;
@@ -303,7 +303,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
             foreach (uri, indv; l_individuals)
             {
-                if (indv.isExists(rdf__type, owl__Ontology))
+                if (indv.exists(rdf__type, owl__Ontology))
                 {
                     string o_file = filename_2_prefix.get(indv.uri, null);
                     if (o_file !is null && o_file != filename)
@@ -410,7 +410,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
 
-                                ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, false, false).result;
+                                ResultCode res = context.put_individual(&sticket, indv.uri, indv, true, null, -1, false, false).result;
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
@@ -479,7 +479,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
         {
             //log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
 
-            if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
+            if (ss.exists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
@@ -536,7 +536,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 //            }
 //            catch (Exception ex) {}
 
-        OpResult orc = context.put_individual(&sticket, indv_ttl_file.uri, indv_ttl_file, true, null, false, false);
+        OpResult orc = context.put_individual(&sticket, indv_ttl_file.uri, indv_ttl_file, true, null, -1, false, false);
 
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)

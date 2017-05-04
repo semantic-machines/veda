@@ -43,17 +43,20 @@ before_script:
   - cat $PWD/logs/veda-ltr-scripts-stderr.log
   - cat $PWD/logs/veda-scripts-lp-stderr.log
   - cat $PWD/logs/veda-scripts-main-stderr.log
-  - cat $PWD/logs/veda-server-stderr.log
+  - cat $PWD/logs/veda-mstorage-stderr.log
   - cat $PWD/logs/veda-ttlreader-stderr.log
   - cat $PWD/logs/veda-webserver-stderr.log 
   - cat $PWD/veda_s.log
-  - cat $PWD/logs/veda-core-server_*.log          
+  - cat $PWD/logs/veda-core-mstorage_*.log          
+  - setsid ./qa/uptime-to-log.sh&
+  - cat ./uptime.log
 
 # Run API & integration test
 script:
-  - grunt test
+  - grunt test --stack --verbose
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
+#  - node ./qa/testSendGet.js
   - node ./qa/testLogin.js
   - node ./qa/testPerson.js
   - node ./qa/testDrafts.js
@@ -79,6 +82,7 @@ script:
 # Stop deamon and show log
 after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
+  - cat ./uptime.log
   - grunt coveralls
   - date    
   - cat $PWD/veda_s.log
@@ -87,7 +91,7 @@ after_script:
   - cat logs/veda-core-fulltext_indexer_*.log
   - cat logs/veda-core-ltr_scripts_*.log
 #  - cat veda-core-scripts_*.log
-  - cat logs/veda-core-server_*.log
+  - cat logs/veda-core-mstorage_*.log
   - cat logs/veda-core-ttl_reader_*.log
   - cat logs/veda-core-webserver_*.log 
   

@@ -2,7 +2,7 @@
    авторизация
  */
 
-module veda.server.acl_manager;
+module veda.mstorage.acl_manager;
 
 private
 {
@@ -21,7 +21,7 @@ Logger _log;
 Logger log()
 {
     if (_log is null)
-        _log = new Logger("veda-core-server", "log", "ACL-MANAGER");
+        _log = new Logger("veda-core-mstorage", "log", "ACL-MANAGER");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////

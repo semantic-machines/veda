@@ -229,10 +229,18 @@ public TTA parse_expr(string s)
                         if (s[ ep - 1 ] == '(' || s[ ep - 1 ] == ')')
                         {
                             ep = i - 1;
+
+                            if (s[ i - 2 ] != '\'')
+                                operand = s[ bp .. i - 1 ];
+                            else
+                                operand = s[ bp .. i - 2 ];
+
                             i -= 2;
                         }
+                        else
+                            operand = s[ bp .. i ];
 
-                        operand = s[ bp .. i ];
+                        //log.trace ("operand=[%s]", operand);
                         st.pushBack(new TTA(operand, null, null));
                     }
                 }

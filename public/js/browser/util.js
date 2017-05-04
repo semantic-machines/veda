@@ -13,6 +13,56 @@ veda.Module(function Util(veda) { "use strict";
     }
   }
 
+  veda.Util.processQuery = function (q, limit, delta, pause, fn) {
+    console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
+    var result = [], append = [].push, fetchingProgress = 0, processingProgress = 0;
+    fetchResult();
+    return;
+
+    function fetchResult(cursor) {
+      var from = cursor || 0;
+      query({
+        ticket: veda.ticket,
+        query: q,
+        from: from,
+        top: delta,
+        limit: limit,
+        async: true
+      }).then(function (query_result) {
+        var cursor = query_result.cursor;
+        var estimated = query_result.estimated;
+        if ( limit > estimated ) {
+          limit = estimated;
+        }
+        append.apply(result, query_result.result);
+        if ( cursor/limit - fetchingProgress >= 0.05 ) {
+          fetchingProgress = cursor/limit;
+          console.log("fetching progress:", Math.floor(fetchingProgress * 100) + "%", "(" + cursor, "of", limit + ")");
+        }
+        if ( cursor === estimated || cursor >= limit ) {
+          console.log("fetching done:", limit);
+          result.splice(limit - cursor || limit); // cut result to limit
+          processResult(result);
+        } else {
+          fetchResult(query_result.cursor);
+        }
+      });
+    }
+    function processResult(result) {
+      var portion = result.splice(-delta);
+      portion.forEach( fn );
+      if ( (limit - result.length) / limit - processingProgress >= 0.05 ) {
+        processingProgress = (limit - result.length) / limit;
+        console.log("processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (limit - result.length), "of", limit + ")");
+      }
+      if ( result.length ) {
+        setTimeout(processResult, pause, result);
+      } else {
+        console.log("processing done:", limit);
+      }
+    }
+  }
+
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
     if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
@@ -151,21 +201,27 @@ veda.Module(function Util(veda) { "use strict";
               type = item.type,
               lang = item.lang;
           switch (type) {
+            case 4:
             case "Integer":
               triple.object = '"' + value + '"^^' + prefixer("xsd:integer");
               break;
+            case 32:
             case "Decimal":
               triple.object = '"' + value + '"^^' + prefixer("xsd:decimal");
               break;
+            case 64:
             case "Boolean":
               triple.object = '"' + value + '"^^' + prefixer("xsd:boolean");
               break;
+            case 2:
             case "String":
               triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
               break;
+            case 8:
             case "Datetime":
               triple.object = '"' + ( value instanceof Date ? value.toISOString() : value ) + '"^^' + prefixer("xsd:dateTime");
               break;
+            case 1:
             case "Uri":
               triple.object = prefixer(value);
               break;
@@ -187,7 +243,7 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.applyTransform = function (individualList, transform) {
-    return transformation(null, individualList, transform, null, null);
+    return transformation(veda.ticket, individualList, transform, null, null);
   };
 
   veda.Util.forSubIndividual = function (net, property, id, func) {
@@ -413,7 +469,7 @@ veda.Module(function Util(veda) { "use strict";
    * @returns veda.IndividualModel - start form
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    var transfromResult = veda.Util.applyTransform(individual, transform);
+    var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
     var startForm = new veda.IndividualModel();
     Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
     {

@@ -9,71 +9,22 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
            std.json, std.regex;
     import veda.bind.xapian_d_header;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
-    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context,
-           veda.core.common.log_msg, veda.util.module_info;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
+           veda.util.module_info;
+    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
-    import veda.core.az.acl, veda.core.search.vql;
-    import veda.util.module_info;
-    import veda.common.logger;
+    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
 
-    version (isServer)
+    version (isMStorage)
     {
-        alias veda.server.storage_manager ticket_storage_module;
-        alias veda.server.storage_manager subject_storage_module;
-        alias veda.server.acl_manager     acl_module;
-        alias veda.server.load_info       load_info;
+        alias veda.mstorage.storage_manager ticket_storage_module;
+        alias veda.mstorage.storage_manager subject_storage_module;
     }
-}
-
-Tid            dummy_tid;
-
-private File   *ff_key2slot_r = null;
-private long   last_size_key2slot;
-private int[ string ] old_key2slot;
-private string file_name_key2slot;
-
-public int[ string ] read_key2slot()
-{
-    int[ string ] key2slot;
-
-    if (ff_key2slot_r is null)
-    {
-        file_name_key2slot = xapian_info_path ~ "/key2slot";
-        try
-        {
-            ff_key2slot_r = new File(file_name_key2slot, "r");
-        }
-        catch (Exception ex) {}
-    }
-
-    if (ff_key2slot_r !is null)
-    {
-        long cur_size = getSize(file_name_key2slot);
-
-        if (cur_size > last_size_key2slot)
-        {
-            last_size_key2slot = cur_size;
-            ff_key2slot_r.seek(0);
-            auto       buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
-            ResultCode rc;
-            key2slot     = deserialize_key2slot(cast(string)buf, rc);
-            old_key2slot = key2slot;
-        }
-        else
-        {
-            return old_key2slot;
-        }
-//            writeln("@context:read_key2slot:key2slot", key2slot);
-    }
-    return key2slot;
 }
 
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    long local_count_put;
-
     bool[ P_MODULE ] is_traced_module;
 
     private Ticket *[ string ] user_of_ticket;
@@ -135,12 +86,12 @@ class PThreadContext : Context
             }
         }
 
-        private OpResult reqrep_2_main_module(ref JSONValue jreq)
+        private OpResult[] reqrep_2_main_module(ref JSONValue jreq)
         {
-            OpResult res;
-            string   req = jreq.toString();
+            OpResult[] ress;
+            string     req = jreq.toString();
 
-            int      sock = get_sock_2_main_module();
+            int        sock = get_sock_2_main_module();
 
             if (sock >= 0)
             {
@@ -159,8 +110,26 @@ class PThreadContext : Context
 
                     if (jres[ "type" ].str == "OpResult")
                     {
-                        res.op_id  = jres[ "op_id" ].integer;
-                        res.result = cast(ResultCode)jres[ "result" ].integer;
+                        JSONValue data = jres[ "data" ];
+                        if (data !is JSONValue.init)
+                        {
+                            foreach (ii; data.array)
+                            {
+                                OpResult res;
+
+
+                                res.op_id  = ii[ "op_id" ].integer;
+                                res.result = cast(ResultCode)ii[ "result" ].integer;
+                                ress ~= res;
+                            }
+                        }
+                        else
+                        {
+                            OpResult res;
+                            res.op_id  = jres[ "op_id" ].integer;
+                            res.result = cast(ResultCode)jres[ "result" ].integer;
+                            ress ~= res;
+                        }
                     }
 
                     nn_freemsg(buf);
@@ -171,7 +140,7 @@ class PThreadContext : Context
                 log.trace("ERR! N_CHANNEL: invalid socket");
             }
 
-            return res;
+            return ress;
         }
     }
 
@@ -218,9 +187,6 @@ class PThreadContext : Context
 
         ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
         ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
-//        is_traced_module[ P_MODULE.acl_preparer ]      = true;
-//        is_traced_module[ P_MODULE.fulltext_indexer ] = true;
-//        is_traced_module[ P_MODULE.scripts ]          = true;
 
         ctx.get_configuration();
 
@@ -228,9 +194,6 @@ class PThreadContext : Context
 
         ctx.onto = new Onto(ctx);
         ctx.onto.load();
-
-        ctx.local_count_put = get_subject_manager_op_id();
-        //ft_local_count  = get_count_indexed();
 
         ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
 
@@ -244,46 +207,17 @@ class PThreadContext : Context
         tickets_storage_r.close_db();
     }
 
-    string begin_transaction()
-    {
-        string res;
-
-        version (isServer)
-        {
-            res = subject_storage_module.begin_transaction(P_MODULE.subject_manager);
-        }
-
-        return res;
-    }
-
-    void commit_transaction(string transaction_id)
-    {
-        version (isServer)
-        {
-            subject_storage_module.commit_transaction(P_MODULE.subject_manager, transaction_id);
-        }
-    }
-
-    void abort_transaction(string transaction_id)
-    {
-        version (isServer)
-        {
-            subject_storage_module.abort_transaction(P_MODULE.subject_manager, transaction_id);
-        }
-    }
-
-
     bool isReadyAPI()
     {
         return API_ready;
     }
 
-    public Storage get_subject_storage_db()
+    public Storage get_inividuals_storage_r()
     {
         return inividuals_storage_r;
     }
 
-    @property
+
     public Ticket sys_ticket(bool is_new = false)
     {
         Ticket ticket = get_global_systicket();
@@ -300,41 +234,6 @@ class PThreadContext : Context
             set_global_systicket(ticket);
         }
 
-        version (isServer)
-        {
-            if (ticket == Ticket.init || ticket.user_uri == "" || is_new)
-            {
-                try
-                {
-                    ticket = create_new_ticket("cfg:VedaSystem", "90000000");
-
-                    long op_id;
-                    ticket_storage_module.put(P_MODULE.ticket_manager, false, null, Resources.init, "systicket", null, ticket.id, -1, null, false, op_id);
-                    log.trace("systicket [%s] was created", ticket.id);
-
-                    Individual sys_account_permission;
-                    sys_account_permission.uri = "p:" ~ ticket.id;
-                    sys_account_permission.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
-                    sys_account_permission.addResource("v-s:canCreate", Resource(DataType.Boolean, "true"));
-                    sys_account_permission.addResource("v-s:permissionObject", Resource(DataType.Uri, "v-s:AllResourcesGroup"));
-                    sys_account_permission.addResource("v-s:permissionSubject", Resource(DataType.Uri, "cfg:VedaSystem"));
-                    OpResult opres = this.put_individual(&ticket, sys_account_permission.uri, sys_account_permission, false, "srv", false, false);
-
-                    if (opres.result == ResultCode.OK)
-                        log.trace("permission [%s] was created", sys_account_permission);
-                }
-                catch (Exception ex)
-                {
-                    //printPrettyTrace(stderr);
-                    log.trace("context.sys_ticket:EX!%s", ex.msg);
-                }
-
-                if (ticket.user_uri == "")
-                    ticket.user_uri = "cfg:VedaSystem";
-
-                set_global_systicket(ticket);
-            }
-        }
         return ticket;
     }
 
@@ -342,7 +241,7 @@ class PThreadContext : Context
     {
         if (node == Individual.init && node_id !is null)
         {
-            this.reopen_ro_subject_storage_db();
+            this.reopen_ro_individuals_storage_db();
             Ticket sticket = sys_ticket();
 
             node = get_individual(&sticket, node_id);
@@ -414,31 +313,11 @@ class PThreadContext : Context
 
         if (inividuals_storage_r !is null)
             res = inividuals_storage_r.find(true, user_id, uri);
-        else
-            res = get_from_individual_storage_thread(uri);
 
         if (res !is null && res.length < 10)
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
 
         return res;
-    }
-
-    public int[ string ] get_key2slot()
-    {
-        return read_key2slot();
-//        string key2slot_str;
-
-//        if (inividuals_storage !is null)
-//            key2slot_str = inividuals_storage.find(xapian_metadata_doc_id);
-//        else
-//            key2slot_str = get_from_individual_storage_thread(xapian_metadata_doc_id);
-
-//        if (key2slot_str !is null)
-//        {
-//            int[ string ] key2slot = deserialize_key2slot(key2slot_str);
-//            return key2slot;
-//        }
-//        return (int[ string ]).init;
     }
 
     ref string[ string ] get_prefix_map()
@@ -452,57 +331,6 @@ class PThreadContext : Context
         {
             prefix_map[ key ] = value;
         }
-    }
-
-    private void subject2Ticket(ref Individual ticket, Ticket *tt)
-    {
-        string when;
-        long   duration;
-
-        tt.id       = ticket.uri;
-        tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
-        when        = ticket.getFirstLiteral(ticket__when);
-        string dd = ticket.getFirstLiteral(ticket__duration);
-
-        try
-        {
-            duration = parse!uint (dd);
-        }
-        catch (Exception ex)
-        {
-            writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
-        }
-
-        if (tt.user_uri is null)
-        {
-            if (trace_msg[ T_API_10 ] == 1)
-                log.trace("found a session ticket is not complete, the user can not be found.");
-        }
-
-        if (tt.user_uri !is null && (when is null || duration < 10))
-        {
-            if (trace_msg[ T_API_20 ] == 1)
-                log.trace("found a session ticket is not complete, we believe that the user has not been found.");
-            tt.user_uri = null;
-        }
-
-        if (when !is null)
-        {
-            if (trace_msg[ T_API_30 ] == 1)
-                log.trace("session ticket %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
-                          duration);
-
-            long start_time = stringToTime(when);
-
-            tt.start_time = start_time;
-            tt.end_time   = start_time + duration * 10_000_000;
-        }
-    }
-
-    public void stat(byte command_type, ref StopWatch sw) nothrow
-    {
-        version (isServer)
-            load_info.stat(command_type, sw);
     }
 
     // *************************************************** external api *********************************** //
@@ -549,26 +377,6 @@ class PThreadContext : Context
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        version (isServer)
-        {
-            // store ticket
-            string     ss_as_binobj = new_ticket.serialize();
-
-            long       op_id;
-            ResultCode rc = ticket_storage_module.put(P_MODULE.ticket_manager, false, null, type, new_ticket.uri, null, ss_as_binobj, -1, null, false, op_id);
-            ticket.result = rc;
-
-            if (rc == ResultCode.OK)
-            {
-                subject2Ticket(new_ticket, &ticket);
-                user_of_ticket[ ticket.id ] = new Ticket(ticket);
-            }
-
-            log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(
-                                                                                                                                                      ),
-                      SysTime(ticket.end_time, UTC()).toISOExtString());
-        }
-
         version (WebServer)
         {
             subject2Ticket(new_ticket, &ticket);
@@ -578,16 +386,11 @@ class PThreadContext : Context
         return ticket;
     }
 
-	string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
+    string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
 
     Ticket get_ticket_trusted(string tr_ticket_id, string login)
     {
         Ticket ticket;
-
-        version (isServer)
-        {
-            log.trace("is server");
-        }
 
         version (isModule)
         {
@@ -617,7 +420,7 @@ class PThreadContext : Context
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
-            	//log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
+                //log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
                 if (subject_group == allow_trusted_group)
                     is_allow_trusted = true;
             }
@@ -644,7 +447,7 @@ class PThreadContext : Context
             }
             else
             {
-	            log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);            	
+                log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
             }
         }
         else
@@ -654,75 +457,6 @@ class PThreadContext : Context
 
         ticket.result = ResultCode.Authentication_Failed;
         return ticket;
-    }
-
-    public Ticket authenticate(string login, string password)
-    {
-        StopWatch sw; sw.start;
-
-        Ticket    ticket;
-
-        if (trace_msg[ T_API_70 ] == 1)
-            log.trace("authenticate, login=[%s] password=[%s]", login, password);
-
-        try
-        {
-            ticket.result = ResultCode.Authentication_Failed;
-
-            if (login == null || login.length < 1 || password == null || password.length < 6)
-                return ticket;
-
-            login = replaceAll(login, regex(r"[-]", "g"), " +");
-
-            Ticket       sticket         = sys_ticket;
-            Individual[] candidate_users = this.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
-            foreach (user; candidate_users)
-            {
-                string user_id = user.getFirstResource(veda_schema__owner).uri;
-                if (user_id is null)
-                    continue;
-
-                string pass;
-                string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
-                if (usesCredential_uri !is null)
-                {
-                    log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-                    Individual i_usesCredential = this.get_individual(&sticket, usesCredential_uri);
-                    pass = i_usesCredential.getFirstLiteral("v-s:password");
-                }
-                else
-                {
-                    pass = user.getFirstLiteral("v-s:password");
-
-                    Individual i_usesCredential;
-                    i_usesCredential.uri = user.uri ~ "-crdt";
-                    i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
-                    i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-                    OpResult op_res = this.put_individual(&sticket, i_usesCredential.uri, i_usesCredential, false, "", false, true);
-                    log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
-                    user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
-                    user.removeResource("v-s:password");
-                    op_res = this.put_individual(&sticket, user.uri, user, false, "", false, true);
-                    log.trace("authenticate: update user[%s], res=%s", user, op_res);
-                }
-
-                if (pass !is null && pass == password)
-                {
-                    ticket = create_new_ticket(user_id);
-                    return ticket;
-                }
-            }
-
-            log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-
-            ticket.result = ResultCode.Authentication_Failed;
-
-            return ticket;
-        }
-        finally
-        {
-            stat(CMD_PUT, sw);
-        }
     }
 
     public string get_ticket_from_storage(string ticket_id)
@@ -877,15 +611,13 @@ class PThreadContext : Context
 
     public void reopen_ro_ticket_manager_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.ticket_manager) != Tid.init)
-//                this.wait_operation_complete(P_MODULE.ticket_manager, 0);
-//        }
-//        catch (Exception ex) {}
-
         if (tickets_storage_r !is null)
             tickets_storage_r.reopen_db();
+    }
+
+    public VQL get_vql()
+    {
+        return _vql;
     }
 
     public void reopen_ro_fulltext_indexer_db()
@@ -894,28 +626,14 @@ class PThreadContext : Context
             _vql.reopen_db();
     }
 
-    public void reopen_ro_subject_storage_db()
+    public void reopen_ro_individuals_storage_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.subject_manager) != Tid.init)
-//                this.wait_operation_complete(P_MODULE.subject_manager, 0);
-//        }
-//        catch (Exception ex) {}
-
         if (inividuals_storage_r !is null)
             inividuals_storage_r.reopen_db();
     }
 
     public void reopen_ro_acl_storage_db()
     {
-//        try
-//        {
-//            if (getTid(P_MODULE.acl_preparer) != Tid.init)
-//                this.wait_operation_complete(P_MODULE.acl_preparer, 0);
-//        }
-//        catch (Exception ex) {}
-
         if (acl_indexes !is null)
             acl_indexes.reopen_db();
         //log.trace ("reopen_ro_acl_storage_db");
@@ -1041,7 +759,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD_GET, sw);
+            //stat(CMD_GET, sw);
         }
     }
 
@@ -1092,7 +810,7 @@ class PThreadContext : Context
         }
         finally
         {
-            stat(CMD_GET, sw);
+            //stat(CMD_GET, sw);
             if (trace_msg[ T_API_200 ] == 1)
                 log.trace("get_individual as binobj: end, uri=%s", uri);
         }
@@ -1101,99 +819,11 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    private OpResult _remove_individual(Ticket *ticket, string uri, bool prepare_events, string event_id, bool ignore_freeze)
+    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+                                       bool ignore_freeze,
+                                       bool is_api_request)
     {
-        OpResult res = OpResult(ResultCode.Fail_Store, -1);
-
-        try
-        {
-            version (isModule)
-            {
-                JSONValue req_body;
-                req_body[ "function" ]       = "remove";
-                req_body[ "ticket" ]         = ticket.id;
-                req_body[ "uri" ]            = uri;
-                req_body[ "prepare_events" ] = prepare_events;
-                req_body[ "event_id" ]       = event_id;
-                req_body[ "transaction_id" ] = "";
-
-                res = reqrep_2_main_module(req_body);
-            }
-
-            version (isServer)
-            {
-	            EVENT      ev = EVENT.REMOVE;
-
-	            string     prev_state;
-	            Individual indv;
-	            Individual prev_indv;
-
-	            prev_state = get_from_individual_storage_thread(uri);
-	            if (prev_state !is null)
-	            {
-	                int code = prev_indv.deserialize(prev_state);
-	                if (code < 0)
-	                {
-	                    log.trace("ERR! remove_individual: invalid prev_state [%s]", prev_state);
-	                    res.result = ResultCode.Unprocessable_Entity;
-	                    return res;
-	                }
-
-	                prev_indv.setResources("v-s:deleted", [Resource(true)]);
-	            }
-
-                OpResult oprc = store_individual(INDV_OP.PUT, ticket, &prev_indv, prepare_events, event_id, ignore_freeze, true);
-
-                if (oprc.result != ResultCode.OK)
-                {
-                    res.result = oprc.result;
-	                log.trace("ERR! remove_individual: fail set [v-s:deleted], :uri=%s, errcode=[%s]", prev_indv.uri, res.result);
-                }
-                else
-                {
-                    res.result = subject_storage_module.remove(P_MODULE.subject_manager, false, null, uri, ignore_freeze, res.op_id);
-                }
-                    
-                if (res.result == ResultCode.OK)
-				{
-	                Resources   _types = prev_indv.resources.get(rdf__type, Resources.init);
-	                MapResource rdfType;
-	                setMapResources(_types, rdfType);
-
-	                if (rdfType.anyExists(owl_tags) == true)
-	                {
-	                    // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-	                    inc_count_onto_update();
-	                }
-				}
-            }
-
-            return res;
-        }
-        finally
-        {
-            if (res.result != ResultCode.OK)
-                log.trace("ERR! remove_individual :uri=%s, errcode=[%s], ticket=[%s]",
-                          uri, text(res.result), ticket !is null ? text(*ticket) : "null");
-
-            if (trace_msg[ T_API_210 ] == 1)
-                log.trace("[%s] remove_individual [%s] uri = %s", name, uri, res);
-        }
-    }
-
-    public void subject_storage_commmit(bool isWait = true)
-    {
-        version (isServer)
-        {
-            subject_storage_module.flush_int_module(P_MODULE.subject_manager, isWait);
-        }
-    }
-
-    private OpResult store_individual(INDV_OP cmd, Ticket *ticket, Individual *indv, bool prepare_events, string event_id, bool ignore_freeze,
-                                      bool is_api_request)
-    {
-        //if (trace_msg[ T_API_230 ] == 1)
-        //log.trace("[%s] store_individual: %s %s", name, text(cmd), *indv);
+        //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
         StopWatch sw; sw.start;
 
@@ -1206,17 +836,15 @@ class PThreadContext : Context
                 res.result = ResultCode.Invalid_Identifier;
                 return res;
             }
-            if (indv is null || indv.resources.length == 0)
+            if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
             {
                 res.result = ResultCode.No_Content;
                 return res;
             }
 
-            //log.trace ("context:store_individual #2 main_module_url=%s", main_module_url);
-
             version (isModule)
             {
-                //log.trace("[%s] store_individual: isModule", name);
+                //log.trace("[%s] add_to_transaction: isModule", name);
 
                 string scmd;
 
@@ -1232,173 +860,17 @@ class PThreadContext : Context
                 JSONValue req_body;
                 req_body[ "function" ]       = scmd;
                 req_body[ "ticket" ]         = ticket.id;
-                req_body[ "individual" ]     = individual_to_json(*indv);
+                req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "transaction_id" ] = "";
+                req_body[ "tnx_id" ]         = tnx.id;
 
-                //log.trace("[%s] store_individual: (isModule), req=(%s)", name, req_body.toString());
+                //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
-                res = reqrep_2_main_module(req_body);
-                //log.trace("[%s] store_individual: (isModule), rep=(%s)", name, res);
+                res = reqrep_2_main_module(req_body)[ 0 ];
+                //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
-            //                  writeln("context:store_individual #5 ", process_name);
-            version (isServer)
-            {
-                //log.trace("[%s] store_individual: (isServer)", name);
-                Tid       tid_subject_manager;
-                Tid       tid_acl;
-
-                Resources _types = indv.resources.get(rdf__type, Resources.init);
-                foreach (idx, rs; _types)
-                {
-                    _types[ idx ].info = NEW_TYPE;
-                }
-
-                MapResource rdfType;
-                setMapResources(_types, rdfType);
-
-                EVENT      ev = EVENT.CREATE;
-
-                string     prev_state;
-                Individual prev_indv;
-
-                try
-                {
-                    prev_state = get_from_individual_storage_thread(indv.uri);
-
-                    if ((prev_state is null ||
-                         prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                        log.trace("ERR! store_individual, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
-                }
-                catch (Exception ex)
-                {
-                    log.trace("ERR! store_individual: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
-                    return res;
-                }
-
-                if (prev_state !is null)
-                {
-                    ev = EVENT.UPDATE;
-                    int code = prev_indv.deserialize(prev_state);
-                    if (code < 0)
-                    {
-                        log.trace("ERR! store_individual: invalid prev_state [%s]", prev_state);
-                        res.result = ResultCode.Unprocessable_Entity;
-                        return res;
-                    }
-
-                    if (is_api_request)
-                    {
-                        // для обновляемого индивида проверим доступность бита Update
-                        if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null) != Access.can_update)
-                        {
-                            res.result = ResultCode.Not_Authorized;
-                            return res;
-                        }
-
-                        // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                        foreach (rs; _types)
-                        {
-                            string   itype = rs.get!string;
-
-                            Resource *rr = rdfType.get(itype, null);
-
-                            if (rr !is null)
-                                rr.info = EXISTS_TYPE;
-                        }
-                    }
-                }
-
-                if (is_api_request)
-                {
-                    // для новых типов проверим доступность бита Create
-                    foreach (key, rr; rdfType)
-                    {
-                        if (rr.info == NEW_TYPE)
-                        {
-                            if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null) != Access.can_create)
-                            {
-                                res.result = ResultCode.Not_Authorized;
-                                return res;
-                            }
-                        }
-                    }
-                }
-
-                if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
-                {
-                    //log.trace("[%s] ++ store_individual, prev_indv: %s", name, prev_indv);
-                    indv = indv_apply_cmd(cmd, &prev_indv, indv);
-                    //log.trace("[%s] ++ store_individual, final indv: %s", name, *indv);
-                }
-
-                long update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
-                update_counter++;
-                indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
-
-                string new_state = indv.serialize();
-
-                if (new_state.length > max_size_of_individual)
-                {
-                    res.result = ResultCode.Size_too_large;
-                    return res;
-                }
-
-                res.result =
-                    subject_storage_module.put(P_MODULE.subject_manager, is_api_request, ticket.user_uri, _types, indv.uri, prev_state, new_state, update_counter,
-                                               event_id,
-                                               ignore_freeze,
-                                               res.op_id);
-                //log.trace("res.result=%s", res.result);
-
-                if (res.result != ResultCode.OK)
-                    return res;
-
-                if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
-                {
-                    if (rdfType.anyExists(owl_tags) == true && new_state != prev_state)
-                    {
-                        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-                        inc_count_onto_update();
-                    }
-
-                    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-                    {
-                        tid_acl = getTid(P_MODULE.acl_preparer);
-                        if (tid_acl != Tid.init)
-                        {
-                            send(tid_acl, CMD_PUT, ev, prev_state, new_state, res.op_id);
-                        }
-                    }
-
-/*
-                        version (libV8)
-                        {
-                            if (rdfType.anyExists("v-s:ExecuteScript"))
-                            {
-                                // передать вызов отдельной нити по выполнению Long Time Run Scripts
-                                veda.core.glue_code.ltrs.execute_script(new_state);
-                            }
-                        }
- */
-//                    if (event_id != "fanout")
-/*
-                        version (WebServer)
-                        {
-                            veda.core.threads.dcs_manager.ev_update_individual(cmd, ticket.user_uri, indv.uri, new_state, prev_state, event_id,
-                                                                               res.op_id,
-                                                                               update_counter);
-                        }
- */
-                    res.result = ResultCode.OK;
-                }
-                else
-                {
-                    res.result = ResultCode.Internal_Server_Error;
-                }
-            }
             return res;
         }
         finally
@@ -1409,43 +881,62 @@ class PThreadContext : Context
                           text(res.result), ticket !is null ? text(*ticket) : "null");
 
             if (trace_msg[ T_API_240 ] == 1)
-                log.trace("[%s] store_individual [%s] = %s", name, indv.uri, res);
+                log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);
 
-            stat(CMD_PUT, sw);
+            //stat(CMD_PUT, sw);
         }
     }
 
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze = false,
-                                   bool is_api_request = true)
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+                                   bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.PUT, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, bool ignore_freeze, bool is_api_request = true)
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
+                                      bool is_api_request = true)
     {
-        return _remove_individual(ticket, uri, prepareEvents, event_id, ignore_freeze);
+        Individual individual;
+
+        individual.uri = uri;
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true)
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+                                      bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.ADD_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, bool ignore_freeze =
-                                          false, bool is_api_request = true)
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+                                      bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.SET_IN, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           bool ignore_freeze = false, bool is_api_request = true)
+                                           long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        return store_individual(INDV_OP.REMOVE_FROM, ticket, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        Transaction tnx;
+        tnx.id            = transaction_id;
+        tnx.is_autocommit = true;
+        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1461,82 +952,6 @@ class PThreadContext : Context
 //        veda.core.log_msg.set_trace(idx, state);
     }
 
-    public bool backup(bool to_binlog, int level = 0)
-    {
-        bool result = false;
-
-        version (isServer)
-        {
-            if (level == 0)
-                freeze();
-
-            Ticket sticket = sys_ticket();
-
-            try
-            {
-                string backup_id = "to_binlog";
-
-                if (to_binlog)
-                {
-                    long count = this.inividuals_storage_r.dump_to_binlog();
-                    if (count > 0)
-                        result = true;
-                }
-                else
-                {
-                    backup_id = subject_storage_module.backup(P_MODULE.subject_manager);
-
-                    if (backup_id != "")
-                    {
-                        result = true;
-
-                        string res; // = veda.core.threads.acl_manager.backup(backup_id);
-
-                        if (res == "")
-                            result = false;
-                        else
-                        {
-                            Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                            send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
-                            receive((string _res) { res = _res; });
-                            if (res == "")
-                                result = false;
-                            else
-                            {
-                                //res = veda.core.threads.xapian_indexer.backup(backup_id);
-
-                                if (res == "")
-                                    result = false;
-                            }
-                        }
-                    }
-
-                    if (result == false)
-                    {
-                        if (level < 10)
-                        {
-                            log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
-
-                            core.thread.Thread.sleep(dur!("msecs")(500));
-                            return backup(to_binlog, level + 1);
-                        }
-                        else
-                            log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
-                    }
-                }
-
-                if (result == true)
-                    log.trace_log_and_console("BACKUP Ok, %s", backup_id);
-            }
-            finally
-            {
-                if (level == 0)
-                    unfreeze();
-            }
-        }
-        return result;
-    }
-
     public long count_individuals()
     {
         long count = 0;
@@ -1549,41 +964,22 @@ class PThreadContext : Context
 
     public void freeze()
     {
-        version (isServer)
-        {
-            subject_storage_module.freeze(P_MODULE.subject_manager);
-        }
         version (isModule)
         {
             JSONValue req_body;
             req_body[ "function" ] = "freeze";
-            OpResult  res = reqrep_2_main_module(req_body);
+            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
         }
     }
 
     public void unfreeze()
     {
-        version (isServer)
-        {
-            subject_storage_module.unfreeze(P_MODULE.subject_manager);
-        }
         version (isModule)
         {
             JSONValue req_body;
             req_body[ "function" ] = "unfreeze";
-            OpResult  res = reqrep_2_main_module(req_body);
+            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
         }
-    }
-
-    private string get_from_individual_storage_thread(string uri)
-    {
-        string res;
-
-        version (isServer)
-        {
-            res = subject_storage_module.find(P_MODULE.subject_manager, uri);
-        }
-        return res;
     }
 
     //////////////////////////////////////////////// MODULES INTERACTION
@@ -1605,19 +1001,7 @@ class PThreadContext : Context
 
     public long get_operation_state(P_MODULE module_id, long wait_op_id)
     {
-        long res = -1;
-
-        version (isServer)
-        {
-            if (module_id == P_MODULE.acl_preparer)
-            {
-                return get_acl_manager_op_id;
-            }
-            else if (module_id == P_MODULE.subject_manager)
-            {
-                return get_subject_manager_op_id;
-            }
-        }
+        long  res = -1;
 
         MInfo info = get_info(module_id);
 
@@ -1629,22 +1013,10 @@ class PThreadContext : Context
                 res = info.op_id;
         }
 
-        version (isModule)
-        {
-            if (module_id == P_MODULE.subject_manager)
-                this.reopen_ro_subject_storage_db();
-
-            if (module_id == P_MODULE.acl_preparer)
-                this.reopen_ro_acl_storage_db();
-
-            if (module_id == P_MODULE.fulltext_indexer)
-                this.reopen_ro_fulltext_indexer_db();
-        }
-
         version (WebServer)
         {
             if (module_id == P_MODULE.subject_manager)
-                this.reopen_ro_subject_storage_db();
+                this.reopen_ro_individuals_storage_db();
 
             if (module_id == P_MODULE.acl_preparer)
                 this.reopen_ro_acl_storage_db();
@@ -1656,35 +1028,6 @@ class PThreadContext : Context
         log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);
 
         return res;
-    }
-
-    public long restart_module(P_MODULE module_id)
-    {
-        return 0;
-    }
-
-
-    public bool wait_operation_complete(P_MODULE module_id, long op_id, long timeout = 10_000)
-    {
-        version (isServer)
-        {
-            if (module_id == P_MODULE.scripts_main || module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.fanout_email ||
-                module_id == P_MODULE.ltr_scripts || module_id == P_MODULE.fanout_sql)
-            {
-                return wait_module(module_id, op_id, timeout);
-            }
-            else
-            {
-                Tid tid = getTid(module_id);
-                if (tid != Tid.init)
-                {
-                    send(tid, CMD_NOP, thisTid);
-                    //                receiveTimeout(1000.msecs, (bool res) {});
-                    receive((bool res) {});
-                }
-            }
-        }
-        return true;
     }
 
     private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
@@ -1717,176 +1060,61 @@ class PThreadContext : Context
         return true;
     }
 
-    version (isServer)
+    public ResultCode commit(Transaction *in_tnx)
     {
-        public string execute(string in_msg)
+        ResultCode  rc;
+        long        op_id;
+
+        Transaction normalized_tnx;
+
+        normalized_tnx.id = in_tnx.id;
+        foreach (item; in_tnx.get_queue())
         {
-            JSONValue res;
+            if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
+                continue;
 
-            JSONValue jsn;
+            if (item.rc != ResultCode.OK)
+                return item.rc;
 
-            try
+            Ticket *ticket = this.get_ticket(item.ticket_id);
+
+            //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+
+            rc = this.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+
+            if (rc == ResultCode.No_Content)
             {
-                jsn = parseJSON(in_msg);
-            }
-            catch (Throwable tr)
-            {
-                log.trace("ERR! fail parse msg=%s, err=%s", in_msg, tr.msg);
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ]  = -1;
-
-                return res.toString();
-            }
-            //log.trace("get msg=%s", jsn);
-
-            JSONValue fn = jsn[ "function" ];
-
-            string    sfn = fn.str();
-
-            if (sfn == "authenticate")
-            {
-                JSONValue login    = jsn[ "login" ];
-                JSONValue password = jsn[ "password" ];
-
-                Ticket    ticket = this.authenticate(login.str, password.str);
-
-                res[ "type" ]     = "ticket";
-                res[ "id" ]       = ticket.id;
-                res[ "user_uri" ] = ticket.user_uri;
-                res[ "result" ]   = ticket.result;
-                res[ "end_time" ] = ticket.end_time;
-
-                //log.trace("authenticate: res=%s", res);
-            }
-            else if (sfn == "get_ticket_trusted")
-            {
-                JSONValue ticket_id = jsn[ "ticket" ];
-                JSONValue login     = jsn[ "login" ];
-
-                Ticket    ticket = this.get_ticket_trusted(ticket_id.str, login.str);
-
-                res[ "type" ]     = "ticket";
-                res[ "id" ]       = ticket.id;
-                res[ "user_uri" ] = ticket.user_uri;
-                res[ "result" ]   = ticket.result;
-                res[ "end_time" ] = ticket.end_time;
-            }
-            else if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
-            {
-                OpResult  rc;
-
-                JSONValue _ticket         = jsn[ "ticket" ];
-                JSONValue jprepare_events = jsn[ "prepare_events" ];
-
-                bool      prepare_events;
-                if (jprepare_events.type() == JSON_TYPE.TRUE)
-                    prepare_events = true;
-
-                JSONValue event_id       = jsn[ "event_id" ];
-                JSONValue transaction_id = jsn[ "transaction_id" ];
-
-                Ticket    *ticket = this.get_ticket(_ticket.str);
-
-                if (sfn == "put")
-                {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.put_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
-                }
-                else if (sfn == "add_to")
-                {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.add_to_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
-                }
-                else if (sfn == "set_in")
-                {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.set_in_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
-                }
-                else if (sfn == "remove_from")
-                {
-                    JSONValue  individual_json = jsn[ "individual" ];
-                    Individual individual      = json_to_individual(individual_json);
-                    rc = this.remove_from_individual(ticket, individual.uri, individual, prepare_events, event_id.str, false, true);
-                }
-                else if (sfn == "remove")
-                {
-                    JSONValue uri = jsn[ "uri" ];
-                    rc = this.remove_individual(ticket, uri.str, prepare_events, event_id.str, false, true);
-                }
-
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = rc.result;
-                res[ "op_id" ]  = rc.op_id;
-            }
-            else if (sfn == "flush")
-            {
-                P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                long       wait_op_id  = jsn[ "wait_op_id" ].integer;
-
-                ResultCode rc;
-
-                if (f_module_id == P_MODULE.subject_manager)
-                    rc = subject_storage_module.flush_int_module(P_MODULE.subject_manager, false);
-                else if (f_module_id == P_MODULE.acl_preparer)
-                    rc = acl_module.flush(false);
-                else if (f_module_id == P_MODULE.fulltext_indexer)
-                    subject_storage_module.flush_ext_module(f_module_id, wait_op_id);
-
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else if (sfn == "send_to_module")
-            {
-                P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-                string     msg         = jsn[ "msg" ].str;
-
-                ResultCode rc;
-
-                subject_storage_module.msg_to_module(f_module_id, msg, false);
-
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else if (sfn == "backup")
-            {
-                bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-                bool rc        = this.backup(to_binlog, 0);
-
-                res[ "type" ] = "OpResult";
-                if (rc == true)
-                    res[ "result" ] = ResultCode.OK;
-                else
-                    res[ "result" ] = ResultCode.Internal_Server_Error;
-                res[ "op_id" ] = -1;
-            }
-            else if (sfn == "freeze")
-            {
-                this.freeze();
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else if (sfn == "unfreeze")
-            {
-                this.unfreeze();
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.OK;
-                res[ "op_id" ]  = -1;
-            }
-            else
-            {
-                res[ "type" ]   = "OpResult";
-                res[ "result" ] = ResultCode.Bad_Request;
-                res[ "op_id" ]  = -1;
+                this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
             }
 
-            return res.toString();
+            if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+            {
+                this.get_logger().trace("FAIL COMMIT");
+                return rc;
+            }
+            //else
+            //log.trace ("SUCCESS COMMIT");
         }
+
+        if (in_tnx.is_autocommit == false)
+        {
+            version (isModule)
+            {
+                //log.trace("[%s] add_to_transaction: isModule", name);
+
+                string    scmd = "commit";
+
+                JSONValue req_body;
+                req_body[ "function" ] = scmd;
+                req_body[ "tnx_id" ]   = in_tnx.id;
+                req_body[ "items" ]    = to_json(in_tnx.get_immutable_queue);
+
+                log.trace("[%s] commit: (isModule), req=(%s)", name, req_body.toString());
+
+                OpResult res = reqrep_2_main_module(req_body)[ 0 ];
+                log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
+            }
+        }
+        return ResultCode.OK;
     }
 }
