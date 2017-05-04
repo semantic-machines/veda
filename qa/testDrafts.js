@@ -13,10 +13,10 @@ var webdriver = require('selenium-webdriver'),
 function check(driver, count) {
     basic.menu(driver, 'Drafts');
     driver.sleep(basic.FAST_OPERATION);
-    driver.findElements({css:'div[id="drafts"] span[typeof="v-s:Person"]'}).then(function(elements_arr){
+    driver.findElements({css:'div[id="drafts"] [typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
             if (count == "true") {
-                basic.execute(driver, 'click', 'div[id="drafts"] span[typeof="v-s:Person"]', "Cannot click on selected draft");
+                basic.execute(driver, 'click', 'div[id="drafts"] [typeof="v-s:Person"]', "Cannot click on selected draft");
             }
             if (count == "false") {
                 console.trace("Expected number of drafts is 0, but get 1");
