@@ -54,8 +54,7 @@ v-cal:FunctionCalendarModel
       this["v-cal:query"][0],
       start.toISOString().substr(0,10),
       end.toISOString().substr(0,10),
-      veda.appointment ? veda.appointment.id : veda.user.id,
-      veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id
+      veda.user.id
     );
     var sort = this["v-cal:sortOrder"][0];
     return tasks.search(q, sort);
@@ -110,7 +109,7 @@ v-cal:TasksCalendar
   rdf:type v-cal:FunctionCalendar ;
   rdfs:label "Tasks calendar"@en ;
   rdfs:label "Календарь задач"@ru ;
-  v-cal:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1}T00:00:00,{2}T23:59:59]) && ('v-wf:to' == '{3}' || 'v-wf:to' == '{4}')"^^xsd:string ;
+  v-cal:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1}T00:00:00,{2}T23:59:59] && 'v-wf:to' == '{3}'"^^xsd:string ;
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-cal:FunctionCalendarTemplate
