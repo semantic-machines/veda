@@ -166,10 +166,9 @@ v-s:PersonalAspectTemplate
                 </div>
               </div>
               <a href="#/v-ft:Inbox">
-                <div class="panel-body">
+                <div class="panel-body clearfix">
                   <span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
                   <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                  <div class="clearfix"></div>
                 </div>
               </a>
             </div>
@@ -196,10 +195,9 @@ v-s:PersonalAspectTemplate
                 </div>
               </div>
               <a href="#/v-ft:Outbox">
-                <div class="panel-body">
+                <div class="panel-body clearfix">
                   <span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
                   <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                  <div class="clearfix"></div>
                 </div>
               </a>
             </div>
@@ -226,10 +224,9 @@ v-s:PersonalAspectTemplate
                 </div>
               </div>
               <a href="#/v-ft:Completed">
-                <div class="panel-body">
+                <div class="panel-body clearfix">
                   <span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
                   <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                  <div class="clearfix"></div>
                 </div>
               </a>
             </div>
