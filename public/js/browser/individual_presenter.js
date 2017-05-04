@@ -937,7 +937,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (valTemplate.attr("deleteButton") == "hide") {
         btnRemove.hide();
       }
-      btnRemove.click(function () {
+      btnRemove.click(function (e) {
+        e.stopPropagation();
+        e.preventDefault();
         individual.set( rel_uri, individual.get(rel_uri).filter(function (item) { return item.id !== value.id; }) );
         if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", individual) ) {
           value.delete();
