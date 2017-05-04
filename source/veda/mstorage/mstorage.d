@@ -1156,7 +1156,7 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
-
+/*
     if (rdfType.anyExists(owl_tags) == true)
     {
         is_onto = true;
@@ -1166,6 +1166,6 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out
     {
         is_acl_element = true;
     }
-
+*/
     return _types;
 }
