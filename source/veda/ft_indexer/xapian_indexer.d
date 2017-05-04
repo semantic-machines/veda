@@ -183,16 +183,30 @@ public class IndexerContext
             iproperty.load(true);
     }
 
-    void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context)
+    void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context, bool is_trace = false)
     {
-        //writeln("@ft index, indv.uri=", indv.uri);
-        bool is_deleted;
+        bool is_deleted, prev_is_deleted, is_restored;
+
+        if (is_trace)
+            log.trace("index msg %s", indv.uri);
 
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
 
         if (is_deleted == false && indv.exists(veda_schema__deleted, true) == true)
             is_deleted = true;
+
+        if (prev_indv.exists(veda_schema__deleted, true) == true)
+            prev_is_deleted = true;
+
+        if (prev_is_deleted == true && is_deleted == false)
+        {
+            log.trace("index msg: restore individual: %s ", indv.uri);
+            is_restored = true;
+        }
+
+        if (prev_is_deleted == false && is_deleted == true)
+            log.trace("index msg: delete individual: %s", indv.uri);
 
         try
         {
@@ -214,8 +228,7 @@ public class IndexerContext
                     return;
                 }
 
-                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri /*||
-                                                                                                       (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)*/))
+                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri))
                 {
                     if (actualVersion !is null && actualVersion != indv.uri)
                         log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", indv.uri, actualVersion, indv.uri);
@@ -729,6 +742,9 @@ public class IndexerContext
                 string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
                 doc.add_boolean_term(uuid.ptr, uuid.length, &err);
                 doc.set_data(indv.uri.ptr, indv.uri.length, &err);
+
+                if (is_restored)
+                    indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
 
                 if (is_deleted)
                 {
