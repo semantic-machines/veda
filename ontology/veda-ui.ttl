@@ -761,15 +761,11 @@ v-ui:LabelTemplate
   rdfs:label "Шаблон с меткой"@ru ;
   rdfs:label "Template with label"@en ;
   v-ui:template """
-  <span about="@" property="rdfs:label"></span>
+  <span class="label-template" about="@" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
-    template.css({
-      "display": "inline-block",
-      "margin-right": "7px"
-    });
     //# sourceURL=v-ui:LabelTemplate
   </script>
   """ ;
@@ -779,7 +775,7 @@ v-ui:LabelTemplateWithEditLink
   rdfs:label "Шаблон с меткой и ссылкой на страницу редактирования"@ru ;
   rdfs:label "Template with label & edit link"@en ;
   v-ui:template """
-  <span>
+  <span class="label-template">
     # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
   <script>
@@ -795,7 +791,7 @@ v-ui:LabelLinkTemplate
   rdfs:label "Шаблон с меткой и ссылкой"@ru ;
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
-  <a href="#/@"><span property="rdfs:label"></span></a>
+  <a class="label-template" href="#/@"><span property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
@@ -870,7 +866,7 @@ v-ui:LabelEmptyLinkTemplate
   rdfs:label "Шаблон без имени класса, но с меткой (модальное окно)"@ru ;
   rdfs:label "Template without class name, with label (modal)"@en ;
   v-ui:template """
-<a href="#" property="rdfs:label"></a>
+<a href="#" property="rdfs:label" class="label-template"></a>
 <script>
   if (!individual.hasValue("rdfs:label")) {
     template.text(individual.id);
@@ -898,15 +894,11 @@ v-ui:ClassNameLabelLinkTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
+  <a class="label-template" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
-    template.css({
-      "display": "inline-block",
-      "margin": "0 7px 7px 0"
-    });
     //# sourceURL=v-ui:ClassNameLabelLinkTemplate
   </script>
   """ ;
@@ -916,15 +908,11 @@ v-ui:ClassNameLabelLinkEditTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><a href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a></span>
+  <a class="label-template" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
-    template.css({
-      "display": "inline-block",
-      "margin": "0 7px 7px 0"
-    });
     //# sourceURL=v-ui:ClassNameLabelLinkTemplate
   </script>
   """ ;
@@ -937,22 +925,28 @@ v-ui:RabbitHole
   v-ui:template """
 <script>
   var text = "<span>" + mkLabel(individual) + "</span>";
+  var visited = [ individual.id ];
+
   if (individual.hasValue("v-s:backwardTarget")) {
     travel(individual["v-s:backwardTarget"][0]);
   } else if (individual.hasValue("v-s:parent")) {
     travel(individual["v-s:parent"][0]);
   }
   $("small", template).append(text);
+
   function travel(individual) {
+    if ( visited.indexOf(individual.id) >= 0 ) {
+      return;
+    } else {
+      visited.push(individual.id);
+    }
     text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " &rarr; " + text;
-    if (!individual.hasValue("v-s:parent") && !individual.hasValue("v-s:backwardTarget")) { return; }
-
+    if ( !individual.hasValue("v-s:parent") && !individual.hasValue("v-s:backwardTarget") ) { return; }
     if (individual.hasValue("v-s:backwardTarget")) {
-    travel(individual["v-s:backwardTarget"][0]);
-  } else if (individual.hasValue("v-s:parent")) {
-    travel(individual["v-s:parent"][0]);
-  }
-
+      travel(individual["v-s:backwardTarget"][0]);
+    } else if (individual.hasValue("v-s:parent")) {
+      travel(individual["v-s:parent"][0]);
+    }
   }
   function mkLabel(individual) {
     return individual["rdf:type"][0]["rdfs:label"].join(" ")// + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
@@ -967,15 +961,11 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></span>
+  <span class="label-template"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
-    template.css({
-      "display": "inline-block",
-      "margin": "0 7px 7px 0"
-    });
     //# sourceURL=v-ui:ClassNameLabelTemplate
   </script>
   """ ;

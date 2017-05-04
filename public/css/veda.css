@@ -1242,3 +1242,11 @@ svg.process-path-highlight path
 .fc-event .fc-bg {opacity: 0;}
 
 /* Fullcalendar END */
+
+/* Templates */
+
+.label-template {
+  display: inline-block;
+  margin-right: 7px;
+  margin-bottom: 7px;
+}
