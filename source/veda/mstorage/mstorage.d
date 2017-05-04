@@ -914,7 +914,7 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
                     rc = prepare_event(ev, rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
         }
-*/
+ */
     }
 
     return rc;
@@ -1159,12 +1159,12 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out
 
     if (rdfType.anyExists(owl_tags) == true)
     {
-//        is_onto = true;
+        is_onto = true;
     }
 
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
     {
-//        is_acl_element = true;
+        is_acl_element = true;
     }
 
     return _types;
