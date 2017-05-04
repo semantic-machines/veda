@@ -18,9 +18,10 @@ module.exports = {
     */
     checkTask: function (driver, count, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
+        driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).getText().then(function (result) {
             assert.equal(count, result);
-        }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
+        }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count");});
         welcome(driver);
         basic.logout(driver);
     },
