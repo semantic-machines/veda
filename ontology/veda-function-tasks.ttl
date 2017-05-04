@@ -45,6 +45,13 @@ v-ft:TaskCounter
   rdfs:label "Task counter"@en ;
   rdfs:label "Счетчик задач "@ru ;
 .
+v-ft:forceUpdate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "обновить принудительно"@en ;
+  rdfs:label "force гpdate"@ru ;
+.
 v-ft:inboxCount
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:TaskCounter ;
@@ -79,6 +86,7 @@ v-ft:Event_UpdateTaskCounter
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обновления счетчиков задач" ;
   v-s:triggerByType v-wf:DecisionForm ;
+  v-s:triggerByType v-ft:TaskCounter ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -90,6 +98,17 @@ v-ft:Event_UpdateTaskCounter
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
  */
+
+// Force update task counter
+var forceUpdate = hasValue(document, "v-ft:forceUpdate", {data: true, type: _Boolean}),
+    counterOwner = getUri(document["v-s:owner"]);
+if ( forceUpdate && counterOwner ) {
+  print("re-create task counter, owner =", counterOwner);
+  createTaskCounter(counterOwner);
+  return;
+}
+
+// Update task counter on task
 var task = document,
     task_uri = document["@"],
     to_uris = task["v-wf:to"] && task["v-wf:to"].map(function (to) {return to.data}),
@@ -195,96 +214,25 @@ function createTaskCounter(owner) {
 
   var taskCounter = {
     "@": uri,
-    "rdf:type": newUri('v-ft:TaskCounter'),
+    "rdf:type": newUri("v-ft:TaskCounter"),
     "v-s:owner": newUri(owner),
+    "v-s:created": newDate(today),
     "v-ft:inboxCount": newInt(inboxCount),
     "v-ft:inboxWeekCount": newInt(inboxWeekCount),
     "v-ft:outboxCount": newInt(outboxCount),
     "v-ft:completedCount": newInt(completedCount),
     "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateTaskCounter")
   };
-  put_individual(ticket, taskCounter, _event_id);
   if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
     print(
-      "Calculated counters:", uri,
-      "| inbox =", JSON.stringify(inbox), "| inboxCount =", inboxCount,
-      "| outbox =", JSON.stringify(outbox), "| outboxCount =", outboxCount,
-      "| completed =", JSON.stringify(completed), "| completedCount =", completedCount,
-      "| inboxWeek =", JSON.stringify(inboxWeek), "| inboxWeekCount =", inboxWeekCount
+      "Created counter:", uri,
+      "| inboxCount =", inboxCount,
+      "| outboxCount =", outboxCount,
+      "| completedCount =", completedCount,
+      "| inboxWeekCount =", inboxWeekCount
     );
   }
-  return taskCounter;
-}
-  """ ;
-.
-
-v-ft:Event_UpdateAllTaskCounters
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Еженедельный скрипт обновления счетчиков задач для всех должностей и назначений" ;
-  v-s:triggerByUid cfg:weekly ;
-  v-s:runAt "V8.LowPriority" ;
-  v-s:deleted true ;
-  v-s:script """
-/* Available variables:
- * ticket = superuser ticket
- * document = captured document
- * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
- * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_script_id = id of the parent script that triggered this event.
- * parent_document_id = id of the document that triggered this event.
- */
-print("************************** START **************************");
-
-var owners = query(ticket, "'rdf:type'==='v-s:Position' || 'rdf:type'==='v-s:Person'");
-print("owners count =", owners.length);
-
-owners.forEach(createTaskCounter);
-
-print("************************** END **************************");
-
-function createTaskCounter(owner) {
-  var uri = "d:taskCounter_" + owner.split(':').join('_'),
-      inbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "')"),
-      inboxCount = inbox[0] ? inbox.length : 0,
-      outbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + owner + "')"),
-      outboxCount = outbox[0] ? outbox.length : 0,
-      completed = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + owner + "')"),
-      completedCount = completed[0] ? completed.length : 0;
-
-  var today = new Date(),
-      monday = new Date(),
-      sunday = new Date();
-
-  monday.setDate(monday.getDate() - monday.getDay() + 1);
-  sunday.setDate(sunday.getDate() + 7 - sunday.getDay());
-  monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
-  sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
-
-  var inboxWeek = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "' && 'v-wf:dateGiven' == [" + monday.toISOString() +  "," + sunday.toISOString() + "])"),
-      inboxWeekCount = inboxWeek[0] ? inboxWeek.length : 0;
-
-  var taskCounter = {
-    "@": uri,
-    "rdf:type": newUri('v-ft:TaskCounter'),
-    "v-s:owner": newUri(owner),
-    "v-ft:inboxCount": newInt(inboxCount),
-    "v-ft:inboxWeekCount": newInt(inboxWeekCount),
-    "v-ft:outboxCount": newInt(outboxCount),
-    "v-ft:completedCount": newInt(completedCount),
-    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateAllTaskCounters")
-  };
   put_individual(ticket, taskCounter, _event_id);
-  if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
-    print(
-      "Calculated counters:", uri,
-      "| inbox =", JSON.stringify(inbox), "| inboxCount =", inboxCount,
-      "| outbox =", JSON.stringify(outbox), "| outboxCount =", outboxCount,
-      "| completed =", JSON.stringify(completed), "| completedCount =", completedCount,
-      "| inboxWeek =", JSON.stringify(inboxWeek), "| inboxWeekCount =", inboxWeekCount
-    );
-  }
   return taskCounter;
 }
   """ ;
@@ -568,7 +516,24 @@ v-ft:FunctionTasksIndicatorTemplate
   //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
-  <span class="fa fa-envelope-o fa-lg"></span> <span id="counter" class="label label-danger" property="v-ft:inboxCount">0</span>
+  <span class="fa fa-envelope-o fa-lg"></span>
+  <span id="counter" class="label label-danger">
+    <span about="@" property="v-ft:inboxCount"></span>
+    <script>
+      // Force update outdated counter
+      if ( individual.is("v-ft:TaskCounter") ) {
+        var monday = new Date();
+        monday.setDate(monday.getDate() - monday.getDay() + 1);
+        monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+        var created = individual["v-s:created"] && individual["v-s:created"][0];
+        var forceUpdate = !created || created < monday;
+        if ( forceUpdate ) {
+          individual["v-ft:forceUpdate"] = [true];
+          individual.save();
+        }
+      }
+    </script>
+  </span>
 </a>
   """ ;
 .
