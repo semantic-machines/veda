@@ -1164,7 +1164,7 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out
 
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
     {
-        //is_acl_element = true;
+        is_acl_element = true;
     }
 
     return _types;
