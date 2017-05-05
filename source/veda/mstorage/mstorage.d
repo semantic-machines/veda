@@ -10,8 +10,7 @@ private
            std.regex, std.uuid;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.mstorage.wslink;
-    import veda.core.common.context;
-    import veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
+    import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
@@ -57,10 +56,10 @@ extern (C) void handleTermination2(int _signal)
     Runtime.terminate();
 }
 
-Context l_context;
-Storage inividuals_storage_r;
-VQL     vql_r;
-Ticket  sticket;
+private Context l_context;
+private Storage inividuals_storage_r;
+private VQL     vql_r;
+private Ticket  sticket;
 
 void main(char[][] args)
 {
