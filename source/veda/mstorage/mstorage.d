@@ -899,9 +899,9 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
     if (in_tnx.is_autocommit == false)
     {
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
-/*
-        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
 
+        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
+/*
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, items, in_tnx.id, false, op_id);
 
         if (rc == ResultCode.OK)
