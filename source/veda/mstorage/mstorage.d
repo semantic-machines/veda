@@ -35,12 +35,6 @@ Logger log()
 
 Logger io_msg;
 
-enum CMD : byte
-{
-    /// Установить
-    SET = 50,
-}
-
 static this()
 {
     io_msg = new Logger("pacahon", "io", "mstorage");
