@@ -882,7 +882,6 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
                     rc = prepare_event(ev, rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
         }
-
     }
 
     return rc;
