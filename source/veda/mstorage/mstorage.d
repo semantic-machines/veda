@@ -1159,7 +1159,7 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out
 
     if (rdfType.anyExists(owl_tags) == true)
     {
-        //is_onto = true;
+        is_onto = true;
     }
 
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
