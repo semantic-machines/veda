@@ -44,6 +44,7 @@ v-ft:TaskCounter
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Task counter"@en ;
   rdfs:label "Счетчик задач "@ru ;
+  v-ui:hasModel v-ft:TaskCounterModel;
 .
 v-ft:forceUpdate
   rdf:type owl:DatatypeProperty ;
@@ -508,7 +509,7 @@ v-ft:FunctionTasksIndicatorTemplate
   v-ui:template """
 <script>
   var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
-  $(".label", template).attr("about", counter_uri);
+  $("#counter", template).attr("about", counter_uri);
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")
@@ -517,24 +518,27 @@ v-ft:FunctionTasksIndicatorTemplate
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
   <span class="fa fa-envelope-o fa-lg"></span>
-  <span id="counter" class="label label-danger">
-    <span about="@" property="v-ft:inboxCount"></span>
-    <script>
-      // Force update outdated counter
-      if ( individual.is("v-ft:TaskCounter") ) {
-        var monday = new Date();
-        monday.setDate(monday.getDate() - monday.getDay() + 1);
-        monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
-        var created = individual["v-s:created"] && individual["v-s:created"][0];
-        var forceUpdate = !created || created < monday;
-        if ( forceUpdate ) {
-          individual["v-ft:forceUpdate"] = [true];
-          individual.save();
-        }
-      }
-    </script>
-  </span>
+  <span id="counter" class="label label-danger" property="v-ft:inboxCount"></span>
 </a>
+  """ ;
+.
+
+v-ft:TaskCounterModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "v-ft:TaskCounter model"@en ;
+  rdfs:label "Модель v-ft:TaskCounter"@ru ;
+  v-s:script """
+// Force update outdated counter
+var monday = new Date();
+monday.setDate(monday.getDate() - monday.getDay() + 1);
+monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+var created = this["v-s:created"] && this["v-s:created"][0];
+var forceUpdate = !created || created < monday;
+if ( forceUpdate ) {
+  this["v-ft:forceUpdate"] = [true];
+  this.save();
+}
+//# sourceURL=v-ft:TaskCounterModel
   """ ;
 .
 
