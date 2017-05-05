@@ -59,15 +59,15 @@ td:khvostiaImage
 td:Analyst1
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Analyst 1"@en ;
-  rdfs:label "Аналитик 1"@ru ;
+  rdfs:label "Analyst"@en ;
+  rdfs:label "Аналитик"@ru ;
 .
 
 td:Analyst2
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Analyst 2"@en ;
-  rdfs:label "Аналитик 2"@ru ;
+  rdfs:label "Analyst"@en ;
+  rdfs:label "Аналитик"@ru ;
 .
 
 td:CommercialDirector
