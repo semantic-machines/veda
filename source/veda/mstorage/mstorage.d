@@ -901,7 +901,7 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
 
         immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
-/*
+
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, items, in_tnx.id, false, op_id);
 
         if (rc == ResultCode.OK)
@@ -914,7 +914,7 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
                     rc = prepare_event(ev, rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
         }
- */
+
     }
 
     return rc;
