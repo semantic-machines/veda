@@ -864,38 +864,6 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
     ResultCode rc;
     long       op_id;
 
-/*
-    Transaction normalized_tnx;
-
-    normalized_tnx.id = in_tnx.id;
-    foreach (item; in_tnx.get_queue())
-    {
-        if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
-            continue;
-
-        if (item.rc != ResultCode.OK)
-            return item.rc;
-
-        Ticket *ticket = ctx.get_ticket(item.ticket_id);
-
-        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-        rc = add_to_transaction(ctx.acl_indexes(), normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
-
-        if (rc == ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
-        }
-
-        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("FAIL COMMIT");
-            return rc;
-        }
-        //else
-        //log.trace ("SUCCESS COMMIT");
-    }
- */
     if (in_tnx.is_autocommit == false)
     {
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
