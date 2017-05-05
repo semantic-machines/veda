@@ -1841,6 +1841,93 @@ if (doc) {
     }
 */
   }
+//------------------------------------------------------------------------Первичный документ
+  if (doc['rdf:type'][0].id === "mnd-s:AccountingDoc") {
+
+    var approvers = [];
+    var signers = [];
+    var reviewers = [];
+    var examiners = [];
+
+    var supporter = []; // Специалист по сопровождению контракта
+    if ( doc.hasValue("v-s:hasContract") && doc["v-s:hasContract"][0].hasValue("mnd-s:supportSpecialistOfContract") ) {
+      supporter = doc["v-s:hasContract"][0]["mnd-s:supportSpecialistOfContract"];
+    } else if ( doc.hasValue("mnd-s:hasPurchaseOrder") && doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:hasContract") && doc["mnd-s:hasPurchaseOrder"][0]["v-s:hasContract"][0].hasValue("mnd-s:supportSpecialistOfContract") ) {
+      supporter = doc["mnd-s:hasPurchaseOrder"][0]["v-s:hasContract"][0]["mnd-s:supportSpecialistOfContract"];
+    }
+
+    var orderCreator = []; // Создатель заказа
+    if ( doc.hasValue("mnd-s:hasPurchaseOrder") && doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator") ) {
+      orderCreator = doc["mnd-s:hasPurchaseOrder"][0]["v-s:creator"];
+    }
+
+    if (
+      doc.hasValue("v-s:hasDocumentKind", "d:77d4cbd58cf34321a82e7281e8347542") // Декларация на товары
+      || doc.hasValue("v-s:hasDocumentKind", "d:c26c0ae5290a4c119561aacc2b01f04d") // Корректировка декларации на товары
+    ) {
+      approvers = approvers.concat(supporter); // Специалист по сопровождению контракта
+    } else {
+      examiners = examiners.concat(supporter); // Специалист по сопровождению контракта
+    }
+
+    if (
+      doc.hasValue("v-s:hasDocumentKind", "d:8737ebad40db4fafbf1cd5929f580c3a") // Акт о приемке выполненных работ имп.
+      || doc.hasValue("v-s:hasDocumentKind", "d:029549e0607c412097e47e47b4e8dc94") // Инвойс к услугам, работам
+      || doc.hasValue("v-s:hasDocumentKind", "d:53ee1e1d341b4351878fe12aff907618") // Инвойс на предоплату
+      || doc.hasValue("v-s:hasDocumentKind", "d:753b0b16b74e4174949ff6ddbeac4294") // Инвойс поступающий вместе с товаром
+      || doc.hasValue("v-s:hasDocumentKind", "d:e267901f0b904979ad7d8d4a0dc6a7d9") // Банковская гарантия
+      || doc.hasValue("v-s:hasDocumentKind", "d:6ef5acd0e8104e158045636555baedac") // Подтверждение об открытии, изменении аккредитива
+    ) {
+      signers = signers.concat(new veda.IndividualModel("d:0c061f42-ceb5-442b-a550-61bfe762e0e1")); // Переводчик
+    }
+    if (
+      doc.hasValue("v-s:hasDocumentKind", "d:8737ebad40db4fafbf1cd5929f580c3a") // Акт о приемке выполненных работ имп.
+      || doc.hasValue("v-s:hasDocumentKind", "d:029549e0607c412097e47e47b4e8dc94") // Инвойс к услугам, работам
+      || doc.hasValue("v-s:hasDocumentKind", "d:53ee1e1d341b4351878fe12aff907618") // Инвойс на предоплату
+      || doc.hasValue("v-s:hasDocumentKind", "d:753b0b16b74e4174949ff6ddbeac4294") // Инвойс поступающий вместе с товаром
+      || doc.hasValue("v-s:hasDocumentKind", "d:e267901f0b904979ad7d8d4a0dc6a7d9") // Банковская гарантия
+      || doc.hasValue("v-s:hasDocumentKind", "d:6ef5acd0e8104e158045636555baedac") // Подтверждение об открытии, изменении аккредитива
+      || doc.hasValue("v-s:hasDocumentKind", "d:c26c0ae5290a4c119561aacc2b01f04d") // Корректировка декларации на товары
+      || doc.hasValue("v-s:hasDocumentKind", "d:77d4cbd58cf34321a82e7281e8347542") // Декларация на товары
+      || doc.hasValue("v-s:hasDocumentKind", "d:7919fd49560f4340b41ce6bc01aa87e9") // Кредит - нота
+    ) {
+      reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
+    }
+    if ( orderCreator.length ) {
+      examiners = examiners.concat(orderCreator); // Создатель заказа
+    }
+    if ( doc.hasValue("v-s:hasDocumentKind", "d:77d4cbd58cf34321a82e7281e8347542") ) { // Декларация на товары
+      if ( orderCreator.length ) {
+        approvers = approvers.concat( orderCreator ); // Создатель заказа
+      } else if ( supporter.length ) {
+        approvers = approvers.concat( supporter ); // Специалист по сопровождению контракта
+      }
+    }
+
+    routes['approval'][simple+'participant'] = approvers;
+    routes['approval'][simple+'comment'] = [new String('Проверить сумму. Указать аванс')];
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'deadlineDays'] = [3];
+
+    routes['sign'][simple+'participant'] = signers;
+    routes['sign'][simple+'comment'] = [new String('Выполнить перевод документа')];
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    routes['sign'][simple+'deadlineDays'] = [3];
+
+    routes['review'][simple+'participant'] = reviewers;
+    routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
+    routes['review'][simple+'visible'] = [true];
+    routes['review'][simple+'editable'] = [true];
+    routes['review'][simple+'deadlineDays'] = [3];
+
+    routes['examination'][simple+'participant'] = examiners;
+    routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом')];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['examination'][simple+'deadlineDays'] = [3];
+  }
 
 //----------------------------------------------------------------------------------------------------------------------------------Заявка на cброс сточных вод
   if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
