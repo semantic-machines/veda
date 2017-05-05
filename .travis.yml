@@ -58,10 +58,9 @@ script:
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
 #  - node ./qa/testSendGet.js
-  - node ./qa/testRepeatComplexRoute.js
-  - node ./qa/testNetComplexRoute.js
   - node ./qa/testLogin.js
-  - node ./qa/testPerson.js
+  - node ./qa/testNetComplexRoute.js
+  - node ./qa/testRepeatComplexRoute.js
   - node ./qa/testDrafts.js
   - node ./qa/testLanguage.js
   - node ./qa/testDeleteAndRecovery.js
