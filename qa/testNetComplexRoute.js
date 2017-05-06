@@ -83,6 +83,7 @@ basic.getDrivers().forEach (function (drv) {
     //    ['red', 'red', 'red'], 1, 2);
 
     //review, instruction, examination -> instruction2
+    console.info ('review, instruction, examination -> instruction2');
     complexRoute.checkTask(driver, '3', 'bychinat', '123', '4', 'Администратор4');
     complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2');
     complexRoute.acceptTask(driver, '0', '-', '-',  'bychinat', '123', '4', 'Администратор4');
@@ -108,13 +109,13 @@ basic.getDrivers().forEach (function (drv) {
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 2);
 
     //controller
+    console.info ('controller');
     complexRoute.acceptTask(driver, '2', '+', '+', 'karpovrt', '123', '2', 'Администратор2');
     complexRoute.acceptTask(driver, '1', '+', '-', 'bychinat', '123', '4', 'Администратор4');
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');
 
-    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_instruction2', 's-wf:cr_finish'],
-    //    ['red' , 'red'], 1, 2);
+    //complexRoute.checkRouteStatus(driver, ['s-wf:cr_instruction2', 's-wf:cr_finish'], ['red' , 'red'], 1, 2);
 
     driver.quit();
 });
