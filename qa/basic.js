@@ -148,7 +148,6 @@ module.exports = {
           webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),
           FAST_OPERATION
       ).thenCatch(function (e) {errrorHandlerFunction(e, "Login:Cannot find user last name")});
-      console.log ('login: %s', login);
   },
 
     /**
