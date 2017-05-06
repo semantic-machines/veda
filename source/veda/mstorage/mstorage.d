@@ -228,7 +228,6 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
     receive((bool isReady)
             {
                 res = isReady;
-                //if (trace_msg[ 50 ] == 1)
                 log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
                 if (res == false)
                     log.trace("FAIL START THREAD: %s", text(tid_idx));
@@ -251,6 +250,7 @@ public void exit(P_MODULE module_id)
 void commiter(string thread_name)
 {
     core.thread.Thread.getThis().name = thread_name;
+
     // SEND ready
     receive((Tid tid_response_reciever)
             {
@@ -368,8 +368,7 @@ public Ticket create_new_ticket(string user_id, string duration = "40000", strin
             user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
 
-        log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(
-                                                                                                                                                  ),
+        log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
                   SysTime(ticket.end_time, UTC()).toISOExtString());
     }
 
@@ -394,7 +393,6 @@ public Ticket authenticate(string login, string password)
 
         login = replaceAll(login, regex(r"[-]", "g"), " +");
 
-        //Ticket       sticket         = sys_ticket;
         Individual[] candidate_users;
         vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, false, false);
         foreach (user; candidate_users)
@@ -424,7 +422,6 @@ public Ticket authenticate(string login, string password)
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
                 OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true);
-
 
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                 user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
@@ -539,8 +536,7 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
                                                        true);
 
                     //commit (false, tnx);
@@ -561,8 +557,7 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
                                                        false, true);
 
                     rc ~= ires;
@@ -581,8 +576,7 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
                                                        false, true);
 
                     rc ~= ires;
@@ -601,8 +595,7 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
                                                        false, true);
 
                     rc ~= ires;
@@ -621,8 +614,7 @@ public string execute(string in_msg, Context ctx)
                 Transaction tnx;
                 tnx.id            = transaction_id;
                 tnx.is_autocommit = true;
-                OpResult ires = add_to_transaction(
-                                                   ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
+                OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
                                                    true);
 
                 rc ~= ires;
@@ -645,8 +637,8 @@ public string execute(string in_msg, Context ctx)
         }
         else if (sfn == "flush")
         {
-            P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-            long       wait_op_id  = jsn[ "wait_op_id" ].integer;
+            P_MODULE f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
+            long     wait_op_id  = jsn[ "wait_op_id" ].integer;
 
             ResultCode rc;
 
