@@ -1,3 +1,4 @@
+var console = require('console');
 var basic = require('./basic.js'),
     complexRoute = require('./complexRoute.js'),
     assert = require('assert');
@@ -19,7 +20,7 @@ var basic = require('./basic.js'),
  * 7.Accept task(as kaprovrt) -> Accept task(as bychinat) -> Accept task(as bychinat) -> Accept task(as bychinat);
  * 8.Quit;
  *
- * 1.Открываем страницу -> Входи в систему под karpovrt;
+ * 1.Открываем страницу -> Вход в систему под karpovrt;
  * 2.Открываем форму создания Тестовый шаблон комплексного маршурута -> Запускаем маршрут -> Выходим из системы;
  * Согласование1
  * 3.Отвечаем на задачу(под karpovrt) -> Отвечаем на задачу(под bychinat);
@@ -42,8 +43,13 @@ var basic = require('./basic.js'),
 
 basic.getDrivers().forEach (function (drv) {
     var driver = basic.getDriver(drv);
+
+    console.info ('1.Open page -> login(as karpovrt)');
+
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+
+    console.info ('2.Open create Complex route test template document form -> Start route -> Logout');
 
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest');
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
@@ -56,12 +62,15 @@ basic.getDrivers().forEach (function (drv) {
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
 
+    console.info ('coordination 1');
+
     //coordination1
 
     complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2');
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_c1', 's-wf:cr_c2'], ['green', 'red'], 1, 2);
 
+    console.info ('coordination 2');
     //coordination2
 
     complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2');
