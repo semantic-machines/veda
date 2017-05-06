@@ -421,7 +421,7 @@ public Ticket authenticate(string login, string password)
                 Transaction tnx;
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-                OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true);
+                OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true, false);
 
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                 user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
@@ -429,7 +429,7 @@ public Ticket authenticate(string login, string password)
 
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-                op_res            = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", false, true);
+                op_res            = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", false, true, false);
 
                 log.trace("authenticate: update user[%s], res=%s", user, op_res);
             }
@@ -537,7 +537,7 @@ public string execute(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
-                                                       true);
+                                                       true, false);
 
                     //commit (false, tnx);
 
@@ -558,7 +558,7 @@ public string execute(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
-                                                       false, true);
+                                                       false, true, false);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -577,7 +577,7 @@ public string execute(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
-                                                       false, true);
+                                                       false, true, false);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -596,7 +596,7 @@ public string execute(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
-                                                       false, true);
+                                                       false, true, false);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -615,7 +615,7 @@ public string execute(string in_msg, Context ctx)
                 tnx.id            = transaction_id;
                 tnx.is_autocommit = true;
                 OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
-                                                   true);
+                                                   true, false);
 
                 rc ~= ires;
                 if (transaction_id <= 0)
@@ -637,8 +637,8 @@ public string execute(string in_msg, Context ctx)
         }
         else if (sfn == "flush")
         {
-            P_MODULE f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
-            long     wait_op_id  = jsn[ "wait_op_id" ].integer;
+            P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
+            long       wait_op_id  = jsn[ "wait_op_id" ].integer;
 
             ResultCode rc;
 
@@ -749,7 +749,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
             Transaction tnx;
             tnx.id            = -1;
             tnx.is_autocommit = true;
-            OpResult opres = add_to_transaction(ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false);
+            OpResult opres = add_to_transaction(ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false, false);
 
 
             if (opres.result == ResultCode.OK)
@@ -844,8 +844,8 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     return result;
 }
 /*
-public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
-{
+   public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
+   {
     ResultCode rc;
     long       op_id;
 
@@ -870,8 +870,8 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
     }
 
     return rc;
-}
-*/
+   }
+ */
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
@@ -879,7 +879,7 @@ static const byte EXISTS_TYPE = 1;
 public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events,
                                    string event_id,
                                    bool ignore_freeze,
-                                   bool is_api_request)
+                                   bool is_api_request, bool trace)
 {
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
@@ -927,6 +927,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
         catch (Exception ex)
         {
+            res.result = ResultCode.Unprocessable_Entity;
             log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
             return res;
         }
@@ -1071,7 +1072,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                       indv !is null ? text(*indv) : "null",
                       text(res.result), ticket !is null ? text(*ticket) : "null");
 
-        if (trace_msg[ T_API_240 ] == 1)
+        if (trace)
             log.trace("add_to_transaction [%s] = %s", indv.uri, res);
     }
 }
