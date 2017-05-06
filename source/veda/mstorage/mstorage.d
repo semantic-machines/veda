@@ -843,7 +843,7 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
 
     return result;
 }
-
+/*
 public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
 {
     ResultCode rc;
@@ -871,6 +871,7 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
 
     return rc;
 }
+*/
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
