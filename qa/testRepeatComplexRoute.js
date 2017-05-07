@@ -50,7 +50,7 @@ basic.getDrivers().forEach (function (drv) {
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver);
 
-    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4');
+    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', '#1');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 1);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 1);
