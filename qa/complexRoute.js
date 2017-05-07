@@ -22,7 +22,7 @@ module.exports = {
 	    //if (result == '')
 	    //	result = '0';
             assert.equal(count, result);
-        }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count, user=" + login + ':' + firstName + ':' + lastName', phase=' + info);});
+        }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count, user=" + login + ':' + firstName + ':' + lastName + ', phase=' + info);});
         welcome(driver);
         basic.logout(driver);
     },
