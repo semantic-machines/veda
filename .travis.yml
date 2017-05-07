@@ -59,8 +59,6 @@ script:
 #  - node ./qa/testAPI.js
 #  - node ./qa/testSendGet.js
   - node ./qa/testLogin.js
-  - node ./qa/testRepeatComplexRoute.js
-  - node ./qa/testNetComplexRoute.js
   - node ./qa/testDrafts.js
   - node ./qa/testLanguage.js
   - node ./qa/testDeleteAndRecovery.js
@@ -73,8 +71,8 @@ script:
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
-#  - node ./qa/testRepeatComplexRoute.js
-#  - node ./qa/testNetComplexRoute.js
+  - node ./qa/testRepeatComplexRoute.js
+  - node ./qa/testNetComplexRoute.js
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
