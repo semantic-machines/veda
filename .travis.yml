@@ -61,6 +61,7 @@ script:
   - node ./qa/testLogin.js
   - node ./qa/testNetComplexRoute.js
   - node ./qa/testRepeatComplexRoute.js
+  - node ./qa/testRepeatComplexRoute.js
   - node ./qa/testDrafts.js
   - node ./qa/testLanguage.js
   - node ./qa/testDeleteAndRecovery.js
