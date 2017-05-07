@@ -19,7 +19,7 @@ module.exports = {
     checkTask: function (driver, count, login, password, firstName, lastName) {
         driver.sleep(basic.SLOW_OPERATION);
         basic.login(driver, login, password, firstName, lastName);
-        driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).getText().then(function (result) {
+        driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).then(function (result) {
 	    //if (result == '')
 	    //	result = '0';
             assert.equal(count, result);
