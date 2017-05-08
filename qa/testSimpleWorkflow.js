@@ -90,7 +90,7 @@ basic.getDrivers().forEach (function (drv) {
   basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
   driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).getText().then(function (result) {
         assert.equal(1, result.length);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count");});
+    }).thenCatch(function (e) {basic.errorHandler(e, "Invalid `message` elements count (inbox task counter)");});
 
   driver.quit();
 });
