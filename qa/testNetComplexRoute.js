@@ -91,7 +91,7 @@ basic.getDrivers().forEach (function (drv) {
     //    ['green', 'green', 'green', 'red'], 1, 2);
 
     //
-    complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', '?');
+    // ? complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', '?');
     complexRoute.acceptTask(driver, '3', '+', '+', 'karpovrt', '123', '2', 'Администратор2');
     complexRoute.acceptTask(driver, '4', '+', '-', 'bychinat', '123', '4', 'Администратор4');
     complexRoute.acceptTask(driver, '1', '+', '-', 'karpovrt', '123', '2', 'Администратор2');
