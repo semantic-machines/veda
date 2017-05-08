@@ -421,7 +421,9 @@ public Ticket authenticate(string login, string password)
                 Transaction tnx;
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-                OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true, false);
+                OpResult op_res = add_to_transaction(
+                                                     l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true,
+                                                     false);
 
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                 user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
@@ -749,7 +751,9 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
             Transaction tnx;
             tnx.id            = -1;
             tnx.is_autocommit = true;
-            OpResult opres = add_to_transaction(ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false, false);
+            OpResult opres = add_to_transaction(
+                                                ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false,
+                                                false);
 
 
             if (opres.result == ResultCode.OK)
@@ -843,9 +847,9 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
 
     return result;
 }
-/*
-   public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
-   {
+
+public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
+{
     ResultCode rc;
     long       op_id;
 
@@ -870,8 +874,8 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     }
 
     return rc;
-   }
- */
+}
+
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
