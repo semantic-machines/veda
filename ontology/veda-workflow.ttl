@@ -496,8 +496,8 @@ v-wf:SimpleNetTemplate
     </td>
       <td>
         <veda-control rel="v-wf:completedMapping" data-type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:completedMapping">
-          <div deleteButton="hide" class="VCcompletedMapping">
+        <div about="@" rel="v-wf:completedMapping">
+          <div class="VCcompletedMapping">
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
               <span>
@@ -1002,8 +1002,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:startingMapping" data-type="link" class="VCstartingMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:startingMapping">
-          <div deleteButton="hide" class="VCstartingMapping">
+        <div about="@" rel="v-wf:startingMapping">
+          <div class="VCstartingMapping">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1024,8 +1024,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:completedMapping" data-type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:completedMapping">
-          <div deleteButton="hide" class="VCcompletedMapping">
+        <div about="@" rel="v-wf:completedMapping">
+          <div class="VCcompletedMapping">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1046,8 +1046,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:startingExecutorJournalMap" data-type="link" class="VCstartingExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:startingExecutorJournalMap">
-          <div deleteButton="hide" class="VCstartingExecutorJournalMap">
+        <div about="@" rel="v-wf:startingExecutorJournalMap">
+          <div class="VCstartingExecutorJournalMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1068,8 +1068,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:completedExecutorJournalMap" data-type="link" class="VCcompletedExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:completedExecutorJournalMap">
-          <div deleteButton="hide" class="VCcompletedExecutorJournalMap">
+        <div about="@" rel="v-wf:completedExecutorJournalMap">
+          <div class="VCcompletedExecutorJournalMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1090,8 +1090,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:startingJournalMap" data-type="link" class="VCstartingJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:startingJournalMap">
-          <div deleteButton="hide" class="VCstartingJournalMap">
+        <div about="@" rel="v-wf:startingJournalMap">
+          <div class="VCstartingJournalMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1112,8 +1112,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:completedJournalMap" data-type="link" class="VCcompletedJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:completedJournalMap">
-          <div deleteButton="hide" class="VCcompletedJournalMap">
+        <div about="@" rel="v-wf:completedJournalMap">
+          <div class="VCcompletedJournalMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1134,8 +1134,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:startingMessageMap" data-type="link" class="VCstartingMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:startingMessageMap">
-          <div deleteButton="hide" class="VCstartingMessageMap">
+        <div about="@" rel="v-wf:startingMessageMap">
+          <div class="VCstartingMessageMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1156,8 +1156,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:completedMessageMap" data-type="link" class="VCcompletedMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:completedMessageMap">
-          <div deleteButton="hide" class="VCcompletedMap">
+        <div about="@" rel="v-wf:completedMessageMap">
+          <div class="VCcompletedMap">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
@@ -1178,8 +1178,8 @@ v-wf:TaskTemplateAsProperties
     </td>
       <td>
         <veda-control rel="v-wf:wosResultsMapping" data-type="link" class="VCwosResultsMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
-        <div rel="v-wf:wosResultsMapping">
-          <div deleteButton="hide" class="VCwosResultsMapping">
+        <div about="@" rel="v-wf:wosResultsMapping">
+          <div class="VCwosResultsMapping">
             <p>
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
