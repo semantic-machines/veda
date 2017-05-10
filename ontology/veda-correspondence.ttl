@@ -72,6 +72,7 @@ v-s:Letter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
   v-ui:hasTemplate v-s:LetterTemplate ;

@@ -135,19 +135,19 @@ module.exports = {
       (
           webdriver.until.elementIsVisible(driver.findElement({id:'user-info'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems 'user-info' is not visible");});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "Login:Seems 'user-info' is not visible");});
 
       // Проверям что мы залогинены корректно
       driver.wait
       (
           webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserFirstName),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find user first name")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "Login:Cannot find user first name")});
       driver.wait
       (
           webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find user last name")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "Login:Cannot find user last name")});
   },
 
     /**
@@ -156,19 +156,19 @@ module.exports = {
      */
   logout: function(driver) {
       driver.findElement({id:'menu'}).click()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "Logout:Cannot click on settings button");});
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `exit` button inside menu");});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "Logout:Seems there is no `exit` button inside menu");});
       driver.findElement({css:'li[id="menu"] li[resource="v-l:Exit"]'}).click()
-          .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on `exit` button");});
+          .thenCatch(function (e) {basic.errorHandler(e, "Logout:Cannot click on `exit` button");});
       FAST_OPERATION;
       driver.findElement({css:'input[id="login"]'}).clear()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'login' field");});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "Logout:Cannot clear 'login' field");});
       driver.findElement({css:'input[id="password"]'}).clear()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot clear 'password' field");});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "Logout:Cannot clear 'password' field");});
   },
 
     /**

@@ -560,9 +560,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         if (mode === "edit") {
           values.map(function (value) {
             if (
-                value.id !== about.id // prevent self parent
-                && rel_uri !== "v-s:parent" // prevent circular parent
-                && !value.hasValue("v-s:parent") // do not change parent
+              value.id !== about.id // prevent self parent
+              && rel_uri !== "v-s:parent" // prevent circular parent
+              && !value.hasValue("v-s:parent") // do not change parent
             ) {
               value["v-s:parent"] = [about];
             }
@@ -934,12 +934,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
       if (mode === "view") { wrapper.hide(); }
 
-      if (valTemplate.attr("deleteButton") == "hide") {
-        btnRemove.hide();
-      }
       btnRemove.click(function (e) {
         e.stopPropagation();
         e.preventDefault();
+        valTemplate.remove();
         individual.set( rel_uri, individual.get(rel_uri).filter(function (item) { return item.id !== value.id; }) );
         if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", individual) ) {
           value.delete();

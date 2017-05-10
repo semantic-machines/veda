@@ -16,12 +16,13 @@ module.exports = {
      * @param firstName   |
      * @param lastName    |
     */
-    checkTask: function (driver, count, login, password, firstName, lastName) {
-        driver.sleep(basic.SLOW_OPERATION);
+    checkTask: function (driver, count, login, password, firstName, lastName, info) {
         basic.login(driver, login, password, firstName, lastName);
-        driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).getText().then(function (result) {
+        driver.findElement({css:'li[about="v-ft:Inbox2"] span[id="counter"]'}).getText().then(function (result) {
+	    if (result == '')
+	    	result = '0';
             assert.equal(count, result);
-        }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count");});
+        }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName + ', phase=' + info);});
         welcome(driver);
         basic.logout(driver);
     },
@@ -40,7 +41,7 @@ module.exports = {
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName) {
         basic.login(driver, login, password, firstName, lastName);
         basic.menu(driver, 'Inbox');
-        driver.sleep(basic.FAST_OPERATION);
+        driver.sleep(basic.SLOW_OPERATION);
         driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
             function(result){basic.clickUp(result);});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "Cannot click on '" + decision + "' decision");

@@ -1,4 +1,3 @@
-var console = require('console');
 var basic = require('./basic.js'),
     createNet = require('./createNet'),
     timeStamp = ''+Math.round(+new Date()/1000);
@@ -15,8 +14,6 @@ var basic = require('./basic.js'),
 */
 
 basic.getDrivers().forEach (function (drv) {
-    console.time("testSimpleNet");
-
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
@@ -27,6 +24,5 @@ basic.getDrivers().forEach (function (drv) {
 
     createNet.checkNet(driver, timeStamp, 'red', '-', 'red');
 
-    console.timeEnd("testSimpleNet");
     driver.quit();
 });

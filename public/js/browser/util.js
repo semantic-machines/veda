@@ -11,7 +11,7 @@ veda.Module(function Util(veda) { "use strict";
       delete localStorage["end_time"];
       delete localStorage["ticket"];
     }
-  }
+  };
 
   veda.Util.processQuery = function (q, limit, delta, pause, fn) {
     console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
@@ -61,7 +61,7 @@ veda.Module(function Util(veda) { "use strict";
         console.log("processing done:", limit);
       }
     }
-  }
+  };
 
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
@@ -470,36 +470,9 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
     var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
-    var startForm = new veda.IndividualModel();
-    Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
-    {
-      if (key !== '@')
-      {
-        if (!Array.isArray(transfromResult[0][key])) {
-          transfromResult[0][key] = [transfromResult[0][key]];
-        }
-        for (var i in transfromResult[0][key])
-        {
-          var value = null;
-          if (key === 'rdf:type')
-          {
-            value = new veda.IndividualModel(transfromResult[0][key][i].data);
-          } else
-          {
-            if (transfromResult[0][key][i].type == _Uri) {
-              value = new veda.IndividualModel(transfromResult[0][key][i].data);
-            } else if (transfromResult[0][key][i].type == _Datetime) {
-              value = new Date(Date.parse(transfromResult[0][key][i].data));
-            } else {
-              value = transfromResult[0][key][i].data;
-            }
-          }
-          if (value) {
-            startForm[key] = startForm[key].concat(value);
-          }
-        }
-      }
-    });
+    var startForm = new veda.IndividualModel(transfromResult[0]);
+    startForm.isNew(true);
+    startForm.isSync(false);
     return startForm;
   }
 

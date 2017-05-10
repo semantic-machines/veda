@@ -62,8 +62,6 @@ function fillProperty(driver, property, something) {
 
 
 basic.getDrivers().forEach(function(drv) {
-    console.time("testDrafts");
-
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
@@ -96,7 +94,5 @@ basic.getDrivers().forEach(function(drv) {
     basic.execute(driver, 'click', '#save', "Cannot click on 'save' button");
 
     check(driver, "false");
-
-    console.timeEnd("testDrafts");
     driver.quit();
 })

@@ -47,8 +47,6 @@ public enum P_MODULE : byte
     fanout_email               = 12,
 
     //// data change signal
-    fanout_sql                 = 13,
-
     ltr_scripts                = 14,
 
     webserver                  = 15,
@@ -56,6 +54,10 @@ public enum P_MODULE : byte
     n_channel                  = 16,
 
     ccus_channel               = 17,
+    
+    fanout_sql_np              = 20,
+    
+    fanout_sql_lp              = 21,
 
     nop                        = 99
 }
