@@ -133,14 +133,15 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (TransactionItem)[] _ti, long tnx_id, bool ignore_freeze, out long op_id)
+public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze,
+                         out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init)
     {
-        send(tid, need_auth, _ti, tnx_id, ignore_freeze, thisTid);
+        send(tid, opt_request, _ti, tnx_id, opt_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -153,9 +154,10 @@ public ResultCode update(P_MODULE storage_id, bool need_auth, immutable (Transac
     return rc;
 }
 
-public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj, string new_binobj,
+public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
+                         string new_binobj,
                          long update_counter,
-                         string event_id, long tnx_id, bool ignore_freeze,
+                         string event_id, long tnx_id, OptFreeze opt_freeze,
                          out long op_id)
 {
     ResultCode rc;
@@ -166,7 +168,7 @@ public ResultCode update(P_MODULE storage_id, bool need_auth, INDV_OP cmd, strin
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
                                                                   false);
 
-        send(tid, need_auth, [ ti ], tnx_id, ignore_freeze, thisTid);
+        send(tid, opt_request, [ ti ], tnx_id, opt_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -356,13 +358,13 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
                         },
-                        (bool need_auth, immutable(TransactionItem)[] tiz, long tnx_id, bool ignore_freeze, Tid tid_response_reciever)
+                        (OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
                         {
                             immutable TransactionItem ti = tiz[ 0 ];
 
                             ResultCode rc = ResultCode.Not_Ready;
 
-                            if (!ignore_freeze && is_freeze && ti.cmd == INDV_OP.PUT)
+                            if (opt_freeze == OptFreeze.NONE && is_freeze && ti.cmd == INDV_OP.PUT)
                                 send(tid_response_reciever, rc, thisTid);
 
                             try
