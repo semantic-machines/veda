@@ -560,9 +560,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         if (mode === "edit") {
           values.map(function (value) {
             if (
-                value.id !== about.id // prevent self parent
-                && rel_uri !== "v-s:parent" // prevent circular parent
-                && !value.hasValue("v-s:parent") // do not change parent
+              value.id !== about.id // prevent self parent
+              && rel_uri !== "v-s:parent" // prevent circular parent
+              && !value.hasValue("v-s:parent") // do not change parent
             ) {
               value["v-s:parent"] = [about];
             }
