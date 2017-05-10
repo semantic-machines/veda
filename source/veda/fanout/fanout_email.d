@@ -1,7 +1,7 @@
 /**
- * fanout module
+ * fanout email module
  */
-module veda.fanout_email;
+module veda.fanout.fanout_email;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -232,7 +232,7 @@ class FanoutProcess : VedaModule
                 log.trace("new_indv [%s] is draft, ignore", new_indv.uri);
                 return ResultCode.OK;
             }
-            
+
             if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri /*||
                                                                                                    (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)*/))
             {

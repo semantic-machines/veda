@@ -1,7 +1,7 @@
 /**
- * fanout sql module, normal priority
+ * fanout sql module, low priority
  */
-module veda.fanout.fanout_sql;
+module veda.fanout.fanout_sql_lp;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 //private import backtrace.backtrace, Backtrace = backtrace.backtrace;
@@ -13,12 +13,12 @@ private import veda.vmodule.vmodule, veda.fanout.to_sql;
 
 void main(string[] args)
 {
-    string priority = "normal";
-    process_name = "fanout-sql";
+    string priority = "low";
+    process_name = "fanout-sql-lp";
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_sql_np), new Logger("veda-core-fanout-sql", "log", ""), priority);
+    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_sql_lp), new Logger("veda-core-fanout-sql-lp", "log", ""), priority);
 
     p_fanout.run();
 }
