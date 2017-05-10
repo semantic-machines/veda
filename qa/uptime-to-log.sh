@@ -1,1 +1,1 @@
- while true; do uptime >> uptime.log; sleep 1; done
+ while true; do uptime >> uptime.log; sleep 10; done

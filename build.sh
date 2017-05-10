@@ -46,6 +46,7 @@ fi
 
 if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] ; then
     ./build-component.sh veda-fanout-sql fanout-sql
+    ./build-component.sh veda-fanout-sql-lp fanout-sql-lp
 fi
 
 if [ -z $1 ] || [ $1 == "scripts-main" ] || [ $1 == "veda-scripts-main" ] ; then

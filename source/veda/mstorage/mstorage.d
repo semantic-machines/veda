@@ -10,8 +10,7 @@ private
            std.regex, std.uuid;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import veda.bind.libwebsocketd, veda.mstorage.wslink;
-    import veda.core.common.context;
-    import veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
+    import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
@@ -35,12 +34,6 @@ Logger log()
 
 Logger io_msg;
 
-enum CMD : byte
-{
-    /// Установить
-    SET = 50,
-}
-
 static this()
 {
     io_msg = new Logger("pacahon", "io", "mstorage");
@@ -63,10 +56,10 @@ extern (C) void handleTermination2(int _signal)
     Runtime.terminate();
 }
 
-Context l_context;
-Storage inividuals_storage_r;
-VQL     vql_r;
-Ticket  sticket;
+private Context l_context;
+private Storage inividuals_storage_r;
+private VQL     vql_r;
+private Ticket  sticket;
 
 void main(char[][] args)
 {
@@ -235,7 +228,6 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
     receive((bool isReady)
             {
                 res = isReady;
-                //if (trace_msg[ 50 ] == 1)
                 log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
                 if (res == false)
                     log.trace("FAIL START THREAD: %s", text(tid_idx));
@@ -258,6 +250,7 @@ public void exit(P_MODULE module_id)
 void commiter(string thread_name)
 {
     core.thread.Thread.getThis().name = thread_name;
+
     // SEND ready
     receive((Tid tid_response_reciever)
             {
@@ -375,8 +368,7 @@ public Ticket create_new_ticket(string user_id, string duration = "40000", strin
             user_of_ticket[ ticket.id ] = new Ticket(ticket);
         }
 
-        log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(
-                                                                                                                                                  ),
+        log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
                   SysTime(ticket.end_time, UTC()).toISOExtString());
     }
 
@@ -401,7 +393,6 @@ public Ticket authenticate(string login, string password)
 
         login = replaceAll(login, regex(r"[-]", "g"), " +");
 
-        //Ticket       sticket         = sys_ticket;
         Individual[] candidate_users;
         vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, false, false);
         foreach (user; candidate_users)
@@ -430,8 +421,9 @@ public Ticket authenticate(string login, string password)
                 Transaction tnx;
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-                OpResult op_res = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true);
-
+                OpResult op_res = add_to_transaction(
+                                                     l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "", false, true,
+                                                     false);
 
                 log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
                 user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
@@ -439,7 +431,7 @@ public Ticket authenticate(string login, string password)
 
                 tnx.id            = -1;
                 tnx.is_autocommit = true;
-                op_res            = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", false, true);
+                op_res            = add_to_transaction(l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", false, true, false);
 
                 log.trace("authenticate: update user[%s], res=%s", user, op_res);
             }
@@ -546,9 +538,8 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
-                                                       true);
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str, false,
+                                                       true, false);
 
                     //commit (false, tnx);
 
@@ -568,9 +559,8 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
-                                                       false, true);
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
+                                                       false, true, false);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -588,9 +578,8 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
-                                                       false, true);
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
+                                                       false, true, false);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -608,9 +597,8 @@ public string execute(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
-                                                       false, true);
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
+                                                       false, true, false);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -628,9 +616,8 @@ public string execute(string in_msg, Context ctx)
                 Transaction tnx;
                 tnx.id            = transaction_id;
                 tnx.is_autocommit = true;
-                OpResult ires = add_to_transaction(
-                                                   ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
-                                                   true);
+                OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str, false,
+                                                   true, false);
 
                 rc ~= ires;
                 if (transaction_id <= 0)
@@ -764,7 +751,9 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
             Transaction tnx;
             tnx.id            = -1;
             tnx.is_autocommit = true;
-            OpResult opres = add_to_transaction(ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false);
+            OpResult opres = add_to_transaction(
+                                                ctx.acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", false, false,
+                                                false);
 
 
             if (opres.result == ResultCode.OK)
@@ -864,42 +853,10 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
     ResultCode rc;
     long       op_id;
 
-/*
-    Transaction normalized_tnx;
-
-    normalized_tnx.id = in_tnx.id;
-    foreach (item; in_tnx.get_queue())
-    {
-        if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
-            continue;
-
-        if (item.rc != ResultCode.OK)
-            return item.rc;
-
-        Ticket *ticket = ctx.get_ticket(item.ticket_id);
-
-        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-        rc = add_to_transaction(ctx.acl_indexes(), normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
-
-        if (rc == ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
-        }
-
-        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("FAIL COMMIT");
-            return rc;
-        }
-        //else
-        //log.trace ("SUCCESS COMMIT");
-    }
- */
     if (in_tnx.is_autocommit == false)
     {
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, in_tnx.get_immutable_queue(), in_tnx.id, false, op_id);
-/*
+
         immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
 
         rc = indv_storage_thread.update(P_MODULE.subject_manager, is_api_request, items, in_tnx.id, false, op_id);
@@ -914,11 +871,11 @@ public ResultCode commit(bool is_api_request, EVENT ev, ref Transaction in_tnx)
                     rc = prepare_event(ev, rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
         }
- */
     }
 
     return rc;
 }
+
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
@@ -926,7 +883,7 @@ static const byte EXISTS_TYPE = 1;
 public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events,
                                    string event_id,
                                    bool ignore_freeze,
-                                   bool is_api_request)
+                                   bool is_api_request, bool trace)
 {
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
@@ -951,12 +908,18 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         bool        is_onto;
 
         MapResource rdfType;
-        Resources   _types = set_map_of_type(indv, rdfType, is_acl_element, is_onto);
+        Resources   _types = set_map_of_type(indv, rdfType);
 
-        EVENT       ev = EVENT.CREATE;
+        if (rdfType.anyExists(owl_tags) == true)
+            is_onto = true;
 
-        string      prev_state;
-        Individual  prev_indv;
+        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+            is_acl_element = true;
+
+        EVENT      ev = EVENT.CREATE;
+
+        string     prev_state;
+        Individual prev_indv;
 
         try
         {
@@ -968,6 +931,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
         catch (Exception ex)
         {
+            res.result = ResultCode.Unprocessable_Entity;
             log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
             return res;
         }
@@ -1112,7 +1076,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                       indv !is null ? text(*indv) : "null",
                       text(res.result), ticket !is null ? text(*ticket) : "null");
 
-        if (trace_msg[ T_API_240 ] == 1)
+        if (trace)
             log.trace("add_to_transaction [%s] = %s", indv.uri, res);
     }
 }
@@ -1149,23 +1113,18 @@ private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_
     return res;
 }
 
-private Resources set_map_of_type(Individual *indv, ref MapResource rdfType, out bool is_acl_element, out bool is_onto)
+private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
 {
-    Resources _types = indv.resources.get(rdf__type, Resources.init);
+    Resources _types;
+
+    if (indv is null)
+        return _types;
+
+    _types = indv.resources.get(rdf__type, Resources.init);
 
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
     setMapResources(_types, rdfType);
-
-    if (rdfType.anyExists(owl_tags) == true)
-    {
-        is_onto = true;
-    }
-
-    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-    {
-        is_acl_element = true;
-    }
 
     return _types;
 }

@@ -624,11 +624,12 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             for (var i = 0; i < path.length - 1; i++)
             {
               if (!curelem || !curelem[path[i]]) return;
-              curelem = get_individual(ticket, curelem[path[i]].data ? curelem[path[i]].data : curelem[path[i]]);
+              var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
+              curelem = get_individual(ticket, uri);
             }
             if (!curelem || !curelem[path[path.length - 1]]) return;
 
-            out_data0_el_arr.push(curelem[path[path.length - 1]]);
+            out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
 
             out_data0_el[name] = out_data0_el_arr;
           }
