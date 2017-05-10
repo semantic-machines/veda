@@ -116,51 +116,53 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 {
     TransactionItem *ti = new TransactionItem();
 
-    ti.cmd       = _cmd;
-    ti.binobj    = _binobj;
-    ti.ticket_id = _ticket_id;
-    ti.event_id  = _event_id;
+    ti.cmd        = _cmd;
+    ti.new_binobj = _binobj;
+    ti.ticket_id  = _ticket_id;
+    ti.event_id   = _event_id;
 
     if (ti.cmd == INDV_OP.REMOVE)
     {
-        ti.rc = ResultCode.OK;
+        ti.new_indv.uri = _binobj;
+        ti.rc           = ResultCode.OK;
     }
     else
     {
-        int code = ti.indv.deserialize(ti.binobj);
+        int code = ti.new_indv.deserialize(ti.new_binobj);
         if (code < 0)
         {
             ti.rc = ResultCode.Unprocessable_Entity;
-            log.trace("ERR! v8d:transaction:deserialize [%s]", ti.binobj);
+            log.trace("ERR! v8d:transaction:deserialize [%s]", ti.new_binobj);
             return ti;
         }
         else
             ti.rc = ResultCode.OK;
 
-        ti.indv.setStatus(ti.rc);
+        ti.new_indv.setStatus(ti.rc);
 
         if (ti.rc == ResultCode.OK && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
         {
             Individual      prev_indv;
 
-            TransactionItem *ti1 = tnx.buff.get(ti.indv.uri, null);
-            if (ti1 !is null && ti1.binobj.length > 0)
+            TransactionItem *ti1 = tnx.get(ti.new_indv.uri);
+            if (ti1 !is null && ti1.new_binobj.length > 0)
             {
-                prev_indv = ti1.indv;
+                prev_indv = ti1.new_indv;
             }
             else
             {
                 Ticket *ticket = g_context.get_ticket(ti.ticket_id);
-                prev_indv = g_context.get_individual(ticket, ti.indv.uri);
+                prev_indv = g_context.get_individual(ticket, ti.new_indv.uri);
             }
 
             if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
                 ti.rc = prev_indv.getStatus();
 
             if (prev_indv.getStatus() == ResultCode.OK)
-                ti.indv = *indv_apply_cmd(ti.cmd, &prev_indv, &ti.indv);
+                ti.new_indv = *indv_apply_cmd(ti.cmd, &prev_indv, &ti.new_indv);
             else
-                log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.indv.uri, prev_indv.getStatus());
+                log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri,
+                          prev_indv.getStatus());
         }
     }
     return ti;
@@ -463,11 +465,11 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
         }
         else
         {
-            TransactionItem *ti = tnx.buff.get(uri, null);
-            if (ti !is null && ti.binobj.length > 0)
+            TransactionItem *ti = tnx.get(uri);
+            if (ti !is null && ti.new_binobj.length > 0)
             {
-                tmp_individual.data   = cast(char *)ti.binobj;
-                tmp_individual.length = cast(int)ti.binobj.length;
+                tmp_individual.data   = cast(char *)ti.new_binobj;
+                tmp_individual.length = cast(int)ti.new_binobj.length;
                 return &tmp_individual;
             }
 

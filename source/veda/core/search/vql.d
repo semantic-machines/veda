@@ -7,7 +7,7 @@ module veda.core.search.vql;
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
-    import veda.util.container, veda.common.logger, veda.core.util.utils;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.common.type;
     import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates;
     import veda.core.search.vel, veda.core.search.xapian_reader;
     import veda.onto.individual, veda.core.az.acl;
@@ -179,7 +179,7 @@ class VQL
                     else
                     {
                         //writeln("ERR! invalid individual=", uri);
-                        context.reopen_ro_subject_storage_db();
+                        context.reopen_ro_individuals_storage_db();
                         data = context.get_from_individual_storage(ticket.user_uri, uri);
                         if (ind.deserialize(data) > 0)
                         {

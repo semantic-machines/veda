@@ -58,42 +58,50 @@ veda.Module(function (veda) { "use strict";
 
   var proto = veda.IndividualModel.prototype;
 
+  proto.get = function (property_uri) {
+    var self = this;
+    if (!self.properties[property_uri]) return [];
+    var values = self.properties[property_uri]
+      .filter(function (value) {
+        var condition = value.type !== "String" || value.lang === "NONE" || (veda.user && veda.user.language && value.lang in veda.user.language);
+        if (condition === false) {
+          var filtered = self.filtered[property_uri] || [],
+              found = filtered.filter(function (filteredVal) {
+                return filteredVal.data === value.data && filteredVal.lang === value.lang;
+              });
+          if ( !found.length ) {
+            filtered.push( value );
+          }
+          self.filtered[property_uri] = filtered;
+        }
+        return condition;
+      })
+      .map( parser );
+    return values;
+  };
+
+  proto.set = function (property_uri, values) {
+    this.isSync(false);
+    values = values.filter(function (i) { return i != undefined });
+    var serialized = values.map( serializer );
+    if (this.filtered[property_uri] && this.filtered[property_uri].length) {
+      serialized = serialized.concat( this.filtered[property_uri] );
+    }
+    if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
+      this.properties[property_uri] = serialized;
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
+  };
+
   // Define properties from ontology in veda.IndividualModel.prototype
   veda.IndividualModel.defineProperty = function (property_uri) {
     Object.defineProperty(proto, property_uri, {
       get: function () {
-        var self = this;
-        if (!self.properties[property_uri]) return [];
-        var values = self.properties[property_uri]
-          .filter(function (value) {
-            var condition = value.type !== "String" || value.lang === "NONE" || (veda.user && veda.user.language && value.lang in veda.user.language);
-            if (condition === false) {
-              var filtered = self.filtered[property_uri] || [],
-                  found = filtered.filter(function (filteredVal) {
-                    return filteredVal.data === value.data && filteredVal.lang === value.lang;
-                  });
-              if ( !found.length ) {
-                filtered.push( value );
-              }
-              self.filtered[property_uri] = filtered;
-            }
-            return condition;
-          })
-          .map( parser );
-        return values;
+        return this.get(property_uri);
       },
       set: function (values) {
-        this.isSync(false);
-        values = values.filter(function (i) { return i != undefined });
-        var serialized = values.map( serializer );
-        if (this.filtered[property_uri] && this.filtered[property_uri].length) {
-          serialized = serialized.concat( this.filtered[property_uri] );
-        }
-        if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
-          this.properties[property_uri] = serialized;
-          this.trigger("propertyModified", property_uri, values);
-          this.trigger(property_uri, values);
-        }
+        return this.set(property_uri, values);
       },
       configurable: false,
       enumerable: false

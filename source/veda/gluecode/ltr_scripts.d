@@ -289,11 +289,10 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
             log.trace("start exec ltr-script : %s %s", script.id, uri);
 
             script.compiled_script.run();
-            tnx.id = -1;            
-            ResultCode res = commit(&tnx, g_context);
-            tnx.buff  = tnx.buff.init;
-		    tnx.queue = tnx.queue.init;
-            
+            tnx.id = -1;
+            ResultCode res = g_context.commit(&tnx);
+            tnx.reset();
+
             if (res != ResultCode.OK)
             {
                 log.trace("fail exec event script : %s", script.id);
@@ -338,7 +337,7 @@ class ScriptProcess : VedaModule
     {
         committed_op_id = op_id;
 
-        if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
+        if (new_indv.exists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
             return ResultCode.OK;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)

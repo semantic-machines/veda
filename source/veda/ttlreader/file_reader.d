@@ -303,7 +303,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
             foreach (uri, indv; l_individuals)
             {
-                if (indv.isExists(rdf__type, owl__Ontology))
+                if (indv.exists(rdf__type, owl__Ontology))
                 {
                     string o_file = filename_2_prefix.get(indv.uri, null);
                     if (o_file !is null && o_file != filename)
@@ -479,7 +479,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
         {
             //log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
 
-            if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
+            if (ss.exists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;

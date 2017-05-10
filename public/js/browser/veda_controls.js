@@ -36,7 +36,7 @@
     function modifiedHandler () {
       if (control.isSingle) {
         var field = input[0];
-        var value = veda.Util.formatValue( individual[property_uri][0] );
+        var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
         try {
           var start = field.selectionStart;
@@ -53,9 +53,9 @@
     function changeHandler (e) {
       var value = opts.parser(this.value);
       if (control.isSingle) {
-        individual[property_uri] = [value];
+        individual.set(property_uri, [value]);
       } else {
-        individual[property_uri] = individual[property_uri].concat(value);
+        individual.set(property_uri, individual.get(property_uri).concat(value));
         this.value = "";
       }
     }
@@ -248,10 +248,10 @@
 
     if (isSingle) {
       change = function (value) {
-        individual[property_uri] = [value];
+        individual.set(property_uri, [value]);
       };
       if (individual.hasValue(property_uri)) {
-        input.val( moment(individual[property_uri][0]).format(format) );
+        input.val( moment(individual.get(property_uri)[0]).format(format) );
       }
       individual.on(property_uri, singleValueHandler);
       control.one("remove", function () {
@@ -259,7 +259,7 @@
       });
     } else {
       change = function (value) {
-        individual[property_uri] = individual[property_uri].concat(value);
+        individual.set(property_uri, individual.get(property_uri).concat(value));
         input.val("");
       }
     }
@@ -304,7 +304,7 @@
       e.stopPropagation();
       if (e.type === "search") {
         change = function (value) {
-          individual[property_uri] = individual[property_uri].concat(value);
+          individual.set(property_uri, individual.get(property_uri).concat(value));
           input.val("");
         }
       }
@@ -410,7 +410,7 @@
 
     Object.keys(veda.user.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
-      var value = individual[property_uri].filter(function (item) {
+      var value = individual.get(property_uri).filter(function (item) {
         // Set value language to default if undefined
         if ( !item.language ) { item.language = veda.user.defaultLanguage; }
         return item.language === language_name;
@@ -449,11 +449,11 @@
       }
     }
     function change (value) {
-      var filtered = individual[property_uri].filter(function (item) {
+      var filtered = individual.get(property_uri).filter(function (item) {
         if ( !item.language ) { item.language = veda.user.defaultLanguage; }
         return item.language !== value.language ;
       });
-      individual[property_uri] = value.length ? filtered.concat(value) : filtered;
+      individual.set(property_uri, value.length ? filtered.concat(value) : filtered);
     }
     function handler (values) {
       input.each(function () {
@@ -593,7 +593,7 @@
 
     function handler (doc_property_uri) {
       if (individual.hasValue(property_uri)) {
-        if (individual[property_uri][0] == true) {
+        if (individual.get(property_uri)[0] === true) {
           input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
         } else {
           input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
@@ -611,11 +611,11 @@
 
     input.click( function () {
       if ( input.prop("readonly") ) {
-        individual[property_uri] = [ false ];
+        individual.set(property_uri, [false]);
       } else if ( !input.prop("checked") ) {
-        individual[property_uri] = [];
+        individual.set(property_uri, []);
       } else {
-        individual[property_uri] = [ true ];
+        individual.set(property_uri, [true]);
       }
     });
 
@@ -676,10 +676,10 @@
     select.change(function () {
       var value = $("option:selected", select).data("value");
       if (isSingle) {
-        individual[property_uri] = [ value ];
+        individual.set(property_uri, [value]);
       } else {
         if ( !individual.hasValue(property_uri, value) ) {
-          individual[property_uri] = individual[property_uri].concat( value );
+          individual.set(property_uri, individual.get(property_uri).concat( value ));
         }
         $(this).children(":first").prop("selected", true);
       }
@@ -840,11 +840,11 @@
         chk.prop("checked", hasValue);
         chk.change(function () {
           if ( chk.is(":checked") ) {
-            individual[property_uri] = individual[property_uri].concat( chk.data("value") );
+            individual.set(property_uri, individual.get(property_uri).concat( chk.data("value") ));
           } else {
-            individual[property_uri] = individual[property_uri].filter( function (i) {
+            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
               return i.valueOf() !== chk.data("value").valueOf();
-            });
+            }));
           }
         });
       });
@@ -962,11 +962,11 @@
         rad.prop("checked", hasValue);
         rad.change(function () {
           if ( rad.is(":checked") ) {
-            individual[property_uri] = [ rad.data("value") ];
+            individual.set(property_uri, [rad.data("value")]);
           } else {
-            individual[property_uri] = individual[property_uri].filter( function (i) {
+            individual.set(property_uri, individual[property_uri].filter( function (i) {
               return i.valueOf() !== rad.data("value").valueOf();
-            });
+            }));
           }
         });
       });
@@ -1038,10 +1038,10 @@
     }
 
     var change = function (value) {
-      individual[property_uri] = [value];
+      individual.set(property_uri, [value]);
     };
 
-    input.val(individual[property_uri][0]);
+    input.val(individual.get(property_uri)[0]);
     individual.on(property_uri, singleValueHandler);
     control.one("remove", function () {
       individual.off(property_uri, singleValueHandler);
@@ -1088,7 +1088,7 @@
             var numertor = map['v-s:hasNumerationRule'][0];
               var scope = eval(numertor['v-s:numerationScope'][0].toString())(null, individual);
               var nextValue = eval(numertor['v-s:numerationGetNextValue'][0].toString())(null, scope);
-              individual[property_uri] = [nextValue];
+              individual.set(property_uri, [nextValue]);
           }
         }
       }
@@ -1115,9 +1115,9 @@
         fscreen = $("#full-screen", control),
         editorEl = control.get(0);
 
-    opts.value = individual.hasValue(property_uri) ? individual[property_uri][0].toString() : "";
+    opts.value = individual.hasValue(property_uri) ? individual.get(property_uri)[0].toString() : "";
     opts.change = function (value) {
-      individual[property_uri] = [value];
+      individual.set(property_uri, [value]);
     }
     if (typeof self.attr('data-mode') !== "undefined") opts.sourceMode = self.attr('data-mode');
     if (property_uri === "v-s:script") opts.sourceMode = "javascript";
@@ -1308,9 +1308,9 @@
               files.push(f);
               if (files.length === n) {
                 if (isSingle) {
-                  individual[rel_uri] = files;
+                  individual.set(rel_uri, files);
                 } else {
-                  individual[rel_uri] = individual[rel_uri].concat(files);
+                  individual.set(rel_uri, individual.get(rel_uri).concat(files));
                 }
               }
               indicatorSpinner.empty().hide();
@@ -1322,9 +1322,9 @@
           files.push(f);
           if (files.length === n) {
             if (isSingle) {
-              individual[rel_uri] = files;
+              individual.set(rel_uri, files);
             } else {
-              individual[rel_uri] = individual[rel_uri].concat(files);
+              individual.set(rel_uri, individual.get(rel_uri).concat(files));
             }
           }
           indicatorSpinner.empty().hide();
@@ -1384,9 +1384,9 @@
             f["v-s:filePath"] = [ path ];
             f.save();
             if (isSingle) {
-              individual[rel_uri] = [f];
+              individual.set(rel_uri, [f]);
             } else {
-              individual[rel_uri] = individual[rel_uri].concat(f);
+              individual.set(rel_uri, individual[rel_uri].concat(f));
             }
           });
         }
@@ -1448,12 +1448,12 @@
     function select(selected) {
       selected = selected instanceof Array ? selected : [ selected ];
       if (isSingle) {
-        individual[rel_uri] = [ selected[0] ];
+        individual.set(rel_uri, [ selected[0] ]);
       } else {
         var filtered = selected.filter( function (i) {
-          return individual[rel_uri].indexOf(i) < 0;
+          return individual.get(rel_uri).indexOf(i) < 0;
         });
-        individual[rel_uri] = individual[rel_uri].concat(filtered);
+        individual.set(rel_uri, individual[rel_uri].concat(filtered));
       }
     }
 
@@ -1481,6 +1481,7 @@
             modal.modal("show");
             create.one("remove", function () {
               modal.modal("hide").remove();
+              $(document).off("keyup", escHandler);
             });
             var ok = $("#ok", modal).click(function (e) {
               select(newVal);
@@ -1504,7 +1505,7 @@
               select(newVal);
               modal.modal("hide").remove();
             });
-            var tmpl = newVal["rdf:type"][0].template ? $( newVal["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+            var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
             $(".action", tmpl).remove();
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
@@ -1531,7 +1532,7 @@
         create.one("remove", function () {
           individual.off(rel_uri, singleValueHandler);
         });
-        singleValueHandler(individual[rel_uri]);
+        singleValueHandler(individual.get(rel_uri));
       }
 
     } else {
@@ -1639,7 +1640,7 @@
       // Clear values from individual if isSingle && typeAhead was emptied
       typeAhead.on("change keyup", function () {
         if (isSingle && this.value === "") {
-          individual[rel_uri] = [];
+          individual.set(rel_uri, []);
         }
       });
 
@@ -1647,7 +1648,7 @@
       var handler = function () {
         if (isSingle && individual.hasValue(rel_uri)) {
           try {
-            typeAhead.typeahead( "val", renderTemplate( individual[rel_uri][0]) );
+            typeAhead.typeahead( "val", renderTemplate( individual.get(rel_uri)[0]) );
           } catch (e) {
             typeAhead.typeahead("val", "");
           }

@@ -1,4 +1,4 @@
-module veda.server.wslink;
+module veda.mstorage.wslink;
 
 private
 {

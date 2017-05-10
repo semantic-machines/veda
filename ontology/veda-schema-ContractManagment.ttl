@@ -408,114 +408,115 @@ v-s:ContractorTemplate
     <small about="@" property="rdfs:label"></small>
   </h2>
   <hr>
-  <div id="mainProperties">
-    <div class="row">
-      <div class="col-md-3">
-        <em about="v-s:registrationNumber" property="rdfs:label"></em>
-        <div property="v-s:registrationNumber" class="view -edit -search"></div>
-        <veda-control data-type="string" property="v-s:registrationNumber" class="-view edit search"></veda-control>
-      </div>
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-s:registrationNumber" property="rdfs:label"></em>
+      <div property="v-s:registrationNumber" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:registrationNumber" class="-view edit search"></veda-control>
     </div>
-
-    <em about="v-s:linkedOrganization" property="rdfs:label"></em>
-    <div about="@" rel="v-s:linkedOrganization" data-template="v-ui:LabelLinkTemplate"></div>
-    <hr class="view -edit -search">
-
-    <em about="rdfs:label" property="rdfs:label"></em>
-    <div property="rdfs:label" class="view -edit -search"></div>
-    <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
-
-    <em about="v-s:shortLabel" property="rdfs:label"></em>
-    <div property="v-s:shortLabel" class="view -edit -search"></div>
-    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
-
-    <hr class="view -edit -search">
-
-    <div class="row">
-      <div class="col-sm-3">
-        <em about="v-s:taxId" property="rdfs:label"></em>
-        <div property="v-s:taxId" class="view -edit -search"></div>
-        <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
-      </div>
+    <div class="col-md-4">
+      <em about="v-s:taxId" property="rdfs:label"></em>
+      <div property="v-s:taxId" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
     </div>
-
-    <hr class="view -edit -search">
-
-    <em about="v-s:legalAddress" property="rdfs:label"></em>
-    <div property="v-s:legalAddress" class="view -edit -search"></div>
-    <veda-control data-type="text" rows="3" property="v-s:legalAddress" class="-view edit search"></veda-control>
-
-    <hr class="view -edit -search">
-
-    <div class="checkbox">
-      <label>
-        <veda-control property="v-s:locked" data-type="boolean"></veda-control>
-        <em about="v-s:locked" property="rdfs:label"></em>
-      </label>
+    <div class="col-md-4">
+      <em about="v-s:linkedOrganization" property="rdfs:label"></em>
+      <div rel="v-s:linkedOrganization" class="view -edit search" data-template="v-ui:LabelLinkTemplate"></div>
+      <veda-control data-type="link" rel="v-s:linkedOrganization" class="-view edit search fulltext" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:taxId'][0]}"></veda-control>
     </div>
-    <em about="mnd-s:hasContractorLock" property="rdfs:label"></em>
-    <table class="table table-condensed table-bordered">
-      <thead>
-        <tr class="active">
-          <th width="60%" about="mnd-s:hasLockedReason" property="rdfs:label"></th>
-          <th width="20%" about="v-s:dateFrom" property="rdfs:label"></th>
-          <th width="20%" about="v-s:dateTo" property="rdfs:label"></th>
-        </tr>
-      </thead>
-      <tbody rel="mnd-s:hasContractorLock" data-embedded="true">
-        <tr>
-         <td>
-            <div property="mnd-s:hasLockedReason" class="view -edit -search"></div>
-            <veda-control data-type="link" rel="mnd-s:hasLockedReason" class="-view edit search fulltext dropdown"></veda-control>
-          </td>
-          <td>
-            <div property="v-s:dateFrom" class="view -edit search"> </div>
-            <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
-          </td>
-          <td>
-            <div property="v-s:dateTo" class="view -edit search"> </div>
-            <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <veda-control rel="mnd-s:hasContractorLock" data-type="link" class="-view edit -search create"></veda-control>
-    <br>
-    <div class="checkbox">
-      <label>
-        <veda-control property="v-s:lockedInOrigin" data-type="boolean"></veda-control>
-        <em about="v-s:lockedInOrigin" property="rdfs:label"></em>
-      </label>
-    </div>
-    <div class="checkbox">
-      <label>
-        <veda-control property="v-s:deletedInOrigin" data-type="boolean"></veda-control>
-        <em about="v-s:deletedInOrigin" property="rdfs:label"></em>
-      </label>
-    </div>
-    <div class="checkbox">
-      <label>
-        <veda-control property="v-s:isCreditor" data-type="boolean"></veda-control>
-        <em about="v-s:isCreditor" property="rdfs:label"></em>
-      </label>
-    </div>
-    <div class="checkbox">
-      <label>
-        <veda-control property="v-s:isDebitor" data-type="boolean"></veda-control>
-        <em about="v-s:isDebitor" property="rdfs:label"></em>
-      </label>
-    </div>
-
-    <hr class="view -edit -search">
-
-    <em about="mnd-s:forOrganization" property="rdfs:label"></em>
-    <div rel="mnd-s:forOrganization" class="view -edit -search">
-      <a href="#/@">
-        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
-      </a>
-    </div>
-    <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext"></veda-control>
   </div>
+
+  <hr class="view -edit -search">
+  <div class="row">
+    <div class="col-md-8">
+      <em about="rdfs:label" property="rdfs:label"></em>
+      <div property="rdfs:label" class="view -edit -search"></div>
+      <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:shortLabel" property="rdfs:label"></em>
+      <div property="v-s:shortLabel" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+    </div>
+  </div>
+
+  <hr class="view -edit -search">
+
+  <em about="v-s:legalAddress" property="rdfs:label"></em>
+  <div property="v-s:legalAddress" class="view -edit -search"></div>
+  <veda-control data-type="string" property="v-s:legalAddress" class="-view edit search"></veda-control>
+
+  <hr class="view -edit -search">
+
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:locked" data-type="boolean"></veda-control>
+      <em about="v-s:locked" property="rdfs:label"></em>
+    </label>
+  </div>
+  <em about="mnd-s:hasContractorLock" property="rdfs:label"></em>
+  <table class="table table-condensed table-bordered">
+    <thead>
+      <tr class="active">
+        <th width="60%" about="mnd-s:hasLockedReason" property="rdfs:label"></th>
+        <th width="20%" about="v-s:dateFrom" property="rdfs:label"></th>
+        <th width="20%" about="v-s:dateTo" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody rel="mnd-s:hasContractorLock" data-embedded="true">
+      <tr>
+       <td>
+          <div property="mnd-s:hasLockedReason" class="view -edit -search"></div>
+          <veda-control data-type="link" rel="mnd-s:hasLockedReason" class="-view edit search fulltext dropdown"></veda-control>
+        </td>
+        <td>
+          <div property="v-s:dateFrom" class="view -edit search"> </div>
+          <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+        </td>
+        <td>
+          <div property="v-s:dateTo" class="view -edit search"> </div>
+          <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <veda-control rel="mnd-s:hasContractorLock" data-type="link" class="-view edit -search create"></veda-control>
+  <br>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:lockedInOrigin" data-type="boolean"></veda-control>
+      <em about="v-s:lockedInOrigin" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:deletedInOrigin" data-type="boolean"></veda-control>
+      <em about="v-s:deletedInOrigin" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:isCreditor" data-type="boolean"></veda-control>
+      <em about="v-s:isCreditor" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:isDebitor" data-type="boolean"></veda-control>
+      <em about="v-s:isDebitor" property="rdfs:label"></em>
+    </label>
+  </div>
+
+  <hr class="view -edit -search">
+
+  <em about="mnd-s:forOrganization" property="rdfs:label"></em>
+  <div rel="mnd-s:forOrganization" class="view -edit -search">
+    <a href="#/@">
+      <span about="@" property="v-s:taxId"></span> - <span about="@" property="v-s:shortLabel"></span> - <span about="@" property="v-s:legalAddress"></span>
+    </a>
+  </div>
+  <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext"></veda-control>
+
   <hr>
   <div id="systemProperties">
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>

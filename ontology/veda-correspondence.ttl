@@ -72,6 +72,7 @@ v-s:Letter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
   v-ui:hasTemplate v-s:LetterTemplate ;
@@ -89,6 +90,13 @@ v-s:hasLetterRegistrationRecordRecipient
   rdfs:range v-s:LetterRegistrationRecordRecipient ;
   rdfs:label "Регистрационная запись получателя"@ru ;
   rdfs:label "Registration record recipient"@en ;
+.
+v-s:hasRelatedLetter
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:Letter ;
+  rdfs:label "Связанные письма"@ru ;
+  rdfs:label "Related letter"@en ;
 .
 
 # rdfs:label
@@ -205,6 +213,20 @@ v-s:PsOrganizationForCorrespondent
   rdfs:label "v-s:correspondentOrganization specification for v-s:Correspondent class"@en ;
   rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
 .
+
+v-s:PsDepartmentForCorrespondent
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Correspondent ;
+  v-ui:forProperty v-s:correspondentDepartment ;
+  v-ui:forProperty v-s:correspondentPerson ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "v-s:correspondentDepartment specification for v-s:Correspondent class"@en ;
+  rdfs:label "Спецификация v-s:correspondentDepartment для класса v-s:Correspondent"@ru ;
+.
+
+
+
 
 # ------------------------------------------------------------ СТРОКИ --
 

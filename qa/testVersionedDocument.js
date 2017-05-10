@@ -48,7 +48,7 @@ function checkVersion(driver, version, responsible) {
                     process.exit(1);
                 } else {
                     driver.executeScript("document.querySelector('strong[about=\"v-s:previousVersion\"]').scrollIntoView(true);");
-                    basic.execute(driver, 'click', 'div[rel="v-s:previousVersion"] span[typeof="v-s:Action v-s:Version"]', "Cannot click on 'previousVersion'");
+                    basic.execute(driver, 'click', 'div[rel="v-s:previousVersion"] [typeof="v-s:Action v-s:Version"]', "Cannot click on 'previousVersion'");
                     driver.sleep(basic.FAST_OPERATION);
                     driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
                     var b = responsible[i];
@@ -57,7 +57,7 @@ function checkVersion(driver, version, responsible) {
                     }).thenCatch(function (e) {basic.errorHandler(e, "Seems wrong responsible, expected" + b);})
                     i++;
                 }
-            }).thenCatch(function (e) {basic.errorHandler(e, "Invalid element");}); 
+            }).thenCatch(function (e) {basic.errorHandler(e, "Invalid element");});
         });
     };
 }
@@ -87,13 +87,13 @@ basic.getDrivers().forEach(function (drv) {
     updateVersion(driver, 'edit', timeStamp + 3, 'Администратор4', 'Администратор4 : Аналитик');
     checkVersion(driver, [timeStamp + 3, timeStamp + 2, timeStamp + 1], ['Администратор4 : Аналитик', 'Администратор2 : Аналитик', 'Администратор2 : Аналитик']);
     driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] span[typeof="v-s:Action v-s:Version"]', "Cannot click on 'nextVersion'");
+    basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action v-s:Version"]', "Cannot click on 'nextVersion'");
     driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] span[typeof="v-s:Action v-s:Version"]', "Cannot click on 'nextVersion'");
+    basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action v-s:Version"]', "Cannot click on 'nextVersion'");
     updateVersion(driver, 'edit', timeStamp + 4, 'Администратор2', 'Администратор2 : Аналитик');
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] span[typeof="v-s:Action"]', "Cannot click on 'nextVersion'");
+    basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action"]', "Cannot click on 'nextVersion'");
     checkVersion(driver, [timeStamp + 4, timeStamp + 2, timeStamp + 1], ['Администратор2 : Аналитик', 'Администратор2 : Аналитик', 'Администратор2 : Аналитик']);
     driver.quit();
 });

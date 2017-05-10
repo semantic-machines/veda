@@ -23,6 +23,52 @@ Logger log()
         _log = new Logger("veda-core-" ~ process_name, "log", "UTIL");
     return _log;
 }
+
+public void subject2Ticket(ref Individual ticket, Ticket *tt)
+{
+    string when;
+    long   duration;
+
+    tt.id       = ticket.uri;
+    tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
+    when        = ticket.getFirstLiteral(ticket__when);
+    string dd = ticket.getFirstLiteral(ticket__duration);
+
+    try
+    {
+        duration = parse!uint (dd);
+    }
+    catch (Exception ex)
+    {
+        writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
+    }
+
+    if (tt.user_uri is null)
+    {
+        //if (trace_msg[ T_API_10 ] == 1)
+        log.trace("found a session ticket is not complete, the user can not be found.");
+    }
+
+    if (tt.user_uri !is null && (when is null || duration < 10))
+    {
+        //if (trace_msg[ T_API_20 ] == 1)
+        log.trace("found a session ticket is not complete, we believe that the user has not been found.");
+        tt.user_uri = null;
+    }
+
+    if (when !is null)
+    {
+        //if (trace_msg[ T_API_30 ] == 1)
+        //    log.trace("session ticket %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
+        //              duration);
+
+        long start_time = stringToTime(when);
+
+        tt.start_time = start_time;
+        tt.end_time   = start_time + duration * 10_000_000;
+    }
+}
+
 // ////// ////// ///////////////////////////////////////////
 public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual *indv)
 {

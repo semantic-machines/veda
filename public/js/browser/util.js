@@ -11,7 +11,57 @@ veda.Module(function Util(veda) { "use strict";
       delete localStorage["end_time"];
       delete localStorage["ticket"];
     }
-  }
+  };
+
+  veda.Util.processQuery = function (q, limit, delta, pause, fn) {
+    console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
+    var result = [], append = [].push, fetchingProgress = 0, processingProgress = 0;
+    fetchResult();
+    return;
+
+    function fetchResult(cursor) {
+      var from = cursor || 0;
+      query({
+        ticket: veda.ticket,
+        query: q,
+        from: from,
+        top: delta,
+        limit: limit,
+        async: true
+      }).then(function (query_result) {
+        var cursor = query_result.cursor;
+        var estimated = query_result.estimated;
+        if ( limit > estimated ) {
+          limit = estimated;
+        }
+        append.apply(result, query_result.result);
+        if ( cursor/limit - fetchingProgress >= 0.05 ) {
+          fetchingProgress = cursor/limit;
+          console.log("fetching progress:", Math.floor(fetchingProgress * 100) + "%", "(" + cursor, "of", limit + ")");
+        }
+        if ( cursor === estimated || cursor >= limit ) {
+          console.log("fetching done:", limit);
+          result.splice(limit - cursor || limit); // cut result to limit
+          processResult(result);
+        } else {
+          fetchResult(query_result.cursor);
+        }
+      });
+    }
+    function processResult(result) {
+      var portion = result.splice(-delta);
+      portion.forEach( fn );
+      if ( (limit - result.length) / limit - processingProgress >= 0.05 ) {
+        processingProgress = (limit - result.length) / limit;
+        console.log("processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (limit - result.length), "of", limit + ")");
+      }
+      if ( result.length ) {
+        setTimeout(processResult, pause, result);
+      } else {
+        console.log("processing done:", limit);
+      }
+    }
+  };
 
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
@@ -420,36 +470,9 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
     var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
-    var startForm = new veda.IndividualModel();
-    Object.getOwnPropertyNames(transfromResult[0]).forEach(function (key)
-    {
-      if (key !== '@')
-      {
-        if (!Array.isArray(transfromResult[0][key])) {
-          transfromResult[0][key] = [transfromResult[0][key]];
-        }
-        for (var i in transfromResult[0][key])
-        {
-          var value = null;
-          if (key === 'rdf:type')
-          {
-            value = new veda.IndividualModel(transfromResult[0][key][i].data);
-          } else
-          {
-            if (transfromResult[0][key][i].type == _Uri) {
-              value = new veda.IndividualModel(transfromResult[0][key][i].data);
-            } else if (transfromResult[0][key][i].type == _Datetime) {
-              value = new Date(Date.parse(transfromResult[0][key][i].data));
-            } else {
-              value = transfromResult[0][key][i].data;
-            }
-          }
-          if (value) {
-            startForm[key] = startForm[key].concat(value);
-          }
-        }
-      }
-    });
+    var startForm = new veda.IndividualModel(transfromResult[0]);
+    startForm.isNew(true);
+    startForm.isSync(false);
     return startForm;
   }
 

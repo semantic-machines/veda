@@ -1,6 +1,6 @@
 module veda.core.common.transaction;
 
-import std.stdio;
+import std.stdio, std.json;
 import veda.core.common.context, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
 
 struct TransactionItem
@@ -8,59 +8,146 @@ struct TransactionItem
     INDV_OP    cmd;
     string     ticket_id;
     string     event_id;
+    string     user_uri;
+
+    string     uri;
+
+    long       update_counter;
+    long       op_id;
+
+    string     prev_binobj;
+    string     new_binobj;
+
+    Individual prev_indv;
+    Individual new_indv;
+
+    bool       is_acl_element;
+    bool       is_onto;
+
     ResultCode rc;
 
-    string     binobj;
-    Individual indv;
+    immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id
+                   , bool _is_acl_element, bool _is_onto)
+    {
+        cmd            = _cmd;
+        user_uri       = _user_uri;
+        uri            = _uri;
+        prev_binobj    = _prev_binobj;
+        new_binobj     = _new_binobj;
+        update_counter = _update_counter;
+        event_id       = _event_id;
+        is_acl_element = _is_acl_element;
+        is_onto        = _is_onto;
+    }
+
+    immutable this(TransactionItem ti)
+    {
+        cmd            = ti.cmd;
+        user_uri       = ti.user_uri;
+        uri            = ti.uri;
+        prev_binobj    = ti.prev_binobj;
+        new_binobj     = ti.new_binobj;
+        update_counter = ti.update_counter;
+        event_id       = ti.event_id;
+        is_acl_element = ti.is_acl_element;
+        is_onto        = ti.is_onto;
+    }
+}
+
+TransactionItem copy_from_immutable(immutable TransactionItem ti)
+{
+    TransactionItem res;
+
+    res.cmd            = ti.cmd;
+    res.user_uri       = ti.user_uri;
+    res.uri            = ti.uri;
+    res.prev_binobj    = ti.prev_binobj;
+    res.new_binobj     = ti.new_binobj;
+    res.update_counter = ti.update_counter;
+    res.event_id       = ti.event_id;
+    return res;
+}
+
+JSONValue to_json(immutable TransactionItem ti)
+{
+    JSONValue res;
+
+    res[ "cmd" ]            = ti.cmd;
+    res[ "user_uri" ]       = ti.user_uri;
+    res[ "uri" ]            = ti.uri;
+    res[ "prev_binobj" ]    = ti.prev_binobj;
+    res[ "new_binobj" ]     = ti.new_binobj;
+    res[ "update_counter" ] = ti.update_counter;
+    res[ "event_id" ]       = ti.event_id;
+
+    return res;
+}
+
+
+public JSONValue to_json(ref immutable(TransactionItem)[] immutable_queue)
+{
+    JSONValue res;
+
+    foreach (ti; immutable_queue)
+    {
+        res ~= to_json(ti);
+    }
+
+    return res;
 }
 
 struct Transaction
 {
-	long id;
-    TransactionItem *[ string ] buff;
-    TransactionItem *[] queue;
-
-    public void         add(TransactionItem *ti)
+    private
     {
-        buff[ ti.indv.uri ] = ti;
+        TransactionItem *[ string ] buff;
+        TransactionItem *[]          queue;
+        immutable(TransactionItem)[] immutable_queue;
+    }
+
+    bool       is_autocommit = true;
+    long       id;
+    ResultCode rc;
+
+/*
+    public void                 add(ref immutable TransactionItem _ti)
+    {
+        TransactionItem ti = copy_from_immutable(_ti);
+
+        buff[ ti.new_indv.uri ] = &ti;
+        queue ~= &ti;
+    }
+ */
+
+    public void add_immutable(ref immutable TransactionItem _ti)
+    {
+        immutable_queue ~= _ti;
+    }
+
+    public void add(TransactionItem *ti)
+    {
+        buff[ ti.new_indv.uri ] = ti;
         queue ~= ti;
     }
-}
 
-public ResultCode commit(Transaction *_tnx, Context ctx)
-{
-    foreach (item; _tnx.queue)
+    public void reset()
     {
-        if (item.cmd != INDV_OP.REMOVE && item.indv == Individual.init)
-            continue;
-
-        if (item.rc != ResultCode.OK)
-            return item.rc;
-
-        Ticket *ticket = ctx.get_ticket(item.ticket_id);
-
-        //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-        ResultCode rc;
-
-        if (item.cmd == INDV_OP.REMOVE)
-            rc = ctx.remove_individual(ticket, item.binobj, true, item.event_id, _tnx.id, false).result;
-        else
-            rc = ctx.put_individual(ticket, item.indv.uri, item.indv, true, item.event_id, _tnx.id, false).result;
-
-        if (rc == ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.indv);
-        }
-
-        if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-        {
-            ctx.get_logger().trace("FAIL COMMIT");
-            return rc;
-        }
-        //else
-        //log.trace ("SUCCESS COMMIT");
+        buff  = buff.init;
+        queue = queue.init;
     }
 
-    return ResultCode.OK;
+    public TransactionItem *get(string uri)
+    {
+        return buff.get(uri, null);
+    }
+
+    public TransactionItem *[] get_queue()
+    {
+        return queue;
+    }
+
+    public ref immutable(TransactionItem)[] get_immutable_queue()
+    {
+        return immutable_queue;
+    }
 }

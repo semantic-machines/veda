@@ -217,7 +217,7 @@ class VedaModule
 
     public void prepare_all()
     {
-        long  total_count    = context.get_subject_storage_db().count_entries();
+        long  total_count    = context.get_inividuals_storage_r().count_entries();
         long  count_prepared = 0;
 
         long  count;
@@ -239,7 +239,7 @@ class VedaModule
         log.trace_console("start prepare_all");
         context.freeze();
         log.trace_console("start create queue");
-        context.get_subject_storage_db().get_of_cursor(&add_to_queue, false);
+        context.get_inividuals_storage_r().get_of_cursor(&add_to_queue, false);
         log.trace_console("end create queue, count: %d", queue.count_pushed);
         queue.close();
         context.unfreeze();

@@ -54,8 +54,7 @@ v-cal:FunctionCalendarModel
       this["v-cal:query"][0],
       start.toISOString().substr(0,10),
       end.toISOString().substr(0,10),
-      veda.appointment ? veda.appointment.id : veda.user.id,
-      veda.appointment ? veda.appointment["v-s:occupation"][0].id : veda.user.id
+      veda.user.id
     );
     var sort = this["v-cal:sortOrder"][0];
     return tasks.search(q, sort);
@@ -110,7 +109,7 @@ v-cal:TasksCalendar
   rdf:type v-cal:FunctionCalendar ;
   rdfs:label "Tasks calendar"@en ;
   rdfs:label "Календарь задач"@ru ;
-  v-cal:query "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1}T00:00:00,{2}T23:59:59]) && ('v-wf:to' == '{3}' || 'v-wf:to' == '{4}')"^^xsd:string ;
+  v-cal:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1}T00:00:00,{2}T23:59:59] && 'v-wf:to' == '{3}'"^^xsd:string ;
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-cal:FunctionCalendarTemplate
@@ -173,9 +172,8 @@ v-cal:FunctionCalendarIndicatorTemplate
   rdfs:label "Шаблон индикатора для v-cal:FunctionCalendar"@ru ;
   v-ui:template """
 <script>
-  var pos_uri = veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0].id : undefined,
-      pos_counter_uri = pos_uri ? "d:taskCounter_" + pos_uri.split(":").join("_") : undefined;
-  $(".label", template).attr("about", pos_counter_uri);
+  var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  $(".label", template).attr("about", counter_uri);
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")
@@ -183,7 +181,8 @@ v-cal:FunctionCalendarIndicatorTemplate
   //# sourceURL=v-cal:FunctionCalendarIndicatorTemplate_pre
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
-  <span class="fa fa-calendar fa-lg"></span> <span class="label label-danger" property="v-ft:inboxWeekCount">0</span>
+  <span class="fa fa-calendar fa-lg"></span>
+  <span id="counter" class="label label-danger" property="v-ft:inboxWeekCount"></span>
 </a>
   """ ;
 .
