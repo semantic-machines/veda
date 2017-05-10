@@ -1893,9 +1893,11 @@ if (doc) {
     ) {
       reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
     }
+/*
     if ( orderCreator.length ) {
       examiners = examiners.concat(orderCreator); // Создатель заказа
     }
+*/
     if ( doc.hasValue("v-s:hasDocumentKind", "d:77d4cbd58cf34321a82e7281e8347542") ) { // Декларация на товары
       if ( orderCreator.length ) {
         approvers = approvers.concat( orderCreator ); // Создатель заказа
