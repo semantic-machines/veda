@@ -51,7 +51,7 @@ v-ft:forceUpdate
   rdfs:domain v-ft:TaskCounter ;
   rdfs:range xsd:boolean ;
   rdfs:label "обновить принудительно"@en ;
-  rdfs:label "force гpdate"@ru ;
+  rdfs:label "force update"@ru ;
 .
 v-ft:inboxCount
   rdf:type owl:DatatypeProperty ;
