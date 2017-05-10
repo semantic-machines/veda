@@ -11,7 +11,7 @@ veda.Module(function Util(veda) { "use strict";
       delete localStorage["end_time"];
       delete localStorage["ticket"];
     }
-  }
+  };
 
   veda.Util.processQuery = function (q, limit, delta, pause, fn) {
     console.log("Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
@@ -61,7 +61,7 @@ veda.Module(function Util(veda) { "use strict";
         console.log("processing done:", limit);
       }
     }
-  }
+  };
 
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
