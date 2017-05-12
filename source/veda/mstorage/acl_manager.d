@@ -124,7 +124,7 @@ void acl_manager(string thread_name, string db_path)
                             }
                         }
                     },
-                    (byte cmd, EVENT type, string prev_state, string new_state, long op_id)
+                    (byte cmd, string prev_state, string new_state, long op_id)
                     {
                         if (cmd == CMD_PUT)
                         {
