@@ -1,5 +1,5 @@
 /**
- * процесс отвечающий за хранение
+ * хранение индивидов
  */
 module veda.mstorage.storage_manager;
 

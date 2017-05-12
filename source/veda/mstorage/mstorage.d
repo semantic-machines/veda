@@ -179,7 +179,7 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log);
+        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
         l_context            = core_context;
         inividuals_storage_r = l_context.get_inividuals_storage_r();
         vql_r                = l_context.get_vql();
@@ -775,7 +775,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
         catch (Exception ex)
         {
             //printPrettyTrace(stderr);
-            log.trace("context.sys_ticket:EX!%s", ex.msg);
+            log.trace("sys_ticket:EX!%s", ex.msg);
         }
 
         if (ticket.user_uri == "")
@@ -868,11 +868,13 @@ public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
     if (in_tnx.is_autocommit == false)
     {
-        rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, in_tnx.get_immutable_queue(), in_tnx.id, OptFreeze.NONE, op_id);
-
         immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
 
+		log.trace ("commit: items=%s", items);
+
         rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+
+		log.trace ("commit: rc=%s", rc);
 
         if (rc == ResultCode.OK)
         {
@@ -880,6 +882,7 @@ public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
             foreach (item; items)
             {
+		log.trace ("commit: item.rc=%s", item.rc);
                 if (item.rc == ResultCode.OK)
                     rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
@@ -1101,7 +1104,7 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
     if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
     {
         // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-        inc_count_onto_update();
+        //inc_count_onto_update();
     }
 
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
