@@ -548,7 +548,7 @@ public string execute(string in_msg, Context ctx)
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
-                    //commit (false, tnx);
+                    //commit (OptAuthorize.YES, tnx);
 
                     rc ~= ires;
                     if (transaction_id <= 0)
@@ -861,7 +861,7 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     return result;
 }
 
-public ResultCode commit(OptAuthorize opt_request, EVENT ev, ref Transaction in_tnx)
+public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
     long       op_id;
@@ -881,7 +881,7 @@ public ResultCode commit(OptAuthorize opt_request, EVENT ev, ref Transaction in_
             foreach (item; items)
             {
                 if (item.rc == ResultCode.OK)
-                    rc = prepare_event(ev, rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                    rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
         }
     }
@@ -929,8 +929,6 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
             is_acl_element = true;
 
-        EVENT      ev = EVENT.CREATE;
-
         string     prev_state;
         Individual prev_indv;
 
@@ -951,7 +949,6 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
         if (prev_state !is null)
         {
-            ev = EVENT.UPDATE;
             int code = prev_indv.deserialize(prev_state);
             if (code < 0)
             {
@@ -1078,7 +1075,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.OK)
-            res.result = prepare_event(ev, rdfType, prev_state, new_state, is_acl_element, is_onto, res.op_id);
+            res.result = prepare_event(rdfType, prev_state, new_state, is_acl_element, is_onto, res.op_id);
 
         return res;
     }
@@ -1094,35 +1091,30 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     }
 }
 
-private ResultCode prepare_event(EVENT ev, ref MapResource rdfType, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto,
+private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto,
                                  long op_id)
 {
     ResultCode res;
 
-    if (ev == EVENT.CREATE || ev == EVENT.UPDATE)
-    {
-        Tid tid_acl;
-        if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
-        {
-            // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-            inc_count_onto_update();
-        }
+    Tid        tid_acl;
 
-        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-        {
-            tid_acl = getTid(P_MODULE.acl_preparer);
-            if (tid_acl != Tid.init)
-            {
-                send(tid_acl, CMD_PUT, ev, prev_binobj, new_binobj, op_id);
-            }
-        }
-
-        res = ResultCode.OK;
-    }
-    else
+    if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
     {
-        res = ResultCode.Internal_Server_Error;
+        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
+        inc_count_onto_update();
     }
+
+    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+    {
+        tid_acl = getTid(P_MODULE.acl_preparer);
+        if (tid_acl != Tid.init)
+        {
+            send(tid_acl, CMD_PUT, prev_binobj, new_binobj, op_id);
+        }
+    }
+
+    res = ResultCode.OK;
+
     return res;
 }
 
