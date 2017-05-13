@@ -117,7 +117,7 @@ interface Context
     public VQL get_vql();
     public Authorization acl_indexes();
 
-    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
                                        bool is_api_request);
 

@@ -826,7 +826,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
                                        bool is_api_request)
     {
@@ -870,7 +870,7 @@ class PThreadContext : Context
                 req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ]         = tnx.id;
+                req_body[ "tnx_id" ]         = tnx_id;
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
@@ -898,52 +898,36 @@ class PThreadContext : Context
                                    bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
                                       bool is_api_request = true)
     {
         Individual individual;
-
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1072,9 +1056,6 @@ class PThreadContext : Context
         ResultCode  rc;
         long        op_id;
 
-        Transaction normalized_tnx;
-
-        normalized_tnx.id = in_tnx.id;
         foreach (item; in_tnx.get_queue())
         {
             if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
@@ -1087,7 +1068,7 @@ class PThreadContext : Context
 
             //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
-            rc = this.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+            rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
 
             if (rc == ResultCode.No_Content)
             {
