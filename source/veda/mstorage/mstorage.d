@@ -654,11 +654,11 @@ public string execute(string in_msg, Context ctx)
             ResultCode rc;
 
             if (f_module_id == P_MODULE.subject_manager)
-                rc = indv_storage_thread.flush_int_module(P_MODULE.subject_manager, false);
+                rc = flush_storage();
             else if (f_module_id == P_MODULE.acl_preparer)
                 rc = acl_module.flush(false);
             else if (f_module_id == P_MODULE.fulltext_indexer)
-                indv_storage_thread.flush_ext_module(f_module_id, wait_op_id);
+                flush_ext_module(f_module_id, wait_op_id);
 
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.OK;
@@ -671,7 +671,7 @@ public string execute(string in_msg, Context ctx)
 
             ResultCode rc;
 
-            indv_storage_thread.msg_to_module(f_module_id, msg, false);
+            msg_to_module(f_module_id, msg, false);
 
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.OK;
@@ -1134,3 +1134,45 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
 
     return _types;
 }
+
+public ResultCode flush_storage()
+{
+    ResultCode rc;
+
+    rc = ResultCode.OK;
+    return rc;
+}
+
+public void flush_ext_module(P_MODULE f_module, long wait_op_id)
+{
+    Tid tid = getTid(P_MODULE.subject_manager);
+
+    if (tid != Tid.init)
+    {
+        send(tid, CMD_COMMIT, f_module, wait_op_id);
+    }
+}
+
+public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
+{
+    ResultCode rc;
+
+    Tid        tid = getTid(P_MODULE.subject_manager);
+
+    if (tid != Tid.init)
+    {
+        if (is_wait == false)
+        {
+            send(tid, CMD_MSG, f_module, msg);
+        }
+        else
+        {
+            send(tid, CMD_MSG, msg, f_module, thisTid);
+            receive((bool isReady) {});
+        }
+        rc = ResultCode.OK;
+    }
+    return rc;
+}
+
+

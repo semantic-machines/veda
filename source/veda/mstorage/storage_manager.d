@@ -80,28 +80,6 @@ public string backup(P_MODULE storage_id)
     return backup_id;
 }
 
-public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
-{
-    ResultCode rc;
-
-    Tid        tid = getTid(P_MODULE.subject_manager);
-
-    if (tid != Tid.init)
-    {
-        if (is_wait == false)
-        {
-            send(tid, CMD_MSG, f_module, msg);
-        }
-        else
-        {
-            send(tid, CMD_MSG, msg, f_module, thisTid);
-            receive((bool isReady) {});
-        }
-        rc = ResultCode.OK;
-    }
-    return rc;
-}
-
 public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
 {
     ResultCode rc;
@@ -121,16 +99,6 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
         rc = ResultCode.OK;
     }
     return rc;
-}
-
-public void flush_ext_module(P_MODULE f_module, long wait_op_id)
-{
-    Tid tid = getTid(P_MODULE.subject_manager);
-
-    if (tid != Tid.init)
-    {
-        send(tid, CMD_COMMIT, f_module, wait_op_id);
-    }
 }
 
 public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze,
