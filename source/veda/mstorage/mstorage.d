@@ -179,7 +179,8 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
+        Storage    storage = null;                               //new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, storage, null);
         l_context            = core_context;
         inividuals_storage_r = l_context.get_inividuals_storage_r();
         vql_r                = l_context.get_vql();
@@ -350,28 +351,25 @@ public Ticket create_new_ticket(string user_id, string duration = "40000", strin
     new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
     new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-    version (isMStorage)
+    // store ticket
+    string     ss_as_binobj = new_ticket.serialize();
+
+    long       op_id;
+    ResultCode rc =
+        ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
+                                     -1,
+                                     OptFreeze.NONE,
+                                     op_id);
+    ticket.result = rc;
+
+    if (rc == ResultCode.OK)
     {
-        // store ticket
-        string     ss_as_binobj = new_ticket.serialize();
-
-        long       op_id;
-        ResultCode rc =
-            ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
-                                         -1,
-                                         OptFreeze.NONE,
-                                         op_id);
-        ticket.result = rc;
-
-        if (rc == ResultCode.OK)
-        {
-            subject2Ticket(new_ticket, &ticket);
-            user_of_ticket[ ticket.id ] = new Ticket(ticket);
-        }
-
-        log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
-                  SysTime(ticket.end_time, UTC()).toISOExtString());
+        subject2Ticket(new_ticket, &ticket);
+        user_of_ticket[ ticket.id ] = new Ticket(ticket);
     }
+
+    log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
+              SysTime(ticket.end_time, UTC()).toISOExtString());
 
     return ticket;
 }
@@ -870,11 +868,11 @@ public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
     {
         immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
 
-		log.trace ("commit: items=%s", items);
+        log.trace("commit: items=%s", items);
 
         rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
 
-		log.trace ("commit: rc=%s", rc);
+        log.trace("commit: rc=%s", rc);
 
         if (rc == ResultCode.OK)
         {
@@ -882,7 +880,7 @@ public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
             foreach (item; items)
             {
-		log.trace ("commit: item.rc=%s", item.rc);
+                log.trace("commit: item.rc=%s", item.rc);
                 if (item.rc == ResultCode.OK)
                     rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }

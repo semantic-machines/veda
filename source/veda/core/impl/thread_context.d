@@ -180,15 +180,15 @@ class PThreadContext : Context
  */
         ctx.node_id = _node_id;
 
-		if (in_inividuals_storage_r is null)
-	        ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
-	    else
-		    ctx.inividuals_storage_r = in_inividuals_storage_r;
-	        
-	    if (in_tickets_storage_r is null)    
-	        ctx.tickets_storage_r    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
-	    else    
-			ctx.tickets_storage_r =in_tickets_storage_r;
+        if (in_inividuals_storage_r is null)
+            ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
+        else
+            ctx.inividuals_storage_r = in_inividuals_storage_r;
+
+        if (in_tickets_storage_r is null)
+            ctx.tickets_storage_r = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
+        else
+            ctx.tickets_storage_r = in_tickets_storage_r;
 
         ctx.name = context_name;
 
