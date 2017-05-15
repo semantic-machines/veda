@@ -1918,6 +1918,16 @@ if (doc) {
       || doc.hasValue("v-s:hasDocumentKind", "d:7919fd49560f4340b41ce6bc01aa87e9") // Кредит - нота
     ) {
       reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
+    } else {
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+      routes['coordination1'][simple+'comment'] = [new String('Согласовать первичный документ')];
+
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+      routes['coordination2'][simple+'deadlineDays'] = [10];
+      routes['coordination2'][simple+'comment'] = [new String('Согласовать первичный документ')];
     }
 /*
     if ( orderCreator.length ) {
