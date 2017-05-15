@@ -11,6 +11,7 @@ killall -9 veda-ltr-scripts
 killall -9 veda-scripts-lp
 killall -9 veda-scripts-main
 killall -9 veda-mstorage
+killall -9 veda-server
 killall -9 veda-ttlreader
 killall -9 veda-webserver
 
