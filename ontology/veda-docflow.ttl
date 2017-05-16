@@ -1396,12 +1396,23 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionReturnedToReview ;
-  v-ui:forClass v-wf:DecisionAchieved ;
+#  v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
 .
+v-wf:DecisionRedirectTemplateSpec2_comment
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
+  rdfs:label "Spec for template for some -Decision- subclasses"@en ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:forClass v-wf:DecisionAchieved ;
+.
+
 
 v-wf:DecisionRedirectTemplateSpec3
   rdf:type v-ui:ObjectPropertySpecification ;
