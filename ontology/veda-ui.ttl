@@ -513,7 +513,7 @@ v-ui:PSFromToForLink
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-#  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
 .
 v-ui:LinkTemplate
   rdf:type v-ui:ClassTemplate ;
