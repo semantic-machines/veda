@@ -83,6 +83,21 @@ JSONValue to_json(immutable TransactionItem ti)
     return res;
 }
 
+TransactionItem from_json(JSONValue jsn)
+{
+    TransactionItem res;
+
+    res.cmd = cast(INDV_OP)jsn[ "cmd" ].integer;
+    res.user_uri = jsn[ "user_uri" ].str;
+    res.uri = jsn[ "uri" ].str;
+    res.prev_binobj = jsn[ "prev_binobj" ].str;
+    res.new_binobj = jsn[ "new_binobj" ].str;
+    res.update_counter = jsn[ "update_counter" ].integer;
+    res.event_id = jsn[ "event_id" ].str;
+
+    return res;
+}
+
 
 public JSONValue to_json(ref immutable(TransactionItem)[] immutable_queue)
 {

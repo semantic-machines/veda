@@ -486,7 +486,26 @@ public string execute(string in_msg, Context ctx)
 
         string    sfn = fn.str();
 
-        if (sfn == "authenticate")
+        if (sfn == "commit")
+        {
+        	log.trace ("@ execute commit %s", jsn);
+            JSONValue   tnx_id = jsn[ "tnx_id" ];
+            JSONValue[] items  = jsn[ "items" ].array;
+
+            Transaction tnx;
+            tnx.id            = tnx_id.integer;
+            tnx.is_autocommit = false;
+
+            foreach (ijsn; items)
+            {
+                TransactionItem ti = from_json(ijsn);
+
+                tnx.add(&ti);
+            }
+
+            commit(OptAuthorize.YES, tnx);
+        }
+        else if (sfn == "authenticate")
         {
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
