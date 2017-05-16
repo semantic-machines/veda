@@ -154,7 +154,7 @@ void main(string[] args)
 
     string[] modules =
     [
-        "veda", "veda-ccus", "veda-mstorage", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql", "veda-fanout-sql-lp", "veda-scripts-main",
+        "veda", "veda-ccus", "veda-mstorage", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql-np", "veda-fanout-sql-lp", "veda-scripts-main",
         "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts"
     ];
     int[][ string ] command_2_pid;
@@ -163,7 +163,7 @@ void main(string[] args)
 
     string[] wr_components =
     [
-        "acl_preparer", "fanout_email", "fanout_sql", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager",
+        "acl_preparer", "fanout_email", "fanout_sql_np", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager",
         "ticket_manager", "acl_preparer"
     ];
 
