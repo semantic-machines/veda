@@ -506,7 +506,7 @@ public string execute(string in_msg, Context ctx)
             JSONValue ticket_id = jsn[ "ticket" ];
             JSONValue login     = jsn[ "login" ];
 
-            Ticket    ticket = ctx.get_ticket_trusted(ticket_id.str, login.str);
+            Ticket    ticket = get_ticket_trusted(ctx, ticket_id.str, login.str);
 
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
@@ -1173,6 +1173,78 @@ public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
         rc = ResultCode.OK;
     }
     return rc;
+}
+
+string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
+
+/**
+   Доверенная аутентификация
+   Params:
+            ticket = имя пользователя, входящего в группу [cfg:SuperUser]
+            login = имя пользователя, кому будет выдан новый тикет
+
+   Returns:
+            экземпляр структуры Ticket
+ */
+Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
+{
+    Ticket ticket;
+
+    //if (trace_msg[ T_API_60 ] == 1)
+    log.trace("trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
+
+    ticket.result = ResultCode.Authentication_Failed;
+
+    if (login == null || login.length < 1 || tr_ticket_id.length < 6)
+    {
+        log.trace("WARN: trusted authenticate: invalid login [%s] or ticket [%s]", login, ticket);
+        return ticket;
+    }
+
+    Ticket *tr_ticket = ctx.get_ticket(tr_ticket_id);
+    if (tr_ticket.result == ResultCode.OK)
+    {
+        bool is_allow_trusted = false;
+
+        void trace_acl(string resource_group, string subject_group, string right)
+        {
+            //log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
+            if (subject_group == allow_trusted_group)
+                is_allow_trusted = true;
+        }
+
+        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl);
+
+        if (is_allow_trusted)
+        {
+            login = replaceAll(login, regex(r"[-]", "g"), " +");
+
+            Ticket       sticket         = sys_ticket(ctx);
+            Individual[] candidate_users = ctx.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            foreach (user; candidate_users)
+            {
+                string user_id = user.getFirstResource(veda_schema__owner).uri;
+                if (user_id is null)
+                    continue;
+
+                ticket = create_new_ticket(user_id);
+
+                log.trace("trusted authenticate, result ticket=[%s]", ticket);
+                return ticket;
+            }
+        }
+        else
+        {
+            log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
+        }
+    }
+    else
+        log.trace("WARN: trusted authenticate: problem ticket [%s]", ticket);
+
+    log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
+
+    ticket.result = ResultCode.Authentication_Failed;
+    return ticket;
 }
 
 

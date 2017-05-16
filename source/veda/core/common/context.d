@@ -138,17 +138,6 @@ interface Context
     //public Ticket authenticate(string login, string password);
 
     /**
-       Доверенная аутентификация
-       Params:
-                ticket = имя пользователя, входящего в группу [cfg:SuperUser]
-                login = имя пользователя, кому будет выдан новый тикет
-
-       Returns:
-                экземпляр структуры Ticket
-     */
-    Ticket get_ticket_trusted(string ticket, string login);
-
-    /**
        Вернуть обьект Ticket по Id
      */
     public Ticket *get_ticket(string ticket_id, bool is_systicket = false);
