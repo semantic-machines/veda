@@ -39,7 +39,7 @@ before_script:
   - ls  $PWD   
   - ls  $PWD/logs   
   - cat $PWD/logs/veda-fanout-email-stderr.log
-  - cat $PWD/logs/veda-fanout-sql-stderr.log
+#  - cat $PWD/logs/veda-fanout-sql-stderr.log
   - cat $PWD/logs/veda-ft-indexer-stderr.log
   - cat $PWD/logs/veda-ltr-scripts-stderr.log
   - cat $PWD/logs/veda-scripts-lp-stderr.log
