@@ -1075,7 +1075,6 @@ class PThreadContext : Context
             {
                 //log.trace("[%s] add_to_transaction: isModule", name);
 				Individual imm;
-                imm.uri = text (in_tnx.id);
                 imm.addResource("fn", Resource(DataType.String, "commit"));
                 
                 Resources items;
@@ -1085,6 +1084,8 @@ class PThreadContext : Context
 				    Individual iti;
 				    
 				    iti.addResource("cmd", Resource(ti.cmd));
+
+				    iti.addResource("tnx_id", Resource(in_tnx.id));
 
                     if (ti.user_uri !is null && ti.user_uri.length > 0)
 	                    iti.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));

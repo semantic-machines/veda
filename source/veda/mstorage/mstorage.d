@@ -462,27 +462,38 @@ public Ticket authenticate(string login, string password)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public string execute_binobj(string in_msg, Context ctx)
 {
-/*
+    Individual otnx;
+
+    if (otnx.deserialize(in_msg) > 0)
+    {
+        string sfn = otnx.getFirstLiteral("fn");
+
         if (sfn == "commit")
         {
-            log.trace("@ execute commit %s", jsn);
-            JSONValue   tnx_id = jsn[ "tnx_id" ];
-            JSONValue[] items  = jsn[ "items" ].array;
+            log.trace("@ execute commit %s", otnx);
 
             Transaction tnx;
-            tnx.id            = tnx_id.integer;
+            tnx.id = otnx.getFirstInteger("fn");
+
+            Resources items = otnx.getResources("items");
+
             tnx.is_autocommit = false;
 
-            foreach (ijsn; items)
+            foreach (ib; items)
             {
-                TransactionItem ti = from_json(ijsn);
+                Individual item;
 
-                tnx.add(&ti);
+                if (item.deserialize(ib.data) > 0)
+                {
+                    TransactionItem ti;
+
+                    tnx.add(&ti);
+                }
             }
 
             commit(OptAuthorize.YES, tnx);
         }
- */
+    }
     return "";
 }
 
