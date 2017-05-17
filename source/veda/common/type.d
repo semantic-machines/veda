@@ -142,6 +142,24 @@ public enum ResultCode
     Connect_Error         = 4000
 }
 
+enum OptFreeze
+{
+	INGORE,
+	NONE 
+}
+
+enum OptAuthorize
+{
+	NO,
+	YES
+}
+
+enum OptTrace
+{
+	TRACE,
+	NONE
+}
+
 public struct OpResult
 {
     ResultCode result;

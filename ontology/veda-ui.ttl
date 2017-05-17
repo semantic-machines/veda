@@ -513,7 +513,7 @@ v-ui:PSFromToForLink
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-#  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
 .
 v-ui:LinkTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -840,11 +840,12 @@ v-ui:IconModalTemplate
     cntr.on("invalid", function () {
     ok.attr("disabled", "disabled");
     });
-    var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-
+ // var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+    var tmpl = individual["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( individual["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
+          
     if (newMode === "edit") {
-      $(".actions", tmpl).remove();
       individual.present(cntr, tmpl, newMode);
+      $(".actions", tmpl).remove();
     } else {
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
       individual.present(cntr, tmpl, newMode);
@@ -961,7 +962,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span class="label-template"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></span>
+  <span class="label-template"><span about="@" property="rdf:type"></span>: <span id="label" about="@" property="rdfs:label"></span></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);

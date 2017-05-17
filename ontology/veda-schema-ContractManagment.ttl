@@ -20,6 +20,7 @@ v-s:Contractor
   rdfs:subClassOf v-s:UserThing ;
 #  rdfs:subClassOf v-s:Organization ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;
   v-ui:hasTemplate v-s:ContractorTemplate ;
@@ -58,6 +59,7 @@ v-s:InternalAccountingDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "InternalAccountingDocument"@en ;
   rdfs:label "Внутренний бухгалтерский документ"@ru ;
 .
@@ -80,6 +82,7 @@ v-s:CurrencyExchangeRate
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Курс обмена валюты"@ru ;
   rdfs:label "Currency exchange rate"@en ;
   v-ui:hasTemplate v-s:CurrencyExchangeRateTemplate ;
@@ -330,6 +333,7 @@ v-s:ContractPassport
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:BackwardLink;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Contract passport"@en ;
   rdfs:label "Паспорт сделки"@ru ;
 .
@@ -340,6 +344,7 @@ v-s:RequestContractDetail
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Request contract detail"@en ;
   rdfs:label "Детализация заявки на контракт"@ru ;
 .
@@ -391,6 +396,7 @@ v-s:AccountingDoc
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Financial ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Accounting document"@en ;
   rdfs:label "Первичный документ"@ru ;
 .

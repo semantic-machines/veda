@@ -104,7 +104,7 @@ v-ft:Event_UpdateTaskCounter
 var forceUpdate = hasValue(document, "v-ft:forceUpdate", {data: true, type: _Boolean}),
     counterOwner = getUri(document["v-s:owner"]);
 if ( forceUpdate && counterOwner ) {
-  print("re-create task counter, owner =", counterOwner);
+  // print("re-create task counter, owner =", counterOwner);
   createTaskCounter(counterOwner);
   return;
 }
@@ -118,7 +118,7 @@ var task = document,
     isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: _Boolean, data: true}) && hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
     isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: _Boolean, data: true}) && hasValue(task, "v-s:deleted", {type: _Boolean, data: true});
 
-print("************************** START **************************");
+// print("************************** START **************************");
 
 if ( !isNew && !isDeleted && !isCompleted ) { return; }
 
@@ -131,7 +131,7 @@ monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMillis
 sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
 var isThisWeekTask = hasValue(task, "v-wf:dateGiven") && (monday < task["v-wf:dateGiven"][0].data && task["v-wf:dateGiven"][0].data < sunday);
 
-print("task =", task_uri, "| from =", from_uris, "| to =", to_uris, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted, "| isThisWeekTask =", isThisWeekTask);
+// print("task =", task_uri, "| from =", from_uris, "| to =", to_uris, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted, "| isThisWeekTask =", isThisWeekTask);
 
 to_uris && to_uris.map(function (to_uri) {
   // get or create task counter
@@ -164,7 +164,7 @@ to_uris && to_uris.map(function (to_uri) {
       break;
   }
   put_individual(ticket, toCounter, _event_id);
-  print("toCounter updated =", JSON.stringify(toCounter));
+//  print("toCounter updated =", JSON.stringify(toCounter));
 });
 
 from_uris && from_uris.map(function (from_uri) {
@@ -187,10 +187,10 @@ from_uris && from_uris.map(function (from_uri) {
       break;
   }
   put_individual(ticket, fromCounter, _event_id);
-  print("fromCounter updated =", JSON.stringify(fromCounter));
+//  print("fromCounter updated =", JSON.stringify(fromCounter));
 });
 
-print("************************** END **************************");
+//print("************************** END **************************");
 
 function createTaskCounter(owner) {
   var uri = "d:taskCounter_" + owner.split(':').join('_'),
@@ -224,7 +224,7 @@ function createTaskCounter(owner) {
     "v-ft:completedCount": newInt(completedCount),
     "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateTaskCounter")
   };
-  if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
+  /*if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
     print(
       "Created counter:", uri,
       "| inboxCount =", inboxCount,
@@ -232,7 +232,7 @@ function createTaskCounter(owner) {
       "| completedCount =", completedCount,
       "| inboxWeekCount =", inboxWeekCount
     );
-  }
+  }*/
   put_individual(ticket, taskCounter, _event_id);
   return taskCounter;
 }

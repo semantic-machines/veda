@@ -1173,11 +1173,17 @@ if (doc) {
           routes['coordination1'][simple+'editable'] = [true];
           routes['coordination1'][simple+'deadlineDays'] = [10];
           routes['coordination1'][simple+'comment'] = [new String('Согласовать возможность безальтернативной закупки')];
-          /*
+
           routes['coordination2'][simple+'visible'] = [true];
           routes['coordination2'][simple+'editable'] = [true];
           routes['coordination2'][simple+'deadlineDays'] = [10];
-          */
+          routes['coordination2'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+
+          routes['coordination3'][simple+'visible'] = [true];
+          routes['coordination3'][simple+'editable'] = [true];
+          routes['coordination3'][simple+'deadlineDays'] = [10];
+          routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+
           routes['review'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00068194_71023848")]; // Анна Тарасова : Руководитель группы
           routes['review'][simple+'visible'] = [true];
           routes['review'][simple+'editable'] = [true];
@@ -1203,6 +1209,16 @@ if (doc) {
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
         routes['coordination1'][simple+'deadlineDays'] = [10];
+
+        routes['coordination2'][simple+'visible'] = [true];
+        routes['coordination2'][simple+'editable'] = [true];
+        routes['coordination2'][simple+'deadlineDays'] = [10];
+        routes['coordination2'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+
+        routes['coordination3'][simple+'visible'] = [true];
+        routes['coordination3'][simple+'editable'] = [true];
+        routes['coordination3'][simple+'deadlineDays'] = [10];
+        routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
 
         routes['review'][simple+'participant'] = algorithm1(doc); //АЛГО1
         routes['review'][simple+'visible'] = [true];
@@ -1235,6 +1251,16 @@ if (doc) {
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
       routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+      routes['coordination2'][simple+'deadlineDays'] = [10];
+      routes['coordination2'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+
+      routes['coordination3'][simple+'visible'] = [true];
+      routes['coordination3'][simple+'editable'] = [true];
+      routes['coordination3'][simple+'deadlineDays'] = [10];
+      routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
 
       if (doc.hasValue('v-s:hasContractObject') &&
           (doc['v-s:hasContractObject'][0].id == 'd:e0de239b29c34ec3afaf25b0554893cb' || // Энергия
@@ -1892,6 +1918,16 @@ if (doc) {
       || doc.hasValue("v-s:hasDocumentKind", "d:7919fd49560f4340b41ce6bc01aa87e9") // Кредит - нота
     ) {
       reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
+    } else {
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+      routes['coordination1'][simple+'comment'] = [new String('Согласовать первичный документ')];
+
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+      routes['coordination2'][simple+'deadlineDays'] = [10];
+      routes['coordination2'][simple+'comment'] = [new String('Согласовать первичный документ')];
     }
 /*
     if ( orderCreator.length ) {
