@@ -120,6 +120,8 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
     ti.new_binobj = _binobj;
     ti.ticket_id  = _ticket_id;
     ti.event_id   = _event_id;
+    Ticket *ticket = g_context.get_ticket(ti.ticket_id);
+    ti.user_uri = ticket.user_uri;
 
     if (ti.cmd == INDV_OP.REMOVE)
     {
@@ -152,7 +154,6 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
             }
             else
             {
-                Ticket *ticket = g_context.get_ticket(ti.ticket_id);
                 prev_indv = g_context.get_individual(ticket, ti.new_indv.uri);
             }
 

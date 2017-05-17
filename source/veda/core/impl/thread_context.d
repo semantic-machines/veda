@@ -86,7 +86,64 @@ class PThreadContext : Context
             }
         }
 
-        private OpResult[] reqrep_2_main_module(ref JSONValue jreq)
+        private OpResult[] reqrep_binobj_2_main_module(string req)
+        {
+            OpResult[] ress;
+
+            int        sock = get_sock_2_main_module();
+
+            if (sock >= 0)
+            {
+                char *buf = cast(char *)0;
+                int  bytes;
+
+                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+                //log.trace("N_CHANNEL send (%s)", req);
+                bytes = nn_recv(sock, &buf, NN_MSG, 0);
+                if (bytes > 0)
+                {
+                    string rep = to!string(buf);
+                    //log.trace("N_CHANNEL recv (%s)", rep);
+
+                    JSONValue jres = parseJSON(rep);
+
+                    if (jres[ "type" ].str == "OpResult")
+                    {
+                        JSONValue data = jres[ "data" ];
+                        if (data !is JSONValue.init)
+                        {
+                            foreach (ii; data.array)
+                            {
+                                OpResult res;
+
+
+                                res.op_id  = ii[ "op_id" ].integer;
+                                res.result = cast(ResultCode)ii[ "result" ].integer;
+                                ress ~= res;
+                            }
+                        }
+                        else
+                        {
+                            OpResult res;
+                            res.op_id  = jres[ "op_id" ].integer;
+                            res.result = cast(ResultCode)jres[ "result" ].integer;
+                            ress ~= res;
+                        }
+                    }
+
+                    nn_freemsg(buf);
+                }
+            }
+            else
+            {
+                log.trace("ERR! N_CHANNEL: invalid socket");
+            }
+
+            return ress;
+        }
+    
+
+        private OpResult[] reqrep_json_2_main_module(ref JSONValue jreq)
         {
             OpResult[] ress;
             string     req = jreq.toString();
@@ -802,7 +859,7 @@ class PThreadContext : Context
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
-                res = reqrep_2_main_module(req_body)[ 0 ];
+                res = reqrep_json_2_main_module(req_body)[ 0 ];
                 //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
@@ -887,7 +944,7 @@ class PThreadContext : Context
         {
             JSONValue req_body;
             req_body[ "function" ] = "freeze";
-            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
+            OpResult  res = reqrep_json_2_main_module(req_body)[ 0 ];
         }
     }
 
@@ -897,7 +954,7 @@ class PThreadContext : Context
         {
             JSONValue req_body;
             req_body[ "function" ] = "unfreeze";
-            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
+            OpResult  res = reqrep_json_2_main_module(req_body)[ 0 ];
         }
     }
 
@@ -1017,17 +1074,40 @@ class PThreadContext : Context
             version (isModule)
             {
                 //log.trace("[%s] add_to_transaction: isModule", name);
+				Individual imm;
+                imm.uri = text (in_tnx.id);
+                imm.addResource("fn", Resource(DataType.String, "commit"));
+                
+                Resources items;
 
-                string    scmd = "commit";
+			    foreach (ti; in_tnx.get_queue())
+			    {
+				    Individual iti;
+				    
+				    iti.addResource("cmd", Resource(ti.cmd));
 
-                JSONValue req_body;
-                req_body[ "function" ] = scmd;
-                req_body[ "tnx_id" ]   = in_tnx.id;
-                req_body[ "items" ]    = to_json(in_tnx.get_immutable_queue);
+                    if (ti.user_uri !is null && ti.user_uri.length > 0)
+	                    iti.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
 
-                log.trace("[%s] commit: (isModule), req=(%s)", name, req_body.toString());
+                    iti.addResource("uri", Resource(DataType.Uri, ti.uri));
 
-                OpResult res = reqrep_2_main_module(req_body)[ 0 ];
+					if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+		                iti.addResource("prev_binobj", Resource(DataType.String, ti.prev_binobj));
+
+					if (ti.new_binobj !is null && ti.new_binobj.length > 0)
+		                iti.addResource("new_binobj", Resource(DataType.String, ti.new_binobj));
+
+		            iti.addResource("update_counter", Resource(DataType.Integer, ti.update_counter));
+		            iti.addResource("event_id", Resource(DataType.String, ti.event_id));
+			    }
+			    
+                imm.setResources("items", items);
+
+                string binobj = imm.serialize();
+
+                log.trace("[%s] commit: (isModule), req=(%s)", name, binobj);
+
+                OpResult res = reqrep_binobj_2_main_module(binobj)[ 0 ];
                 log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
             }
         }

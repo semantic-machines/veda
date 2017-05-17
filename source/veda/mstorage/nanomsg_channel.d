@@ -56,10 +56,15 @@ void nanomsg_channel(string thread_name)
                 int  bytes = nn_recv(sock, &buf, NN_MSG, 0);
                 if (bytes >= 0)
                 {
-                    string req = to!string(buf);
+                    string req = cast(string)buf[ 0..bytes ];
 //                    log.trace("RECEIVED (%s)", req);
 
-                    string rep = execute(req, context);
+                    string rep;
+
+                    if (req[ 0 ] == '{')
+                        rep = execute_json(req, context);
+                    else
+                        rep = execute_binobj(req, context);
 
                     nn_freemsg(buf);
 

@@ -134,7 +134,7 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 
     if (rc == ResultCode.OK)
     {
-        res = execute(cast(string)msg, l_context);
+        res = execute_json(cast(string)msg, l_context);
     }
     else
     {
@@ -460,8 +460,33 @@ public Ticket authenticate(string login, string password)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public string execute_binobj(string in_msg, Context ctx)
+{
+/*
+        if (sfn == "commit")
+        {
+            log.trace("@ execute commit %s", jsn);
+            JSONValue   tnx_id = jsn[ "tnx_id" ];
+            JSONValue[] items  = jsn[ "items" ].array;
 
-public string execute(string in_msg, Context ctx)
+            Transaction tnx;
+            tnx.id            = tnx_id.integer;
+            tnx.is_autocommit = false;
+
+            foreach (ijsn; items)
+            {
+                TransactionItem ti = from_json(ijsn);
+
+                tnx.add(&ti);
+            }
+
+            commit(OptAuthorize.YES, tnx);
+        }
+ */
+    return "";
+}
+
+public string execute_json(string in_msg, Context ctx)
 {
     JSONValue res;
     JSONValue jsn;
@@ -486,26 +511,7 @@ public string execute(string in_msg, Context ctx)
 
         string    sfn = fn.str();
 
-        if (sfn == "commit")
-        {
-            log.trace("@ execute commit %s", jsn);
-            JSONValue   tnx_id = jsn[ "tnx_id" ];
-            JSONValue[] items  = jsn[ "items" ].array;
-
-            Transaction tnx;
-            tnx.id            = tnx_id.integer;
-            tnx.is_autocommit = false;
-
-            foreach (ijsn; items)
-            {
-                TransactionItem ti = from_json(ijsn);
-
-                tnx.add(&ti);
-            }
-
-            commit(OptAuthorize.YES, tnx);
-        }
-        else if (sfn == "authenticate")
+        if (sfn == "authenticate")
         {
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];

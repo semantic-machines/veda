@@ -68,21 +68,6 @@ TransactionItem copy_from_immutable(immutable TransactionItem ti)
     return res;
 }
 
-JSONValue to_json(immutable TransactionItem ti)
-{
-    JSONValue res;
-
-    res[ "cmd" ]            = ti.cmd;
-    res[ "user_uri" ]       = ti.user_uri;
-    res[ "uri" ]            = ti.uri;
-    res[ "prev_binobj" ]    = ti.prev_binobj;
-    res[ "new_binobj" ]     = ti.new_binobj;
-    res[ "update_counter" ] = ti.update_counter;
-    res[ "event_id" ]       = ti.event_id;
-
-    return res;
-}
-
 TransactionItem from_json(JSONValue jsn)
 {
     TransactionItem res;
@@ -94,19 +79,6 @@ TransactionItem from_json(JSONValue jsn)
     res.new_binobj = jsn[ "new_binobj" ].str;
     res.update_counter = jsn[ "update_counter" ].integer;
     res.event_id = jsn[ "event_id" ].str;
-
-    return res;
-}
-
-
-public JSONValue to_json(ref immutable(TransactionItem)[] immutable_queue)
-{
-    JSONValue res;
-
-    foreach (ti; immutable_queue)
-    {
-        res ~= to_json(ti);
-    }
 
     return res;
 }

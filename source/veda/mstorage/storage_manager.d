@@ -328,9 +328,15 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         },
                         (OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
                         {
-                            immutable TransactionItem ti = tiz[ 0 ];
-
                             ResultCode rc = ResultCode.Not_Ready;
+                            if (tiz.length == 0)
+                            {
+                                rc = ResultCode.No_Content;
+                                send(tid_response_reciever, rc, thisTid);
+                                return;
+                            }
+
+                            immutable TransactionItem ti = tiz[ 0 ];
 
                             if (opt_freeze == OptFreeze.NONE && is_freeze && ti.cmd == INDV_OP.PUT)
                                 send(tid_response_reciever, rc, thisTid);
