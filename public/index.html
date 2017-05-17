@@ -43,8 +43,8 @@
   <body>
     <!-- Application container -->
     <div id="app"></div>
-    
-    
+
+
     <!-- Login form -->
     <div id="login-container" class="hidden"></div>
 
@@ -290,14 +290,14 @@
     <!-- String control template -->
     <script type="html/template" id="string-control-template">
       <div>
-        <input type="text" class="form-control" />
+        <input type="text" class="form-control" autocomplete="on" />
       </div>
     </script>
 
     <!-- Text control template -->
     <script type="html/template" id="text-control-template">
       <div>
-        <textarea class="form-control" rows="1" />
+        <textarea class="form-control" rows="1" autocomplete="on" />
       </div>
     </script>
 
@@ -306,7 +306,7 @@
       <div>
         <div class="input-group">
           <div class="input-group-addon"><small class="language-tag"></small></div>
-          <input type="text" class="form-control" lang="" />
+          <input type="text" class="form-control" lang="" autocomplete="on" />
         </div>
       </div>
     </script>
@@ -316,7 +316,7 @@
       <div>
         <div class="input-group">
           <div class="input-group-addon"><small class="language-tag"></small></div>
-          <textarea class="form-control" lang="" rows="1" />
+          <textarea class="form-control" lang="" rows="1" autocomplete="on" />
         </div>
       </div>
     </script>
@@ -440,6 +440,7 @@
     <script type="text/javascript" src="/js/browser/lib/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/fullcalendar.min.js"></script>
     <script type="text/javascript" src="/js/browser/lib/locale/ru.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/jquery.touchSwipe.min.js"></script>
 
     <!-- CodeMirror -->
     <script type="text/javascript" src="/js/browser/lib/codemirror/codemirror.js"></script>

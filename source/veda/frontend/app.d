@@ -164,7 +164,7 @@ shared static this()
 
     veda.core.common.context.Context context;
 
-    context = PThreadContext.create_new (node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
+    context = PThreadContext.create_new (node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws", null, null, null);
 
     sys_ticket = context.sys_ticket(false);
 

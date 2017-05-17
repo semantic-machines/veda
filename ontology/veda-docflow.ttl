@@ -333,6 +333,10 @@ v-df:QuestionRouteStartFormTemplate
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
+  
+  <em about="v-s:controller" property="rdfs:label"></em>
+  <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+  <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
@@ -340,6 +344,7 @@ v-df:QuestionRouteStartFormTemplate
   </div>
 </div>
 <script>
+  individual["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
@@ -568,6 +573,7 @@ v-df:QuestionRouteStartFormToNet
   v-wf:transformRule v-df:rul_QuestionTransform6_0 ;
   v-wf:transformRule v-df:rul_QuestionTransform6_3 ;
   v-wf:transformRule v-df:rul_QuestionTransform7 ;
+  v-wf:transformRule v-df:rul_QuestionTransform8;
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_QuestionTransform0
@@ -633,6 +639,13 @@ v-df:rul_QuestionTransform7
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putString ('v-wf:variableValue', 'Ответить на вопрос')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
+.
+v-df:rul_QuestionTransform8
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:controller')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'controller')";
 .
 
 
@@ -1383,12 +1396,23 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionReturnedToReview ;
-  v-ui:forClass v-wf:DecisionAchieved ;
+#  v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
 .
+v-wf:DecisionRedirectTemplateSpec2_comment
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
+  rdfs:label "Spec for template for some -Decision- subclasses"@en ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:forClass v-wf:DecisionAchieved ;
+.
+
 
 v-wf:DecisionRedirectTemplateSpec3
   rdf:type v-ui:ObjectPropertySpecification ;

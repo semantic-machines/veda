@@ -1273,3 +1273,7 @@ svg.process-path-highlight path
   margin-right: 7px;
   margin-bottom: 7px;
 }
+.label-template > #rel-actions {
+  position: relative!important;
+  margin: 0 0 0 7px!important;
+}

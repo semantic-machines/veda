@@ -117,7 +117,7 @@ interface Context
     public VQL get_vql();
     public Authorization acl_indexes();
 
-    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
                                        bool is_api_request);
 
@@ -136,17 +136,6 @@ interface Context
                 экземпляр структуры Ticket
      */
     //public Ticket authenticate(string login, string password);
-
-    /**
-       Доверенная аутентификация
-       Params:
-                ticket = имя пользователя, входящего в группу [cfg:SuperUser]
-                login = имя пользователя, кому будет выдан новый тикет
-
-       Returns:
-                экземпляр структуры Ticket
-     */
-    Ticket get_ticket_trusted(string ticket, string login);
 
     /**
        Вернуть обьект Ticket по Id

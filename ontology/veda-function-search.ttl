@@ -1183,6 +1183,39 @@ v-fs:AttributiveSearchTemplate
     individual.resultTemplate = resultTemplate;
     resultContainer.empty();
   }
+
+  // Enable swipe for result table
+  var prevDistance = 0, delta = 0;
+  $("#search-result", template).swipe({
+    swipeStatus: function (event, phase, direction, distance, duration) {
+      if (phase === "move" && event.ctrlKey === true) {
+        this.css("cursor", "move");
+        if (direction === "left") {
+          delta = distance - prevDistance;
+          prevDistance = distance;
+          this.scrollLeft( this.scrollLeft() + delta );
+        } else if (direction === "right") {
+          delta = distance - prevDistance;
+          prevDistance = distance;
+          this.scrollLeft( this.scrollLeft() - delta );
+        } else if (direction === "up") {
+          window.scrollBy(0, distance);
+        } else if (direction === "down") {
+          window.scrollBy(0, -distance);
+        }
+      } else {
+        prevDistance = 0;
+        delta = 0;
+        this.css("cursor", "");
+      }
+    }
+  });
+  template.one("remove", function () {
+    prevDistance = null;
+    delta = null;
+    $("#search-result", template).swipe("destroy");
+  });
+
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">

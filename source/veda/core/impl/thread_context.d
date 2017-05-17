@@ -157,8 +157,8 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url = null,
-                                     Authorization in_acl_indexes = null)
+    public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url,
+                                     Authorization in_acl_indexes, Storage in_inividuals_storage_r, Storage in_tickets_storage_r)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -180,8 +180,15 @@ class PThreadContext : Context
  */
         ctx.node_id = _node_id;
 
-        ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
-        ctx.tickets_storage_r    = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
+        if (in_inividuals_storage_r is null)
+            ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
+        else
+            ctx.inividuals_storage_r = in_inividuals_storage_r;
+
+        if (in_tickets_storage_r is null)
+            ctx.tickets_storage_r = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
+        else
+            ctx.tickets_storage_r = in_tickets_storage_r;
 
         ctx.name = context_name;
 
@@ -386,78 +393,6 @@ class PThreadContext : Context
         return ticket;
     }
 
-    string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
-
-    Ticket get_ticket_trusted(string tr_ticket_id, string login)
-    {
-        Ticket ticket;
-
-        version (isModule)
-        {
-            log.trace("is module");
-        }
-
-        version (WebServer)
-        {
-            log.trace("is webserver");
-        }
-
-        //if (trace_msg[ T_API_60 ] == 1)
-        log.trace("trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
-
-        ticket.result = ResultCode.Authentication_Failed;
-
-        if (login == null || login.length < 1 || tr_ticket_id.length < 6)
-        {
-            log.trace("WARN: trusted authenticate: invalid login [%s] or ticket [%s]", login, ticket);
-            return ticket;
-        }
-
-        Ticket *tr_ticket = get_ticket(tr_ticket_id);
-        if (tr_ticket.result == ResultCode.OK)
-        {
-            bool is_allow_trusted = false;
-
-            void trace_acl(string resource_group, string subject_group, string right)
-            {
-                //log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
-                if (subject_group == allow_trusted_group)
-                    is_allow_trusted = true;
-            }
-
-            get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl);
-
-            if (is_allow_trusted)
-            {
-                login = replaceAll(login, regex(r"[-]", "g"), " +");
-
-                Ticket       sticket         = sys_ticket;
-                Individual[] candidate_users = get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
-                foreach (user; candidate_users)
-                {
-                    string user_id = user.getFirstResource(veda_schema__owner).uri;
-                    if (user_id is null)
-                        continue;
-
-                    ticket = create_new_ticket(user_id);
-
-                    log.trace("trusted authenticate, result ticket=[%s]", ticket);
-                    return ticket;
-                }
-            }
-            else
-            {
-                log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
-            }
-        }
-        else
-            log.trace("WARN: trusted authenticate: problem ticket [%s]", ticket);
-
-        log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
-
-        ticket.result = ResultCode.Authentication_Failed;
-        return ticket;
-    }
 
     public string get_ticket_from_storage(string ticket_id)
     {
@@ -819,7 +754,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    public OpResult add_to_transaction(ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
                                        bool ignore_freeze,
                                        bool is_api_request)
     {
@@ -863,7 +798,7 @@ class PThreadContext : Context
                 req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
                 req_body[ "prepare_events" ] = prepare_events;
                 req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ]         = tnx.id;
+                req_body[ "tnx_id" ]         = tnx_id;
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
@@ -891,52 +826,36 @@ class PThreadContext : Context
                                    bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
                                       bool is_api_request = true)
     {
         Individual individual;
-
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
                                       bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
                                            long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
     {
         individual.uri = uri;
-        Transaction tnx;
-        tnx.id            = transaction_id;
-        tnx.is_autocommit = true;
-        return add_to_transaction(tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1065,9 +984,6 @@ class PThreadContext : Context
         ResultCode  rc;
         long        op_id;
 
-        Transaction normalized_tnx;
-
-        normalized_tnx.id = in_tnx.id;
         foreach (item; in_tnx.get_queue())
         {
             if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
@@ -1080,7 +996,7 @@ class PThreadContext : Context
 
             //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
-            rc = this.add_to_transaction(normalized_tnx, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+            rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
 
             if (rc == ResultCode.No_Content)
             {
