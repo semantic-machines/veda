@@ -386,7 +386,7 @@ v-s:ProcessStarted
 v-s:Journal_printBlank
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:Document ;
-  v-s:filePath "/reports/Subreports/Unidoc_Journal" ;
+  v-s:filePath "/Subreports/Unidoc_Journal" ;
   v-s:fileFormat "pdf";
   rdfs:label "Journal print blank"@en ;
   rdfs:label "Печатная форма журнала"@ru ;
