@@ -488,7 +488,7 @@ public string execute(string in_msg, Context ctx)
 
         if (sfn == "commit")
         {
-        	log.trace ("@ execute commit %s", jsn);
+            log.trace("@ execute commit %s", jsn);
             JSONValue   tnx_id = jsn[ "tnx_id" ];
             JSONValue[] items  = jsn[ "items" ].array;
 
@@ -1062,9 +1062,9 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         {
             if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
             {
-                //log.trace("++ add_to_transaction, prev_indv: %s", prev_indv);
+                //log.trace("++ add_to_transaction (%s), prev_indv: %s, op_indv: %s", text (cmd), prev_indv, *indv);
                 indv = indv_apply_cmd(cmd, &prev_indv, indv);
-                //log.trace("++ add_to_transaction, final indv: %s", *indv);
+                //log.trace("++ add_to_transaction (%s), final indv: %s", text (cmd), *indv);
             }
 
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);

@@ -142,6 +142,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 
         if (ti.rc == ResultCode.OK && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
         {
+            // log.trace("new_TransactionItem(%s) [%s]", text (_cmd), ti.new_indv);
             Individual      prev_indv;
 
             TransactionItem *ti1 = tnx.get(ti.new_indv.uri);
@@ -163,6 +164,8 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
             else
                 log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri,
                           prev_indv.getStatus());
+
+            ti.cmd = INDV_OP.PUT;
         }
     }
     return ti;
