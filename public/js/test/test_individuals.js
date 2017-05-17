@@ -846,12 +846,12 @@ for (i = 0; i < 1; i++)
 
 
     test(
-        "#014 Individual store, add_to_individual, set_in_individual test",
+        "#014 Individual store, add_to_individual, set_in_individual test, remove_from",
         function()
         {
             var ticket_user1 = get_user1_ticket();
 
-            //#1
+            //#1 
             ok(ticket_user1.id.length > 0);
 
             var new_test_doc1_uri = "test14:" + guid();
@@ -870,6 +870,8 @@ for (i = 0; i < 1; i++)
 
             //#2
             ok(compare(new_test_doc1, read_individual));
+
+	    /////////////////////////// ADD TO
 
             var new_test_add1 = {
                 '@': new_test_doc1_uri,
@@ -911,6 +913,8 @@ for (i = 0; i < 1; i++)
 
             //#3
             ok(compare(new_test_doc1_add1, read_individual));
+	    
+	    ////////////////////////// SET IN	    
 
             var new_test_set1 = {
                 '@': new_test_doc1_uri,
@@ -932,6 +936,28 @@ for (i = 0; i < 1; i++)
 
             //#4
             ok(compare(new_test_doc1_set1, read_individual));
+
+	    /////////////////////// REMOVE FROM
+
+            var new_test_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'v-s:author': newUri('td:test-e')
+            };
+
+            remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            wait_module(condition, res.op_id);
+            wait_module(acl_manager, res.op_id);
+
+            var new_test_doc1_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#5
+            ok(compare(new_test_doc1_remove_from1, read_individual));
         });
 
     test("#015 Document as a group",
