@@ -958,6 +958,15 @@ for (i = 0; i < 1; i++)
 
             //#5
             ok(compare(new_test_doc1_remove_from1, read_individual));
+
+            remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            wait_module(condition, res.op_id);
+            wait_module(acl_manager, res.op_id);
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#6
+            ok(compare(new_test_doc1_remove_from1, read_individual));
         });
 
     test("#015 Document as a group",
