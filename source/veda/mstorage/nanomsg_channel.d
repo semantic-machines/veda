@@ -75,7 +75,7 @@ void nanomsg_channel(string thread_name)
                     nn_freemsg(buf);
 
                     bytes = nn_send(sock, cast(char *)rep, rep.length + 1, 0);
-//                    log.trace("SENDING (%s) %d bytes", rep, bytes);
+//                    log.trace("SENDING [%d](%s) bytes", bytes, rep);
                 }
             }
             catch (Throwable tr)
