@@ -160,6 +160,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     core.thread.Thread.getThis().name = thread_name;
 
     LmdbStorage                  storage              = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+    
+    long count = storage.count_entries();
+    
+    log.trace ("COUNT INDIVIDUALS=%d", count);
+     
     int                          size_bin_log         = 0;
     int                          max_size_bin_log     = 10_000_000;
     string                       bin_log_name         = get_new_binlog_name(db_path);
