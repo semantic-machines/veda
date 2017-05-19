@@ -112,7 +112,6 @@ class ScriptProcess : VedaModule
         g_ticket.length = cast(int)sticket.length;
 
         set_g_super_classes(indv_types, context.get_onto());
-        tnx.reset();
 
         //log.trace("-------------------");
         //log.trace ("indv=%s, indv_types=%s", individual_id, indv_types);
@@ -120,6 +119,8 @@ class ScriptProcess : VedaModule
 
         foreach (_script_id; event_scripts_order)
         {
+    	    tnx.reset();
+
             script_id = _script_id;
 
             ScriptInfo script = event_scripts[ script_id ];
