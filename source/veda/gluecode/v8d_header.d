@@ -141,6 +141,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
             ti.rc = ResultCode.OK;
 
         ti.new_indv.setStatus(ti.rc);
+        ti.uri = ti.new_indv.uri;
 
         if (ti.rc == ResultCode.OK && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
         {
