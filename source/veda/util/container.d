@@ -14,7 +14,6 @@
 module veda.util.container;
 
 import std.stdio, std.conv;
-import backtrace.backtrace, Backtrace = backtrace.backtrace;
 
 /// Unordered array with O(1) insertion and removal
 struct Set (T, uint INITSIZE = 64)
@@ -133,13 +132,6 @@ class Cache(T, K)
 
     public void put(K, T) (K key, T src, int level = 0)
     {
-    	if (key is null || key.length == 0)
-    	{
-    		stderr.writefln("ERR! container.put, key is empty, src=%s", src);
-    		printPrettyTrace(stderr);
-    		return;
-    	}
-    	
         if (key_2_element.length < max_size)
         {
             CacheElement!(T, K) * ce = new CacheElement!(T, K)();

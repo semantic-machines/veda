@@ -72,13 +72,13 @@ TransactionItem from_json(JSONValue jsn)
 {
     TransactionItem res;
 
-    res.cmd            = cast(INDV_OP)jsn[ "cmd" ].integer;
-    res.user_uri       = jsn[ "user_uri" ].str;
-    res.uri            = jsn[ "uri" ].str;
-    res.prev_binobj    = jsn[ "prev_binobj" ].str;
-    res.new_binobj     = jsn[ "new_binobj" ].str;
+    res.cmd = cast(INDV_OP)jsn[ "cmd" ].integer;
+    res.user_uri = jsn[ "user_uri" ].str;
+    res.uri = jsn[ "uri" ].str;
+    res.prev_binobj = jsn[ "prev_binobj" ].str;
+    res.new_binobj = jsn[ "new_binobj" ].str;
     res.update_counter = jsn[ "update_counter" ].integer;
-    res.event_id       = jsn[ "event_id" ].str;
+    res.event_id = jsn[ "event_id" ].str;
 
     return res;
 }
@@ -119,14 +119,8 @@ struct Transaction
 
     public void reset()
     {
-        if (buff.length > 0)
-            buff = buff.init;
-
-        if (queue.length > 0)
-            queue = queue.init;
-
-        if (immutable_queue.length > 0)
-            immutable_queue = immutable_queue.init;
+        buff  = buff.init;
+        queue = queue.init;
     }
 
     public TransactionItem *get(string uri)

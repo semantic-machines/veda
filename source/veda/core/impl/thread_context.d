@@ -98,12 +98,12 @@ class PThreadContext : Context
                 int  bytes;
 
                 bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                //log.trace("N_CHANNEL BINOBJ send [%d](%s)", req.length, req);
+                //log.trace("N_CHANNEL send (%s)", req);
                 bytes = nn_recv(sock, &buf, NN_MSG, 0);
                 if (bytes > 0)
                 {
                     string rep = to!string(buf);
-                    //log.trace("N_CHANNEL BINOBJ recv (%s)", rep);
+                    //log.trace("N_CHANNEL recv (%s)", rep);
 
                     JSONValue jres = parseJSON(rep);
 
@@ -141,7 +141,7 @@ class PThreadContext : Context
 
             return ress;
         }
-
+    
 
         private OpResult[] reqrep_json_2_main_module(ref JSONValue jreq)
         {
@@ -812,8 +812,8 @@ class PThreadContext : Context
     static const byte EXISTS_TYPE = 1;
 
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
-                           bool ignore_freeze,
-                           bool is_api_request)
+                                       bool ignore_freeze,
+                                       bool is_api_request)
     {
         //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
@@ -890,7 +890,6 @@ class PThreadContext : Context
                                       bool is_api_request = true)
     {
         Individual individual;
-
         individual.uri = uri;
         return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
     }
@@ -1039,84 +1038,70 @@ class PThreadContext : Context
 
     public ResultCode commit(Transaction *in_tnx)
     {
-        ResultCode rc;
-        long       op_id;
+        ResultCode  rc;
+        long        op_id;
 
-        if (in_tnx.get_queue().length == 0)
+        foreach (item; in_tnx.get_queue())
         {
-            return ResultCode.OK;
-        }
+            if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
+                continue;
 
-        if (in_tnx.is_autocommit == true)
-        {
-            foreach (item; in_tnx.get_queue())
+            if (item.rc != ResultCode.OK)
+                return item.rc;
+
+            Ticket *ticket = this.get_ticket(item.ticket_id);
+
+            //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+
+            rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+
+            if (rc == ResultCode.No_Content)
             {
-                if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
-                    continue;
-
-                if (item.rc != ResultCode.OK)
-                    return item.rc;
-
-                Ticket *ticket = this.get_ticket(item.ticket_id);
-
-                //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
-
-                if (rc == ResultCode.No_Content)
-                {
-                    this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
-                }
-
-                if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-                {
-                    this.get_logger().trace("FAIL COMMIT");
-                    return rc;
-                }
-                //else
-                //log.trace ("SUCCESS COMMIT");
+                this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
             }
+
+            if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+            {
+                this.get_logger().trace("FAIL COMMIT");
+                return rc;
+            }
+            //else
+            //log.trace ("SUCCESS COMMIT");
         }
-        else
+
+        if (in_tnx.is_autocommit == false)
         {
             version (isModule)
             {
-                log.trace("@0 -------------------------------------------------------------------------------------------");
-                log.trace("@1 commit, tnx.id=%s tnx.len=%d", in_tnx.id, in_tnx.get_queue().length);
-
-                Individual imm;
-                imm.uri = "tnx:" ~ text(in_tnx.id);
+                //log.trace("[%s] add_to_transaction: isModule", name);
+				Individual imm;
                 imm.addResource("fn", Resource(DataType.String, "commit"));
-
+                
                 Resources items;
 
-                int       idx = 0;
-                foreach (ti; in_tnx.get_queue())
-                {
-                    log.trace("@2 ti=%s", *ti);
-                    Individual iti;
+			    foreach (ti; in_tnx.get_queue())
+			    {
+				    Individual iti;
+				    
+				    iti.addResource("cmd", Resource(ti.cmd));
 
-                    iti.uri = "el:" ~ text(idx);
-                    iti.addResource("cmd", Resource(ti.cmd));
+				    iti.addResource("tnx_id", Resource(in_tnx.id));
 
                     if (ti.user_uri !is null && ti.user_uri.length > 0)
-                        iti.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
+	                    iti.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
 
                     iti.addResource("uri", Resource(DataType.Uri, ti.uri));
 
-                    if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
-                        iti.addResource("prev_binobj", Resource(DataType.String, ti.prev_binobj));
+					if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+		                iti.addResource("prev_binobj", Resource(DataType.String, ti.prev_binobj));
 
-                    if (ti.new_binobj !is null && ti.new_binobj.length > 0)
-                        iti.addResource("new_binobj", Resource(DataType.String, ti.new_binobj));
+					if (ti.new_binobj !is null && ti.new_binobj.length > 0)
+		                iti.addResource("new_binobj", Resource(DataType.String, ti.new_binobj));
 
-                    iti.addResource("update_counter", Resource(DataType.Integer, ti.update_counter));
-                    iti.addResource("event_id", Resource(DataType.String, ti.event_id));
-
-                    string iti_binobj = iti.serialize();
-                    items ~= Resource(iti_binobj);
-                }
-
+		            iti.addResource("update_counter", Resource(DataType.Integer, ti.update_counter));
+		            iti.addResource("event_id", Resource(DataType.String, ti.event_id));
+			    }
+			    
                 imm.setResources("items", items);
 
                 string binobj = imm.serialize();
