@@ -462,10 +462,14 @@ public Ticket authenticate(string login, string password)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public string execute_binobj(string in_msg, Context ctx)
 {
+//    log.trace("@1 execute_binobj %s", in_msg);
+    JSONValue  res;
     Individual otnx;
 
     if (otnx.deserialize(in_msg) > 0)
     {
+//	    log.trace("@ execute_binobj otnx=%s", otnx);
+
         string sfn = otnx.getFirstLiteral("fn");
 
         if (sfn == "commit")
@@ -481,20 +485,48 @@ public string execute_binobj(string in_msg, Context ctx)
 
             foreach (ib; items)
             {
+                log.trace("@ ib= %s", ib);
+
                 Individual item;
 
                 if (item.deserialize(ib.data) > 0)
                 {
-                    TransactionItem ti;
+                    immutable TransactionItem ti = immutable TransactionItem(cast(INDV_OP)item.getFirstInteger("cmd"), item.getFirstLiteral(
+                                                                                                                                            "user_uri"),
+                                                                             item.getFirstLiteral("uri"),
+                                                                             item.getFirstLiteral("prev_binobj"), item.getFirstLiteral(
+                                                                                                                                       "new_binobj"),
+                                                                             item.getFirstInteger("update_counter"), item.getFirstLiteral("event_id"),
+                                                                             false, false);
 
-                    tnx.add(&ti);
+                    log.trace("@ ti= %s", ti);
+
+                    tnx.add_immutable(ti);
                 }
             }
 
-            commit(OptAuthorize.YES, tnx);
+            OpResult[]  rcs = commit(OptAuthorize.YES, tnx);
+
+            JSONValue[] all_res;
+            foreach (rr; rcs)
+            {
+                JSONValue ires;
+                ires[ "result" ] = rr.result;
+                ires[ "op_id" ]  = rr.op_id;
+                all_res ~= ires;
+            }
+
+            res[ "data" ]   = all_res;
+            res[ "type" ]   = "OpResult";
+            res[ "result" ] = ResultCode.OK;
+            res[ "op_id" ]  = -1;
         }
     }
-    return "";
+    else
+        log.trace("ERR! execute_binobj: fail deserialize");
+
+    log.trace("@e execute_binobj");
+    return res.toString();
 }
 
 public string execute_json(string in_msg, Context ctx)
@@ -670,7 +702,6 @@ public string execute_json(string in_msg, Context ctx)
             }
 
             JSONValue[] all_res;
-
             foreach (rr; rc)
             {
                 JSONValue ires;
@@ -895,14 +926,16 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     return result;
 }
 
-public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
+public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
+
+    OpResult[] rcs;
     long       op_id;
 
     if (in_tnx.is_autocommit == false)
     {
-        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
+        auto items = in_tnx.get_immutable_queue();
 
         log.trace("commit: items=%s", items);
 
@@ -920,10 +953,11 @@ public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
                 if (item.rc == ResultCode.OK)
                     rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
+            rcs ~= OpResult(rc, op_id);
         }
     }
 
-    return rc;
+    return rcs;
 }
 
 
