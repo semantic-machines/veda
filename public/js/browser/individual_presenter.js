@@ -346,6 +346,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }));
       stask.append($('<li/>', {
         style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:signRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:Sign')['rdfs:label'].join(" "))+'</a>'
+      }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:Instruction')['rdfs:label'].join(" "))+'</a>'
       }));

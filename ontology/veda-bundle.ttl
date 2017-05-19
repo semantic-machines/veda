@@ -261,6 +261,12 @@ v-s:Coordination
   rdfs:label "На согласование"@ru ;
   rdfs:label "Coordination"@en ;
 .
+v-s:Sign
+  rdf:type v-s:Bundle ;
+  rdfs:label "Подписание"@ru ;
+  rdfs:label "Sign"@en ;
+.
+
 v-s:SendTask
   rdf:type v-s:Bundle ;
   rdfs:label "Выдать задачу"@ru ;
