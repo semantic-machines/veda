@@ -112,6 +112,7 @@ class ScriptProcess : VedaModule
         g_ticket.length = cast(int)sticket.length;
 
         set_g_super_classes(indv_types, context.get_onto());
+        tnx.reset();
 
         //log.trace("-------------------");
         //log.trace ("indv=%s, indv_types=%s", individual_id, indv_types);
@@ -167,7 +168,6 @@ class ScriptProcess : VedaModule
                     tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
                     ResultCode res = g_context.commit(&tnx);
-                    tnx.reset();
 
                     if (res != ResultCode.OK)
                     {
@@ -177,9 +177,9 @@ class ScriptProcess : VedaModule
 
                     log.trace("end: %s", script_id);
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
-                    log.trace("WARN! fail execute event script : %s %s", script_id, ex.msg);
+                    log.trace("WARN! fail execute event script : %s %s %s", script_id, ex.msg, ex.info);
                 }
             }
         }
