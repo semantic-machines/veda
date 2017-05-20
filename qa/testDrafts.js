@@ -10,22 +10,23 @@ var webdriver = require('selenium-webdriver'),
  * @param count - количество черновиков, которое должно быть
  */
 
-function check(driver, count) {
+function check(driver, count, phase) {
     basic.menu(driver, 'Drafts');
     driver.sleep(basic.FAST_OPERATION);
     driver.findElements({css:'div[id="drafts"] [typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
             if (count == "true") {
-                basic.execute(driver, 'click', 'div[id="drafts"] [typeof="v-s:Person"]', "Cannot click on selected draft");
+                basic.execute(driver, 'click', 'div[id="drafts"] [typeof="v-s:Person"]',
+                    "****** PHASE#" + phase + " > CHECK DRAFT : ERROR = Cannot click on selected draft");
             }
             if (count == "false") {
-                console.trace("Expected number of drafts is 0, but get 1");
+                console.trace("****** PHASE#" + phase + " > CHECK DRAFT : ERROR = Expected number of drafts is 0, but get 1");
                 process.exit(1);
             }
         }
         if (elements_arr.length === 0){
             if (count == "true") {
-                console.trace("Expected number of drafts is 1, but get 0");
+                console.trace("****** PHASE#" + phase + " > CHECK DRAFT : ERROR = Expected number of drafts is 1, but get 0");
                 process.exit(1);
             }
         }
@@ -41,7 +42,7 @@ function check(driver, count) {
 
 function fillProperty(driver, property, something) {
     basic.execute(driver, 'sendKeys', '[property="v-s:' + property + '"] + veda-control input',
-        "Cannot fill 'v-s:" + property + "' for person", something);
+        "****** PHASE#2 > NEW DRAFT : ERROR = Cannot fill 'v-s:" + property + "' for person", something);
 }
 
 /**1.Open Page -> Login(as karpovrt);
@@ -62,37 +63,47 @@ function fillProperty(driver, property, something) {
 
 
 basic.getDrivers().forEach(function(drv) {
+    //PHASE#1
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#1 > LOGIN       : COMPLETE");});
 
+    //PHASE#2
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person');
     var lastName = 'Draft';
     fillProperty(driver, 'lastName', lastName);
     fillProperty(driver, 'firstName', firstName);
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);");
     basic.isEnabled(driver, '#draft', basic.FAST_OPERATION);
-    basic.execute(driver, 'click', '#draft', "Cannot click on 'draft' button");
+    basic.execute(driver, 'click', '#draft', "****** PHASE#2 > NEW DRAFT : ERROR = Cannot click on 'draft' button");
     driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
         assert(txt == firstName);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Seems that person is not saved properly/FN");});
+    }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 > NEW DRAFT : ERROR = Seems that person is not saved properly/FN");});
     driver.findElement({css:'div[property="v-s:lastName"] span[class="value-holder"]'}).getText().then(function (txt) {
         assert(txt == lastName);
-    }).thenCatch(function (e) {basic.errorHandler(e, "Seems that person is not saved properly/LN");});
+    }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 > NEW DRAFT : ERROR = Seems that person is not saved properly/LN");});
+    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#2 > NEW DRAFT   : COMPLETE");});
 
-    //Проверям наличие его в наших черновиках
-    check(driver, "true");
+    //PHASE#3:Проверям наличие его в наших черновиках
+    check(driver, "true", 3);
+    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#3 > CHECK DRAFT : COMPLETE");});
 
-    //Досоздаем черновик
+    //PHASE#4:Досоздаем черновик
     fillProperty(driver, 'middleName', 'Пупкин');
     var now = new Date();
     fillProperty(driver, 'birthday',
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2));
-    basic.execute(driver, 'click', '[property="v-s:lastName"] + veda-control input', "Cannot click on 'last name control' for person");
+    basic.execute(driver, 'click', '[property="v-s:lastName"] + veda-control input',
+        "****** PHASE#4 > EDIT DRAFT : ERROR = Cannot click on 'last name control' for person");
     //Сохраняем его как нормальный документ
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#save')[0].scrollIntoView(true);");
-    basic.execute(driver, 'click', '#save', "Cannot click on 'save' button");
+    basic.execute(driver, 'click', '#save', "****** PHASE#4 > EDIT DRAFT : ERROR = Cannot click on 'save' button");
+    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#4 > EDIT DRAFT  : COMPLETE");});
 
-    check(driver, "false");
+    //PHASE#5
+    check(driver, "false", 5);
+    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#5 > CHECK DRAFT : COMPLETE");});
+
     driver.quit();
-})
+});
