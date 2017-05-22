@@ -1494,6 +1494,14 @@ v-wf:DecisionCalculationsPerformed
   rdfs:label "Calculations performed"@en ;
   v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
+v-wf:DecisionAcceptMotivatedRefusal
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Принять мотивированный отказ"@ru ;
+  rdfs:label "Accept a motivated refusal"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
+.
 
 v-wf:DecisionRedirectTemplate
   rdf:type v-ui:ClassTemplate ;
