@@ -120,6 +120,9 @@ v-s:Delivery
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Доставка"@ru ;
   rdfs:label "Delivery"@en ;
   v-ui:hasTemplate v-s:DeliveryTemplate;
