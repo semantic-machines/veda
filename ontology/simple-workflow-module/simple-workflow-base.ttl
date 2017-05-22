@@ -965,6 +965,13 @@ if (doc) {
         }
       }
     }
+  routes['examination'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+  routes['examination'][simple+'visible'] = [true];
+  routes['examination'][simple+'editable'] = [true];
+//routes['examination'][simple+'deadlineDays'] = [10];
+//routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+  
+  
   }
 
 //--------------------------------------------------------------------------------Претензия-------
