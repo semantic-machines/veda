@@ -2039,6 +2039,16 @@ if (doc) {
     routes['instruction3'][simple+'editable'] = [false];
     routes['instruction3'][simple+'deadlineDays'] = [10];
     routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
+  
+    // #informing----------------------------------------------------------------------------------------------------------------------------------------
+    routes['informing'][simple+'participant'] = [new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]; // Сотрудник. Мастер УВКХ
+    routes['informing'][simple+'visible'] = [true];
+    routes['informing'][simple+'editable'] = [false];
+    routes['informing'][simple+'deadlineDays'] = [10];
+    routes['informing'][simple+'comment'] = [new String('Для принятия решений')];
+
+  
+  
   }
 //----------------------------------------------------------------------------------------------------------------------------------Письмо
   // Входящее письмо
