@@ -392,6 +392,8 @@ v-s:Journal_printBlank
   v-s:fileFormat "pdf";
   rdfs:label "Journal print blank"@en ;
   rdfs:label "Печатная форма журнала"@ru ;
+#  rdfs:label "pdf"@en ;
+#  rdfs:label "pdf"@ru ;
 .
 
 ####################################################################################

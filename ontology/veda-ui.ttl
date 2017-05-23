@@ -1467,20 +1467,37 @@ v-ui:JournalTemplate
   v-ui:template """
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
+  $('.createReport0', template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
+  });
 </script>
 <div class="container journal sheet">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
+  <div class="row">
+  <div class="col-md-10">
+    
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  </div>
+  <div class="col-md-2">
+    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
+      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <!--span class="glyphicon glyphicon-print"></span--> <span class="fa fa-file-pdf-o"></span>
+    </button>
+    </div>    
+    </div>
   <div rel="v-s:onDocument">
     <div>
-      <h4>
-        <span about="v-wf:onDocument" property="rdfs:label"></span>:
-        <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
-      </h4>
-    </div>
+      
+        <h4>
+          <span about="v-wf:onDocument" property="rdfs:label"></span>:
+          <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+        </h4>
+      </div>
+    
+    
   </div>
   <div rel="v-wf:onProcess">
     <div>
