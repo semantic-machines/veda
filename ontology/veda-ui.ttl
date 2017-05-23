@@ -1482,9 +1482,9 @@ v-ui:JournalTemplate
     
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
   </div>
-  <div class="col-md-2">
+  <div class="col-md-2 text-right">
     <button type="button" class="action btn btn-info view -edit -search createReport0"  >
-      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <!--span class="glyphicon glyphicon-print"></span--> <span class="fa fa-file-pdf-o"></span>
+      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
     </button>
     </div>    
   </div>
