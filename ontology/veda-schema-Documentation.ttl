@@ -289,3 +289,22 @@ v-s:OriginalSource
   rdfs:label "Original source"@en ;
   rdfs:label "Источник оригинала"@ru ;
 .
+
+#---------------------------------------------------------
+v-s:PowerOfAttorney
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ; 
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;     
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Power of attorney"@en ;
+  rdfs:label "Доверенность"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:sender
+# v-s:recipient
+# v-s:hasComment
+# rdfs:label
