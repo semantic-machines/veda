@@ -119,8 +119,6 @@ class ScriptProcess : VedaModule
 
         foreach (_script_id; event_scripts_order)
         {
-            tnx.reset();
-
             script_id = _script_id;
 
             ScriptInfo script = event_scripts[ script_id ];
@@ -150,6 +148,8 @@ class ScriptProcess : VedaModule
 
                 try
                 {
+                    tnx.reset();
+
 /*
                                     if (count_sckip == 0)
                                     {

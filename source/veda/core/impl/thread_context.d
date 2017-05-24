@@ -812,8 +812,8 @@ class PThreadContext : Context
     static const byte EXISTS_TYPE = 1;
 
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
-                           bool ignore_freeze,
-                           bool is_api_request)
+                           OptFreeze opt_freeze,
+                           OptAuthorize opt_request)
     {
         //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
@@ -880,40 +880,40 @@ class PThreadContext : Context
     }
 
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
-                                   bool ignore_freeze = false, bool is_api_request = true)
+                                   OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
-                                      bool is_api_request = true)
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id,
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         Individual individual;
 
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
-                                      bool ignore_freeze = false, bool is_api_request = true)
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
-                                      bool ignore_freeze = false, bool is_api_request = true)
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
+                                           long transaction_id, OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1060,8 +1060,7 @@ class PThreadContext : Context
                 Ticket *ticket = this.get_ticket(item.ticket_id);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
+                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, OptFreeze.NONE, OptAuthorize.YES).result;
 
                 if (rc == ResultCode.No_Content)
                 {
@@ -1081,8 +1080,8 @@ class PThreadContext : Context
         {
             version (isModule)
             {
-                log.trace("@0 -------------------------------------------------------------------------------------------");
-                log.trace("@1 commit, tnx.id=%s tnx.len=%d", in_tnx.id, in_tnx.get_queue().length);
+                //log.trace("@0 -------------------------------------------------------------------------------------------");
+                //log.trace("@1 commit, tnx.id=%s tnx.len=%d", in_tnx.id, in_tnx.get_queue().length);
 
                 Individual imm;
                 imm.uri = "tnx:" ~ text(in_tnx.id);
@@ -1093,7 +1092,7 @@ class PThreadContext : Context
                 int       idx = 0;
                 foreach (ti; in_tnx.get_queue())
                 {
-                    log.trace("@2 ti=%s", ti);
+                    //log.trace("@2 ti=%s", ti);
                     Individual iti;
 
                     iti.uri = "el:" ~ text(idx);
@@ -1121,10 +1120,16 @@ class PThreadContext : Context
 
                 string binobj = imm.serialize();
 
-                log.trace("[%s] commit: (isModule), req=(%s)", name, binobj);
+                //log.trace("[%s] commit: (isModule), req=(%s)", name, binobj);
 
                 OpResult res = reqrep_binobj_2_main_module(binobj)[ 0 ];
-                log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
+                //log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
+
+                if (res.result != ResultCode.OK && res.result != ResultCode.No_Content)
+                {
+                    this.get_logger().trace("FAIL COMMIT");
+                    return res.result;
+                }
             }
         }
         return ResultCode.OK;

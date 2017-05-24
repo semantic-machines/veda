@@ -290,7 +290,7 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                        cast(string)_event_id[ 0.._event_id_length ].dup);
+                         cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -304,7 +304,7 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                        cast(string)_event_id[ 0.._event_id_length ].dup);
+                         cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -318,7 +318,7 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                        cast(string)_event_id[ 0.._event_id_length ].dup);
+                         cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -333,7 +333,7 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                        cast(string)_event_id[ 0.._event_id_length ].dup);
+                         cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -347,7 +347,7 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                        cast(string)_event_id[ 0.._event_id_length ].dup);
+                         cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
