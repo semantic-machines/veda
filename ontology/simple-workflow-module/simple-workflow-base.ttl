@@ -211,9 +211,13 @@ s-wf:map_possible_decision
 s-wf:possible_decision_after_return
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:possible_decision ;
-  v-wf:mappingExpression  "[newUri('v-wf:DecisionAgreed'), newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionRedirect')]" ;
+  v-wf:mappingExpression  "[newUri('v-wf:DecisionAcceptMotivatedRefusal'), newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionRedirect')]" ;
 .
-
+s-wf:possible_decision_for_controller
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:possible_decision ;
+  v-wf:mappingExpression  "[newUri('v-wf:DecisionConfirm'), newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionRedirect')]" ;
+.
 s-wf:map_decision_route_to_add_reaction
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:decision_route_to_add_reaction ;
@@ -303,6 +307,13 @@ s-wf:map_initiator_4_PLV_initiator
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_initiator ;
   v-wf:mappingExpression  "process.getLocalVariable ('initiator')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_controller_4_PLV_controller
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_controller ;
+  v-wf:mappingExpression  "process.getLocalVariable ('controller')" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -970,8 +981,8 @@ if (doc) {
   routes['examination'][simple+'editable'] = [true];
 //routes['examination'][simple+'deadlineDays'] = [10];
 //routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
-  
-  
+
+
   }
 
 //--------------------------------------------------------------------------------Претензия-------
@@ -1912,13 +1923,13 @@ if (doc) {
       || doc.hasValue("v-s:hasDocumentKind", "d:6ef5acd0e8104e158045636555baedac") // Подтверждение об открытии, изменении аккредитива
   ) {
       signers = signers.concat(new veda.IndividualModel("d:0c061f42-ceb5-442b-a550-61bfe762e0e1")); // Переводчик
-      
-      
+
+
       routes['approval'][simple+'comment'] = [new String('Проверить сумму. Указать аванс')];
       routes['sign'][simple+'comment'] = [new String('Выполнить перевод документа')];
       routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
       routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом')];
-     
+
     }
     if (
       doc.hasValue("v-s:hasDocumentKind", "d:8737ebad40db4fafbf1cd5929f580c3a") // Акт о приемке выполненных работ имп.
@@ -1936,56 +1947,56 @@ if (doc) {
       } else if ( supporter.length ) {
         approvers = approvers.concat( supporter ); // Специалист по сопровождению контракта
       }
-      
+
       reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
       routes['review'][simple+'participant'] = reviewers;
       routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [true];
       routes['review'][simple+'deadlineDays'] = [3];
-    } 
+    }
 /*
     if ( orderCreator.length ) {
       examiners = examiners.concat(orderCreator); // Создатель заказа
     }
 */
-   
+
     if ( doc.hasValue("v-s:hasDocumentKind", "d:0e013b49ee56476897656015c1ca6c94") // акт КС-2
       || doc.hasValue("v-s:hasDocumentKind", "d:ada37e3e328b4a1592b0e259e95539b8"))// акт КС-3
-      
+
     {
       signers = signers.concat(new veda.IndividualModel("d:wom1ouosnbv76dvsixphdcdd"));//  роль "Технический директор. Подписание актов"
     }
-    
-    
+
+
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
     routes['coordination1'][simple+'deadlineDays'] = [10];
     routes['coordination1'][simple+'comment'] = [new String('Согласовать первичный документ')];
-   
+
     routes['coordination2'][simple+'visible'] = [true];
     routes['coordination2'][simple+'editable'] = [true];
     routes['coordination2'][simple+'deadlineDays'] = [10];
     routes['coordination2'][simple+'comment'] = [new String('Согласовать первичный документ')];
-    
+
     routes['approval'][simple+'participant'] = approvers;
   //routes['approval'][simple+'comment'] = [new String('Проверить сумму. Указать аванс')];
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'deadlineDays'] = [3];
-  
+
     routes['sign'][simple+'participant'] = signers;
   //routes['sign'][simple+'comment'] = [new String('Выполнить перевод документа')];
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [3];
-  
+
     routes['review'][simple+'participant'] = reviewers;
   //routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
     routes['review'][simple+'visible'] = [true];
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
-  
+
     routes['examination'][simple+'participant'] = examiners;
   //routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом')];
     routes['examination'][simple+'visible'] = [true];
@@ -2039,7 +2050,7 @@ if (doc) {
     routes['instruction3'][simple+'editable'] = [false];
     routes['instruction3'][simple+'deadlineDays'] = [10];
     routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
-  
+
     // #informing----------------------------------------------------------------------------------------------------------------------------------------
     routes['informing'][simple+'participant'] = [new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]; // Сотрудник. Мастер УВКХ
     routes['informing'][simple+'visible'] = [true];
@@ -2047,8 +2058,8 @@ if (doc) {
     routes['informing'][simple+'deadlineDays'] = [10];
     routes['informing'][simple+'comment'] = [new String('Для принятия решений')];
 
-  
-  
+
+
   }
 //----------------------------------------------------------------------------------------------------------------------------------Письмо
   // Входящее письмо
@@ -3500,7 +3511,7 @@ s-wf:def_exec_initiator
 
 s-wf:def_exec_responsible
   rdf:type v-wf:ExecutorDefinition ;
-  v-wf:executorExpression "process.getLocalVariable ('responsible') ? process.getLocalVariable ('responsible') : process.getLocalVariable ('initiator')" ;
+  v-wf:executorExpression "process.getLocalVariable ('responsible') ? process.getLocalVariable ('responsible') : (process.getLocalVariable ('controller') ? process.getLocalVariable ('controller') : process.getLocalVariable ('initiator'))" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -3808,7 +3819,7 @@ s-wf:nc_return_to_initiator
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm3;
+  v-wf:startingMapping s-wf:map_controller_4_PLV_controller, s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm3;
   v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
@@ -3831,7 +3842,7 @@ s-wf:nc_oc
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_from_actor, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
-  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
+  v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
