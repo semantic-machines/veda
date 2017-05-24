@@ -88,33 +88,28 @@ struct Transaction
     private
     {
         TransactionItem *[ string ] buff;
-        TransactionItem *[]          queue;
+        TransactionItem[]            queue;
         immutable(TransactionItem)[] immutable_queue;
     }
 
-    bool       is_autocommit = true;
-    long       id;
-    ResultCode rc;
+    bool        is_autocommit = true;
+    long        id;
+    ResultCode  rc;
+    int         count;
 
-/*
-    public void                 add(ref immutable TransactionItem _ti)
-    {
-        TransactionItem ti = copy_from_immutable(_ti);
-
-        buff[ ti.new_indv.uri ] = &ti;
-        queue ~= &ti;
-    }
- */
 
     public void add_immutable(ref immutable TransactionItem _ti)
     {
         immutable_queue ~= _ti;
     }
 
-    public void add(TransactionItem *ti)
+    public void add(TransactionItem ti)
     {
-        buff[ ti.new_indv.uri ] = ti;
         queue ~= ti;
+        TransactionItem *tii = &queue[ count ];
+        string          kk   = ti.new_indv.uri.dup;
+        buff[ kk ] = tii;
+        count++;
     }
 
     public void reset()
@@ -127,6 +122,8 @@ struct Transaction
 
         if (immutable_queue.length > 0)
             immutable_queue = immutable_queue.init;
+
+        count = 0;
     }
 
     public TransactionItem *get(string uri)
@@ -134,7 +131,7 @@ struct Transaction
         return buff.get(uri, null);
     }
 
-    public TransactionItem *[] get_queue()
+    public TransactionItem[] get_queue()
     {
         return queue;
     }

@@ -119,7 +119,7 @@ class ScriptProcess : VedaModule
 
         foreach (_script_id; event_scripts_order)
         {
-    	    tnx.reset();
+            tnx.reset();
 
             script_id = _script_id;
 

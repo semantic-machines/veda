@@ -112,10 +112,8 @@ void set_g_super_classes(string[] indv_types, Onto onto)
     g_super_classes.length = cast(int)superclasses_str.length;
 }
 
-private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
+private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
 {
-    TransactionItem *ti = new TransactionItem();
-
     ti.cmd        = _cmd;
     ti.new_binobj = _binobj;
     ti.ticket_id  = _ticket_id;
@@ -135,7 +133,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
         {
             ti.rc = ResultCode.Unprocessable_Entity;
             log.trace("ERR! v8d:transaction:deserialize [%s]", ti.new_binobj);
-            return ti;
+            return;
         }
         else
             ti.rc = ResultCode.OK;
@@ -145,7 +143,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
 
         if (ti.rc == ResultCode.OK && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
         {
-            // log.trace("new_TransactionItem(%s) [%s]", text (_cmd), ti.new_indv);
+            // log.trace("fill_TransactionItem(%s) [%s]", text (_cmd), ti.new_indv);
             Individual      prev_indv;
 
             TransactionItem *ti1 = tnx.get(ti.new_indv.uri);
@@ -170,7 +168,7 @@ private TransactionItem *new_TransactionItem(INDV_OP _cmd, string _binobj, strin
             ti.cmd = INDV_OP.PUT;
         }
     }
-    return ti;
+    return;
 }
 
 
@@ -289,8 +287,10 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
                                        int _event_id_length)
 {
     // writeln("@V8:put_individual");
-    TransactionItem *ti = new_TransactionItem(INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                                              cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem ti;
+
+    fill_TransactionItem(&ti, INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                        cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -301,9 +301,10 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
 extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti =
-        new_TransactionItem(INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                            cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem ti;
+
+    fill_TransactionItem(&ti, INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                        cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -314,9 +315,10 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
 extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti =
-        new_TransactionItem(INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                            cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem ti;
+
+    fill_TransactionItem(&ti, INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                        cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -328,9 +330,10 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
                                                const char *_event_id,
                                                int _event_id_length)
 {
-    TransactionItem *ti =
-        new_TransactionItem(INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                            cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem ti;
+
+    fill_TransactionItem(&ti, INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                        cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -341,8 +344,10 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
 extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
                                           int _event_id_length)
 {
-    TransactionItem *ti = new_TransactionItem(INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                                              cast(string)_event_id[ 0.._event_id_length ].dup);
+    TransactionItem ti;
+
+    fill_TransactionItem(&ti, INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
+                        cast(string)_event_id[ 0.._event_id_length ].dup);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);

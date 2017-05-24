@@ -1093,7 +1093,7 @@ class PThreadContext : Context
                 int       idx = 0;
                 foreach (ti; in_tnx.get_queue())
                 {
-                    log.trace("@2 ti=%s", *ti);
+                    log.trace("@2 ti=%s", ti);
                     Individual iti;
 
                     iti.uri = "el:" ~ text(idx);

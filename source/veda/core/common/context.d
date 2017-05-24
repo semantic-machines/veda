@@ -118,8 +118,8 @@ interface Context
     public Authorization acl_indexes();
 
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
-                                       bool ignore_freeze,
-                                       bool is_api_request);
+                           bool ignore_freeze,
+                           bool is_api_request);
 
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
 
