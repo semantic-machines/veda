@@ -304,7 +304,25 @@ v-s:PowerOfAttorney
 .
 # v-s:registrationNumber
 # v-s:registrationDate
-# v-s:sender
-# v-s:recipient
 # v-s:hasComment
 # rdfs:label
+# v-s:grantor
+# v-s:grantee
+
+v-s:grantor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Grantor"@en ;
+  rdfs:label "Доверитель"@ru ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:grantee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Grantee"@en ;
+  rdfs:label "Доверенный"@ru ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+
+
+
