@@ -3862,7 +3862,7 @@ s-wf:nc_r_to_i_return a v-wf:Flow;
 
 s-wf:nc_r_to_i_finish a v-wf:Flow;
   rdfs:isDefinedBy s-wf:;
-  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
+  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAcceptMotivatedRefusal')) == true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_finish;
 .
@@ -3876,7 +3876,7 @@ s-wf:nc_r_to_aur a v-wf:Flow;
 
 s-wf:nc_to_finish a v-wf:Flow;
   rdfs:isDefinedBy s-wf:;
-  v-wf:predicate "(!process.getInputVariable ('controller')) || task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
+  v-wf:predicate "(!process.getInputVariable ('controller')) || task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionConfirm')) == true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_finish;
 .
