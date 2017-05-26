@@ -810,7 +810,7 @@ if (doc) {
   routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
   routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
+  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Утвердить", "Approve");
   routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
   routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
