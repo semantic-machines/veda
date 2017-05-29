@@ -768,8 +768,8 @@ s-wf:ComplexRouteStartForm_Template
 if (mode !== "edit") { return; }
 
 var stages = [ // Default values fill
-  'informing',
-  'introduction',
+  'informing',      //Информирование
+  'introduction',   //
   'coordination1',
   'coordination2',
   'coordination3',
@@ -778,11 +778,11 @@ var stages = [ // Default values fill
   'coordination6',
   'sign',
   'approval',
-  'review',
+  'review',         //Рассмотрение
   'instruction',
   'instruction2',
   'instruction3',
-  'examination',
+  'examination',    //Ознакомление
   'distribution',
   'auto_instruction'
 ];
@@ -1302,8 +1302,24 @@ if (doc) {
       routes['examination'][simple+'comment'] = [new String('Для информации')];
     }
   }
-//--------------------------------------------------------------------------------------------------------------------------------Выполнение заявки на контракт
+//--------------------------------------------------------------------------------------------------------------------------------Выбор поставщика
   if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'visible'] = [true];
+    routes['coordination4'][simple+'editable'] = [true];
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+  }
+/*  if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
     if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") {
       // Закупка
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasBudgetCategory') && doc['v-s:backwardTarget'][0]['v-s:hasBudgetCategory'][0].id == "d:a193b366b-aaeb-c1f2-b101-89c95b10a6c8") {
@@ -1449,7 +1465,7 @@ if (doc) {
         }
       }
     }
-  }
+  }*/
 //-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт / Дополнительное соглашение
   if (doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") {
 
