@@ -1081,6 +1081,8 @@ v-df:rul_DistributionTransform7
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
 .
 
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ CОГЛАСОВАНИЕ В СЕТЬ --
+
 v-df:CoordinationRouteStartFormToNet
   rdfs:label "Трансформация из СтФ На согласование в стандартную сеть процесса"^^xsd:string;
   rdf:type v-wf:Transform ;
@@ -1144,7 +1146,8 @@ v-df:rul_CoordinationTransform6_0
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAgreed')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRejected')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotPerformed')";
+# v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotPerformed')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNoAgreed')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRedirect')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotForMe')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
@@ -1252,6 +1255,7 @@ v-wf:permission_c_on_decision
   v-s:permissionObject v-wf:DecisionControll ;
   v-s:permissionObject v-wf:DecisionNotRequireReview ;
   v-s:permissionObject v-wf:DecisionAgreed ;
+  v-s:permissionObject v-wf:DecisionNoAgreed ;
   v-s:permissionObject v-wf:DecisionAgreedToProject ;
   v-s:permissionObject v-wf:DecisionAgreedToExecute ;
   v-s:permissionObject v-wf:DecisionAgreedToExecuteComment ;
@@ -1306,6 +1310,15 @@ v-wf:DecisionNotRequireReview
   rdfs:label "Review is not necessary"@en ;
 .
 
+v-wf:DecisionNoAgreed
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Согласование не требуется"@ru ;
+  rdfs:label "Negotiation is not required"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
+.
+
 v-wf:DecisionAgreed
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Decision ;
@@ -1314,6 +1327,7 @@ v-wf:DecisionAgreed
   rdfs:label "Approved"@en ;
   v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
+
 
 v-wf:DecisionAgreedToProject
   rdf:type owl:Class ;
@@ -1528,6 +1542,7 @@ v-wf:DecisionTemplate1
   rdfs:label "Template for -Decision- class"@en ;
   v-ui:forClass v-wf:DecisionNotForMe ;
   v-ui:forClass v-wf:DecisionAgreed ;
+  v-ui:forClass v-wf:DecisionNoAgreed ;
   v-ui:forClass v-wf:DecisionSign ;
   v-ui:forClass v-wf:DecisionApprove ;
   v-ui:forClass v-wf:DecisionReview ;
@@ -1586,6 +1601,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:forProperty rdfs:comment ;
   v-ui:forClass v-wf:DecisionAgreed ;
+  v-ui:forClass v-wf:DecisionNoAgreed;
   v-ui:forClass v-wf:DecisionSign ;
   v-ui:forClass v-wf:DecisionApprove ;
   v-ui:forClass v-wf:DecisionReview ;
