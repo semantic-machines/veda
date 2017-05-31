@@ -25,7 +25,7 @@ shared static this()
 
 private int[ string ] get_processes_info(string[] command_patterns, ref ProcessInfo[ int ] processes)
 {
-    writeln("command_patterns=", command_patterns);
+    //writeln("command_patterns=", command_patterns);
 
     long[ string ] keys;
     int[ string ] args_2_pid;
@@ -328,7 +328,7 @@ void main(string[] args)
 
             foreach (ml; started_modules)
             {
-                writeln("check module ", ml);
+                //writeln("check module ", ml);
                 int pid;
                 pid = args_2_pid.get(ml, -1);
 
