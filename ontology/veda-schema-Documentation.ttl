@@ -326,3 +326,55 @@ v-s:grantee
 
 
 
+#----------------------------------КОМАНДИРОВКА-----------------------
+v-s:BusinessTrip
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ; 
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Business trip"@en ;
+  rdfs:label "Командировка"@ru ;
+.
+v-s:hasBusinessTripRegistrationRecord
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BusinessTrip ;
+  rdfs:range v-s:BusinessTripRegistrationRecord ;
+  rdfs:label "Регистрационная запись"@ru ;
+  rdfs:label "Registration record"@en ;
+.
+v-s:businessTripEmployee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "business trip employee"@en ;
+  rdfs:label "Сотрудник"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:businessTripDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "business trip department"@en ;
+  rdfs:label "Подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:buisnessTripGoal
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Goal"@en ;
+  rdfs:label "Цель"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+# v-s:supplier
+# v-s:duration
+
+
+###----------------------------------РЕГ_ЗАПИСЬ_КОМАНДИРОВКИ---------------------
+v-s:BusinessTripRegistrationRecord
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:label "Регистрационная запись командировки"@ru ;
+  rdfs:label "Business trip registration record"@en ;
+#  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
+.
