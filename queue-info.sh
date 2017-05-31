@@ -1,8 +1,5 @@
 #!/bin/bash
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_push`
-COUNT_PUT=${array[3]}
-
 IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_CCUS`
 COUNT_CCUS=${array[4]}
 
@@ -26,6 +23,9 @@ COUNT_SCRIPTS_LP=${array[4]}
 
 IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_scripts_main`
 COUNT_SCRIPTS_MAIN=${array[4]}
+
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_push`
+COUNT_PUT=${array[3]}
 
 echo count put: $COUNT_PUT
 echo ccus: $(($COUNT_PUT - $COUNT_CCUS))
