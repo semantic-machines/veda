@@ -1031,7 +1031,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
             {
                 // для обновляемого индивида проверим доступность бита Update
-                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null) != Access.can_update)
+                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
                 {
                     res.result = ResultCode.Not_Authorized;
                     return res;
@@ -1057,7 +1057,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             {
                 if (rr.info == NEW_TYPE)
                 {
-                    if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null) != Access.can_create)
+                    if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null, null) != Access.can_create)
                     {
                         res.result = ResultCode.Not_Authorized;
                         return res;
@@ -1283,7 +1283,7 @@ Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
                 is_allow_trusted = true;
         }
 
-        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl);
+        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl, null);
 
         if (is_allow_trusted)
         {

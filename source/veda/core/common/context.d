@@ -254,7 +254,7 @@ interface Context
                  trace_acl  = функция делегат, собирающая результат выполнения функции
      */
     public void get_rights_origin_from_acl(Ticket *ticket, string uri,
-                                           void delegate(string resource_group, string subject_group, string right) trace_acl);
+                                           void delegate(string resource_group, string subject_group, string right) trace_acl, void delegate(string log) trace_info);
 
     /**
        Вернуть список групп в которые входит индивид указанный по uri, список представляет собой индивид

@@ -51,7 +51,7 @@ class Authorization : LmdbStorage
                                                                                                                string subject_group,
                                                                                                                string right)
                     trace_acl,
-                    void delegate(string resource_group) trace_group
+                    void delegate(string resource_group) trace_group, void delegate(string log) trace_info
                     )
     {
         string uri = _uri.idup;

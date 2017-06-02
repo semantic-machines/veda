@@ -455,7 +455,7 @@ class VedaModule
 
             while (is_superadmin == false)
             {
-                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", &trace_acl);
+                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", &trace_acl, null);
 
                 log.trace("child_process is_superadmin=%s", text(is_superadmin));
                 Thread.sleep(dur!("seconds")(1));

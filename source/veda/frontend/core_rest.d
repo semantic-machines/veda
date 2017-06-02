@@ -349,7 +349,10 @@ class VedaStorageRest : VedaStorageRest_API
             if (ticket.result != ResultCode.OK)
                 throw new HTTPStatusException(ticket.result);
 
-
+            void trace_info(string info)
+            {
+            }
+            
             void trace_acl(string resource_group, string subject_group, string right)
             {
                 Individual indv_res = Individual.init;
@@ -366,7 +369,7 @@ class VedaStorageRest : VedaStorageRest_API
                 res ~= indv_res;
             }
 
-            context.get_rights_origin_from_acl(ticket, uri, &trace_acl);
+            context.get_rights_origin_from_acl(ticket, uri, &trace_acl, &trace_info);
 
 
             json = Json[].init;
