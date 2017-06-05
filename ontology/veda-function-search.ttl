@@ -198,6 +198,11 @@ v-fs:Find
   rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
 .
+v-fs:Excel
+  rdf:type v-s:Bundle ;
+  rdfs:label "Excel"@en ;
+  rdfs:label "Excel"@ru ;
+.
 v-fs:Results
   rdf:type v-s:Bundle ;
   rdfs:label "Results"@en ;
@@ -1229,7 +1234,7 @@ v-fs:AttributiveSearchTemplate
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
-    <button class="btn btn-default xls"><span>Excel</span></button>
+    <button class="btn btn-default xls"><span  about="v-fs:Excel" property="rdfs:label"></span></button>
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
   </div>
   <div id="results" class="hidden">
@@ -1347,11 +1352,29 @@ v-fs:AttributiveSearchTemplate
         scrollTo( $("#results", template).offset().top );
       });
     }
+// Очистка поисковой формы по клавишам Ctrl+Delete    
+    if (e.ctrlKey && e.keyCode === 46) {
+      var obj = searchBlank.object;
+      Object.keys(obj.properties).map(function (property_uri) {
+        if (property_uri === "@" || property_uri === "rdf:type") {
+          return;
+        }
+        obj.set(property_uri, []);
+      });
+    }
   }
+  
+  
   $(window).on("keyup", ctrlEnterHandler);
   template.one("remove", function () {
     $(window).off("keyup", ctrlEnterHandler);
   });
+  
+  
+  function ctrlDelHandler (e) {
+   
+  }
+  
 
   // Clear button handler
   clearButton.click(function () {
