@@ -2726,7 +2726,7 @@ s-wf:codelet_change_controller_right
   v-s:script """
   process.getInputVariable ('rightset')?
   change_rights_actor (process, task, process.getInputVariable ('rightset'), 'controller') :
-  down_right_and_store (process, task)
+  change_rights_actor (process, task, newStr ('-r--'), 'controller')
 """ ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -2737,7 +2737,7 @@ s-wf:codelet_change_responsible_right
   v-s:script """
   process.getInputVariable ('rightset')?
   change_rights_actor (process, task, process.getInputVariable ('rightset'), 'responsible') :
-  down_right_and_store (process, task)
+  change_rights_actor (process, task, newStr ('-r--'), 'responsible')
 """ ;
   rdfs:isDefinedBy s-wf: ;
 .
