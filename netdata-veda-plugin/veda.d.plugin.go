@@ -157,8 +157,6 @@ func main() {
 		fmt.Printf("SET dt_count_updates=%v\n", vedaData["dt_count_updates"])
 		fmt.Println("END")
 
-		main_queue.get_info ()
-
     		cs_fanout_email.get_info()
     		cs_fanout_sql_lp.get_info()
     		cs_fanout_sql_np.get_info()
@@ -167,6 +165,8 @@ func main() {
     		cs_ltr_scripts.get_info()
     		cs_scripts_lp.get_info()
     		cs_CCUS.get_info()
+
+		main_queue.get_info ()
 
 		fmt.Println("BEGIN netdata.plugin_veda_queue_scripts_main")
 		fmt.Printf("SET queue_fanout_email=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)
