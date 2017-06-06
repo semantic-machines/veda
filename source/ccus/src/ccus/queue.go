@@ -97,6 +97,7 @@ type Consumer struct {
 	first_element uint64
 	count_popped  uint32
 	last_read_msg []uint8
+	mode          Mode
 
 	ff_info_pop_w *os.File
 	ff_info_pop_r *os.File
@@ -108,10 +109,11 @@ type Consumer struct {
 	hash   hash.Hash32
 }
 
-func NewConsumer(_queue *Queue, _name string) *Consumer {
+func NewConsumer(_queue *Queue, _name string, _mode Mode) *Consumer {
 	p := new(Consumer)
 	p.queue = _queue
 	p.name = _name
+	p.mode = _mode
 	//tablePolynomial := crc32.MakeTable(0xD5828281)
 	//p.hash = crc32.New(tablePolynomial)
 	p.hash = crc32.NewIEEE()
@@ -128,10 +130,12 @@ func (ths *Consumer) open() bool {
 
 	var err error
 
-	if _, err = os.Stat(ths.file_name_info_pop); os.IsNotExist(err) {
-		ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_CREATE|os.O_RDWR, 0644)
-	} else {
-		ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_RDWR, 0644)
+	if ths.mode == RW {
+		if _, err = os.Stat(ths.file_name_info_pop); os.IsNotExist(err) {
+			ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_CREATE|os.O_RDWR, 0644)
+		} else {
+			ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_RDWR, 0644)
+		}
 	}
 	ths.ff_info_pop_r, err = os.OpenFile(ths.file_name_info_pop, os.O_RDONLY, 0644)
 
@@ -141,8 +145,10 @@ func (ths *Consumer) open() bool {
 }
 
 func (ths *Consumer) Close() {
-	ths.ff_info_pop_w.Sync()
-	ths.ff_info_pop_w.Close()
+	if ths.mode == RW {
+		ths.ff_info_pop_w.Sync()
+		ths.ff_info_pop_w.Close()
+	}
 	ths.ff_info_pop_r.Close()
 }
 
@@ -152,7 +158,7 @@ func (ths *Consumer) remove() {
 }
 
 func (ths *Consumer) put_info(is_sync_data bool) bool {
-	if !ths.queue.isReady || !ths.isReady {
+	if !ths.queue.isReady || !ths.isReady || ths.mode != RW {
 		return false
 	}
 
@@ -243,8 +249,7 @@ func (ths *Consumer) get_info() bool {
 }
 
 func (ths *Consumer) pop() string {
-
-	if !ths.queue.isReady || !ths.isReady {
+	if !ths.queue.isReady || !ths.isReady || ths.mode != RW {
 		return ""
 	}
 
@@ -286,12 +291,14 @@ func (ths *Consumer) pop() string {
 }
 
 func (ths *Consumer) sync() {
-	ths.ff_info_pop_w.Sync()
+	if ths.mode == RW {
+		ths.ff_info_pop_w.Sync()
+	}
 }
 
 func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
-	if !ths.queue.isReady || !ths.isReady {
-		log.Printf("ERR! queue:commit_and_next:!queue.isReady || !isReady")
+	if !ths.queue.isReady || !ths.isReady || ths.mode != RW {
+		log.Printf("ERR! queue:commit_and_next:!queue.isReady || !isReady || ths.mode != RW")
 		return false
 	}
 
