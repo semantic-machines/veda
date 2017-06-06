@@ -57,16 +57,6 @@ func main() {
 	fmt.Println("DIMENSION count_updates 'count updates' absolute 1 1" +
 		" '' area 10000 3")
 
-	fmt.Println("CHART netdata.plugin_vedad_count_ws_sessions '' 'Veda count_ws_sessions' 'count' " +
-		"veda.d '' area 10000 3")
-	fmt.Println("DIMENSION count_ws_sessions 'count ws sessions' absolute 1 1" +
-		" '' area 10000 3")
-
-	fmt.Println("CHART netdata.plugin_vedad_count_ws_hosts '' 'Veda count_ws_hosts' 'count' " +
-		"veda.d '' area 10000 3")
-	fmt.Println("DIMENSION count_ws_hosts 'count ws hosts' absolute 1 1" +
-		" '' area 10000 3")
-
 	fmt.Println("CHART netdata.plugin_vedad_dt_count_updates '' 'Veda dt_count_updates' 'count' " +
 		"veda.d '' area 10000 3")
 	fmt.Println("DIMENSION dt_count_updates 'dt count updates' absolute 1 1")
@@ -81,6 +71,10 @@ func main() {
 	fmt.Println("DIMENSION queue_fulltext_indexer 'fulltext_indexer' absolute 1 1")
 	fmt.Println("DIMENSION queue_scripts_main 'scripts_main' absolute 1 1")
 	fmt.Println("DIMENSION queue_CCUS 'CCUS' absolute 1 1")
+
+	fmt.Println("CHART netdata.plugin_veda_users '' 'Veda users' 'count' veda.d '' area 10000 3")
+	fmt.Println("DIMENSION ws_sessions 'ws sessions' absolute 1 1  '' area 10000 3")
+	fmt.Println("DIMENSION ws_hosts 'ws hosts' absolute 1 1 '' area 10000 3")
 
 	req, err := createRequest(config.Ccus_url)
 	if err != nil {
@@ -154,12 +148,9 @@ func main() {
 		fmt.Printf("SET count_updates=%v\n", vedaData["count_updates"])
 		fmt.Println("END")
 
-		fmt.Println("BEGIN netdata.plugin_vedad_count_ws_sessions")
-		fmt.Printf("SET count_ws_sessions=%v\n", vedaData["count_ws_sessions"])
-		fmt.Println("END")
-
-		fmt.Println("BEGIN netdata.plugin_vedad_count_ws_hosts")
-		fmt.Printf("SET count_ws_hosts=%v\n", vedaData["count_ws_hosts"])
+		fmt.Println("BEGIN netdata.plugin_veda_users")
+		fmt.Printf("SET ws_sessions=%v\n", vedaData["count_ws_sessions"])
+		fmt.Printf("SET ws_hosts=%v\n", vedaData["count_ws_hosts"])
 		fmt.Println("END")
 
 		fmt.Println("BEGIN netdata.plugin_vedad_dt_count_updates")
