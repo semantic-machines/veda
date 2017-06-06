@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 var httpClient *http.Client
 
-func createRequest() (*http.Request, error) {
+func createRequest(url string) (*http.Request, error) {
 	httpClient = &http.Client{}
-	req, err := http.NewRequest("GET", "http://127.0.0.1:8088/debug/vars", nil)
+	req, err := http.NewRequest("GET", url+"/debug/vars", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -21,43 +24,107 @@ func createRequest() (*http.Request, error) {
 	return req, nil
 }
 
+type Config struct {
+	Ccus_url        string
+	Veda_queue_path string
+}
+
+func ReadConfig() Config {
+	var configfile = "/etc/netdata/veda-plugin-properties.ini"
+	_, err := os.Stat(configfile)
+	if err != nil {
+		log.Fatal("Config file is missing: ", configfile)
+	}
+
+	var config Config
+	if _, err := toml.DecodeFile(configfile, &config); err != nil {
+		log.Fatal(err)
+	}
+//	log.Printf("CONFIG: veda_queue_path=%s\n", config.Veda_queue_path)
+	return config
+}
+
 func main() {
-	fmt.Println("CHART netdata.plugin_vedad_count_requests '' 'Veda count_requests' 'count' veda.d " +
-		" '' area 1000 5")
-	fmt.Println("DIMENSION count_requests 'count requests' absolute 1 1" +
-		" '' area 1000 5")
+	config := ReadConfig()
+
+//	fmt.Println("CHART netdata.plugin_vedad_count_requests '' 'Veda count_requests' 'count' veda.d " +
+//		" '' area 1000 3")
+//	fmt.Println("DIMENSION count_requests 'count requests' absolute 1 1" +
+//		" '' area 1000 3")
 
 	fmt.Println("CHART netdata.plugin_vedad_count_updates '' 'Veda count_updates' 'count' veda.d " +
-		" '' area 1000 5")
+		" '' area 10000 3")
 	fmt.Println("DIMENSION count_updates 'count updates' absolute 1 1" +
-		" '' area 1000 5")
+		" '' area 10000 3")
 
 	fmt.Println("CHART netdata.plugin_vedad_count_ws_sessions '' 'Veda count_ws_sessions' 'count' " +
-		"veda.d '' area 1000 5")
+		"veda.d '' area 10000 3")
 	fmt.Println("DIMENSION count_ws_sessions 'count ws sessions' absolute 1 1" +
-		" '' area 1000 5")
+		" '' area 10000 3")
 
 	fmt.Println("CHART netdata.plugin_vedad_count_ws_hosts '' 'Veda count_ws_hosts' 'count' " +
-		"veda.d '' area 1000 5")
+		"veda.d '' area 10000 3")
 	fmt.Println("DIMENSION count_ws_hosts 'count ws hosts' absolute 1 1" +
-		" '' area 1000 5")
+		" '' area 10000 3")
 
 	fmt.Println("CHART netdata.plugin_vedad_dt_count_updates '' 'Veda dt_count_updates' 'count' " +
-		"veda.d '' area 1000 5")
+		"veda.d '' area 10000 3")
 	fmt.Println("DIMENSION dt_count_updates 'dt count updates' absolute 1 1")
 
-	req, err := createRequest()
+	fmt.Println("CHART netdata.plugin_veda_queue_scripts_main '' 'Veda queue_scripts_main' 'count' " +
+		"veda.d '' area 10000 3")
+
+	fmt.Println("DIMENSION queue_fanout_email 'email' absolute 1 1")
+	fmt.Println("DIMENSION queue_scripts_main 'scripts_main' absolute 1 1")
+	fmt.Println("DIMENSION queue_fanout_sql_lp 'sql_lp' absolute 1 1")
+	fmt.Println("DIMENSION queue_fanout_sql_np 'sql_np' absolute 1 1")
+	fmt.Println("DIMENSION queue_fulltext_indexer 'fulltext_indexer' absolute 1 1")
+	fmt.Println("DIMENSION queue_scripts_main 'scripts_main' absolute 1 1")
+	fmt.Println("DIMENSION queue_CCUS 'CCUS' absolute 1 1")
+
+	req, err := createRequest(config.Ccus_url)
 	if err != nil {
 		log.Println(err)
 	}
+
+	var main_queue *Queue
+
+	main_queue_name := "individuals-flow"
+	main_queue = NewQueue(main_queue_name, R, config.Veda_queue_path)
+	main_queue.open(CURRENT)
+
+	cs_CCUS := NewConsumer(main_queue, "CCUS", R)
+	cs_CCUS.open()
+
+	cs_fanout_email := NewConsumer(main_queue, "fanout_email", R)
+	cs_fanout_email.open()
+
+	cs_fanout_sql_lp := NewConsumer(main_queue, "fanout_sql_lp", R)
+	cs_fanout_sql_lp.open()
+
+	cs_fanout_sql_np := NewConsumer(main_queue, "fanout_sql_np", R)
+	cs_fanout_sql_np.open()
+
+	cs_fulltext_indexer := NewConsumer(main_queue, "fulltext_indexer", R)
+	cs_fulltext_indexer.open()
+
+	cs_scripts_main := NewConsumer(main_queue, "scripts_main", R)
+	cs_scripts_main.open()
+
+	cs_ltr_scripts := NewConsumer(main_queue, "ltr_scripts", R)
+	cs_ltr_scripts.open()
+
+	cs_scripts_lp := NewConsumer(main_queue, "scripts_lp", R)
+	cs_scripts_lp.open()
+
 	vedaData := make(map[string]interface{})
 	for {
 		respStream, err := httpClient.Do(req)
 		if err != nil {
-			// log.Println("Failed to do request: ", err)
+			log.Println("Failed to do request: ", err)
 			respStream.Body.Close()
 			time.Sleep(5000 * time.Millisecond)
-			req, err = createRequest()
+			req, err = createRequest(config.Ccus_url)
 			if err != nil {
 				log.Println(err)
 			}
@@ -71,7 +138,7 @@ func main() {
 			// log.Println("Error on decoding json: ", err)
 			respStream.Body.Close()
 			time.Sleep(5000 * time.Millisecond)
-			req, err = createRequest()
+			req, err = createRequest(config.Ccus_url)
 			if err != nil {
 				log.Println(err)
 			}
@@ -79,9 +146,9 @@ func main() {
 			continue
 		}
 
-		fmt.Println("BEGIN netdata.plugin_vedad_count_requests")
-		fmt.Printf("SET count_requests=%v\n", vedaData["count_requests"])
-		fmt.Println("END")
+//		fmt.Println("BEGIN netdata.plugin_vedad_count_requests")
+//		fmt.Printf("SET count_requests=%v\n", vedaData["count_requests"])
+//		fmt.Println("END")
 
 		fmt.Println("BEGIN netdata.plugin_vedad_count_updates")
 		fmt.Printf("SET count_updates=%v\n", vedaData["count_updates"])
@@ -99,8 +166,29 @@ func main() {
 		fmt.Printf("SET dt_count_updates=%v\n", vedaData["dt_count_updates"])
 		fmt.Println("END")
 
+		main_queue.get_info ()
+
+    		cs_fanout_email.get_info()
+    		cs_fanout_sql_lp.get_info()
+    		cs_fanout_sql_np.get_info()
+    		cs_fulltext_indexer.get_info()
+    		cs_scripts_main.get_info()
+    		cs_ltr_scripts.get_info()
+    		cs_scripts_lp.get_info()
+    		cs_CCUS.get_info()
+
+		fmt.Println("BEGIN netdata.plugin_veda_queue_scripts_main")
+		fmt.Printf("SET queue_fanout_email=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)
+		fmt.Printf("SET queue_scripts_main=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
+		fmt.Printf("SET queue_fanout_sql_lp=%d\n", main_queue.count_pushed - cs_fanout_sql_lp.count_popped)
+		fmt.Printf("SET queue_fanout_sql_np=%d\n", main_queue.count_pushed - cs_fanout_sql_np.count_popped)
+		fmt.Printf("SET queue_fulltext_indexer=%d\n", main_queue.count_pushed - cs_fulltext_indexer.count_popped)
+		fmt.Printf("SET queue_scripts_main=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
+		fmt.Printf("SET queue_CCUS=%d\n", main_queue.count_pushed - cs_CCUS.count_popped)
+		fmt.Println("END")
+
 		respStream.Body.Close()
-		time.Sleep(5000 * time.Millisecond)
+		time.Sleep(3000 * time.Millisecond)
 	}
 
 	/*  sys.stdout.write(
@@ -113,3 +201,4 @@ func main() {
 	    '\n')
 	sys.stdout.write("DIMENSION run_time 'run time' absolute 1 1\n\n")*/
 }
+
