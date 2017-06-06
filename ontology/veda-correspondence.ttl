@@ -215,6 +215,7 @@ v-s:PsOrganizationForCorrespondent
   v-ui:forProperty v-s:correspondentOrganization ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Organization') || ('rdf:type'=='v-s:Subsidiary')"^^xsd:string ;  
   rdfs:label "v-s:correspondentOrganization specification for v-s:Correspondent class"@en ;
   rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
 .
