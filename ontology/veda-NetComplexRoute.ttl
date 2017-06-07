@@ -299,7 +299,7 @@ s-wf:cr_c6 a v-wf:Task;
     v-wf:hasFlow s-wf:crf_c6_to_jp, s-wf:crf_c6_to_s, s-wf:crf_c6_to_i4;
     v-wf:locationX "1050"^^xsd:integer;
     v-wf:locationY "200"^^xsd:integer;
-    v-wf:split v-wf:XOR;
+    v-wf:split v-wf:OR;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
     v-wf:subNet s-wf:InterlayerNet.
 s-wf:crf_c6_to_jp a v-wf:Flow;
@@ -440,7 +440,7 @@ s-wf:cr_sign a v-wf:Task;
     v-wf:hasFlow s-wf:crf_s_to_a, s-wf:crf_s_to_jp, s-wf:crf_s_to_i3;
     v-wf:locationX "1200"^^xsd:integer;
     v-wf:locationY "200"^^xsd:integer;
-    v-wf:split v-wf:XOR;
+    v-wf:split v-wf:OR;
     v-wf:startDecisionTransform s-wf:tr_sign_form;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
     v-wf:subNet s-wf:InterlayerNet.
@@ -713,7 +713,7 @@ s-wf:crf_a_to_i2 a v-wf:Flow;
     v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
     v-s:updateCounter "19"^^xsd:integer;
     v-wf:flowsInto s-wf:cr_informing2;
-    v-wf:predicate "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_approval'}])!=undefined"^^xsd:string.
+    v-wf:predicate "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_approval'}]).length > 0"^^xsd:string.
 
 s-wf:cr_informing3 a v-wf:Task;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-cr/>;
@@ -732,6 +732,7 @@ s-wf:cr_informing3 a v-wf:Task;
     v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
     v-wf:startingMapping s-wf:map_doc_id;
 .    
+
 s-wf:crf_s_to_i3 a v-wf:Flow;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/net_complex_route>;
     v-s:created "2017-05-29T10:00:13.000Z"^^xsd:dateTime;
@@ -740,7 +741,8 @@ s-wf:crf_s_to_i3 a v-wf:Flow;
     v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
     v-s:updateCounter "12"^^xsd:integer;
     v-wf:flowsInto s-wf:cr_informing3;
-    v-wf:predicate "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_sign'}])!=undefined"^^xsd:string.
+    v-wf:predicate "get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_sign'}]).length > 0"^^xsd:string.
+
 s-wf:cr_informing4 a v-wf:Task;
     rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow-cr/>;
     rdfs:label "Уведомление"^^xsd:string;
@@ -765,7 +767,9 @@ s-wf:crf_c6_to_i4 a v-wf:Flow;
     v-s:edited "2017-06-06T07:45:34.685Z"^^xsd:dateTime;
     v-s:lastEditor td:AleksandraKhvostikova-Analyst1;
     v-s:updateCounter "7"^^xsd:integer;
-    v-wf:flowsInto s-wf:cr_informing4.
+    v-wf:flowsInto s-wf:cr_informing4;
+    v-wf:predicate "(get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_coordintion1'}]).length > 0) || (get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_coordintion2'}]).length > 0) || (get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_coordintion3'}]).length > 0) || (get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_coordintion4'}]).length > 0) || (get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_coordintion5'}]).length > 0) || (get_properties_chain (process.getInputVariable ('startForm_id'), [{$get:'s-wf:ComplexRouteStartForm_coordintion6'}]).length > 0)"^^xsd:string.
+
 s-wf:crf_dr_to_e  a v-wf:Flow;
     v-s:created "2017-06-06T07:45:34.689Z"^^xsd:dateTime;
     v-s:creator td:AleksandraKhvostikova-Analyst1;
