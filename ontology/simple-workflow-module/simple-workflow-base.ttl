@@ -23,6 +23,11 @@
 
 # -----------------------------------------------
 
+s-wf:EmptyTask
+    rdf:type v-wf:DecisionForm ;
+    rdfs:label "";
+.    
+
 s-wf:var_initiator
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "initiator" ;
@@ -3535,6 +3540,13 @@ s-wf:map_redirect_from_2_result_decision
   rdfs:label "Задача из формы решения пользователя"@ru ;
 .
 
+s-wf:map_redirect_from_2_undefine
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_redirect_from ;
+  v-wf:mappingExpression "newUri ('s-wf:EmptyTask')";
+  rdfs:label "redirect_from = undefine" ;
+.
+
 ##########################################################################################################################################
 
 
@@ -3858,7 +3870,7 @@ s-wf:nc_t2
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_actor;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_t2_sm5;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_msg_nc_t2_comment ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -3880,7 +3892,8 @@ s-wf:nc_return_to_initiator
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_responsible;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
+  v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_responsible, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -3902,7 +3915,8 @@ s-wf:nc_oc
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_controller;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
+  v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_controller, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
