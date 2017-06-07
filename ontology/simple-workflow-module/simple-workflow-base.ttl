@@ -324,6 +324,13 @@ s-wf:map_doc_id
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_redirect_from_4_PLV_redirect_from
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_redirect_from ;
+  v-wf:mappingExpression  "process.getLocalVariable ('redirect_from')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_decision_form_type_4_PLV_decision_form_type
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_decision_form_type ;
@@ -2997,6 +3004,7 @@ s-wf:tr_actor_form
   rdf:type v-wf:Transform ;
   v-wf:transformRule s-wf:rul_tr_form_1 ;
   v-wf:transformRule s-wf:rul_tr_form_1a ;
+  v-wf:transformRule s-wf:rul_tr_form_1b ;
   v-wf:transformRule s-wf:rul_tr_form_a ;
   v-wf:transformRule s-wf:rul_tr_form_2 ;
   v-wf:transformRule s-wf:rul_tr_form_3 ;
@@ -3045,6 +3053,16 @@ s-wf:rul_tr_form_1a
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "Тип формы из переменной decision_form_type"@ru ;
+.
+
+s-wf:rul_tr_form_1b
+  rdf:type v-wf:Rule ;
+  v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'redirect_from')" ;
+  v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+  v-wf:aggregate  "putValue ('v-wf:redirect_from_task')";
+  v-wf:grouping "1";
+  rdfs:isDefinedBy s-wf: ;
+  rdfs:label "Предыдущая задача из переменной redirect_from"@ru ;
 .
 
 s-wf:rul_tr_form_2
@@ -3325,6 +3343,13 @@ s-wf:var_actor_task_action
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:var_redirect_from
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "redirect_from" ;
+  v-wf:varDefineScope v-wf:Net ;
+  rdfs:label "Var redirect from" ;
+  rdfs:isDefinedBy s-wf: ;
+.
 
 s-wf:var_actor_task_comment
   rdf:type v-wf:VarDefine ;
@@ -3497,6 +3522,19 @@ s-wf:map_controller_2_result_decision
   rdfs:label "Исполнитель из формы решения пользователя"@ru ;
 .
 
+s-wf:map_redirect_from_2_result_decision
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_redirect_from ;
+  v-wf:mappingExpression """
+
+  get_properties_chain (process.getLocalVariable('result_decision'),
+              [{$get:'v-s:parent'}]
+             )
+
+  """;
+  rdfs:label "Задача из формы решения пользователя"@ru ;
+.
+
 ##########################################################################################################################################
 
 
@@ -3648,7 +3686,7 @@ s-wf:net_coordination
   v-wf:inputVariable s-wf:var_msg_template, s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level, s-wf:var_rightset;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
   v-wf:localVariable s-wf:var_responsible, s-wf:var_result, s-wf:var_actor, s-wf:var_controller, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
-  v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action.
+  v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action, s-wf:var_redirect_from.
 
 s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
   v-wf:locationY "528"^^xsd:integer;
@@ -3815,7 +3853,7 @@ s-wf:nc_t2
   rdfs:label "Выдача задачи";
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
-  v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
+  v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
@@ -3837,7 +3875,7 @@ s-wf:nc_return_to_initiator
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_controller_4_PLV_controller, s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm3;
-  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
+  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
@@ -3859,7 +3897,7 @@ s-wf:nc_oc
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_from_actor, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
-  v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
+  v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
@@ -4018,8 +4056,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4
   v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
   v-wf:locationY "637"^^xsd:integer;
   a v-wf:Task;
-  rdfs:label "Установить переменную actor из *result_decision[wf:to]"^^xsd:string;
-  v-wf:completedMapping s-wf:map_actor_2_result_decision;
+  rdfs:label "Обработка redirect: actor = *result_decision[wf:to]"^^xsd:string;
+  v-wf:completedMapping s-wf:map_actor_2_result_decision, s-wf:map_redirect_from_2_result_decision;
   v-s:author td:RomanKarpov-Analyst1;
   v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
   v-wf:locationX "480"^^xsd:integer.
@@ -4028,8 +4066,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4_oc
   v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e_oc;
   v-wf:locationY "264"^^xsd:integer;
   a v-wf:Task;
-  rdfs:label "Установить переменную controller из *result_decision[wf:to]"^^xsd:string;
-  v-wf:completedMapping s-wf:map_controller_2_result_decision;
+  rdfs:label "Обработка redirect: controller = *result_decision[wf:to]"^^xsd:string;
+  v-wf:completedMapping s-wf:map_controller_2_result_decision, s-wf:map_redirect_from_2_result_decision;
   v-s:author td:RomanKarpov-Analyst1;
   v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
   v-wf:locationX "1168"^^xsd:integer.
@@ -4038,8 +4076,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4_rti
   v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e_rti;
   v-wf:locationY "800"^^xsd:integer;
   a v-wf:Task;
-  rdfs:label "Установить переменную responsible из *result_decision[wf:to]"^^xsd:string;
-  v-wf:completedMapping s-wf:map_responsible_2_result_decision;
+  rdfs:label "Обработка redirect: responsible = *result_decision[wf:to]"^^xsd:string;
+  v-wf:completedMapping s-wf:map_responsible_2_result_decision, s-wf:map_redirect_from_2_result_decision;
   v-s:author td:RomanKarpov-Analyst1;
   v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
   v-wf:locationX "1200"^^xsd:integer.
