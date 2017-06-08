@@ -41,6 +41,7 @@ s-wf:var_initiator
   v-wf:varDefineScope v-wf:Net ;
   rdfs:isDefinedBy s-wf: ;
 .
+
 s-wf:var_controller
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "controller" ;
@@ -128,6 +129,14 @@ s-wf:var_result_decision
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "result_decision" ;
   rdfs:label "Полученное решение пользователя"@ru ;
+  v-wf:varDefineScope v-wf:Net ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_result_decision_nct2
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "result_decision_nct2" ;
+  rdfs:label "Полученное решение пользователя nct2"@ru ;
   v-wf:varDefineScope v-wf:Net ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -317,6 +326,13 @@ s-wf:map_initiator_from_actor
 s-wf:map_initiator_4_PLV_initiator
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_initiator ;
+  v-wf:mappingExpression  "process.getLocalVariable ('initiator')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_from_4_PLV_initiator
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_from ;
   v-wf:mappingExpression  "process.getLocalVariable ('initiator')" ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -3130,7 +3146,7 @@ s-wf:tr_actor_form
   v-wf:transformRule s-wf:rul_tr_form_1a ;
   v-wf:transformRule s-wf:rul_tr_form_1b ;
   v-wf:transformRule s-wf:rul_tr_form_a ;
-  v-wf:transformRule s-wf:rul_tr_form_2 ;
+  v-wf:transformRule s-wf:rul_tr_form_2a ;
   v-wf:transformRule s-wf:rul_tr_form_3 ;
   v-wf:transformRule s-wf:rul_tr_form_4 ;
   v-wf:transformRule s-wf:rul_tr_form_5 ;
@@ -3198,6 +3214,17 @@ s-wf:rul_tr_form_2
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "От кого = инициатор"@ru ;
+.
+
+s-wf:rul_tr_form_2a
+  rdf:type v-wf:Rule ;
+  v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'from')" ;
+  v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:employee'])";
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:occupation'])";
+  v-wf:grouping "1";
+  rdfs:isDefinedBy s-wf: ;
+  rdfs:label "от кого = from"@ru ;
 .
 
 s-wf:rul_tr_form_3
@@ -3541,6 +3568,16 @@ s-wf:map_actor_task_action_4LV_result_decision
   rdfs:label "Описание задачи из формы решения пользователя [result_decision]"@ru ;
 .
 
+s-wf:map_actor_task_action_4LV_result_decision_nct2
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_actor_task_action ;
+  v-wf:mappingExpression """
+  get_properties_chain (process.getLocalVariable('result_decision_nct2'),
+                            [{$go:'rdf:type'}, {$get:'rdfs:label'}] )
+  """;
+  rdfs:label "Описание задачи из формы решения пользователя [result_decision_nct2]"@ru ;
+.
+
 s-wf:map_actor_task_action_return_result_decision
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_actor_task_action ;
@@ -3658,9 +3695,9 @@ s-wf:map_redirect_from_2_result_decision
   rdfs:label "Задача из формы решения пользователя"@ru ;
 .
 
-s-wf:map_initiator_2_result_decision_author
+s-wf:map_from_2_result_decision_author
   rdf:type v-wf:Mapping ;
-  v-wf:mapToVariable s-wf:var_initiator ;
+  v-wf:mapToVariable s-wf:var_from ;
   v-wf:mappingExpression """
 
   get_properties_chain (process.getLocalVariable('result_decision'),
@@ -3722,6 +3759,13 @@ s-wf:map_set_if_result
 s-wf:map_set_result_decision_from_TR_result_data
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_result_decision ;
+  v-wf:mappingExpression  "task_result.getValue ('result_data')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_set_result_decision_nct2_from_TR_result_data
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_result_decision_nct2 ;
   v-wf:mappingExpression  "task_result.getValue ('result_data')";
   rdfs:isDefinedBy s-wf: ;
 .
@@ -3827,7 +3871,7 @@ s-wf:net_coordination
   v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local, s-wf:map_last_actor_4_PLV_actor;
   v-wf:inputVariable s-wf:var_msg_template, s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level, s-wf:var_rightset;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
-  v-wf:localVariable s-wf:var_responsible, s-wf:var_result, s-wf:var_actor, s-wf:var_controller, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
+  v-wf:localVariable s-wf:var_responsible, s-wf:var_result, s-wf:var_actor, s-wf:var_controller, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_result_decision_nct2, s-wf:var_actor_task_date_to;
   v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action, s-wf:var_redirect_from.
 
 s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
@@ -3994,13 +4038,13 @@ s-wf:nc_t2
   v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a, s-wf:nc_t2_to_r;
   rdfs:label "Выдача задачи";
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_from_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
   v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_actor;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_result_decision_nct2_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_msg_nc_t2_comment ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -4016,7 +4060,7 @@ s-wf:nc_return_to_initiator
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_controller_4_PLV_controller, s-wf:map_doc_id, s-wf:map_initiator_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm3;
+  v-wf:startingMapping s-wf:map_controller_4_PLV_controller, s-wf:map_doc_id, s-wf:map_from_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision_nct2, s-wf:map_t2_sm3;
   v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
@@ -4039,7 +4083,7 @@ s-wf:nc_oc
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_from_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision_nct2, s-wf:map_t2_sm_control;
   v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
