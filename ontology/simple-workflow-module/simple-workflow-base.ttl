@@ -2000,6 +2000,19 @@ if (doc) {
 
     {
       signers = signers.concat(new veda.IndividualModel("d:wom1ouosnbv76dvsixphdcdd"));//  роль "Технический директор. Подписание актов"
+      
+      routes['coordination3'][simple+'visible'] = [true];
+      routes['coordination3'][simple+'editable'] = [true];
+      routes['coordination3'][simple+'deadlineDays'] = [10];
+      routes['coordination3'][simple+'comment'] = [new String('Согласовать первичный документ')];
+
+      routes['coordination4'][simple+'visible'] = [true];
+      routes['coordination4'][simple+'editable'] = [true];
+      routes['coordination4'][simple+'deadlineDays'] = [10];
+      routes['coordination4'][simple+'comment'] = [new String('Согласовать первичный документ')];
+    
+    
+    
     }
 
 
@@ -2118,7 +2131,7 @@ if (doc) {
   }
   //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
       
-  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {              
+  if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {              
     
     if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
       || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
@@ -2141,18 +2154,24 @@ if (doc) {
       routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
     } else {
       var headUnit;
-      function calculationHeadUnit(businessTripEmployee){
-        if(businessTripEmployee.hasValue(v-s:hasChief)){
-         return businessTripEmployee = businessTripEmployee["v-s:hasChief"][0];  
-          
-        } else {
-         return calculationHeadUnit(businessTripEmployee["v-s:parentUnit"][0]);
-        }
-        
-      }  
       headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
+    
+      function calculationHeadUnit(occupation){
+        if(occupation.hasValue("v-s:hasChief")){
+         return occupation["v-s:hasChief"][0];  
+          
+        } else  if (!occupation.hasValue("v-s:parentUnit")) {
+          return [];
+        }else{
+         return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
+        }
+      }
+      
+      
+        
         
     }
+
     
     
     
@@ -2161,9 +2180,7 @@ if (doc) {
     
     
     
-    
-    
-    routes['review'][simple+'participant'] = algorithm1(doc); 
+   // routes['review'][simple+'participant'] = algorithm1(doc); 
     
    
  /*   routes['coordination3'][simple+'visible'] = [true];
