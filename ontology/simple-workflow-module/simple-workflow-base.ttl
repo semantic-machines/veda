@@ -2026,9 +2026,7 @@ if (doc) {
       routes['coordination4'][simple+'editable'] = [true];
       routes['coordination4'][simple+'deadlineDays'] = [10];
       routes['coordination4'][simple+'comment'] = [new String('Согласовать первичный документ')];
-    
-    
-    
+      
     }
 
 
@@ -2148,7 +2146,8 @@ if (doc) {
   //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
       
   if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {              
-    
+
+// согласование 1 уровня    
     if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
       || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
       || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
@@ -2168,7 +2167,7 @@ if (doc) {
       routes['coordination1'][simple+'editable'] = [true];
       routes['coordination1'][simple+'deadlineDays'] = [10];
       routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
-    } else {
+    } else if (doc.hasValue("v-s:businessTripEmployee")) {
       var headUnit;
       headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
     
@@ -2182,39 +2181,52 @@ if (doc) {
          return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
         }
       }
-      
-      
-        
-        
+      routes['coordination1'][simple+'participant'] = headUnit; 
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+    } else{
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
     }
+//согласование 2 уровня
+    
+    if(doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:0574e5e2e66447dfbf787a6e0b05f4fe")//Выставки
+      || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:e9ca8b048f244f348775b7e2befaee8c")//Обучение
+    ){
+      routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:0c989a61-896b-4e1d-a8f6-1f09b9a0e433")];//Специалист УЦ 
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+    } else if(
+      doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:42f7a4e157ed4e3da34d6cd885df4a9b") //(запланированы)
+      || doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:0e31da05e36b4216832fb9a5ba853684") //(возможны)
+      || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:c533caab0062434c9c3b74521fd9798c")// Выставки, форумы отраслевые (ЦБП, Леспром)
+      || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:6c0bbecd077d4dff8b9481da73ea5350")//(Общественные организации отраслевые (ЦБП, Леспром))
+      || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:236170912d8f40a08178baab6449ff05")// (Организации конкуренты)
+    ){
+      routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ 
+      routes['coordination2'][simple+'visible'] = [true];
+      routes['coordination2'][simple+'editable'] = [true];
+    }
+// Подписание
+   /// Если v-s:businessTripEmployee (Ответственный) равно d:mondi_appointment_00069177_71015289 // Шаллеггер ИЛИ d:mondi_appointment_00064206_71017819 // Бендер ИЛИ d:mondi_appointment_00068750_71017804 // Дружков ИЛИ d:mondi_appointment_00010043_71018870 // Третьяков ИЛИ d:mondi_appointment_00061421_71020115 // Рембе ИЛИ d:mondi_appointment_00000420_71014492 // Завацкая ИЛИ d:mondi_appointment_00068300_71019086 // Фотиева ИЛИ d:mondi_appointment_00011441_71014055 // Белых ИЛИ d:mondi_appointment_00002610_71018830 // Пшеницына ИЛИ d:mondi_appointment_00063592_71017302 // Едапина ИЛИ d:mondi_appointment_00050652_71021621 // Тутринова ИЛИ d:mondi_appointment_00069811_71017956 // Сабо ИЛИ d:mondi_appointment_00063711_71017961// Ардашова
+      
+    
+    if(
+    
+    
+    
+    
+    ){}
 
-    
-    
-    
-    
-    
-    
-    
-    
-   // routes['review'][simple+'participant'] = algorithm1(doc); 
-    
-   
- /*   routes['coordination3'][simple+'visible'] = [true];
-    routes['coordination3'][simple+'editable'] = [true];
-    routes['coordination3'][simple+'deadlineDays'] = [10];
-    routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
-   
-    routes['review'][simple+'participant'] = algorithm1(doc); //АЛГО1
-    routes['review'][simple+'visible'] = [true];
-    routes['review'][simple+'editable'] = [true];
-    routes['review'][simple+'deadlineDays'] = [10];
-    routes['review'][simple+'comment'] = [new String('Рассмотреть заявку')];
-   
-    routes['examination'][simple+'participant'] = algorithm2(doc); //АЛГО2
-    routes['examination'][simple+'visible'] = [true];
-    routes['examination'][simple+'editable'] = [true];
-    routes['examination'][simple+'deadlineDays'] = [10];
-    routes['examination'][simple+'comment'] = [new String('Для информации')];*/
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [true];
+      
+      routes['coordination3'][simple+'visible'] = [true];
+      routes['coordination3'][simple+'editable'] = [true];
+       
+      routes['coordination4'][simple+'visible'] = [true];
+      routes['coordination4'][simple+'editable'] = [true];
+ 
   }
   
   
