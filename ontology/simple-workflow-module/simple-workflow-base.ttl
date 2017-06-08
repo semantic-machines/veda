@@ -21,6 +21,12 @@
   v-s:loadPriority 21 ;
 .
 
+#------------------------Строки----------
+v-s:TaskIsRedirectedFrom
+  rdf:type v-s:Bundle ;
+  rdfs:label "Задача перенаправлена от"@ru ;
+  rdfs:label "Task is redirected from"@en ;
+.
 # -----------------------------------------------
 
 s-wf:EmptyTask
@@ -1017,7 +1023,7 @@ if (doc) {
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
   }
-//-------------------------------------------------------------------------------------------------------------------------------------------Заявка на контракт
+//--------------------------------------------------------------------------Заявка на контракт
   function objectOrParent(doc, objectId) {
     return doc.hasValue('v-s:hasContractObject') &&
       (doc['v-s:hasContractObject'][0].id == objectId
@@ -2110,6 +2116,78 @@ if (doc) {
     routes['sign'][simple+'deadlineDays'] = [3];
     routes['sign'][simple+'participant'] = doc["v-s:sender"][0]["v-s:correspondentPerson"];
   }
+  //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
+      
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {              
+    
+    if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00061421_71020115") // Рембе
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00000420_71014492") // Завацкая
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068300_71019086") // Фотиева
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00011441_71014055") // Пшеницына
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00002610_71018830") // Белых
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063592_71017302") // Едапина
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
+    ){
+      routes['coordination1'][simple+'visible'] = [true];
+      routes['coordination1'][simple+'editable'] = [true];
+      routes['coordination1'][simple+'deadlineDays'] = [10];
+      routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+    } else {
+      var headUnit;
+      function calculationHeadUnit(businessTripEmployee){
+        if(businessTripEmployee.hasValue(v-s:hasChief)){
+         return businessTripEmployee = businessTripEmployee["v-s:hasChief"][0];  
+          
+        } else {
+         return calculationHeadUnit(businessTripEmployee["v-s:parentUnit"][0]);
+        }
+        
+      }  
+      headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    routes['review'][simple+'participant'] = algorithm1(doc); 
+    
+   
+ /*   routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'deadlineDays'] = [10];
+    routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+   
+    routes['review'][simple+'participant'] = algorithm1(doc); //АЛГО1
+    routes['review'][simple+'visible'] = [true];
+    routes['review'][simple+'editable'] = [true];
+    routes['review'][simple+'deadlineDays'] = [10];
+    routes['review'][simple+'comment'] = [new String('Рассмотреть заявку')];
+   
+    routes['examination'][simple+'participant'] = algorithm2(doc); //АЛГО2
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['examination'][simple+'deadlineDays'] = [10];
+    routes['examination'][simple+'comment'] = [new String('Для информации')];*/
+  }
+  
+  
+  
+  
+  
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {
       routes['coordination1'][simple+'participant'] = [
@@ -2132,6 +2210,11 @@ if (doc) {
       routes['instruction2'][simple+'visible'] = [true];
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
+  
+  
+  
+  
+  
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
   /*
       routes['introduction'][simple+'participant'] = [
@@ -2859,6 +2942,25 @@ s-wf:UserTaskFormTemplate
         <div about="@" property="v-wf:dateGiven"></div>
       </div>
     </div>
+   
+    
+    <div about="@" rel="v-wf:redirect_from_task">
+      <hr>
+      <div class="row">
+        <div class="col-md-3">
+          <em about="v-s:TaskIsRedirectedFrom" property="rdfs:label"> </em>
+          <span  rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
+          
+        </div>
+        <div rel="v-wf:takenDecision" class="col-md-3">
+          
+          <em about="rdfs:comment" property="rdfs:label"> </em>
+          <span about="@"  property="rdfs:comment"></span>
+        
+        </div>
+      </div>
+    </div>
+    
     <hr />
     <em about="v-wf:takenDecision" property="rdfs:label"></em>
     <div class="radio decision">
