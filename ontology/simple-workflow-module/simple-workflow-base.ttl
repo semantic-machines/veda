@@ -2208,24 +2208,70 @@ if (doc) {
       routes['coordination2'][simple+'editable'] = [true];
     }
 // Подписание
-   /// Если v-s:businessTripEmployee (Ответственный) равно d:mondi_appointment_00069177_71015289 // Шаллеггер ИЛИ d:mondi_appointment_00064206_71017819 // Бендер ИЛИ d:mondi_appointment_00068750_71017804 // Дружков ИЛИ d:mondi_appointment_00010043_71018870 // Третьяков ИЛИ d:mondi_appointment_00061421_71020115 // Рембе ИЛИ d:mondi_appointment_00000420_71014492 // Завацкая ИЛИ d:mondi_appointment_00068300_71019086 // Фотиева ИЛИ d:mondi_appointment_00011441_71014055 // Белых ИЛИ d:mondi_appointment_00002610_71018830 // Пшеницына ИЛИ d:mondi_appointment_00063592_71017302 // Едапина ИЛИ d:mondi_appointment_00050652_71021621 // Тутринова ИЛИ d:mondi_appointment_00069811_71017956 // Сабо ИЛИ d:mondi_appointment_00063711_71017961// Ардашова
-      
     
-    if(
-    
-    
-    
-    
-    ){}
-
+    if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00061421_71020115") // Рембе*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00000420_71014492") // Завацкая*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068300_71019086") // Фотиева*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00011441_71014055") // Пшеницына*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00002610_71018830") // Белых*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063592_71017302") // Едапина*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова*
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
+      || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
+    ){
+      routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")];//Генеральный директор
       routes['sign'][simple+'visible'] = [true];
-      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'editable'] = [false];
+    } else if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758")//Пеллер
+    ){
+      routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00069177_71015289")];//Шаллеггер*
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [false];
+    } else if(!doc.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")){
+      routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")];//Генеральный директор
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [false];
+    } else if(doc.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")){
+      routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71019086")];//Директор по персоналу Монди
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [false];
+    }
+    
+    
       
       routes['coordination3'][simple+'visible'] = [true];
       routes['coordination3'][simple+'editable'] = [true];
        
       routes['coordination4'][simple+'visible'] = [true];
       routes['coordination4'][simple+'editable'] = [true];
+//Утверждение      
+      routes['approval'][simple+'participant'] = [new veda.IndividualModel(" d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [false];
+      routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+      
+ //Рассмотрение     
+      routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
+      routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'deadlineDays'] =[doc["v-s:dateFrom"][0]];
+      
+      
+//Исполнение
+      var data=new Date(doc["v-s:dateTo"][0].toISOString())
+      data.setDate(data.getDate() + 3);
+      routes['instruction'][simple+'participant'] =[doc["v-s:creator"][0]]; 
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [false];
+      routes['instruction'][simple+'deadlineDays'] =[data];
+      
+      
+      
  
   }
   
