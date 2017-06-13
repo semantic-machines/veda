@@ -210,7 +210,7 @@ module.exports = {
       driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'}).click()
           .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `" + submenu + "` button");});
   },
-    
+
   /**
    * Проверка элемента на видимость
    * @param driver
@@ -405,7 +405,7 @@ module.exports = {
           function () {
               return driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
                   return webdriver.promise.filter(suggestions, function(suggestion) {
-                      return suggestion.getText().then(function(txt){ return txt == templateName });
+                      return suggestion.getText().then(function(txt){ return txt === templateName + " (" + templateRdfType + ")" });
                   }).then(function(x) { return x.length>0; });
               });
           },
@@ -415,7 +415,7 @@ module.exports = {
       // Кликаем на запрашиваемый тип в выпавшем списке
       driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
           webdriver.promise.filter(suggestions, function(suggestion) {
-              return suggestion.getText().then(function(txt){ return txt == templateName });
+              return suggestion.getText().then(function(txt){ return txt === templateName + " (" + templateRdfType + ")" });
           }).then(function(x) { x[0].click();});
       }).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
 
