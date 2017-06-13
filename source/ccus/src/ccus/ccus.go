@@ -121,10 +121,10 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	var main_queue *Queue
 	var main_cs *Consumer
 
-	main_queue = NewQueue(main_queue_name, R)
+	main_queue = NewQueue(main_queue_name, R, "./data/queue")
 	main_queue.open(CURRENT)
 
-	main_cs = NewConsumer(main_queue, "CCUS")
+	main_cs = NewConsumer(main_queue, "CCUS", RW)
 	main_cs.open()
 
 	data := ""

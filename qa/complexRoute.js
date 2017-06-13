@@ -18,10 +18,10 @@ module.exports = {
     */
     checkTask: function (driver, count, login, password, firstName, lastName, info) {
         basic.login(driver, login, password, firstName, lastName);
-        driver.findElement({css:'li[about="v-ft:Inbox2"] span[id="counter"]'}).getText().then(function (result) {
-	    if (result == '')
-	    	result = '0';
-            assert.equal(count, result);
+        basic.menu(driver, 'Inbox');
+        driver.sleep(basic.SLOW_OPERATION);
+        driver.findElements({css:'tr[typeof="v-wf:DecisionForm s-wf:UserTaskForm"]'}).then(function (result) {
+            assert.equal(count, result.length);
         }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName + ', phase=' + info);});
         welcome(driver);
         basic.logout(driver);

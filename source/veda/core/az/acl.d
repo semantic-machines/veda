@@ -42,16 +42,16 @@ class Authorization : LmdbStorage
         //writeln("ACL:CACHE:RESET");
     }
 
-	override public void unload_to_queue (string path, string queue_id, bool only_ids)
-	{
-		super.unload_to_queue(path, queue_id, only_ids);
-	}
+    override public void unload_to_queue(string path, string queue_id, bool only_ids)
+    {
+        super.unload_to_queue(path, queue_id, only_ids);
+    }
 
     ubyte authorize(string _uri, Ticket *ticket, ubyte request_access, bool is_check_for_reload, void delegate(string resource_group,
                                                                                                                string subject_group,
                                                                                                                string right)
                     trace_acl,
-                    void delegate(string resource_group) trace_group
+                    void delegate(string resource_group) trace_group, void delegate(string log) trace_info
                     )
     {
         string uri = _uri.idup;
@@ -76,8 +76,8 @@ class Authorization : LmdbStorage
         if (db_is_opened == false)
             return res;
 
-        if (trace_msg[ 111 ] == 1)
-            log.trace("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access));
+        if (trace_info !is null)
+            trace_info(format("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access)));
 
         MDB_txn *txn_r;
         MDB_dbi dbi;
@@ -93,14 +93,14 @@ class Authorization : LmdbStorage
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
         {
-            log.trace("WARN! find 1:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
+            log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", path);
             for (int i = 0; i < 10 && rc != 0; i++)
             {
                 mdb_txn_abort(txn_r);
 
                 if (i > 3)
                 {
-                    log.trace("WARN! find 1:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
+                    log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", path);
                     core.thread.Thread.sleep(dur!("msecs")(10));
                 }
 
@@ -112,13 +112,13 @@ class Authorization : LmdbStorage
         {
             if (rc == MDB_MAP_RESIZED)
             {
-                log.trace("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", path, fromStringz(mdb_strerror(rc)));
+                log.trace("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) %s", path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
-                log.trace("WARN! 2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", path);
+                log.trace("WARN! 2: find:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?
@@ -131,7 +131,7 @@ class Authorization : LmdbStorage
 
         if (rc != 0)
         {
-            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR! %s", path, fromStringz(mdb_strerror(rc)));
+            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) ERR! %s", path, fromStringz(mdb_strerror(rc)));
             return res;
         }
 
@@ -233,11 +233,11 @@ class Authorization : LmdbStorage
             RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
 
-            if (trace_msg[ 113 ] == 1)
+            if (trace_info !is null)
             {
-                log.trace("user_uri=%s", ticket.user_uri);
-                log.trace("subject_groups=%s", subject_groups);
-                log.trace("object_groups=%s", object_groups);
+                trace_info(format("user_uri=%s", ticket.user_uri));
+                trace_info(format("subject_groups=%s", subject_groups));
+                trace_info(format("object_groups=%s", object_groups));
             }
 
 
@@ -254,8 +254,8 @@ class Authorization : LmdbStorage
                 else
                     acl_key = permission_prefix ~ object_group.id;
 
-                if (trace_msg[ 112 ] == 1)
-                    log.trace("look acl_key: [%s]", acl_key);
+                if (trace_info !is null)
+                    trace_info(format("look acl_key: [%s]", acl_key));
 
                 RightSet permission;
 
@@ -265,8 +265,8 @@ class Authorization : LmdbStorage
 
                     if (permission !is null)
                     {
-                        if (trace_msg[ 112 ] == 1)
-                            log.trace("for [%s] found in cache %s", acl_key, permission);
+                        if (trace_info !is null)
+                            trace_info(format("for [%s] found in cache %s", acl_key, permission));
                         permission_2_group[ object_group.id ] = permission;
                     }
                 }
@@ -287,8 +287,8 @@ class Authorization : LmdbStorage
                         if (cache_of_permission !is null)
                             cache_of_permission.put(acl_key, pp);
 
-                        if (trace_msg[ 112 ] == 1)
-                            log.trace("for [%s] found %s", acl_key, pp);
+                        if (trace_info !is null)
+                            trace_info(format("for [%s] found %s", acl_key, pp));
                     }
                 }
             }
@@ -298,7 +298,10 @@ class Authorization : LmdbStorage
             foreach (obj_key; object_groups.data.keys)
             {
                 RightSet permissions = permission_2_group.get(obj_key, null);
-                //log.trace("obj_key=%s, permissions=%s", obj_key, permissions);
+
+                if (trace_info !is null)
+                    trace_info(format("obj_key=%s, permissions=%s", obj_key, permissions));
+
                 if (permissions !is null)
                 {
                     foreach (perm_key; permissions.data.keys)
@@ -308,7 +311,8 @@ class Authorization : LmdbStorage
                             Right *restriction = object_groups.data.get(obj_key, null);
                             Right *permission  = permissions.data.get(perm_key, null);
 
-                            //log.trace("restriction=%s, permission=%s, request=%s", *restriction, *permission, access_to_pretty_string(request_access));
+                            if (trace_info !is null)
+                                trace_info(format("restriction=%s, permission=%s, request=%s", *restriction, *permission, access_to_pretty_string(request_access)));
 
                             ubyte restriction_access, permission_access;
 
@@ -335,7 +339,9 @@ class Authorization : LmdbStorage
 //                                trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
                                         res = cast(ubyte)(res | set_bit);
-                                        //log.trace("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res));
+
+                                        if (trace_info !is null)
+                                            trace_info(format("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res)));
 
                                         if (trace_acl !is null)
                                         {
@@ -355,8 +361,8 @@ class Authorization : LmdbStorage
 
         scope (exit)
         {
-            if (trace_msg[ 111 ] == 1)
-                log.trace("authorize %s, request=%s, answer=[%s]", uri, access_to_pretty_string(request_access), access_to_pretty_string(res));
+            if (trace_info !is null)
+                trace_info(format("authorize %s, request=%s, answer=[%s]", uri, access_to_pretty_string(request_access), access_to_pretty_string(res)));
         }
 
         if (mode == DBMode.R)
@@ -412,9 +418,9 @@ unittest
 
     Logger log = new Logger("test", "log", "ACL");
 
-	string test_path = get_test_path ();
-	string az_path = test_path ~ "/az";
-	
+    string test_path = get_test_path();
+    string az_path   = test_path ~ "/az";
+
     try
     {
         mkdir(az_path);
@@ -422,7 +428,7 @@ unittest
     catch (Exception ex)
     {
     }
-    
+
     Authorization storage = new Authorization(az_path, DBMode.RW, "test", log);
 
     assert(storage !is null);

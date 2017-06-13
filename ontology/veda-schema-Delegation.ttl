@@ -86,7 +86,7 @@ v-s:PsDelegatorForRequestDelegation
   v-ui:forProperty v-s:delegator ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person'" ;
+  v-ui:queryPrefix "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person' || ( 'rdf:type' === 'v-s:Person' && 'v-s:deleted' == true )" ;
 .
 v-s:PsDelegatedPositionForRequestDelegation
   rdf:type v-ui:PropertySpecification ;

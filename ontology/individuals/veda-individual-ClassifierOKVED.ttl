@@ -2492,7 +2492,7 @@ d:50b3f71f4cc24491a5606c13971b5866
   v-s:tag "ремонт и обслуживание прочих транспортных средств, указанных в группировке 30, кроме мотоциклов и велосипедов ремонт и техническое обслуживание локомотивов и подвижного железнодорожного состава (кроме ремонта и обслуживания в заводских условиях); ремонт телег и фургонов, приводимых в движение при использовании животных в качестве тягловой силы"^^xsd:string;
   v-s:updateCounter "2"^^xsd:integer;
   v-s:hasParentLink d:766b9b9550c24ba6b6ae4a366b98e883;
-  v-s:description "50.20.2"^^xsd:string;
+  v-s:description "35.30.9"^^xsd:string;
   v-s:registrationNumber "33.17"^^xsd:string;
   rdfs:label "Ремонт и техническое обслуживание прочих транспортных средств и оборудования"^^xsd:string;
 .
@@ -3055,6 +3055,7 @@ d:eded898897204f1cad9281b396ddfd50
 d:69455b30c50c49699ba7b72d8cfcc1d4
   a v-s:ClassifierOKVED;
   v-s:hasParentLink d:eded898897204f1cad9281b396ddfd50;
+  v-s:description "63.21.1"^^xsd:string;
   v-s:registrationNumber "52.21.19"^^xsd:string;
   rdfs:label "Деятельность вспомогательная прочая, связанная с железнодорожным транспортом"^^xsd:string;
 .
@@ -3555,6 +3556,7 @@ d:1169297ec6e74ff7aaa47e02baaf9b69
 d:31ade55eddfd4e6e97c9840a9eaadff2
   a v-s:ClassifierOKVED;
   v-s:registrationNumber "81.29"^^xsd:string;
+  v-s:description "74.70.1"^^xsd:string;
   rdfs:label "Деятельность по чистке и уборке прочая"^^xsd:string;
   v-s:hasParentLink d:1169297ec6e74ff7aaa47e02baaf9b69;
 .

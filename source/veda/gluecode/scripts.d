@@ -148,6 +148,8 @@ class ScriptProcess : VedaModule
 
                 try
                 {
+                    tnx.reset();
+
 /*
                                     if (count_sckip == 0)
                                     {
@@ -164,10 +166,9 @@ class ScriptProcess : VedaModule
 
                     //count++;
                     script.compiled_script.run();
-
-                    tnx.id = transaction_id;
+                    tnx.is_autocommit = true;
+                    tnx.id            = transaction_id;
                     ResultCode res = g_context.commit(&tnx);
-                    tnx.reset();
 
                     if (res != ResultCode.OK)
                     {
@@ -177,9 +178,9 @@ class ScriptProcess : VedaModule
 
                     log.trace("end: %s", script_id);
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
-                    log.trace("WARN! fail execute event script : %s %s", script_id, ex.msg);
+                    log.trace("WARN! fail execute event script : %s %s %s", script_id, ex.msg, ex.info);
                 }
             }
         }

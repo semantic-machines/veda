@@ -370,11 +370,15 @@ class XapianVQL
                                                 if (el[ 0 ] == '\'' && el.length > 2 && el[ $ - 1 ] == '\'')
                                                     el = el[ 1..$ - 1 ];
 
-                                                Names  subclasses = ctx.get_onto().get_sub_classes(el);
-                                                string query_str  = el;
+                                                string query_str = el;
                                                 xtr = "X" ~ text(slot) ~ "X";
-                                                foreach (classz; subclasses.keys)
-                                                    query_str ~= " OR " ~ classz;
+
+                                                if (!is_strict_equality && rs.indexOf(':') > 0)
+                                                {
+                                                    Names subclasses = ctx.get_onto().get_sub_classes(el);
+                                                    foreach (classz; subclasses.keys)
+                                                        query_str ~= " OR " ~ classz;
+                                                }
 
                                                 query_str = to_lower_and_replace_delimeters(query_str);
 

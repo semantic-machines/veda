@@ -42,3 +42,5 @@ veda.properties
 /veda-scripts-main
 /veda-ccus
 /veda-mstorage
+/veda-fanout-sql-lp
+/veda-fanout-sql-np

@@ -349,6 +349,23 @@ class VedaStorageRest : VedaStorageRest_API
             if (ticket.result != ResultCode.OK)
                 throw new HTTPStatusException(ticket.result);
 
+            string     all_info;
+
+            Individual indv_info = Individual.init;
+
+            indv_info.uri = "_";
+            indv_info.addResource(rdf__type,
+                                  Resource(DataType.Uri, veda_schema__PermissionStatement));
+            indv_info.addResource(veda_schema__permissionObject,
+                                  Resource(DataType.Uri, "?"));
+            indv_info.addResource(veda_schema__permissionSubject,
+                                  Resource(DataType.Uri, "?"));
+
+
+            void trace_info(string info)
+            {
+                all_info ~= info ~ "\n";
+            }
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
@@ -366,8 +383,10 @@ class VedaStorageRest : VedaStorageRest_API
                 res ~= indv_res;
             }
 
-            context.get_rights_origin_from_acl(ticket, uri, &trace_acl);
+            context.get_rights_origin_from_acl(ticket, uri, &trace_acl, &trace_info);
 
+            indv_info.addResource("rdfs:comment", Resource(all_info));
+            res ~= indv_info;
 
             json = Json[].init;
             foreach (individual; res)
@@ -1067,7 +1086,10 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
 //        update_counter = juc[ 0 ][ "data" ].get!long;
     //set_updated_uid(juri.get!string, op_res.op_id, update_counter + 1);
 
-    // trail(_ticket, ticket.user_uri, cmd, jreq, res, op_res.result, start_time);
+    if (op_res.length == 1)
+        trail(_ticket, ticket.user_uri, cmd, jreq, res, op_res[ 0 ].result, start_time);
+    else
+        trail(_ticket, ticket.user_uri, cmd, jreq, res, ResultCode.Not_Implemented, start_time);
 
     return op_res;
 }
