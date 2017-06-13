@@ -21,7 +21,18 @@
   v-s:loadPriority 21 ;
 .
 
+#------------------------Строки----------
+v-s:TaskIsRedirectedFrom
+  rdf:type v-s:Bundle ;
+  rdfs:label "Задача перенаправлена от"@ru ;
+  rdfs:label "Task is redirected from"@en ;
+.
 # -----------------------------------------------
+
+s-wf:EmptyTask
+    rdf:type v-wf:DecisionForm ;
+    rdfs:label "";
+.    
 
 s-wf:var_initiator
   rdf:type v-wf:VarDefine ;
@@ -30,6 +41,7 @@ s-wf:var_initiator
   v-wf:varDefineScope v-wf:Net ;
   rdfs:isDefinedBy s-wf: ;
 .
+
 s-wf:var_controller
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "controller" ;
@@ -117,6 +129,14 @@ s-wf:var_result_decision
   rdf:type v-wf:VarDefine ;
   v-wf:varDefineName "result_decision" ;
   rdfs:label "Полученное решение пользователя"@ru ;
+  v-wf:varDefineScope v-wf:Net ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:var_result_decision_nct2
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "result_decision_nct2" ;
+  rdfs:label "Полученное решение пользователя nct2"@ru ;
   v-wf:varDefineScope v-wf:Net ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -211,9 +231,13 @@ s-wf:map_possible_decision
 s-wf:possible_decision_after_return
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:possible_decision ;
-  v-wf:mappingExpression  "[newUri('v-wf:DecisionAgreed'), newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionRedirect')]" ;
+  v-wf:mappingExpression  "[newUri('v-wf:DecisionAcceptMotivatedRefusal'), newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionRedirect')]" ;
 .
-
+s-wf:possible_decision_for_controller
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:possible_decision ;
+  v-wf:mappingExpression  "[newUri('v-wf:DecisionConfirm'), newUri ('v-wf:DecisionRemake'), newUri('v-wf:DecisionRedirect')]" ;
+.
 s-wf:map_decision_route_to_add_reaction
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:decision_route_to_add_reaction ;
@@ -306,10 +330,31 @@ s-wf:map_initiator_4_PLV_initiator
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_from_4_PLV_initiator
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_from ;
+  v-wf:mappingExpression  "process.getLocalVariable ('initiator')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_controller_4_PLV_controller
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_controller ;
+  v-wf:mappingExpression  "process.getLocalVariable ('controller')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_doc_id
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_doc_id ;
   v-wf:mappingExpression  "process.getInputVariable ('docId')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_redirect_from_4_PLV_redirect_from
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_redirect_from ;
+  v-wf:mappingExpression  "process.getLocalVariable ('redirect_from')" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -743,7 +788,7 @@ s-wf:participantSpecification
   v-ui:forProperty s-wf:SimpleRouteStartForm_participant ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 100 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User') || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
 .
 
 s-wf:ComplexRouteStartForm_Template
@@ -757,8 +802,8 @@ s-wf:ComplexRouteStartForm_Template
 if (mode !== "edit") { return; }
 
 var stages = [ // Default values fill
-  'informing',
-  'introduction',
+  'informing',      //Информирование
+  'introduction',   //
   'coordination1',
   'coordination2',
   'coordination3',
@@ -767,11 +812,11 @@ var stages = [ // Default values fill
   'coordination6',
   'sign',
   'approval',
-  'review',
+  'review',         //Рассмотрение
   'instruction',
   'instruction2',
   'instruction3',
-  'examination',
+  'examination',    //Ознакомление
   'distribution',
   'auto_instruction'
 ];
@@ -799,7 +844,7 @@ if (doc) {
   routes['sign'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionSign'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   routes['sign'][simple+'task_label'] = veda.Util.mlstring("Подписать", "Sign");
   routes['approval'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionApprove'), newUri('v-wf:DecisionDeclined'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
-  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Подтвердить", "Approve");
+  routes['approval'][simple+'task_label'] = veda.Util.mlstring("Утвердить", "Approve");
   routes['review'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionReview'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
   routes['review'][simple+'task_label'] = veda.Util.mlstring("Рассмотреть", "Review");
   routes['instruction'][simple+'possible_decisions'] = [new String("[newUri ('v-wf:DecisionAchieved'), newUri('v-wf:DecisionRejected'), newUri('v-wf:DecisionNotPerformed'), newUri('v-wf:DecisionRedirect'), newUri('v-wf:DecisionNotForMe')]")];
@@ -965,12 +1010,19 @@ if (doc) {
         }
       }
     }
+  routes['examination'][simple+'participant'] = veda.user['v-s:hasAppointment'];
+  routes['examination'][simple+'visible'] = [true];
+  routes['examination'][simple+'editable'] = [true];
+//routes['examination'][simple+'deadlineDays'] = [10];
+//routes['examination'][simple+'comment'] = [new String('Согласование завершено')];
+
+
   }
 
 //--------------------------------------------------------------------------------Претензия-------
   if (doc['rdf:type'][0].id === "mnd-s:Claim") {
-    routes['informing'][simple+'visible'] = [true];
-    routes['informing'][simple+'editable'] = [true];
+    routes['introduction'][simple+'visible'] = [true];
+    routes['introduction'][simple+'editable'] = [true];
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
     routes['coordination2'][simple+'visible'] = [true];
@@ -987,7 +1039,7 @@ if (doc) {
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
   }
-//-------------------------------------------------------------------------------------------------------------------------------------------Заявка на контракт
+//--------------------------------------------------------------------------Заявка на контракт
   function objectOrParent(doc, objectId) {
     return doc.hasValue('v-s:hasContractObject') &&
       (doc['v-s:hasContractObject'][0].id == objectId
@@ -1284,8 +1336,24 @@ if (doc) {
       routes['examination'][simple+'comment'] = [new String('Для информации')];
     }
   }
-//--------------------------------------------------------------------------------------------------------------------------------Выполнение заявки на контракт
+//--------------------------------------------------------------------------------------------------------------------------------Выбор поставщика
   if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'visible'] = [true];
+    routes['coordination4'][simple+'editable'] = [true];
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+  }
+/*  if (doc['rdf:type'][0].id === "mnd-s:TenderProcedure") {
     if (doc.hasValue('v-s:backwardTarget') && doc['v-s:backwardTarget'][0].hasValue('v-s:customer') && doc['v-s:backwardTarget'][0]['v-s:customer'][0].if == "d:org_RU1121003135") {
       // Закупка
       if (doc['v-s:backwardTarget'][0].hasValue('v-s:hasBudgetCategory') && doc['v-s:backwardTarget'][0]['v-s:hasBudgetCategory'][0].id == "d:a193b366b-aaeb-c1f2-b101-89c95b10a6c8") {
@@ -1431,7 +1499,7 @@ if (doc) {
         }
       }
     }
-  }
+  }*/
 //-----------------------------------------------------------------------------------------------------------------------------------------------------Контракт / Дополнительное соглашение
   if (doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") {
 
@@ -1903,8 +1971,15 @@ if (doc) {
       || doc.hasValue("v-s:hasDocumentKind", "d:753b0b16b74e4174949ff6ddbeac4294") // Инвойс поступающий вместе с товаром
       || doc.hasValue("v-s:hasDocumentKind", "d:e267901f0b904979ad7d8d4a0dc6a7d9") // Банковская гарантия
       || doc.hasValue("v-s:hasDocumentKind", "d:6ef5acd0e8104e158045636555baedac") // Подтверждение об открытии, изменении аккредитива
-    ) {
+  ) {
       signers = signers.concat(new veda.IndividualModel("d:0c061f42-ceb5-442b-a550-61bfe762e0e1")); // Переводчик
+
+
+      routes['approval'][simple+'comment'] = [new String('Проверить сумму. Указать аванс')];
+      routes['sign'][simple+'comment'] = [new String('Выполнить перевод документа')];
+      routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
+      routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом')];
+
     }
     if (
       doc.hasValue("v-s:hasDocumentKind", "d:8737ebad40db4fafbf1cd5929f580c3a") // Акт о приемке выполненных работ имп.
@@ -1917,51 +1992,74 @@ if (doc) {
       || doc.hasValue("v-s:hasDocumentKind", "d:77d4cbd58cf34321a82e7281e8347542") // Декларация на товары
       || doc.hasValue("v-s:hasDocumentKind", "d:7919fd49560f4340b41ce6bc01aa87e9") // Кредит - нота
     ) {
-      reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
-    } else {
-      routes['coordination1'][simple+'visible'] = [true];
-      routes['coordination1'][simple+'editable'] = [true];
-      routes['coordination1'][simple+'deadlineDays'] = [10];
-      routes['coordination1'][simple+'comment'] = [new String('Согласовать первичный документ')];
+      if ( orderCreator.length ) {
+        approvers = approvers.concat( orderCreator ); // Создатель заказа
+      } else if ( supporter.length ) {
+        approvers = approvers.concat( supporter ); // Специалист по сопровождению контракта
+      }
 
-      routes['coordination2'][simple+'visible'] = [true];
-      routes['coordination2'][simple+'editable'] = [true];
-      routes['coordination2'][simple+'deadlineDays'] = [10];
-      routes['coordination2'][simple+'comment'] = [new String('Согласовать первичный документ')];
+      reviewers = reviewers.concat(new veda.IndividualModel("d:85c261ce-add1-40ef-9ccd-25cc62577eb1")); // Специалист казначейского отдела
+      routes['review'][simple+'participant'] = reviewers;
+      routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [true];
+      routes['review'][simple+'deadlineDays'] = [3];
     }
 /*
     if ( orderCreator.length ) {
       examiners = examiners.concat(orderCreator); // Создатель заказа
     }
 */
-    if ( doc.hasValue("v-s:hasDocumentKind", "d:77d4cbd58cf34321a82e7281e8347542") ) { // Декларация на товары
-      if ( orderCreator.length ) {
-        approvers = approvers.concat( orderCreator ); // Создатель заказа
-      } else if ( supporter.length ) {
-        approvers = approvers.concat( supporter ); // Специалист по сопровождению контракта
-      }
+
+    if ( doc.hasValue("v-s:hasDocumentKind", "d:0e013b49ee56476897656015c1ca6c94") // акт КС-2
+      || doc.hasValue("v-s:hasDocumentKind", "d:ada37e3e328b4a1592b0e259e95539b8"))// акт КС-3
+
+    {
+      signers = signers.concat(new veda.IndividualModel("d:wom1ouosnbv76dvsixphdcdd"));//  роль "Технический директор. Подписание актов"
+      
+      routes['coordination3'][simple+'visible'] = [true];
+      routes['coordination3'][simple+'editable'] = [true];
+      routes['coordination3'][simple+'deadlineDays'] = [10];
+      routes['coordination3'][simple+'comment'] = [new String('Согласовать первичный документ')];
+
+      routes['coordination4'][simple+'visible'] = [true];
+      routes['coordination4'][simple+'editable'] = [true];
+      routes['coordination4'][simple+'deadlineDays'] = [10];
+      routes['coordination4'][simple+'comment'] = [new String('Согласовать первичный документ')];
+      
     }
 
+
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    routes['coordination1'][simple+'comment'] = [new String('Согласовать первичный документ')];
+
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'deadlineDays'] = [10];
+    routes['coordination2'][simple+'comment'] = [new String('Согласовать первичный документ')];
+
     routes['approval'][simple+'participant'] = approvers;
-    routes['approval'][simple+'comment'] = [new String('Проверить сумму. Указать аванс')];
+  //routes['approval'][simple+'comment'] = [new String('Проверить сумму. Указать аванс')];
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'deadlineDays'] = [3];
 
     routes['sign'][simple+'participant'] = signers;
-    routes['sign'][simple+'comment'] = [new String('Выполнить перевод документа')];
+  //routes['sign'][simple+'comment'] = [new String('Выполнить перевод документа')];
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [3];
 
     routes['review'][simple+'participant'] = reviewers;
-    routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
+  //routes['review'][simple+'comment'] = [new String('Рассмотреть документ')];
     routes['review'][simple+'visible'] = [true];
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
 
     routes['examination'][simple+'participant'] = examiners;
-    routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом')];
+  //routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом')];
     routes['examination'][simple+'visible'] = [true];
     routes['examination'][simple+'editable'] = [true];
     routes['examination'][simple+'deadlineDays'] = [3];
@@ -2013,6 +2111,16 @@ if (doc) {
     routes['instruction3'][simple+'editable'] = [false];
     routes['instruction3'][simple+'deadlineDays'] = [10];
     routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
+
+    // #informing----------------------------------------------------------------------------------------------------------------------------------------
+    routes['introduction'][simple+'participant'] = [new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]; // Сотрудник. Мастер УВКХ
+    routes['introduction'][simple+'visible'] = [true];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['introduction'][simple+'deadlineDays'] = [10];
+    routes['introduction'][simple+'comment'] = [new String('Для принятия решений')];
+
+
+
   }
 //----------------------------------------------------------------------------------------------------------------------------------Письмо
   // Входящее письмо
@@ -2035,6 +2143,154 @@ if (doc) {
     routes['sign'][simple+'deadlineDays'] = [3];
     routes['sign'][simple+'participant'] = doc["v-s:sender"][0]["v-s:correspondentPerson"];
   }
+  //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
+      
+  if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {
+    if (!doc.hasValue("mnd-s:hasChangeOfTerms")){              
+
+  // согласование 1 уровня    
+      if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00061421_71020115") // Рембе
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00000420_71014492") // Завацкая
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068300_71019086") // Фотиева
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00011441_71014055") // Пшеницына
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00002610_71018830") // Белых
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063592_71017302") // Едапина
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
+      ){
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+        routes['coordination1'][simple+'deadlineDays'] = [10];
+        routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
+      } else if (doc.hasValue("v-s:businessTripEmployee")) {
+        var headUnit;
+        headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
+      
+        function calculationHeadUnit(occupation){
+          if(occupation.hasValue("v-s:hasChief")){
+          return occupation["v-s:hasChief"][0];  
+            
+          } else  if (!occupation.hasValue("v-s:parentUnit")) {
+            return [];
+          }else{
+          return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
+          }
+        }
+        routes['coordination1'][simple+'participant'] = headUnit; 
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+      } else{
+        routes['coordination1'][simple+'visible'] = [true];
+        routes['coordination1'][simple+'editable'] = [true];
+      }
+  //согласование 2 уровня
+      
+      if(doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:0574e5e2e66447dfbf787a6e0b05f4fe")//Выставки
+        || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:e9ca8b048f244f348775b7e2befaee8c")//Обучение
+      ){
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:0c989a61-896b-4e1d-a8f6-1f09b9a0e433")];//Специалист УЦ 
+        routes['coordination2'][simple+'visible'] = [true];
+        routes['coordination2'][simple+'editable'] = [true];
+      } else if(
+        doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:42f7a4e157ed4e3da34d6cd885df4a9b") //(запланированы)
+        || doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:0e31da05e36b4216832fb9a5ba853684") //(возможны)
+        || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:c533caab0062434c9c3b74521fd9798c")// Выставки, форумы отраслевые (ЦБП, Леспром)
+        || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:6c0bbecd077d4dff8b9481da73ea5350")//(Общественные организации отраслевые (ЦБП, Леспром))
+        || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:236170912d8f40a08178baab6449ff05")// (Организации конкуренты)
+      ){
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ 
+        routes['coordination2'][simple+'visible'] = [true];
+        routes['coordination2'][simple+'editable'] = [true];
+      }
+  // Подписание
+      
+      if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00061421_71020115") // Рембе*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00000420_71014492") // Завацкая*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068300_71019086") // Фотиева*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00011441_71014055") // Пшеницына*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00002610_71018830") // Белых*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063592_71017302") // Едапина*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова*
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
+      ){
+        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")];//Генеральный директор
+        routes['sign'][simple+'visible'] = [true];
+        routes['sign'][simple+'editable'] = [false];
+      } else if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758")//Пеллер
+      ){
+        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00069177_71015289")];//Шаллеггер*
+        routes['sign'][simple+'visible'] = [true];
+        routes['sign'][simple+'editable'] = [false];
+      } else if(!doc.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")){
+        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")];//Генеральный директор
+        routes['sign'][simple+'visible'] = [true];
+        routes['sign'][simple+'editable'] = [false];
+      } else if(doc.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")){
+        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71019086")];//Директор по персоналу Монди
+        routes['sign'][simple+'visible'] = [true];
+        routes['sign'][simple+'editable'] = [false];
+      }
+      
+      
+        
+        routes['coordination3'][simple+'visible'] = [true];
+        routes['coordination3'][simple+'editable'] = [true];
+        
+        routes['coordination4'][simple+'visible'] = [true];
+        routes['coordination4'][simple+'editable'] = [true];
+  //Утверждение      
+        routes['approval'][simple+'participant'] = [new veda.IndividualModel(" d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+        routes['approval'][simple+'visible'] = [true];
+        routes['approval'][simple+'editable'] = [false];
+        routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+        
+  //Рассмотрение     
+        routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
+        routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
+        routes['review'][simple+'visible'] = [true];
+        routes['review'][simple+'editable'] = [false];
+        routes['review'][simple+'deadlineDays'] =[doc["v-s:dateFrom"][0]];
+        
+        
+  //Исполнение
+        if( doc.hasValue("v-s:dateTo")){
+          var data=new Date(doc["v-s:dateTo"][0].toISOString())
+          data.setDate(data.getDate() + 3);
+        } else {data=[];}
+        routes['instruction'][simple+'participant'] =[doc["v-s:creator"][0]]; 
+        routes['instruction'][simple+'visible'] = [true];
+        routes['instruction'][simple+'editable'] = [false];
+        routes['instruction'][simple+'deadlineDays'] =[data];
+    } else {
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
+      
+      routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
+      routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+
+ 
+      
+    }
+  }
+  
+  
+  
+  
+  
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {
       routes['coordination1'][simple+'participant'] = [
@@ -2057,6 +2313,11 @@ if (doc) {
       routes['instruction2'][simple+'visible'] = [true];
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
+  
+  
+  
+  
+  
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
   /*
       routes['introduction'][simple+'participant'] = [
@@ -2137,6 +2398,14 @@ $('#save_and_start_process', template).on('click', function () {
         </div>
         <div class="panel-body" about="@" data-embedded="true" data-template="s-wf:SimpleRouteStartFormMinimal_Template"></div>
       </div>
+    </div>    
+    <div class="col-md-6 introduction" rel="s-wf:ComplexRouteStartForm_introduction" data-embedded="true">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_introduction" property="rdfs:label"></h3>
+        </div>
+        <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
+      </div>
     </div>
     <div class="col-md-6 coordination1" rel="s-wf:ComplexRouteStartForm_coordination1" data-embedded="true">
       <div class="panel panel-success">
@@ -2154,14 +2423,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    <div class="col-md-6 introduction" rel="s-wf:ComplexRouteStartForm_introduction" data-embedded="true">
-      <div class="panel panel-success">
-        <div class="panel-heading">
-          <h3 class="panel-title" about="s-wf:ComplexRouteStartForm_introduction" property="rdfs:label"></h3>
-        </div>
-      <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
-    </div>
-    </div>
+    
     <div class="col-md-6 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
@@ -2663,7 +2925,7 @@ s-wf:codelet_change_controller_right
   v-s:script """
   process.getInputVariable ('rightset')?
   change_rights_actor (process, task, process.getInputVariable ('rightset'), 'controller') :
-  down_right_and_store (process, task)
+  change_rights_actor (process, task, newStr ('-r--'), 'controller')
 """ ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -2674,7 +2936,7 @@ s-wf:codelet_change_responsible_right
   v-s:script """
   process.getInputVariable ('rightset')?
   change_rights_actor (process, task, process.getInputVariable ('rightset'), 'responsible') :
-  down_right_and_store (process, task)
+  change_rights_actor (process, task, newStr ('-r--'), 'responsible')
 """ ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -2783,6 +3045,25 @@ s-wf:UserTaskFormTemplate
         <div about="@" property="v-wf:dateGiven"></div>
       </div>
     </div>
+   
+    
+    <div about="@" rel="v-wf:redirect_from_task">
+      <hr>
+      <div class="row">
+        <div class="col-md-3">
+          <em about="v-s:TaskIsRedirectedFrom" property="rdfs:label"> </em>
+          <span  rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
+          
+        </div>
+        <div rel="v-wf:takenDecision" class="col-md-3">
+          
+          <em about="rdfs:comment" property="rdfs:label"> </em>
+          <span about="@"  property="rdfs:comment"></span>
+        
+        </div>
+      </div>
+    </div>
+    
     <hr />
     <em about="v-wf:takenDecision" property="rdfs:label"></em>
     <div class="radio decision">
@@ -2933,8 +3214,9 @@ s-wf:tr_actor_form
   rdf:type v-wf:Transform ;
   v-wf:transformRule s-wf:rul_tr_form_1 ;
   v-wf:transformRule s-wf:rul_tr_form_1a ;
+  v-wf:transformRule s-wf:rul_tr_form_1b ;
   v-wf:transformRule s-wf:rul_tr_form_a ;
-  v-wf:transformRule s-wf:rul_tr_form_2 ;
+  v-wf:transformRule s-wf:rul_tr_form_2a ;
   v-wf:transformRule s-wf:rul_tr_form_3 ;
   v-wf:transformRule s-wf:rul_tr_form_4 ;
   v-wf:transformRule s-wf:rul_tr_form_5 ;
@@ -2983,6 +3265,16 @@ s-wf:rul_tr_form_1a
   rdfs:label "Тип формы из переменной decision_form_type"@ru ;
 .
 
+s-wf:rul_tr_form_1b
+  rdf:type v-wf:Rule ;
+  v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'redirect_from')" ;
+  v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+  v-wf:aggregate  "putValue ('v-wf:redirect_from_task')";
+  v-wf:grouping "1";
+  rdfs:isDefinedBy s-wf: ;
+  rdfs:label "Предыдущая задача из переменной redirect_from"@ru ;
+.
+
 s-wf:rul_tr_form_2
   rdf:type v-wf:Rule ;
   v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'initiator')" ;
@@ -2992,6 +3284,17 @@ s-wf:rul_tr_form_2
   v-wf:grouping "1";
   rdfs:isDefinedBy s-wf: ;
   rdfs:label "От кого = инициатор"@ru ;
+.
+
+s-wf:rul_tr_form_2a
+  rdf:type v-wf:Rule ;
+  v-wf:segregateObject "objectContentStrValue ('v-wf:variableName', 'from')" ;
+  v-wf:segregateElement "contentName('v-wf:variableValue')" ;
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:employee'])";
+  v-wf:aggregate  "putValueFrom ('v-wf:from', ['v-s:occupation'])";
+  v-wf:grouping "1";
+  rdfs:isDefinedBy s-wf: ;
+  rdfs:label "от кого = from"@ru ;
 .
 
 s-wf:rul_tr_form_3
@@ -3261,6 +3564,13 @@ s-wf:var_actor_task_action
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:var_redirect_from
+  rdf:type v-wf:VarDefine ;
+  v-wf:varDefineName "redirect_from" ;
+  v-wf:varDefineScope v-wf:Net ;
+  rdfs:label "Var redirect from" ;
+  rdfs:isDefinedBy s-wf: ;
+.
 
 s-wf:var_actor_task_comment
   rdf:type v-wf:VarDefine ;
@@ -3326,6 +3636,16 @@ s-wf:map_actor_task_action_4LV_result_decision
                             [{$go:'rdf:type'}, {$get:'rdfs:label'}] )
   """;
   rdfs:label "Описание задачи из формы решения пользователя [result_decision]"@ru ;
+.
+
+s-wf:map_actor_task_action_4LV_result_decision_nct2
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_actor_task_action ;
+  v-wf:mappingExpression """
+  get_properties_chain (process.getLocalVariable('result_decision_nct2'),
+                            [{$go:'rdf:type'}, {$get:'rdfs:label'}] )
+  """;
+  rdfs:label "Описание задачи из формы решения пользователя [result_decision_nct2]"@ru ;
 .
 
 s-wf:map_actor_task_action_return_result_decision
@@ -3433,6 +3753,37 @@ s-wf:map_controller_2_result_decision
   rdfs:label "Исполнитель из формы решения пользователя"@ru ;
 .
 
+s-wf:map_redirect_from_2_result_decision
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_redirect_from ;
+  v-wf:mappingExpression """
+
+  get_properties_chain (process.getLocalVariable('result_decision'),
+              [{$get:'v-s:parent'}] )
+
+  """;
+  rdfs:label "Задача из формы решения пользователя"@ru ;
+.
+
+s-wf:map_from_2_result_decision_author
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_from ;
+  v-wf:mappingExpression """
+
+  get_properties_chain (process.getLocalVariable('result_decision'),
+              [{$get:'v-s:creator'}])
+
+  """;
+  rdfs:label "Автор задачи из формы решения пользователя"@ru ;
+.
+
+s-wf:map_redirect_from_2_undefine
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_redirect_from ;
+  v-wf:mappingExpression "newUri ('s-wf:EmptyTask')";
+  rdfs:label "redirect_from = undefine" ;
+.
+
 ##########################################################################################################################################
 
 
@@ -3464,7 +3815,7 @@ s-wf:def_exec_initiator
 
 s-wf:def_exec_responsible
   rdf:type v-wf:ExecutorDefinition ;
-  v-wf:executorExpression "process.getLocalVariable ('responsible') ? process.getLocalVariable ('responsible') : process.getLocalVariable ('initiator')" ;
+  v-wf:executorExpression "process.getLocalVariable ('responsible') ? process.getLocalVariable ('responsible') : (process.getLocalVariable ('controller') ? process.getLocalVariable ('controller') : process.getLocalVariable ('initiator'))" ;
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -3478,6 +3829,13 @@ s-wf:map_set_if_result
 s-wf:map_set_result_decision_from_TR_result_data
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_result_decision ;
+  v-wf:mappingExpression  "task_result.getValue ('result_data')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_set_result_decision_nct2_from_TR_result_data
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_result_decision_nct2 ;
   v-wf:mappingExpression  "task_result.getValue ('result_data')";
   rdfs:isDefinedBy s-wf: ;
 .
@@ -3583,8 +3941,8 @@ s-wf:net_coordination
   v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local, s-wf:map_last_actor_4_PLV_actor;
   v-wf:inputVariable s-wf:var_msg_template, s-wf:var_doc_id, s-wf:var_initiator, s-wf:var_coordinator, s-wf:var_coordinator_level, s-wf:var_rightset;
   rdfs:isDefinedBy <http://semantic-machines.com/veda/simple-workflow/>;
-  v-wf:localVariable s-wf:var_responsible, s-wf:var_result, s-wf:var_actor, s-wf:var_controller, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_actor_task_date_to;
-  v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action.
+  v-wf:localVariable s-wf:var_responsible, s-wf:var_result, s-wf:var_actor, s-wf:var_controller, s-wf:var_add_request_actor, s-wf:var_result_decision, s-wf:var_result_decision_nct2, s-wf:var_actor_task_date_to;
+  v-wf:localVariable s-wf:var_actor_task_comment, s-wf:var_actor_task_action, s-wf:var_redirect_from.
 
 s-wf:c1 v-wf:hasFlow d:abaa42215-965f-a032-aada-31be82a54e95;
   v-wf:locationY "528"^^xsd:integer;
@@ -3750,13 +4108,13 @@ s-wf:nc_t2
   v-wf:hasFlow s-wf:nc_f_t2_t1, s-wf:nc_f_t2_oc, d:a65787936-f51e-a83c-f537-95eaaa02c21a, s-wf:nc_t2_to_r;
   rdfs:label "Выдача задачи";
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
-  v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type;
-  v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_from_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_t2_sm2, s-wf:map_t2_sm3;
+  v-wf:startingMapping s-wf:map_possible_decision, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_redirect_from_4_PLV_redirect_from;
+  v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_from, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_rdf_type_4_TIV_documentType, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_actor;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_t2_sm5;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_set_result_decision_nct2_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_actor, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_msg_nc_t2_comment ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -3772,13 +4130,14 @@ s-wf:nc_return_to_initiator
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_4_PLV_initiator, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm3;
-  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
+  v-wf:startingMapping s-wf:map_controller_4_PLV_controller, s-wf:map_doc_id, s-wf:map_from_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision_nct2, s-wf:map_t2_sm3;
+  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_responsible;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
+  v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_responsible, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -3794,13 +4153,14 @@ s-wf:nc_oc
   v-wf:startDecisionTransform s-wf:tr_actor_form;
   v-wf:completeDecisionTransform s-wf:tr_taken_decision;
   v-wf:expectedResultType s-wf:UserTaskForm;
-  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator_from_actor, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision, s-wf:map_t2_sm_control;
-  v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision;
+  v-wf:startingMapping s-wf:map_doc_id, s-wf:map_from_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision_nct2, s-wf:map_t2_sm_control;
+  v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
   v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_controller;
-  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision, s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5;
+  v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
+  v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
   rdfs:isDefinedBy s-wf: ;
   v-wf:startingExecutorJournalMap s-wf:map_jrn_msg_nc_t2_b, s-wf:map_jrn_msg_nc_t2_b_ev, s-wf:map_journal_to_4_PLV_controller, s-wf:map_journal_doc_id, s-wf:map_journal_process_id ;
   v-wf:completedExecutorJournalMap s-wf:map_jrn_msg_nce_t2_b, s-wf:map_jrn_msg_nce_t2_b_ev, s-wf:map_journal_to_4_OOV_result_data_N_author, s-wf:map_journal_doc_id, s-wf:map_journal_process_id, s-wf:map_jrn_decision_b ;
@@ -3815,7 +4175,7 @@ s-wf:nc_r_to_i_return a v-wf:Flow;
 
 s-wf:nc_r_to_i_finish a v-wf:Flow;
   rdfs:isDefinedBy s-wf:;
-  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
+  v-wf:predicate "task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAcceptMotivatedRefusal')) == true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_finish;
 .
@@ -3829,7 +4189,7 @@ s-wf:nc_r_to_aur a v-wf:Flow;
 
 s-wf:nc_to_finish a v-wf:Flow;
   rdfs:isDefinedBy s-wf:;
-  v-wf:predicate "(!process.getInputVariable ('controller')) || task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionAgreed')) == true"^^xsd:string;
+  v-wf:predicate "(!process.getInputVariable ('controller')) || task_result.is_all_executors_taken_decision ('result', newUri ('v-wf:DecisionConfirm')) == true"^^xsd:string;
   v-wf:belongsTo s-wf:net_coordination;
   v-wf:flowsInto s-wf:nc_finish;
 .
@@ -3954,8 +4314,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4
   v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e;
   v-wf:locationY "637"^^xsd:integer;
   a v-wf:Task;
-  rdfs:label "Установить переменную actor из *result_decision[wf:to]"^^xsd:string;
-  v-wf:completedMapping s-wf:map_actor_2_result_decision;
+  rdfs:label "Обработка redirect: actor = *result_decision[wf:to]"^^xsd:string;
+  v-wf:completedMapping s-wf:map_actor_2_result_decision, s-wf:map_redirect_from_2_result_decision;
   v-s:author td:RomanKarpov-Analyst1;
   v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
   v-wf:locationX "480"^^xsd:integer.
@@ -3964,8 +4324,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4_oc
   v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e_oc;
   v-wf:locationY "264"^^xsd:integer;
   a v-wf:Task;
-  rdfs:label "Установить переменную controller из *result_decision[wf:to]"^^xsd:string;
-  v-wf:completedMapping s-wf:map_controller_2_result_decision;
+  rdfs:label "Обработка redirect: controller = *result_decision[wf:to]"^^xsd:string;
+  v-wf:completedMapping s-wf:map_controller_2_result_decision, s-wf:map_redirect_from_2_result_decision;
   v-s:author td:RomanKarpov-Analyst1;
   v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
   v-wf:locationX "1168"^^xsd:integer.
@@ -3974,8 +4334,8 @@ d:abc5142af-b501-1ec6-8ee0-acb767f078a4_rti
   v-wf:hasFlow d:a2dcf4fb5-ca60-4b2d-d303-91f8c29db59e_rti;
   v-wf:locationY "800"^^xsd:integer;
   a v-wf:Task;
-  rdfs:label "Установить переменную responsible из *result_decision[wf:to]"^^xsd:string;
-  v-wf:completedMapping s-wf:map_responsible_2_result_decision;
+  rdfs:label "Обработка redirect: responsible = *result_decision[wf:to]"^^xsd:string;
+  v-wf:completedMapping s-wf:map_responsible_2_result_decision, s-wf:map_redirect_from_2_result_decision;
   v-s:author td:RomanKarpov-Analyst1;
   v-s:created "2015-11-10T18:08:39.175Z"^^xsd:dateTime;
   v-wf:locationX "1200"^^xsd:integer.
@@ -4052,10 +4412,38 @@ s-wf:map_msg_template_4_SV_default_template_notification
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_msg_template_4_SV_default_template_notification_approvalEnd
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "newUri ('m-l:msg-template-universal-notification_approvalEnd')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_msg_template_4_SV_default_template_notification_signEnd
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "newUri ('m-l:msg-template-universal-notification_signEnd')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_msg_template_4_SV_default_template_notification_coordinationEnd
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "newUri ('m-l:msg-template-universal-notification_coordinationEnd')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_from_4_TIV_initiator
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_from ;
   v-wf:mappingExpression  "task.getInputVariable ('initiator')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_from_4_TIV_from
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_from ;
+  v-wf:mappingExpression  "task.getInputVariable ('from')";
   rdfs:isDefinedBy s-wf: ;
 .
 
@@ -4136,6 +4524,13 @@ s-wf:map_vf_to_4_O_executor
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_vf_to_4_0_initiator
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_wf_to ;
+  v-wf:mappingExpression  "process.getInputVariable ('initiator')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+ 
 s-wf:map_to_4_O_executor
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_to ;

@@ -1467,13 +1467,27 @@ v-ui:JournalTemplate
   v-ui:template """
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
+  $('.createReport0', template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
+  });
 </script>
 <div class="container journal sheet">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
+  <div class="row">
+  <div class="col-md-10">
+    
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  </div>
+  <div class="col-md-2 text-right">
+    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
+      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
+    </button>
+    </div>    
+  </div>
   <div rel="v-s:onDocument">
     <div>
       <h4>
@@ -1642,6 +1656,9 @@ v-ui:PermissionStatementTemplate
     <div class="col-md-1">
       <span about="v-s:endTime" property="rdfs:label"></span>
     </div>
+    <div class="col-md-12">
+      <span about="rdfs:comment" property="rdfs:label"></span>
+    </div>
   </div>
   <hr/>
   <div class="row">
@@ -1669,11 +1686,18 @@ v-ui:PermissionStatementTemplate
     <div class="col-md-1">
       <span about="@" property="v-s:endTime"></span>
     </div>
+    <div class="col-md-12">
+	<pre style="border:none;background-color:#fff;"></pre>
+    </div>
   </div>
   </div>
   <script>
-    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
+//    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
     //# sourceURL=v-ui:PermissionStatementTemplate
+    var dd = individual['rdfs:comment'][0];
+    var pre = $("pre", template);
+    var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+    pre.html(anchored);
   </script>
   """ ;
 .

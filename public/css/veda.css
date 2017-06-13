@@ -65,7 +65,7 @@ body {
   font-size: 0.9em;
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
-  z-index: 10000;
+  z-index: 0;
 }
 
 /* Ribbons */

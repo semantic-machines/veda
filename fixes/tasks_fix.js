@@ -416,3 +416,32 @@ veda.Util.processQuery("'rdf:type'==='v-wf:DecisionForm' && ('v-wf:to.rdf:type'=
     console.log(err, "Error", "| task_uri", task_uri, "| position_uri", position_uri, "| app_uri", app_uri);
   }
 });
+
+
+
+// Fix tasks given to deleted positions
+var deletedPositionsWithTasks = [];
+var errored = [];
+
+veda.Util.processQuery("'rdf:type'==='v-s:Position' && 'v-s:deleted'== true ", 10000, 100, 0, function (position_uri) {
+  try {
+    var position = get_individual(veda.ticket, position_uri);
+    var isDeleted = position && position["v-s:deleted"] && position["v-s:deleted"][0].data === true;
+
+    if (isDeleted) {
+      var tasks_query = query({
+        ticket: veda.ticket,
+        query: "'rdf:type'==='v-wf:DecisionForm' && 'v-wf:isCompleted' == 'false' && 'v-wf:to'=='" + position_uri + "'",
+        top: 1,
+        limit: 1
+      });
+      if (tasks_query.estimated) {
+        deletedPositionsWithTasks.push(position_uri);
+      }
+    }
+
+  } catch (err) {
+    //console.log(err, "Error", "| position_uri", position_uri, "| tasks_query", tasks_query);
+    errored.push(position_uri);
+  }
+});

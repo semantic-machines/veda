@@ -204,3 +204,8 @@ v-s:StatusAcceptedPartially
   rdfs:label "Accepted partially"@en ;
   rdfs:label "Принято частично"@ru ;
 .
+v-s:StatusChangedOfTermes
+  rdf:type v-s:Status ;
+  rdfs:label "Changed of termes"@en ;
+  rdfs:label "Изменены сроки"@ru ;
+.

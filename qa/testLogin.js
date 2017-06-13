@@ -9,9 +9,11 @@ var basic = require('./basic.js');
  */
 
 basic.getDrivers().forEach (function (drv) {
+    //PHASE#1
 	var driver = basic.getDriver(drv);
 	basic.openPage(driver, drv);
 	basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#1 > LOGIN : COMPLETE");});
 
 	driver.quit();	
 });

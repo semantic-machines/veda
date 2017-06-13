@@ -198,6 +198,12 @@ this._init = function () {
       self.object.set(property_uri, self.get(property_uri).slice(0));
     }
   });
+  self.object.one("afterSave", function () {
+    delete self.object;
+  });
+  self.object.one("afterReset", function () {
+    delete self.object;
+  });
 }
 
 self.on("beforeSave", updateBlank);
@@ -289,16 +295,18 @@ v-fc:BlankTemplate
       object.off("afterReset", cancelHandler);
       self.off("beforeSave");
       self.off("afterSave");
-      delete self.object;
+      //delete self.object;
     });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
   function saveHandler () {
-    delete self.object;
-    setTimeout(function () {
-      riot.route("#/" + object.id);
-    }, 100);
+    //delete self.object;
+    if (container.attr("id") === "main") {
+      setTimeout(function () {
+        riot.route("#/" + object.id);
+      }, 100);
+    }
   }
   function cancelHandler () { window.history.back(); }
   //# sourceURL=v-fc:BlankTemplate
@@ -339,19 +347,21 @@ v-fc:BlankTemplateShort
       object.off("afterReset", cancelHandler);
       self.off("beforeSave");
       self.off("afterSave");
-      delete self.object;
+      //delete self.object;
     });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
   function saveHandler () {
-    delete self.object;
-    setTimeout(function () {
-      riot.route("#/" + object.id);
-    }, 100);
+    //delete self.object;
+    if (container.attr("id") === "main") {
+      setTimeout(function () {
+        riot.route("#/" + object.id);
+      }, 100);
+    }
   }
   function cancelHandler () { window.history.back(); }
-  //# sourceURL=v-fc:BlankTemplate
+  //# sourceURL=v-fc:BlankTemplateShort
 </script>
   """
 .

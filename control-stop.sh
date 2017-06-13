@@ -15,6 +15,7 @@ killall -9 veda-mstorage
 killall -9 veda-server
 killall -9 veda-ttlreader
 killall -9 veda-webserver
+killall -9 veda-gowebserver
 
 rm data/module-info/*.lock
 rm data/queue/*.lock

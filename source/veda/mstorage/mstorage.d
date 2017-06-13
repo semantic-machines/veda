@@ -134,7 +134,7 @@ void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 
     if (rc == ResultCode.OK)
     {
-        res = execute(cast(string)msg, l_context);
+        res = execute_json(cast(string)msg, l_context);
     }
     else
     {
@@ -460,8 +460,76 @@ public Ticket authenticate(string login, string password)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+public string execute_binobj(string in_msg, Context ctx)
+{
+//    log.trace("@1 execute_binobj %s", in_msg);
+    JSONValue  res;
+    Individual otnx;
 
-public string execute(string in_msg, Context ctx)
+    if (otnx.deserialize(in_msg) > 0)
+    {
+//	    log.trace("@ execute_binobj otnx=%s", otnx);
+
+        string sfn = otnx.getFirstLiteral("fn");
+
+        if (sfn == "commit")
+        {
+            log.trace("@ execute commit %s", otnx);
+
+            Transaction tnx;
+            tnx.id = otnx.getFirstInteger("fn");
+
+            Resources items = otnx.getResources("items");
+
+            tnx.is_autocommit = false;
+
+            foreach (ib; items)
+            {
+                log.trace("@ ib= %s", ib);
+
+                Individual item;
+
+                if (item.deserialize(ib.data) > 0)
+                {
+                    immutable TransactionItem ti = immutable TransactionItem(cast(INDV_OP)item.getFirstInteger("cmd"), item.getFirstLiteral(
+                                                                                                                                            "user_uri"),
+                                                                             item.getFirstLiteral("uri"),
+                                                                             item.getFirstLiteral("prev_binobj"), item.getFirstLiteral(
+                                                                                                                                       "new_binobj"),
+                                                                             item.getFirstInteger("update_counter"), item.getFirstLiteral("event_id"),
+                                                                             false, false);
+
+                    log.trace("@ ti= %s", ti);
+
+                    tnx.add_immutable(ti);
+                }
+            }
+
+            OpResult[]  rcs = commit(OptAuthorize.YES, tnx);
+
+            JSONValue[] all_res;
+            foreach (rr; rcs)
+            {
+                JSONValue ires;
+                ires[ "result" ] = rr.result;
+                ires[ "op_id" ]  = rr.op_id;
+                all_res ~= ires;
+            }
+
+            res[ "data" ]   = all_res;
+            res[ "type" ]   = "OpResult";
+            res[ "result" ] = ResultCode.OK;
+            res[ "op_id" ]  = -1;
+        }
+    }
+    else
+        log.trace("ERR! execute_binobj: fail deserialize");
+
+    log.trace("@e execute_binobj");
+    return res.toString();
+}
+
+public string execute_json(string in_msg, Context ctx)
 {
     JSONValue res;
     JSONValue jsn;
@@ -486,26 +554,7 @@ public string execute(string in_msg, Context ctx)
 
         string    sfn = fn.str();
 
-        if (sfn == "commit")
-        {
-        	log.trace ("@ execute commit %s", jsn);
-            JSONValue   tnx_id = jsn[ "tnx_id" ];
-            JSONValue[] items  = jsn[ "items" ].array;
-
-            Transaction tnx;
-            tnx.id            = tnx_id.integer;
-            tnx.is_autocommit = false;
-
-            foreach (ijsn; items)
-            {
-                TransactionItem ti = from_json(ijsn);
-
-                tnx.add(&ti);
-            }
-
-            commit(OptAuthorize.YES, tnx);
-        }
-        else if (sfn == "authenticate")
+        if (sfn == "authenticate")
         {
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
@@ -653,7 +702,6 @@ public string execute(string in_msg, Context ctx)
             }
 
             JSONValue[] all_res;
-
             foreach (rr; rc)
             {
                 JSONValue ires;
@@ -878,14 +926,16 @@ public bool backup(Context ctx, bool to_binlog, int level = 0)
     return result;
 }
 
-public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
+public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
+
+    OpResult[] rcs;
     long       op_id;
 
     if (in_tnx.is_autocommit == false)
     {
-        immutable(TransactionItem)[] items = in_tnx.get_immutable_queue();
+        auto items = in_tnx.get_immutable_queue();
 
         log.trace("commit: items=%s", items);
 
@@ -903,10 +953,11 @@ public ResultCode commit(OptAuthorize opt_request, ref Transaction in_tnx)
                 if (item.rc == ResultCode.OK)
                     rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
             }
+            rcs ~= OpResult(rc, op_id);
         }
     }
 
-    return rc;
+    return rcs;
 }
 
 
@@ -980,7 +1031,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
             {
                 // для обновляемого индивида проверим доступность бита Update
-                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null) != Access.can_update)
+                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
                 {
                     res.result = ResultCode.Not_Authorized;
                     return res;
@@ -1006,7 +1057,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             {
                 if (rr.info == NEW_TYPE)
                 {
-                    if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null) != Access.can_create)
+                    if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null, null) != Access.can_create)
                     {
                         res.result = ResultCode.Not_Authorized;
                         return res;
@@ -1062,9 +1113,9 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         {
             if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
             {
-                //log.trace("++ add_to_transaction, prev_indv: %s", prev_indv);
+                //log.trace("++ add_to_transaction (%s), prev_indv: %s, op_indv: %s", text (cmd), prev_indv, *indv);
                 indv = indv_apply_cmd(cmd, &prev_indv, indv);
-                //log.trace("++ add_to_transaction, final indv: %s", *indv);
+                //log.trace("++ add_to_transaction (%s), final indv: %s", text (cmd), *indv);
             }
 
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
@@ -1232,7 +1283,7 @@ Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
                 is_allow_trusted = true;
         }
 
-        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl);
+        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl, null);
 
         if (is_allow_trusted)
         {

@@ -1674,6 +1674,15 @@ v-wf:from
   rdfs:range v-s:Appointment ;
 .
 
+v-wf:redirect_from_task
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Перенаправлено из задачи"@ru ;
+  rdfs:label "Redirect from task"@en ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:range v-wf:DecisionForm ;
+.
+
 v-wf:to
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;

@@ -478,7 +478,7 @@ td:ComplexRouteStartForm1
   v-wf:processedDocument td:SavedSearch1 ;
   v-wf:processInitiator td:RomanKarpov-Analyst1 ;
   v-wf:useTransformation s-wf:transformation1 ;
-  rdfs:label "ТЕСТ Комплексный маршрут"@ru;
+  rdfs:label "ТЕСТ Комплексный маршрут"@ru ;
   s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ;
   s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ;
   s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ;
