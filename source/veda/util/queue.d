@@ -121,7 +121,7 @@ class Consumer
         header_buff = new ubyte[ header.length() ];
     }
 
-    public bool open()
+    public bool open(bool open_only_if_exists = false)
     {
         if (!queue.isReady)
         {
@@ -130,6 +130,11 @@ class Consumer
         }
 
         file_name_info_pop = path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
+
+		if (open_only_if_exists && !exists (file_name_info_pop))
+		{
+			return false;
+		}
 
         if (exists(file_name_info_pop) == false)
             ff_info_pop_w = new File(file_name_info_pop, "w");
