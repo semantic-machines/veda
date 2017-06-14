@@ -408,7 +408,7 @@
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       timeout;
 
-    var input = Object.keys(veda.user.language).map(function (language_name) {
+    Object.keys(veda.user.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
 
       localedInput.find(".language-tag").text(language_name);
@@ -434,10 +434,10 @@
         }
       });
 
-      return localedInput;
+      control.append( localedInput );
     });
 
-    control.append( input );
+    var input = control.children();
 
     individual.on(property_uri, handler);
     control.one("remove", function () {
@@ -458,7 +458,7 @@
     }
 
     function handler (values) {
-      control.find(".form-control").each(function () {
+      input.each(function () {
         var that = this;
         var lang = this.lang;
         individual.get(property_uri).forEach(function (value) {
@@ -483,7 +483,7 @@
     }
 
     this.on("veda_focus", function (e, value) {
-      control.find(".form-control").each(function () {
+      input.each(function () {
         if ( value.language === this.lang || !value.language ) {
           $(this).trigger("focus");
         }
@@ -499,7 +499,7 @@
       if (!value) {
         return parser( input.val() );
       }
-      control.find(".form-control").each(function () {
+      input.each(function () {
         if (value.language === this.lang || !value.language) {
           this.value = value.toString();
         }
