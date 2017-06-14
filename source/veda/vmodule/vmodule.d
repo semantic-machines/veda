@@ -328,7 +328,7 @@ class VedaModule
                     if (rc != ResultCode.Connect_Error)
                         prepare_batch_cs.commit_and_next(true);
 
-                    continue;
+                    //continue;
                 }
                 else
                 {
