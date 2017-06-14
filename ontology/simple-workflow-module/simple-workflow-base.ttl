@@ -2250,7 +2250,7 @@ if (doc) {
         routes['coordination4'][simple+'visible'] = [true];
         routes['coordination4'][simple+'editable'] = [true];
   //Утверждение      
-        routes['approval'][simple+'participant'] = [new veda.IndividualModel(" d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+        routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
         routes['approval'][simple+'visible'] = [true];
         routes['approval'][simple+'editable'] = [false];
         routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
