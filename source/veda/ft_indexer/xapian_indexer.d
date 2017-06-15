@@ -244,18 +244,38 @@ public class IndexerContext
 
                 Resources types = indv.getResources(rdf__type);
 
+                Resources prev_types  = prev_indv.getResources(rdf__type);
+                string    prev_dbname = "base";
+                foreach (_type; prev_types)
+                {
+                    prev_dbname = iproperty.get_dbname_of_class(_type.uri);
+                    if (prev_dbname != "base")
+                        break;
+                }
+
+                string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
+
                 // используем информацию о типе, для определения, в какой базе следует проводить индексацию
                 string dbname = "base";
                 foreach (_type; types)
                 {
                     if (_type.uri == "vdi:ClassIndex")
-                    {
                         iproperty.add_schema_data(indv);
-                    }
 
                     dbname = iproperty.get_dbname_of_class(_type.uri);
                     if (dbname != "base")
                         break;
+                }
+
+                if (prev_dbname != dbname)
+                {
+                    log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
+                    log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
+
+                    if (prev_dbname == "system")
+                        indexer_system_db.delete_document(uuid.ptr, uuid.length, &err);
+                    else
+                        indexer_base_db.delete_document(uuid.ptr, uuid.length, &err);
                 }
 
                 if (dbname == "not-indexed")
@@ -739,7 +759,6 @@ public class IndexerContext
                 if (trace_msg[ 221 ] == 1)
                     log.trace("index all text [%s]", data);
 
-                string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
                 doc.add_boolean_term(uuid.ptr, uuid.length, &err);
                 doc.set_data(indv.uri.ptr, indv.uri.length, &err);
 
