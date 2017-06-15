@@ -77,17 +77,17 @@ basic.getDrivers().forEach(function (drv) {
         function () {
             return driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
                 return webdriver.promise.filter(suggestions, function(suggestion) {
-                    return suggestion.getText().then(function(txt){ return txt === 'Персона' });
+                    return suggestion.getText().then(function(txt){ return txt === 'Персона (v-s:Person)' });
                 }).then(function(x) { return x.length > 0; });
             });
         },
         basic.SLOW_OPERATION
-    ).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value "+'Персона');});
+    ).thenCatch(function (e) {basic.errorHandler(e, "Dropdown doesnt contains value "+'Персона (v-s:Person)');});
     driver.findElements({css:"veda-control.fulltext div.tt-suggestion>p"}).then(function (suggestions) {
         webdriver.promise.filter(suggestions, function(suggestion) {
-            return suggestion.getText().then(function(txt){ return txt == 'Персона';});
+            return suggestion.getText().then(function(txt){ return txt == 'Персона (v-s:Person)';});
         }).then(function(x) { x[0].click();});
-    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "+'Персона'+" from dropdown");});
+    }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on "+'Персона (v-s:Person)'+" from dropdown");});
     var birthday = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
     search(driver, ['v-s:lastName'], ["a" + last], 1);
     search(driver, ['v-s:firstName'], [first.substring(0,4) + "*"], 2);
