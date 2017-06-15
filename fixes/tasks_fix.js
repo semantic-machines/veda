@@ -445,3 +445,34 @@ veda.Util.processQuery("'rdf:type'==='v-s:Position' && 'v-s:deleted'== true ", 1
     errored.push(position_uri);
   }
 });
+
+// Fix tasks counters
+
+var cntr = 0;
+
+veda.Util.processQuery("'rdf:type'==='v-ft:TaskCounter'", 10000, 100, 100, function (counter_uri) {
+  try {
+    var counter = get_individual(veda.ticket, counter_uri);
+    var inboxCount = counter["v-ft:inboxCount"] && counter["v-ft:inboxCount"][0],
+        inboxWeekCount = counter["v-ft:inboxWeekCount"] && counter["v-ft:inboxWeekCount"][0],
+        outboxCount = counter["v-ft:outboxCount"] && counter["v-ft:outboxCount"][0],
+        completedCount = counter["v-ft:completedCount"] && counter["v-ft:completedCount"][0],
+        owner = counter["v-s:owner"] && counter["v-s:owner"][0];
+
+    if (!inboxCount || !inboxWeekCount || !outboxCount || !completedCount || !owner) {
+      cntr++;
+      var index = counter_uri.indexOf("_d_");
+      var length = counter_uri.length;
+      var owner_uri = counter_uri.substring(index, length).replace("_d_", "d:");
+      if (owner_uri === "d:taskCounter_td_AleksandraKhvostikova") {
+        owner_uri = "td:AleksandraKhvostikova";
+      };
+      counter["v-ft:forceUpdate"] = [{data: true, type: "Boolean"}];
+      counter["v-s:owner"] = [{data: owner_uri, type: "Uri"}];
+      put_individual(veda.ticket, counter);
+      console.log(cntr, "error counter =", counter_uri, "owner =", owner_uri);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
