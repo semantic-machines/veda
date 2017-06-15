@@ -41,7 +41,7 @@ function equal(a, b, button) {
  * 1.Open page -> login(as karpovrt);
  * 2.Open create net document form;
  * 3.Create flow from input to output -> Delete flow -> Check flow is no on canvas;
- * 4.Create task1 -> Copy task1(task2) -> Delete task1 -> Delete task2 -> Check task is no on canvas; 
+ * 4.Create task1 -> Copy task1(task2) -> Delete task1 -> Delete task2 -> Check task is no on canvas;
  * 5.Create condition -> Check condition;
  * 6.Default state(state1) -> Zoom-out(state2) -> Equal state1 & state2;
  * 7.Zoom-in -> Zoom-in(state3) -> Equal state1 & state3;
@@ -72,7 +72,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
     basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
     basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
-    basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
+    //basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
 
     //Создание и удаление коннектора между двумя элементами
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
