@@ -82,6 +82,7 @@ veda.Module(function (veda) { "use strict";
 
   proto.set = function (property_uri, values) {
     this.isSync(false);
+    values = veda.Util.unique(values);
     values = values.filter(function (i) { return i != undefined });
     var serialized = values.map( serializer );
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
