@@ -437,7 +437,7 @@
       control.append( localedInput );
     });
 
-    var input = control.children();
+    var input = control.find(".form-control");
 
     individual.on(property_uri, handler);
     control.one("remove", function () {
