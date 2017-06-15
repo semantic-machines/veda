@@ -625,13 +625,13 @@ v-s:LetterRegistryResultTemplate
 <!--Отправитель //v-s:sender -->      
       <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentOrganization"><span about="v-s:correspondentOrganization" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentDepartment"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentPerson"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentPerson"><span about="v-s:correspondentPerson" property="rdfs:label"></span></th>
     
       <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordSender" property="rdfs:label"></span></th>
 <!--Получатель //v-s:recipient-->      
       <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentOrganization"><span about="v-s:correspondentOrganization" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentDepartment"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentPerson"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentPerson"><span about="v-s:correspondentPerson" property="rdfs:label"></span></th>
       
       <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordRecipient" property="rdfs:label"></span></th>
       
