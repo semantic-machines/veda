@@ -52,10 +52,14 @@ module.exports = {
     startNet: function (driver, timeStamp) {
         basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
         basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
-        basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
+        var startPoint = driver.findElement({css:'.glyphicon-play'});
+        var actionSequence = webdriver.ActionSequence;        
+        var act = new actionSequence(driver);
+        act.mouseMove(startPoint, {x: 200, y: 0}).click().perform();
         basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
         basic.execute(driver, 'click', '#props-col [about="rdfs:label"]', "Cannot click on net rdfs:label");
         basic.execute(driver, 'sendKeys', '#VClabel input', "Cannot fill rdfl:label in net properties", timeStamp);
+        driver.sleep(basic.FAST_OPERATION * 2);
     },
     /**
      * Запуск функции choose 
@@ -92,13 +96,13 @@ module.exports = {
     connectNet: function (driver, hasTask) {
         if (hasTask === "false") {
             new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}),
-                driver.findElement({css:'.state-io-condition-output'})).perform();
+                driver.findElement({css:'.glyphicon-stop'})).perform();
         }
         if (hasTask === "true") {
             new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}),
                 driver.findElement({css:'.state-task'})).perform();
             new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-task .ep'}),
-                driver.findElement({css:'.state-io-condition-output'})).perform();
+                driver.findElement({css:'.glyphicon-stop'})).perform();
         }
 
     },

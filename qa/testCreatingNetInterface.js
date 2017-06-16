@@ -75,7 +75,7 @@ basic.getDrivers().forEach(function (drv) {
     //basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
 
     //Создание и удаление коннектора между двумя элементами
-    new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.state-io-condition-output'})).perform();
+    new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}), driver.findElement({css:'.glyphicon-stop'})).perform();
     basic.execute(driver, 'click', 'svg[class="_jsPlumb_connector"]', "Cannot click on 'connector' arrow");
     deleteElement(driver);
     check(driver, 'svg[class="_jsPlumb_connector"]');

@@ -20,7 +20,7 @@ module.exports = {
         basic.execute(driver, 'click', '#save', "Cannot click on save button");
         //Смотрим на процесс
         driver.sleep(basic.FAST_OPERATION * 2);
-        driver.executeScript("location.reload();");
+        // driver.executeScript("location.reload();");
         driver.wait
         (
             webdriver.until.elementIsEnabled(driver.findElement({css:'div[rel="v-wf:isProcess"]'})),
