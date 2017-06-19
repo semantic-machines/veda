@@ -3083,7 +3083,7 @@ s-wf:UserTaskFormTemplate
     </div>
   </div>
   <br>
-  <div about="@" rel="v-wf:onDocument" class="view edit -search sheet" data-template="v-ft:DocumentRelatedTasksTemplate"></div>
+  <div about="@" class="view edit -search sheet" data-template="v-ft:TaskRelatedTasksTemplate"></div>
   <br>
   <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>

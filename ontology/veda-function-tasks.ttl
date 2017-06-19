@@ -844,14 +844,35 @@ v-ft:RelatedTasksBlank
 
 v-ft:DocumentRelatedTasksTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон связанных задач"@ru ;
-  rdfs:label "Related tasks template"@en ;
+  rdfs:label "Шаблон связанных задач для документа"@ru ;
+  rdfs:label "Related tasks template for document"@en ;
   v-ui:template """
 <script>
-  var relTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
-  relTasksBlank["v-wf:onDocument"] = [ this ];
+  var relatedTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
+  relatedTasksBlank["v-wf:onDocument"] = [ this ];
 </script>
-<div about="v-ft:RelatedTasks"></div>
+<div>
+  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
+  <div about="v-ft:RelatedTasks"></div>
+</div>
+  """
+.
+
+v-ft:TaskRelatedTasksTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон связанных задач для задачи"@ru ;
+  rdfs:label "Related tasks template for task"@en ;
+  v-ui:template """
+<script>
+  var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
+  var relatedTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
+  relatedTasks["v-fs:fulltextQuery"] = ["'@' != '" + this.id + "'"];
+  relatedTasksBlank["v-wf:onDocument"] = this["v-wf:onDocument"];
+</script>
+<div>
+  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
+  <div about="v-ft:RelatedTasks"></div>
+</div>
   """
 .
 
