@@ -2146,10 +2146,11 @@ if (doc) {
   //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
       
   if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {
-    if (!doc.hasValue("mnd-s:hasChangeOfTerms")){              
 
-  // согласование 1 уровня    
-      if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
+    if (!doc.hasValue("mnd-s:hasChangeOfTerms")) {
+
+      // согласование 1 уровня
+      if (doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков
@@ -2163,7 +2164,8 @@ if (doc) {
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
-      ){
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00071167_71024480") // Соколов С.С.
+      ) {
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
         routes['coordination1'][simple+'deadlineDays'] = [10];
@@ -2173,43 +2175,42 @@ if (doc) {
         headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
       
         function calculationHeadUnit(occupation){
-          if(occupation.hasValue("v-s:hasChief")){
-          return occupation["v-s:hasChief"][0];  
-            
+          if(occupation.hasValue("v-s:hasChief")) {
+            return occupation["v-s:hasChief"][0];
           } else  if (!occupation.hasValue("v-s:parentUnit")) {
             return [];
-          }else{
+          } else {
           return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
           }
         }
         routes['coordination1'][simple+'participant'] = headUnit; 
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
-      } else{
+      } else {
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
       }
-  //согласование 2 уровня
-      
+
+      //согласование 2 уровня
       if(doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:0574e5e2e66447dfbf787a6e0b05f4fe")//Выставки
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:e9ca8b048f244f348775b7e2befaee8c")//Обучение
-      ){
-        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:0c989a61-896b-4e1d-a8f6-1f09b9a0e433")];//Специалист УЦ 
+      ) {
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:0c989a61-896b-4e1d-a8f6-1f09b9a0e433")];//Специалист УЦ
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
-      } else if(
+      } else if (
         doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:42f7a4e157ed4e3da34d6cd885df4a9b") //(запланированы)
         || doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:0e31da05e36b4216832fb9a5ba853684") //(возможны)
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:c533caab0062434c9c3b74521fd9798c")// Выставки, форумы отраслевые (ЦБП, Леспром)
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:6c0bbecd077d4dff8b9481da73ea5350")//(Общественные организации отраслевые (ЦБП, Леспром))
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:236170912d8f40a08178baab6449ff05")// (Организации конкуренты)
-      ){
-        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ 
+      ) {
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
       }
-  // Подписание
-      
+
+      // Подписание
       if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков*
@@ -2223,12 +2224,13 @@ if (doc) {
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
-      ){
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00071167_71024480") // Соколов С.С.
+      ) {
         routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")];//Генеральный директор
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
       } else if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758")//Пеллер
-      ){
+      ) {
         routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00069177_71015289")];//Шаллеггер*
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
@@ -2241,38 +2243,37 @@ if (doc) {
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
       }
-      
-      
-        
-        routes['coordination3'][simple+'visible'] = [true];
-        routes['coordination3'][simple+'editable'] = [true];
-        
-        routes['coordination4'][simple+'visible'] = [true];
-        routes['coordination4'][simple+'editable'] = [true];
-  //Утверждение      
-        routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
-        routes['approval'][simple+'visible'] = [true];
-        routes['approval'][simple+'editable'] = [false];
-        routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
-        
-  //Рассмотрение     
-        routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
-        routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
-        routes['review'][simple+'visible'] = [true];
-        routes['review'][simple+'editable'] = [false];
-        routes['review'][simple+'deadlineDays'] =[doc["v-s:dateFrom"][0]];
-        
-        
-  //Исполнение
-        if( doc.hasValue("v-s:dateTo")){
-          var data=new Date(doc["v-s:dateTo"][0].toISOString())
-          data.setDate(data.getDate() + 3);
-        } else {data=[];}
-        routes['instruction'][simple+'participant'] =[doc["v-s:creator"][0]]; 
-        routes['instruction'][simple+'visible'] = [true];
-        routes['instruction'][simple+'editable'] = [false];
-        routes['instruction'][simple+'deadlineDays'] =[data];
+
+      routes['coordination3'][simple+'visible'] = [true];
+      routes['coordination3'][simple+'editable'] = [true];
+      routes['coordination4'][simple+'visible'] = [true];
+      routes['coordination4'][simple+'editable'] = [true];
+
+      //Утверждение
+      routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [false];
+      routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+
+      //Рассмотрение
+      routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
+      routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'deadlineDays'] =[doc["v-s:dateFrom"][0]];
+
+      //Исполнение
+      if( doc.hasValue("v-s:dateTo")){
+        var data=new Date(doc["v-s:dateTo"][0].toISOString())
+        data.setDate(data.getDate() + 3);
+      } else {data=[];}
+      routes['instruction'][simple+'participant'] =[doc["v-s:creator"][0]];
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [false];
+      routes['instruction'][simple+'deadlineDays'] =[data];
+
     } else {
+
       routes['sign'][simple+'visible'] = [true];
       routes['sign'][simple+'editable'] = [true];
       routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
@@ -2281,18 +2282,10 @@ if (doc) {
       routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [false];
-
- 
-      
     }
   }
-  
-  
-  
-  
-  
 
-  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
                    new veda.IndividualModel("td:RomanKarpov-Analyst1"),
                    new veda.IndividualModel("td:AndreyBychin-Analyst2")];
@@ -2313,12 +2306,8 @@ if (doc) {
       routes['instruction2'][simple+'visible'] = [true];
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
-  
-  
-  
-  
-  
-  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
+
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") { //Тестовый маршрут2
   /*
       routes['introduction'][simple+'participant'] = [
                      new veda.IndividualModel("td:AndreyBychin-Analyst2")]
