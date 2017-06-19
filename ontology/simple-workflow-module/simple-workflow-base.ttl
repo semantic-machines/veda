@@ -11,6 +11,7 @@
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/>.
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 
 <http://semantic-machines.com/veda/simple-workflow>
   rdf:type owl:Ontology ;
@@ -32,7 +33,7 @@ v-s:TaskIsRedirectedFrom
 s-wf:EmptyTask
     rdf:type v-wf:DecisionForm ;
     rdfs:label "";
-.    
+.
 
 s-wf:var_initiator
   rdf:type v-wf:VarDefine ;
@@ -2016,7 +2017,7 @@ if (doc) {
 
     {
       signers = signers.concat(new veda.IndividualModel("d:wom1ouosnbv76dvsixphdcdd"));//  роль "Технический директор. Подписание актов"
-      
+
       routes['coordination3'][simple+'visible'] = [true];
       routes['coordination3'][simple+'editable'] = [true];
       routes['coordination3'][simple+'deadlineDays'] = [10];
@@ -2026,7 +2027,7 @@ if (doc) {
       routes['coordination4'][simple+'editable'] = [true];
       routes['coordination4'][simple+'deadlineDays'] = [10];
       routes['coordination4'][simple+'comment'] = [new String('Согласовать первичный документ')];
-      
+
     }
 
 
@@ -2144,7 +2145,7 @@ if (doc) {
     routes['sign'][simple+'participant'] = doc["v-s:sender"][0]["v-s:correspondentPerson"];
   }
   //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
-      
+
   if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {
 
     if (!doc.hasValue("mnd-s:hasChangeOfTerms")) {
@@ -2173,7 +2174,7 @@ if (doc) {
       } else if (doc.hasValue("v-s:businessTripEmployee")) {
         var headUnit;
         headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
-      
+
         function calculationHeadUnit(occupation){
           if(occupation.hasValue("v-s:hasChief")) {
             return occupation["v-s:hasChief"][0];
@@ -2183,7 +2184,7 @@ if (doc) {
           return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
           }
         }
-        routes['coordination1'][simple+'participant'] = headUnit; 
+        routes['coordination1'][simple+'participant'] = headUnit;
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
       } else {
@@ -2277,7 +2278,7 @@ if (doc) {
       routes['sign'][simple+'visible'] = [true];
       routes['sign'][simple+'editable'] = [true];
       routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
-      
+
       routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
       routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
       routes['review'][simple+'visible'] = [true];
@@ -2387,7 +2388,7 @@ $('#save_and_start_process', template).on('click', function () {
         </div>
         <div class="panel-body" about="@" data-embedded="true" data-template="s-wf:SimpleRouteStartFormMinimal_Template"></div>
       </div>
-    </div>    
+    </div>
     <div class="col-md-6 introduction" rel="s-wf:ComplexRouteStartForm_introduction" data-embedded="true">
       <div class="panel panel-info">
         <div class="panel-heading">
@@ -2412,7 +2413,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    
+
     <div class="col-md-6 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
@@ -3034,25 +3035,19 @@ s-wf:UserTaskFormTemplate
         <div about="@" property="v-wf:dateGiven"></div>
       </div>
     </div>
-   
-    
     <div about="@" rel="v-wf:redirect_from_task">
       <hr>
       <div class="row">
         <div class="col-md-3">
           <em about="v-s:TaskIsRedirectedFrom" property="rdfs:label"> </em>
-          <span  rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
-          
+          <span rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
         </div>
         <div rel="v-wf:takenDecision" class="col-md-3">
-          
           <em about="rdfs:comment" property="rdfs:label"> </em>
           <span about="@"  property="rdfs:comment"></span>
-        
         </div>
       </div>
     </div>
-    
     <hr />
     <em about="v-wf:takenDecision" property="rdfs:label"></em>
     <div class="radio decision">
@@ -3077,6 +3072,8 @@ s-wf:UserTaskFormTemplate
     </div>
   </div>
   <br>
+  <div about="@" class="view edit -search sheet" data-template="v-ft:TaskRelatedTasksTemplate"></div>
+  <br>
   <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
@@ -3091,7 +3088,7 @@ s-wf:UserTaskFormTemplate
   } else {
     template.trigger("view");
   }
-  $("#cancel, #send", template).click( function (e) {
+  $("#send", template).click( function (e) {
     e.stopPropagation();
     window.history.back();
     //riot.route("#/v-ft:Inbox");
@@ -3099,7 +3096,7 @@ s-wf:UserTaskFormTemplate
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>
   """ ;
-  .
+.
 
 v-wf:DecisionGoSign
   rdf:type owl:Class ;
@@ -4519,7 +4516,7 @@ s-wf:map_vf_to_4_0_initiator
   v-wf:mappingExpression  "process.getInputVariable ('initiator')" ;
   rdfs:isDefinedBy s-wf: ;
 .
- 
+
 s-wf:map_to_4_O_executor
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_to ;

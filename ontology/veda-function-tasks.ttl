@@ -821,3 +821,107 @@ v-ft:FunctionTasks2Model
   //# sourceURL=v-ft:FunctionTasks2Model
   """
 .
+
+# Related tasks for document
+
+v-ft:RelatedTasks
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Related tasks"@en ;
+  rdfs:label "Связанные задачи"@ru ;
+  v-fs:searchBlank v-ft:RelatedTasksBlank ;
+  v-fs:searchResultTemplate v-ft:RelatedTasksResultTemplate ;
+  v-fs:sortOrder "'v-wf:dateGiven' desc" ;
+  v-fs:searchOnLoad true ;
+.
+
+v-ft:RelatedTasksBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк входящих задач"@ru ;
+  rdfs:label "Blank inbox task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted false ;
+.
+
+v-ft:DocumentRelatedTasksTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон связанных задач для документа"@ru ;
+  rdfs:label "Related tasks template for document"@en ;
+  v-ui:template """
+<script>
+  var relatedTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
+  relatedTasksBlank["v-wf:onDocument"] = [ this ];
+</script>
+<div>
+  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
+  <div about="v-ft:RelatedTasks"></div>
+</div>
+  """
+.
+
+v-ft:TaskRelatedTasksTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон связанных задач для задачи"@ru ;
+  rdfs:label "Related tasks template for task"@en ;
+  v-ui:template """
+<script>
+  var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
+  var relatedTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
+  relatedTasks["v-fs:fulltextQuery"] = ["'@' != '" + this.id + "'"];
+  relatedTasksBlank["v-wf:onDocument"] = this["v-wf:onDocument"];
+</script>
+<div>
+  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
+  <div about="v-ft:RelatedTasks"></div>
+</div>
+  """
+.
+
+v-ft:RelatedTasksResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра связанных задач"@ru ;
+  rdfs:label "Related tasks registry result template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-bordered table-striped">
+  <thead>
+    <tr>
+      <th width="20px">#</th>
+      <th width="20px"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:from"><span about="v-wf:from" property="rdfs:label"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:to"><span about="v-wf:to" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-wf:onDocument"><span about="v-wf:onDocument" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
+      <td><a href="#/@" property="rdfs:label"></a></td>
+      <td rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
+      <td property="v-s:created"></td>
+      <td property="v-wf:dateGiven"></td>
+    </tr>
+    <script>
+      if ( !individual.hasValue("v-wf:read", true) ) {
+        template.css("font-weight", "bold");
+      }
+      individual.on("v-wf:isCompleted", removeCompleted);
+      template.one("remove", function () {
+        individual.off("v-wf:isCompleted", removeCompleted);
+      });
+      var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+      var remove = (folder === "v-ft:Inbox2") || (folder === "v-ft:Outbox2");
+      removeCompleted(individual["v-wf:isCompleted"]);
+      function removeCompleted(values) {
+        if (remove && values[0] === true) {
+          template.remove();
+        }
+      }
+    </script>
+  </tbody>
+</table>  """
+.
