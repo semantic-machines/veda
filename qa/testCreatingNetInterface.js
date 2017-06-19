@@ -71,7 +71,11 @@ basic.getDrivers().forEach(function (drv) {
 
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
     basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
-    basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
+    // basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
+    var startPoint = driver.findElement({css:'.glyphicon-play'});
+    var actionSequence = webdriver.ActionSequence;        
+    var act = new actionSequence(driver);
+    act.mouseMove(startPoint, {x: 200, y: 0}).click().perform();
     basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
 
     //Создание и удаление коннектора между двумя элементами

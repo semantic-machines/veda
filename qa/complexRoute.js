@@ -3,6 +3,8 @@ var basic = require('./basic.js'),
     assert = require('assert');
 
 function welcome(driver) {
+    driver.executeScript("document.querySelector('.navbar-brand').scrollIntoView(true)");
+    driver.sleep(basic.FAST_OPERATION * 2);
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
 }
 

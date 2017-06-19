@@ -155,6 +155,8 @@ module.exports = {
      * @param driver
      */
   logout: function(driver) {
+      driver.executeScript("document.querySelector('#menu').scrollIntoView(true)");
+      driver.sleep(FAST_OPERATION * 2);
       driver.findElement({id:'menu'}).click()
           .thenCatch(function (e) {errrorHandlerFunction(e, "Logout:Cannot click on settings button");});
       driver.wait
