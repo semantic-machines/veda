@@ -1269,6 +1269,19 @@ v-ui:FileTemplate
   """ ;
 .
 
+v-ui:FileMinTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для файла"@ru ;
+  rdfs:label "File template"@en ;
+  v-ui:template """
+<div>
+  <a href="/files/@">
+    <span about="@" property="v-s:fileName"></span>
+  </a>
+</div>
+  """ ;
+.
+
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;

@@ -706,7 +706,7 @@ v-s:LetterRegistryResultTemplate
       </td>
       <td property="v-s:description"></td>
       <td property="rdfs:comment"></td>
-      <td rel="v-s:attachment" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
       <td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td>
     </tr>
   </tbody>
