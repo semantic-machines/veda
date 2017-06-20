@@ -423,6 +423,13 @@ v-s:duration
   rdfs:range xsd:integer ;
   rdfs:domain v-s:Temporal ;
 .
+v-s:hasWorkMode
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Work mode"@en ;
+  rdfs:label "Режим работы"@ru ;
+  rdfs:range v-s:WorkMode ;
+  rdfs:domain v-s:Temporal ;
+.
 ### -------------------------------------------------------
 v-s:Spatial
   rdf:type owl:Class ;

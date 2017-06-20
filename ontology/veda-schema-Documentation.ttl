@@ -382,3 +382,53 @@ v-s:BusinessTripRegistrationRecord
   rdfs:label "Business trip registration record"@en ;
 #  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
 .
+
+###----------------------------------ЗАЯВКА_НА_ПРОПУСК---------------------
+v-s:PassRequest
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ; 
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Initiative ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Заявка на пропуск"@ru ;
+  rdfs:label "pass request"@en ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:initiator
+# v-s:customer
+# v-s:goal
+v-s:hasPass
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Pass"@en ;
+  rdfs:label "Пропуск"@ru ;
+  rdfs:range v-s:Pass ;
+  rdfs:domain v-s:PassRequest ;
+.
+# v-s:hasComment
+# rdfs:label
+
+###----------------------------------ПРОПУСК---------------------
+
+v-s:Pass
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ; 
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Пропуск"@ru ;
+  rdfs:label "Pass"@en ;
+.
+# v-s:registrationNumber
+# v-s:dateFrom
+# v-s:dateTo
+
+
+###----------------------------------РЕЖИМ_РАБОТЫ---------------------
+v-s:WorkMode
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Режим работы"@ru ;
+  rdfs:label "WorkMode"@en ;
+.
