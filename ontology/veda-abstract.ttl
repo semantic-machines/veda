@@ -309,6 +309,13 @@ v-s:valid
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
 .
+v-s:colorDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:label "color"@en ;
+  rdfs:label "цвет"@ru ;
+  rdfs:range xsd:string ;
+.
 ### -------------------------------------------------------
 v-s:UserThing
   rdf:type owl:Class ;
