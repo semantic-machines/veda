@@ -134,13 +134,20 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 
 HTTPListener[ ushort ] listener_2_port;
 
-short opt_http_port = 0;
+public short internal_users_http_port = 0;
 
 shared static this()
 {
+	short opt_http_port = 0;
+	short opt_internal_users_http_port = 0;
+
     readOption("http_port", &opt_http_port, "The listen http port");
     if (opt_http_port != 0)
         http_port = opt_http_port;
+
+    readOption("int_usr_port", &opt_internal_users_http_port, "http port for internal user");
+    if (opt_internal_users_http_port != 0)
+        http_port = opt_internal_users_http_port;
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
