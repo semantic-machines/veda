@@ -358,7 +358,7 @@ v-s:businessTripDepartment
   rdfs:range v-s:Department ;
   rdfs:domain v-s:BusinessTrip ;
 .
-v-s:buisnessTripGoal
+v-s:businessTripGoal
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Goal"@en ;
   rdfs:label "Цель"@ru ;
