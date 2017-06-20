@@ -3090,11 +3090,6 @@ s-wf:UserTaskFormTemplate
   } else {
     template.trigger("view");
   }
-  $("#send", template).click( function (e) {
-    e.stopPropagation();
-    window.history.back();
-    //riot.route("#/v-ft:Inbox");
-  });
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>
   """ ;
