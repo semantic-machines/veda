@@ -2176,9 +2176,11 @@ if (doc) {
         headUnit = calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
 
         function calculationHeadUnit(occupation){
-          if(occupation.hasValue("v-s:hasChief") && occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
-            return occupation["v-s:hasChief"][0];
-          } else  if (!occupation.hasValue("v-s:parentUnit") || occupation["v-s:hasChief"][0]["rdf:type"][0].id == "rdfs:Resource") {
+          if(occupation.hasValue("v-s:hasChief") ) {
+            if (occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
+              return occupation["v-s:hasChief"][0];
+            } else {return [];}
+          } else  if ( !occupation.hasValue("v-s:parentUnit") ){
             return [];
           } else {
           return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
