@@ -2173,12 +2173,12 @@ if (doc) {
         routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
       } else if (doc.hasValue("v-s:businessTripEmployee")) {
         var headUnit;
-        headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
+        headUnit = calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
 
         function calculationHeadUnit(occupation){
-          if(occupation.hasValue("v-s:hasChief")) {
+          if(occupation.hasValue("v-s:hasChief") && occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
             return occupation["v-s:hasChief"][0];
-          } else  if (!occupation.hasValue("v-s:parentUnit")) {
+          } else  if (!occupation.hasValue("v-s:parentUnit") || occupation["v-s:hasChief"][0]["rdf:type"][0].id == "rdfs:Resource") {
             return [];
           } else {
           return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
