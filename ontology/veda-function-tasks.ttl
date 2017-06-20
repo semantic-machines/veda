@@ -842,22 +842,6 @@ v-ft:RelatedTasksBlank
   v-wf:isCompleted false ;
 .
 
-v-ft:DocumentRelatedTasksTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон связанных задач для документа"@ru ;
-  rdfs:label "Related tasks template for document"@en ;
-  v-ui:template """
-<script>
-  var relatedTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
-  relatedTasksBlank["v-wf:onDocument"] = [ this ];
-</script>
-<div>
-  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
-  <div about="v-ft:RelatedTasks"></div>
-</div>
-  """
-.
-
 v-ft:TaskRelatedTasksTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон связанных задач для задачи"@ru ;
@@ -865,9 +849,10 @@ v-ft:TaskRelatedTasksTemplate
   v-ui:template """
 <script>
   var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
-  var relatedTasksBlank = new veda.IndividualModel("v-ft:RelatedTasksBlank");
-  relatedTasks["v-fs:fulltextQuery"] = ["'@' != '" + this.id + "'"];
-  relatedTasksBlank["v-wf:onDocument"] = this["v-wf:onDocument"];
+  var taskId = this.id;
+  var docId = this.hasValue("v-wf:onDocument") && this["v-wf:onDocument"][0].id;
+  relatedTasks["v-fs:fulltextQuery"] = ["'@' != '" + taskId + "' && 'v-wf:onDocument' == '" + docId + "'"];
+  //# sourceURL=v-ft:TaskRelatedTasksTemplate_pre
 </script>
 <div>
   <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
