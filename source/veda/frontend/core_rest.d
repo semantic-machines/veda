@@ -19,7 +19,9 @@ veda.common.logger.Logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-short               http_port = 8080;
+public short               http_port = 8080;
+public bool is_internal_users = false;
+
 
 public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
@@ -430,10 +432,23 @@ class VedaStorageRest : VedaStorageRest_API
                 if (type_msg != "ticket")
                     throw new HTTPStatusException(ResultCode.Not_Authorized);
 
+                ticket.user_uri = jres[ "user_uri" ].get!string;
+
                 ticket.end_time = jres[ "end_time" ].get!long;
                 ticket.id       = jres[ "id" ].get!string;
-                ticket.user_uri = jres[ "user_uri" ].get!string;
                 ticket.result   = cast(ResultCode)jres[ "result" ].get!long;
+
+                if (is_internal_users)
+                {
+                	log.trace ("check internal user (%s)", ticket.user_uri);
+                    Individual user = context.get_individual(&ticket, ticket.user_uri);
+                    if (user.exists("v-s:origin", Resource("Internal User")) == false)
+                    {
+                        ticket = Ticket.init;
+                        throw new HTTPStatusException(ResultCode.Not_Authorized);
+                    }
+                }
+
 
                 //log.trace("new ticket= '%s'", ticket);
             }
@@ -1047,7 +1062,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 }
 
 //////////////////////////////////////////////////////////////////// ws-server-transport
-private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, bool prepare_events, string event_id, ulong start_time)
+private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, bool prepare_events, string event_id,
+                                      ulong start_time)
 {
     OpResult[] op_res;
 
