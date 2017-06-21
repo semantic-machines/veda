@@ -1478,7 +1478,7 @@
           e.stopPropagation();
           var newVal = createValue();
           if ( inModal ) {
-            var modal = $("#notification-modal-template").html();
+            var modal = $("#individual-modal-template").html();
             modal = $(modal).modal({"show": false});
             $("body").append(modal);
             modal.modal("show");
@@ -1509,7 +1509,7 @@
               modal.modal("hide").remove();
             });
             var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-           // $(".action", tmpl).remove();
+            $(".action", tmpl).remove();
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
             template.on("internal-validated", function () {
