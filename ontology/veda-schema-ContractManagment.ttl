@@ -313,6 +313,15 @@ v-s:PaymentConditions
 # rdfs:comment
 # rdfs:label
 
+#----------------------------------------------
+v-s:PaymentForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Payment form"@en ;
+  rdfs:label "Форма оплаты"@ru ;
+.
+# rdfs:label
+
 #------------------------------------------------
 v-s:DeliveryConditions
   rdf:type owl:Class ;

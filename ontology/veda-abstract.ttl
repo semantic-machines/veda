@@ -564,6 +564,13 @@ v-s:hasPaymentConditions
   rdfs:label "Условия платежа"@ru ;
   rdfs:range v-s:PaymentConditions ;
 .
+v-s:hasPaymentForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Payment form"@en ;
+  rdfs:label "Форма оплаты"@ru ;
+  rdfs:range v-s:PaymentForm ;
+.
 v-s:hasDeliveryConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
