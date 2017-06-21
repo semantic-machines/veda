@@ -851,7 +851,10 @@ v-ft:TaskRelatedTasksTemplate
   var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
   var taskId = this.id;
   var docId = this.hasValue("v-wf:onDocument") && this["v-wf:onDocument"][0].id;
-  relatedTasks["v-fs:fulltextQuery"] = ["'@' != '" + taskId + "' && 'v-wf:onDocument' == '" + docId + "'"];
+  relatedTasks["v-fs:fulltextQuery"] = [
+    "'@' != '" + taskId + "'",
+    "'v-wf:onDocument' == '" + docId + "'"
+  ].join(" && ");
   //# sourceURL=v-ft:TaskRelatedTasksTemplate_pre
 </script>
 <div>
