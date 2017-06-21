@@ -137,15 +137,15 @@ HTTPListener[ ushort ] listener_2_port;
 shared static this()
 {
     short opt_http_port                = 0;
-    short opt_internal_users_http_port = 0;
+    short opt_external_users_http_port = 0;
 
     readOption("http_port", &opt_http_port, "The listen http port");
     if (opt_http_port != 0)
         http_port = opt_http_port;
 
-    readOption("int_usr_port", &opt_internal_users_http_port, "http port for internal user");
-    if (opt_internal_users_http_port != 0 && opt_internal_users_http_port == http_port)
-        is_internal_users = true;
+    readOption("ext_usr_port", &opt_external_users_http_port, "http port for external user");
+    if (opt_external_users_http_port != 0 && opt_external_users_http_port == http_port)
+        is_external_users = true;
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))

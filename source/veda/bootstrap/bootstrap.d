@@ -137,7 +137,25 @@ void main(string[] args)
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
                              {
                                  syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no, "Set frontend ports, example: --http_ports=8081,8082");
+                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no,
+                                               "Set frontend http ports, example: --http_ports=8081,8082");
+                             });
+    }
+    catch (ArgumentParserException ex)
+    {
+        stderr.writefln(ex.msg);
+        return;
+    }
+
+    string ext_user_port_str = "";
+
+    try
+    {
+        ArgumentParser.parse(args, (ArgumentSyntax syntax)
+                             {
+                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
+                                 syntax.option('e', "ext_usr_http_port", &ext_user_port_str, Required.no,
+                                               "Set external user http port, example: --ext_usr_http_port=8082");
                              });
     }
     catch (ArgumentParserException ex)
@@ -166,7 +184,8 @@ void main(string[] args)
 
     string[] wr_components =
     [
-        "acl_preparer", "fanout_email", "fanout_sql_np", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager",
+        "acl_preparer", "fanout_email", "fanout_sql_np", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp",
+        "subject_manager",
         "ticket_manager", "acl_preparer"
     ];
 
@@ -255,6 +274,9 @@ void main(string[] args)
 
                 string   ml = "veda-webserver";
                 sargs = [ "./" ~ ml, "--http_port=" ~ port ];
+
+                if (ext_user_port_str.length > 0)
+                    sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
 
                 auto _logFile = File("logs/" ~ ml ~ port ~ "-stderr.log", "w");
                 writeln("start " ~ ml);
