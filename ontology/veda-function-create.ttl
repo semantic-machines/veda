@@ -52,21 +52,21 @@ v-fc:FormBlankCreate
   a v-fc:FormBlank;
   rdfs:label "Создание"@ru;
   rdfs:label "Create"@en;
-  v-s:updateCounter "1"^^xsd:integer.
+  v-s:updateCounter "1"^^xsd:integer ;
 .
 
 v-fc:FormBlankSearch
   a v-fc:FormBlank;
   rdfs:label "Поиск"@ru;
   rdfs:label "Search"@en;
-  v-s:updateCounter "1"^^xsd:integer.
+  v-s:updateCounter "1"^^xsd:integer ;
 .
 
 v-fc:FormBlankReport
   a v-fc:FormBlank;
   rdfs:label "Отчет"@ru;
   rdfs:label "Search"@en;
-  v-s:updateCounter "1"^^xsd:integer.
+  v-s:updateCounter "1"^^xsd:integer ;
 .
 
 v-fc:BlankMgmt
