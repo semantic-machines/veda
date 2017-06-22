@@ -15,7 +15,7 @@
 .
 
 d:a1147437819d462ba31484592f434e6f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mag"@en ;
   rdfs:label "Mag"@ru ;
   rdfs:comment ""@en ;
@@ -23,7 +23,7 @@ d:a1147437819d462ba31484592f434e6f
 .
 
 d:7af150cd0c38496abb78fb00e078a2a1
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Трактор"@en ;
   rdfs:label "Трактор"@ru ;
   rdfs:comment "Трактор"@en ;
@@ -31,7 +31,7 @@ d:7af150cd0c38496abb78fb00e078a2a1
 .
 
 d:cf356eb5e6ca4001b7cc882c88e9d2f8
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Машина коммунально-строительная многоцелевая"@en ;
   rdfs:label "Машина коммунально-строительная многоцелевая"@ru ;
   rdfs:comment "МКСМ"@en ;
@@ -39,7 +39,7 @@ d:cf356eb5e6ca4001b7cc882c88e9d2f8
 .
 
 d:ec931f5af3074955ab5e79b71dc19c62
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Komatsu"@en ;
   rdfs:label "Komatsu"@ru ;
   rdfs:comment "Коматцу Коматсу"@en ;
@@ -47,7 +47,7 @@ d:ec931f5af3074955ab5e79b71dc19c62
 .
 
 d:4b080a169177407fbfb87a8aab45c9c2
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "JСB"@en ;
   rdfs:label "JСB"@ru ;
   rdfs:comment "Джи Си Би"@en ;
@@ -55,7 +55,7 @@ d:4b080a169177407fbfb87a8aab45c9c2
 .
 
 d:fc510e9cbda243c38220ce8b77e05ef4
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Caterpillar"@en ;
   rdfs:label "Caterpillar"@ru ;
   rdfs:comment "Катэрпиллер Катерпиллер"@en ;
@@ -63,7 +63,7 @@ d:fc510e9cbda243c38220ce8b77e05ef4
 .
 
 d:c7503c93a6df40039ce2d0a1244301c7
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Setra"@en ;
   rdfs:label "Setra"@ru ;
   rdfs:comment "Сетра"@en ;
@@ -71,7 +71,7 @@ d:c7503c93a6df40039ce2d0a1244301c7
 .
 
 d:244340038a50410a84d8e6a6a244e58a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Neoplan"@en ;
   rdfs:label "Neoplan"@ru ;
   rdfs:comment "Неоплан"@en ;
@@ -79,7 +79,7 @@ d:244340038a50410a84d8e6a6a244e58a
 .
 
 d:79aa05e0909f4a8e9806dc9e1a8c7a4d
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Ikarus"@en ;
   rdfs:label "Ikarus"@ru ;
   rdfs:comment "Икарус"@en ;
@@ -87,7 +87,7 @@ d:79aa05e0909f4a8e9806dc9e1a8c7a4d
 .
 
 d:bbc30fe6200d468ca9a7cdb05970b2e6
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ЛАЗ"@en ;
   rdfs:label "ЛАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -95,7 +95,7 @@ d:bbc30fe6200d468ca9a7cdb05970b2e6
 .
 
 d:f0375fc946714dac81ac51a2d8822c71
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "МАРЗ"@en ;
   rdfs:label "МАРЗ"@ru ;
   rdfs:comment ""@en ;
@@ -103,7 +103,7 @@ d:f0375fc946714dac81ac51a2d8822c71
 .
 
 d:74d15962cbc94331ba92186a8dc49bea
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ГолАЗ"@en ;
   rdfs:label "ГолАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -111,7 +111,7 @@ d:74d15962cbc94331ba92186a8dc49bea
 .
 
 d:d6439b56ef9b4ef0a3298bd45ef1e8d0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Волжанин"@en ;
   rdfs:label "Волжанин"@ru ;
   rdfs:comment ""@en ;
@@ -119,7 +119,7 @@ d:d6439b56ef9b4ef0a3298bd45ef1e8d0
 .
 
 d:e4fc425a2d4044d5a7e5647a10c82e8a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "КАвЗ"@en ;
   rdfs:label "КАвЗ"@ru ;
   rdfs:comment ""@en ;
@@ -127,7 +127,7 @@ d:e4fc425a2d4044d5a7e5647a10c82e8a
 .
 
 d:911204a78dd54bf0b328486539dec1fc
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ЛиАЗ"@en ;
   rdfs:label "ЛиАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -135,7 +135,7 @@ d:911204a78dd54bf0b328486539dec1fc
 .
 
 d:bd59feb7de70438ba7169329edc68bcc
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ПАЗ"@en ;
   rdfs:label "ПАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -143,7 +143,7 @@ d:bd59feb7de70438ba7169329edc68bcc
 .
 
 d:0f7f8752809a437a8a62ef1911df4467
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "НефАЗ"@en ;
   rdfs:label "НефАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -151,7 +151,7 @@ d:0f7f8752809a437a8a62ef1911df4467
 .
 
 d:c4f20689d6cf4d7fb12b7e3c410c2d70
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Тонар"@en ;
   rdfs:label "Тонар"@ru ;
   rdfs:comment ""@en ;
@@ -159,7 +159,7 @@ d:c4f20689d6cf4d7fb12b7e3c410c2d70
 .
 
 d:ed09fe6f092341288b1df266e136357a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "УралАЗ"@en ;
   rdfs:label "УралАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -167,7 +167,7 @@ d:ed09fe6f092341288b1df266e136357a
 .
 
 d:65a3b04618034cbb9cfb3aa9c8484978
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "МТЗ"@en ;
   rdfs:label "МТЗ"@ru ;
   rdfs:comment "Беларус"@en ;
@@ -175,7 +175,7 @@ d:65a3b04618034cbb9cfb3aa9c8484978
 .
 
 d:f1ef4c776a08476394b552ea62171530
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "КрАЗ"@en ;
   rdfs:label "КрАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -183,7 +183,7 @@ d:f1ef4c776a08476394b552ea62171530
 .
 
 d:6f64e0a8d1764514a2e1b772cbe7f19a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Western Star"@en ;
   rdfs:label "Western Star"@ru ;
   rdfs:comment "Вестерн Стар"@en ;
@@ -191,7 +191,7 @@ d:6f64e0a8d1764514a2e1b772cbe7f19a
 .
 
 d:775398b299a0458d9a15dda80f65ae15
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Sisu"@en ;
   rdfs:label "Sisu"@ru ;
   rdfs:comment "Сису"@en ;
@@ -199,7 +199,7 @@ d:775398b299a0458d9a15dda80f65ae15
 .
 
 d:bf6048ef9c374a558541d415ebd5b0e9
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Scania"@en ;
   rdfs:label "Scania"@ru ;
   rdfs:comment "Сканиа Скания"@en ;
@@ -207,7 +207,7 @@ d:bf6048ef9c374a558541d415ebd5b0e9
 .
 
 d:4c80ce318cec430da3cdec3ba0bed817
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Peterbilt"@en ;
   rdfs:label "Peterbilt"@ru ;
   rdfs:comment "Петербилт"@en ;
@@ -215,7 +215,7 @@ d:4c80ce318cec430da3cdec3ba0bed817
 .
 
 d:9ccffa5b3c954c328980c3aafaeaeb70
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Multicar"@en ;
   rdfs:label "Multicar"@ru ;
   rdfs:comment "Мультикар"@en ;
@@ -223,7 +223,7 @@ d:9ccffa5b3c954c328980c3aafaeaeb70
 .
 
 d:ffd5eb08da534118ade1864a64a951a8
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mack"@en ;
   rdfs:label "Mack"@ru ;
   rdfs:comment "Макк Мак"@en ;
@@ -231,7 +231,7 @@ d:ffd5eb08da534118ade1864a64a951a8
 .
 
 d:36f8b459e5594dee8e783515b1df7a28
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Kenworth"@en ;
   rdfs:label "Kenworth"@ru ;
   rdfs:comment "Кенуорт Кенворт"@en ;
@@ -239,7 +239,7 @@ d:36f8b459e5594dee8e783515b1df7a28
 .
 
 d:dfdb7a64879e43b9848bfa2e7fd4fa64
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Navistar International"@en ;
   rdfs:label "Navistar International"@ru ;
   rdfs:comment "Навистар Интернешнл"@en ;
@@ -247,7 +247,7 @@ d:dfdb7a64879e43b9848bfa2e7fd4fa64
 .
 
 d:752f1f3b3c194d66a88c5e328f49b6f3
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Howo"@en ;
   rdfs:label "Howo"@ru ;
   rdfs:comment "Хово"@en ;
@@ -255,7 +255,7 @@ d:752f1f3b3c194d66a88c5e328f49b6f3
 .
 
 d:efacc894bf5e45f285a1af72c8cca727
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Hino"@en ;
   rdfs:label "Hino"@ru ;
   rdfs:comment "Хино"@en ;
@@ -263,7 +263,7 @@ d:efacc894bf5e45f285a1af72c8cca727
 .
 
 d:43841b96d64c441994803d5bf6c24448
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Freightliner"@en ;
   rdfs:label "Freightliner"@ru ;
   rdfs:comment "Фрайтлайнер"@en ;
@@ -271,7 +271,7 @@ d:43841b96d64c441994803d5bf6c24448
 .
 
 d:158ee6b2449f49708c91eeef7f9341f0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "DAF"@en ;
   rdfs:label "DAF"@ru ;
   rdfs:comment "ДАФ"@en ;
@@ -279,7 +279,7 @@ d:158ee6b2449f49708c91eeef7f9341f0
 .
 
 d:5ea1ae01a3d04946a1dbed9a8c73aa90
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Avia"@en ;
   rdfs:label "Avia"@ru ;
   rdfs:comment "Авиа"@en ;
@@ -287,7 +287,7 @@ d:5ea1ae01a3d04946a1dbed9a8c73aa90
 .
 
 d:b2c8f25a859645e2b580022fbce97b1c
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "MAN"@en ;
   rdfs:label "MAN"@ru ;
   rdfs:comment "МАН"@en ;
@@ -295,7 +295,7 @@ d:b2c8f25a859645e2b580022fbce97b1c
 .
 
 d:7be0d088ed7f4b77815fb3c517bdffe9
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Rаba"@en ;
   rdfs:label "Rаba"@ru ;
   rdfs:comment "Раба"@en ;
@@ -303,7 +303,7 @@ d:7be0d088ed7f4b77815fb3c517bdffe9
 .
 
 d:1f7de1e1e7aa44a19b6c3fa61a2f79d0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "МЗКТ"@en ;
   rdfs:label "МЗКТ"@ru ;
   rdfs:comment ""@en ;
@@ -311,7 +311,7 @@ d:1f7de1e1e7aa44a19b6c3fa61a2f79d0
 .
 
 d:2596517324a44c2b8d03930537e86000
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Амкодор"@en ;
   rdfs:label "Амкодор"@ru ;
   rdfs:comment ""@en ;
@@ -319,7 +319,7 @@ d:2596517324a44c2b8d03930537e86000
 .
 
 d:55dc4d13ead146cf8f0d169fa069fcaf
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "МАЗ МАН"@en ;
   rdfs:label "МАЗ МАН"@ru ;
   rdfs:comment "MAZ MAN"@en ;
@@ -327,7 +327,7 @@ d:55dc4d13ead146cf8f0d169fa069fcaf
 .
 
 d:735226b56bfe479782d08b1eaaa99536
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "МАЗ"@en ;
   rdfs:label "МАЗ"@ru ;
   rdfs:comment "MAZ"@en ;
@@ -335,7 +335,7 @@ d:735226b56bfe479782d08b1eaaa99536
 .
 
 d:17525d9bf4134f398182e28c97e9926b
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "СеАЗ"@en ;
   rdfs:label "СеАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -343,7 +343,7 @@ d:17525d9bf4134f398182e28c97e9926b
 .
 
 d:836ece0d96304bea8272216a233cf054
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ЛуАЗ"@en ;
   rdfs:label "ЛуАЗ"@ru ;
   rdfs:comment ""@en ;
@@ -351,7 +351,7 @@ d:836ece0d96304bea8272216a233cf054
 .
 
 d:eb91dc13fe88403ca03f4ee677201edf
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ИЖ"@en ;
   rdfs:label "ИЖ"@ru ;
   rdfs:comment ""@en ;
@@ -359,7 +359,7 @@ d:eb91dc13fe88403ca03f4ee677201edf
 .
 
 d:6f054b67595f48f5a2ac6336c7b6fe77
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Богдан"@en ;
   rdfs:label "Богдан"@ru ;
   rdfs:comment ""@en ;
@@ -367,7 +367,7 @@ d:6f054b67595f48f5a2ac6336c7b6fe77
 .
 
 d:123efcbaf82f41dba444194596b8247f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Xin Kai"@en ;
   rdfs:label "Xin Kai"@ru ;
   rdfs:comment "Ксин Кай"@en ;
@@ -375,7 +375,7 @@ d:123efcbaf82f41dba444194596b8247f
 .
 
 d:559f054505b5462a8894dad8332da4b0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Vortex"@en ;
   rdfs:label "Vortex"@ru ;
   rdfs:comment "Вортэкс"@en ;
@@ -383,7 +383,7 @@ d:559f054505b5462a8894dad8332da4b0
 .
 
 d:ced82a310e3c4dd8a28c47d365594c5f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Vauxhall"@en ;
   rdfs:label "Vauxhall"@ru ;
   rdfs:comment "Воксхолл"@en ;
@@ -391,7 +391,7 @@ d:ced82a310e3c4dd8a28c47d365594c5f
 .
 
 d:453ea59c174b482b8d70620ec6d0a433
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Tianye"@en ;
   rdfs:label "Tianye"@ru ;
   rdfs:comment "Тиани"@en ;
@@ -399,7 +399,7 @@ d:453ea59c174b482b8d70620ec6d0a433
 .
 
 d:3164ad4684ed44168d777b8305426d49
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Tianma"@en ;
   rdfs:label "Tianma"@ru ;
   rdfs:comment "Тианма"@en ;
@@ -407,7 +407,7 @@ d:3164ad4684ed44168d777b8305426d49
 .
 
 d:d2f1b48b1c654cba986edca3ac805781
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Tesla"@en ;
   rdfs:label "Tesla"@ru ;
   rdfs:comment "Тесла Тэсла"@en ;
@@ -415,7 +415,7 @@ d:d2f1b48b1c654cba986edca3ac805781
 .
 
 d:14d1240c138741238e66cdccf551a4de
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Tatra"@en ;
   rdfs:label "Tatra"@ru ;
   rdfs:comment "Татра"@en ;
@@ -423,7 +423,7 @@ d:14d1240c138741238e66cdccf551a4de
 .
 
 d:1542bb7d5c754838b066b99f11ba9aed
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Tata"@en ;
   rdfs:label "Tata"@ru ;
   rdfs:comment "Тата"@en ;
@@ -431,7 +431,7 @@ d:1542bb7d5c754838b066b99f11ba9aed
 .
 
 d:caebdc9630414605bda395f4b4f22290
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "SsangYong"@en ;
   rdfs:label "SsangYong"@ru ;
   rdfs:comment "Сан Йонг Сан Янг"@en ;
@@ -439,7 +439,7 @@ d:caebdc9630414605bda395f4b4f22290
 .
 
 d:8c9b6ac7d4df41e4ac25b4b0452f268d
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Sokon"@en ;
   rdfs:label "Sokon"@ru ;
   rdfs:comment "Сокон"@en ;
@@ -447,7 +447,7 @@ d:8c9b6ac7d4df41e4ac25b4b0452f268d
 .
 
 d:30c409d7c1c3440cb10c7976a9529c1a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Smart"@en ;
   rdfs:label "Smart"@ru ;
   rdfs:comment "Смарт"@en ;
@@ -455,7 +455,7 @@ d:30c409d7c1c3440cb10c7976a9529c1a
 .
 
 d:b85906cb22584fc4bbc4b3b8bc721b0b
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Shuanghuan"@en ;
   rdfs:label "Shuanghuan"@ru ;
   rdfs:comment "ШуангХуан"@en ;
@@ -463,7 +463,7 @@ d:b85906cb22584fc4bbc4b3b8bc721b0b
 .
 
 d:e9b8df76aa134eac883fb55fe5350662
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "SEAT"@en ;
   rdfs:label "SEAT"@ru ;
   rdfs:comment "СЕАТ"@en ;
@@ -471,7 +471,7 @@ d:e9b8df76aa134eac883fb55fe5350662
 .
 
 d:603de45f71694586a24e0186750a65b8
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Saturn"@en ;
   rdfs:label "Saturn"@ru ;
   rdfs:comment "Сатурн"@en ;
@@ -479,7 +479,7 @@ d:603de45f71694586a24e0186750a65b8
 .
 
 d:1479f49d02c045ac9dd74a6d9609d4ab
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Saab"@en ;
   rdfs:label "Saab"@ru ;
   rdfs:comment "Сааб"@en ;
@@ -487,7 +487,7 @@ d:1479f49d02c045ac9dd74a6d9609d4ab
 .
 
 d:9de8a29dde2645f5ae82bd5cacc3639c
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Rover"@en ;
   rdfs:label "Rover"@ru ;
   rdfs:comment "Ровер"@en ;
@@ -495,7 +495,7 @@ d:9de8a29dde2645f5ae82bd5cacc3639c
 .
 
 d:56531a8d787a46408946d37b63361991
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Rolls Royce"@en ;
   rdfs:label "Rolls Royce"@ru ;
   rdfs:comment "Роллс Ройс"@en ;
@@ -503,7 +503,7 @@ d:56531a8d787a46408946d37b63361991
 .
 
 d:976f98ac27464d7bb8da3cc675bf932f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "РАФ"@en ;
   rdfs:label "РАФ"@ru ;
   rdfs:comment "RAF"@en ;
@@ -511,7 +511,7 @@ d:976f98ac27464d7bb8da3cc675bf932f
 .
 
 d:996a2e77da8c4f4a9a4afc1ae8cb9f98
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Pontiac"@en ;
   rdfs:label "Pontiac"@ru ;
   rdfs:comment "Понтиак"@en ;
@@ -519,7 +519,7 @@ d:996a2e77da8c4f4a9a4afc1ae8cb9f98
 .
 
 d:299cf23ce00d428e9362925b5b3b75db
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mini"@en ;
   rdfs:label "Mini"@ru ;
   rdfs:comment "Мини"@en ;
@@ -527,7 +527,7 @@ d:299cf23ce00d428e9362925b5b3b75db
 .
 
 d:0cdc4d6a286c46299e92983c6e9b5aeb
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mercury"@en ;
   rdfs:label "Mercury"@ru ;
   rdfs:comment "Меркури"@en ;
@@ -535,7 +535,7 @@ d:0cdc4d6a286c46299e92983c6e9b5aeb
 .
 
 d:b0d720e5a08b496a925c3d5084f7e3ad
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mercedes Benz"@en ;
   rdfs:label "Mercedes Benz"@ru ;
   rdfs:comment "Мерседес Бенц"@en ;
@@ -543,7 +543,7 @@ d:b0d720e5a08b496a925c3d5084f7e3ad
 .
 
 d:b18c06f4185c461ca773d326e245de24
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Maybach"@en ;
   rdfs:label "Maybach"@ru ;
   rdfs:comment "Майбах"@en ;
@@ -551,7 +551,7 @@ d:b18c06f4185c461ca773d326e245de24
 .
 
 d:b16fed30fa7740a5a6951c4dda29bfc5
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Lotus"@en ;
   rdfs:label "Lotus"@ru ;
   rdfs:comment "Лотус"@en ;
@@ -559,7 +559,7 @@ d:b16fed30fa7740a5a6951c4dda29bfc5
 .
 
 d:cfb5d682b6b34e118b123b058406b030
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Lincoln"@en ;
   rdfs:label "Lincoln"@ru ;
   rdfs:comment "Линколь"@en ;
@@ -567,7 +567,7 @@ d:cfb5d682b6b34e118b123b058406b030
 .
 
 d:9b949ec708af42d2932bf3d18c5e316c
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Lifan"@en ;
   rdfs:label "Lifan"@ru ;
   rdfs:comment "Лифан"@en ;
@@ -575,7 +575,7 @@ d:9b949ec708af42d2932bf3d18c5e316c
 .
 
 d:158890aa297a487f957e0d6f294063e3
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "LDV"@en ;
   rdfs:label "LDV"@ru ;
   rdfs:comment "Leyland-DAF Vans Maxus ЛДВ"@en ;
@@ -583,7 +583,7 @@ d:158890aa297a487f957e0d6f294063e3
 .
 
 d:98fd4627d6ef4304bb1080faa4b1b431
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Lamborghini"@en ;
   rdfs:label "Lamborghini"@ru ;
   rdfs:comment "Ламборгини Ламборджини"@en ;
@@ -591,7 +591,7 @@ d:98fd4627d6ef4304bb1080faa4b1b431
 .
 
 d:f619e457541f45a88509d67683cc492e
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Kia"@en ;
   rdfs:label "Kia"@ru ;
   rdfs:comment "Киа"@en ;
@@ -599,7 +599,7 @@ d:f619e457541f45a88509d67683cc492e
 .
 
 d:b6a6e9844d0a4759adbd296cbffa5d21
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "JMC"@en ;
   rdfs:label "JMC"@ru ;
   rdfs:comment "Jiangling ДжангЛинг"@en ;
@@ -607,7 +607,7 @@ d:b6a6e9844d0a4759adbd296cbffa5d21
 .
 
 d:64d8a3a5688e4d7bad9410f46582968c
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "JAC"@en ;
   rdfs:label "JAC"@ru ;
   rdfs:comment "Jianghuai ЖдангХуай ЖАК"@en ;
@@ -615,7 +615,7 @@ d:64d8a3a5688e4d7bad9410f46582968c
 .
 
 d:853d52bf00a6448bb6189efa8790a55f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Iveco"@en ;
   rdfs:label "Iveco"@ru ;
   rdfs:comment "Ивэко Ивеко"@en ;
@@ -623,7 +623,7 @@ d:853d52bf00a6448bb6189efa8790a55f
 .
 
 d:3168bd9c20ec4f6c9326757430376d4f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Isuzu"@en ;
   rdfs:label "Isuzu"@ru ;
   rdfs:comment "Исудзу Исузу"@en ;
@@ -631,7 +631,7 @@ d:3168bd9c20ec4f6c9326757430376d4f
 .
 
 d:c11bce43897a41aeb04c118178e9ca94
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Infiniti"@en ;
   rdfs:label "Infiniti"@ru ;
   rdfs:comment "Инфинити"@en ;
@@ -639,7 +639,7 @@ d:c11bce43897a41aeb04c118178e9ca94
 .
 
 d:75e1d6abf94945849f7da0a2ae90f7c0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Hyundai"@en ;
   rdfs:label "Hyundai"@ru ;
   rdfs:comment "Хёндэ Хундай Хендай Хюндай"@en ;
@@ -647,7 +647,7 @@ d:75e1d6abf94945849f7da0a2ae90f7c0
 .
 
 d:4f9ebe91ff12454caee81a73619f0048
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "HuangHa"@en ;
   rdfs:label "HuangHa"@ru ;
   rdfs:comment "ХуангХай"@en ;
@@ -655,7 +655,7 @@ d:4f9ebe91ff12454caee81a73619f0048
 .
 
 d:490906319b174ac8b5fdc90097bc9867
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Great Wall"@en ;
   rdfs:label "Great Wall"@ru ;
   rdfs:comment "Грит Вол"@en ;
@@ -663,7 +663,7 @@ d:490906319b174ac8b5fdc90097bc9867
 .
 
 d:dacc1711746c422ca73541f77592a7e8
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "GMC"@en ;
   rdfs:label "GMC"@ru ;
   rdfs:comment "General Motors ДМК ГМК"@en ;
@@ -671,7 +671,7 @@ d:dacc1711746c422ca73541f77592a7e8
 .
 
 d:9f6dc675dcb94b0aa8d287d0bceebd19
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Geely"@en ;
   rdfs:label "Geely"@ru ;
   rdfs:comment "Джили Цзили"@en ;
@@ -679,7 +679,7 @@ d:9f6dc675dcb94b0aa8d287d0bceebd19
 .
 
 d:c6bf0f37598042e297ccfec9896772b1
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Foton"@en ;
   rdfs:label "Foton"@ru ;
   rdfs:comment "Фотон"@en ;
@@ -687,7 +687,7 @@ d:c6bf0f37598042e297ccfec9896772b1
 .
 
 d:f99b92feb5dc4344b50743b75e4945fb
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Fiat"@en ;
   rdfs:label "Fiat"@ru ;
   rdfs:comment "Фиат"@en ;
@@ -695,7 +695,7 @@ d:f99b92feb5dc4344b50743b75e4945fb
 .
 
 d:85e0244d44a74a44b125ecb44908918c
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Ferrari"@en ;
   rdfs:label "Ferrari"@ru ;
   rdfs:comment "Феррари"@en ;
@@ -703,7 +703,7 @@ d:85e0244d44a74a44b125ecb44908918c
 .
 
 d:18107ab80ac0450da2bebc056b744669
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "FAW"@en ;
   rdfs:label "FAW"@ru ;
   rdfs:comment "ФАУ ФАВ"@en ;
@@ -711,7 +711,7 @@ d:18107ab80ac0450da2bebc056b744669
 .
 
 d:a8377e14fa1f499aa6b99ed0e7427d15
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Derways"@en ;
   rdfs:label "Derways"@ru ;
   rdfs:comment "Дервэйс"@en ;
@@ -719,7 +719,7 @@ d:a8377e14fa1f499aa6b99ed0e7427d15
 .
 
 d:fa45dc55c52f498d98d06b1f311d95d1
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "DongFeng"@en ;
   rdfs:label "DongFeng"@ru ;
   rdfs:comment "Дунфэн Донгфенг"@en ;
@@ -727,7 +727,7 @@ d:fa45dc55c52f498d98d06b1f311d95d1
 .
 
 d:03ba311c643641c38245b789b7edfd99
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Dodge"@en ;
   rdfs:label "Dodge"@ru ;
   rdfs:comment "Додж"@en ;
@@ -735,7 +735,7 @@ d:03ba311c643641c38245b789b7edfd99
 .
 
 d:2d0fe94ab45644228f07b620d5cab2b0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Daihatsu"@en ;
   rdfs:label "Daihatsu"@ru ;
   rdfs:comment "Дайхатсу"@en ;
@@ -743,7 +743,7 @@ d:2d0fe94ab45644228f07b620d5cab2b0
 .
 
 d:f5f7634ab6e646bd8587d621d60342e0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Daewoo"@en ;
   rdfs:label "Daewoo"@ru ;
   rdfs:comment "Дэу"@en ;
@@ -751,7 +751,7 @@ d:f5f7634ab6e646bd8587d621d60342e0
 .
 
 d:58b9bd55c781435091f025c83d028c36
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Dacia"@en ;
   rdfs:label "Dacia"@ru ;
   rdfs:comment "Дачия"@en ;
@@ -759,7 +759,7 @@ d:58b9bd55c781435091f025c83d028c36
 .
 
 d:aeb18045073b47b59524aa20c79be55e
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Chrysler"@en ;
   rdfs:label "Chrysler"@ru ;
   rdfs:comment "Крайслер"@en ;
@@ -767,7 +767,7 @@ d:aeb18045073b47b59524aa20c79be55e
 .
 
 d:65c20544ee634691b2ac5d9ac229610f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Chery"@en ;
   rdfs:label "Chery"@ru ;
   rdfs:comment "Чери Шери"@en ;
@@ -775,7 +775,7 @@ d:65c20544ee634691b2ac5d9ac229610f
 .
 
 d:8bf36dc90aa44c579f6e4d81d61c2cd0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Changhe"@en ;
   rdfs:label "Changhe"@ru ;
   rdfs:comment "Чангхе"@en ;
@@ -783,7 +783,7 @@ d:8bf36dc90aa44c579f6e4d81d61c2cd0
 .
 
 d:b73aa0458c124845b3c628474b1b8a9d
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "GAC Changfeng"@en ;
   rdfs:label "GAC Changfeng"@ru ;
   rdfs:comment "Чангфенг Чангфэнг"@en ;
@@ -791,7 +791,7 @@ d:b73aa0458c124845b3c628474b1b8a9d
 .
 
 d:dbc04a7b66444623ad86dd641e734255
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Cadillac"@en ;
   rdfs:label "Cadillac"@ru ;
   rdfs:comment "Кадиллак"@en ;
@@ -799,7 +799,7 @@ d:dbc04a7b66444623ad86dd641e734255
 .
 
 d:732b57fe2e9847bb881a8b361c5437ae
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "BYD"@en ;
   rdfs:label "BYD"@ru ;
   rdfs:comment "БИД"@en ;
@@ -807,7 +807,7 @@ d:732b57fe2e9847bb881a8b361c5437ae
 .
 
 d:5e49918b1b0642fa8cc4569c3fbc676e
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Buick"@en ;
   rdfs:label "Buick"@ru ;
   rdfs:comment "Бюик Бьюик"@en ;
@@ -815,7 +815,7 @@ d:5e49918b1b0642fa8cc4569c3fbc676e
 .
 
 d:7e149be3c294467bb75c75b74359da0a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "BAW"@en ;
   rdfs:label "BAW"@ru ;
   rdfs:comment "БАУ БОУ"@en ;
@@ -823,7 +823,7 @@ d:7e149be3c294467bb75c75b74359da0a
 .
 
 d:306f8e9eabab40b1ae4f0e4cb35a9159
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Aston Martin"@en ;
   rdfs:label "Aston Martin"@ru ;
   rdfs:comment "Астон Мартин"@en ;
@@ -831,7 +831,7 @@ d:306f8e9eabab40b1ae4f0e4cb35a9159
 .
 
 d:38edf9c961454e98a7203844db0b84d7
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Alpina"@en ;
   rdfs:label "Alpina"@ru ;
   rdfs:comment "Альпина"@en ;
@@ -839,7 +839,7 @@ d:38edf9c961454e98a7203844db0b84d7
 .
 
 d:0f5ee6cd32a246f9a9dc9998b24d9147
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Alfa Romeo"@en ;
   rdfs:label "Alfa Romeo"@ru ;
   rdfs:comment "Альфа Ромео"@en ;
@@ -847,7 +847,7 @@ d:0f5ee6cd32a246f9a9dc9998b24d9147
 .
 
 d:e89163eef9f143b6890149f7f0bb96f0
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Acura"@en ;
   rdfs:label "Acura"@ru ;
   rdfs:comment "Акура"@en ;
@@ -855,7 +855,7 @@ d:e89163eef9f143b6890149f7f0bb96f0
 .
 
 d:5b6e47aa8bb94ce0ba9f8825ab8ee2a4
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Maserati"@en ;
   rdfs:label "Maserati"@ru ;
   rdfs:comment "Мазерати"@en ;
@@ -863,7 +863,7 @@ d:5b6e47aa8bb94ce0ba9f8825ab8ee2a4
 .
 
 d:4c849e593e674efdad1ca02416303974
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Porsche"@en ;
   rdfs:label "Porsche"@ru ;
   rdfs:comment "Порше Порш"@en ;
@@ -871,7 +871,7 @@ d:4c849e593e674efdad1ca02416303974
 .
 
 d:ed5d3743a9fd49a395b2348203345715
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ТагАЗ"@en ;
   rdfs:label "ТагАЗ"@ru ;
   rdfs:comment "TagAZ"@en ;
@@ -879,7 +879,7 @@ d:ed5d3743a9fd49a395b2348203345715
 .
 
 d:80bb31c170aa4482973a32495279e760
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ЗАЗ"@en ;
   rdfs:label "ЗАЗ"@ru ;
   rdfs:comment "ZAZ"@en ;
@@ -887,7 +887,7 @@ d:80bb31c170aa4482973a32495279e760
 .
 
 d:dba89c8cb5c34ff1b0a1d15811c3d2ba
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Toyota"@en ;
   rdfs:label "Toyota"@ru ;
   rdfs:comment "Тойота"@en ;
@@ -895,7 +895,7 @@ d:dba89c8cb5c34ff1b0a1d15811c3d2ba
 .
 
 d:1d2f4b6ed8284b62b2593871b7a434ef
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Bentley"@en ;
   rdfs:label "Bentley"@ru ;
   rdfs:comment "Бентли Бэнтли"@en ;
@@ -903,7 +903,7 @@ d:1d2f4b6ed8284b62b2593871b7a434ef
 .
 
 d:ae7e119d69ef40feb1fd955060ec2deb
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Ford"@en ;
   rdfs:label "Ford"@ru ;
   rdfs:comment "Форд"@en ;
@@ -911,7 +911,7 @@ d:ae7e119d69ef40feb1fd955060ec2deb
 .
 
 d:0f3342f9fbd549fb98312f4e4d334f33
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Hummer"@en ;
   rdfs:label "Hummer"@ru ;
   rdfs:comment "Хаммер"@en ;
@@ -919,7 +919,7 @@ d:0f3342f9fbd549fb98312f4e4d334f33
 .
 
 d:e66f2d20b1b64c6d997b659706f056cd
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Lancia"@en ;
   rdfs:label "Lancia"@ru ;
   rdfs:comment "Ланчия Ляньча Ланча"@en ;
@@ -927,7 +927,7 @@ d:e66f2d20b1b64c6d997b659706f056cd
 .
 
 d:a0380c6676e0455ab7df6c14af00c916
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Lexus"@en ;
   rdfs:label "Lexus"@ru ;
   rdfs:comment "Лексус"@en ;
@@ -935,7 +935,7 @@ d:a0380c6676e0455ab7df6c14af00c916
 .
 
 d:a5e1df20554644ab967ae1d2a7756628
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "BMW"@en ;
   rdfs:label "BMW"@ru ;
   rdfs:comment "БМВ"@en ;
@@ -943,7 +943,7 @@ d:a5e1df20554644ab967ae1d2a7756628
 .
 
 d:6958bff3884244a39734230f247ff932
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Peugeot"@en ;
   rdfs:label "Peugeot"@ru ;
   rdfs:comment "Пежо"@en ;
@@ -951,7 +951,7 @@ d:6958bff3884244a39734230f247ff932
 .
 
 d:7b054ce85e1b4f72913457db8a1b949e
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Renault"@en ;
   rdfs:label "Renault"@ru ;
   rdfs:comment "Рено"@en ;
@@ -959,7 +959,7 @@ d:7b054ce85e1b4f72913457db8a1b949e
 .
 
 d:9d2c6ccd50da4d19994e615f40c597ec
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "АЗЛК"@en ;
   rdfs:label "АЗЛК"@ru ;
   rdfs:comment "АЗЛК Москвич"@en ;
@@ -967,7 +967,7 @@ d:9d2c6ccd50da4d19994e615f40c597ec
 .
 
 d:5c941ecf88d44d239dcf10bfcf9353b7
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Citroen"@en ;
   rdfs:label "Citroen"@ru ;
   rdfs:comment "Ситроен Ситроэн"@en ;
@@ -975,7 +975,7 @@ d:5c941ecf88d44d239dcf10bfcf9353b7
 .
 
 d:40d21fa00a6a4128a272d394714b6041
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Land Rover"@en ;
   rdfs:label "Land Rover"@ru ;
   rdfs:comment "Ленд Ровер Ланд Ровер"@en ;
@@ -983,7 +983,7 @@ d:40d21fa00a6a4128a272d394714b6041
 .
 
 d:1902a092b5824c048fbeb2446dbb75be
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Jaguar"@en ;
   rdfs:label "Jaguar"@ru ;
   rdfs:comment "Ягуар"@en ;
@@ -991,7 +991,7 @@ d:1902a092b5824c048fbeb2446dbb75be
 .
 
 d:7c98e72a7a954d639dc6d953c2f887fe
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Subaru"@en ;
   rdfs:label "Subaru"@ru ;
   rdfs:comment "Субару"@en ;
@@ -999,7 +999,7 @@ d:7c98e72a7a954d639dc6d953c2f887fe
 .
 
 d:d3fbd17f47cd402ba00cae3f62f63b00
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Volkswagen"@en ;
   rdfs:label "Volkswagen"@ru ;
   rdfs:comment "Фольксваген"@en ;
@@ -1007,7 +1007,7 @@ d:d3fbd17f47cd402ba00cae3f62f63b00
 .
 
 d:67be1a32a09e4501a45ec36951419af3
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Volvo"@en ;
   rdfs:label "Volvo"@ru ;
   rdfs:comment "Вольво"@en ;
@@ -1015,7 +1015,7 @@ d:67be1a32a09e4501a45ec36951419af3
 .
 
 d:a3974e2df6c2489997aa4ff11c8f30ce
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Suzuki"@en ;
   rdfs:label "Suzuki"@ru ;
   rdfs:comment "Сузуки Судзуки"@en ;
@@ -1023,7 +1023,7 @@ d:a3974e2df6c2489997aa4ff11c8f30ce
 .
 
 d:d99259617316454ea55465ee6c8577ae
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Skoda"@en ;
   rdfs:label "Skoda"@ru ;
   rdfs:comment "Шкода"@en ;
@@ -1031,7 +1031,7 @@ d:d99259617316454ea55465ee6c8577ae
 .
 
 d:5a852491128848628f7a9c55971edf0a
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Opel"@en ;
   rdfs:label "Opel"@ru ;
   rdfs:comment "Опель"@en ;
@@ -1039,7 +1039,7 @@ d:5a852491128848628f7a9c55971edf0a
 .
 
 d:9584f0129ade4e02a36bb76183e7d451
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Nissan"@en ;
   rdfs:label "Nissan"@ru ;
   rdfs:comment "Ниссан"@en ;
@@ -1047,7 +1047,7 @@ d:9584f0129ade4e02a36bb76183e7d451
 .
 
 d:97ba199be16e444dbf5acb49ada3113f
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mitsubishi"@en ;
   rdfs:label "Mitsubishi"@ru ;
   rdfs:comment "Митсубиси Митсубиши Мицубиси"@en ;
@@ -1055,7 +1055,7 @@ d:97ba199be16e444dbf5acb49ada3113f
 .
 
 d:4c22c654b62c45969e6d49c8bcd915bc
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Mazda"@en ;
   rdfs:label "Mazda"@ru ;
   rdfs:comment "Мазда"@en ;
@@ -1063,7 +1063,7 @@ d:4c22c654b62c45969e6d49c8bcd915bc
 .
 
 d:3238ea684d85492ab60031f20825959d
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Jeep"@en ;
   rdfs:label "Jeep"@ru ;
   rdfs:comment "Джип"@en ;
@@ -1071,7 +1071,7 @@ d:3238ea684d85492ab60031f20825959d
 .
 
 d:9e362f84e52b4b369e6cd945b99aaa4d
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ЗИЛ"@en ;
   rdfs:label "ЗИЛ"@ru ;
   rdfs:comment "ZIL"@en ;
@@ -1079,7 +1079,7 @@ d:9e362f84e52b4b369e6cd945b99aaa4d
 .
 
 d:e6408729f540437399bd64d0023f69e1
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Honda"@en ;
   rdfs:label "Honda"@ru ;
   rdfs:comment "Хонда"@en ;
@@ -1087,7 +1087,7 @@ d:e6408729f540437399bd64d0023f69e1
 .
 
 d:2ae8cc9a5cc54ebe932a5dc3ff081cd8
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ГАЗ"@en ;
   rdfs:label "ГАЗ"@ru ;
   rdfs:comment "GAZ"@en ;
@@ -1095,7 +1095,7 @@ d:2ae8cc9a5cc54ebe932a5dc3ff081cd8
 .
 
 d:0ebe7b16e2694549bec5484146fb7b2d
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Chevrolet"@en ;
   rdfs:label "Chevrolet"@ru ;
   rdfs:comment "Шевроле"@en ;
@@ -1103,7 +1103,7 @@ d:0ebe7b16e2694549bec5484146fb7b2d
 .
 
 d:8500eb06fabf40cf89dd8ccd68a518cb
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "УАЗ"@en ;
   rdfs:label "УАЗ"@ru ;
   rdfs:comment "UAZ"@en ;
@@ -1111,7 +1111,7 @@ d:8500eb06fabf40cf89dd8ccd68a518cb
 .
 
 d:1c6c379337ef45a4aa3d14e7cf23f711
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "Audi"@en ;
   rdfs:label "Audi"@ru ;
   rdfs:comment "Ауди"@en ;
@@ -1119,7 +1119,7 @@ d:1c6c379337ef45a4aa3d14e7cf23f711
 .
 
 d:8982ed51d1574343907beafd65702582
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "КаМАЗ"@en ;
   rdfs:label "КаМАЗ"@ru ;
   rdfs:comment "Kamaz"@en ;
@@ -1127,7 +1127,7 @@ d:8982ed51d1574343907beafd65702582
 .
 
 d:3e89cef929d64223ac11c39ea9987bad
-    a mnd-s:VehicleModel;
+    a v-s:VehicleModel;
   rdfs:label "ВАЗ"@en ;
   rdfs:label "ВАЗ"@ru ;
   rdfs:comment "VAZ"@en ;
