@@ -72,6 +72,8 @@ basic.getDrivers().forEach(function (drv) {
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
     basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
     // basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
+    basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
+    basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
     var startPoint = driver.findElement({css:'.glyphicon-play'});
     var actionSequence = webdriver.ActionSequence;        
     var act = new actionSequence(driver);
@@ -124,13 +126,6 @@ basic.getDrivers().forEach(function (drv) {
     });
 
     basic.execute(driver, 'click', '#workflow-save-button', "Cannot click on 'save net' button");
-    driver.sleep(basic.SLOW_OPERATION);
-    driver.findElements({css:'h4[about="v-fc:ChooseType"]'}).then(function(elements_arr) {
-        if (elements_arr.length > 0) {
-            console.trace("Seems save-button does not work");
-            process.exit(1);
-        }
-    });
 
     driver.quit();
 });
