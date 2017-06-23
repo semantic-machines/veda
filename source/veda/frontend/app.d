@@ -143,7 +143,7 @@ shared static this()
     if (opt_http_port != 0)
         http_port = opt_http_port;
 
-    readOption("ext_usr_port", &opt_external_users_http_port, "http port for external user");
+    readOption("ext_usr_http_port", &opt_external_users_http_port, "http port for external user");
     if (opt_external_users_http_port != 0 && opt_external_users_http_port == http_port)
         is_external_users = true;
 
