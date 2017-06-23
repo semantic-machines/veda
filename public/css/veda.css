@@ -385,6 +385,10 @@ textarea {
 .deleted, .deleted *:not(.btn) {
   text-decoration: line-through!important;
 }
+.deleted[typeof='v-s:Appointment'], .deleted[typeof='v-s:Appointment'] * {
+  text-decoration: none!important;
+  color: #888;
+}
 
 dl {
   margin-top: 0;
