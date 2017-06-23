@@ -2287,27 +2287,25 @@ if (doc) {
       routes['review'][simple+'editable'] = [false];
     }
   }
+  
+  //--------------------------------------------------------ЗАЯВКА-НА-ПРОПУСК 
 
-  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
-      routes['coordination1'][simple+'participant'] = [
-                   new veda.IndividualModel("td:RomanKarpov-Analyst1"),
-                   new veda.IndividualModel("td:AndreyBychin-Analyst2")];
-      routes['coordination1'][simple+'visible'] = [true];
-
-      routes['coordination2'][simple+'participant'] = [
-                   new veda.IndividualModel("td:RomanKarpov-Analyst1"),
-                   new veda.IndividualModel("td:AndreyBychin-Analyst2")];
-      routes['coordination2'][simple+'visible'] = [true];;
-
-      routes['review'][simple+'participant'] = [new veda.IndividualModel("td:AndreyBychin-Analyst2")];
-      routes['review'][simple+'visible'] = [true];
-      routes['instruction'][simple+'participant'] = [new veda.IndividualModel("td:AndreyBychin-Analyst2")];
-      routes['instruction'][simple+'visible'] = [true];
-      routes['examination'][simple+'participant'] = [new veda.IndividualModel("td:AndreyBychin-Analyst2")];
-      routes['examination'][simple+'visible'] = [true];
-      routes['instruction2'][simple+'participant'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
-      routes['instruction2'][simple+'visible'] = [true];
-      routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
+  if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
+    
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Регистратор документов СЛПК
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+    
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];     
   }
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") { //Тестовый маршрут2
