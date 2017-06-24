@@ -258,12 +258,13 @@ module.exports = {
   findUp: function (driver, element, number, message) {
       return driver.findElements({css:'' + element + ''}).then(function (result) {
           return result[number];
-      }).thenCatch(function (e) {basic.errorHandler(e, message);});
+      }).thenCatch(function (e) {errrorHandlerFunction(e, message);});
   },
 
   zoomToNormal: function (driver) {
       for(var i = 0; i < 10; i++) {
-          basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
+          driver.findElement({css:'.zoom-out'}).click()
+              .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on 'zoom-out' button");});
       };
   },
   /**
