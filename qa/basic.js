@@ -260,6 +260,12 @@ module.exports = {
           return result[number];
       }).thenCatch(function (e) {basic.errorHandler(e, message);});
   },
+
+  zoomToNormal: function (driver) {
+      for(var i = 0; i < 10; i++) {
+          basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
+      };
+  },
   /**
    * Заполнить ссылочный атрибут значением из выпадающего списка
    *

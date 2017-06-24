@@ -72,8 +72,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net');
     basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION);
     // basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
-    basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
-    basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
+    basic.zoomToNormal(driver);
     var startPoint = driver.findElement({css:'.glyphicon-play'});
     var actionSequence = webdriver.ActionSequence;        
     var act = new actionSequence(driver);

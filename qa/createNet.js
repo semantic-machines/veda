@@ -56,8 +56,7 @@ module.exports = {
         var actionSequence = webdriver.ActionSequence;        
         var act = new actionSequence(driver);
         act.mouseMove(startPoint, {x: 200, y: 0}).click().perform();
-        basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
-        basic.execute(driver, 'click', '.zoom-out', "Cannot click on 'zoom-out' button");
+        basic.zoomToNormal(driver);
         basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION);
         basic.execute(driver, 'click', '#props-col [about="rdfs:label"]', "Cannot click on net rdfs:label");
         basic.execute(driver, 'sendKeys', '#VClabel input', "Cannot fill rdfl:label in net properties", timeStamp);
