@@ -985,6 +985,13 @@ v-s:hasPrice
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Financial ;
 .
+v-s:hasPricePerUnit
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Price per unit"@en ;
+  rdfs:label "Стоимость на единицу"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
 v-s:prepayment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Prepayment"@en ;
