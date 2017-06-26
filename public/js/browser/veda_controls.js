@@ -283,7 +283,7 @@
     }
 
     control.datetimepicker({
-      locale: "ru",
+      locale: Object.keys(veda.user.language),
       allowInputToggle: true,
       format: format,
       sideBySide: true,
