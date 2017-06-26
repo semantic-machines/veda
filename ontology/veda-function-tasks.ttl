@@ -830,7 +830,7 @@ v-ft:RelatedTasks
   rdfs:label "Связанные задачи"@ru ;
   v-fs:searchBlank v-ft:RelatedTasksBlank ;
   v-fs:searchResultTemplate v-ft:RelatedTasksResultTemplate ;
-  v-fs:sortOrder "'v-wf:dateGiven' desc" ;
+  v-fs:sortOrder "'v-wf:from' desc,'v-wf:dateGiven' desc" ;
   v-fs:searchOnLoad true ;
 .
 
