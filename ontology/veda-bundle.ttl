@@ -347,3 +347,8 @@ v-s:DecisionBundle
   rdfs:label "Решение"@ru ;
   rdfs:label "Decision"@en ;
 .
+v-s:RefreshBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обновить"@ru ;
+  rdfs:label "Refresh"@en ;
+.
