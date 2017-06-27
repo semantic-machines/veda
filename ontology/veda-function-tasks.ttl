@@ -42,44 +42,45 @@ v-ft:UserTaskFormIndex_1_1
 v-ft:TaskCounter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Task counter"@en ;
   rdfs:label "Счетчик задач "@ru ;
+  rdfs:label "Task counter"@en ;
   v-ui:hasModel v-ft:TaskCounterModel;
+  v-ui:hasTemplate v-ft:TaskCounterTemplate;
 .
 v-ft:forceUpdate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:TaskCounter ;
   rdfs:range xsd:boolean ;
-  rdfs:label "обновить принудительно"@en ;
-  rdfs:label "force update"@ru ;
+  rdfs:label "обновить принудительно"@ru ;
+  rdfs:label "force update"@en ;
 .
 v-ft:inboxCount
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:TaskCounter ;
   rdfs:range xsd:integer ;
-  rdfs:label "количество входящих"@en ;
-  rdfs:label "inbox сount"@ru ;
+  rdfs:label "количество входящих"@ru ;
+  rdfs:label "inbox сount"@en ;
 .
 v-ft:inboxWeekCount
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:TaskCounter ;
   rdfs:range xsd:integer ;
-  rdfs:label "количество входящих на текущую неделю"@en ;
-  rdfs:label "inbox сount for current week"@ru ;
+  rdfs:label "количество входящих на текущую неделю"@ru ;
+  rdfs:label "inbox сount for current week"@en ;
 .
 v-ft:outboxCount
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:TaskCounter ;
   rdfs:range xsd:integer ;
-  rdfs:label "количество исходящих"@en ;
-  rdfs:label "outbox сount"@ru ;
+  rdfs:label "количество исходящих"@ru ;
+  rdfs:label "outbox сount"@en ;
 .
 v-ft:completedCount
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ft:TaskCounter ;
   rdfs:range xsd:integer ;
-  rdfs:label "количество выполненных"@en ;
-  rdfs:label "completed сount"@ru ;
+  rdfs:label "количество выполненных"@ru ;
+  rdfs:label "completed сount"@en ;
 .
 
 v-ft:Event_UpdateTaskCounter
@@ -520,6 +521,50 @@ v-ft:FunctionTasksIndicatorTemplate
   <span class="fa fa-envelope-o fa-lg"></span>
   <span id="counter" class="label label-danger" property="v-ft:inboxCount"></span>
 </a>
+  """ ;
+.
+v-ft:TaskCounterTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "V-ft:FunctionInbox indicator template"@en ;
+  rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
+  v-ui:forClass v-ft:TaskCounter;
+  v-ui:template """
+<script>
+  var that = this;
+  if (that.rights && individual.rights.hasValue("v-s:canUpdate")) {
+    $("#refresh", template).click(function () {
+      that["v-ft:forceUpdate"] = [true];
+      that.save();
+    });
+  } else {
+    $("#refresh", template).remove();
+  }
+  //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre
+</script>
+<div class="container sheet">
+  <h2 property="rdf:type"></h2>
+  <em about="v-s:owner" property="rdfs:label"></em>
+  <div rel="v-s:owner" data-template="v-ui:LabelLinkTemplate"></div>
+  <table class="table table-condensed table-bordered table-striped">
+    <thead>
+      <tr>
+        <th about="v-ft:inboxCount" property="rdfs:label"></th>
+        <th about="v-ft:completedCount" property="rdfs:label"></th>
+        <th about="v-ft:outboxCount" property="rdfs:label"></th>
+        <th about="v-ft:inboxWeekCount" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td property="v-ft:inboxCount"></td>
+        <td property="v-ft:completedCount"></td>
+        <td property="v-ft:outboxCount"></td>
+        <td property="v-ft:inboxWeekCount"></td>
+      </tr>
+    </tbody>
+  </table>
+  <button id="refresh" class="btn btn-primary" about="v-s:RefreshBundle" property="rdfs:label"></button>
+</div>
   """ ;
 .
 
