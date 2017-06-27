@@ -16,6 +16,19 @@ veda.Module(function AppPresenter(veda) { "use strict";
     location.reload();
   });
 
+  // Route to resource ttl view on Ctrl + Alt + Click
+  $("body").on("click", "[resource][typeof], [about]", function (e) {
+    if (e.ctrlKey && e.altKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      var uri = $(this).attr("resource") || $(this).attr("about");
+      var hash = "#/" + uri + "//v-ui:ttl";
+      setTimeout(function () {
+        riot.route(hash);
+      });
+    }
+  });
+
   // Prevent empty links routing
   $("body").on("click", "[href='']", function (e) {
     e.preventDefault();
