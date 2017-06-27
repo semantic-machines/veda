@@ -2307,6 +2307,29 @@ if (doc) {
     routes['examination'][simple+'visible'] = [true];
     routes['examination'][simple+'editable'] = [true];     
   }
+  
+//---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ РАССХОДЫ
+  if (doc['rdf:type'][0].id === "mnd-s:RepresentativeCosts") {
+    
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+
+    var stakeholder ;
+    if (doc.hasValue("v-s:stakeholder")){ 
+     stakeholder = doc["v-s:stakeholder"] ;
+      
+    }
+    
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [false];
+    routes['sign'][simple+'participant'] = stakeholder ;
+    
+  }  
+
+  
+  
+  
+  
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
