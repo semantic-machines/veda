@@ -800,6 +800,22 @@ s-wf:ComplexRouteStartForm_Template
   v-ui:forClass s-wf:ComplexRouteStartForm ;
   v-ui:template """
 <script>
+
+if (this.hasValue("v-wf:isProcess")) {
+  $('#save_and_start_process', template).remove();
+} else {
+  $('#save_and_start_process', template).on('click', function () {
+    stages.forEach(function(stage) {
+      var routeid = complex+stage;
+      var sub = individual[routeid][0];
+      if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
+        delete individual.properties[routeid];
+      }
+    });
+    veda.Util.send(individual, template);
+  });
+}
+
 if (mode !== "edit") { return; }
 
 var stages = [ // Default values fill
@@ -2287,25 +2303,25 @@ if (doc) {
       routes['review'][simple+'editable'] = [false];
     }
   }
-  
-  //--------------------------------------------------------ЗАЯВКА-НА-ПРОПУСК 
+
+  //--------------------------------------------------------ЗАЯВКА-НА-ПРОПУСК
 
   if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
     routes['coordination1'][simple+'deadlineDays'] = [10];
     routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
-    
+
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
-    
+
     routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Регистратор документов СЛПК
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
-    
+
     routes['examination'][simple+'visible'] = [true];
-    routes['examination'][simple+'editable'] = [true];     
+    routes['examination'][simple+'editable'] = [true];
   }
   
 //---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ РАССХОДЫ
@@ -2377,16 +2393,6 @@ if (doc) {
     }
   });
 }
-$('#save_and_start_process', template).on('click', function () {
-  stages.forEach(function(stage) {
-    var routeid = complex+stage;
-    var sub = individual[routeid][0];
-    if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
-      delete individual.properties[routeid];
-    }
-  });
-  veda.Util.send(individual, template);
-});
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
 <div class="container sheet">
