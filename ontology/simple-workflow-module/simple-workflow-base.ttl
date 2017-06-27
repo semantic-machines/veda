@@ -2324,7 +2324,7 @@ if (doc) {
     routes['examination'][simple+'editable'] = [true];
   }
   
-//---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ РАССХОДЫ
+//---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ-РАССХОДЫ
   if (doc['rdf:type'][0].id === "mnd-s:RepresentativeCosts") {
     
     routes['coordination1'][simple+'visible'] = [true];
@@ -2333,19 +2333,48 @@ if (doc) {
     var stakeholder ;
     if (doc.hasValue("v-s:stakeholder")){ 
      stakeholder = doc["v-s:stakeholder"] ;
-      
+     routes['sign'][simple+'participant'] = stakeholder ;
+     routes['sign'][simple+'visible'] = [true];
+     routes['sign'][simple+'editable'] = [false];
     }
     
-    routes['sign'][simple+'visible'] = [true];
+    routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d")]; //(Бухгалтер КФО)
     routes['sign'][simple+'editable'] = [false];
-    routes['sign'][simple+'participant'] = stakeholder ;
+    routes['examination'][simple+'visible'] = [true];
     
-  }  
-
-  
-  
-  
-  
+    
+    if (doc.hasValue("v-s:hasPaymentForm", "d:e09f37f287a54e92967ba06ee1d6d472")){// (Счет)
+      routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa")]; //Регистратор документов СЛПК
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [true];
+      
+      var creator ;
+      if (doc.hasValue("v-s:creator")){ 
+        creator = doc["v-s:creator"] ;
+        routes['review'][simple+'participant'] = creator;
+      }      
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'comment'] = [new String('Получите подтверждение оплаты из бухгалтерии. Проведите мероприятие. Сформируйте отчет')];
+      
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [false];
+      routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d")]; //(Бухгалтер КФО)
+      
+    } else if (doc.hasValue("v-s:hasPaymentForm", "d:3d99624858e74529aaa6df725f6f611d")    // Корпоративная карта
+      || doc.hasValue("v-s:hasPaymentForm", "d:43efbfdadcf64f4db2a0e07d974d9098") // Наличный расчет
+      || doc.hasValue("v-s:hasPaymentForm", "d:5df55c8191f245a4a49cebc49cc98a76")) // Услуги ТП Бумажник
+    {     
+      var creator2 ;
+      if (doc.hasValue("v-s:creator")){ 
+        creator2 = doc["v-s:creator"] ;
+        routes['review'][simple+'participant'] = creator2;
+      } 
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'comment'] = [new String('Получите подтверждение оплаты из бухгалтерии. Проведите мероприятие. Сформируйте отчет')];
+    }
+  }
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
