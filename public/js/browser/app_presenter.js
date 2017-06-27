@@ -18,13 +18,25 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
   // Route to resource ttl view on Ctrl + Alt + Click
   $("body").on("click", "[resource][typeof], [about]", function (e) {
-    if (e.ctrlKey && e.altKey) {
+    var uri = $(this).attr("resource") || $(this).attr("about");
+    var hash = "#/" + uri;
+    if (e.altKey && e.ctrlKey && e.shiftKey) {
       e.preventDefault();
       e.stopPropagation();
-      var uri = $(this).attr("resource") || $(this).attr("about");
-      var hash = "#/" + uri + "//v-ui:ttl";
       setTimeout(function () {
-        riot.route(hash);
+        riot.route(hash +  "//v-ui:generic");
+      });
+    } else if (e.altKey && e.ctrlKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(function () {
+        riot.route(hash +  "//v-ui:ttl");
+      });
+    } else if (e.altKey && e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(function () {
+        riot.route(hash +  "//v-ui:json");
       });
     }
   });
