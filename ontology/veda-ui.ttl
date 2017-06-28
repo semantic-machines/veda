@@ -842,7 +842,7 @@ v-ui:IconModalTemplate
     });
  // var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
     var tmpl = individual["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( individual["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-          
+
     if (newMode === "edit") {
       individual.present(cntr, tmpl, newMode);
       $(".actions", tmpl).remove();
@@ -1484,6 +1484,7 @@ v-ui:JournalTemplate
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
   });
+  //# sourceURL=v-ui:JournalTemplate_pre
 </script>
 <div class="container journal sheet">
   <style>
@@ -1491,15 +1492,17 @@ v-ui:JournalTemplate
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
   <div class="row">
-  <div class="col-md-10">
-    
-  <h2 about="v-s:Journal" property="rdfs:label"></h2>
-  </div>
-  <div class="col-md-2 text-right">
-    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
-      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
-    </button>
-    </div>    
+    <div class="col-md-10">
+      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+    </div>
+    <div class="col-md-2 text-right">
+      <button type="button" class="action btn btn-info view -edit -search createReport0">
+        <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
+      </button>
+      <button type="button" class="btn btn-default view -edit -search dms-journal hidden">
+        Журнал СЭД
+      </button>
+    </div>
   </div>
   <div rel="v-s:onDocument">
     <div>
@@ -1534,6 +1537,24 @@ v-ui:JournalTemplate
     <div rel="v-s:childRecord"></div>
   </div>
 </div>
+<script>
+  var docId = this["v-s:onDocument"];
+  if (docId) {
+    //var dfJournalUri = 'http://docflow.mp.local/veda-client-workflow/njrl.html?docId=' + docId + '&locale=ru&viewMode=light';
+    var dfJournalUri = 'http://docflow.mp.local/veda-client-workflow/njrl.html?docId=bc9f5df747a74329bf641827042f9522&locale=ru&viewMode=light';
+    $.get({
+      url: 'http://docflow.mp.local/veda-client-workflow/njrl.html',
+      /*data: {
+        'docId': 'bc9f5df747a74329bf641827042f9522',
+        'locale': 'ru',
+        'viewMode': 'light'
+      }*/
+    }).then(function (result) {
+      console.log(result);
+    });
+  }
+  //# sourceURL=v-ui:JournalTemplate_post
+</script>
   """ ;
 .
 v-ui:SubJournalTemplate
@@ -1603,9 +1624,22 @@ v-ui:DocumentEventTemplate
       <div property="rdfs:label"></div>
       <div rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div rel="v-wf:onProcess">
+        <script>
+          var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
+            return vrbl.hasValue("v-wf:variableName",  "startForm_id");
+          });
+          if (startFormVar.length) {
+            $("[about='start-form']", template).attr("about", startFormVar[0]["v-wf:variableValue"][0].id);
+          } else {
+            $("[about='start-form']", template).remove();
+          }
+        </script>
         <div>
           <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
           <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
+          <div about="start-form">
+            <a href="#/@" property="rdf:type"></a>
+          </div>
         </div>
       </div>
     </div>
@@ -1700,7 +1734,7 @@ v-ui:PermissionStatementTemplate
       <span about="@" property="v-s:endTime"></span>
     </div>
     <div class="col-md-12">
-	<pre style="border:none;background-color:#fff;"></pre>
+  <pre style="border:none;background-color:#fff;"></pre>
     </div>
   </div>
   </div>
