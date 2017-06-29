@@ -2339,7 +2339,7 @@ if (doc) {
     }
     
     routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d")]; //(Бухгалтер КФО)
-    routes['sign'][simple+'editable'] = [false];
+    routes['examination'][simple+'editable'] = [false];
     routes['examination'][simple+'visible'] = [true];
     
     
@@ -2372,7 +2372,7 @@ if (doc) {
       } 
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [false];
-      routes['review'][simple+'comment'] = [new String('Получите подтверждение оплаты из бухгалтерии. Проведите мероприятие. Сформируйте отчет')];
+      routes['review'][simple+'comment'] = [new String('Проведите мероприятие. Сформируйте отчет')];
     }
   }
 
