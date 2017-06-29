@@ -2346,7 +2346,7 @@ if (doc) {
     if (doc.hasValue("v-s:hasPaymentForm", "d:e09f37f287a54e92967ba06ee1d6d472")){// (Счет)
       routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa")]; //Регистратор документов СЛПК
       routes['approval'][simple+'visible'] = [true];
-      routes['approval'][simple+'editable'] = [true];
+      routes['approval'][simple+'editable'] = [false];
       
       var creator ;
       if (doc.hasValue("v-s:creator")){ 
