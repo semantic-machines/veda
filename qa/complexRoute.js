@@ -59,7 +59,7 @@ module.exports = {
         basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button");
         welcome(driver);
             basic.logout(driver);
-        },
+    },
     /**
      * Проверка статуса маршрута
      * @param driver
@@ -85,9 +85,43 @@ module.exports = {
         }
         welcome(driver);
         basic.logout(driver);
+    },
+
+    /**
+     * Проверка счетчиков задач
+     * @param driver
+     * @param inbox - счетчик входящих
+     * @param outbox - счетчик исходящих
+     * @param completed - счетчик выполненных
+     * @param login       |
+     * @param password    | Данные для входа
+     * @param firstName   |
+     * @param lastName    |
+     */
+    checkTasks: function (driver, inbox, outbox, completed, login, password, firstName, lastName) {
+        basic.login(driver, login, password, firstName, lastName);
+        basic.menu(driver, 'Inbox');
+        driver.sleep(basic.SLOW_OPERATION);
+        driver.findElement({css:'a[about="v-ft:Inbox2"]'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Inbox messages")});
+        driver.findElement({css:'span[property="v-ft:inboxCount"]'}).getText().then(function (result) {
+            assert.equal(inbox, result);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of inbox messages is wrong: expected = " + inbox);});
+        driver.findElement({css:'a[about="v-ft:Outbox2"]'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Outbox messages")});
+        driver.findElement({css:'span[property="v-ft:outboxCount"]'}).getText().then(function (result) {
+            assert.equal(inbox, result);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of inbox messages is wrong: expected = " + inbox);});
+        driver.findElement({css:'a[about="v-ft:Completed2"]'}).click()
+            .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Completed messages")});
+        driver.findElement({css:'span[property="v-ft:completedCount"]'}).getText().then(function (result) {
+            assert.equal(inbox, result);
+        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of inbox messages is wrong: expected = " + inbox);});
+        welcome(driver);
+        basic.logout(driver);
     }
 
-}
+};
 
 
 
