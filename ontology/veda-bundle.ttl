@@ -307,6 +307,11 @@ v-s:ViewJournal
   rdfs:label "Журнал"@ru ;
   rdfs:label "Journal"@en ;
 .
+v-s:ViewJournalDMS
+  rdf:type v-s:Bundle ;
+  rdfs:label "Журнал СЭД"@ru ;
+  rdfs:label "Journal DMS"@en ;
+.
 v-s:WillBeProcessed
   rdf:type v-s:Bundle ;
   rdfs:label "Спасибо. Ваше действие будет обработано."@ru ;
