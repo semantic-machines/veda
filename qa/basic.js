@@ -201,16 +201,16 @@ module.exports = {
      * @param driver
      * @param submenu - вкладка
      */
-  menu: function (driver, submenu) {
+  menu: function (driver, submenu, phase) {
       driver.findElement({id:'menu'}).click()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button");});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on settings button");});
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'})),
           SLOW_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems " + submenu + " is not visible");});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems " + submenu + " is not visible");});
       driver.findElement({css:'li[id="menu"] li[resource="v-l:' + submenu + '"]'}).click()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `" + submenu + "` button");});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `" + submenu + "` button");});
   },
 
   /**
@@ -232,12 +232,12 @@ module.exports = {
    * @param element - элемент который проверяем.
    * @param time - промежуток времени, втечение которого проверяем.
   */
-  isEnabled: function (driver, element, time) {
+  isEnabled: function (driver, element, time, phase) {
       driver.wait
       (
           webdriver.until.elementIsEnabled(driver.findElement({css:''+ element +''})),
           time
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot find" + element + "button");});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find" + element + "button");});
   },
     /**
      * Клик по элементу
@@ -310,33 +310,33 @@ module.exports = {
    * @param templateName - имя шаблона, документ которого создается
    * @param templateRdfType - rdf:type шаблона, документ которого создается
    */
-  openCreateDocumentForm: function (driver, templateName, templateRdfType) {
+  openCreateDocumentForm: function (driver, templateName, templateRdfType, phase) {
       // Клик `Документ` в главном меню
       driver.findElement({id:'menu'}).click()
-            .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button")});
+            .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on settings button")});
 
       // Проверяем что открылось подменю
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Create"]'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `create` button inside menu")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems there is no `create` button inside menu")});
 
       // Клик `Создать`
       driver.findElement({css:'li[id="menu"] li[resource="v-l:Create"]'}).click()
-            .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `create` button")});
+            .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `create` button")});
 
       // Проверяем что открылась страница создания документов
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fc:Create"]'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Create template was not opened")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Create template was not opened")});
 
       // Вводим запрашиваемый тип документа
       driver.findElement({id:'fulltext'}).clear();
       driver.findElement({id:'fulltext'}).sendKeys(templateName)
-            .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot enter template name")});
+            .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot enter template name")});
 
       driver.sleep(FAST_OPERATION);
       // Проверяем что запрашиваемый тип появился в выпадающем списке
@@ -350,14 +350,14 @@ module.exports = {
               });
           },
           SLOW_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Dropdown doesnt contains value `"+templateName+"`")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Dropdown doesnt contains value `"+templateName+"`")});
 
       // Кликаем на запрашиваемый тип в выпавшем списке
       driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
           webdriver.promise.filter(suggestions, function(suggestion) {
               return suggestion.getText().then(function(txt){ return txt == templateName });
           }).then(function(x) { x[0].click();});
-      }).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
+      }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `"+templateName+"` from dropdown")});
 
       // Проверяем что тип появился на экране
       if (templateRdfType === 'v-s:RequestDelegationUser' || templateRdfType === 'v-wf:Net' || templateRdfType === 'v-s:Person') {
@@ -365,14 +365,14 @@ module.exports = {
           (
               webdriver.until.elementIsVisible(driver.findElement({css:'div[typeof="'+templateRdfType+'"]'})),
               SLOW_OPERATION
-          ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems that create operation not works properly")});
+          ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems that create operation not works properly")});
           return;
       } // Имеет нестандартный шаблон
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'span[about="'+templateRdfType+'"]'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems that create operation not works properly")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems that create operation not works properly")});
   },
   /**
    * Открыть форму полнотекстового поиска, при этом выбрать поиск внутри определённого шаблона
@@ -380,28 +380,28 @@ module.exports = {
    * @param templateName - имя шаблона, документ которого ищется
    * @param templateRdfType - rdf:type шаблона, документ которого ищется
    */
-  openFulltextSearchDocumentForm: function (driver, templateName, templateRdfType) {
+  openFulltextSearchDocumentForm: function (driver, templateName, templateRdfType, phase) {
       // Клик `Документ` в главном меню
       driver.findElement({css:'li[id="menu"]'}).click()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on settings button")});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on settings button")});
 
       // Проверяем что открылось подменю
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems there is no `search` button inside settings")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems there is no `search` button inside settings")});
 
       // Клик `Поиск`
       driver.findElement({css:'li[id="menu"] li[resource="v-l:Find"]'}).click()
-          .thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `search` button")});
+          .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `search` button")});
 
       // Проверяем что открылась страница поиска
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fs:Search"]'})),
           FAST_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Search template was not opened")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Search template was not opened")});
 
       // Вводим запрашиваемый тип документа
       driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
@@ -419,20 +419,20 @@ module.exports = {
               });
           },
           SLOW_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Dropdown doesnt contains value `"+templateName+"`")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Dropdown doesnt contains value `"+templateName+"`")});
 
       // Кликаем на запрашиваемый тип в выпавшем списке
       driver.findElements({css:'veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
           webdriver.promise.filter(suggestions, function(suggestion) {
               return suggestion.getText().then(function(txt){ return txt === templateName + " (" + templateRdfType + ")" });
           }).then(function(x) { x[0].click();});
-      }).thenCatch(function (e) {errrorHandlerFunction(e, "Cannot click on `"+templateName+"` from dropdown")});
+      }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `"+templateName+"` from dropdown")});
 
       // Проверяем что тип появился на экране
       driver.wait
       (
           webdriver.until.elementIsVisible(driver.findElement({css:'div[rel="v-fs:typeToSearch"] span[about="'+templateRdfType+'"]'})),
           SLOW_OPERATION
-      ).thenCatch(function (e) {errrorHandlerFunction(e, "Seems that find operation not works properly")});
+      ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems that find operation not works properly")});
   }
 };

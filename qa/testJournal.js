@@ -52,58 +52,54 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
 function update(driver, key) {
   basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
   driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
-  basic.execute(driver, 'click' , '#edit', "****** PHASE#3 > TEST JOURNAL : ERROR = Cannot click on `Edit` button");
+  basic.execute(driver, 'click' , '#edit', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Edit` button");
   if (key != '') {
     driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
     basic.execute(driver, 'clear', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]', "Cannot find 'shortLabel'");
     basic.execute(driver, 'click', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]',
-        "****** PHASE#3 > TEST JOURNAL : ERROR = Cannot fill 'v-s:shortLabel' field");
+        "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot fill 'v-s:shortLabel' field");
   }
   driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-  basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#3 > TEST JOURNAL : ERROR = Cannot click on `Save` button");
+  basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Save` button");
 }
 
 /**
- * 1.Open page -> Login(as karpovrt);
- * 2.Create Action(fill label, responsible, shortLabel) -> Save;
- * 3.Check journal -> Update shortLabel ->
+ * 0.Open page -> Login(as karpovrt);
+ * 1.Create Action(fill label, responsible, shortLabel) -> Save;
+ * 2.Check journal -> Update shortLabel ->
  * -> Check journal -> No update shortLabel ->
  * -> Check journal -> Update shortLabel ->
  * -> Check journal;
- * 4.Quit;
  *
- * 1.Открываем страницу -> Входим в систему под karpovrt;
- * 2.Создаем Мероприятие(заполняем label, responsible, shortLabel) -> Сохраняем;
- * 3.Проверяем количество записей в журнале -> Изменяем shortLabel ->
+ * 0.Открываем страницу -> Входим в систему под karpovrt;
+ * 1.Создаем Мероприятие(заполняем label, responsible, shortLabel) -> Сохраняем;
+ * 2.Проверяем количество записей в журнале -> Изменяем shortLabel ->
  * -> Проверяем количество записей в журнале -> Не изменяем shortlabel ->
  * -> Проверяем количество записей в журнале -> Изменяем shortLabel ->
  * -> Проверяем количество записей в журнале;
- * 4.Выход;
 */
 
 
 basic.getDrivers().forEach (function (drv) {
-    //PHASE#1
+    //PHASE#0 : Вход
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#1 > LOGIN         : COMPLETE");});
 
-    //PHASE#2
+    //PHASE#1 : Создание
     basic.openCreateDocumentForm(driver, 'Мероприятие', "v-s:Action");
     driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
     basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]',
-        "****** PHASE#2 > CREATE ACTION : ERROR = Cannot fill 'rdfs:label' field", timeStamp);
+        "****** PHASE#1 > CREATE ACTION : ERROR = Cannot fill 'rdfs:label' field", timeStamp);
     driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
     basic.chooseFromDropdown(driver, 'v-s:responsible', "Администратор2", "Администратор2 : Аналитик");
     driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
     basic.execute(driver, 'sendKeys', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]',
-        "****** PHASE#2 > CREATE ACTION : ERROR = Cannot fill 'v-s:shortLabel' field", 'timeStamp + 1');
+        "****** PHASE#1 > CREATE ACTION : ERROR = Cannot fill 'v-s:shortLabel' field", 'timeStamp + 1');
     driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 > CREATE ACTION : ERROR = Cannot click on `Save` button");
-    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#2 > CREATE ACTION : COMPLETE");});
+    basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#1 > CREATE ACTION : ERROR = Cannot click on `Save` button");
 
-    //PHASE#3
+    //PHASE#3 : Тестирование журнала
     assertCounts(driver, 1, 1, 0);
     update(driver, timeStamp + 2);
     assertCounts(driver, 2, 1, 1);
@@ -111,8 +107,5 @@ basic.getDrivers().forEach (function (drv) {
     assertCounts(driver, 2, 1, 1);
     update(driver, timeStamp + 3);
     assertCounts(driver, 3, 1, 2);
-    driver.findElement({css:'#app'}).then(function(){console.log("****** PHASE#3 > TEST JOURNAL  : COMPLETE");});
-
-    //PHASE#4
     driver.quit();
 });
