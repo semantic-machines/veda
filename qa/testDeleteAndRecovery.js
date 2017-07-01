@@ -57,12 +57,12 @@ function clickButton(driver, button, phase) {
  */
 
 basic.getDrivers().forEach(function(drv){
-    //PHASE#0: Вход
+    //PHASE#0: Login
     var driver = basic. getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
-    //PHASE#1: Новая Стартовая форма
+    //PHASE#1: New Startform
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm', 1);
     driver.executeScript("document.querySelector('strong[about=\"rdfs:label\"]').scrollIntoView(true);");
     basic.execute(driver, 'click', 'veda-control[data-type="multilingualString"]',
@@ -72,16 +72,16 @@ basic.getDrivers().forEach(function(drv){
     clickButton(driver, "save", 1);
     driver.sleep(basic.FAST_OPERATION);
 
-    //PHASE#2: Удаление
+    //PHASE#2: Delete
     check(driver, 1, 2);
     basic.execute(driver, 'click', 'span[typeof="v-wf:StartForm"]', "****** PHASE#2 > DELETE : ERROR = Cannot click on 'StartForm' button");
     clickButton(driver, "delete", 2);
     driver.switchTo().alert().accept();
 
-    //PHASE#3: Проверка, что ее нет
+    //PHASE#3: Checking
     check(driver, 0, 3);
 
-    //PHASE#4: Восстановление
+    //PHASE#4: Recovery
     basic.menu(driver, 'Search', 4);
     basic.execute(driver, 'sendKeys', '#q', '****** PHASE#4 > RECOVERY : ERROR = Cannot fill input field',
         "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");

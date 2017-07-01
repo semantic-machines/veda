@@ -62,12 +62,12 @@ function fillProperty(driver, property, something, phase) {
 
 
 basic.getDrivers().forEach(function(drv) {
-    //PHASE#0: Вход
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
-    //PHASE#1:Создаем черновик
+    //PHASE#1: Create draft
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person', 1);
     var lastName = 'Draft';
     fillProperty(driver, 'lastName', lastName, 1);
@@ -82,10 +82,10 @@ basic.getDrivers().forEach(function(drv) {
         assert(txt == lastName);
     }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/LN");});
 
-    //PHASE#2: Проверям наличие его в наших черновиках
+    //PHASE#2: Check
     check(driver, "true", 2);
 
-    //PHASE#3: Досоздаем черновик в документ
+    //PHASE#3: Edit and save as document
     fillProperty(driver, 'middleName', 'Пупкин', 3);
     var now = new Date();
     fillProperty(driver, 'birthday',
@@ -95,7 +95,7 @@ basic.getDrivers().forEach(function(drv) {
     driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#save')[0].scrollIntoView(true);");
     basic.execute(driver, 'click', '#save', "****** PHASE#3 > EDIT DRAFT : ERROR = Cannot click on 'save' button");
 
-    //PHASE#4: Проверяем, что теперь нет черновика
+    //PHASE#4: Check
     check(driver, "false", 4);
     driver.quit();
 });

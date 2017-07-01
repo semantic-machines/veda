@@ -42,27 +42,27 @@ function search(driver, somethingUnique, count, phase) {
 */
 
 basic.getDrivers().forEach (function (drv) {
-    //PHASE#0: Вход
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
-    //PHASE#1: Создание документа пользователем с большими правами
+    //PHASE#1: Create document(by karpovrt)
     var now = new Date();
-    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());//-
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
 
-    //PHASE#2: Проверка отсутсвия созданного документа
-    basic.logout(driver);//-
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');//-
+    //PHASE#2: Check
+    basic.logout(driver, 2);
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 2);
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person', 2);
     search(driver, timeStamp, 0, 2);
 
-    //PHASE#3: Создание нового документа пользователем с меньшими правами
-    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());//-
+    //PHASE#3: Create document(by bychinat)
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
     basic.logout(driver);
 
-    //PHASE#4: Проверка наличия созданного документа пользователем с меньшими правами
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');//-
+    //PHASE#4: Check
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 4);
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person', 4);
     search(driver, timeStamp + 1, 1, 4);
     driver.quit();

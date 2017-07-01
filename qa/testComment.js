@@ -42,11 +42,11 @@ function check(driver, comment, reply, edit, del, phase) {
 
 function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
-    basic.execute(driver, 'sendKeys', 'div[typeof="v-s:Comment"] textarea[class="form-control"]', "****** PHASE#2 > ADD+REPLY COMMENT : ERROR = Cannot input comment", somethingUnique);
+    basic.execute(driver, 'sendKeys', 'div[typeof="v-s:Comment"] textarea[class="form-control"]', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot input comment", somethingUnique);
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
-    basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "****** PHASE#2 > ADD+REPLY COMMENT : ERROR = Cannot click  on 'save' button");
+    basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click  on 'save' button");
     driver.sleep(basic.SLOW_OPERATION/2);
-    driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
+    driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
 }
 
 /**
@@ -62,19 +62,19 @@ function comment(driver, somethingUnique) {
 */
 
 basic.getDrivers().forEach(function (drv) {
-    //PHASE#0 : Вход
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
-    //PHASE#1 : Комментирование
+    //PHASE#1: Comment
     basic.execute(driver, 'click', '#user-info', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'user-info' button");
     driver.executeScript("document.querySelector('#add-comment').scrollIntoView(true);");
     basic.execute(driver, 'click', '#add-comment', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'add-comment' button");
     comment(driver, timeStamp);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
     basic.execute(driver, 'click', '#reply', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'reexply' button");
-    comment(driver, timeStamp + 1);//-
+    comment(driver, timeStamp + 1);
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
     basic.execute(driver, 'click', '#reply', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'reply' button");
@@ -87,23 +87,23 @@ basic.getDrivers().forEach(function (drv) {
     driver.sleep(basic.SLOW_OPERATION/2);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
 
-    //PHASE#2 : Удаление
-    check(driver, 3, 3, 2, 2, 2);//-
+    //PHASE#2: Delete
+    check(driver, 3, 3, 2, 2, 2);
     driver.executeScript("document.querySelector('#delete').scrollIntoView(true);");
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
     driver.sleep(basic.SLOW_OPERATION/2);
-    check(driver, 2, 2, 1, 1, 2);//-
+    check(driver, 2, 2, 1, 1, 2);
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
     driver.sleep(basic.SLOW_OPERATION/2);
-    check(driver, 1, 1, 1, 1, 2);//-
+    check(driver, 1, 1, 1, 1, 2);
 
-    //PHASE#3 : Проверка из под другого пользователя
-    basic.logout(driver);
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4');
+    //PHASE#3: Check
+    basic.logout(driver, 3);
+    basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 3);
     driver.navigate().refresh();
     driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");

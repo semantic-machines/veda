@@ -36,24 +36,24 @@ function click(driver, button, phase) {
  */
 
 basic.getDrivers().forEach (function (drv) {
-    //PHASE#0: Вход
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
 
-    //PHASE#1: русский + английский
+    //PHASE#1: RU + EN
     click(driver, 'EN', 1);
     check(driver, 'Eng', "2", 1);
     check(driver, 'Eng', "Administrator2", 1);
     check(driver, 'Рус', "2", 1);
     check(driver, 'Рус', "Администратор2", 1);
 
-    //PHASE#2: только английский
+    //PHASE#2: EN
     click(driver, 'RU', 2);
     check(driver, 'Eng', "2", 2);
     check(driver, 'Eng', "Administrator2", 2);
 
-    //PHASE#3: только русский
+    //PHASE#3: RU
     click(driver, 'RU', 3);
     click(driver, 'EN', 3);
     check(driver, 'Рус', "2", 3);
