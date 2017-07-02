@@ -18,15 +18,15 @@ module.exports = {
      * @param firstName   |
      * @param lastName    |
     */
-    checkTask: function (driver, count, login, password, firstName, lastName, info) {
-        basic.login(driver, login, password, firstName, lastName);
-        basic.menu(driver, 'Inbox');
+    checkTask: function (driver, count, login, password, firstName, lastName, phase) {
+        basic.login(driver, login, password, firstName, lastName, phase);
+        basic.menu(driver, 'Inbox', phase);
         driver.sleep(basic.SLOW_OPERATION);
         driver.findElements({css:'tr[typeof="v-wf:DecisionForm s-wf:UserTaskForm"]'}).then(function (result) {
             assert.equal(count, result.length);
-        }).thenCatch(function (e) {basic.errorHandler(e, "checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName + ', phase=' + info);});
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName);});
         welcome(driver);
-        basic.logout(driver);
+        basic.logout(driver, phase);
     },
 
     /**
@@ -40,25 +40,25 @@ module.exports = {
      * @param firstName   |
      * @param lastName    |
     */
-    acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName) {
+    acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName);
         basic.menu(driver, 'Inbox');
         driver.sleep(basic.SLOW_OPERATION);
-        driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
+        driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
             function(result){basic.clickUp(result);});
-        basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "Cannot click on '" + decision + "' decision");
+        basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
         if (commentValue === '+') {
-            basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "Cannot fill 'comment'", timeStamp);
+            basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "****** PHASE#" + phase + " : ERROR = Cannot fill 'comment'", timeStamp);
         }
         if (chooseValue === '+') {
             driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
-            basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик');
+            basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик', phase);
         }
         driver.sleep(basic.FAST_OPERATION);
         driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
-        basic.execute(driver, 'click', 'button[id="send"]', "Cannot click on 'Ok' button");
+        basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'Ok' button");
         welcome(driver);
-            basic.logout(driver);
+        basic.logout(driver, phase);
     },
     /**
      * Проверка статуса маршрута

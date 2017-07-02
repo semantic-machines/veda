@@ -7,14 +7,15 @@ module.exports = {
      * @param driver
      * @param valuteToSearch - Персона, которую надо искать для делегирования
      * @param valuteToChoose - Персона, которую надо выбрать для делегирования
+     * @param phase - текущая фаза теста
     */
-    createRequestDelegation: function (driver, valueToSearch, valueToChoose ) {
-        basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser');
+    createRequestDelegation: function (driver, valueToSearch, valueToChoose, phase) {
+        basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser', phase);
 
         driver.executeScript("document.querySelector('#positions').scrollIntoView(true);");
-        basic.execute(driver, 'click', 'div[id="positions"] input[id="td:Analyst1"]', "Cannot click on 'Аналитик' position");
+        basic.execute(driver, 'click', 'div[id="positions"] input[id="td:Analyst1"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'Аналитик' position");
 
-        basic.execute(driver, 'sendKeys', 'veda-control[rel="v-s:delegate"] input[id="fulltext"]', "Cannot find attribute 'rel=v-s:delegate'", valueToSearch);
+        basic.execute(driver, 'sendKeys', 'veda-control[rel="v-s:delegate"] input[id="fulltext"]', "****** PHASE#" + phase + " : ERROR = Cannot find attribute 'rel=v-s:delegate'", valueToSearch);
         driver.sleep(basic.FAST_OPERATION);
         driver.wait
         (
@@ -28,7 +29,7 @@ module.exports = {
                 });
             },
             basic.SLOW_OPERATION
-        ).thenCatch(function (e) {basic.errorHandler(e, "Cannot find '"+ valueToSearch +"' from dropdown");});
+        ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot find '"+ valueToSearch +"' from dropdown");});
 
         driver.findElements({css:'veda-control[rel="v-s:delegate"] span[class="tt-dropdown-menu"] div[class="tt-dataset-dataset"] p'}).then(function (suggestions) {
             webdriver.promise.filter(suggestions, function(suggestion) {
@@ -40,18 +41,20 @@ module.exports = {
                     }
                 });
             }).then(function(x) { x[0].click();});
-        }).thenCatch(function (e) {basic.errorHandler(e, "Cannot click on '"+ valueToChoose +"' from dropdown");});
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot click on '" + valueToChoose + "' from dropdown");});
 
-        basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]', "Cannot click on 'dateFrom' input");
-        basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]', "Cannot click on 'dateTo' input");
-        driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "Cannot find 'glyphicon-chevron-up' button"),
+        basic.execute(driver, 'click', 'veda-control[property="v-s:dateFrom"] input[type="text"]',
+            "****** PHASE#" + phase + " : ERROR = Cannot click on 'dateFrom' input");
+        basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]',
+            "****** PHASE#" + phase + " : ERROR = Cannot click on 'dateTo' input");
+        driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "****** PHASE#" + phase + " : ERROR = Cannot find 'glyphicon-chevron-up' button"),
             basic.FAST_OPERATION).then(function (result) {basic.clickUp(result)});
-        driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "Cannot find 'glyphicon-chevron-up' button"),
+        driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "****** PHASE#" + phase + " : ERROR = Cannot find 'glyphicon-chevron-up' button"),
             basic.FAST_OPERATION).then(function (result) {basic.clickUp(result)});
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
         driver.sleep(basic.FAST_OPERATION);
-        basic.execute(driver, 'click','#save', "Cannot click on 'save' button");
+        basic.execute(driver, 'click','#save', "****** PHASE#" + phase + " : ERROR = Cannot click on 'save' button");
 
     }
 };
