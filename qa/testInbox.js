@@ -26,7 +26,7 @@ basic.getThreeDrivers().forEach(function (drv) {
 
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest');
     basic.execute(driver, "click", 'span[about="v-s:SendTask"]', "Cannot click on SendTask button");
-    basic.execute(driver, "click", 'div[typeof="s-wf:ComplexRouteTest"] ul[id="standard-tasks"]')
+    basic.execute(driver, "click", 'div[typeof="s-wf:ComplexRouteTest"] ul[id="standard-tasks"]');
     basic.execute(driver, "sendKeys", 'veda-control[rel="v-s:hasAppointment"] input[id="fulltext"]',
         "Cannot fill Appointment field", "Aдминистратор4 : Аналитик");
     //Dropdown

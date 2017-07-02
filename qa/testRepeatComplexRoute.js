@@ -34,7 +34,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver, 1);
 
     //PHASE#2: Check&Accept
-    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', '#1', 2);
+    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 2);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 0);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 2);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 0);
@@ -53,7 +53,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver, 3);
 
     //PHASE#4: Check&Accept
-    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', '#2', 4);
+    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 4);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 1);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 4);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 1);
