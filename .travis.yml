@@ -39,15 +39,15 @@ before_script:
   - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
   - ls  $PWD   
   - ls  $PWD/logs   
-  - cat $PWD/logs/veda-fanout-email-stderr.log
+#  - cat $PWD/logs/veda-fanout-email-stderr.log
 #  - cat $PWD/logs/veda-fanout-sql-stderr.log
-  - cat $PWD/logs/veda-ft-indexer-stderr.log
-  - cat $PWD/logs/veda-ltr-scripts-stderr.log
-  - cat $PWD/logs/veda-scripts-lp-stderr.log
-  - cat $PWD/logs/veda-scripts-main-stderr.log
-  - cat $PWD/logs/veda-mstorage-stderr.log
-  - cat $PWD/logs/veda-ttlreader-stderr.log
-  - cat $PWD/logs/veda-webserver-stderr.log 
+#  - cat $PWD/logs/veda-ft-indexer-stderr.log
+#  - cat $PWD/logs/veda-ltr-scripts-stderr.log
+#  - cat $PWD/logs/veda-scripts-lp-stderr.log
+#  - cat $PWD/logs/veda-scripts-main-stderr.log
+#  - cat $PWD/logs/veda-mstorage-stderr.log
+#  - cat $PWD/logs/veda-ttlreader-stderr.log
+#  - cat $PWD/logs/veda-webserver-stderr.log 
 #  - cat $PWD/veda_s.log
   - cat $PWD/logs/veda-core-mstorage_*.log          
   - setsid ./qa/uptime-to-log.sh&
@@ -87,11 +87,11 @@ after_script:
   - grunt coveralls
   - date    
   - cat $PWD/veda_s.log
-  - cat logs/veda-core-_*.log 
-  - cat logs/veda-core-fanout_*.log
-  - cat logs/veda-core-fulltext_indexer_*.log
-  - cat logs/veda-core-ltr_scripts_*.log
+#  - cat logs/veda-core-_*.log 
+#  - cat logs/veda-core-fanout_*.log
+#  - cat logs/veda-core-fulltext_indexer_*.log
+#  - cat logs/veda-core-ltr_scripts_*.log
 #  - cat veda-core-scripts_*.log
-  - cat logs/veda-core-mstorage_*.log
-  - cat logs/veda-core-ttl_reader_*.log
-  - cat logs/veda-core-webserver_*.log 
+#  - cat logs/veda-core-mstorage_*.log
+#  - cat logs/veda-core-ttl_reader_*.log
+#  - cat logs/veda-core-webserver_*.log 
