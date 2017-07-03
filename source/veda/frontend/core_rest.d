@@ -238,7 +238,11 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-                    string ss = "attachment; filename*=UTF-8''" ~ encode(originFileName);
+				    string encoded_originFileName = encode(originFileName);
+				    
+				    encoded_originFileName = encoded_originFileName.replace (",", " ");
+
+                    string ss = "attachment; filename*=UTF-8''" ~ encoded_originFileName;
 
                     res.headers[ "Content-Disposition" ] = ss;
 
