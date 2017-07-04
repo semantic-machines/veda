@@ -112,12 +112,129 @@ module.exports = {
         driver.manage().window().setSize(1280, 960);
         //driver.manage().window().maximize();
     },
+
+//------------------------------------------------------
+    /**
+     * Заполнить ссылочный атрибут значением из выпадающего списка
+     * @param driver
+     * @param attribute - rdf:type атрибута, который будет заполнятся выбором из выпадающего списка
+     * @param valueToSearch - значение, которое будет введено в строку поиска
+     * @param valueToChoose - значение, которое будет выбрано как результат поиска (без учёта регистра; если не указано, будет использовано значение value)
+     * @param phase - текущая фаза теста
+     */
+    chooseFromDropdown: function(driver, attribute, valueToSearch, valueToChoose, phase) {
+        driver.findElement({css:'div[rel="'+attribute+'"] + veda-control input[id="fulltext"]'}).sendKeys(valueToSearch)
+            .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find attribute `"+attribute+"`")});
+        driver.sleep(FAST_OPERATION);
+        // Проверяем что запрашивамый объект появился в выпадающем списке
+        driver.wait
+        (
+            function () {
+                return driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
+                    return webdriver.promise.filter(suggestions, function(suggestion) {
+                        return suggestion.getText().then(function(txt){return txt.toLowerCase() == valueToChoose.toLowerCase() });
+                    }).then(function(x) { return x.length>0; });
+                });
+            },
+            SLOW_OPERATION
+        ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find `"+valueToSearch+"` from dropdown")});
+        // Кликаем на запрашиваемый тип в выпавшем списке
+        driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
+            webdriver.promise.filter(suggestions, function(suggestion) {
+                return suggestion.getText().then(function(txt){
+                    if (valueToChoose == undefined) {
+                        return txt.toLowerCase() == valueToSearch.toLowerCase();
+                    } else {
+                        return txt.toLowerCase() == valueToChoose.toLowerCase();
+                    }
+                });
+            }).then(function(x) { x[0].click();});
+        }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `"+valueToChoose+"` from dropdown")});
+    },
+
+    /**
+     * Клик по элементу
+     * @param element - элемент
+     */
+    clickUp: function (element) {
+        element.click()
+            .thenCatch(function(e) {errrorHandlerFunction(e, "Cannot click on" + element)})
+    },
+
     /**
     * Обработчик ошибок
     */
     errorHandler: function(e, message) {
         errrorHandlerFunction(e, message)
     },
+
+    /**
+     * Выполнение задачи
+     * @param driver
+     * @param task - задача
+     * @param selector
+     * @param message - сообщение ошибки
+     * @param something - данные для ввода в поле
+     */
+    execute: function(driver, task, selector, message, something) {
+        if (task === 'click') {
+            driver.findElement({css:'' + selector + ''}).click()
+                .thenCatch(function (e) {errrorHandlerFunction(e, message);});
+        }
+        if (task === 'clear') {
+            driver.findElement({css:'' + selector + ''}).clear()
+                .thenCatch(function (e) {errrorHandlerFunction(e, message);});
+        }
+        if (task === 'sendKeys') {
+            driver.findElement({css:'' + selector + ''}).sendKeys(something)
+                .thenCatch(function (e) {errrorHandlerFunction(e, message);});
+        }
+    },
+
+    /**
+     * Поиск небходимого элемента среди всех таких элементов
+     * @param driver
+     * @param element - элемента
+     * @param number - номер элемента
+     * @param message - сообщение ошибки
+     * @returns {!promise.Promise.<R>|!goog.Promise|*}
+     */
+    findUp: function (driver, element, number, message) {
+        return driver.findElements({css:'' + element + ''}).then(function (result) {
+            return result[number];
+        }).thenCatch(function (e) {errrorHandlerFunction(e, message);});
+    },
+
+    /**
+     * Проверка кнопки на активность
+     * @param driver
+     * @param element - элемент который проверяем.
+     * @param time - промежуток времени, втечение которого проверяем.
+     * @param phase - текущая фаза теста
+     */
+    isEnabled: function (driver, element, time, phase) {
+        driver.wait
+        (
+            webdriver.until.elementIsEnabled(driver.findElement({css:''+ element +''})),
+            time
+        ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find" + element + "button");});
+    },
+
+    /**
+     * Проверка элемента на видимость
+     * @param driver
+     * @param element - элемент который проверяем.
+     * @param time - промежуток времени, втечение которого проверяем.
+     * @param phase - текущая фаза теста
+     */
+    isVisible: function (driver, element, time, phase) {
+        driver.wait
+        (
+            webdriver.until.elementIsVisible(driver.findElement({css:''+ element +''})),
+            time
+        ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems " + element +" is not visible");});
+    },
+
     /**
     * @param login - логин пользователя
     * @param password - пароль пользователя
@@ -180,29 +297,6 @@ module.exports = {
     },
 
     /**
-     * Выполнение задачи
-     * @param driver
-     * @param task - задача
-     * @param selector
-     * @param message - сообщение ошибки
-     * @param something - данные для ввода в поле
-     */
-    execute: function(driver, task, selector, message, something) {
-        if (task === 'click') {
-            driver.findElement({css:'' + selector + ''}).click()
-                .thenCatch(function (e) {errrorHandlerFunction(e, message);});
-        }
-        if (task === 'clear') {
-            driver.findElement({css:'' + selector + ''}).clear()
-                .thenCatch(function (e) {errrorHandlerFunction(e, message);});
-        }
-        if (task === 'sendKeys') {
-            driver.findElement({css:'' + selector + ''}).sendKeys(something)
-                .thenCatch(function (e) {errrorHandlerFunction(e, message);});
-        }
-    },
-
-    /**
      * Открытие вкладки в меню
      * @param driver
      * @param submenu - вкладка
@@ -220,104 +314,6 @@ module.exports = {
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `" + submenu + "` button");});
     },
 
-    /**
-    * Проверка элемента на видимость
-    * @param driver
-    * @param element - элемент который проверяем.
-    * @param time - промежуток времени, втечение которого проверяем.
-    * @param phase - текущая фаза теста
-    */
-    isVisible: function (driver, element, time, phase) {
-        driver.wait
-        (
-            webdriver.until.elementIsVisible(driver.findElement({css:''+ element +''})),
-            time
-        ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Seems " + element +" is not visible");});
-    },
-    /**
-    * Проверка кнопки на активность
-    * @param driver
-    * @param element - элемент который проверяем.
-    * @param time - промежуток времени, втечение которого проверяем.
-    * @param phase - текущая фаза теста
-    */
-    isEnabled: function (driver, element, time, phase) {
-        driver.wait
-        (
-            webdriver.until.elementIsEnabled(driver.findElement({css:''+ element +''})),
-            time
-        ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find" + element + "button");});
-    },
-    /**
-     * Клик по элементу
-     * @param element - элемент
-     */
-    clickUp: function (element) {
-        element.click()
-             .thenCatch(function(e) {errrorHandlerFunction(e, "Cannot click on" + element)})
-    },
-    /**
-     * Поиск небходимого элемента среди всех таких элементов
-     * @param driver
-     * @param element - элемента
-     * @param number - номер элемента
-     * @param message - сообщение ошибки
-     * @returns {!promise.Promise.<R>|!goog.Promise|*}
-     */
-    findUp: function (driver, element, number, message) {
-        return driver.findElements({css:'' + element + ''}).then(function (result) {
-            return result[number];
-        }).thenCatch(function (e) {errrorHandlerFunction(e, message);});
-    },
-
-    /**
-     *
-     * @param driver
-     * @param phase - текущая фаза теста
-     */
-    zoomToNormal: function (driver, phase) {
-        for(var i = 0; i < 10; i++) {
-            driver.findElement({css:'.zoom-out'}).click()
-                .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on 'zoom-out' button");});
-        };
-    },
-    /**
-    * Заполнить ссылочный атрибут значением из выпадающего списка
-    * @param driver
-    * @param attribute - rdf:type атрибута, который будет заполнятся выбором из выпадающего списка
-    * @param valueToSearch - значение, которое будет введено в строку поиска
-    * @param valueToChoose - значение, которое будет выбрано как результат поиска (без учёта регистра; если не указано, будет использовано значение value)
-    * @param phase - текущая фаза теста
-    */
-    chooseFromDropdown: function(driver, attribute, valueToSearch, valueToChoose, phase) {
-        driver.findElement({css:'div[rel="'+attribute+'"] + veda-control input[id="fulltext"]'}).sendKeys(valueToSearch)
-            .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find attribute `"+attribute+"`")});
-         driver.sleep(FAST_OPERATION);
-        // Проверяем что запрашивамый объект появился в выпадающем списке
-        driver.wait
-        (
-            function () {
-                return driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
-                    return webdriver.promise.filter(suggestions, function(suggestion) {
-                        return suggestion.getText().then(function(txt){return txt.toLowerCase() == valueToChoose.toLowerCase() });
-                    }).then(function(x) { return x.length>0; });
-                });
-            },
-            SLOW_OPERATION
-        ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find `"+valueToSearch+"` from dropdown")});
-        // Кликаем на запрашиваемый тип в выпавшем списке
-        driver.findElements({css:'div[rel="'+attribute+'"] + veda-control.fulltext div.tt-suggestion>p'}).then(function (suggestions) {
-            webdriver.promise.filter(suggestions, function(suggestion) {
-                return suggestion.getText().then(function(txt){
-                    if (valueToChoose == undefined) {
-                        return txt.toLowerCase() == valueToSearch.toLowerCase();
-                    } else {
-                        return txt.toLowerCase() == valueToChoose.toLowerCase();
-                    }
-                });
-            }).then(function(x) { x[0].click();});
-        }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `"+valueToChoose+"` from dropdown")});
-    },
     /**
     * Открыть форму создания документа определённого шаблона
     * @param driver

@@ -10,26 +10,6 @@ function welcome(driver) {
 
 module.exports = {
     /**
-     * Проверка сообщений
-     * @param driver
-     * @param count - количество сообщений
-     * @param login       |
-     * @param password    | Данные для входа
-     * @param firstName   |
-     * @param lastName    |
-    */
-    checkTask: function (driver, count, login, password, firstName, lastName, phase) {
-        basic.login(driver, login, password, firstName, lastName, phase);
-        basic.menu(driver, 'Inbox', phase);
-        driver.sleep(basic.SLOW_OPERATION);
-        driver.findElements({css:'tr[typeof="v-wf:DecisionForm s-wf:UserTaskForm"]'}).then(function (result) {
-            assert.equal(count, result.length);
-        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName);});
-        welcome(driver);
-        basic.logout(driver, phase);
-    },
-
-    /**
      * Ответ на сообщение
      * @param driver
      * @param decision - номер решения
@@ -61,6 +41,8 @@ module.exports = {
         welcome(driver);
         basic.logout(driver, phase);
     },
+
+
     /**
      * Проверка статуса маршрута
      * @param driver
@@ -89,6 +71,26 @@ module.exports = {
     },
 
     /**
+     * Проверка сообщений
+     * @param driver
+     * @param count - количество сообщений
+     * @param login       |
+     * @param password    | Данные для входа
+     * @param firstName   |
+     * @param lastName    |
+    */
+    checkTask: function (driver, count, login, password, firstName, lastName, phase) {
+        basic.login(driver, login, password, firstName, lastName, phase);
+        basic.menu(driver, 'Inbox', phase);
+        driver.sleep(basic.SLOW_OPERATION);
+        driver.findElements({css:'tr[typeof="v-wf:DecisionForm s-wf:UserTaskForm"]'}).then(function (result) {
+            assert.equal(count, result.length);
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName);});
+        welcome(driver);
+        basic.logout(driver, phase);
+    },
+
+    /**
      * Проверка счетчиков задач
      * @param driver
      * @param inbox - счетчик входящих
@@ -99,29 +101,30 @@ module.exports = {
      * @param firstName   |
      * @param lastName    |
      */
-    checkTasks: function (driver, inbox, outbox, completed, login, password, firstName, lastName) {
+    checkTasks: function (driver, inbox, outbox, completed, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName);
         basic.menu(driver, 'Inbox');
-        driver.sleep(basic.SLOW_OPERATION);
+        driver.sleep(basic.FAST_OPERATION * 2);
         driver.findElement({css:'a[about="v-ft:Inbox2"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Inbox messages")});
+            .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Inbox messages")});
         driver.findElement({css:'span[property="v-ft:inboxCount"]'}).getText().then(function (result) {
             assert.equal(inbox, result);
-        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of inbox messages is wrong: expected = " + inbox);});
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of inbox messages is wrong: expected = " + inbox);});
+        driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'a[about="v-ft:Outbox2"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Outbox messages")});
         driver.findElement({css:'span[property="v-ft:outboxCount"]'}).getText().then(function (result) {
-            assert.equal(inbox, result);
-        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of inbox messages is wrong: expected = " + inbox);});
+            assert.equal(outbox, result);
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of outbox messages is wrong: expected = " + outbox);});
+        driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'a[about="v-ft:Completed2"]'}).click()
-            .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Completed messages")});
+            .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Completed messages")});
         driver.findElement({css:'span[property="v-ft:completedCount"]'}).getText().then(function (result) {
-            assert.equal(inbox, result);
-        }).thenCatch(function (e) {basic.errorHandler(e, "Seems number of inbox messages is wrong: expected = " + inbox);});
+            assert.equal(completed, result);
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of completed messages is wrong: expected = " + completed);});
         welcome(driver);
         basic.logout(driver);
     }
-
 };
 
 
