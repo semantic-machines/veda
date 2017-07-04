@@ -22,8 +22,8 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     deleteAll.present( $("#delete-all", tmpl), new veda.IndividualModel("v-ui:LabelTemplate") );
 
     var tree = {};
-    var linkTmpl = new veda.IndividualModel("v-ui:ClassNameLabelLinkEditTemplate");
-    var labelTmpl = new veda.IndividualModel("v-ui:ClassNameLabelTemplate");
+    var linkTmpl = new veda.IndividualModel("v-ui:DraftLinkEditTemplate");
+    var labelTmpl = new veda.IndividualModel("v-ui:DraftTemplate");
 
     if (veda.drafts.length) {
       Object.keys(veda.drafts).map(function (uri) {
