@@ -5,42 +5,45 @@ var webdriver = require('selenium-webdriver'),
 
 
 /**
- * 1. Open Page -> login(as karpovrt);
- * 2. Create task(bychinat - executor) -> Send task;
- * 3. Check tasks(as bychinat)(Inbox: 0, Outbox: 1, Completed: 0) -> Check tasks(as bychinat) (Inbox: 1, Outbox: 0, Completed: 0);
- * 4. Accept task(as bychinat) -> Check tasks(as bychinat)(Inbox: 0, Outbox: 0, Completed: 0) ->
+ * 0. Open Page -> login(as karpovrt);
+ * 1. Create task(bychinat - executor) -> Send task;
+ * 2. Check tasks(as bychinat)(Inbox: 0, Outbox: 1, Completed: 0) -> Check tasks(as bychinat) (Inbox: 1, Outbox: 0, Completed: 0);
+ * 3. Accept task(as bychinat) -> Check tasks(as bychinat)(Inbox: 0, Outbox: 0, Completed: 0) ->
  *    -> Check tasks(as bychinat) (Inbox: 0, Outbox: 0, Completed: 1);
  *
- * 1. Открываем страницу -> Входим в систему под karpovrt;
- * 2. Создаем задачу(bychinat - исполнитель) -> Отправляем задачу;
- * 3. Проверяем количество задач
- * 4.
+ * 0. Открываем страницу -> Входим в систему под karpovrt;
+ * 1. Создаем задачу(bychinat - исполнитель) -> Отправляем задачу;
+ * 2. Проверяем количество задач
+ * 3.
  *
  */
 
 
-basic.getThreeDrivers().forEach(function (drv) {
+basic.getDrivers().forEach(function (drv) {
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
-    basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest');
-    basic.execute(driver, "click", 'span[about="v-s:SendTask"]', "Cannot click on SendTask button");
+    //PHASE#1: Create task
+    basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest', 1);
+    basic.execute(driver, "click", 'span[about="v-s:SendTask"]', "****** PHASE#1 > Create task : ERROR = Cannot click on SendTask button");
     basic.execute(driver, "click", 'div[typeof="s-wf:ComplexRouteTest"] ul[id="standard-tasks"]');
-    basic.execute(driver, "sendKeys", 'veda-control[rel="v-s:hasAppointment"] input[id="fulltext"]',
-        "Cannot fill Appointment field", "Aдминистратор4 : Аналитик");
-    //Dropdown
+    basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Администратор4', 'Администратор4 : Аналитик', 1);
     basic.execute(driver, "sendKeys", 'veda-control[property="rdfs:comment"] textarea[class="form-control"]',
-        "Cannot fill Comment field", timeStamp);
-    driver.sleep(basic.FAST_OPERATION);
-    basic.execute(driver, "click", 'button[id="Send"]', "Cannot click on Send button");
+        "****** PHASE#1 > Create task : ERROR = Cannot fill Comment field", timeStamp);
+    driver.sleep(basic.FAST_OPERATION * 2);
+    basic.execute(driver, "click", 'div[class="modal-dialog modal-lg"] button[id="send"]', "****** PHASE#1 > Create task : ERROR = Cannot click on Send button");
+    basic.logout(driver, 1);
 
-    complexRoute.checkTasks(driver, 1, 0, 0, 'bychinat', '123', '4', 'Администратор4');
-    complexRoute.checkTasks(driver, 0, 1, 0, 'karpovrt', '123', '2', 'Администратор2');
+    //PHASE#2: Check tasks
+    complexRoute.checkTasks(driver, 1, 0, 0, 'bychinat', '123', '4', 'Администратор4', 2, 2);
+    complexRoute.checkTasks(driver, 0, 1, 0, 'karpovrt', '123', '2', 'Администратор2', 2, 2);
 
-    complexRoute.acceptTask(driver, 0, '-', '-', 'bychinat', '123', '4', 'Администратор4');
-    complexRoute.checkTasks(driver, 0, 0, 1, 'bychinat', '123', '4', 'Администратор4');
-    complexRoute.checkTasks(driver, 0, 0, 0, 'karpovrt', '123', '2', 'Администратор2');
+    //PHASE#3: Accept + Check
+    complexRoute.acceptTask(driver, 0, '-', '-', 'bychinat', '123', '4', 'Администратор4', 3, 2);
+    complexRoute.checkTasks(driver, 0, 0, 1, 'bychinat', '123', '4', 'Администратор4', 3, 2);
+    complexRoute.checkTasks(driver, 0, 0, 0, 'karpovrt', '123', '2', 'Администратор2', 3, 2);
 
 
     driver.quit();
