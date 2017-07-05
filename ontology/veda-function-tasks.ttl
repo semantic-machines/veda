@@ -608,7 +608,7 @@ v-ft:Inbox2
   v-fs:searchBlank v-ft:InboxBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
-  v-fs:sortOrder "'v-wf:dateGiven' desc" ;
+  v-fs:sortOrder "'v-s:created' desc" ;
   v-fs:searchOnLoad true ;
 .
 v-ft:InboxBlank
@@ -627,7 +627,7 @@ v-ft:Outbox2
   v-fs:searchBlank v-ft:OutboxBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
-  v-fs:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
   v-fs:searchOnLoad true ;
 .
 v-ft:OutboxBlank
@@ -646,7 +646,7 @@ v-ft:Completed2
   v-fs:searchBlank v-ft:CompletedBlank ;
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
-  v-fs:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
   v-fs:searchOnLoad true ;
 .
 v-ft:CompletedBlank
@@ -875,7 +875,7 @@ v-ft:RelatedTasks
   rdfs:label "Связанные задачи"@ru ;
   v-fs:searchBlank v-ft:RelatedTasksBlank ;
   v-fs:searchResultTemplate v-ft:RelatedTasksResultTemplate ;
-  v-fs:sortOrder "'v-wf:from' desc,'v-wf:dateGiven' desc" ;
+  v-fs:sortOrder "'v-wf:from' desc,'v-s:created' desc" ;
   v-fs:searchOnLoad true ;
 .
 
