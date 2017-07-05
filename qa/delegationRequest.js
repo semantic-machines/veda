@@ -9,11 +9,11 @@ module.exports = {
      * @param valuteToChoose - Персона, которую надо выбрать для делегирования
      * @param phase - текущая фаза теста
     */
-    createRequestDelegation: function (driver, valueToSearch, valueToChoose, phase) {
+    createRequestDelegation: function (driver, valueToSearch, valueToChoose, delegatedPosition, phase) {
         basic.openCreateDocumentForm(driver, 'Заявка на делегирование для пользователя', 'v-s:RequestDelegationUser', phase);
 
         driver.executeScript("document.querySelector('#positions').scrollIntoView(true);");
-        basic.execute(driver, 'click', 'div[id="positions"] input[id="td:Analyst1"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'Аналитик' position");
+        basic.execute(driver, 'click', 'div[id="positions"] input[id="' + delegatedPosition + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'Аналитик' position");
 
         basic.execute(driver, 'sendKeys', 'veda-control[rel="v-s:delegate"] input[id="fulltext"]', "****** PHASE#" + phase + " : ERROR = Cannot find attribute 'rel=v-s:delegate'", valueToSearch);
         driver.sleep(basic.FAST_OPERATION);
