@@ -432,3 +432,19 @@ v-s:WorkMode
   rdfs:label "Режим работы"@ru ;
   rdfs:label "WorkMode"@en ;
 .
+
+#----------------------------------РАСПОРЯДИТЕЛЬНЫЙ_ДОКУМЕНТ-----------------------
+v-s:Decree
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:label "Decree"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:title

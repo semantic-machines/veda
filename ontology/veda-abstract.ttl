@@ -1101,7 +1101,7 @@ v-s:signedBy
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Подписавший"@ru ;
   rdfs:label "Signed by"@en ;
-  rdfs:range xsd:string ;
+  rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:sheetsCount
