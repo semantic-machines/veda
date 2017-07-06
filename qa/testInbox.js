@@ -26,15 +26,18 @@ function sendTask(driver, valueToSearch, valueToChoose) {
 /**
  * 0. Open Page -> login(as karpovrt);
  * 1. Create task(bychinat - executor) -> Send task;
- * 2. Check tasks(as karpovrt)(Inbox: 0, Outbox: 1, Completed: 0) -> Check tasks(as bychinat) (Inbox: 1, Outbox: 0, Completed: 0);
- * 3. Accept task(as bychinat) -> Check tasks(as bychinat)(Inbox: 0, Outbox: 0, Completed: 0) ->
- *    -> Check tasks(as kaprovrt) (Inbox: 0, Outbox: 0, Completed: 1);
+ * 2. Check tasks(as karpovrt)(Inbox: 2, Outbox: 3, Completed: 0) -> Check tasks(as bychinat) (Inbox: 1, Outbox: 0, Completed: 0);
+ * 3. Accept task(as bychinat) -> Check tasks(as bychinat)(Inbox: 0, Outbox: 0, Completed: 1) ->
+ *    -> Check tasks(as kaprovrt) (Inbox: 2, Outbox: 2, Completed: 0) -> Accept task(as karpovrt) -> Check tasks(as bychinat)(Inbox: 0, Outbox: 0, Completed: 1) ->
+ *    -> Check tasks(as kaprovrt) (Inbox: 1, Outbox: 1, Completed: 1) -> Accept task(as bychinat) -> Check tasks(as bychinat)(Inbox: 0, Outbox: 0, Completed: 1) ->
+ *    -> Check tasks(as kaprovrt) (Inbox: 0, Outbox: 0, Completed: 2)
  *
  * 0. Открываем страницу -> Входим в систему под karpovrt;
  * 1. Создаем задачу(bychinat - исполнитель) -> Отправляем задачу;
- * 2. Проверяем количество задач(bychinat(1; 0; 0), karpovrt(0; 1; 0))
- * 3. Исполняем задачу(за bychinat) -> Проверяем количество задач(bychinat(0; 0; 0), karpovrt(0; 0; 1));
- *
+ * 2. Проверяем количество задач(bychinat(1; 0; 0), karpovrt(2; 3; 0))
+ * 3. Исполняем задачу(за bychinat) -> Проверяем количество задач(bychinat(0; 0; 1), karpovrt(2; 2; 0)) -> 
+ *    -> Исполняем задачу(за karpovrt) -> Проверяем количество задач(bychinat(0; 0; 1), karpovrt(1; 1; 1)) ->
+ *    -> Исполняем задачу(за karpovrt) -> Проверяем количество задач(bychinat(0; 0; 1), karpovrt(0; 0; 2));
  */
 
 
