@@ -99,7 +99,7 @@ class VedaModule
 
         if (prepare_batch_queue.isReady)
         {
-            prepare_batch_cs = new Consumer(prepare_batch_queue, tmp_path, process_name, log);
+            prepare_batch_cs = new Consumer(prepare_batch_queue, tmp_path, process_name, Mode.RW, log);
             if (!prepare_batch_cs.open(is_open_exists_batch))
             {
                 log.trace("not found uncompleted batch");
@@ -151,10 +151,10 @@ class VedaModule
             main_queue.open();
         }
 
-        main_cs = new Consumer(main_queue, queue_db_path, process_name, log);
+        main_cs = new Consumer(main_queue, queue_db_path, process_name, Mode.RW, log);
         main_cs.open();
 
-        main_cs_prefetch = new Consumer(main_queue, queue_db_path, process_name ~ "_prefetch", log);
+        main_cs_prefetch = new Consumer(main_queue, queue_db_path, process_name ~ "_prefetch", Mode.RW, log);
         main_cs_prefetch.open();
 
         // attempt open [prepareall] queue
