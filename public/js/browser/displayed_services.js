@@ -8,11 +8,11 @@ veda.Module(function DisplayedServices(veda) { "use strict";
 
   // Autoupdate displayed individuals that were changed on server
 
-  var updateService = new veda.UpdateService();
-
   veda.on("started", function () {
+    var updateService = new veda.UpdateService();
     updateService.start();
   }).on("logout", function () {
+    var updateService = new veda.UpdateService();
     updateService.stop();
   });
 
@@ -24,6 +24,7 @@ veda.Module(function DisplayedServices(veda) { "use strict";
 
   function subscribeDisplayed(template) {
     var individual = this;
+    var updateService = new veda.UpdateService();
     updateService.subscribe(individual.id);
 
     template.one("remove", function () {

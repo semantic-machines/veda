@@ -18,7 +18,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var self = riot.observable(this);
 
-    var address = "ws://" + location.hostname + ":8088/ccus",
+    var address = (new veda.IndividualModel("cfg:ClientUpdateServiceAddress"))["rdf:value"][0],
         socket,
         msgTimeout,
         msgDelay = 1000,
