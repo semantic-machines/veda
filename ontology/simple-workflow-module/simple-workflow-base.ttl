@@ -2375,6 +2375,202 @@ if (doc) {
       routes['review'][simple+'comment'] = [new String('Проведите мероприятие. Сформируйте отчет')];
     }
   }
+    //--------------------------------------------------------ЗАЯВКА-НА-ПРОПУСК
+
+  if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
+
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Регистратор документов СЛПК
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+  }
+
+
+
+//---------------------------------------------------------Распорядительный документ
+  if (doc['rdf:type'][0].id === "mnd-s:Decree") {
+
+    routes['informing'][simple+'participant'] = doc["v-s:initiator"] ;
+    routes['informing'][simple+'visible'] = [true];
+    routes['informing'][simple+'editable'] = [true];
+    routes['informing'][simple+'comment'] = [new String('Уведомление о начале процесса согласования документа')];
+
+
+    routes['sign'][simple+'participant'] = doc["v-s:signedBy"] ;
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+
+    var aprovalDecree ;
+//3.1
+    if (doc.hasValue("mnd-s:hasDecreeKind", "d:9664874293574b79af624f01e3c091cd") //(Распоряжение по ГО)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:391362e32a2b48199ef4bebe9b7a611a") //(Приказ по ГО)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:b7a958be3d14437f98ab414c8ce88977") //(Приказ по основной деятельности)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:2283f9f186794145bd6c8e3229f7a009") //(Распоряжение по основной деятельности)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+//3.2
+
+    } else if(doc.hasValue("mnd-s:hasDecreeKind", "d:586ab1e3ea554a92ab6ebb64d2df8c41") //(Распоряжение по кадровой работе)
+             || doc.hasValue("mnd-s:hasDecreeKind", "d:e5753b58168843e28ad73855c07b8cff")// (Приказ по кадровой работе)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:mondi_position_70000238")]; //(Начальник отдела кадров)
+//3.3
+
+    } else if(doc.hasValue("mnd-s:hasDecreeKind", "d:ce99f0a34bbb4813ac88d3dfe7699a1a") //(Приказ Распоряжение по кадрам. Верхне-Вычегодский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:650a386e-d0ed-4338-9a83-ca183d16617e")]; //(Регистратор распоряжений Верхне-Вычегодский участок)
+//3.4
+    } else if(doc.hasValue("mnd-s:hasDecreeKind", "d:e5061f4736d3401899fd172f67c18f84") //(Приказ Распоряжение по кадрам. Верхне-Вычегодский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:130e833c-1d6b-4e2f-b70f-6ca5b62ce7fd")]; //(Регистратор распоряжений Койгородский участок)
+    }
+//3.5
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:c9dc77d387ff43ac8e88766aa66c7cae") //(Приказ Распоряжение по кадрам. Корткеросский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:238916b4-5aac-42f8-9c6c-4fabb2507c29")]; //(Регистратор распоряжений Корткеросский участок)
+    }
+//3.6
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:ca1d0c4ca12e44ba8ad7e3471970e67c") //(Приказ Распоряжение по кадрам. Ношульский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:9a9db2fb-9546-4d44-9501-56dd5bb23653")]; //(Регистратор распоряжений Ношульский участок)
+    }
+//3.7
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:6f64ab3a995c4851865136e58e88f7ed") //(Приказ Распоряжение по кадрам. Сысольский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:33bec470-8d6d-4b07-b522-4a9c0fd6f6d2")]; //(Регистратор распоряжений Сысольский участок)
+    }
+//3.8
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:337906d27e484923aa8b4400e6fdc7a3") //(Приказ Распоряжение по кадрам. Удорский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:350a5e64-d4a5-4cb8-b875-ec4157ba55bf")]; //((Регистратор распоряжений Удорский участок)
+    }
+//3.9
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:c0d293bfced442d8864ba2aa450b8604") //(Приказ Распоряжение по кадрам. Усть-Куломский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:4c26f5b2-63bf-4465-84c0-07d34ce7e8ab")]; //(Регистратор распоряжений Усть-Куломский участок)
+    }
+//3.10
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:6b0f6cc7c96b49e4b5566316e75ab81e") //(Распоряжение по ПБ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:beec6105-4511-4c63-861a-d6cde0dfc58b")]; //(Регистратор распоряжений ПБ)
+    }
+//3.11
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:4a293c55b37e492fad852401349b3072") //(Распоряжение по ПЦ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:e88d9685-d02f-46bc-8e23-7038f018e2bd")]; //(Регистратор распоряжений ПЦ)
+    }
+//3.12
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:43b31005c8754e77ab2d472c907a81cd") //(Распоряжение по СРТ УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:c6b2f375-755f-477b-a5a0-63719c46a75f")]; //(Регистратор распоряжений СРТ УЛО)
+    }
+//3.13
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:cd74acdd370a4647851e588ab49e227f") //(Распоряжение по УЛ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:dece060b-d010-46e5-95e4-e69244f43e53")]; //(Регистратор распоряжений УЛ)
+    }
+//3.14
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:d67d40855c4c492e93f1f8e979b32915") //(Распоряжение по УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:424e1e88-ed4e-424d-abc7-a829c0f4d11c")]; //(Регистратор распоряжений УЛО)
+    }
+//3.15
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:93a91c7be4f84289b3a618ab4aaf9c99") //(Распоряжение по УПБ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:8d5a2a33-d646-4006-89ab-bc97064fcc24")]; //(Регистратор распоряжений УПБ)
+    }
+//3.16
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:e5e9d7334e7142b98ce82b53aa9f1b4e") //(Распоряжение по УТТО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:869ca4e0-eb52-4612-a0b8-a66659720c24")]; //(Регистратор распоряжений УТТО)
+    }
+//3.17
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:506814f2866f4adc9f5effe3cbd75dab") //(Распоряжение по ЭП)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:1ca57ded-c051-4ca4-bc33-fb8994b04d8f")]; //(Регистратор распоряжений ЭП)
+    }
+//3.18
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:5f3338bf470448958167688853db0b4a") //(Распоряжение по ЛПО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:2474d195-0bc4-4bc6-83d4-b4a4eb2fb350")]; //(Регистратор распоряжений ЛПО)
+    }
+//3.19
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:40fec391a071473bbafda39e26839cd0") //(Распоряжение по СЛЗ УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:aa4374af-380a-4f19-a415-4c32d8d1b3e4")]; //(Регистратор распоряжений по СЛЗ УЛО)
+    }
+//3.20
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:b79019ea82e24aaa94ec226ad10f7a46") //(Распоряжение по САТ УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:f63d88c8-42c7-4a7b-a1b4-57204bc86541")]; //(Регистратор распоряжений по CАТ УЛО)
+    }
+//3.21
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:897c15bc7cdf425c8106775ef31ecb17") //(Распоряжение по САТ СЭБ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:06e9adee-8349-4ec0-8095-7a7b142c9709")]; //(Регистратор распоряжений по СЭБ )
+    }
+//3.22
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:9c171b39761749dab3ca7891b67bf531") //(Распоряжение по ОООС)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:6f55fed4-5eff-4afe-b00e-e7df7c53be9e")]; //(Регистратор распоряжений ОООС)
+    }
+//3.23
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:61caa917c8584832ae8856ec9d982d41") //(Распоряжение по ТС)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:8c81cb04-be5c-442f-bfa2-49f9f47458c2")]; //(Регистратор распоряжений ТС)
+    }
+//3.24
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:106cf5f7d76b4640a2bd771e05845c4b") //(Распоряжение по УИП )
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:4f6f2f60-a0cd-49bc-9b0d-d0166909285a")]; //(Регистратор распоряжений УИП )
+    }
+//3.25
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:d55ba7ababf846eda58e0940b4172ac8") //(Распоряжение по УЗ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:1b69d188-8268-4c22-8deb-3bbc0abd249f")]; //(Регистратор распоряжений УЗ)
+    }
+//3.25
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:ed97548ed45047bcaf5de9ce05de205c") //(Распоряжение по УФ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:6990c8e9-f6f4-423d-ac46-b892f64ff3df")]; //(Регистратор распоряжений по УФ)
+    } else { aprovalDecree = []; }
+
+    routes['approval'][simple+'participant'] = aprovalDecree ;
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [false];
+    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+
+
+
+
+
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
