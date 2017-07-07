@@ -110,18 +110,27 @@ module.exports = {
         driver.findElement({css:'span[property="v-ft:inboxCount"]'}).getText().then(function (result) {
             assert.equal(inbox, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of inbox messages is wrong: expected = " + inbox);});
+        driver.findElements({css:'a[property="rdfs:label"]'}).then(function(result) {
+            assert.equal(inbox, result.length - 3);
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of displayed inbox messages in is wrong: expected = " + inbox);});
         driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'a[about="v-ft:Outbox2"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Outbox messages")});
         driver.findElement({css:'span[property="v-ft:outboxCount"]'}).getText().then(function (result) {
             assert.equal(outbox, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of outbox messages is wrong: expected = " + outbox);});
+        driver.findElements({css:'a[property="rdfs:label"]'}).then(function(result) {
+            assert.equal(outbox, result.length - 3);
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of displayed outbox messages in is wrong: expected = " + outbox);});
         driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'a[about="v-ft:Completed2"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Completed messages")});
         driver.findElement({css:'span[property="v-ft:completedCount"]'}).getText().then(function (result) {
             assert.equal(completed, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of completed messages is wrong: expected = " + completed);});
+        driver.findElements({css:'a[property="rdfs:label"]'}).then(function(result) {
+            assert.equal(completed, result.length - 3);
+        }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of displayed completed messages in is wrong: expected = " + completed);});
         welcome(driver);
         basic.logout(driver);
     }
