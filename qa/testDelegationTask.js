@@ -51,7 +51,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.logout(driver, 3);
 
     //PHASE#4: Check person
-    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 4);
+    //complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 4);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 4);
     basic.menu(driver, 'Inbox', 4);
     driver.sleep(basic.SLOW_OPERATION);
