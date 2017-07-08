@@ -52,7 +52,20 @@ basic.getDrivers().forEach(function (drv) {
 
     //PHASE#4: Check person
     complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 4);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 4);
+    basic.login(driver, login, password, firstName, lastName, 4);
+    basic.menu(driver, 'Inbox', 4);
+    driver.sleep(basic.SLOW_OPERATION);
+    driver.findElement({css:'span[about="td:CommercialDirector"]'}).click()
+        .thenCatch(function (e) {basic.errorHandler(e, "Cannot click on 'td:CommercialDirector' actor")});
+    driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#4 : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
+        function(result){basic.clickUp(result);});
+    basic.execute(driver, 'click', 'div[class="radio decision"] input[value="0"]', "****** PHASE#4 : ERROR = Cannot click on '0' decision");
+    driver.sleep(basic.FAST_OPERATION);
+    driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
+    basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#4 : ERROR = Cannot click on 'Ok' button");
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
+    basic.logout(driver, 4);
+    //complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 4);
     complexRoute.checkTask(driver, '0', 'bychinat', '123', '4', 'Администратор4', 4);
     complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2', 4);
     driver.quit();
