@@ -39,26 +39,30 @@ defaults
 frontend proxy
   bind *:80
   mode http
-  acl acl-query url_beg -i query
-  use_backend query if acl-query
+  acl acl_query path_beg /query
+  acl acl_ccus path_beg /ccus
+  use_backend query if acl_query
+  use_backend ccus if acl_ccus
   default_backend web
 
 backend web
   mode http
   balance roundrobin
   option forwardfor
-  option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-  server web01 127.0.0.1:8080 check
+  server web8080 127.0.0.1:8080
+
+backend ccus
+  balance roundrobin
+  server ccus8088 127.0.0.1:8088
 
 backend query
   mode http
   option forwardfor
-  option httpchk HEAD / HTTP/1.1\r\nHost:localhost
   balance roundrobin
-  server query00 127.0.0.1:8080 check
-#  server query01 127.0.0.1:8081 check
-#  server query02 127.0.0.1:8082 check  
-#  server query03 127.0.0.1:8083 check
+  server query8080 127.0.0.1:8080
+  server query8081 127.0.0.1:8081
+  server query8082 127.0.0.1:8082
+  server query8083 127.0.0.1:8083
 
 listen stats
   bind *:20000
