@@ -1,8 +1,8 @@
-var webdriver = require('selenium-webdriver'),
-    basic = require('./basic.js'),
-    person = require('./person.js'),
+var basic = require('./basic.js'),
     delegationRequest = require('./delegationRequest.js'),
-    timeStamp = ''+Math.round(+new Date()/1000);
+    person = require('./person.js'),
+    timeStamp = ''+Math.round(+new Date()/1000),
+    webdriver = require('selenium-webdriver');
 
 /**
  * Поиск элементов
