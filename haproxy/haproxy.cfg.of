@@ -49,7 +49,8 @@ backend web
   mode http
   balance roundrobin
   option forwardfor
-  server web8080 127.0.0.1:8080
+  option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+  server web8080 127.0.0.1:8080 check
 
 backend ccus
   balance roundrobin
@@ -57,12 +58,13 @@ backend ccus
 
 backend query
   mode http
-  option forwardfor
   balance roundrobin
-  server query8080 127.0.0.1:8080
-  server query8081 127.0.0.1:8081
-  server query8082 127.0.0.1:8082
-  server query8083 127.0.0.1:8083
+  option forwardfor
+  option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+  server query8080 127.0.0.1:8080 check
+  server query8081 127.0.0.1:8081 check
+  server query8082 127.0.0.1:8082 check
+  server query8083 127.0.0.1:8083 check
 
 listen stats
   bind *:20000
