@@ -124,12 +124,8 @@ var task = document,
 if ( !isNew && !isDeleted && !isCompleted ) { return; }
 
 var today = new Date(),
-    monday = new Date(),
-    sunday = new Date();
-monday.setDate(monday.getDate() - monday.getDay() + 1);
-sunday.setDate(sunday.getDate() + 7 - sunday.getDay());
-monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
-sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
+    monday = getMonday(today),
+    sunday = getSunday(today);
 var isThisWeekTask = hasValue(task, "v-wf:dateGiven") && (monday < task["v-wf:dateGiven"][0].data && task["v-wf:dateGiven"][0].data < sunday);
 
 // print("task =", task_uri, "| from =", from_uris, "| to =", to_uris, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted, "| isThisWeekTask =", isThisWeekTask);
@@ -193,6 +189,18 @@ from_uris && from_uris.map(function (from_uri) {
 
 //print("************************** END **************************");
 
+function getMonday(date) {
+  var monday = new Date(date);
+  var day = monday.getDay();
+  var diff = monday.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  monday.setDate(diff); monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+  return monday;
+}
+function getSunday(date) {
+  var monday = getMonday(date);
+  return new Date(monday.valueOf() + 604799999);
+}
+
 function createTaskCounter(owner) {
   var uri = "d:taskCounter_" + owner.split(':').join('_'),
       inbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "')"),
@@ -203,13 +211,8 @@ function createTaskCounter(owner) {
       completedCount = completed[0] ? completed.length : 0;
 
   var today = new Date(),
-      monday = new Date(),
-      sunday = new Date();
-
-  monday.setDate(monday.getDate() - monday.getDay() + 1);
-  sunday.setDate(sunday.getDate() + 7 - sunday.getDay());
-  monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
-  sunday.setHours(23); sunday.setMinutes(59); sunday.setSeconds(59); sunday.setMilliseconds(999);
+      monday = getMonday(today),
+      sunday = getSunday(today);
 
   var inboxWeek = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "' && 'v-wf:dateGiven' == [" + monday.toISOString() +  "," + sunday.toISOString() + "])"),
       inboxWeekCount = inboxWeek[0] ? inboxWeek.length : 0;
@@ -574,9 +577,14 @@ v-ft:TaskCounterModel
   rdfs:label "Модель v-ft:TaskCounter"@ru ;
   v-s:script """
 // Force update outdated counter
-var monday = new Date();
-monday.setDate(monday.getDate() - monday.getDay() + 1);
-monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+function getMonday(date) {
+  var monday = new Date(date);
+  var day = monday.getDay();
+  var diff = monday.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  monday.setDate(diff); monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+  return monday;
+}
+var monday = getMonday(new Date());
 var created = this["v-s:created"] && this["v-s:created"][0];
 var forceUpdate = !created || created < monday;
 if ( forceUpdate ) {
