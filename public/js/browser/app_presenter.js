@@ -16,6 +16,31 @@ veda.Module(function AppPresenter(veda) { "use strict";
     location.reload();
   });
 
+  // Route to resource ttl view on Ctrl + Alt + Click
+  $("body").on("click", "[resource][typeof], [about]", function (e) {
+    var uri = $(this).attr("resource") || $(this).attr("about");
+    var hash = "#/" + uri;
+    if (e.altKey && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(function () {
+        riot.route(hash +  "//v-ui:generic");
+      });
+    } else if (e.altKey && e.ctrlKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(function () {
+        riot.route(hash +  "//v-ui:ttl");
+      });
+    } else if (e.altKey && e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(function () {
+        riot.route(hash +  "//v-ui:json");
+      });
+    }
+  });
+
   // Prevent empty links routing
   $("body").on("click", "[href='']", function (e) {
     e.preventDefault();
@@ -40,7 +65,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
   // Triggered in veda.init()
   veda.one("started", function () {
-    var welcome = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
+    var welcome;
+    if (veda.user.hasValue("v-s:origin", "External User")) {
+      welcome = (new veda.IndividualModel("cfg:WelcomeExternal"))["rdf:value"][0];
+    } else {
+      welcome = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
+    }
     // Router function
     riot.route( function (hash) {
       if ( !hash ) { return welcome.present("#main"); }
@@ -52,7 +82,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
     });
   });
   veda.on("started", function () {
-    var layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
+    var layout;
+    if (veda.user.hasValue("v-s:origin", "External User")) {
+      layout = (new veda.IndividualModel("cfg:LayoutExternal"))["rdf:value"][0];
+    } else {
+      layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
+    }
     layout.present("#app");
     riot.route(location.hash);
   });

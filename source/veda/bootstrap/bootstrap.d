@@ -137,7 +137,25 @@ void main(string[] args)
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
                              {
                                  syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no, "Set frontend ports, example: --http_ports=8081,8082");
+                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no,
+                                               "Set frontend http ports, example: --http_ports=8081,8082");
+                             });
+    }
+    catch (ArgumentParserException ex)
+    {
+        stderr.writefln(ex.msg);
+        return;
+    }
+
+    string ext_user_port_str = "";
+
+    try
+    {
+        ArgumentParser.parse(args, (ArgumentSyntax syntax)
+                             {
+                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
+                                 syntax.option('e', "ext_usr_http_port", &ext_user_port_str, Required.no,
+                                               "Set external user http port, example: --ext_usr_http_port=8082");
                              });
     }
     catch (ArgumentParserException ex)
@@ -166,7 +184,8 @@ void main(string[] args)
 
     string[] wr_components =
     [
-        "acl_preparer", "fanout_email", "fanout_sql_np", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp", "subject_manager",
+        "acl_preparer", "fanout_email", "fanout_sql_np", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp",
+        "subject_manager",
         "ticket_manager", "acl_preparer"
     ];
 
@@ -256,6 +275,9 @@ void main(string[] args)
                 string   ml = "veda-webserver";
                 sargs = [ "./" ~ ml, "--http_port=" ~ port ];
 
+                if (ext_user_port_str.length > 0)
+                    sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
+
                 auto _logFile = File("logs/" ~ ml ~ port ~ "-stderr.log", "w");
                 writeln("start " ~ ml);
 
@@ -316,61 +338,68 @@ void main(string[] args)
             }
         }
 
-        writeln("watch dog start");
-        is_next = true;
-        while (is_next)
+        if (need_remove_ontology == true || need_reload_ontology == true)
         {
-            core.thread.Thread.yield();
-            core.thread.Thread.sleep(dur!("seconds")(10));
-
-            ProcessInfo[ int ] processes;
-            auto args_2_pid = get_processes_info(started_modules, processes);
-
-            foreach (ml; started_modules)
+            exit_code = wait(server_pid);
+        }
+        else
+        {
+            writeln("watch dog start");
+            is_next = true;
+            while (is_next)
             {
-                //writeln("check module ", ml);
-                int pid;
-                pid = args_2_pid.get(ml, -1);
+                core.thread.Thread.yield();
+                core.thread.Thread.sleep(dur!("seconds")(10));
 
-                if (pid == -1)
+                ProcessInfo[ int ] processes;
+                auto args_2_pid = get_processes_info(started_modules, processes);
+
+                foreach (ml; started_modules)
                 {
-                    writeln("not found running module ", ml, " (", pid, ")");
-                    //string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
-                    //writeln ("lock_path=", lock_path);
-                    //remove (lock_path);
+                    //writeln("check module ", ml);
+                    int pid;
+                    pid = args_2_pid.get(ml, -1);
 
-                    //auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
-                    //writeln("restart " ~ ml);
-                    //auto _pid = spawnProcess(ml.split (" "),
-                    //                         std.stdio.stdin,
-                    //                         std.stdio.stdout,
-                    //                         _logFile, env, Config.suppressConsole);
-
-                    is_next = false;
-                    break;
-                }
-                else
-                {
-                    ProcessInfo pi = processes[ pid ];
-                    if (pi.stat == "Z+" || pi.stat == "Z")
+                    if (pid == -1)
                     {
-                        writeln("defunct module ", pi, " (", pid, ")");
-                        kill(pi.pid, SIGKILL);
-
-                        //              string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
-                        //              writeln ("lock_path=", lock_path);
-                        //              remove (lock_path);
-
+                        writeln("not found running module ", ml, " (", pid, ")");
+                        //string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
+                        //writeln ("lock_path=", lock_path);
+                        //remove (lock_path);
 
                         //auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
                         //writeln("restart " ~ ml);
                         //auto _pid = spawnProcess(ml.split (" "),
                         //                         std.stdio.stdin,
                         //                         std.stdio.stdout,
-                        //                        _logFile, env, Config.suppressConsole);
+                        //                         _logFile, env, Config.suppressConsole);
 
                         is_next = false;
                         break;
+                    }
+                    else
+                    {
+                        ProcessInfo pi = processes[ pid ];
+                        if (pi.stat == "Z+" || pi.stat == "Z")
+                        {
+                            writeln("defunct module ", pi, " (", pid, ")");
+                            kill(pi.pid, SIGKILL);
+
+                            //              string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
+                            //              writeln ("lock_path=", lock_path);
+                            //              remove (lock_path);
+
+
+                            //auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
+                            //writeln("restart " ~ ml);
+                            //auto _pid = spawnProcess(ml.split (" "),
+                            //                         std.stdio.stdin,
+                            //                         std.stdio.stdout,
+                            //                        _logFile, env, Config.suppressConsole);
+
+                            is_next = false;
+                            break;
+                        }
                     }
                 }
             }

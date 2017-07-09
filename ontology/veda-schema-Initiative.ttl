@@ -132,6 +132,7 @@ v-s:Project
   rdfs:subClassOf v-s:Initiative ;
   rdfs:subClassOf v-s:WorkGroup ;
   rdfs:subClassOf v-s:Maintained ;
+  rdfs:subClassOf v-s:Contractual ;
   rdfs:label "Project"@en ;
   rdfs:label "Проект"@ru ;
 .
@@ -422,7 +423,7 @@ v-s:WorkGroup
 v-s:hasMemberOfWorkGroup
   rdf:type owl:ObjectProperty ;
   rdfs:label "Участники рабочей группы"@ru ;
-  rdfs:label "Work group members"@en ;
+  rdfs:label "Working group members"@en ;
   rdfs:range v-s:MemberOfWorkGroup ;
   rdfs:domain v-s:WorkGroup ;
 .

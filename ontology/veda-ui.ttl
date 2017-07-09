@@ -842,7 +842,7 @@ v-ui:IconModalTemplate
     });
  // var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
     var tmpl = individual["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( individual["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-          
+
     if (newMode === "edit") {
       individual.present(cntr, tmpl, newMode);
       $(".actions", tmpl).remove();
@@ -915,6 +915,34 @@ v-ui:ClassNameLabelLinkEditTemplate
       $("#label", template).text(individual.id);
     }
     //# sourceURL=v-ui:ClassNameLabelLinkTemplate
+  </script>
+  """ ;
+.
+v-ui:DraftLinkEditTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон черновика со ссылкой"@ru ;
+  rdfs:label "Draft template with link"@en ;
+  v-ui:template """
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    //# sourceURL=v-ui:DraftLinkEditTemplate_post
+  </script>
+  """ ;
+.
+v-ui:DraftTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон черновика"@ru ;
+  rdfs:label "Draft template"@en ;
+  v-ui:template """
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    //# sourceURL=v-ui:DraftLinkEditTemplate_post
   </script>
   """ ;
 .
@@ -1269,6 +1297,19 @@ v-ui:FileTemplate
   """ ;
 .
 
+v-ui:FileMinTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для файла"@ru ;
+  rdfs:label "File template"@en ;
+  v-ui:template """
+<div>
+  <a href="/files/@">
+    <span about="@" property="v-s:fileName"></span>
+  </a>
+</div>
+  """ ;
+.
+
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -1479,14 +1520,14 @@ v-ui:JournalTemplate
   </style>
   <div class="row">
   <div class="col-md-10">
-    
+
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
   </div>
   <div class="col-md-2 text-right">
     <button type="button" class="action btn btn-info view -edit -search createReport0"  >
       <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
     </button>
-    </div>    
+    </div>
   </div>
   <div rel="v-s:onDocument">
     <div>
@@ -1687,7 +1728,7 @@ v-ui:PermissionStatementTemplate
       <span about="@" property="v-s:endTime"></span>
     </div>
     <div class="col-md-12">
-	<pre style="border:none;background-color:#fff;"></pre>
+      <pre style="border:none;background-color:#fff;"></pre>
     </div>
   </div>
   </div>

@@ -14,7 +14,7 @@ enum Mode
 {
     R       = 0,
     RW      = 1,
-    CURRENT = 2
+    DEFAULT = 2
 }
 
 struct Header
@@ -97,10 +97,11 @@ class Consumer
     bool    isReady;
     Queue   queue;
     string  name;
-    string path;
+    string  path;
     ulong   first_element;
     uint    count_popped;
     ubyte[] last_read_msg;
+    Mode    mode;
 
     File    *ff_info_pop_w = null;
     File    *ff_info_pop_r = null;
@@ -111,18 +112,23 @@ class Consumer
     Header header;
     CRC32  hash;
 
-    this(Queue _queue, string _path, string _name, Logger _log)
+    this(Queue _queue, string _path, string _name, Mode _mode, Logger _log)
     {
-        queue       = _queue;
-        path        = _path;
-        name        = _name;
+        queue = _queue;
+        path  = _path;
+        name  = _name;
+        mode  = _mode;
+
         log         = _log;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
     }
 
-    public bool open()
+    public bool open(bool open_only_if_exists = false, Mode _mode = Mode.DEFAULT)
     {
+        if (_mode != Mode.DEFAULT)
+            mode = _mode;
+
         if (!queue.isReady)
         {
             isReady = false;
@@ -131,10 +137,18 @@ class Consumer
 
         file_name_info_pop = path ~ "/" ~ queue.name ~ "_info_pop_" ~ name;
 
-        if (exists(file_name_info_pop) == false)
-            ff_info_pop_w = new File(file_name_info_pop, "w");
-        else
-            ff_info_pop_w = new File(file_name_info_pop, "r+");
+        if (open_only_if_exists && !exists(file_name_info_pop))
+        {
+            return false;
+        }
+
+        if (mode == Mode.RW)
+        {
+            if (exists(file_name_info_pop) == false)
+                ff_info_pop_w = new File(file_name_info_pop, "w");
+            else
+                ff_info_pop_w = new File(file_name_info_pop, "r+");
+        }
 
         ff_info_pop_r = new File(file_name_info_pop, "r");
 
@@ -158,7 +172,7 @@ class Consumer
 
     private bool put_info(bool is_sync_data)
     {
-        if (!queue.isReady || !isReady)
+        if (!queue.isReady || !isReady || mode == Mode.R)
             return false;
 
         try
@@ -232,7 +246,7 @@ class Consumer
 
     public string pop()
     {
-        if (!queue.isReady || !isReady)
+        if (!queue.isReady || !isReady || mode == Mode.R)
             return null;
 
         if (count_popped >= queue.count_pushed)
@@ -280,7 +294,7 @@ class Consumer
 
     public bool commit_and_next(bool is_sync_data)
     {
-        if (!queue.isReady || !isReady)
+        if (!queue.isReady || !isReady || mode == Mode.R)
         {
             log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
             return false;
@@ -364,7 +378,7 @@ class Queue
     {
         log         = _log;
         mode        = _mode;
-        path 		= _path; 
+        path        = _path;
         name        = _name;
         isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
@@ -401,13 +415,13 @@ class Queue
         std.file.remove(file_name_queue);
     }
 
-    public bool open(Mode _mode = Mode.CURRENT)
+    public bool open(Mode _mode = Mode.DEFAULT)
     {
         try
         {
             if (isReady == false)
             {
-                if (_mode != Mode.CURRENT)
+                if (_mode != Mode.DEFAULT)
                     mode = _mode;
 
                 //writeln("open ", text (mode));
@@ -607,10 +621,9 @@ class Queue
         put_msg(msg, type);
         put_info();
 
-		if (is_flush)
-	        flush();
+        if (is_flush)
+            flush();
     }
-
 }
 
 unittest

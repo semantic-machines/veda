@@ -283,7 +283,7 @@
     }
 
     control.datetimepicker({
-      locale: "ru",
+      locale: Object.keys(veda.user.language).length === 1 ? Object.keys(veda.user.language)[0] : 'EN',
       allowInputToggle: true,
       format: format,
       sideBySide: true,
@@ -410,26 +410,34 @@
 
     Object.keys(veda.user.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
-      var value = individual.get(property_uri).filter(function (item) {
-        // Set value language to default if undefined
-        if ( !item.language ) { item.language = veda.user.defaultLanguage; }
-        return item.language === language_name;
-      })[0];
+
       localedInput.find(".language-tag").text(language_name);
-      localedInput.find(".form-control").attr("lang", language_name).val(value);
+
+      var formControl = localedInput.find(".form-control");
+      formControl
+        .attr("lang", language_name)
+        .attr("placeholder", placeholder)
+        .on("change focusout", function () {
+          var values = control.find(".form-control").map(function () {
+            return opts.parser( this.value, this );
+          }).get();
+          individual.set(property_uri, values);
+        })
+        .keyup( function (e) {
+          if (timeout) { clearTimeout(timeout); }
+          timeout = setTimeout(keyupHandler, defaultDelay, e);
+        });
+
+      individual.get(property_uri).forEach(function (value) {
+        if ( value.language === language_name || !value.language ) {
+          formControl.val(value);
+        }
+      });
+
       control.append( localedInput );
     });
 
     var input = control.find(".form-control");
-    input.attr("placeholder", placeholder)
-      .on("change focusout", function () {
-        var value = opts.parser( this.value, this );
-        change(value);
-      })
-      .keyup( function (e) {
-        if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(keyupHandler, defaultDelay, e);
-      });
 
     individual.on(property_uri, handler);
     control.one("remove", function () {
@@ -448,43 +456,37 @@
         input.change();
       }
     }
-    function change (value) {
-      var filtered = individual.get(property_uri).filter(function (item) {
-        if ( !item.language ) { item.language = veda.user.defaultLanguage; }
-        return item.language !== value.language ;
-      });
-      individual.set(property_uri, value.length ? filtered.concat(value) : filtered);
-    }
+
     function handler (values) {
       input.each(function () {
-        if (this !== document.activeElement) {
-          return;
-        }
+        var that = this;
         var lang = this.lang;
-        var value = values.filter(function (item) {
-          // Set string language to default if undefined
-          if ( !item.language ) { item.language = veda.user.defaultLanguage; }
-          return item.language === lang;
-        })[0];
-        value = typeof value !== "undefined" ? value : "";
-        try {
-          var start = this.selectionStart;
-          var end = this.selectionEnd;
-          this.value = value;
-          this.selectionStart = start;
-          this.selectionEnd = end;
-        } catch (ex) {
-          this.value = value;
-          console.log("selectionStart/End error:", property_uri, value, typeof value);
-        }
+        individual.get(property_uri).forEach(function (value) {
+          if ( value.language === lang || !value.language ) {
+            try {
+              if (that === document.activeElement) {
+                var start = that.selectionStart;
+                var end = that.selectionEnd;
+                that.value = value;
+                that.selectionStart = start;
+                that.selectionEnd = end;
+              } else {
+                that.value = value;
+              }
+            } catch (ex) {
+              that.value = value;
+              console.log("selectionStart/End error:", property_uri, value, typeof value);
+            }
+          }
+        });
       });
     }
 
     this.on("veda_focus", function (e, value) {
       input.each(function () {
-        // Set string language to default if undefined
-        if ( !value.language ) { value.language = veda.user.defaultLanguage; }
-        if ( value.language === this.lang ) { $(this).trigger("focus"); }
+        if ( value.language === this.lang || !value.language ) {
+          $(this).trigger("focus");
+        }
       });
       e.stopPropagation();
     });
@@ -497,10 +499,8 @@
       if (!value) {
         return parser( input.val() );
       }
-      // Set string language to default if undefined
-      if ( !value.language ) { value.language = veda.user.defaultLanguage; }
       input.each(function () {
-        if (value.language === this.lang) {
+        if (value.language === this.lang || !value.language) {
           this.value = value.toString();
         }
       });
@@ -528,9 +528,12 @@
   };
   veda_multilingual.defaults = {
     parser: function (input, el) {
-      var value = new String(input);
-      value.language = $(el).attr("lang") || undefined;
-      return value;
+      if (input) {
+        var value = new String(input);
+        value.language = $(el).attr("lang") || undefined;
+        return value;
+      }
+      return null;
     }
   };
 
@@ -1475,7 +1478,7 @@
           e.stopPropagation();
           var newVal = createValue();
           if ( inModal ) {
-            var modal = $("#notification-modal-template").html();
+            var modal = $("#individual-modal-template").html();
             modal = $(modal).modal({"show": false});
             $("body").append(modal);
             modal.modal("show");
@@ -1506,7 +1509,7 @@
               modal.modal("hide").remove();
             });
             var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-           // $(".action", tmpl).remove();
+            $(".action", tmpl).remove();
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
             template.on("internal-validated", function () {

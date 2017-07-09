@@ -21,6 +21,7 @@ before_install:
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
+  - npm install grunt --save-dev
   - npm install coveralls --save-dev
   - npm install grunt-coveralls --save-dev
 
@@ -38,15 +39,15 @@ before_script:
   - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
   - ls  $PWD   
   - ls  $PWD/logs   
-  - cat $PWD/logs/veda-fanout-email-stderr.log
+#  - cat $PWD/logs/veda-fanout-email-stderr.log
 #  - cat $PWD/logs/veda-fanout-sql-stderr.log
-  - cat $PWD/logs/veda-ft-indexer-stderr.log
-  - cat $PWD/logs/veda-ltr-scripts-stderr.log
-  - cat $PWD/logs/veda-scripts-lp-stderr.log
-  - cat $PWD/logs/veda-scripts-main-stderr.log
-  - cat $PWD/logs/veda-mstorage-stderr.log
-  - cat $PWD/logs/veda-ttlreader-stderr.log
-  - cat $PWD/logs/veda-webserver-stderr.log 
+#  - cat $PWD/logs/veda-ft-indexer-stderr.log
+#  - cat $PWD/logs/veda-ltr-scripts-stderr.log
+#  - cat $PWD/logs/veda-scripts-lp-stderr.log
+#  - cat $PWD/logs/veda-scripts-main-stderr.log
+#  - cat $PWD/logs/veda-mstorage-stderr.log
+#  - cat $PWD/logs/veda-ttlreader-stderr.log
+#  - cat $PWD/logs/veda-webserver-stderr.log 
 #  - cat $PWD/veda_s.log
   - cat $PWD/logs/veda-core-mstorage_*.log          
   - setsid ./qa/uptime-to-log.sh&
@@ -71,6 +72,7 @@ script:
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
+  - node ./qa/testInbox.js
   - node ./qa/testRepeatComplexRoute.js
   - node ./qa/testNetComplexRoute.js
   - node ./qa/testSimpleNet.js
@@ -78,6 +80,7 @@ script:
   - node ./qa/testSimpleNet3.js
   - node ./qa/testSimpleWorkflow.js
   - node ./qa/testDelegationDocument.js
+  - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
@@ -86,11 +89,11 @@ after_script:
   - grunt coveralls
   - date    
   - cat $PWD/veda_s.log
-  - cat logs/veda-core-_*.log 
-  - cat logs/veda-core-fanout_*.log
-  - cat logs/veda-core-fulltext_indexer_*.log
-  - cat logs/veda-core-ltr_scripts_*.log
+#  - cat logs/veda-core-_*.log 
+#  - cat logs/veda-core-fanout_*.log
+#  - cat logs/veda-core-fulltext_indexer_*.log
+#  - cat logs/veda-core-ltr_scripts_*.log
 #  - cat veda-core-scripts_*.log
-  - cat logs/veda-core-mstorage_*.log
-  - cat logs/veda-core-ttl_reader_*.log
-  - cat logs/veda-core-webserver_*.log 
+#  - cat logs/veda-core-mstorage_*.log
+#  - cat logs/veda-core-ttl_reader_*.log
+#  - cat logs/veda-core-webserver_*.log 

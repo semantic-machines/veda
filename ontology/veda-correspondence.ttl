@@ -215,7 +215,7 @@ v-s:PsOrganizationForCorrespondent
   v-ui:forProperty v-s:correspondentOrganization ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Organization') || ('rdf:type'=='v-s:Subsidiary')"^^xsd:string ;  
+  v-ui:queryPrefix "('rdf:type'=='v-s:Organization') || ('rdf:type'=='v-s:Subsidiary')"^^xsd:string ;
   rdfs:label "v-s:correspondentOrganization specification for v-s:Correspondent class"@en ;
   rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
 .
@@ -450,7 +450,7 @@ v-s:DeliveryEmbededTemplate
       <span about="@" data-template="v-ui:IconModalTemplate"></span>
       <span about="v-s:Delivery" property="rdfs:label"></span>
     </h3>
-    
+
   </div>
   <div class="panel-body">
     <div class="row">
@@ -504,9 +504,9 @@ v-s:LetterRegistrationRecordTemplate
       var scope = eval(numerator["v-s:numerationScope"].toString())(null, this);
       this["v-s:registrationNumber"] = [ eval(numerator["v-s:numerationGetNextValue"].toString())(null, scope) ];
       var today = new Date();
-      //today.setHours(0);
-      //today.setMinutes(0);
-      //today.setSeconds(0);
+      today.setHours(0);
+      today.setMinutes(0);
+      today.setSeconds(0);
       this["v-s:registrationDate"] = [ today ];
     }
   }
@@ -616,32 +616,32 @@ v-s:LetterRegistryResultTemplate
       <th colspan="4" about="v-s:sender" property="rdfs:label"></th>
       <th colspan="4" about="v-s:recipient" property="rdfs:label"></th>
       <th colspan="9" about="v-s:Letter" property="rdfs:label"></th>
-    
+
     </tr>
     <tr class="active">
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
-<!--Отправитель //v-s:sender -->      
+<!--Отправитель //v-s:sender -->
       <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentOrganization"><span about="v-s:correspondentOrganization" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentDepartment"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentPerson"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
-    
+      <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentPerson"><span about="v-s:correspondentPerson" property="rdfs:label"></span></th>
+
       <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordSender" property="rdfs:label"></span></th>
-<!--Получатель //v-s:recipient-->      
+<!--Получатель //v-s:recipient-->
       <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentOrganization"><span about="v-s:correspondentOrganization" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentDepartment"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentPerson"><span about="v-s:correspondentDepartment" property="rdfs:label"></span></th>
-      
+      <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentPerson"><span about="v-s:correspondentPerson" property="rdfs:label"></span></th>
+
       <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordRecipient" property="rdfs:label"></span></th>
-      
+
       <th width="10%" class="orderby" data-orderby="v-s:hasDocumentKind"><span about="v-s:hasDocumentKind" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:deliverBy"><span about="v-s:deliverBy" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:dueDate"><span about="v-s:dueDate" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:sheetsCount"><span about="v-s:sheetsCount" property="rdfs:label"></span></th>
-<!--Доставка //v-s:hasDelivery-->            
+<!--Доставка //v-s:hasDelivery-->
       <th width="10%" class="orderby" data-orderby="v-s:hasDelivery"><span about="v-s:hasDelivery" property="rdfs:label"></span></th>
-      
+
       <th width="10%" class="orderby" data-orderby="v-s:description"><span about="v-s:description" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:attachment"><span about="v-s:attachment" property="rdfs:label"></span></th>
@@ -653,8 +653,8 @@ v-s:LetterRegistryResultTemplate
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td property="v-s:created"></td>
-<!--Отправитель //v-s:sender -->       
-      <td rel="v-s:sender">     
+<!--Отправитель //v-s:sender -->
+      <td rel="v-s:sender">
         <span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"></span>
       </td>
       <td rel="v-s:sender">
@@ -673,7 +673,7 @@ v-s:LetterRegistryResultTemplate
         <span property="v-s:registrationNumber"></span>
         <span property="v-s:registrationDate"></span>
       </td>
-<!--Получатель //v-s:recipient-->       
+<!--Получатель //v-s:recipient-->
       <td rel="v-s:recipient">
        <span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"></span>
       </td>
@@ -706,7 +706,7 @@ v-s:LetterRegistryResultTemplate
       </td>
       <td property="v-s:description"></td>
       <td property="rdfs:comment"></td>
-      <td rel="v-s:attachment" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
       <td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td>
     </tr>
   </tbody>

@@ -322,6 +322,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var $createReportButtons = $(".create-report-button", wrapper);
     var $showRights = $("#rightsOrigin.action", wrapper);
     var $journal = $("#journal.action", wrapper);
+    var $journalDMS = $("#journal-dms.action", wrapper);
 
     $send.on("click", function () {veda.Util.send(individual, template);});
     $createReport.on("click", function () {veda.Util.createReport(individual);});
@@ -333,6 +334,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         riot.route("#/" + journal_uri);
       } else {
         alert("Журнал отсутсвует / Journal empty");
+      }
+    });
+    $journalDMS.on("click", function() {
+      var uri = individual.id.substring(2,100);
+      var journalDMS_url = (new veda.IndividualModel("cfg:JournalDMSUrl"))["rdf:value"][0];
+      if (journalDMS_url) {
+        window.location = journalDMS_url + uri;
       }
     });
 

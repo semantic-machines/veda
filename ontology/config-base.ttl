@@ -299,6 +299,7 @@ cfg:Permission_5
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:permissionObject v-s:Journal_group ;
   v-s:permissionObject v-s:JournalRecord_group ;
+  v-s:permissionObject v-wf:Decision_group ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "Permission to read journals for all users"@en ;
   rdfs:label "Разрешение на чтение журналов для всех пользователей"@ru ;

@@ -59,9 +59,8 @@ class VedaModule
     Consumer       main_cs;
     Consumer       main_cs_prefetch;
 
-    string         prepareall_queue_name;
-    Queue          prepareall_queue;
-    Consumer       prepareall_cs;
+    Queue          prepare_batch_queue;
+    Consumer       prepare_batch_cs;
 
     Context        context;
     Onto           onto;
@@ -79,12 +78,11 @@ class VedaModule
 
     this(string _module_id, Logger in_log)
     {
-        module_id             = _module_id.replace("-", "_");
-        process_name          = text(module_id);
-        prepareall_queue_name = process_name ~ "_prepare_all";
-        message_header        = "MSG:" ~ module_id ~ ":";
-        _log                  = in_log;
-        log                   = _log;
+        module_id      = _module_id.replace("-", "_");
+        process_name   = text(module_id);
+        message_header = "MSG:" ~ module_id ~ ":";
+        _log           = in_log;
+        log            = _log;
     }
 
     ~this()
@@ -92,16 +90,26 @@ class VedaModule
         delete module_info;
     }
 
-    private void open_perapareall_queue()
+    private void open_perapare_batch_queue(bool is_open_exists_batch)
     {
+//       exists(R)(R name)
         // attempt open [prepareall] queue
-        prepareall_queue = new Queue(queue_db_path, prepareall_queue_name, Mode.R, log);
-        prepareall_queue.open();
+        prepare_batch_queue = new Queue(uris_db_path, "uris-db", Mode.R, log);
+        prepare_batch_queue.open();
 
-        if (prepareall_queue.isReady)
+        if (prepare_batch_queue.isReady)
         {
-            prepareall_cs = new Consumer(prepareall_queue, queue_db_path, process_name, log);
-            prepareall_cs.open();
+            prepare_batch_cs = new Consumer(prepare_batch_queue, tmp_path, process_name, Mode.RW, log);
+            if (!prepare_batch_cs.open(is_open_exists_batch))
+            {
+                log.trace("not found uncompleted batch");
+                prepare_batch_queue.close();
+                prepare_batch_queue = null;
+
+                prepare_batch_cs = null;
+            }
+            else
+                log.trace("found uncompleted batch");
         }
     }
 
@@ -143,14 +151,14 @@ class VedaModule
             main_queue.open();
         }
 
-        main_cs = new Consumer(main_queue, queue_db_path, process_name, log);
+        main_cs = new Consumer(main_queue, queue_db_path, process_name, Mode.RW, log);
         main_cs.open();
 
-        main_cs_prefetch = new Consumer(main_queue, queue_db_path, process_name ~ "_prefetch", log);
+        main_cs_prefetch = new Consumer(main_queue, queue_db_path, process_name ~ "_prefetch", Mode.RW, log);
         main_cs_prefetch.open();
 
         // attempt open [prepareall] queue
-        open_perapareall_queue();
+        open_perapare_batch_queue(true);
         load_systicket();
 
         sock = nn_socket(AF_SP, NN_SUB);
@@ -215,36 +223,9 @@ class VedaModule
 
     abstract void event_of_change(string uri);
 
-    public void prepare_all()
+    public void prepare_batch()
     {
-        long  total_count    = context.get_inividuals_storage_r().count_entries();
-        long  count_prepared = 0;
-
-        long  count;
-        Queue queue = new Queue(queue_db_path, prepareall_queue_name, Mode.RW, log);
-
-        if (queue.open(Mode.RW) != true)
-        {
-            log.trace("fail on create queue [%s]", prepareall_queue_name);
-            return;
-        }
-
-        bool add_to_queue(string key, string value)
-        {
-            queue.push(key);
-            count++;
-            return true;
-        }
-
-        log.trace_console("start prepare_all");
-        context.freeze();
-        log.trace_console("start create queue");
-        context.get_inividuals_storage_r().get_of_cursor(&add_to_queue, false);
-        log.trace_console("end create queue, count: %d", queue.count_pushed);
-        queue.close();
-        context.unfreeze();
-
-        open_perapareall_queue();
+        open_perapare_batch_queue(false);
     }
 
     private void configuration_found_in_queue()
@@ -313,16 +294,16 @@ class VedaModule
 
             if (data is null)
             {
-                if (prepareall_cs !is null)
+                if (prepare_batch_cs !is null)
                 {
-                	// prepareall_cs, обход по очереди всех индивидов 
-                    data = prepareall_cs.pop();
+                    // prepare_batch_cs, обход по очереди всех индивидов
+                    data = prepare_batch_cs.pop();
                     if (data is null)
                     {
-                        log.trace("[%s] queue is empty, remove it.", prepareall_queue_name);
-                        prepareall_cs.remove();
-                        prepareall_queue.remove();
-                        prepareall_cs = null;
+                        log.trace("batch queue is empty, remove it.");
+                        prepare_batch_cs.remove();
+                        //prepare_batch_queue.remove();
+                        prepare_batch_cs = null;
                         break;
                     }
 
@@ -345,7 +326,10 @@ class VedaModule
                     }
 
                     if (rc != ResultCode.Connect_Error)
-                        prepareall_cs.commit_and_next(true);
+                        prepare_batch_cs.commit_and_next(true);
+
+			        main_queue.close();
+			        main_queue.open();
 
                     continue;
                 }
@@ -364,12 +348,12 @@ class VedaModule
                 continue;
             }
 
-            string  new_bin  = imm.getFirstLiteral("new_state");
-            string  prev_bin = imm.getFirstLiteral("prev_state");
-            string  user_uri = imm.getFirstLiteral("user_uri");
-            string  event_id = imm.getFirstLiteral("event_id");
-            long  transaction_id = imm.getFirstInteger("tnx_id");
-            INDV_OP cmd      = cast(INDV_OP)imm.getFirstInteger("cmd");
+            string  new_bin        = imm.getFirstLiteral("new_state");
+            string  prev_bin       = imm.getFirstLiteral("prev_state");
+            string  user_uri       = imm.getFirstLiteral("user_uri");
+            string  event_id       = imm.getFirstLiteral("event_id");
+            long    transaction_id = imm.getFirstInteger("tnx_id");
+            INDV_OP cmd            = cast(INDV_OP)imm.getFirstInteger("cmd");
             op_id = imm.getFirstInteger("op_id");
 
             Individual prev_indv, new_indv;

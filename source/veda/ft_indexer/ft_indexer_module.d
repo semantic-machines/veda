@@ -84,9 +84,9 @@ class FTIndexerProcess : VedaModule
             committed_op_id  = op_id;
             //log.trace("commit, op_id=%d", committed_op_id);
         }
-        if (msg == "reindex_all")
+        else if (msg == "reindex_batch")
         {
-            prepare_all();
+            prepare_batch();
         }
     }
 

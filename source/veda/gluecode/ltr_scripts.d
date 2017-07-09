@@ -152,7 +152,7 @@ private void ltrs_thread(string parent_url)
                                        UUID new_id = randomUUID();
                                        string consumer_id = "consumer-uris-" ~ new_id.toString();
 
-                                       Consumer cs = new Consumer(queue, tmp_path, consumer_id, log);
+                                       Consumer cs = new Consumer(queue, tmp_path, consumer_id, Mode.RW, log);
 
                                        if (cs.open())
                                        {

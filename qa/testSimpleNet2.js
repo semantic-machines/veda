@@ -2,29 +2,29 @@ var basic = require('./basic.js'),
     createNet = require('./createNet.js'),
     timeStamp = ''+Math.round(+new Date()/1000);
 /**
- * 1.Open page -> login(as karpovrt); 
- * 2.Create net -> Create task -> Connect input, task and output -> Save net;
- * 3.Check net is working;
- * 4.Quit;
+ * 0.Open page -> login(as karpovrt);
+ * 1.Create net -> Create task -> Connect input, task and output -> Save net;
+ * 2.Check net is working;
  *
- * 1.Открываем страницу -> Входим в систему под karpovrt;
- * 2.Создаем сеть -> Создаем задачу -> Соединяем вход, задачу и выход -> Сохраняем сеть;
- * 3.Проверяем, что сеть работает;
- * 4.Выход;
+ * 0.Открываем страницу -> Входим в систему под karpovrt;
+ * 1.Создаем сеть -> Создаем задачу -> Соединяем вход, задачу и выход -> Сохраняем сеть;
+ * 2.Проверяем, что сеть работает;
 */
 
 basic.getDrivers().forEach (function (drv) {
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
-    createNet.startNet(driver, timeStamp);
-    createNet.createTask(driver, '', 'false');
+    //PHASE#1: Create net
+    createNet.startNet(driver, timeStamp, 1);
+    createNet.createTask(driver, '', 'false', 1);
     createNet.connectNet(driver, 'true');
-    createNet.saveNet(driver);
+    createNet.saveNet(driver, 1);
 
-    createNet.checkNet(driver, timeStamp, 'red', 'green', 'red');
-
+    //PHASE#2: Check net
+    createNet.checkNet(driver, timeStamp, 'red', 'green', 'red', 2);
     driver.quit();
 });
 

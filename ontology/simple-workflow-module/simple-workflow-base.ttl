@@ -11,6 +11,7 @@
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/>.
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
 
 <http://semantic-machines.com/veda/simple-workflow>
   rdf:type owl:Ontology ;
@@ -32,7 +33,7 @@ v-s:TaskIsRedirectedFrom
 s-wf:EmptyTask
     rdf:type v-wf:DecisionForm ;
     rdfs:label "";
-.    
+.
 
 s-wf:var_initiator
   rdf:type v-wf:VarDefine ;
@@ -799,6 +800,22 @@ s-wf:ComplexRouteStartForm_Template
   v-ui:forClass s-wf:ComplexRouteStartForm ;
   v-ui:template """
 <script>
+
+if (this.hasValue("v-wf:isProcess")) {
+  $('#save_and_start_process', template).remove();
+} else {
+  $('#save_and_start_process', template).on('click', function () {
+    stages.forEach(function(stage) {
+      var routeid = complex+stage;
+      var sub = individual[routeid][0];
+      if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
+        delete individual.properties[routeid];
+      }
+    });
+    veda.Util.send(individual, template);
+  });
+}
+
 if (mode !== "edit") { return; }
 
 var stages = [ // Default values fill
@@ -2016,7 +2033,7 @@ if (doc) {
 
     {
       signers = signers.concat(new veda.IndividualModel("d:wom1ouosnbv76dvsixphdcdd"));//  роль "Технический директор. Подписание актов"
-      
+
       routes['coordination3'][simple+'visible'] = [true];
       routes['coordination3'][simple+'editable'] = [true];
       routes['coordination3'][simple+'deadlineDays'] = [10];
@@ -2026,7 +2043,7 @@ if (doc) {
       routes['coordination4'][simple+'editable'] = [true];
       routes['coordination4'][simple+'deadlineDays'] = [10];
       routes['coordination4'][simple+'comment'] = [new String('Согласовать первичный документ')];
-      
+
     }
 
 
@@ -2144,12 +2161,13 @@ if (doc) {
     routes['sign'][simple+'participant'] = doc["v-s:sender"][0]["v-s:correspondentPerson"];
   }
   //-------------------------------------------------------------------------------------------------------КОМАНДИРОВКА
-      
-  if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {
-    if (!doc.hasValue("mnd-s:hasChangeOfTerms")){              
 
-  // согласование 1 уровня    
-      if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
+  if (doc['rdf:type'][0].id === "mnd-s:BusinessTrip") {
+
+    if (!doc.hasValue("mnd-s:hasChangeOfTerms")) {
+
+      // согласование 1 уровня
+      if (doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков
@@ -2163,53 +2181,55 @@ if (doc) {
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
-      ){
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00071167_71024480") // Соколов С.С.
+      ) {
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
         routes['coordination1'][simple+'deadlineDays'] = [10];
         routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
       } else if (doc.hasValue("v-s:businessTripEmployee")) {
         var headUnit;
-        headUnit= calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
-      
+        headUnit = calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
+
         function calculationHeadUnit(occupation){
-          if(occupation.hasValue("v-s:hasChief")){
-          return occupation["v-s:hasChief"][0];  
-            
-          } else  if (!occupation.hasValue("v-s:parentUnit")) {
+          if(occupation.hasValue("v-s:hasChief") ) {
+            if (occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
+              return occupation["v-s:hasChief"][0];
+            } else {return [];}
+          } else  if ( !occupation.hasValue("v-s:parentUnit") ){
             return [];
-          }else{
+          } else {
           return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
           }
         }
-        routes['coordination1'][simple+'participant'] = headUnit; 
+        routes['coordination1'][simple+'participant'] = headUnit;
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
-      } else{
+      } else {
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
       }
-  //согласование 2 уровня
-      
+
+      //согласование 2 уровня
       if(doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:0574e5e2e66447dfbf787a6e0b05f4fe")//Выставки
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:e9ca8b048f244f348775b7e2befaee8c")//Обучение
-      ){
-        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:0c989a61-896b-4e1d-a8f6-1f09b9a0e433")];//Специалист УЦ 
+      ) {
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:0c989a61-896b-4e1d-a8f6-1f09b9a0e433")];//Специалист УЦ
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
-      } else if(
+      } else if (
         doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:42f7a4e157ed4e3da34d6cd885df4a9b") //(запланированы)
         || doc.hasValue("mnd-s:hasContactsWithCompetitors", "d:0e31da05e36b4216832fb9a5ba853684") //(возможны)
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:c533caab0062434c9c3b74521fd9798c")// Выставки, форумы отраслевые (ЦБП, Леспром)
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:6c0bbecd077d4dff8b9481da73ea5350")//(Общественные организации отраслевые (ЦБП, Леспром))
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:236170912d8f40a08178baab6449ff05")// (Организации конкуренты)
-      ){
-        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ 
+      ) {
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
       }
-  // Подписание
-      
+
+      // Подписание
       if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков*
@@ -2223,12 +2243,13 @@ if (doc) {
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00050652_71021621") // Тутринова*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069811_71017956") // Сабо
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063711_71017961") // Ардашова
-      ){
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00071167_71024480") // Соколов С.С.
+      ) {
         routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")];//Генеральный директор
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
       } else if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758")//Пеллер
-      ){
+      ) {
         routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00069177_71015289")];//Шаллеггер*
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
@@ -2241,68 +2262,304 @@ if (doc) {
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
       }
-      
-      
-        
-        routes['coordination3'][simple+'visible'] = [true];
-        routes['coordination3'][simple+'editable'] = [true];
-        
-        routes['coordination4'][simple+'visible'] = [true];
-        routes['coordination4'][simple+'editable'] = [true];
-  //Утверждение      
-        routes['approval'][simple+'participant'] = [new veda.IndividualModel(" d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
-        routes['approval'][simple+'visible'] = [true];
-        routes['approval'][simple+'editable'] = [false];
-        routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
-        
-  //Рассмотрение     
-        routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
-        routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
-        routes['review'][simple+'visible'] = [true];
-        routes['review'][simple+'editable'] = [false];
-        routes['review'][simple+'deadlineDays'] =[doc["v-s:dateFrom"][0]];
-        
-        
-  //Исполнение
-        if( doc.hasValue("v-s:dateTo")){
-          var data=new Date(doc["v-s:dateTo"][0].toISOString())
-          data.setDate(data.getDate() + 3);
-        } else {data=[];}
-        routes['instruction'][simple+'participant'] =[doc["v-s:creator"][0]]; 
-        routes['instruction'][simple+'visible'] = [true];
-        routes['instruction'][simple+'editable'] = [false];
-        routes['instruction'][simple+'deadlineDays'] =[data];
-    } else {
-      routes['sign'][simple+'visible'] = [true];
-      routes['sign'][simple+'editable'] = [true];
-      routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
-      
+
+      routes['coordination3'][simple+'visible'] = [true];
+      routes['coordination3'][simple+'editable'] = [true];
+      routes['coordination4'][simple+'visible'] = [true];
+      routes['coordination4'][simple+'editable'] = [true];
+
+      //Утверждение
+      routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [false];
+      routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+
+      //Рассмотрение
       routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
       routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'deadlineDays'] =[doc["v-s:dateFrom"][0]];
 
- 
-      
+      //Исполнение
+      if( doc.hasValue("v-s:dateTo")){
+        var data=new Date(doc["v-s:dateTo"][0].toISOString())
+        data.setDate(data.getDate() + 3);
+      } else {data=[];}
+      routes['instruction'][simple+'participant'] =[doc["v-s:creator"][0]];
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [false];
+      routes['instruction'][simple+'deadlineDays'] =[data];
+
+    } else {
+
+      routes['sign'][simple+'visible'] = [true];
+      routes['sign'][simple+'editable'] = [true];
+      routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
+
+      routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
+      routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
     }
   }
-  
-  
-  
-  
-  
 
-  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") {
+  //--------------------------------------------------------ЗАЯВКА-НА-ПРОПУСК
+
+  if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
+
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Регистратор документов СЛПК
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+  }
+
+//---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ-РАССХОДЫ
+  if (doc['rdf:type'][0].id === "mnd-s:RepresentativeCosts") {
+
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+
+    var stakeholder ;
+    if (doc.hasValue("v-s:stakeholder")){
+     stakeholder = doc["v-s:stakeholder"] ;
+     routes['sign'][simple+'participant'] = stakeholder ;
+     routes['sign'][simple+'visible'] = [true];
+     routes['sign'][simple+'editable'] = [false];
+    }
+
+    routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d")]; //(Бухгалтер КФО)
+    routes['examination'][simple+'editable'] = [false];
+    routes['examination'][simple+'visible'] = [true];
+
+
+    if (doc.hasValue("v-s:hasPaymentForm", "d:e09f37f287a54e92967ba06ee1d6d472")){// (Счет)
+      routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:3bcad243-5d01-4eba-b62b-1fe233ea2cfa")]; //Регистратор документов СЛПК
+      routes['approval'][simple+'visible'] = [true];
+      routes['approval'][simple+'editable'] = [false];
+
+      var creator ;
+      if (doc.hasValue("v-s:creator")){
+        creator = doc["v-s:creator"] ;
+        routes['review'][simple+'participant'] = creator;
+      }
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'comment'] = [new String('Получите подтверждение оплаты из бухгалтерии. Проведите мероприятие. Сформируйте отчет')];
+
+      routes['instruction'][simple+'visible'] = [true];
+      routes['instruction'][simple+'editable'] = [false];
+      routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d")]; //(Бухгалтер КФО)
+
+    } else if (doc.hasValue("v-s:hasPaymentForm", "d:3d99624858e74529aaa6df725f6f611d")    // Корпоративная карта
+      || doc.hasValue("v-s:hasPaymentForm", "d:43efbfdadcf64f4db2a0e07d974d9098") // Наличный расчет
+      || doc.hasValue("v-s:hasPaymentForm", "d:5df55c8191f245a4a49cebc49cc98a76")) // Услуги ТП Бумажник
+    {
+      var creator2 ;
+      if (doc.hasValue("v-s:creator")){
+        creator2 = doc["v-s:creator"] ;
+        routes['review'][simple+'participant'] = creator2;
+      }
+      routes['review'][simple+'visible'] = [true];
+      routes['review'][simple+'editable'] = [false];
+      routes['review'][simple+'comment'] = [new String('Проведите мероприятие. Сформируйте отчет')];
+    }
+  }
+    //--------------------------------------------------------ЗАЯВКА-НА-ПРОПУСК
+
+  if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'deadlineDays'] = [10];
+    routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
+
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Регистратор документов СЛПК
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+  }
+
+
+
+//---------------------------------------------------------Распорядительный документ
+  if (doc['rdf:type'][0].id === "mnd-s:Decree") {
+
+    routes['informing'][simple+'participant'] = doc["v-s:initiator"] ;
+    routes['informing'][simple+'visible'] = [true];
+    routes['informing'][simple+'editable'] = [true];
+    routes['informing'][simple+'comment'] = [new String('Уведомление о начале процесса согласования документа')];
+
+
+    routes['sign'][simple+'participant'] = doc["v-s:signedBy"] ;
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+
+    var aprovalDecree ;
+//3.1
+    if (doc.hasValue("mnd-s:hasDecreeKind", "d:9664874293574b79af624f01e3c091cd") //(Распоряжение по ГО)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:391362e32a2b48199ef4bebe9b7a611a") //(Приказ по ГО)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:b7a958be3d14437f98ab414c8ce88977") //(Приказ по основной деятельности)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:2283f9f186794145bd6c8e3229f7a009") //(Распоряжение по основной деятельности)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+//3.2
+
+    } else if(doc.hasValue("mnd-s:hasDecreeKind", "d:586ab1e3ea554a92ab6ebb64d2df8c41") //(Распоряжение по кадровой работе)
+             || doc.hasValue("mnd-s:hasDecreeKind", "d:e5753b58168843e28ad73855c07b8cff")// (Приказ по кадровой работе)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:mondi_position_70000238")]; //(Начальник отдела кадров)
+//3.3
+
+    } else if(doc.hasValue("mnd-s:hasDecreeKind", "d:ce99f0a34bbb4813ac88d3dfe7699a1a") //(Приказ Распоряжение по кадрам. Верхне-Вычегодский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:650a386e-d0ed-4338-9a83-ca183d16617e")]; //(Регистратор распоряжений Верхне-Вычегодский участок)
+//3.4
+    } else if(doc.hasValue("mnd-s:hasDecreeKind", "d:e5061f4736d3401899fd172f67c18f84") //(Приказ Распоряжение по кадрам. Верхне-Вычегодский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:130e833c-1d6b-4e2f-b70f-6ca5b62ce7fd")]; //(Регистратор распоряжений Койгородский участок)
+    }
+//3.5
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:c9dc77d387ff43ac8e88766aa66c7cae") //(Приказ Распоряжение по кадрам. Корткеросский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:238916b4-5aac-42f8-9c6c-4fabb2507c29")]; //(Регистратор распоряжений Корткеросский участок)
+    }
+//3.6
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:ca1d0c4ca12e44ba8ad7e3471970e67c") //(Приказ Распоряжение по кадрам. Ношульский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:9a9db2fb-9546-4d44-9501-56dd5bb23653")]; //(Регистратор распоряжений Ношульский участок)
+    }
+//3.7
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:6f64ab3a995c4851865136e58e88f7ed") //(Приказ Распоряжение по кадрам. Сысольский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:33bec470-8d6d-4b07-b522-4a9c0fd6f6d2")]; //(Регистратор распоряжений Сысольский участок)
+    }
+//3.8
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:337906d27e484923aa8b4400e6fdc7a3") //(Приказ Распоряжение по кадрам. Удорский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:350a5e64-d4a5-4cb8-b875-ec4157ba55bf")]; //((Регистратор распоряжений Удорский участок)
+    }
+//3.9
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:c0d293bfced442d8864ba2aa450b8604") //(Приказ Распоряжение по кадрам. Усть-Куломский участок)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:4c26f5b2-63bf-4465-84c0-07d34ce7e8ab")]; //(Регистратор распоряжений Усть-Куломский участок)
+    }
+//3.10
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:6b0f6cc7c96b49e4b5566316e75ab81e") //(Распоряжение по ПБ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:beec6105-4511-4c63-861a-d6cde0dfc58b")]; //(Регистратор распоряжений ПБ)
+    }
+//3.11
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:4a293c55b37e492fad852401349b3072") //(Распоряжение по ПЦ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:e88d9685-d02f-46bc-8e23-7038f018e2bd")]; //(Регистратор распоряжений ПЦ)
+    }
+//3.12
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:43b31005c8754e77ab2d472c907a81cd") //(Распоряжение по СРТ УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:c6b2f375-755f-477b-a5a0-63719c46a75f")]; //(Регистратор распоряжений СРТ УЛО)
+    }
+//3.13
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:cd74acdd370a4647851e588ab49e227f") //(Распоряжение по УЛ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:dece060b-d010-46e5-95e4-e69244f43e53")]; //(Регистратор распоряжений УЛ)
+    }
+//3.14
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:d67d40855c4c492e93f1f8e979b32915") //(Распоряжение по УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:424e1e88-ed4e-424d-abc7-a829c0f4d11c")]; //(Регистратор распоряжений УЛО)
+    }
+//3.15
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:93a91c7be4f84289b3a618ab4aaf9c99") //(Распоряжение по УПБ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:8d5a2a33-d646-4006-89ab-bc97064fcc24")]; //(Регистратор распоряжений УПБ)
+    }
+//3.16
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:e5e9d7334e7142b98ce82b53aa9f1b4e") //(Распоряжение по УТТО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:869ca4e0-eb52-4612-a0b8-a66659720c24")]; //(Регистратор распоряжений УТТО)
+    }
+//3.17
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:506814f2866f4adc9f5effe3cbd75dab") //(Распоряжение по ЭП)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:1ca57ded-c051-4ca4-bc33-fb8994b04d8f")]; //(Регистратор распоряжений ЭП)
+    }
+//3.18
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:5f3338bf470448958167688853db0b4a") //(Распоряжение по ЛПО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:2474d195-0bc4-4bc6-83d4-b4a4eb2fb350")]; //(Регистратор распоряжений ЛПО)
+    }
+//3.19
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:40fec391a071473bbafda39e26839cd0") //(Распоряжение по СЛЗ УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:aa4374af-380a-4f19-a415-4c32d8d1b3e4")]; //(Регистратор распоряжений по СЛЗ УЛО)
+    }
+//3.20
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:b79019ea82e24aaa94ec226ad10f7a46") //(Распоряжение по САТ УЛО)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:f63d88c8-42c7-4a7b-a1b4-57204bc86541")]; //(Регистратор распоряжений по CАТ УЛО)
+    }
+//3.21
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:897c15bc7cdf425c8106775ef31ecb17") //(Распоряжение по САТ СЭБ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:06e9adee-8349-4ec0-8095-7a7b142c9709")]; //(Регистратор распоряжений по СЭБ )
+    }
+//3.22
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:9c171b39761749dab3ca7891b67bf531") //(Распоряжение по ОООС)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:6f55fed4-5eff-4afe-b00e-e7df7c53be9e")]; //(Регистратор распоряжений ОООС)
+    }
+//3.23
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:61caa917c8584832ae8856ec9d982d41") //(Распоряжение по ТС)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:8c81cb04-be5c-442f-bfa2-49f9f47458c2")]; //(Регистратор распоряжений ТС)
+    }
+//3.24
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:106cf5f7d76b4640a2bd771e05845c4b") //(Распоряжение по УИП )
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:4f6f2f60-a0cd-49bc-9b0d-d0166909285a")]; //(Регистратор распоряжений УИП )
+    }
+//3.25
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:d55ba7ababf846eda58e0940b4172ac8") //(Распоряжение по УЗ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:1b69d188-8268-4c22-8deb-3bbc0abd249f")]; //(Регистратор распоряжений УЗ)
+    }
+//3.25
+    else if(doc.hasValue("mnd-s:hasDecreeKind", "d:ed97548ed45047bcaf5de9ce05de205c") //(Распоряжение по УФ)
+    ){
+      aprovalDecree = [new veda.IndividualModel("d:6990c8e9-f6f4-423d-ac46-b892f64ff3df")]; //(Регистратор распоряжений по УФ)
+    } else { aprovalDecree = []; }
+
+    routes['approval'][simple+'participant'] = aprovalDecree ;
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [false];
+    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+  }
+
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
                    new veda.IndividualModel("td:RomanKarpov-Analyst1"),
                    new veda.IndividualModel("td:AndreyBychin-Analyst2")];
       routes['coordination1'][simple+'visible'] = [true];
-
       routes['coordination2'][simple+'participant'] = [
                    new veda.IndividualModel("td:RomanKarpov-Analyst1"),
                    new veda.IndividualModel("td:AndreyBychin-Analyst2")];
       routes['coordination2'][simple+'visible'] = [true];;
-
       routes['review'][simple+'participant'] = [new veda.IndividualModel("td:AndreyBychin-Analyst2")];
       routes['review'][simple+'visible'] = [true];
       routes['instruction'][simple+'participant'] = [new veda.IndividualModel("td:AndreyBychin-Analyst2")];
@@ -2313,12 +2570,8 @@ if (doc) {
       routes['instruction2'][simple+'visible'] = [true];
       routes['instruction2'][simple+'controller'] = [new veda.IndividualModel("td:RomanKarpov-Analyst1")];
   }
-  
-  
-  
-  
-  
-  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") {
+
+  if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") { //Тестовый маршрут2
   /*
       routes['introduction'][simple+'participant'] = [
                      new veda.IndividualModel("td:AndreyBychin-Analyst2")]
@@ -2344,16 +2597,6 @@ if (doc) {
     }
   });
 }
-$('#save_and_start_process', template).on('click', function () {
-  stages.forEach(function(stage) {
-    var routeid = complex+stage;
-    var sub = individual[routeid][0];
-    if (!sub || !sub.hasValue(simple+'participant') || sub.properties[simple+'participant'].length == 0) {
-      delete individual.properties[routeid];
-    }
-  });
-  veda.Util.send(individual, template);
-});
 //# sourceURL=s-wf:ComplexRouteStartForm_Template_pre
 </script>
 <div class="container sheet">
@@ -2398,7 +2641,7 @@ $('#save_and_start_process', template).on('click', function () {
         </div>
         <div class="panel-body" about="@" data-embedded="true" data-template="s-wf:SimpleRouteStartFormMinimal_Template"></div>
       </div>
-    </div>    
+    </div>
     <div class="col-md-6 introduction" rel="s-wf:ComplexRouteStartForm_introduction" data-embedded="true">
       <div class="panel panel-info">
         <div class="panel-heading">
@@ -2423,7 +2666,7 @@ $('#save_and_start_process', template).on('click', function () {
         <div class="panel-body" about="@" data-template="s-wf:SimpleRouteStartFormShort_Template" data-embedded="true"></div>
       </div>
     </div>
-    
+
     <div class="col-md-6 coordination3" rel="s-wf:ComplexRouteStartForm_coordination3" data-embedded="true">
       <div class="panel panel-success">
         <div class="panel-heading">
@@ -3018,7 +3261,7 @@ s-wf:UserTaskFormTemplate
   function createDecision(type) {
     var decision = new veda.IndividualModel();
     decision["rdf:type"] = [ type ];
-    decision["rdfs:label"] = type["rdfs:label"];
+    decision.properties["rdfs:label"] = type.properties["rdfs:label"];
     decision["v-s:parent"] = [ individual ];
     return decision;
   }
@@ -3045,25 +3288,19 @@ s-wf:UserTaskFormTemplate
         <div about="@" property="v-wf:dateGiven"></div>
       </div>
     </div>
-   
-    
     <div about="@" rel="v-wf:redirect_from_task">
       <hr>
       <div class="row">
         <div class="col-md-3">
           <em about="v-s:TaskIsRedirectedFrom" property="rdfs:label"> </em>
-          <span  rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
-          
+          <span rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
         </div>
         <div rel="v-wf:takenDecision" class="col-md-3">
-          
           <em about="rdfs:comment" property="rdfs:label"> </em>
           <span about="@"  property="rdfs:comment"></span>
-        
         </div>
       </div>
     </div>
-    
     <hr />
     <em about="v-wf:takenDecision" property="rdfs:label"></em>
     <div class="radio decision">
@@ -3088,6 +3325,8 @@ s-wf:UserTaskFormTemplate
     </div>
   </div>
   <br>
+  <div about="@" class="view edit -search sheet" data-template="v-ft:TaskRelatedTasksTemplate"></div>
+  <br>
   <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
@@ -3102,15 +3341,10 @@ s-wf:UserTaskFormTemplate
   } else {
     template.trigger("view");
   }
-  $("#cancel, #send", template).click( function (e) {
-    e.stopPropagation();
-    window.history.back();
-    //riot.route("#/v-ft:Inbox");
-  });
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>
   """ ;
-  .
+.
 
 v-wf:DecisionGoSign
   rdf:type owl:Class ;
@@ -4530,7 +4764,7 @@ s-wf:map_vf_to_4_0_initiator
   v-wf:mappingExpression  "process.getInputVariable ('initiator')" ;
   rdfs:isDefinedBy s-wf: ;
 .
- 
+
 s-wf:map_to_4_O_executor
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_to ;

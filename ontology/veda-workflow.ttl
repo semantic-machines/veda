@@ -1599,7 +1599,7 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div class="hidden"></div>
 <script>
-  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
+  if ( individual.rights.hasValue("v-s:canUpdate", true) && !individual.isNew() ) {
     individual.one("beforeSave", function () {
       if ( !individual.hasValue("v-wf:read", true) ) {
         individual["v-wf:read"] = [true];

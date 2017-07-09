@@ -70,7 +70,7 @@ v-s:PsAttachmentForInternalAccountingDocument
   v-ui:forClass v-s:InternalAccountingDocument ;
   v-ui:forProperty v-s:attachment ;
   v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 1 ;
+  v-ui:maxCardinality 100 ;
   rdfs:label "Attachments specification for InternalAccountingDocument class"@en ;
   rdfs:label "Спецификация файлов для класса Внутренний бухгалтерский документ"@ru ;
 .
@@ -311,6 +311,15 @@ v-s:PaymentConditions
 .
 # v-s:registrationNumber
 # rdfs:comment
+# rdfs:label
+
+#----------------------------------------------
+v-s:PaymentForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Payment form"@en ;
+  rdfs:label "Форма оплаты"@ru ;
+.
 # rdfs:label
 
 #------------------------------------------------

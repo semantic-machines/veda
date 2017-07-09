@@ -2,27 +2,27 @@ var basic = require('./basic.js'),
     createNet = require('./createNet'),
     timeStamp = ''+Math.round(+new Date()/1000);
 /**
- * 1.Open page -> login(as karpovrt);
- * 2.Create net -> Connect input and output -> Save net;
- * 3.Check our net is working;
- * 4.Quit;
+ * 0.Open page -> login(as karpovrt);
+ * 1.Create net -> Connect input and output -> Save net;
+ * 2.Check our net is working;
  *
- * 1.Открываем страницу -> Входим в систему под karpovrt;
- * 2.Создаем сеть -> Соединяем вход и выход -> Сохраняем сеть;
- * 3.Проверяем, что наша сеть работает;
- * 4.Выход;
+ * 0.Открываем страницу -> Входим в систему под karpovrt;
+ * 1.Создаем сеть -> Соединяем вход и выход -> Сохраняем сеть;
+ * 2.Проверяем, что наша сеть работает;
 */
 
 basic.getDrivers().forEach (function (drv) {
+    //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
-    createNet.startNet(driver, timeStamp);
+    //PHASE#1: Create net
+    createNet.startNet(driver, timeStamp, 1);
     createNet.connectNet(driver, 'false');
-    createNet.saveNet(driver);
+    createNet.saveNet(driver, 1);
 
-    createNet.checkNet(driver, timeStamp, 'red', '-', 'red');
-
+    //PHASE#2: Check net
+    createNet.checkNet(driver, timeStamp, 'red', '-', 'red', 2);
     driver.quit();
 });

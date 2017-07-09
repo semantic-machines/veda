@@ -209,3 +209,13 @@ v-s:StatusChangedOfTermes
   rdfs:label "Changed of termes"@en ;
   rdfs:label "Изменены сроки"@ru ;
 .
+v-s:StatusRegistration
+  rdf:type v-s:Status ;
+  rdfs:label "Registration"@en ;
+  rdfs:label "Регистрация"@ru ;
+.
+v-s:StatusClosing
+  rdf:type v-s:Status ;
+  rdfs:label "Closing"@en ;
+  rdfs:label "Закрытие"@ru ;
+.
