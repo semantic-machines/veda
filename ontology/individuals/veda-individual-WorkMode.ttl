@@ -1,0 +1,56 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix : <http://semantic-machines.com/veda/veda-individual-WorkMode/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-individual-WorkMode>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda ontology. individual - WorkMode"@en ;
+  rdfs:label "Онтология Veda. Записи справочника WorkMode"@ru ;
+  v-s:loadPriority 10 ;
+.
+
+d:8cee745440a946158c3b71ce19a0d8d5
+  a v-s:WorkMode;
+  rdfs:label "Будни, 7:00 - 24:00"@en ;
+  rdfs:label "Будни, 7:00 - 24:00"@ru ;
+.
+
+d:34f7e3a6a18b4ed7914bf46764f5790d
+  a v-s:WorkMode;
+  rdfs:label "Будни, выходные, 7:00 - 24:00"@en ;
+  rdfs:label "Будни, выходные, 7:00 - 24:00"@ru ;
+.
+
+d:f55c7b4e54a844629c19758aa333ef61
+  a v-s:WorkMode;
+  rdfs:label "Будни, выходные, 7:00 - 19:00"@en ;
+  rdfs:label "Будни, выходные, 7:00 - 19:00"@ru ;
+.
+
+d:af93837625e34526b9a867265bf2b6fa
+  a v-s:WorkMode;
+  rdfs:label "Будни, 7:00 - 19:00"@en ;
+  rdfs:label "Будни, 7:00 - 19:00"@ru ;
+.
+
+d:750fcffda3494f94b34352ab4a08cfe5
+  a v-s:WorkMode;
+  rdfs:label "Сменная работа"@en ;
+  rdfs:label "Сменная работа"@ru ;
+.
+
+d:940cf1b7b9724b15a813c0e3303c5a0b
+  a v-s:WorkMode;
+  rdfs:label "Будни, выходные, круглосуточно"@en ;
+  rdfs:label "Будни, выходные, круглосуточно"@ru ;
+.
+
+d:cf4081c669ff47bf84c4cd463eb73ea0
+  a v-s:WorkMode;
+  rdfs:label "Будни, круглосуточно"@en ;
+  rdfs:label "Будни, круглосуточно"@ru ;
+.

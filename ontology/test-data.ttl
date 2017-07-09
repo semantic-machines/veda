@@ -346,6 +346,7 @@ td:AndreyBychin-Analyst2
   rdfs:label "Administrator4 : Analyst"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
   v-s:official "true"^^xsd:boolean ;
+  v-s:origin "Internal User" ;
 .
 
 td:RomanKarpov
@@ -377,6 +378,7 @@ td:RomanKarpov-Analyst1
   rdfs:label "Администратор2 : Аналитик"@ru ;
   rdfs:label "Administrator2 : Аналитик"@en ;
   v-s:official "true"^^xsd:boolean ;
+  v-s:origin "Internal User" ;
 .
 
 td:RomanKarpov-CommercialDirector
@@ -391,6 +393,7 @@ td:RomanKarpov-CommercialDirector
   rdfs:label "Администратор2 : Коммерческий директор"@ru ;
   rdfs:label "Administrator2 : CommercialDirector"@en ;
   v-s:parentUnit d:org_RU1121001280 ;
+  v-s:origin "Internal User" ;
 .
 
 td:AleksandraKhvostikova
@@ -421,6 +424,7 @@ td:AleksandraKhvostikova-Analyst1
   rdfs:label "Администратор1 : Аналитик"@ru ;
   rdfs:label "Administrator1 : Analyst"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:origin "Internal User" ;
 .
 
 td:ValeriyBushenev
@@ -451,6 +455,7 @@ td:ValeriyBushenev-Programmer1
   rdfs:label "Administrator3 : Programmer"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
   v-s:official "true"^^xsd:boolean ;
+  v-s:origin "Internal User" ;
 .
 
 td:ValeriyBushenev-TechnicalDirector
@@ -465,6 +470,7 @@ td:ValeriyBushenev-TechnicalDirector
   rdfs:label "Administrator3 : Technical director"@en ;
   v-s:parentUnit d:org_RU1121001280 ;
   v-s:official "true"^^xsd:boolean ;
+  v-s:origin "Internal User" ;
 .
 
 # ---------------------------- Тестовые экземпляры маршрутов ------------------------------
@@ -478,7 +484,7 @@ td:ComplexRouteStartForm1
   v-wf:processedDocument td:SavedSearch1 ;
   v-wf:processInitiator td:RomanKarpov-Analyst1 ;
   v-wf:useTransformation s-wf:transformation1 ;
-  rdfs:label "ТЕСТ Комплексный маршрут"@ru;
+  rdfs:label "ТЕСТ Комплексный маршрут"@ru ;
   s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ;
   s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ;
   s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ;

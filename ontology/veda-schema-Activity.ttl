@@ -66,6 +66,13 @@ v-s:activityCoordinator
 .
 # v-s:member
 
+v-s:isActivityAccidental
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Activity ;
+  rdfs:label "is activity accidental"@en ;
+  rdfs:label "Нарушение существенное?"@ru ;
+  rdfs:range xsd:boolean ;
+.
 
 #---------------------------------------------------------
 v-s:Meeting

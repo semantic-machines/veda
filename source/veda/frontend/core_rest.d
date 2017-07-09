@@ -19,7 +19,8 @@ veda.common.logger.Logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-short               http_port = 8080;
+public short        http_port         = 8080;
+public bool         is_external_users = false;
 
 public const string veda_schema__File          = "v-s:File";
 public const string veda_schema__fileName      = "v-s:fileName";
@@ -204,7 +205,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         if (uri.length > 3 && _ticket !is null)
         {
-            Ticket     *ticket = context.get_ticket(_ticket);
+            Ticket     *ticket = get_ticket(context, _ticket);
 
             Individual file_info;
 
@@ -237,7 +238,11 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-                    string ss = "attachment; filename*=UTF-8''" ~ encode(originFileName);
+				    string encoded_originFileName = encode(originFileName);
+				    
+				    encoded_originFileName = encoded_originFileName.replace (",", " ");
+
+                    string ss = "attachment; filename*=UTF-8''" ~ encoded_originFileName;
 
                     res.headers[ "Content-Disposition" ] = ss;
 
@@ -266,7 +271,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
 
             if (ticket.result != ResultCode.OK)
                 throw new HTTPStatusException(ticket.result);
@@ -307,7 +312,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
             if (ticket.result != ResultCode.OK)
                 throw new HTTPStatusException(ticket.result);
 
@@ -345,10 +350,27 @@ class VedaStorageRest : VedaStorageRest_API
         {
             Individual[] res;
 
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
             if (ticket.result != ResultCode.OK)
                 throw new HTTPStatusException(ticket.result);
 
+            string     all_info;
+
+            Individual indv_info = Individual.init;
+
+            indv_info.uri = "_";
+            indv_info.addResource(rdf__type,
+                                  Resource(DataType.Uri, veda_schema__PermissionStatement));
+            indv_info.addResource(veda_schema__permissionObject,
+                                  Resource(DataType.Uri, "?"));
+            indv_info.addResource(veda_schema__permissionSubject,
+                                  Resource(DataType.Uri, "?"));
+
+
+            void trace_info(string info)
+            {
+                all_info ~= info ~ "\n";
+            }
 
             void trace_acl(string resource_group, string subject_group, string right)
             {
@@ -366,8 +388,10 @@ class VedaStorageRest : VedaStorageRest_API
                 res ~= indv_res;
             }
 
-            context.get_rights_origin_from_acl(ticket, uri, &trace_acl);
+            context.get_rights_origin_from_acl(ticket, uri, &trace_acl, &trace_info);
 
+            indv_info.addResource("rdfs:comment", Resource(all_info));
+            res ~= indv_info;
 
             json = Json[].init;
             foreach (individual; res)
@@ -411,10 +435,24 @@ class VedaStorageRest : VedaStorageRest_API
                 if (type_msg != "ticket")
                     throw new HTTPStatusException(ResultCode.Not_Authorized);
 
+                ticket.user_uri = jres[ "user_uri" ].get!string;
+
                 ticket.end_time = jres[ "end_time" ].get!long;
                 ticket.id       = jres[ "id" ].get!string;
-                ticket.user_uri = jres[ "user_uri" ].get!string;
                 ticket.result   = cast(ResultCode)jres[ "result" ].get!long;
+
+                if (is_external_users)
+                {
+                    log.trace("authenticate:check external user (%s)", ticket.user_uri);
+                    Individual user = context.get_individual(&ticket, ticket.user_uri);
+                    if (user.exists("v-s:origin", Resource("External User")) == false)
+                    {
+                        log.trace("ERR! authenticate:user (%s) is not external", ticket.user_uri);
+                        ticket = Ticket.init;
+                        throw new HTTPStatusException(ResultCode.Not_Authorized);
+                    }
+                    external_users_ticket_id[ ticket.user_uri ] = true;
+                }
 
                 //log.trace("new ticket= '%s'", ticket);
             }
@@ -611,7 +649,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-            ticket = context.get_ticket(ticket_id);
+            ticket = get_ticket(context, ticket_id);
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
@@ -654,7 +692,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
@@ -693,7 +731,7 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket;
         try
         {
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
             rc     = ticket.result;
             if (rc != ResultCode.OK)
                 return res;
@@ -746,7 +784,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
@@ -812,7 +850,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         try
         {
-            ticket = context.get_ticket(_ticket);
+            ticket = get_ticket(context, _ticket);
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
@@ -852,7 +890,7 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = context.get_ticket(_ticket);
+        ticket = get_ticket(context, _ticket);
         rc     = ticket.result;
 
         if (rc != ResultCode.OK)
@@ -876,7 +914,7 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = context.get_ticket(_ticket);
+        ticket = get_ticket(context, _ticket);
         rc     = ticket.result;
 
         if (rc != ResultCode.OK)
@@ -893,7 +931,7 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = context.get_ticket(_ticket);
+        ticket = get_ticket(context, _ticket);
         rc     = ticket.result;
 
         if (rc != ResultCode.OK)
@@ -914,7 +952,7 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = context.get_ticket(_ticket);
+        ticket = get_ticket(context, _ticket);
         rc     = ticket.result;
 
         if (rc != ResultCode.OK)
@@ -935,7 +973,7 @@ class VedaStorageRest : VedaStorageRest_API
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = context.get_ticket(_ticket);
+        ticket = get_ticket(context, _ticket);
         rc     = ticket.result;
 
         if (rc != ResultCode.OK)
@@ -1028,11 +1066,12 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 }
 
 //////////////////////////////////////////////////////////////////// ws-server-transport
-private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, bool prepare_events, string event_id, ulong start_time)
+private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, bool prepare_events, string event_id,
+                                      ulong start_time)
 {
     OpResult[] op_res;
 
-    Ticket     *ticket = context.get_ticket(_ticket);
+    Ticket     *ticket = get_ticket(context, _ticket);
 
     if (ticket.result != ResultCode.OK)
         throw new HTTPStatusException(ticket.result, text(ticket.result));
@@ -1067,7 +1106,10 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
 //        update_counter = juc[ 0 ][ "data" ].get!long;
     //set_updated_uid(juri.get!string, op_res.op_id, update_counter + 1);
 
-    // trail(_ticket, ticket.user_uri, cmd, jreq, res, op_res.result, start_time);
+    if (op_res.length == 1)
+        trail(_ticket, ticket.user_uri, cmd, jreq, res, op_res[ 0 ].result, start_time);
+    else
+        trail(_ticket, ticket.user_uri, cmd, jreq, res, ResultCode.Not_Implemented, start_time);
 
     return op_res;
 }
@@ -1131,6 +1173,36 @@ private OpResult[] parseOpResults(string str)
     }
 
     return ress;
+}
+
+private bool[ string ] external_users_ticket_id;
+
+private Ticket *get_ticket(Context context, string ticket_id)
+{
+    Ticket *ticket = context.get_ticket(ticket_id);
+
+    if (ticket.result == ResultCode.OK && is_external_users)
+    {
+        log.trace("check external user (%s)", ticket.user_uri);
+
+        if (external_users_ticket_id.get(ticket_id, false) == false)
+        {
+            Individual user = context.get_individual(ticket, ticket.user_uri);
+            if (user.exists("v-s:origin", Resource("External User")) == false)
+            {
+                log.trace("ERR! user (%s) is not external", ticket.user_uri);
+                ticket.id     = "?";
+                ticket.result = ResultCode.Not_Authorized;
+            }
+            else
+            {
+		        log.trace("user is external (%s)", ticket.user_uri);
+                external_users_ticket_id[ ticket.user_uri ] = true;
+            }    
+        }
+    }
+
+    return ticket;
 }
 
 private Task wsc_server_task;

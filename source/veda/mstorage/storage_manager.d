@@ -160,6 +160,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     core.thread.Thread.getThis().name = thread_name;
 
     LmdbStorage                  storage              = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+    
+    long count = storage.count_entries();
+    
+    log.trace ("COUNT INDIVIDUALS=%d", count);
+     
     int                          size_bin_log         = 0;
     int                          max_size_bin_log     = 10_000_000;
     string                       bin_log_name         = get_new_binlog_name(db_path);
@@ -328,9 +333,15 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         },
                         (OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
                         {
-                            immutable TransactionItem ti = tiz[ 0 ];
-
                             ResultCode rc = ResultCode.Not_Ready;
+                            if (tiz.length == 0)
+                            {
+                                rc = ResultCode.No_Content;
+                                send(tid_response_reciever, rc, thisTid);
+                                return;
+                            }
+
+                            immutable TransactionItem ti = tiz[ 0 ];
 
                             if (opt_freeze == OptFreeze.NONE && is_freeze && ti.cmd == INDV_OP.PUT)
                                 send(tid_response_reciever, rc, thisTid);

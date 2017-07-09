@@ -169,6 +169,8 @@ v-s:Level
 v-s:Link
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Link"@en ;
   rdfs:label "Связь"@ru ;
 .
@@ -381,6 +383,19 @@ v-s:ProcessStarted
   rdfs:label "Process was started"@en ;
   v-ui:hasTemplate v-ui:DocumentEventTemplate ;
 .
+######################## ПЕЧАТНАЯ ФОРМА ЖУРНАЛА ############################################################
+
+v-s:Journal_printBlank
+  rdf:type v-s:ReportsForClass ;
+  v-ui:forClass v-s:Document ;
+  v-s:filePath "/Subreports/Unidoc_Journal" ;
+  v-s:fileFormat "pdf";
+  rdfs:label "Journal print blank"@en ;
+  rdfs:label "Печатная форма журнала"@ru ;
+#  rdfs:label "pdf"@en ;
+#  rdfs:label "pdf"@ru ;
+.
+
 ####################################################################################
 
 # veda-ui-clone (v-ui:)
@@ -588,7 +603,7 @@ v-s:StatusManualTemplate
       <br class="-view edit search">
       <div rel="v-s:hasStatus" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
       <veda-control data-type="link" rel="v-s:hasStatus" class="-view edit search fulltext dropdown"></veda-control>
-      
+
       <br class="-view edit search">
       <em about="rdfs:comment" property="rdfs:label"></em>
       <div property="rdfs:comment" class="view -edit search"></div>
@@ -598,7 +613,7 @@ v-s:StatusManualTemplate
         <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
       </div>
       <br>
-      
+
       <button class="btn btn-success action -view edit -search" id="save">Ok</button>
       <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
       <button class="btn btn-link action -view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>

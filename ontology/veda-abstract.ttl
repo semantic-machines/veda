@@ -309,6 +309,13 @@ v-s:valid
   rdfs:label "Действительно"@ru ;
   rdfs:range xsd:boolean ;
 .
+v-s:colorDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:label "color"@en ;
+  rdfs:label "цвет"@ru ;
+  rdfs:range xsd:string ;
+.
 ### -------------------------------------------------------
 v-s:UserThing
   rdf:type owl:Class ;
@@ -414,6 +421,13 @@ v-s:duration
   rdfs:label "Duration"@en ;
   rdfs:label "Длительность"@ru ;
   rdfs:range xsd:integer ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:hasWorkMode
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Work mode"@en ;
+  rdfs:label "Режим работы"@ru ;
+  rdfs:range v-s:WorkMode ;
   rdfs:domain v-s:Temporal ;
 .
 ### -------------------------------------------------------
@@ -549,6 +563,13 @@ v-s:hasPaymentConditions
   rdfs:label "Payment conditions"@en ;
   rdfs:label "Условия платежа"@ru ;
   rdfs:range v-s:PaymentConditions ;
+.
+v-s:hasPaymentForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Payment form"@en ;
+  rdfs:label "Форма оплаты"@ru ;
+  rdfs:range v-s:PaymentForm ;
 .
 v-s:hasDeliveryConditions
   rdf:type owl:ObjectProperty ;
@@ -916,7 +937,7 @@ v-s:hasMaintainedObject
 .
 v-s:eliminatingTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Eliminating time"@en ;
+  rdfs:label "Elimination time"@en ;
   rdfs:label "Время устранения"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Maintained ;
@@ -961,6 +982,13 @@ v-s:hasPrice
   rdf:type owl:ObjectProperty ;
   rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
+  rdfs:range v-s:Price ;
+  rdfs:domain v-s:Financial ;
+.
+v-s:hasPricePerUnit
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Price per unit"@en ;
+  rdfs:label "Стоимость на единицу"@ru ;
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Financial ;
 .
@@ -1073,7 +1101,7 @@ v-s:signedBy
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Подписавший"@ru ;
   rdfs:label "Signed by"@en ;
-  rdfs:range xsd:string ;
+  rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:sheetsCount

@@ -82,10 +82,11 @@ veda.Module(function (veda) { "use strict";
 
   proto.set = function (property_uri, values) {
     this.isSync(false);
-    values = values.filter(function (i) { return i != undefined });
+    values = values.filter(function (i) { return i != undefined; });
     var serialized = values.map( serializer );
+    var uniq = unique(serialized);
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
-      serialized = serialized.concat( this.filtered[property_uri] );
+      uniq = serialized.concat( this.filtered[property_uri] );
     }
     if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
       this.properties[property_uri] = serialized;
@@ -93,6 +94,18 @@ veda.Module(function (veda) { "use strict";
       this.trigger(property_uri, values);
     }
   };
+
+  function unique (arr) {
+    var n = {}, r = [];
+    for(var i = 0, val; i < arr.length; i++) {
+      val = arr[i].type + arr[i].data + (arr[i].lang || "");
+      if (!n[val]) {
+        n[val] = true;
+        r.push(arr[i]);
+      }
+    }
+    return r;
+  }
 
   // Define properties from ontology in veda.IndividualModel.prototype
   veda.IndividualModel.defineProperty = function (property_uri) {
@@ -364,20 +377,25 @@ veda.Module(function (veda) { "use strict";
       } catch (e) {
         original = {};
       }
-      Object.keys(self.properties).map(function (property_uri) {
-        if (property_uri === "@") {
-          delete original[property_uri];
-          return;
-        }
+      var updated = [];
+      Object.keys(self.properties).forEach(function (property_uri) {
+        if (property_uri === "@") { return; }
         if (original[property_uri] && original[property_uri].length) {
-          self[property_uri] = original[property_uri].map( parser );
+          self.properties[property_uri] = original[property_uri];
         } else {
-          self[property_uri] = [];
+          self.properties[property_uri] = [];
         }
         delete original[property_uri];
+        updated.push(property_uri);
       });
-      Object.keys(original).map(function (property_uri) {
-        self[property_uri] = original[property_uri].map( parser );
+      Object.keys(original).forEach(function (property_uri) {
+        if (property_uri === "@") { return; }
+        self.properties[property_uri] = original[property_uri];
+        updated.push(property_uri);
+      });
+      updated.forEach(function (property_uri) {
+        self.trigger("propertyModified", property_uri, self[property_uri]);
+        self.trigger(property_uri, self[property_uri]);
       });
       self.isNew(false);
       self.isSync(true);

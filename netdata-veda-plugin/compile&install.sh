@@ -1,7 +1,8 @@
-service netdata stop
+go get github.com/BurntSushi/toml
+go build veda.d.plugin.go queue.go tools.go
 
-go build veda.d.plugin.go
-sudo cp veda.d.plugin /usr/libexec/netdata/plugins.d/
-
-sudo service netdata start
+#sudo service netdata stop
+#sudo cp veda.d.plugin /usr/libexec/netdata/plugins.d/
+#sudo cp veda-plugin-properties.ini /etc/netdata/
+#sudo service netdata start
 

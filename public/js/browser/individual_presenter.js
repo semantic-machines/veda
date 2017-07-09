@@ -322,6 +322,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     var $createReportButtons = $(".create-report-button", wrapper);
     var $showRights = $("#rightsOrigin.action", wrapper);
     var $journal = $("#journal.action", wrapper);
+    var $journalDMS = $("#journal-dms.action", wrapper);
 
     $send.on("click", function () {veda.Util.send(individual, template);});
     $createReport.on("click", function () {veda.Util.createReport(individual);});
@@ -335,6 +336,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         alert("Журнал отсутсвует / Journal empty");
       }
     });
+    $journalDMS.on("click", function() {
+      var uri = individual.id.substring(2,100);
+      var journalDMS_url = (new veda.IndividualModel("cfg:JournalDMSUrl"))["rdf:value"][0];
+      if (journalDMS_url) {
+        window.location = journalDMS_url + uri;
+      }
+    });
 
     // standard tasks
     $('ul#standard-tasks', template).each(function() {
@@ -343,6 +351,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         style:'cursor:pointer',
         click: function() {veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true)},
         html: '<a>'+(new veda.IndividualModel('v-s:Question')['rdfs:label'].join(" "))+'</a>'
+      }));
+      stask.append($('<li/>', {
+        style:'cursor:pointer',
+        click: function() {veda.Util.send(individual, template, 'v-wf:signRouteStartForm', true)},
+        html: '<a>'+(new veda.IndividualModel('v-s:Sign')['rdfs:label'].join(" "))+'</a>'
       }));
       stask.append($('<li/>', {
         style:'cursor:pointer',

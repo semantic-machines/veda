@@ -52,9 +52,9 @@ public class FanoutProcess : VedaModule
     override void receive_msg(string msg)
     {
         //log.trace("receive_msg [%s]", msg);
-        if (msg == "unload_all")
+        if (msg == "unload_batch")
         {
-            prepare_all();
+            prepare_batch();
         }
     }
 

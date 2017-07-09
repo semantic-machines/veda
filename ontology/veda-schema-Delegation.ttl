@@ -86,7 +86,7 @@ v-s:PsDelegatorForRequestDelegation
   v-ui:forProperty v-s:delegator ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person'" ;
+  v-ui:queryPrefix "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person' || ( 'rdf:type' === 'v-s:Person' && 'v-s:deleted' == true )" ;
 .
 v-s:PsDelegatedPositionForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -235,7 +235,7 @@ v-s:RequestDelegationTemplate
     $("#positions", template).empty();
     if (values.length) {
       var delegator = individual["v-s:delegator"][0];
-      var appointments_ids = query(veda.ticket, "'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'").result;
+      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')||('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'&&'v-s:deleted' == true)").result;
       var appointments = get_individuals(veda.ticket, appointments_ids);
       var positions_ids = appointments.map(function (appointment_json) {
         var appointment = new veda.IndividualModel(appointment_json);

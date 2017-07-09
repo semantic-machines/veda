@@ -65,7 +65,7 @@ body {
   font-size: 0.9em;
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
-  z-index: 10000;
+  z-index: 0;
 }
 
 /* Ribbons */
@@ -220,7 +220,7 @@ body {
 }
 
 em {
-  margin: 20px 0px 10px 0px;
+  margin: 10px 0px 5px 0px;
   font-weight: bold;
   font-style: normal;
   display: block;
@@ -384,6 +384,10 @@ textarea {
 }
 .deleted, .deleted *:not(.btn) {
   text-decoration: line-through!important;
+}
+.deleted[typeof='v-s:Appointment'], .deleted[typeof='v-s:Appointment'] * {
+  text-decoration: none!important;
+  color: #888;
 }
 
 dl {

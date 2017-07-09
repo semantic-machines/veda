@@ -119,12 +119,13 @@ class ModuleInfoFile
 
     public void close()
     {
-        if (mode == OPEN_MODE.READER)
+        if (mode == OPEN_MODE.READER && ff_module_info_r !is null)
             ff_module_info_r.close();
 
         if (mode == OPEN_MODE.READER_WRITER || mode == OPEN_MODE.WRITER)
         {
-            ff_module_info_w.close();
+        	if (ff_module_info_w !is null)
+	            ff_module_info_w.close();
             remove_lock();
         }
     }

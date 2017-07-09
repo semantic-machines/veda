@@ -21,6 +21,11 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
             {
                 data: net_element_uri,
                 type: _Uri
+            }],
+    	    'v-s:created': [
+    	    {
+        	data: new Date(),
+        	type: _Datetime
             }]
         };
 
@@ -374,6 +379,11 @@ function get_new_variable(variable_name, value)
             {
                 data: variable_name,
                 type: _String
+            }],
+    	    'v-s:created': [
+    	    {
+        	data: new Date(),
+        	type: _Datetime
             }]
         };
 
@@ -686,6 +696,11 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, 
                 {
                     data: 'v-s:Journal',
                     type: _Uri
+                }],
+    		'v-s:created': [
+    		{
+        	    data: new Date(),
+        	    type: _Datetime
                 }]
             };
 
@@ -784,7 +799,12 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
             {
                 var new_message_uri = genUri();
                 var new_message = {
-                    '@': new_message_uri
+                    '@': new_message_uri,
+    		    'v-s:created': [
+    		    {
+        		data: new Date(),
+        		type: _Datetime
+    		    }]
                 };
                 var template;
 
@@ -903,7 +923,12 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, jtype)
     var set_journal_to_element;
     set_journal_to_element = {
         '@': el_uri,
-        'v-wf:traceJournal': newUri(new_sub_journal_uri)
+        'v-wf:traceJournal': newUri(new_sub_journal_uri),
+        'v-s:created': [
+        {
+            data: new Date(),
+            type: _Datetime
+        }]
     };
     add_to_individual(ticket, set_journal_to_element, _event_id);
 
@@ -1014,6 +1039,11 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                 {
                     data: parent_process_uri,
                     type: _Uri
+                }],
+    		'v-s:created': [
+    		{
+        	    data: new Date(),
+        	    type: _Datetime
                 }]
             };
 

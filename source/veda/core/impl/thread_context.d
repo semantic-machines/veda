@@ -86,7 +86,64 @@ class PThreadContext : Context
             }
         }
 
-        private OpResult[] reqrep_2_main_module(ref JSONValue jreq)
+        private OpResult[] reqrep_binobj_2_main_module(string req)
+        {
+            OpResult[] ress;
+
+            int        sock = get_sock_2_main_module();
+
+            if (sock >= 0)
+            {
+                char *buf = cast(char *)0;
+                int  bytes;
+
+                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+                //log.trace("N_CHANNEL BINOBJ send [%d](%s)", req.length, req);
+                bytes = nn_recv(sock, &buf, NN_MSG, 0);
+                if (bytes > 0)
+                {
+                    string rep = to!string(buf);
+                    //log.trace("N_CHANNEL BINOBJ recv (%s)", rep);
+
+                    JSONValue jres = parseJSON(rep);
+
+                    if (jres[ "type" ].str == "OpResult")
+                    {
+                        JSONValue data = jres[ "data" ];
+                        if (data !is JSONValue.init)
+                        {
+                            foreach (ii; data.array)
+                            {
+                                OpResult res;
+
+
+                                res.op_id  = ii[ "op_id" ].integer;
+                                res.result = cast(ResultCode)ii[ "result" ].integer;
+                                ress ~= res;
+                            }
+                        }
+                        else
+                        {
+                            OpResult res;
+                            res.op_id  = jres[ "op_id" ].integer;
+                            res.result = cast(ResultCode)jres[ "result" ].integer;
+                            ress ~= res;
+                        }
+                    }
+
+                    nn_freemsg(buf);
+                }
+            }
+            else
+            {
+                log.trace("ERR! N_CHANNEL: invalid socket");
+            }
+
+            return ress;
+        }
+
+
+        private OpResult[] reqrep_json_2_main_module(ref JSONValue jreq)
         {
             OpResult[] ress;
             string     req = jreq.toString();
@@ -284,7 +341,7 @@ class PThreadContext : Context
         }
 
         //writeln ("@p ### uri=", uri, " ", request_acess);
-        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, is_check_for_reload, null, null);
+        ubyte res = acl_indexes.authorize(uri, ticket, request_acess, is_check_for_reload, null, null, null);
 
         //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
         return request_acess == res;
@@ -578,19 +635,19 @@ class PThreadContext : Context
 
     public ubyte get_rights(Ticket *ticket, string uri)
     {
-        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, null);
+        return acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, null, null);
     }
 
     public void get_rights_origin_from_acl(Ticket *ticket, string uri,
-                                           void delegate(string resource_group, string subject_group, string right) trace_acl)
+                                           void delegate(string resource_group, string subject_group, string right) trace_acl, void delegate(string log) trace_info)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null, trace_info);
     }
 
     public void get_membership_from_acl(Ticket *ticket, string uri,
                                         void delegate(string resource_group) trace_group)
     {
-        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, trace_group);
+        acl_indexes.authorize(uri, ticket, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, trace_group, null);
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
@@ -627,7 +684,7 @@ class PThreadContext : Context
             string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
             if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
                 {
                     if (individual.deserialize(individual_as_binobj) > 0)
                         individual.setStatus(ResultCode.OK);
@@ -670,7 +727,7 @@ class PThreadContext : Context
 
             foreach (uri; uris)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
+                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
                 {
                     Individual individual           = Individual.init;
                     string     individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
@@ -720,7 +777,7 @@ class PThreadContext : Context
 
         try
         {
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
             {
                 string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
 
@@ -755,8 +812,8 @@ class PThreadContext : Context
     static const byte EXISTS_TYPE = 1;
 
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
-                                       bool ignore_freeze,
-                                       bool is_api_request)
+                           OptFreeze opt_freeze,
+                           OptAuthorize opt_request)
     {
         //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
@@ -802,7 +859,7 @@ class PThreadContext : Context
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
-                res = reqrep_2_main_module(req_body)[ 0 ];
+                res = reqrep_json_2_main_module(req_body)[ 0 ];
                 //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
@@ -823,39 +880,40 @@ class PThreadContext : Context
     }
 
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
-                                   bool ignore_freeze = false, bool is_api_request = true)
+                                   OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, bool ignore_freeze,
-                                      bool is_api_request = true)
+    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id,
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         Individual individual;
+
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
-                                      bool ignore_freeze = false, bool is_api_request = true)
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
-                                      bool ignore_freeze = false, bool is_api_request = true)
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           long transaction_id, bool ignore_freeze = false, bool is_api_request = true)
+                                           long transaction_id, OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, ignore_freeze, is_api_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, opt_freeze, opt_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -887,7 +945,7 @@ class PThreadContext : Context
         {
             JSONValue req_body;
             req_body[ "function" ] = "freeze";
-            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
+            OpResult  res = reqrep_json_2_main_module(req_body)[ 0 ];
         }
     }
 
@@ -897,7 +955,7 @@ class PThreadContext : Context
         {
             JSONValue req_body;
             req_body[ "function" ] = "unfreeze";
-            OpResult  res = reqrep_2_main_module(req_body)[ 0 ];
+            OpResult  res = reqrep_json_2_main_module(req_body)[ 0 ];
         }
     }
 
@@ -981,54 +1039,97 @@ class PThreadContext : Context
 
     public ResultCode commit(Transaction *in_tnx)
     {
-        ResultCode  rc;
-        long        op_id;
+        ResultCode rc;
+        long       op_id;
 
-        foreach (item; in_tnx.get_queue())
+        if (in_tnx.get_queue().length == 0)
         {
-            if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
-                continue;
-
-            if (item.rc != ResultCode.OK)
-                return item.rc;
-
-            Ticket *ticket = this.get_ticket(item.ticket_id);
-
-            //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-
-            rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, false, true).result;
-
-            if (rc == ResultCode.No_Content)
-            {
-                this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
-            }
-
-            if (rc != ResultCode.OK && rc != ResultCode.No_Content)
-            {
-                this.get_logger().trace("FAIL COMMIT");
-                return rc;
-            }
-            //else
-            //log.trace ("SUCCESS COMMIT");
+            return ResultCode.OK;
         }
 
-        if (in_tnx.is_autocommit == false)
+        if (in_tnx.is_autocommit == true)
+        {
+            foreach (item; in_tnx.get_queue())
+            {
+                if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
+                    continue;
+
+                if (item.rc != ResultCode.OK)
+                    return item.rc;
+
+                Ticket *ticket = this.get_ticket(item.ticket_id);
+
+                //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, OptFreeze.NONE, OptAuthorize.YES).result;
+
+                if (rc == ResultCode.No_Content)
+                {
+                    this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
+                }
+
+                if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+                {
+                    this.get_logger().trace("FAIL COMMIT");
+                    return rc;
+                }
+                //else
+                //log.trace ("SUCCESS COMMIT");
+            }
+        }
+        else
         {
             version (isModule)
             {
-                //log.trace("[%s] add_to_transaction: isModule", name);
+                //log.trace("@0 -------------------------------------------------------------------------------------------");
+                //log.trace("@1 commit, tnx.id=%s tnx.len=%d", in_tnx.id, in_tnx.get_queue().length);
 
-                string    scmd = "commit";
+                Individual imm;
+                imm.uri = "tnx:" ~ text(in_tnx.id);
+                imm.addResource("fn", Resource(DataType.String, "commit"));
 
-                JSONValue req_body;
-                req_body[ "function" ] = scmd;
-                req_body[ "tnx_id" ]   = in_tnx.id;
-                req_body[ "items" ]    = to_json(in_tnx.get_immutable_queue);
+                Resources items;
 
-                log.trace("[%s] commit: (isModule), req=(%s)", name, req_body.toString());
+                int       idx = 0;
+                foreach (ti; in_tnx.get_queue())
+                {
+                    //log.trace("@2 ti=%s", ti);
+                    Individual iti;
 
-                OpResult res = reqrep_2_main_module(req_body)[ 0 ];
-                log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
+                    iti.uri = "el:" ~ text(idx);
+                    iti.addResource("cmd", Resource(ti.cmd));
+
+                    if (ti.user_uri !is null && ti.user_uri.length > 0)
+                        iti.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
+
+                    iti.addResource("uri", Resource(DataType.Uri, ti.uri));
+
+                    if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+                        iti.addResource("prev_binobj", Resource(DataType.String, ti.prev_binobj));
+
+                    if (ti.new_binobj !is null && ti.new_binobj.length > 0)
+                        iti.addResource("new_binobj", Resource(DataType.String, ti.new_binobj));
+
+                    iti.addResource("update_counter", Resource(DataType.Integer, ti.update_counter));
+                    iti.addResource("event_id", Resource(DataType.String, ti.event_id));
+
+                    string iti_binobj = iti.serialize();
+                    items ~= Resource(iti_binobj);
+                }
+
+                imm.setResources("items", items);
+
+                string binobj = imm.serialize();
+
+                //log.trace("[%s] commit: (isModule), req=(%s)", name, binobj);
+
+                OpResult res = reqrep_binobj_2_main_module(binobj)[ 0 ];
+                //log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
+
+                if (res.result != ResultCode.OK && res.result != ResultCode.No_Content)
+                {
+                    this.get_logger().trace("FAIL COMMIT");
+                    return res.result;
+                }
             }
         }
         return ResultCode.OK;
