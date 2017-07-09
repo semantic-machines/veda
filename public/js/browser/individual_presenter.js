@@ -340,7 +340,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var uri = individual.id.substring(2,100);
       var journalDMS_url = (new veda.IndividualModel("cfg:JournalDMSUrl"))["rdf:value"][0];
       if (journalDMS_url) {
-        window.location = journalDMS_url + uri;
+        //window.location = journalDMS_url + uri;
+        window.open(journalDMS_url + uri, "journal-dms");
       }
     });
 
