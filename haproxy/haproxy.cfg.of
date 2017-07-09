@@ -24,9 +24,10 @@ defaults
   option  httplog
   #option  dontlognull
   #option  dontlog-normal
-  timeout connect 5000
-  timeout client  50000
-  timeout server  50000
+  timeout connect 5s
+  timeout client  50s
+  timeout server  50s
+  timeout tunnel  1h
 
   errorfile 400 /etc/haproxy/errors/400.http
   errorfile 403 /etc/haproxy/errors/403.http
@@ -61,7 +62,6 @@ backend query
   balance roundrobin
   option forwardfor
   option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-  server query8080 127.0.0.1:8080 check
   server query8081 127.0.0.1:8081 check
   server query8082 127.0.0.1:8082 check
   server query8083 127.0.0.1:8083 check
