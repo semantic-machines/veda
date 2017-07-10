@@ -1968,7 +1968,7 @@ if (doc) {
     }
 
     var orderCreator = []; // Создатель заказа
-    if ( doc.hasValue("mnd-s:hasPurchaseOrder") && doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator") ) {
+    if ( doc.hasValue("mnd-s:hasPurchaseOrder") && doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator") && !doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator", "d:SYK-PORTALMS_appointment") ) {
       orderCreator = doc["mnd-s:hasPurchaseOrder"][0]["v-s:creator"];
     }
 
