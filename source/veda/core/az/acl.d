@@ -149,7 +149,7 @@ class Authorization : LmdbStorage
             MDB_val   data;
             string    skey;
 
-            Right *[] _get_resource_groups(string uri, ubyte access, Right *parent, int level = 0)
+            Right *[] _get_resource_groups(string uri, ubyte access, ref ubyte[ string ] prepared_uris, int level = 0)
             {
                 Right *[] res;
 
@@ -188,50 +188,29 @@ class Authorization : LmdbStorage
                     for (int idx = 0; idx < res_lenght; idx++)
                     {
                         Right *group = res[ idx ];
-                        group.src_access = group.access;
-                        
-                        group.parent = parent;
+
+                        if (group.id in prepared_uris)
+                        {                        	
+                        	if (prepared_uris[group.id] == group.access)
+                        	{
+                                if (trace_info !is null)
+                                    trace_info(format("%s (%d)GROUP [%s].access=%s ALREADY ADDED", ll, level, group.id, access_to_pretty_string(group.access)));
+
+	                            continue;
+                        	}    
+                        }    
 
                         if (trace_info !is null)
-                            trace_info(format("%s (%d)GROUP: [%s].access=%s", ll, level, group.id, access_to_pretty_string(group.src_access)));
-
-                        group.access = group.access & access;
-
-                        //проверим путь на зацикливание
-
-                        Right *ii     = parent;
-                        byte parent_access;
-                        
-                        bool  is_loop = false;
-
-                        while (ii !is null)
-                        {
-                            //log.trace("group.id=%s ii.id=%s", group.id, ii.id);
-
-                            if (ii.id == group.id && ii.src_access == group.src_access)
-                            {
-                                if (trace_info !is null)
-                                    trace_info(format("%s ERR: LOOP DETECTED: [%s]", ll, group.id));
-
-                                log.trace("ERR! LOOP DETECTED: [%s]", group.id);
-
-                                res ~= group;
-                                is_loop = true;
-                                break;
-                            }
-
-                            ii = ii.parent;
-                        }
-
-                        if (is_loop)
-                            continue;
+                            trace_info(format("%s (%d)GROUP [%s].access=%s", ll, level, group.id, access_to_pretty_string(group.access)));
 
                         string group_key = membership_prefix ~ group.id;
+                        prepared_uris[ group.id ] = group.access;
+                        group.access = group.access & access;
 
                         if (uri == group_key)
                             continue;
 
-                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, group, level + 1);
+                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, prepared_uris, level + 1);
                         foreach (restriction; up_restrictions)
                         {
                             res ~= restriction;
@@ -247,9 +226,8 @@ class Authorization : LmdbStorage
 
             RightSet get_resource_groups(string uri, ubyte access)
             {
-                Right rr = Right(uri, 0, 0, null);
-
-                return new RightSet(_get_resource_groups(uri, access, &rr, 0), log);
+                ubyte[ string ] prepared_uris;
+                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0), log);
             }
 
             // 0. читаем фильтр прав у object (uri)
@@ -266,7 +244,7 @@ class Authorization : LmdbStorage
 
             // 1. читаем группы object (uri)
             if (trace_info !is null)
-                trace_info(format("READ OBJECT GROUPS"));
+                trace_info(format("\nREAD OBJECT GROUPS"));
             RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
@@ -275,7 +253,7 @@ class Authorization : LmdbStorage
 
             // 2. читаем группы subject (ticket.user_uri)
             if (trace_info !is null)
-                trace_info(format("READ SUBJECT GROUPS"));
+                trace_info(format("\nREAD SUBJECT GROUPS"));
             RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
             if (trace_info !is null)
@@ -518,5 +496,4 @@ unittest
 
     writeln("unittest [Authorization: store permission] Ok");
 }
-
 

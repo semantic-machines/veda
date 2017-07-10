@@ -15,9 +15,6 @@ struct Right
     ubyte  access;
     bool   is_deleted = false;
 
-	Right* parent; 
-    ubyte  src_access;
-
     void   toString(scope void delegate(const(char)[]) sink) const
     {
         string aaa = access_to_pretty_string(access);
