@@ -29,8 +29,8 @@ basic.getThreeDrivers().forEach(function (drv) {
         driver.sleep(basic.FAST_OPERATION);
         basic.execute(driver, 'click', 'button[id="export-ttl"]', "Cannot click on 'export-ttl' button");
 
-        //var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
-        var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
+        var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
+        //var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
         basic.openCreateDocumentForm(driver, 'Отчет', 'v-s:Report');
         driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
         basic.execute(driver, 'sendKeys', 'input[type="file"]', "Cannot find '" + filePath + "' file", filePath);
@@ -56,8 +56,8 @@ basic.getThreeDrivers().forEach(function (drv) {
         basic.execute(driver, 'click', 'button[id="export-ttl"]', "Cannot click on 'export-ttl' button");
 
 
-        //var filePath = 'C:\\Users\\Administrator\\Downloads\\exported_graph.ttl';
-        var filePath = "C:\\Users\\zugzug\\Downloads\\exported_graph.ttl";
+        var filePath = 'C:\\Users\\Administrator\\Downloads\\exported_graph.ttl';
+        //var filePath = "C:\\Users\\zugzug\\Downloads\\exported_graph.ttl";
         basic.openCreateDocumentForm(driver, 'Отчет', 'v-s:Report');
         driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
         basic.execute(driver, 'sendKeys', 'input[type="file"]', "Cannot find '" + filePath + "' file", filePath);
