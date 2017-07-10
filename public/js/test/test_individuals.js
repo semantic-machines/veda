@@ -1248,4 +1248,113 @@ for (i = 0; i < 1; i++)
         //#1
         ok(res.result.length == 0);
     });
+/*
+    test("#021 test put_individuals (user1 stores three individuals)", function()
+    {   
+        var ticket_user1 = get_user1_ticket();
+        
+        //#1
+        ok(ticket_user1.id.length > 0);
+        
+        var new_test_doc1_uri_1 = "test21_1:" + guid();
+        
+        var test_data_uid = guid();
+        var test_data = 'testdata ' + test_data_uid;
+            
+        var new_test_doc1 = {
+            '@': new_test_doc1_uri_1,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newStr(test_data, 'NONE'),
+            'v-s:test_fieldA': newUri('BBB' + test_data_uid),
+            'v-s:test_fieldB': newUri('CCC' + test_data_uid)
+        };
+
+        // document content author != user1
+        var new_test_doc1_uri_2 = "test21_2:" + guid();
+        var new_test_doc2 = {
+            '@': new_test_doc1_uri_2,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newUri(test_data)
+        };
+
+        var new_test_doc1_uri_3 = "test21_3:" + guid();
+        var new_test_doc3 = {
+            '@': new_test_doc1_uri_3,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newUri(test_data),
+            'v-s:test_fieldA': newUri('BBB' + test_data_uid)
+        };
+        var res = put_individuals(ticket_user1.id, [new_test_doc1, new_test_doc2, new_test_doc3], false);
+        var read_individual1 = get_individual(ticket_user1.id, new_test_doc1_uri_1);
+        var read_individual2 = get_individual(ticket_user1.id, new_test_doc1_uri_2);
+        var read_individual3 = get_individual(ticket_user1.id, new_test_doc1_uri_3);
+        //#2
+        ok(compare(new_test_doc1, read_individual1) && compare(new_test_doc2, read_individual2) &&
+            compare(new_test_doc3, read_individual3));
+    }); 
+*/
+    test("#022 test get_rights_origin", function()
+    {
+        var ticket_admin = get_admin_ticket();
+    
+        var res = get_rights_origin(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var result_rights = 0;
+        res.forEach(function(item, i) {
+            if (res[i]["v-s:canCreate"]) {
+                result_rights |= 1;
+            } else if (res[i]["v-s:canRead"]) {
+                result_rights |= 2;
+            } else if (res[i]["v-s:canUpdate"]) {
+                result_rights |= 4;
+            } else if (res[i]["v-s:canDelete"]) {
+                result_rights |= 8;
+            } 
+        });
+            
+        var res = get_rights(ticket_admin.id, "td:Preferences_RomanKarpov");
+        var expected_rights = 0;
+        if (res["v-s:canCreate"]) {
+            expected_rights |= 1;
+        }
+        if (res["v-s:canRead"]) {
+            expected_rights |= 2;
+        }
+        if (res["v-s:canUpdate"]) {
+            expected_rights |= 4;
+        }
+        if (res["v-s:canDelete"]) {
+            expected_rights |= 8;
+        }
+            
+        ok(result_rights == expected_rights);
+    });
+
+    test("#023 test get_membership", function()
+    {
+    //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
+    
+        var ticket_admin = get_admin_ticket();
+
+        var res = get_membership(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var check = true;
+        var found = 0;
+        res["v-s:memberOf"].forEach(function(item, i) {
+            switch (res["v-s:memberOf"][i]["data"]) {
+                case "td:Preferences_RomanKarpov":
+                case "v-s:AllResourcesGroup":
+                case "cfg:TTLResourcesGroup":
+                    found++
+                    break;
+                default:
+                    check = false;
+                    break;
+            }
+        });
+            
+        ok(check && (found == 3));
+    });     
+
 }
