@@ -16,6 +16,7 @@ struct Right
     bool   is_deleted = false;
 
 	Right* parent; 
+    ubyte  src_access;
 
     void   toString(scope void delegate(const(char)[]) sink) const
     {

@@ -158,7 +158,7 @@ class Authorization : LmdbStorage
                 if (trace_info !is null)
                 {
                     if (level < lstr.length)
-                        ll = lstr[ 0..level ];
+                        ll = lstr[ 0..level*2 ];
                     else
                         ll = text(level);
                 }
@@ -188,23 +188,27 @@ class Authorization : LmdbStorage
                     for (int idx = 0; idx < res_lenght; idx++)
                     {
                         Right *group = res[ idx ];
+                        group.src_access = group.access;
+                        
                         group.parent = parent;
 
                         if (trace_info !is null)
-                            trace_info(format("%s GROUP: [%s]", ll, group.id));
+                            trace_info(format("%s (%d)GROUP: [%s].access=%s", ll, level, group.id, access_to_pretty_string(group.src_access)));
 
                         group.access = group.access & access;
 
                         //проверим путь на зацикливание
 
                         Right *ii     = parent;
+                        byte parent_access;
+                        
                         bool  is_loop = false;
 
                         while (ii !is null)
                         {
                             //log.trace("group.id=%s ii.id=%s", group.id, ii.id);
 
-                            if (ii.id == group.id && ii.access == group.access)
+                            if (ii.id == group.id && ii.src_access == group.src_access)
                             {
                                 if (trace_info !is null)
                                     trace_info(format("%s ERR: LOOP DETECTED: [%s]", ll, group.id));
