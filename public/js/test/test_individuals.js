@@ -1357,4 +1357,39 @@ for (i = 0; i < 1; i++)
         ok(check && (found == 3));
     });     
 
+    test("#024 test cycle of group", function()
+    {
+        var ticket_admin = get_admin_ticket();
+
+        var new_test_doc1 = create_test_document1(ticket_admin);
+
+        var group_A = 'g:group_A' + guid();
+        var group_B = 'g:group_B' + guid();
+        var group_C = 'g:group_C' + guid();
+
+        var res;
+
+        res = addToGroup(ticket_admin, group_A, group_B);        
+        ok (res[1].result == 200);
+        
+        res = addToGroup(ticket_admin, group_B, group_C);
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_C, group_A);
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_C, new_test_doc1['@']);
+        ok (res[1].result == 200);
+
+        res = addRight(ticket_admin.id, [can_read], group_C, new_test_doc1['@']);
+        ok (res[1].result == 200);
+
+        wait_module(acl_manager, res[1].op_id);
+
+        check_rights_success(ticket_admin.id, new_test_doc1['@'], [can_read]);
+		
+
+    });     
+
+
 }

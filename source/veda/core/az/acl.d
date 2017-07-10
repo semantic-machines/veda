@@ -10,7 +10,9 @@ private
     import veda.util.container, veda.util.module_info;
 }
 
-int max_count_in_cache = 200;
+string lstr = "                                                                           ";
+
+int    max_count_in_cache = 200;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -147,20 +149,25 @@ class Authorization : LmdbStorage
             MDB_val   data;
             string    skey;
 
-            Right *[] _get_resource_groups(string uri, ubyte access, ref bool[ string ] prepared_uris, int level = 0)
+            Right *[] _get_resource_groups(string uri, ubyte access, Right *parent, int level = 0)
             {
                 Right *[] res;
 
-                //writeln ("~10 level=", level, ", uri=", uri);
+                string    ll;
+
+                if (trace_info !is null)
+                {
+                    if (level < lstr.length)
+                        ll = lstr[ 0..level ];
+                    else
+                        ll = text(level);
+                }
 
                 try
                 {
                     string groups_str;
                     if (cache_of_group !is null)
-                    {
                         res = cache_of_group.get(uri);
-                        //writeln ("ACL:CACHE:found in cache, uri=", uri);
-                    }
 
                     if (res is null)
                     {
@@ -181,19 +188,46 @@ class Authorization : LmdbStorage
                     for (int idx = 0; idx < res_lenght; idx++)
                     {
                         Right *group = res[ idx ];
+                        group.parent = parent;
 
-                        if (prepared_uris.get(group.id, false) == true)
+                        if (trace_info !is null)
+                            trace_info(format("%s GROUP: [%s]", ll, group.id));
+
+                        group.access = group.access & access;
+
+                        //проверим путь на зацикливание
+
+                        Right *ii     = parent;
+                        bool  is_loop = false;
+
+                        while (ii !is null)
+                        {
+                            //log.trace("group.id=%s ii.id=%s", group.id, ii.id);
+
+                            if (ii.id == group.id && ii.access == group.access)
+                            {
+                                if (trace_info !is null)
+                                    trace_info(format("%s ERR: LOOP DETECTED: [%s]", ll, group.id));
+
+                                log.trace("ERR! LOOP DETECTED: [%s]", group.id);
+
+                                res ~= group;
+                                is_loop = true;
+                                break;
+                            }
+
+                            ii = ii.parent;
+                        }
+
+                        if (is_loop)
                             continue;
 
                         string group_key = membership_prefix ~ group.id;
-                        group.access = group.access & access;
-                        //res ~= group;
-                        prepared_uris[ group.id ] = true;
 
                         if (uri == group_key)
                             continue;
 
-                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, prepared_uris, level + 1);
+                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, group, level + 1);
                         foreach (restriction; up_restrictions)
                         {
                             res ~= restriction;
@@ -209,8 +243,9 @@ class Authorization : LmdbStorage
 
             RightSet get_resource_groups(string uri, ubyte access)
             {
-                bool[ string ] prepared_uris;
-                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0), log);
+                Right rr = Right(uri, 0, 0, null);
+
+                return new RightSet(_get_resource_groups(uri, access, &rr, 0), log);
             }
 
             // 0. читаем фильтр прав у object (uri)
@@ -220,33 +255,32 @@ class Authorization : LmdbStorage
             key.mv_data = cast(char *)filter;
             rc          = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
-            {
                 filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-            }
+
+            if (trace_info !is null)
+                trace_info(format("user_uri=%s", ticket.user_uri));
 
             // 1. читаем группы object (uri)
+            if (trace_info !is null)
+                trace_info(format("READ OBJECT GROUPS"));
             RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+            if (trace_info !is null)
+                trace_info(format("object_groups=%s", object_groups));
 
             // 2. читаем группы subject (ticket.user_uri)
+            if (trace_info !is null)
+                trace_info(format("READ SUBJECT GROUPS"));
             RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
-
             if (trace_info !is null)
-            {
-                trace_info(format("user_uri=%s", ticket.user_uri));
                 trace_info(format("subject_groups=%s", subject_groups));
-                trace_info(format("object_groups=%s", object_groups));
-            }
-
 
             foreach (object_group; object_groups.data)
             {
                 if (trace_group !is null)
-                {
                     trace_group(object_group.id);
-                }
 
                 string acl_key;
                 if (filter_value !is null)
@@ -480,4 +514,5 @@ unittest
 
     writeln("unittest [Authorization: store permission] Ok");
 }
+
 
