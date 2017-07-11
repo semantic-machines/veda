@@ -39,7 +39,7 @@ function generate_test_document1(ticket)
     var new_test_doc1_uri = guid();
     var new_test_doc1 = {
         '@': new_test_doc1_uri,
-        'rdf:type': newUri('v-s:test-data-types'),
+        'rdf:type': newUri('rdfs:Resource'),
         'v-s:test_integer': newInt(9223372036854775295),
         'v-s:test_negative_integer': newInt(-144365435),
         'v-s:test_decimal': newDecimal(12.12345678912345),
@@ -66,9 +66,13 @@ function generate_test_document1(ticket)
     return new_test_doc1;
 }
 
-function create_test_document1(ticket)
+function create_test_document1(ticket, prefix)
 {
     var new_test_doc1 = generate_test_document1(ticket)
+
+    if (prefix)
+	new_test_doc1['@'] = prefix + new_test_doc1['@']
+	
     var res = put_individual(ticket.id, new_test_doc1);
     wait_module(subject_manager, res.op_id);
     wait_module(acl_manager, res.op_id);
@@ -1058,12 +1062,12 @@ for (i = 0; i < 1; i++)
             var ticket2 = get_user2_ticket();
 
             var res;
-            var doc1 = create_test_document1(ticket1);
-            var doc2 = create_test_document1(ticket1);
-            var doc3 = create_test_document1(ticket1);
-            var doc_group1_uri = 'g:doc_group_' + guid();
-            var doc_group2_uri = 'g:doc_group_' + guid();
-            var doc_group3_uri = 'g:doc_group_' + guid();
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
 
             //#1
             res = test_success_read(ticket1, doc1['@'], doc1);
@@ -1123,12 +1127,12 @@ for (i = 0; i < 1; i++)
             var ticket2 = get_user2_ticket();
 
             var res;
-            var doc1 = create_test_document1(ticket1);
-            var doc2 = create_test_document1(ticket1);
-            var doc3 = create_test_document1(ticket1);
-            var doc_group1_uri = 'g:doc_group_' + guid();
-            var doc_group2_uri = 'g:doc_group_' + guid();
-            var doc_group3_uri = 'g:doc_group_' + guid();
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
 
             //#1
             res = test_success_read(ticket1, doc1['@'], doc1);
