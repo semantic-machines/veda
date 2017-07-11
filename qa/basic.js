@@ -61,8 +61,8 @@ module.exports = {
          } else {
               return [
                   {'os': 'Windows 7', 'browser': 'chrome', 'version': '43.0'},
-                  {'os': 'Windows 7', 'browser': 'firefox', 'version': '40.0'},
-                  // {'os': 'Windows 7', 'browser': 'internet explorer', 'version': '11.0'}
+                  {'os': 'Windows 7', 'browser': 'firefox', 'version': '46.0'},
+                  {'os': 'Windows 7', 'browser': 'internet explorer', 'version': '11.0'}
               ];
          }
     },
