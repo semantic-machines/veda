@@ -2168,7 +2168,8 @@ if (doc) {
 
       // согласование 1 уровня
       if (doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
-        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00009992_71024618") // Дмитриева
+        || doc.hasValue("v-s:businessTripEmployee", "d:73ff1ce67c77f6815c56b697") // Дмитриева
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков
@@ -2230,7 +2231,8 @@ if (doc) {
       }
 
       // Подписание
-      if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер*
+      if( doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00009992_71024618") // Дмитриева
+        || doc.hasValue("v-s:businessTripEmployee", "d:73ff1ce67c77f6815c56b697") // Дмитриева
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков*
@@ -2250,7 +2252,7 @@ if (doc) {
         routes['sign'][simple+'editable'] = [false];
       } else if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758")//Пеллер
       ) {
-        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00069177_71015289")];//Шаллеггер*
+        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71015289")];//Финансовый директор
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
       } else if(!doc.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")){
