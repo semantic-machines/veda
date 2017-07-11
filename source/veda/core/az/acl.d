@@ -158,7 +158,7 @@ class Authorization : LmdbStorage
                 if (trace_info !is null)
                 {
                     if (level < lstr.length)
-                        ll = lstr[ 0..level*2 ];
+                        ll = lstr[ 0..level * 2 ];
                     else
                         ll = text(level);
                 }
@@ -190,22 +190,24 @@ class Authorization : LmdbStorage
                         Right *group = res[ idx ];
 
                         if (group.id in prepared_uris)
-                        {                        	
-                        	if (prepared_uris[group.id] == group.access)
-                        	{
+                        {
+                            if (prepared_uris[ group.id ] == group.access)
+                            {
                                 if (trace_info !is null)
-                                    trace_info(format("%s (%d)GROUP [%s].access=%s ALREADY ADDED", ll, level, group.id, access_to_pretty_string(group.access)));
+                                    trace_info(format("%s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", ll, level, group.id, access_to_pretty_string(group.access)));
 
-	                            continue;
-                        	}    
-                        }    
+                                continue;
+                            }
+                        }
 
-                        if (trace_info !is null)
-                            trace_info(format("%s (%d)GROUP [%s].access=%s", ll, level, group.id, access_to_pretty_string(group.access)));
+                        ubyte  tmp_access = group.access;
 
                         string group_key = membership_prefix ~ group.id;
+                        group.access              = group.access & access;
                         prepared_uris[ group.id ] = group.access;
-                        group.access = group.access & access;
+
+                        if (trace_info !is null)
+                            trace_info(format("%s (%d)GROUP [%s] %s-> %s", ll, level, group.id, access_to_pretty_string(tmp_access), access_to_pretty_string(group.access)));
 
                         if (uri == group_key)
                             continue;
