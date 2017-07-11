@@ -851,7 +851,7 @@ for (i = 0; i < 1; i++)
         {
             var ticket_user1 = get_user1_ticket();
 
-            //#1 
+            //#1
             ok(ticket_user1.id.length > 0);
 
             var new_test_doc1_uri = "test14:" + guid();
@@ -871,7 +871,7 @@ for (i = 0; i < 1; i++)
             //#2
             ok(compare(new_test_doc1, read_individual));
 
-	    /////////////////////////// ADD TO
+      /////////////////////////// ADD TO
 
             var new_test_add1 = {
                 '@': new_test_doc1_uri,
@@ -913,8 +913,8 @@ for (i = 0; i < 1; i++)
 
             //#3
             ok(compare(new_test_doc1_add1, read_individual));
-	    
-	    ////////////////////////// SET IN	    
+
+      ////////////////////////// SET IN
 
             var new_test_set1 = {
                 '@': new_test_doc1_uri,
@@ -937,7 +937,7 @@ for (i = 0; i < 1; i++)
             //#4
             ok(compare(new_test_doc1_set1, read_individual));
 
-	    /////////////////////// REMOVE FROM
+      /////////////////////// REMOVE FROM
 
             var new_test_remove_from1 = {
                 '@': new_test_doc1_uri,
@@ -1051,7 +1051,7 @@ for (i = 0; i < 1; i++)
             res = test_success_read(ticket2, doc2['@'], doc2, true);
         });
 
-    test("#017 Nested groups with restrictions",
+    test("#017-1 Nested groups with restrictions",
         function()
         {
             var ticket1 = get_user1_ticket();
@@ -1113,6 +1113,73 @@ for (i = 0; i < 1; i++)
 
             //#10
             check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
+
+        });
+
+    test("#017-2 Nested groups with restrictions",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1);
+            var doc2 = create_test_document1(ticket1);
+            var doc3 = create_test_document1(ticket1);
+            var doc_group1_uri = 'g:doc_group_' + guid();
+            var doc_group2_uri = 'g:doc_group_' + guid();
+            var doc_group3_uri = 'g:doc_group_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            //#5
+            res = test_success_read(ticket1, doc3['@'], doc3);
+
+            //#6
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+
+            res = addToGroup(ticket1, doc_group1_uri, doc3['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc3['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc1['@']);
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc1['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            //#7
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+
+            //#8
+            check_rights_success(ticket2.id, doc3['@'], [can_read]);
+
+            //#9
+            check_rights_success(ticket2.id, doc3['@'], [can_update]);
+
+            //#10
+            check_rights_success(ticket2.id, doc3['@'], [can_delete]);
 
         });
 
@@ -1250,17 +1317,17 @@ for (i = 0; i < 1; i++)
     });
 /*
     test("#021 test put_individuals (user1 stores three individuals)", function()
-    {   
+    {
         var ticket_user1 = get_user1_ticket();
-        
+
         //#1
         ok(ticket_user1.id.length > 0);
-        
+
         var new_test_doc1_uri_1 = "test21_1:" + guid();
-        
+
         var test_data_uid = guid();
         var test_data = 'testdata ' + test_data_uid;
-            
+
         var new_test_doc1 = {
             '@': new_test_doc1_uri_1,
             'rdf:type': newUri('rdfs:Resource'),
@@ -1294,12 +1361,12 @@ for (i = 0; i < 1; i++)
         //#2
         ok(compare(new_test_doc1, read_individual1) && compare(new_test_doc2, read_individual2) &&
             compare(new_test_doc3, read_individual3));
-    }); 
+    });
 */
     test("#022 test get_rights_origin", function()
     {
         var ticket_admin = get_admin_ticket();
-    
+
         var res = get_rights_origin(ticket_admin.id, "td:Preferences_RomanKarpov")
         var result_rights = 0;
         res.forEach(function(item, i) {
@@ -1311,9 +1378,9 @@ for (i = 0; i < 1; i++)
                 result_rights |= 4;
             } else if (res[i]["v-s:canDelete"]) {
                 result_rights |= 8;
-            } 
+            }
         });
-            
+
         var res = get_rights(ticket_admin.id, "td:Preferences_RomanKarpov");
         var expected_rights = 0;
         if (res["v-s:canCreate"]) {
@@ -1328,14 +1395,14 @@ for (i = 0; i < 1; i++)
         if (res["v-s:canDelete"]) {
             expected_rights |= 8;
         }
-            
+
         ok(result_rights == expected_rights);
     });
 
     test("#023 test get_membership", function()
     {
     //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
-    
+
         var ticket_admin = get_admin_ticket();
 
         var res = get_membership(ticket_admin.id, "td:Preferences_RomanKarpov")
@@ -1353,9 +1420,9 @@ for (i = 0; i < 1; i++)
                     break;
             }
         });
-            
+
         ok(check && (found == 3));
-    });     
+    });
 
     test("#024 test cycle of group", function()
     {
