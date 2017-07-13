@@ -21,7 +21,7 @@ if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
     export GOPATH=$HOME/go
     rm ./veda-ccus
-    go build -o veda-ccus source/ccus/src/ccus/individual.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
+    go build -o veda-ccus source/ccus/src/ccus/individual.go source/ccus/src/ccus/binobj2individual.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
     echo make end VEDA-CCUS
 fi
 
@@ -44,8 +44,8 @@ if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] ; then
     ./build-component.sh veda-fanout-email fanout-email
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] ; then
-    ./build-component.sh veda-fanout-sql fanout-sql
+if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-np" ] ; then
+    ./build-component.sh veda-fanout-sql-np fanout-sql-np
     ./build-component.sh veda-fanout-sql-lp fanout-sql-lp
 fi
 

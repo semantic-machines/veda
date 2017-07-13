@@ -134,13 +134,18 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 
 HTTPListener[ ushort ] listener_2_port;
 
-short opt_http_port = 0;
-
 shared static this()
 {
+    short opt_http_port                = 0;
+    short opt_external_users_http_port = 0;
+
     readOption("http_port", &opt_http_port, "The listen http port");
     if (opt_http_port != 0)
         http_port = opt_http_port;
+
+    readOption("ext_usr_http_port", &opt_external_users_http_port, "http port for external user");
+    if (opt_external_users_http_port != 0 && opt_external_users_http_port == http_port)
+        is_external_users = true;
 
     import etc.linux.memoryerror;
     static if (is (typeof(registerMemoryErrorHandler)))
@@ -164,7 +169,7 @@ shared static this()
 
     veda.core.common.context.Context context;
 
-    context = PThreadContext.create_new (node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
+    context = PThreadContext.create_new(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws", null, null, null);
 
     sys_ticket = context.sys_ticket(false);
 

@@ -39,7 +39,7 @@ function generate_test_document1(ticket)
     var new_test_doc1_uri = guid();
     var new_test_doc1 = {
         '@': new_test_doc1_uri,
-        'rdf:type': newUri('v-s:test-data-types'),
+        'rdf:type': newUri('rdfs:Resource'),
         'v-s:test_integer': newInt(9223372036854775295),
         'v-s:test_negative_integer': newInt(-144365435),
         'v-s:test_decimal': newDecimal(12.12345678912345),
@@ -66,9 +66,13 @@ function generate_test_document1(ticket)
     return new_test_doc1;
 }
 
-function create_test_document1(ticket)
+function create_test_document1(ticket, prefix)
 {
     var new_test_doc1 = generate_test_document1(ticket)
+
+    if (prefix)
+  new_test_doc1['@'] = prefix + new_test_doc1['@']
+
     var res = put_individual(ticket.id, new_test_doc1);
     wait_module(subject_manager, res.op_id);
     wait_module(acl_manager, res.op_id);
@@ -846,7 +850,7 @@ for (i = 0; i < 1; i++)
 
 
     test(
-        "#014 Individual store, add_to_individual, set_in_individual test",
+        "#014 Individual store, add_to_individual, set_in_individual test, remove_from",
         function()
         {
             var ticket_user1 = get_user1_ticket();
@@ -870,6 +874,8 @@ for (i = 0; i < 1; i++)
 
             //#2
             ok(compare(new_test_doc1, read_individual));
+
+      /////////////////////////// ADD TO
 
             var new_test_add1 = {
                 '@': new_test_doc1_uri,
@@ -912,6 +918,8 @@ for (i = 0; i < 1; i++)
             //#3
             ok(compare(new_test_doc1_add1, read_individual));
 
+      ////////////////////////// SET IN
+
             var new_test_set1 = {
                 '@': new_test_doc1_uri,
                 'v-s:author': newUri('td:test-e')
@@ -932,6 +940,37 @@ for (i = 0; i < 1; i++)
 
             //#4
             ok(compare(new_test_doc1_set1, read_individual));
+
+      /////////////////////// REMOVE FROM
+
+            var new_test_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'v-s:author': newUri('td:test-e')
+            };
+
+            remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            wait_module(condition, res.op_id);
+            wait_module(acl_manager, res.op_id);
+
+            var new_test_doc1_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#5
+            ok(compare(new_test_doc1_remove_from1, read_individual));
+
+            remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            wait_module(condition, res.op_id);
+            wait_module(acl_manager, res.op_id);
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#6
+            ok(compare(new_test_doc1_remove_from1, read_individual));
         });
 
     test("#015 Document as a group",
@@ -1016,19 +1055,19 @@ for (i = 0; i < 1; i++)
             res = test_success_read(ticket2, doc2['@'], doc2, true);
         });
 
-    test("#017 Nested groups with restrictions",
+    test("#017-1 Nested groups with restrictions",
         function()
         {
             var ticket1 = get_user1_ticket();
             var ticket2 = get_user2_ticket();
 
             var res;
-            var doc1 = create_test_document1(ticket1);
-            var doc2 = create_test_document1(ticket1);
-            var doc3 = create_test_document1(ticket1);
-            var doc_group1_uri = 'g:doc_group_' + guid();
-            var doc_group2_uri = 'g:doc_group_' + guid();
-            var doc_group3_uri = 'g:doc_group_' + guid();
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
 
             //#1
             res = test_success_read(ticket1, doc1['@'], doc1);
@@ -1079,6 +1118,136 @@ for (i = 0; i < 1; i++)
             //#10
             check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
 
+        });
+
+    test("#017-2 Nested groups with restrictions",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            //#5
+            res = test_success_read(ticket1, doc3['@'], doc3);
+
+            //#6
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+
+            res = addToGroup(ticket1, doc_group1_uri, doc3['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc3['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc1['@']);
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc1['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            //#7
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+
+            //#8
+            check_rights_success(ticket2.id, doc3['@'], [can_read]);
+
+            //#9
+            check_rights_success(ticket2.id, doc3['@'], [can_update]);
+
+            //#10
+            check_rights_success(ticket2.id, doc3['@'], [can_delete]);
+
+        });
+
+    test("#017-3 Nested groups with restrictions & cycles",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            //#5
+            res = test_success_read(ticket1, doc3['@'], doc3);
+
+            //#6
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+
+
+            res = addToGroup(ticket1, doc2['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc3['@'], doc1['@'], [can_read]);
+
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc2['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc3['@']);
+
+            res = addToGroup(ticket1, doc_group2_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(acl_manager, res[1].op_id);
+
+            //#7
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+
+            //#8
+            check_rights_success(ticket2.id, doc3['@'], [can_read, can_update, can_delete]);
         });
 
     test("#018 Search with cursor",
@@ -1213,4 +1382,148 @@ for (i = 0; i < 1; i++)
         //#1
         ok(res.result.length == 0);
     });
+/*
+    test("#021 test put_individuals (user1 stores three individuals)", function()
+    {
+        var ticket_user1 = get_user1_ticket();
+
+        //#1
+        ok(ticket_user1.id.length > 0);
+
+        var new_test_doc1_uri_1 = "test21_1:" + guid();
+
+        var test_data_uid = guid();
+        var test_data = 'testdata ' + test_data_uid;
+
+        var new_test_doc1 = {
+            '@': new_test_doc1_uri_1,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newStr(test_data, 'NONE'),
+            'v-s:test_fieldA': newUri('BBB' + test_data_uid),
+            'v-s:test_fieldB': newUri('CCC' + test_data_uid)
+        };
+
+        // document content author != user1
+        var new_test_doc1_uri_2 = "test21_2:" + guid();
+        var new_test_doc2 = {
+            '@': new_test_doc1_uri_2,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newUri(test_data)
+        };
+
+        var new_test_doc1_uri_3 = "test21_3:" + guid();
+        var new_test_doc3 = {
+            '@': new_test_doc1_uri_3,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newUri(test_data),
+            'v-s:test_fieldA': newUri('BBB' + test_data_uid)
+        };
+        var res = put_individuals(ticket_user1.id, [new_test_doc1, new_test_doc2, new_test_doc3], false);
+        var read_individual1 = get_individual(ticket_user1.id, new_test_doc1_uri_1);
+        var read_individual2 = get_individual(ticket_user1.id, new_test_doc1_uri_2);
+        var read_individual3 = get_individual(ticket_user1.id, new_test_doc1_uri_3);
+        //#2
+        ok(compare(new_test_doc1, read_individual1) && compare(new_test_doc2, read_individual2) &&
+            compare(new_test_doc3, read_individual3));
+    });
+*/
+    test("#022 test get_rights_origin", function()
+    {
+        var ticket_admin = get_admin_ticket();
+
+        var res = get_rights_origin(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var result_rights = 0;
+        res.forEach(function(item, i) {
+            if (res[i]["v-s:canCreate"]) {
+                result_rights |= 1;
+            } else if (res[i]["v-s:canRead"]) {
+                result_rights |= 2;
+            } else if (res[i]["v-s:canUpdate"]) {
+                result_rights |= 4;
+            } else if (res[i]["v-s:canDelete"]) {
+                result_rights |= 8;
+            }
+        });
+
+        var res = get_rights(ticket_admin.id, "td:Preferences_RomanKarpov");
+        var expected_rights = 0;
+        if (res["v-s:canCreate"]) {
+            expected_rights |= 1;
+        }
+        if (res["v-s:canRead"]) {
+            expected_rights |= 2;
+        }
+        if (res["v-s:canUpdate"]) {
+            expected_rights |= 4;
+        }
+        if (res["v-s:canDelete"]) {
+            expected_rights |= 8;
+        }
+
+        ok(result_rights == expected_rights);
+    });
+
+    test("#023 test get_membership", function()
+    {
+    //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
+
+        var ticket_admin = get_admin_ticket();
+
+        var res = get_membership(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var check = true;
+        var found = 0;
+        res["v-s:memberOf"].forEach(function(item, i) {
+            switch (res["v-s:memberOf"][i]["data"]) {
+                case "td:Preferences_RomanKarpov":
+                case "v-s:AllResourcesGroup":
+                case "cfg:TTLResourcesGroup":
+                    found++
+                    break;
+                default:
+                    check = false;
+                    break;
+            }
+        });
+
+        ok(check && (found == 3));
+    });
+
+    test("#024 test cycle of group", function()
+    {
+        var ticket_admin = get_admin_ticket();
+
+        var new_test_doc1 = create_test_document1(ticket_admin);
+
+        var group_A = 'g:group_A' + guid();
+        var group_B = 'g:group_B' + guid();
+        var group_C = 'g:group_C' + guid();
+
+        var res;
+
+        res = addToGroup(ticket_admin, group_A, group_B);
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_B, group_C);
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_C, group_A);
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_C, new_test_doc1['@']);
+        ok (res[1].result == 200);
+
+        res = addRight(ticket_admin.id, [can_read], group_C, new_test_doc1['@']);
+        ok (res[1].result == 200);
+
+        wait_module(acl_manager, res[1].op_id);
+
+        check_rights_success(ticket_admin.id, new_test_doc1['@'], [can_read]);
+
+
+    });
+
+
 }

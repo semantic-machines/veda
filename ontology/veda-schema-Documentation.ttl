@@ -119,7 +119,7 @@ v-s:isPositiveObservation
 
 v-s:effectsDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Effects description"@en ;
+  rdfs:label "What are the consequences?"@en ;
   rdfs:label "Описание последствий"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
@@ -133,7 +133,7 @@ v-s:observationInitiator
 .
 v-s:observationCircumstances
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Observation circumstances"@en ;
+  rdfs:label "How was it discovered?"@en ;
   rdfs:label "Как было обнаружено?"@ru ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
@@ -289,3 +289,162 @@ v-s:OriginalSource
   rdfs:label "Original source"@en ;
   rdfs:label "Источник оригинала"@ru ;
 .
+
+#---------------------------------------------------------
+v-s:PowerOfAttorney
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Power of attorney"@en ;
+  rdfs:label "Доверенность"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:hasComment
+# rdfs:label
+# v-s:grantor
+# v-s:grantee
+
+v-s:grantor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Grantor"@en ;
+  rdfs:label "Доверитель"@ru ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:grantee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Grantee"@en ;
+  rdfs:label "Доверенный"@ru ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+
+
+
+#----------------------------------КОМАНДИРОВКА-----------------------
+v-s:BusinessTrip
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Business trip"@en ;
+  rdfs:label "Командировка"@ru ;
+.
+v-s:hasBusinessTripRegistrationRecord
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BusinessTrip ;
+  rdfs:range v-s:BusinessTripRegistrationRecord ;
+  rdfs:label "Регистрационная запись"@ru ;
+  rdfs:label "Registration record"@en ;
+.
+v-s:businessTripEmployee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "business trip employee"@en ;
+  rdfs:label "Сотрудник"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:businessTripDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "business trip department"@en ;
+  rdfs:label "Подразделение"@ru ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:businessTripGoal
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Goal"@en ;
+  rdfs:label "Цель"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+# v-s:supplier
+# v-s:duration
+
+
+###----------------------------------РЕГ_ЗАПИСЬ_КОМАНДИРОВКИ---------------------
+v-s:BusinessTripRegistrationRecord
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Enumerated ;
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
+
+  rdfs:label "Регистрационная запись командировки"@ru ;
+  rdfs:label "Business trip registration record"@en ;
+#  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
+.
+
+###----------------------------------ЗАЯВКА_НА_ПРОПУСК---------------------
+v-s:PassRequest
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Initiative ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Заявка на пропуск"@ru ;
+  rdfs:label "pass request"@en ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:initiator
+# v-s:customer
+# v-s:goal
+v-s:hasPass
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Pass"@en ;
+  rdfs:label "Пропуск"@ru ;
+  rdfs:range v-s:Pass ;
+  rdfs:domain v-s:PassRequest ;
+.
+# v-s:hasComment
+# rdfs:label
+
+###----------------------------------ПРОПУСК---------------------
+
+v-s:Pass
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Пропуск"@ru ;
+  rdfs:label "Pass"@en ;
+.
+# v-s:registrationNumber
+# v-s:dateFrom
+# v-s:dateTo
+
+
+###----------------------------------РЕЖИМ_РАБОТЫ---------------------
+v-s:WorkMode
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Режим работы"@ru ;
+  rdfs:label "WorkMode"@en ;
+.
+
+#----------------------------------РАСПОРЯДИТЕЛЬНЫЙ_ДОКУМЕНТ-----------------------
+v-s:Decree
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:label "Decree"@en ;
+  rdfs:label "Распорядительный документ"@ru ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:title

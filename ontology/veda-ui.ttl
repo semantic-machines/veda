@@ -634,7 +634,7 @@ v-ui:PSFromToForLink
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-#  v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
 .
 v-ui:LinkTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -961,11 +961,12 @@ v-ui:IconModalTemplate
     cntr.on("invalid", function () {
     ok.attr("disabled", "disabled");
     });
-    var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+ // var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
+    var tmpl = individual["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( individual["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
 
     if (newMode === "edit") {
-      $(".actions", tmpl).remove();
       individual.present(cntr, tmpl, newMode);
+      $(".actions", tmpl).remove();
     } else {
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
       individual.present(cntr, tmpl, newMode);
@@ -1038,6 +1039,34 @@ v-ui:ClassNameLabelLinkEditTemplate
   </script>
   """ ;
 .
+v-ui:DraftLinkEditTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон черновика со ссылкой"@ru ;
+  rdfs:label "Draft template with link"@en ;
+  v-ui:template """
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    //# sourceURL=v-ui:DraftLinkEditTemplate_post
+  </script>
+  """ ;
+.
+v-ui:DraftTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон черновика"@ru ;
+  rdfs:label "Draft template"@en ;
+  v-ui:template """
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    //# sourceURL=v-ui:DraftLinkEditTemplate_post
+  </script>
+  """ ;
+.
 
 v-ui:RabbitHole
   rdf:type v-ui:ClassTemplate ;
@@ -1082,7 +1111,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span class="label-template"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></span>
+  <span class="label-template"><span about="@" property="rdf:type"></span>: <span id="label" about="@" property="rdfs:label"></span></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
@@ -1389,6 +1418,19 @@ v-ui:FileTemplate
   """ ;
 .
 
+v-ui:FileMinTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для файла"@ru ;
+  rdfs:label "File template"@en ;
+  v-ui:template """
+<div>
+  <a href="/files/@">
+    <span about="@" property="v-s:fileName"></span>
+  </a>
+</div>
+  """ ;
+.
+
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -1587,13 +1629,27 @@ v-ui:JournalTemplate
   v-ui:template """
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
+  $('.createReport0', template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
+  });
 </script>
 <div class="container journal sheet">
   <style>
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
+  <div class="row">
+  <div class="col-md-10">
+
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  </div>
+  <div class="col-md-2 text-right">
+    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
+      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
+    </button>
+    </div>
+  </div>
   <div rel="v-s:onDocument">
     <div>
       <h4>
@@ -1762,6 +1818,9 @@ v-ui:PermissionStatementTemplate
     <div class="col-md-1">
       <span about="v-s:endTime" property="rdfs:label"></span>
     </div>
+    <div class="col-md-12">
+      <span about="rdfs:comment" property="rdfs:label"></span>
+    </div>
   </div>
   <hr/>
   <div class="row">
@@ -1789,11 +1848,18 @@ v-ui:PermissionStatementTemplate
     <div class="col-md-1">
       <span about="@" property="v-s:endTime"></span>
     </div>
+    <div class="col-md-12">
+      <pre style="border:none;background-color:#fff;"></pre>
+    </div>
   </div>
   </div>
   <script>
-    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
+//    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
     //# sourceURL=v-ui:PermissionStatementTemplate
+    var dd = individual['rdfs:comment'][0];
+    var pre = $("pre", template);
+    var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+    pre.html(anchored);
   </script>
   """ ;
 .
@@ -2588,8 +2654,8 @@ td:PropertySpecification1
   v-ui:forProperty v-s:birthday ;
   v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
+  v-ui:tooltip "Required, single value."@en ;
   v-ui:placeholder "день рождения"@ru ;
   v-ui:placeholder "birthday"@en ;
 .

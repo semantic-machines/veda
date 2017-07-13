@@ -86,7 +86,7 @@ v-s:PsDelegatorForRequestDelegation
   v-ui:forProperty v-s:delegator ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person'" ;
+  v-ui:queryPrefix "'rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person' || ( 'rdf:type' === 'v-s:Person' && 'v-s:deleted' == true )" ;
 .
 v-s:PsDelegatedPositionForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -235,7 +235,7 @@ v-s:RequestDelegationTemplate
     $("#positions", template).empty();
     if (values.length) {
       var delegator = individual["v-s:delegator"][0];
-      var appointments_ids = query(veda.ticket, "'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'").result;
+      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')||('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'&&'v-s:deleted' == true)").result;
       var appointments = get_individuals(veda.ticket, appointments_ids);
       var positions_ids = appointments.map(function (appointment_json) {
         var appointment = new veda.IndividualModel(appointment_json);
@@ -435,12 +435,12 @@ var request_uri = document["@"],
     delegate,
     custom_label = document["rdfs:label"];
 
-print("[cfg:Event_Delegation] ************************** START **************************");
-print("[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual);
+//print("[cfg:Event_Delegation] ************************** START **************************");
+//print("[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual);
 
 if (request_type === "v-s:RequestDelegationUser" && delegator_uri !== user_uri && !request_deleted) {
-  print("[cfg:Event_Delegation] ACCESS VIOLATION: delegator_uri !== user_uri");
-  print("[cfg:Event_Delegation] ************************** END **************************");
+  //print("[cfg:Event_Delegation] ACCESS VIOLATION: delegator_uri !== user_uri");
+  //print("[cfg:Event_Delegation] ************************** END **************************");
   return;
 }
 
@@ -466,7 +466,7 @@ position_uris.map(function (position_uri) {
       var position = get_individual(ticket, position_uri);
       var delegate_labels = delegate["rdfs:label"];
       var position_labels = position["rdfs:label"];
-      print('delegate_labels:', JSON.stringify(delegate_labels), 'position_labels:', JSON.stringify(position_labels));
+      //print('delegate_labels:', JSON.stringify(delegate_labels), 'position_labels:', JSON.stringify(position_labels));
       appointment_label = delegate_labels.map(function (item) {
         var lang = item.lang;
         var pos_label = position_labels.map( function (label) {
@@ -478,7 +478,7 @@ position_uris.map(function (position_uri) {
         return item;
       });
     } catch (error) {
-      print(error);
+      //print(error);
       appointment_label = newStr(uri);
     }
   }
@@ -497,13 +497,13 @@ position_uris.map(function (position_uri) {
       "v-s:deleted": newBool(!isActual),
       "rdfs:comment": newStr("создано cfg:Event_Delegation")
     };
-    print("[cfg:Event_Delegation] new appointment created", uri);
+    //print("[cfg:Event_Delegation] new appointment created", uri);
   } else {
     // Update dates
     appointment["v-s:dateFrom"] = dateFrom;
     appointment["v-s:dateTo"] = dateTo;
     appointment["v-s:deleted"] = newBool(!isActual);
-    print("[cfg:Event_Delegation] appointment dates updated", uri, "| isActual =", isActual);
+    //print("[cfg:Event_Delegation] appointment dates updated", uri, "| isActual =", isActual);
   }
 
   allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
@@ -521,13 +521,13 @@ position_uris.map(function (position_uri) {
     delegate["v-s:defaultAppointment"] = delegate["v-s:defaultAppointment"].filter( function (item) {
       return item.data !== uri;
     });
-    print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
+    //print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
     put_individual(ticket, delegate, _event_id);
   } else {
     allDelegated["rdf:value"].push({ data: uri, type: _Uri });
   }
 
-  print("[cfg:Event_Delegation] appointment =", JSON.stringify(appointment));
+  //print("[cfg:Event_Delegation] appointment =", JSON.stringify(appointment));
   put_individual(ticket, appointment, _event_id);
 
   document["v-s:createdAppointment"] = document["v-s:createdAppointment"] || [];
@@ -542,7 +542,7 @@ put_individual(ticket, document, _event_id);
 
 // Update AllDelegatedAppointments for further processing
 put_individual(ticket, allDelegated, _event_id);
-print("[cfg:Event_Delegation] ************************** END **************************");
+//print("[cfg:Event_Delegation] ************************** END **************************");
   """ ;
 .
 
@@ -572,14 +572,14 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var isOverdue = now > appointment["v-s:dateTo"][0].data;
   var isDeleted = hasValue(appointment, "v-s:deleted", {data: true, type: _Boolean});
 
-  print("[cfg:Event_Delegation]", "appointment =", appointment_uri, "| isPremature =", isPremature, "| isActual =", isActual, "| isOverdue =", isOverdue, "| isDeleted =", isDeleted );
+  //print("[cfg:Event_Delegation]", "appointment =", appointment_uri, "| isPremature =", isPremature, "| isActual =", isActual, "| isOverdue =", isOverdue, "| isDeleted =", isDeleted );
 
   if ( isActual ) {
 
     if ( isDeleted ) {
       appointment["v-s:deleted"] = [];
       put_individual(ticket, appointment, _event_id);
-      print("[cfg:Event_Delegation] appointment became actual & restored", appointment_uri);
+      //print("[cfg:Event_Delegation] appointment became actual & restored", appointment_uri);
       delegate_uri = getUri( appointment["v-s:employee"] );
       delegate = get_individual(ticket, delegate_uri);
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
@@ -587,7 +587,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
         return item.data !== appointment_uri;
       }).concat({data: appointment_uri, type: _Uri});
       put_individual(ticket, delegate, _event_id);
-      print("[cfg:Event_Delegation] delegate updated - actual appointment added", delegate_uri);
+      //print("[cfg:Event_Delegation] delegate updated - actual appointment added", delegate_uri);
     }
     // Keep actual appointment in list
     return true;
@@ -607,9 +607,9 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
       });
       appointment["v-s:deleted"] = newBool(true);
       put_individual(ticket, appointment, _event_id);
-      print("[cfg:Event_Delegation] overdue appointment deleted", appointment_uri);
+      //print("[cfg:Event_Delegation] overdue appointment deleted", appointment_uri);
       put_individual(ticket, delegate, _event_id);
-      print("[cfg:Event_Delegation] delegate updated - overdue appointment removed", delegate_uri);
+      //print("[cfg:Event_Delegation] delegate updated - overdue appointment removed", delegate_uri);
     }
     // Remove overdue appointment from list
     return false;
@@ -619,7 +619,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
       // Mark premature appointment as deleted
       appointment["v-s:deleted"] = newBool(true);
       put_individual(ticket, appointment, _event_id);
-      print("[cfg:Event_Delegation] premature appointment deleted", appointment_uri);
+      //print("[cfg:Event_Delegation] premature appointment deleted", appointment_uri);
     }
     // Keep premature appointment in list
     return true;
@@ -630,8 +630,8 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
 put_individual(ticket, allDelegated, _event_id);
 
 var allDelegated_list = allDelegated["rdf:value"].map(function (item) { return item.data; });
-print("[cfg:Event_Delegation] Update cfg:AllDelegatedAppointments =", JSON.stringify(allDelegated_list));
+//print("[cfg:Event_Delegation] Update cfg:AllDelegatedAppointments =", JSON.stringify(allDelegated_list));
 
-print("cfg:Event_Delegation ************************** END **************************");
+//print("cfg:Event_Delegation ************************** END **************************");
   """ ;
 .

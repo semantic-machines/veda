@@ -64,6 +64,13 @@ class RightSet
         log = _log;
         foreach (el; src)
         {
+            if (el.id in data)
+            {
+                ubyte prev_access = data[ el.id ].access;
+                ubyte new_access  = el.access | prev_access;
+                el.access = new_access;
+            }
+
             data[ el.id ] = el;
         }
     }

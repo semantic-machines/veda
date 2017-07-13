@@ -254,7 +254,7 @@ v-s:birthday
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Birthday"@en ;
-  rdfs:label "День рождения"@ru ;
+  rdfs:label "Дата рождения"@ru ;
   rdfs:range xsd:dateTime ;
 .
 v-s:firstName

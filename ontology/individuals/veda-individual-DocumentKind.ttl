@@ -1462,3 +1462,30 @@ d:a238df72c-7862-1e47-0ad3-0288d70561fb
   rdfs:label "Стандарт"^^xsd:string;
   rdfs:comment "Документ, в котором в целях добровольного многократного использования устанавливаются характеристики продукции, правила осуществления и характеристики процессов проектирования (включая изыскания), производства, строительства, монтажа, наладки, эксплуатации, хранения, перевозки, реализации и утилизации, выполнения работ или оказания услуг. Стандарт также может содержать правила и методы исследований (испытаний) и измерений, правила отбора образцов, требования к терминологии, символике, упаковке, маркировке или этикеткам и правилам их нанесения"^^xsd:string;
 .
+d:6869e29efeb24915b43992e210b530aa
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы ЛНД"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
+  rdfs:label "Формы локальных нормативных документов"^^xsd:string;
+.
+d:8e2d4d3e0fd540ebb509a9d0cf3e4f71
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Гарантийное письмо"^^xsd:string;
+  rdfs:label "Гарантийное письмо"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
+d:2b7f2af51d1340d8ad48a29898102b72
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Претензия"^^xsd:string;
+  rdfs:label "Претензионное письмо"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
+d:c25b475f506d47eea1847ea8861ac747
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Смета"^^xsd:string;
+  rdfs:label "Сметная документация"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.

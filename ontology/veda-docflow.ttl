@@ -45,8 +45,8 @@ v-df:PsApprovalTask_dateGiven
   v-ui:forProperty v-wf:dateGiven ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Required, single value."@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
   rdfs:label "Preferences property specification for dateFrom in AgShedule class"@en ;
   rdfs:label "Спецификация даты заседания технического комитета для класса AgShedule"@ru ;
 .
@@ -147,6 +147,15 @@ v-df:ApprovalTaskTemplate
 
 
 # -- СТАРТОВЫЕ ФОРМЫ СТАНДАРТНЫХ ЗАДАЧ --
+v-df:SignRouteStartForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:StartForm ;
+  rdfs:isDefinedBy v-df: ;
+  rdfs:label "Sign a document"@en ;
+  rdfs:label "Подписание"@ru ;
+  rdfs:comment "Задача подписать документ"@ru ;
+  v-ui:hasTemplate v-df:SignRouteStartFormTemplate ;
+.
 
 v-df:QuestionRouteStartForm
   rdf:type owl:Class ;
@@ -200,6 +209,7 @@ v-s:hasAppointment
   rdfs:domain v-df:TaskRouteStartForm ;
   rdfs:domain v-df:DistributionRouteStartForm ;
   rdfs:domain v-df:CoordinationRouteStartForm ;
+  rdfs:domain v-df:SignRouteStartForm;
 .
 v-df:PsStartForm_hasAppointmentTo
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -208,12 +218,11 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:TaskRouteStartForm ;
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
+  v-ui:forClass v-df:SignRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-  v-ui:tooltip "Non-required, single value. Link to instance of Appointment class"@en ;
-  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User' ) || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
   rdfs:label "Task sender property specification for Question task class"@en ;
   rdfs:label "Спецификация исполнителя задачи для класса Стартовая форма задачи question"@ru ;
 .
@@ -224,6 +233,7 @@ v-s:dateTo
   rdfs:domain v-df:TaskRouteStartForm ;
   rdfs:domain v-df:DistributionRouteStartForm ;
   rdfs:domain v-df:CoordinationRouteStartForm ;
+  rdfs:domain v-df:SignRouteStartForm;
 .
 v-wf:dateGiven
   rdfs:domain v-df:CoordinationRouteStartForm ;
@@ -235,11 +245,12 @@ v-df:PsStartForm_dateTo
   v-ui:forClass v-df:TaskRouteStartForm ;
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
+  v-ui:forClass v-df:SignRouteStartForm;
   v-ui:forProperty v-s:dateTo ;
   v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Required, single value."@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
   rdfs:label "Preferences property specification for dateFrom QuestionRouteStartForm class"@en ;
   rdfs:label "Спецификация контрольной даты для класса QuestionRouteStartForm"@ru ;
 .
@@ -249,6 +260,8 @@ v-s:count
   rdfs:domain v-df:TaskRouteStartForm ;
   rdfs:domain v-df:DistributionRouteStartForm ;
   rdfs:domain v-df:CoordinationRouteStartForm ;
+  rdfs:domain v-df:SignRouteStartForm ;
+
 .
 v-df:PsCountForStartForm
   rdf:type v-ui:DatatypePropertySpecification ;
@@ -259,6 +272,7 @@ v-df:PsCountForStartForm
   v-ui:forClass v-df:TaskRouteStartForm ;
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
+  v-ui:forClass v-df:SignRouteStartForm;
   v-ui:forProperty v-s:count ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -271,6 +285,7 @@ v-wf:processedDocument
   rdfs:domain v-df:TaskRouteStartForm ;
   rdfs:domain v-df:DistributionRouteStartForm ;
   rdfs:domain v-df:CoordinationRouteStartForm ;
+  rdfs:domain v-df:SignRouteStartForm;
 .
 v-df:PsStartForm_processedDocument
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -279,6 +294,7 @@ v-df:PsStartForm_processedDocument
   v-ui:forClass v-df:TaskRouteStartForm ;
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
+  v-ui:forClass v-df:SignRouteStartForm ;
   v-ui:forProperty v-wf:processedDocument ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
@@ -294,12 +310,73 @@ v-df:PsStartForm_comment
   v-ui:forClass v-df:TaskRouteStartForm ;
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
+  v-ui:forClass v-df:SignRouteStartForm;
   v-ui:forProperty rdfs:comment ;
   rdfs:label "Спецификация к свойству комментарий для QuestionRouteStartForm"@ru ;
   rdfs:label "Spec for comment for QuestionRouteStartFormclass"@en ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
+
+# -- ШАБЛОН ФОРМЫ ЗАДАЧИ ПОДПИСАНИЕ --
+v-df:SignRouteStartFormTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-df:SignRouteStartForm ;
+  rdfs:label "SignRouteStartForm template"@en ;
+  rdfs:label "Шаблон формы задачи подписание"@ru ;
+  v-ui:template """
+<div class="container sheet">
+  <h3><span about="v-df:SignRouteStartForm" property="rdfs:label"></span>: <span about="@" property="rdfs:label"></span></h3>
+  <em about="v-wf:processedDocument" property="rdfs:label"></em>
+  <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:responsible" property="rdfs:label"></em>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:dateTo" property="rdfs:label"></em>
+      <div property="v-s:dateTo" class="view -edit -search"></div>
+      <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <em about="v-s:count" property="rdfs:label"></em>
+      <div property="v-s:count" class="view -edit -search"></div>
+      <veda-control property="v-s:count" data-type="integer" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <div property="rdfs:comment" class="view -edit -search"></div>
+  <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
+
+  <em about="v-s:controller" property="rdfs:label"></em>
+  <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+  <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
+  <br>
+  <div class="actions">
+    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
+</div>
+<script>
+  if ( mode === "edit" && this.isNew() ) {
+    this["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
+  }
+  $("#cancel", template).click(function () {
+    var modal = template.closest(".modal");
+    if (modal.length) {
+      modal.modal("hide");
+    } else {
+      window.history.back();
+    }
+  });
+  //# sourceURL=v-df:SignRouteStartFormTemplate
+</script>
+""" ;
+.
+
+
 
 
 # -- ШАБЛОН ФОРМЫ ЗАДАЧИ ЗАДАТЬ ВОПРОС --
@@ -333,6 +410,10 @@ v-df:QuestionRouteStartFormTemplate
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
+
+  <em about="v-s:controller" property="rdfs:label"></em>
+  <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+  <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
@@ -340,6 +421,9 @@ v-df:QuestionRouteStartFormTemplate
   </div>
 </div>
 <script>
+  if ( mode === "edit" && this.isNew() ) {
+    this["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
+  }
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
@@ -394,7 +478,9 @@ v-df:InstructionRouteStartFormTemplate
   </div>
 </div>
 <script>
-  individual["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
+  if ( mode === "edit" && this.isNew() ) {
+    this["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
+  }
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
@@ -535,6 +621,10 @@ v-df:CoordinationRouteStartFormTemplate
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
+
+  <em about="v-s:controller" property="rdfs:label"></em>
+  <div rel="v-s:controller" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+  <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
     <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
@@ -542,6 +632,9 @@ v-df:CoordinationRouteStartFormTemplate
   </div>
 </div>
 <script>
+  if ( mode === "edit" && this.isNew() ) {
+    this["v-s:controller"] = [ veda.appointment ? veda.appointment : veda.user ];
+  }
   $("#cancel", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
@@ -554,6 +647,105 @@ v-df:CoordinationRouteStartFormTemplate
 </script>
 """ ;
 .
+
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ПОДПИСАНИЕ В СЕТЬ --
+v-df:SignRouteStartFormToNet
+  rdfs:label "Трансформация из СтФ Задать вопрос в стандартную сеть процесса"^^xsd:string;
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-df:rul_SignTransform0 ;
+  v-wf:transformRule v-df:rul_SignTransform1 ;
+  v-wf:transformRule v-df:rul_SignTransform2 ;
+  v-wf:transformRule v-df:rul_SignTransform3 ;
+  v-wf:transformRule v-df:rul_SignTransform4 ;
+  v-wf:transformRule v-df:rul_SignTransform5 ;
+  v-wf:transformRule v-df:rul_SignTransform6_0 ;
+  v-wf:transformRule v-df:rul_SignTransform6_3 ;
+  v-wf:transformRule v-df:rul_SignTransform7 ;
+  v-wf:transformRule v-df:rul_SignTransform8;
+  rdfs:isDefinedBy v-df: ;
+.
+v-df:rul_SignTransform0
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'startForm_id')";
+.
+v-df:rul_SignTransform1
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-wf:processedDocument')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'docId')";
+.
+v-df:rul_SignTransform2
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
+.
+v-df:rul_SignTransform3
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('rdfs:comment')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_comment')";
+.
+v-df:rul_SignTransform4
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:dateTo')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_date_to')";
+.
+v-df:rul_SignTransform5
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:creator')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'initiator')";
+.
+v-df:rul_SignTransform6_0
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionSign')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRejected')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRedirect')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
+.
+v-df:rul_SignTransform6_3
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 's-wf:UserTaskForm')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'decision_form_type')";
+.
+v-df:rul_SignTransform7
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putString ('v-wf:variableValue', 'Подписание')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
+.
+v-df:rul_SignTransform8
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:controller')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'controller')";
+.
+
+
+
+
+
+
+
+
+
+
 
 # -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ ЗАДАЧИ ЗАДАТЬ ВОПРОС В СЕТЬ --
 v-df:QuestionRouteStartFormToNet
@@ -568,6 +760,7 @@ v-df:QuestionRouteStartFormToNet
   v-wf:transformRule v-df:rul_QuestionTransform6_0 ;
   v-wf:transformRule v-df:rul_QuestionTransform6_3 ;
   v-wf:transformRule v-df:rul_QuestionTransform7 ;
+  v-wf:transformRule v-df:rul_QuestionTransform8;
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_QuestionTransform0
@@ -633,6 +826,13 @@ v-df:rul_QuestionTransform7
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putString ('v-wf:variableValue', 'Ответить на вопрос')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
+.
+v-df:rul_QuestionTransform8
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:controller')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'controller')";
 .
 
 
@@ -887,6 +1087,8 @@ v-df:rul_DistributionTransform7
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
 .
 
+# -- ТРАНСФОРМАЦИЯ ИЗ ФОРМЫ CОГЛАСОВАНИЕ В СЕТЬ --
+
 v-df:CoordinationRouteStartFormToNet
   rdfs:label "Трансформация из СтФ На согласование в стандартную сеть процесса"^^xsd:string;
   rdf:type v-wf:Transform ;
@@ -899,6 +1101,7 @@ v-df:CoordinationRouteStartFormToNet
   v-wf:transformRule v-df:rul_CoordinationTransform6_0 ;
   v-wf:transformRule v-df:rul_CoordinationTransform6_3 ;
   v-wf:transformRule v-df:rul_CoordinationTransform7 ;
+  v-wf:transformRule v-df:rul_CoordinationTransform8 ;
   rdfs:isDefinedBy v-df: ;
 .
 v-df:rul_CoordinationTransform0
@@ -949,7 +1152,8 @@ v-df:rul_CoordinationTransform6_0
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionAgreed')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRejected')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotPerformed')";
+# v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotPerformed')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNoAgreed')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionRedirect')";
   v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionNotForMe')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
@@ -967,6 +1171,13 @@ v-df:rul_CoordinationTransform7
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putString ('v-wf:variableValue', 'Согласовать')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor_task_action')";
+.
+v-df:rul_CoordinationTransform8
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('v-s:controller')" ;
+  v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
+  v-wf:aggregate  "putValue ('v-wf:variableValue')";
+  v-wf:aggregate  "putString ('v-wf:variableName', 'controller')";
 .
 
 # -- ФОРМА ОТВЕТА ЗАДАЧИ ИДЕЯ В РЕАЛИЗАЦИЮ --
@@ -1050,6 +1261,7 @@ v-wf:permission_c_on_decision
   v-s:permissionObject v-wf:DecisionControll ;
   v-s:permissionObject v-wf:DecisionNotRequireReview ;
   v-s:permissionObject v-wf:DecisionAgreed ;
+  v-s:permissionObject v-wf:DecisionNoAgreed ;
   v-s:permissionObject v-wf:DecisionAgreedToProject ;
   v-s:permissionObject v-wf:DecisionAgreedToExecute ;
   v-s:permissionObject v-wf:DecisionAgreedToExecuteComment ;
@@ -1104,6 +1316,15 @@ v-wf:DecisionNotRequireReview
   rdfs:label "Review is not necessary"@en ;
 .
 
+v-wf:DecisionNoAgreed
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Согласование не требуется"@ru ;
+  rdfs:label "Negotiation is not required"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
+.
+
 v-wf:DecisionAgreed
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Decision ;
@@ -1112,6 +1333,7 @@ v-wf:DecisionAgreed
   rdfs:label "Approved"@en ;
   v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
+
 
 v-wf:DecisionAgreedToProject
   rdf:type owl:Class ;
@@ -1292,6 +1514,14 @@ v-wf:DecisionCalculationsPerformed
   rdfs:label "Calculations performed"@en ;
   v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
+v-wf:DecisionAcceptMotivatedRefusal
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-wf:Decision ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Принять мотивированный отказ"@ru ;
+  rdfs:label "Accept a motivated refusal"@en ;
+  v-ui:hasTemplate v-wf:DecisionTemplate1 ;
+.
 
 v-wf:DecisionRedirectTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1318,6 +1548,7 @@ v-wf:DecisionTemplate1
   rdfs:label "Template for -Decision- class"@en ;
   v-ui:forClass v-wf:DecisionNotForMe ;
   v-ui:forClass v-wf:DecisionAgreed ;
+  v-ui:forClass v-wf:DecisionNoAgreed ;
   v-ui:forClass v-wf:DecisionSign ;
   v-ui:forClass v-wf:DecisionApprove ;
   v-ui:forClass v-wf:DecisionReview ;
@@ -1376,6 +1607,7 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:forProperty rdfs:comment ;
   v-ui:forClass v-wf:DecisionAgreed ;
+  v-ui:forClass v-wf:DecisionNoAgreed;
   v-ui:forClass v-wf:DecisionSign ;
   v-ui:forClass v-wf:DecisionApprove ;
   v-ui:forClass v-wf:DecisionReview ;
@@ -1383,12 +1615,23 @@ v-wf:DecisionRedirectTemplateSpec2
   v-ui:forClass v-wf:DecisionRemaked ;
   v-ui:forClass v-wf:DecisionExamined ;
   v-ui:forClass v-wf:DecisionReturnedToReview ;
-  v-ui:forClass v-wf:DecisionAchieved ;
+#  v-ui:forClass v-wf:DecisionAchieved ;
   v-ui:forClass v-wf:DecisionAgreedToProject ;
   v-ui:forClass v-wf:DecisionConfirm ;
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
 .
+v-wf:DecisionRedirectTemplateSpec2_comment
+  rdf:type v-ui:PropertySpecification ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
+  rdfs:label "Spec for template for some -Decision- subclasses"@en ;
+  v-ui:maxCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:forClass v-wf:DecisionAchieved ;
+.
+
 
 v-wf:DecisionRedirectTemplateSpec3
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -1400,7 +1643,16 @@ v-wf:DecisionRedirectTemplateSpec3
   v-ui:forProperty v-wf:to, rdfs:comment ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User') || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
+.
+
+v-wf:signRouteStartFormLinkRule
+  rdf:type v-s:DocumentLinkRules;
+  rdfs:label "Подписание"@ru ;
+  rdfs:label "Sign document"@en ;
+  v-s:classTo v-df:SignRouteStartForm;
+  v-s:hasTransformation v-wf:signRouteStartForm;
+  v-s:isRoute "true"^^xsd:boolean;
 .
 
 v-wf:questionRouteStartFormLinkRule
@@ -1448,6 +1700,7 @@ v-wf:coordinationRouteStartFormLinkRule
 v-wf:permission_on_simple_routes_start_from
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-df:SignRouteStartForm ;
   v-s:permissionObject v-df:QuestionRouteStartForm ;
   v-s:permissionObject v-df:InstructionRouteStartForm ;
   v-s:permissionObject v-df:TaskRouteStartForm ;
@@ -1455,6 +1708,37 @@ v-wf:permission_on_simple_routes_start_from
   v-s:permissionObject v-df:CoordinationRouteStartForm ;
   v-s:permissionSubject cfg:AllUsersGroup ;
 .
+
+v-wf:signRouteStartForm
+  rdf:type v-wf:Transform ;
+  v-wf:transformRule v-wf:rule1sign ;
+  v-wf:transformRule v-wf:rule2sign ;
+  v-wf:transformRule v-wf:rule3sign ;
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:rule1sign
+  rdf:type v-wf:Rule ;
+  v-wf:segregateElement "contentName('@')" ;
+  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping "1";
+.
+v-wf:rule2sign
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping "1";
+.
+v-wf:rule3sign
+  rdf:type v-wf:Rule ;
+  v-wf:aggregate "putUri ('rdf:type', 'v-df:SignRouteStartForm')" ;
+  v-wf:aggregate "putUri ('v-wf:useTransformation', 'v-df:SignRouteStartFormToNet')" ;
+  v-wf:segregateElement "contentName('@')" ;
+  rdfs:isDefinedBy v-wf: ;
+  v-wf:grouping "1";
+.
+
 
 v-wf:questionRouteStartForm
   rdf:type v-wf:Transform ;

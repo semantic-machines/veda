@@ -6,7 +6,12 @@ veda.Module(function (veda) { "use strict";
 
     var self = new veda.IndividualModel(uri);
 
-    if ( self["rdf:type"][0].id !== "v-s:Person" ) { return self; }
+    try {
+      if ( self["rdf:type"][0].id !== "v-s:Person" ) { return self; }
+    } catch (err) {
+      localStorage.clear();
+      location.reload();
+    }
 
     veda.user = self;
 

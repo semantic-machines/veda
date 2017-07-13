@@ -73,8 +73,7 @@ private struct Tasks
 
 Onto    onto;
 Context context;
-ScriptInfo[ string ] codelet_scripts;
-Array!string codelet_scripts_order;
+ScriptsWorkPlace _wpl;
 
 VQL      vql;
 string   empty_uid;
@@ -87,6 +86,7 @@ Task *task;
 
 private void ltrs_thread(string parent_url)
 {
+	_wpl = new ScriptsWorkPlace ();
     process_name = "ltr_scripts";
 
     g_vm_id = "main";
@@ -98,7 +98,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", individuals_db_path, log, parent_url);
+    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", individuals_db_path, log, parent_url, null, null, null);
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
@@ -152,7 +152,7 @@ private void ltrs_thread(string parent_url)
                                        UUID new_id = randomUUID();
                                        string consumer_id = "consumer-uris-" ~ new_id.toString();
 
-                                       Consumer cs = new Consumer(queue, tmp_path, consumer_id, log);
+                                       Consumer cs = new Consumer(queue, tmp_path, consumer_id, Mode.RW, log);
 
                                        if (cs.open())
                                        {
@@ -274,12 +274,12 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     g_ticket.data   = cast(char *)sticket_id;
     g_ticket.length = cast(int)sticket_id.length;
 
-    ScriptInfo script = codelet_scripts.get(script_uri, ScriptInfo.init);
+    ScriptInfo script = _wpl.scripts.get(script_uri, ScriptInfo.init);
 
     if (script is ScriptInfo.init)
     {
         Individual codelet = context.get_individual(&sticket, script_uri);
-        prepare_script(codelet_scripts, codelet_scripts_order, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
+        prepare_script(_wpl, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
     }
 
     if (script.compiled_script !is null)

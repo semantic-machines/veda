@@ -32,6 +32,43 @@ v-fc:Blank
   v-ui:hasModel v-fc:BlankModel ;
   v-ui:hasTemplate v-fc:BlankTemplateShort ;
 .
+
+v-fc:hasFormBlank
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-fc:Blank ;
+  rdfs:label "Form blank"@en ;
+  rdfs:label "Вид бланка"@ru ;
+  rdfs:range v-fc:Blank ; 
+.
+
+v-fc:FormBlank
+  rdf:type owl:Class ;
+  rdfs:label "Form blank"@en ;
+  rdfs:label "Вид бланка"@ru ;
+  rdfs:subClassOf v-s:UserThing ;
+.
+
+v-fc:FormBlankCreate
+  a v-fc:FormBlank;
+  rdfs:label "Создание"@ru;
+  rdfs:label "Create"@en;
+  v-s:updateCounter "1"^^xsd:integer ;
+.
+
+v-fc:FormBlankSearch
+  a v-fc:FormBlank;
+  rdfs:label "Поиск"@ru;
+  rdfs:label "Search"@en;
+  v-s:updateCounter "1"^^xsd:integer ;
+.
+
+v-fc:FormBlankReport
+  a v-fc:FormBlank;
+  rdfs:label "Отчет"@ru;
+  rdfs:label "Search"@en;
+  v-s:updateCounter "1"^^xsd:integer ;
+.
+
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;
   rdfs:label "Запомнить"@ru ;
@@ -198,6 +235,12 @@ this._init = function () {
       self.object.set(property_uri, self.get(property_uri).slice(0));
     }
   });
+  self.object.one("afterSave", function () {
+    delete self.object;
+  });
+  self.object.one("afterReset", function () {
+    delete self.object;
+  });
 }
 
 self.on("beforeSave", updateBlank);
@@ -289,16 +332,18 @@ v-fc:BlankTemplate
       object.off("afterReset", cancelHandler);
       self.off("beforeSave");
       self.off("afterSave");
-      delete self.object;
+      //delete self.object;
     });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
   function saveHandler () {
-    delete self.object;
-    setTimeout(function () {
-      riot.route("#/" + object.id);
-    }, 100);
+    //delete self.object;
+    if (container.attr("id") === "main") {
+      setTimeout(function () {
+        riot.route("#/" + object.id);
+      }, 100);
+    }
   }
   function cancelHandler () { window.history.back(); }
   //# sourceURL=v-fc:BlankTemplate
@@ -339,19 +384,21 @@ v-fc:BlankTemplateShort
       object.off("afterReset", cancelHandler);
       self.off("beforeSave");
       self.off("afterSave");
-      delete self.object;
+      //delete self.object;
     });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
   function saveHandler () {
-    delete self.object;
-    setTimeout(function () {
-      riot.route("#/" + object.id);
-    }, 100);
+    //delete self.object;
+    if (container.attr("id") === "main") {
+      setTimeout(function () {
+        riot.route("#/" + object.id);
+      }, 100);
+    }
   }
   function cancelHandler () { window.history.back(); }
-  //# sourceURL=v-fc:BlankTemplate
+  //# sourceURL=v-fc:BlankTemplateShort
 </script>
   """
 .

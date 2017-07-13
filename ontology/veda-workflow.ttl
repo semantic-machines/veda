@@ -1599,7 +1599,7 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div class="hidden"></div>
 <script>
-  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
+  if ( individual.rights.hasValue("v-s:canUpdate", true) && !individual.isNew() ) {
     individual.one("beforeSave", function () {
       if ( !individual.hasValue("v-wf:read", true) ) {
         individual["v-wf:read"] = [true];
@@ -1672,6 +1672,15 @@ v-wf:from
   rdfs:domain v-wf:DecisionForm ;
   rdfs:domain v-s:Deliverable ;
   rdfs:range v-s:Appointment ;
+.
+
+v-wf:redirect_from_task
+  rdf:type owl:ObjectProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Перенаправлено из задачи"@ru ;
+  rdfs:label "Redirect from task"@en ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:range v-wf:DecisionForm ;
 .
 
 v-wf:to

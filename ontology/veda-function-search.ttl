@@ -198,6 +198,11 @@ v-fs:Find
   rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
 .
+v-fs:Excel
+  rdf:type v-s:Bundle ;
+  rdfs:label "Excel"@en ;
+  rdfs:label "Excel"@ru ;
+.
 v-fs:Results
   rdf:type v-s:Bundle ;
   rdfs:label "Results"@en ;
@@ -410,7 +415,7 @@ v-fs:FulltextRequestTemplate
         </div>
         <h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
         <div rel="v-fs:typeToSearch" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-        <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown"></veda-control>
+        <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown" data-template="{individual['rdfs:label'].join(' ') + ' (' + individual.id + ')'}"></veda-control>
       </form>
     </div>
     <div role="tabpanel" class="tab-pane" id="results-ft">
@@ -699,7 +704,7 @@ v-fs:AttributiveRequestTemplate
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="params-at">
       <h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
-      <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown"></veda-control>
+      <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown" data-template="{individual['rdfs:label'].join(' ') + ' (' + individual.id + ')'}"></veda-control>
       <br>
       <div id="form-holder"></div>
       <button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
@@ -1174,6 +1179,7 @@ v-fs:AttributiveSearchTemplate
   v-ui:template """
 <script>
   var self = individual,
+      searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined,
       searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() : undefined,
       searchResultContainer = $("#search-result", template);
   if ( searchResultTemplate ) {
@@ -1183,24 +1189,60 @@ v-fs:AttributiveSearchTemplate
     individual.resultTemplate = resultTemplate;
     resultContainer.empty();
   }
+  if ( !searchBlankTemplate ) {
+    $("#params", template).remove();
+  }
+
+  // Enable swipe for result table
+  var prevDistance = 0, delta = 0;
+  $("#search-result", template).swipe({
+    swipeStatus: function (event, phase, direction, distance, duration) {
+      if (phase === "move" && event.ctrlKey === true) {
+        this.css("cursor", "move");
+        if (direction === "left") {
+          delta = distance - prevDistance;
+          prevDistance = distance;
+          this.scrollLeft( this.scrollLeft() + delta );
+        } else if (direction === "right") {
+          delta = distance - prevDistance;
+          prevDistance = distance;
+          this.scrollLeft( this.scrollLeft() - delta );
+        } else if (direction === "up") {
+          window.scrollBy(0, distance);
+        } else if (direction === "down") {
+          window.scrollBy(0, -distance);
+        }
+      } else {
+        prevDistance = 0;
+        delta = 0;
+        this.css("cursor", "");
+      }
+    }
+  });
+  template.one("remove", function () {
+    prevDistance = null;
+    delta = null;
+    $("#search-result", template).swipe("destroy");
+  });
+
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
-  <br>
-  <div class="ribbon-wrapper top-left">
-    <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
-  </div>
   <div id="params">
+    <br>
+    <div class="ribbon-wrapper top-left">
+      <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
+    </div>
     <div id="search-form"></div>
     <br>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
-    <button class="btn btn-default xls"><span>Excel</span></button>
+    <button class="btn btn-default xls"><span  about="v-fs:Excel" property="rdfs:label"></span></button>
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+    <br>
   </div>
   <div id="results" class="hidden">
-    <br>
     <hr>
     <h3 class="clearfix">
       <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
@@ -1225,7 +1267,6 @@ v-fs:AttributiveSearchTemplate
     <div class="not-found alert alert-warning hidden">
       <strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
     </div>
-    <br>
     <div id="no-more-results" class="alert alert-success hidden">
       <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
     </div>
@@ -1279,14 +1320,16 @@ v-fs:AttributiveSearchTemplate
   }
 
   // Show results on load if they are available (e.g. if we came back)
-  if (self.result.length) {
+  if ( self.result.length && location.hash.indexOf(self.id) >= 0 ) {
     renderResult(self.result).then(function () {
       scrollTo(self.scroll);
     });
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     search().then(function () {
-      scrollTo( $("#results", template).offset().top );
+      if (location.hash.indexOf(self.id) >= 0) {
+        scrollTo( $("#results", template).offset().top );
+      }
     });
   }
 
@@ -1314,11 +1357,24 @@ v-fs:AttributiveSearchTemplate
         scrollTo( $("#results", template).offset().top );
       });
     }
+// Очистка поисковой формы по клавишам Ctrl+Delete
+    if (e.ctrlKey && e.keyCode === 46) {
+      var obj = searchBlank.object;
+      Object.keys(obj.properties).map(function (property_uri) {
+        if (property_uri === "@" || property_uri === "rdf:type") {
+          return;
+        }
+        obj.set(property_uri, []);
+      });
+    }
   }
+
   $(window).on("keyup", ctrlEnterHandler);
   template.one("remove", function () {
     $(window).off("keyup", ctrlEnterHandler);
   });
+
+  function ctrlDelHandler (e) { }
 
   // Clear button handler
   clearButton.click(function () {
@@ -1365,10 +1421,11 @@ v-fs:AttributiveSearchTemplate
 
   // Manage sort
   var sortBy = "", dir = "";
-  if ( self.hasValue("v-fs:sortOrder") ) {
-    var tmp = self["v-fs:sortOrder"][0].split(" ");
-    sortBy = tmp[0]; dir = tmp[1];
+  if ( !self.hasValue("v-fs:sortOrder") ) {
+    self["v-fs:sortOrder"] = ["'v-s:created' desc"];
   }
+  var tmp = self["v-fs:sortOrder"][0].split(" ");
+  sortBy = tmp[0]; dir = tmp[1];
   $(".orderby", template).each( function () {
     var header = $(this);
     var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
@@ -1452,8 +1509,8 @@ v-fs:AttributiveSearchTemplate
         setTimeout(function () {
           $("td", tmpl).each( function () {
             var text = getText(this);
-            if (text && text.length > 100) {
-              this.textContent = text.substring(0, 100) + "...";
+            if (text && text.length > 200) {
+              this.textContent = text.substring(0, 200) + "...";
             }
           });
           tmpl.show();

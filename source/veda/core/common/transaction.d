@@ -68,30 +68,17 @@ TransactionItem copy_from_immutable(immutable TransactionItem ti)
     return res;
 }
 
-JSONValue to_json(immutable TransactionItem ti)
+TransactionItem from_json(JSONValue jsn)
 {
-    JSONValue res;
+    TransactionItem res;
 
-    res[ "cmd" ]            = ti.cmd;
-    res[ "user_uri" ]       = ti.user_uri;
-    res[ "uri" ]            = ti.uri;
-    res[ "prev_binobj" ]    = ti.prev_binobj;
-    res[ "new_binobj" ]     = ti.new_binobj;
-    res[ "update_counter" ] = ti.update_counter;
-    res[ "event_id" ]       = ti.event_id;
-
-    return res;
-}
-
-
-public JSONValue to_json(ref immutable(TransactionItem)[] immutable_queue)
-{
-    JSONValue res;
-
-    foreach (ti; immutable_queue)
-    {
-        res ~= to_json(ti);
-    }
+    res.cmd            = cast(INDV_OP)jsn[ "cmd" ].integer;
+    res.user_uri       = jsn[ "user_uri" ].str;
+    res.uri            = jsn[ "uri" ].str;
+    res.prev_binobj    = jsn[ "prev_binobj" ].str;
+    res.new_binobj     = jsn[ "new_binobj" ].str;
+    res.update_counter = jsn[ "update_counter" ].integer;
+    res.event_id       = jsn[ "event_id" ].str;
 
     return res;
 }
@@ -101,39 +88,42 @@ struct Transaction
     private
     {
         TransactionItem *[ string ] buff;
-        TransactionItem *[]          queue;
+        TransactionItem[]            queue;
         immutable(TransactionItem)[] immutable_queue;
     }
 
-    bool       is_autocommit = true;
-    long       id;
-    ResultCode rc;
+    bool        is_autocommit = true;
+    long        id;
+    ResultCode  rc;
+    int         count;
 
-/*
-    public void                 add(ref immutable TransactionItem _ti)
-    {
-        TransactionItem ti = copy_from_immutable(_ti);
-
-        buff[ ti.new_indv.uri ] = &ti;
-        queue ~= &ti;
-    }
- */
 
     public void add_immutable(ref immutable TransactionItem _ti)
     {
         immutable_queue ~= _ti;
     }
 
-    public void add(TransactionItem *ti)
+    public void add(TransactionItem ti)
     {
-        buff[ ti.new_indv.uri ] = ti;
         queue ~= ti;
+        TransactionItem *tii = &queue[ count ];
+        string          kk   = ti.new_indv.uri.dup;
+        buff[ kk ] = tii;
+        count++;
     }
 
     public void reset()
     {
-        buff  = buff.init;
-        queue = queue.init;
+        if (buff.length > 0)
+            buff = buff.init;
+
+        if (queue.length > 0)
+            queue = queue.init;
+
+        if (immutable_queue.length > 0)
+            immutable_queue = immutable_queue.init;
+
+        count = 0;
     }
 
     public TransactionItem *get(string uri)
@@ -141,7 +131,7 @@ struct Transaction
         return buff.get(uri, null);
     }
 
-    public TransactionItem *[] get_queue()
+    public TransactionItem[] get_queue()
     {
         return queue;
     }

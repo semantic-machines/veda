@@ -28,8 +28,6 @@ const (
 	CURRENT Mode = 2
 )
 
-const queue_db_path string = "./data/queue"
-
 type Header struct {
 	start_pos    uint64
 	msg_length   uint64
@@ -97,6 +95,7 @@ type Consumer struct {
 	first_element uint64
 	count_popped  uint32
 	last_read_msg []uint8
+	mode          Mode
 
 	ff_info_pop_w *os.File
 	ff_info_pop_r *os.File
@@ -108,10 +107,11 @@ type Consumer struct {
 	hash   hash.Hash32
 }
 
-func NewConsumer(_queue *Queue, _name string) *Consumer {
+func NewConsumer(_queue *Queue, _name string, _mode Mode) *Consumer {
 	p := new(Consumer)
 	p.queue = _queue
 	p.name = _name
+	p.mode = _mode
 	//tablePolynomial := crc32.MakeTable(0xD5828281)
 	//p.hash = crc32.New(tablePolynomial)
 	p.hash = crc32.NewIEEE()
@@ -124,14 +124,16 @@ func (ths *Consumer) open() bool {
 		return false
 	}
 
-	ths.file_name_info_pop = queue_db_path + "/" + ths.queue.name + "_info_pop_" + ths.name
+	ths.file_name_info_pop = ths.queue.queue_db_path + "/" + ths.queue.name + "_info_pop_" + ths.name
 
 	var err error
 
-	if _, err = os.Stat(ths.file_name_info_pop); os.IsNotExist(err) {
-		ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_CREATE|os.O_RDWR, 0644)
-	} else {
-		ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_RDWR, 0644)
+	if ths.mode == RW {
+		if _, err = os.Stat(ths.file_name_info_pop); os.IsNotExist(err) {
+			ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_CREATE|os.O_RDWR, 0644)
+		} else {
+			ths.ff_info_pop_w, err = os.OpenFile(ths.file_name_info_pop, os.O_RDWR, 0644)
+		}
 	}
 	ths.ff_info_pop_r, err = os.OpenFile(ths.file_name_info_pop, os.O_RDONLY, 0644)
 
@@ -141,8 +143,10 @@ func (ths *Consumer) open() bool {
 }
 
 func (ths *Consumer) Close() {
-	ths.ff_info_pop_w.Sync()
-	ths.ff_info_pop_w.Close()
+	if ths.mode == RW {
+		ths.ff_info_pop_w.Sync()
+		ths.ff_info_pop_w.Close()
+	}
 	ths.ff_info_pop_r.Close()
 }
 
@@ -152,7 +156,7 @@ func (ths *Consumer) remove() {
 }
 
 func (ths *Consumer) put_info(is_sync_data bool) bool {
-	if !ths.queue.isReady || !ths.isReady {
+	if !ths.queue.isReady || !ths.isReady || ths.mode != RW {
 		return false
 	}
 
@@ -243,8 +247,7 @@ func (ths *Consumer) get_info() bool {
 }
 
 func (ths *Consumer) pop() string {
-
-	if !ths.queue.isReady || !ths.isReady {
+	if !ths.queue.isReady || !ths.isReady || ths.mode != RW {
 		return ""
 	}
 
@@ -286,12 +289,14 @@ func (ths *Consumer) pop() string {
 }
 
 func (ths *Consumer) sync() {
-	ths.ff_info_pop_w.Sync()
+	if ths.mode == RW {
+		ths.ff_info_pop_w.Sync()
+	}
 }
 
 func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
-	if !ths.queue.isReady || !ths.isReady {
-		log.Printf("ERR! queue:commit_and_next:!queue.isReady || !isReady")
+	if !ths.queue.isReady || !ths.isReady || ths.mode != RW {
+		log.Printf("ERR! queue:commit_and_next:!queue.isReady || !isReady || ths.mode != RW")
 		return false
 	}
 
@@ -350,24 +355,27 @@ type Queue struct {
 	file_name_queue     string
 	file_name_lock      string
 
+	queue_db_path string
+
 	// --- tmp ---
 	header Header
 	hash   hash.Hash32
 }
 
-func NewQueue(_name string, _mode Mode) *Queue {
+func NewQueue(_name string, _mode Mode, _queue_db_path string) *Queue {
 	p := new(Queue)
 
 	p.name = _name
 	p.mode = _mode
+	p.queue_db_path = _queue_db_path
 
 	p.isReady = false
 	buff = make([]uint8, 4096*100)
 	header_buff = make([]uint8, p.header.length())
 
-	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push"
-	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
-	p.file_name_lock = queue_db_path + "/" + p.name + "_queue.lock"
+	p.file_name_info_push = p.queue_db_path + "/" + p.name + "_info_push"
+	p.file_name_queue = p.queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
+	p.file_name_lock = p.queue_db_path + "/" + p.name + "_queue.lock"
 
 	p.hash = crc32.NewIEEE()
 	return p
