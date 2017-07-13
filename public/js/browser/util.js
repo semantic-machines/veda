@@ -545,11 +545,13 @@ veda.Module(function Util(veda) { "use strict";
       }
     });
     // Set client timezone parameter
+    var tz = (new Date()).getTimezoneOffset();
     var tzField = document.createElement("input");
     tzField.setAttribute("type", "hidden");
     tzField.setAttribute("name", "timezone");
-    tzField.setAttribute("value", (new Date()).getTimezoneOffset());
+    tzField.setAttribute("value", tz);
     form.appendChild(tzField);
+    console.log("timezone", tz);
 
     document.body.appendChild(form);
 
