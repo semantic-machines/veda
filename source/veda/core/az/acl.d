@@ -151,13 +151,25 @@ class Authorization : LmdbStorage
 
             Right *[] _get_resource_groups(string uri, ubyte access, ref ubyte[ string ] prepared_uris, int level = 0)
             {
+                if (level > 16)
+                {
+                    log.trace("WARN! level down > 16, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                }
+
+                if (level > 32)
+                {
+                    log.trace("ERR! level down > 32, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                    return (Right *[]).init;
+                }
+
+
                 Right *[] res;
 
                 string    ll;
 
                 if (trace_info !is null)
                 {
-                    if (level < lstr.length)
+                    if (level * 2 < lstr.length)
                         ll = lstr[ 0..level * 2 ];
                     else
                         ll = text(level);
@@ -191,7 +203,7 @@ class Authorization : LmdbStorage
 
                         if (group.id in prepared_uris)
                         {
-                            if (prepared_uris[ group.id ] == group.access)
+                            if (prepared_uris[ group.id ] == (group.access & access))
                             {
                                 if (trace_info !is null)
                                     trace_info(format("%s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", ll, level, group.id, access_to_pretty_string(group.access)));
