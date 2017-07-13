@@ -502,12 +502,12 @@ veda.Module(function Util(veda) { "use strict";
         if (reportsDropdown.html()== '') {
           Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
             $("<li/>", {
-                 "style" : "cursor:pointer",
-                       "html" : "<a href='#'>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
-                       "click": (function (e) {
-                        veda.Util.redirectToReport(individual, res_id);
-                       })
-                      }).appendTo(reportsDropdown);
+              "style" : "cursor:pointer",
+              "html" : "<a href='#'>" + new veda.IndividualModel(res_id)["rdfs:label"].join(" ") + "</a>",
+              "click": (function (e) {
+                veda.Util.redirectToReport(individual, res_id);
+              })
+            }).appendTo(reportsDropdown);
           });
         }
       }

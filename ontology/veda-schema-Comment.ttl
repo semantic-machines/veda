@@ -166,10 +166,7 @@ v-s:SingleCommentTemplate
     <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
     <br>
-    <button class="btn btn-primary action view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button class="btn btn-success action -view edit -search" id="save">Ok</button>
-    <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-    <button class="btn btn-link action view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+    <div about="@" data-template="v-ui:HorizontalButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete">
   </div>
 </div>
   """ ;
@@ -187,6 +184,8 @@ v-s:RecursiveCommentTemplate
   }
   $(".action", template).click(function (e) {
     e.preventDefault();
+    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    if ( this.id === "delete" && !confirm(warning) ) { return; }
     template.trigger(this.id);
   });
 

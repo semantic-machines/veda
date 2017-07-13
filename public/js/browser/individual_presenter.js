@@ -528,9 +528,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           return acc && validation[property_uri].state;
         }, true);
         validation.state = validation.state && embedded.reduce(function (acc, template) {
-              var embeddedValidation = template.data("validation");
-              return embeddedValidation ? acc && embeddedValidation.state : acc;
-            }, true);
+          var embeddedValidation = template.data("validation");
+          return embeddedValidation ? acc && embeddedValidation.state : acc;
+        }, true);
         template.trigger("internal-validated");
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded

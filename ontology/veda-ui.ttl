@@ -423,46 +423,26 @@ v-ui:SystemPropertiesTemplate
 v-ui:HorizontalButtonsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Горизонтальный шаблон с набором стандартных кнопок"@ru ;
-  rdfs:label "Horizontal standard buttons template"@en ;
+  rdfs:label "Horizontal template with standard buttons"@en ;
   v-ui:template """
-<div class="actions">
-  <button type="button" class="action btn btn-warning view -edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
-  <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-  <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-  <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-  <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-  <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
-  <div class="btn-group dropup">
-    <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
-      <span about="v-s:SendTask" property="rdfs:label"> </span>
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" id="standard-tasks">
-      <li><a href="#" about="v-s:Question" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Instruction" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Introduction" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Distribution" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Coordination" property="rdfs:label"></a></li>
-    </ul>
-  </div>
-</div>
 <script>
   var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
   var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
-  if (!canUpdate) {
-    $("#edit, #save, #cancel", template).remove();
-  }
-  if (!canDelete) {
-    $("#delete", template).remove();
-  }
+  var enabledButtons = (template.parent().data("buttons") || "send edit save cancel delete journal task").split(" ");
+  enabledButtons.forEach(function (id) {
+    if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
+    if ( !canUpdate && (id === "delete") ) { return; }
+    $("#" + id, template).removeClass("rm");
+  });
+  $(".rm", template).remove();
   template.on("click", "#edit, #save, #cancel, #delete", function (e) {
     e.preventDefault();
     var action = $(this).prop("id");
-    if (action === "delete" && confirm("Вы уверены? / Are you sure?") ) {
-      template.parent().closest("[resource='" + individual.id + "']").trigger(action);
-    } else {
-      template.parent().closest("[resource='" + individual.id + "']").trigger(action);
+    if (action === "delete") {
+      var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+      if ( !confirm(warning) ) { return; }
     }
+    template.parent().closest("[resource='" + individual.id + "']").trigger(action);
   });
   $("#journal", template).on("click", function (e) {
     e.preventDefault();
@@ -471,14 +451,15 @@ v-ui:HorizontalButtonsTemplate
     if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
       riot.route("#/" + journal_uri);
     } else {
-      alert("Журнал отсутсвует / Journal empty");
+      var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty")["rdfs:label"].join(" ");
+      alert(journalEmpty);
     }
   });
   $("#send", template).on("click", function () { veda.Util.send(individual, template); });
   $("#createReport", template).on("click", function () { veda.Util.createReport(individual); });
   $("#showRights", template).on("click", function () { veda.Util.showRights(individual); });
 
-  // standard tasks
+  // Standard tasks
   template.on("click", "ul#standard-tasks a", function (e) {
     e.preventDefault();
     var task = $(this).attr("about");
@@ -496,21 +477,21 @@ v-ui:HorizontalButtonsTemplate
   });
 
   // Standart buttons labels change for drafts
-  var Edit = (new veda.IndividualModel("v-s:Edit"))["rdfs:label"].join(" ");
-  var ContinueEdit = (new veda.IndividualModel("v-s:ContinueEdit"))["rdfs:label"].join(" ");
-  var DeleteDraft = (new veda.IndividualModel("v-s:DeleteDraft"))["rdfs:label"].join(" ");
-  var Cancel = (new veda.IndividualModel("v-s:Cancel"))["rdfs:label"].join(" ");
+  var Edit = new veda.IndividualModel("v-s:Edit")["rdfs:label"].join(" ");
+  var ContinueEdit = new veda.IndividualModel("v-s:ContinueEdit")["rdfs:label"].join(" ");
+  var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft")["rdfs:label"].join(" ");
+  var Cancel = new veda.IndividualModel("v-s:Cancel")["rdfs:label"].join(" ");
   function isDraftHandler() {
     if ( individual.hasValue("v-s:isDraft", true) ) {
       //Rename "Edit" -> "Continue edit"
-      $("#edit", template).text(ContinueEdit);
+      $(".action#edit", template).text(ContinueEdit);
       //Rename "Cancel" -> "Delete draft"
-      $("#cancel", template).text(DeleteDraft);
+      $(".action#cancel", template).text(DeleteDraft);
     } else {
       //Rename "Continue edit" -> Edit"
-      $("#edit", template).text(Edit);
+      $(".action#edit", template).text(Edit);
       //Rename "Delete draft" -> "Cancel"
-      $("#cancel", template).text(Cancel);
+      $(".action#cancel", template).text(Cancel);
     }
   }
   individual.on("v-s:isDraft", isDraftHandler);
@@ -518,25 +499,45 @@ v-ui:HorizontalButtonsTemplate
     individual.off("v-s:isDraft", isDraftHandler);
   });
   isDraftHandler("v-s:isDraft");
-
-/*  template.on("internal-validated", function (e) {
-      if (validation.state) {
-        $save.removeAttr("disabled");
-        $send.removeAttr("disabled");
-        $sendButtons.removeAttr("disabled");
-        $createReport.removeAttr("disabled");
-        $createReportButtons.removeAttr("disabled");
-      } else {
-        $save.attr("disabled", "disabled");
-        $send.attr("disabled", "disabled");
-        $sendButtons.attr("disabled", "disabled");
-        $createReport.attr("disabled", "disabled");
-        $createReportButtons.attr("disabled", "disabled");
-      }
-      e.stopPropagation();
-    });
-*/
-  
+  //# sourceURL=v-ui:HorizontalButtonsTemplate_pre
+</script>
+<div class="actions">
+  <button type="button" class="rm action btn btn-warning view -edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
+  <div class="rm action btn-group dropup" id="task">
+    <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
+      <span about="v-s:SendTask" property="rdfs:label"> </span>
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" id="standard-tasks">
+      <li><a href="#" about="v-s:Question" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Instruction" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Introduction" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Distribution" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Coordination" property="rdfs:label"></a></li>
+    </ul>
+  </div>
+</div>
+<script>
+  // Respect validation state of parent template
+  var closest = template.parent().closest("[resource='" + individual.id + "']");
+  closest.on("validate", function (e) {
+    var validation = $(this).data("validation");
+    if (validation.state) {
+      $(".action#save", template).removeAttr("disabled");
+      $(".action#send", template).removeAttr("disabled");
+      $(".action#task-button", template).removeAttr("disabled");
+    } else {
+      $(".action#save", template).attr("disabled", "disabled");
+      $(".action#send", template).attr("disabled", "disabled");
+      $(".action#task-button", template).attr("disabled", "disabled");
+    }
+    e.stopPropagation();
+  });
   //# sourceURL=v-ui:HorizontalButtonsTemplate_post
 </script>
 """ ;
@@ -1645,7 +1646,7 @@ v-ui:JournalTemplate
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
   </div>
   <div class="col-md-2 text-right">
-    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
+    <button type="button" class="action btn btn-info view -edit -search createReport0">
       <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
     </button>
     </div>
@@ -1770,7 +1771,8 @@ v-ui:DocumentEventTemplate
     if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
       $(".stop-process", template).on("click", function() {
-        if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
+        var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+        if ( confirm(warning) ) {
           process['v-wf:isStopped'] = [ true ];
           process.save();
           $(this).remove();
