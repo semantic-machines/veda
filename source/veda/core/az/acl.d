@@ -201,6 +201,12 @@ class Authorization : LmdbStorage
                     {
                         Right *group = res[ idx ];
 
+						if (group is null)
+						{
+		                    log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);							
+							continue;
+						}	
+							
                         if (group.id in prepared_uris)
                         {
                             if (prepared_uris[ group.id ] == (group.access & access))
