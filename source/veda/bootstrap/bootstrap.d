@@ -121,6 +121,7 @@ void main(string[] args)
 
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
+    bool need_watchdog = true;
 
     foreach (arg; args)
     {
@@ -128,6 +129,8 @@ void main(string[] args)
             need_remove_ontology = true;
         if (arg == "reload-ontology")
             need_reload_ontology = true;
+        if (arg == "no-watchdog")
+            need_watchdog = false;
     }
 
     string webserver_ports_str = "";
@@ -338,7 +341,7 @@ void main(string[] args)
             }
         }
 
-        if (need_remove_ontology == true || need_reload_ontology == true)
+        if (need_remove_ontology == true || need_reload_ontology == true || need_watchdog == false)
         {
             exit_code = wait(server_pid);
         }
