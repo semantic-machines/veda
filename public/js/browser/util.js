@@ -544,6 +544,13 @@ veda.Module(function Util(veda) { "use strict";
         form.appendChild(hiddenField);
       }
     });
+    // Set client timezone parameter
+    var tzField = document.createElement("input");
+    tzField.setAttribute("type", "hidden");
+    tzField.setAttribute("name", "timezone");
+    tzField.setAttribute("value", (new Date()).getTimezoneOffset());
+    form.appendChild(tzField);
+
     document.body.appendChild(form);
 
     window.open('', 'view');
