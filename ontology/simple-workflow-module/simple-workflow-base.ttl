@@ -2550,7 +2550,7 @@ if (doc) {
     routes['approval'][simple+'participant'] = aprovalDecree ;
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [false];
-    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+    routes['approval'][simple+'comment'] = [new String('На оформление распорядительного документа и регистрацию')];
   }
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
