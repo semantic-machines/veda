@@ -550,6 +550,7 @@ v-s:ProjectPhaseKind
 v-s:Currency
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;  
   rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
 .

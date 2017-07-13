@@ -1419,10 +1419,11 @@ v-fs:AttributiveSearchTemplate
 
   // Manage sort
   var sortBy = "", dir = "";
-  if ( self.hasValue("v-fs:sortOrder") ) {
-    var tmp = self["v-fs:sortOrder"][0].split(" ");
-    sortBy = tmp[0]; dir = tmp[1];
+  if ( !self.hasValue("v-fs:sortOrder") ) {
+    self["v-fs:sortOrder"] = ["'v-s:created' desc"];
   }
+  var tmp = self["v-fs:sortOrder"][0].split(" ");
+  sortBy = tmp[0]; dir = tmp[1];
   $(".orderby", template).each( function () {
     var header = $(this);
     var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");

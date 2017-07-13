@@ -67,21 +67,19 @@ vdi:index_01
   vdi:forClass v-s:File ;
   vdi:forClass v-wf:Process ;
   vdi:forClass v-wf:DecisionForm ;
-  vdi:forClass v-wf:WorkOrder ;
-  vdi:forClass v-wf:WorkItem ;
   vdi:forClass v-s:Membership ;
   vdi:forClass v-s:PermissionStatement ;
-  vdi:forClass v-wf:Variable ;
   vdi:indexed_to "system" ;
 .
-
 vdi:index_02
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Journal ;
   vdi:forClass v-s:JournalRecord ;
+  vdi:forClass v-wf:WorkOrder ;
+  vdi:forClass v-wf:WorkItem ;
+  vdi:forClass v-wf:Variable ;
   vdi:indexed_to "not-indexed" ;
 .
-
 vdi:index_1
   rdf:type vdi:ClassIndex ;
   vdi:forProperty v-s:creator ;

@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
 
 /**
  * Обьект - сессионный тикет
@@ -99,6 +99,7 @@ interface Context
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
 
     public long get_operation_state(P_MODULE thread_id, long wait_op_id);
+    public MInfo get_info(P_MODULE module_id);
 
     @property
     public Ticket sys_ticket(bool is_new = false);

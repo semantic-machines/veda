@@ -967,7 +967,7 @@
           if ( rad.is(":checked") ) {
             individual.set(property_uri, [rad.data("value")]);
           } else {
-            individual.set(property_uri, individual[property_uri].filter( function (i) {
+            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
               return i.valueOf() !== rad.data("value").valueOf();
             }));
           }
@@ -1389,7 +1389,7 @@
             if (isSingle) {
               individual.set(rel_uri, [f]);
             } else {
-              individual.set(rel_uri, individual[rel_uri].concat(f));
+              individual.set(rel_uri, individual.get(rel_uri).concat(f));
             }
           });
         }
@@ -1456,7 +1456,7 @@
         var filtered = selected.filter( function (i) {
           return individual.get(rel_uri).indexOf(i) < 0;
         });
-        individual.set(rel_uri, individual[rel_uri].concat(filtered));
+        individual.set(rel_uri, individual.get(rel_uri).concat(filtered));
       }
     }
 

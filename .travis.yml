@@ -86,7 +86,7 @@ script:
 after_script:
   - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
   - cat ./uptime.log
-  - grunt coveralls
+#  - grunt coveralls
   - date    
   - cat $PWD/veda_s.log
 #  - cat logs/veda-core-_*.log 

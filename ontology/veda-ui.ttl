@@ -2538,8 +2538,8 @@ td:PropertySpecification1
   v-ui:forProperty v-s:birthday ;
   v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
+  v-ui:tooltip "Required, single value."@en ;
   v-ui:placeholder "день рождения"@ru ;
   v-ui:placeholder "birthday"@en ;
 .

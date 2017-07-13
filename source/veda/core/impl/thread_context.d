@@ -962,7 +962,7 @@ class PThreadContext : Context
     //////////////////////////////////////////////// MODULES INTERACTION
 
     private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
-    private MInfo get_info(P_MODULE module_id)
+    public MInfo get_info(P_MODULE module_id)
     {
         ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
 

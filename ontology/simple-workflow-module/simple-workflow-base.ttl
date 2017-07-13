@@ -1968,7 +1968,7 @@ if (doc) {
     }
 
     var orderCreator = []; // Создатель заказа
-    if ( doc.hasValue("mnd-s:hasPurchaseOrder") && doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator") ) {
+    if ( doc.hasValue("mnd-s:hasPurchaseOrder") && doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator") && !doc["mnd-s:hasPurchaseOrder"][0].hasValue("v-s:creator", "d:SYK-PORTALMS_appointment") ) {
       orderCreator = doc["mnd-s:hasPurchaseOrder"][0]["v-s:creator"];
     }
 
@@ -2168,7 +2168,8 @@ if (doc) {
 
       // согласование 1 уровня
       if (doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758") // Пеллер
-        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер
+        || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00009992_71024618") // Дмитриева
+        || doc.hasValue("v-s:businessTripEmployee", "d:73ff1ce67c77f6815c56b697") // Дмитриева
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков
@@ -2230,7 +2231,8 @@ if (doc) {
       }
 
       // Подписание
-      if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00069177_71015289") // Шаллеггер*
+      if( doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00009992_71024618") // Дмитриева
+        || doc.hasValue("v-s:businessTripEmployee", "d:73ff1ce67c77f6815c56b697") // Дмитриева
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00064206_71017819") // Бендер*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00068750_71017804") // Дружков*
         || doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00010043_71018870") // Третьяков*
@@ -2250,7 +2252,7 @@ if (doc) {
         routes['sign'][simple+'editable'] = [false];
       } else if(doc.hasValue("v-s:businessTripEmployee", "d:mondi_appointment_00063551_70013758")//Пеллер
       ) {
-        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_appointment_00069177_71015289")];//Шаллеггер*
+        routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71015289")];//Финансовый директор
         routes['sign'][simple+'visible'] = [true];
         routes['sign'][simple+'editable'] = [false];
       } else if(!doc.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")){
@@ -2315,7 +2317,7 @@ if (doc) {
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
 
-    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Регистратор документов СЛПК
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:7af25dfb-5319-466f-afca-0c0289f2557c")]; //Руководитель ОООИ СЭБ
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [true];
     routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
@@ -2324,7 +2326,7 @@ if (doc) {
     routes['examination'][simple+'editable'] = [true];
   }
 
-//---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ-РАССХОДЫ
+//---------------------------------------------------------ПРЕДСТАВИТЕЛЬСКИЕ-РАСХОДЫ
   if (doc['rdf:type'][0].id === "mnd-s:RepresentativeCosts") {
 
     routes['coordination1'][simple+'visible'] = [true];
@@ -2548,7 +2550,7 @@ if (doc) {
     routes['approval'][simple+'participant'] = aprovalDecree ;
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [false];
-    routes['approval'][simple+'comment'] = [new String('Зарегистрировать')];
+    routes['approval'][simple+'comment'] = [new String('На оформление распорядительного документа и регистрацию')];
   }
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
