@@ -1700,3 +1700,73 @@ v-fs:TestResultTemplate
 </table>
   """ ;
 .
+
+v-fs:FulltextSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Полнотекстовый поиск"@ru ;
+  rdfs:label "Fulltext search"@en ;
+  v-fs:searchBlank v-fs:FulltextBlank ;
+  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
+  v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
+.
+
+v-fs:FulltextBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+#  v-fc:targetType v-s:UserThing ;
+.
+
+v-fs:FulltextBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <div class="col-md-12">
+    <h3>Введите запрос</h3>
+    <veda-control property="*" data-type="string"></veda-control>
+  </div>
+</div>
+<script>
+  $("input").keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-fs:FulltextBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-fs:FulltextResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска персоны"@ru ;
+  rdfs:label "Person search result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="5%" class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="rdf:type"></td>
+      <td property="rdfs:label"></td>
+      <td property="v-s:created"></td>
+      <td property="v-s:creator"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
