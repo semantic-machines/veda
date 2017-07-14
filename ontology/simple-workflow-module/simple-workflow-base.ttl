@@ -2225,7 +2225,7 @@ if (doc) {
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:6c0bbecd077d4dff8b9481da73ea5350")//(Общественные организации отраслевые (ЦБП, Леспром))
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:236170912d8f40a08178baab6449ff05")// (Организации конкуренты)
       ) {
-        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Юрисконсульт по конкурентному праву
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
       }
