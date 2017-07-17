@@ -201,36 +201,45 @@ class Authorization : LmdbStorage
                     {
                         Right *group = res[ idx ];
 
-						if (group is null)
-						{
-		                    log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);							
-							continue;
-						}	
-							
+                        if (group is null)
+                        {
+                            log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);
+                            continue;
+                        }
+
+                        ubyte orig_access = group.access;
+                        ubyte new_access  = group.access & access;
+
                         if (group.id in prepared_uris)
                         {
-                            if (prepared_uris[ group.id ] == (group.access & access))
+                            ubyte preur_access = prepared_uris[ group.id ];
+                            if (preur_access == new_access)
                             {
                                 if (trace_info !is null)
-                                    trace_info(format("%s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", ll, level, group.id, access_to_pretty_string(group.access)));
+                                    trace_info(format("%s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", ll, level, group.id,
+                                                      access_to_pretty_string(preur_access)));
 
                                 continue;
                             }
                         }
 
-                        ubyte  tmp_access = group.access;
-
-                        string group_key = membership_prefix ~ group.id;
-                        group.access              = group.access & access;
-                        prepared_uris[ group.id ] = group.access;
+                        group.access              = new_access;
+                        prepared_uris[ group.id ] = new_access;
 
                         if (trace_info !is null)
-                            trace_info(format("%s (%d)GROUP [%s] %s-> %s", ll, level, group.id, access_to_pretty_string(tmp_access), access_to_pretty_string(group.access)));
+                            trace_info(format("%s (%d)GROUP [%s] %s-> %s", ll, level, group.id, access_to_pretty_string(orig_access),
+                                              access_to_pretty_string(new_access)));
 
+                        string group_key = membership_prefix ~ group.id;
                         if (uri == group_key)
+                        {
+                            if (trace_info !is null)
+                                trace_info(format("%s (%d)GROUP [%s].access=%s SKIP, uri == group_key", ll, level, group.id,
+                                                  access_to_pretty_string(orig_access)));
                             continue;
+                        }
 
-                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, prepared_uris, level + 1);
+                        Right *[] up_restrictions = _get_resource_groups(group_key, new_access, prepared_uris, level + 1);
                         foreach (restriction; up_restrictions)
                         {
                             res ~= restriction;
@@ -348,7 +357,8 @@ class Authorization : LmdbStorage
                             Right *permission  = permissions.data.get(perm_key, null);
 
                             if (trace_info !is null)
-                                trace_info(format("restriction=%s, permission=%s, request=%s", *restriction, *permission, access_to_pretty_string(request_access)));
+                                trace_info(format("restriction=%s, permission=%s, request=%s", *restriction, *permission,
+                                                  access_to_pretty_string(request_access)));
 
                             ubyte restriction_access, permission_access;
 
