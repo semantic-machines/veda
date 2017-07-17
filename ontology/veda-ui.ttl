@@ -1508,9 +1508,23 @@ v-ui:JournalTemplate
   v-ui:template """
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
+ 
   $('.createReport0', template).on('click', function () {
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
+  });
+  
+  $('#createReport',template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_pdf');
+  });
+  $('#createReport2', template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_xlsx');
+  });
+  $('#createReport3', template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
   });
 </script>
 <div class="container journal sheet">
@@ -1519,14 +1533,25 @@ v-ui:JournalTemplate
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
   <div class="row">
-  <div class="col-md-10">
+  <div class="col-md-8">
 
   <h2 about="v-s:Journal" property="rdfs:label"></h2>
   </div>
-  <div class="col-md-2 text-right">
+  <div class="col-md-4 text-right">
     <button type="button" class="action btn btn-info view -edit -search createReport0"  >
       <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
     </button>
+    <div class="btn-group dropup" >
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span about="v-s:CoordinationList" property="rdfs:label"> </span>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
+        <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
+        <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
+      </ul>
+    </div>
     </div>
   </div>
   <div rel="v-s:onDocument">

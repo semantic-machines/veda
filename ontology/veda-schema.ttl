@@ -396,6 +396,27 @@ v-s:Journal_printBlank
 #  rdfs:label "pdf"@ru ;
 .
 
+v-s:JournalCoordination_printBlank_pdf
+  rdf:type v-s:Report ;
+  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:fileFormat "pdf";
+  rdfs:label "Лист согласования (pdf)"@ru ;
+  rdfs:label "Coordination list (pdf)"@en ;
+.
+v-s:JournalCoordination_printBlank_xlsx
+  rdf:type v-s:Report ;
+  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:fileFormat "xlsx";
+  rdfs:label "Лист согласования (xlsx)"@ru ;
+  rdfs:label "Coordination list (xlsx)"@en ;
+.
+v-s:JournalCoordination_printBlank_docx
+  rdf:type v-s:Report ;
+  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:fileFormat "docx";
+  rdfs:label "Лист согласования (docx)"@ru ;
+  rdfs:label "Coordination list (docx)"@en ;
+.
 ####################################################################################
 
 # veda-ui-clone (v-ui:)
