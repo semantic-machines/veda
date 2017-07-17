@@ -10,7 +10,9 @@ private
     import veda.util.container, veda.util.module_info;
 }
 
-int max_count_in_cache = 200;
+string lstr = "                                                                           ";
+
+int    max_count_in_cache = 200;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -147,20 +149,37 @@ class Authorization : LmdbStorage
             MDB_val   data;
             string    skey;
 
-            Right *[] _get_resource_groups(string uri, ubyte access, ref bool[ string ] prepared_uris, int level = 0)
+            Right *[] _get_resource_groups(string uri, ubyte access, ref ubyte[ string ] prepared_uris, int level = 0)
             {
+                if (level > 16)
+                {
+                    log.trace("WARN! level down > 16, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                }
+
+                if (level > 32)
+                {
+                    log.trace("ERR! level down > 32, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                    return (Right *[]).init;
+                }
+
+
                 Right *[] res;
 
-                //writeln ("~10 level=", level, ", uri=", uri);
+                string    ll;
+
+                if (trace_info !is null)
+                {
+                    if (level * 2 < lstr.length)
+                        ll = lstr[ 0..level * 2 ];
+                    else
+                        ll = text(level);
+                }
 
                 try
                 {
                     string groups_str;
                     if (cache_of_group !is null)
-                    {
                         res = cache_of_group.get(uri);
-                        //writeln ("ACL:CACHE:found in cache, uri=", uri);
-                    }
 
                     if (res is null)
                     {
@@ -182,13 +201,31 @@ class Authorization : LmdbStorage
                     {
                         Right *group = res[ idx ];
 
-                        if (prepared_uris.get(group.id, false) == true)
-                            continue;
+						if (group is null)
+						{
+		                    log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);							
+							continue;
+						}	
+							
+                        if (group.id in prepared_uris)
+                        {
+                            if (prepared_uris[ group.id ] == (group.access & access))
+                            {
+                                if (trace_info !is null)
+                                    trace_info(format("%s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", ll, level, group.id, access_to_pretty_string(group.access)));
+
+                                continue;
+                            }
+                        }
+
+                        ubyte  tmp_access = group.access;
 
                         string group_key = membership_prefix ~ group.id;
-                        group.access = group.access & access;
-                        //res ~= group;
-                        prepared_uris[ group.id ] = true;
+                        group.access              = group.access & access;
+                        prepared_uris[ group.id ] = group.access;
+
+                        if (trace_info !is null)
+                            trace_info(format("%s (%d)GROUP [%s] %s-> %s", ll, level, group.id, access_to_pretty_string(tmp_access), access_to_pretty_string(group.access)));
 
                         if (uri == group_key)
                             continue;
@@ -209,7 +246,7 @@ class Authorization : LmdbStorage
 
             RightSet get_resource_groups(string uri, ubyte access)
             {
-                bool[ string ] prepared_uris;
+                ubyte[ string ] prepared_uris;
                 return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0), log);
             }
 
@@ -220,33 +257,32 @@ class Authorization : LmdbStorage
             key.mv_data = cast(char *)filter;
             rc          = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
-            {
                 filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-            }
+
+            if (trace_info !is null)
+                trace_info(format("user_uri=%s", ticket.user_uri));
 
             // 1. читаем группы object (uri)
+            if (trace_info !is null)
+                trace_info(format("\nREAD OBJECT GROUPS"));
             RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+            if (trace_info !is null)
+                trace_info(format("object_groups=%s", object_groups));
 
             // 2. читаем группы subject (ticket.user_uri)
+            if (trace_info !is null)
+                trace_info(format("\nREAD SUBJECT GROUPS"));
             RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
-
             if (trace_info !is null)
-            {
-                trace_info(format("user_uri=%s", ticket.user_uri));
                 trace_info(format("subject_groups=%s", subject_groups));
-                trace_info(format("object_groups=%s", object_groups));
-            }
-
 
             foreach (object_group; object_groups.data)
             {
                 if (trace_group !is null)
-                {
                     trace_group(object_group.id);
-                }
 
                 string acl_key;
                 if (filter_value !is null)

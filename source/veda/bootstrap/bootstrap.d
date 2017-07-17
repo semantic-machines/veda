@@ -121,6 +121,7 @@ void main(string[] args)
 
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
+    bool need_watchdog = true;
 
     foreach (arg; args)
     {
@@ -128,6 +129,8 @@ void main(string[] args)
             need_remove_ontology = true;
         if (arg == "reload-ontology")
             need_reload_ontology = true;
+        if (arg == "no-watchdog")
+            need_watchdog = false;
     }
 
     string webserver_ports_str = "";
@@ -338,61 +341,68 @@ void main(string[] args)
             }
         }
 
-        writeln("watch dog start");
-        is_next = true;
-        while (is_next)
+        if (need_remove_ontology == true || need_reload_ontology == true || need_watchdog == false)
         {
-            core.thread.Thread.yield();
-            core.thread.Thread.sleep(dur!("seconds")(10));
-
-            ProcessInfo[ int ] processes;
-            auto args_2_pid = get_processes_info(started_modules, processes);
-
-            foreach (ml; started_modules)
+            exit_code = wait(server_pid);
+        }
+        else
+        {
+            writeln("watch dog start");
+            is_next = true;
+            while (is_next)
             {
-                //writeln("check module ", ml);
-                int pid;
-                pid = args_2_pid.get(ml, -1);
+                core.thread.Thread.yield();
+                core.thread.Thread.sleep(dur!("seconds")(10));
 
-                if (pid == -1)
+                ProcessInfo[ int ] processes;
+                auto args_2_pid = get_processes_info(started_modules, processes);
+
+                foreach (ml; started_modules)
                 {
-                    writeln("not found running module ", ml, " (", pid, ")");
-                    //string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
-                    //writeln ("lock_path=", lock_path);
-                    //remove (lock_path);
+                    //writeln("check module ", ml);
+                    int pid;
+                    pid = args_2_pid.get(ml, -1);
 
-                    //auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
-                    //writeln("restart " ~ ml);
-                    //auto _pid = spawnProcess(ml.split (" "),
-                    //                         std.stdio.stdin,
-                    //                         std.stdio.stdout,
-                    //                         _logFile, env, Config.suppressConsole);
-
-                    is_next = false;
-                    break;
-                }
-                else
-                {
-                    ProcessInfo pi = processes[ pid ];
-                    if (pi.stat == "Z+" || pi.stat == "Z")
+                    if (pid == -1)
                     {
-                        writeln("defunct module ", pi, " (", pid, ")");
-                        kill(pi.pid, SIGKILL);
-
-                        //              string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
-                        //              writeln ("lock_path=", lock_path);
-                        //              remove (lock_path);
-
+                        writeln("not found running module ", ml, " (", pid, ")");
+                        //string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
+                        //writeln ("lock_path=", lock_path);
+                        //remove (lock_path);
 
                         //auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
                         //writeln("restart " ~ ml);
                         //auto _pid = spawnProcess(ml.split (" "),
                         //                         std.stdio.stdin,
                         //                         std.stdio.stdout,
-                        //                        _logFile, env, Config.suppressConsole);
+                        //                         _logFile, env, Config.suppressConsole);
 
                         is_next = false;
                         break;
+                    }
+                    else
+                    {
+                        ProcessInfo pi = processes[ pid ];
+                        if (pi.stat == "Z+" || pi.stat == "Z")
+                        {
+                            writeln("defunct module ", pi, " (", pid, ")");
+                            kill(pi.pid, SIGKILL);
+
+                            //              string lock_path = "data/module-info/" ~ pi.command ~ ".lock";
+                            //              writeln ("lock_path=", lock_path);
+                            //              remove (lock_path);
+
+
+                            //auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
+                            //writeln("restart " ~ ml);
+                            //auto _pid = spawnProcess(ml.split (" "),
+                            //                         std.stdio.stdin,
+                            //                         std.stdio.stdout,
+                            //                        _logFile, env, Config.suppressConsole);
+
+                            is_next = false;
+                            break;
+                        }
                     }
                 }
             }

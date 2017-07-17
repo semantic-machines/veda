@@ -82,11 +82,11 @@ veda.Module(function (veda) { "use strict";
 
   proto.set = function (property_uri, values) {
     this.isSync(false);
-    values = veda.Util.unique(values);
     values = values.filter(function (i) { return i != undefined; });
     var serialized = values.map( serializer );
+    var uniq = unique(serialized);
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
-      serialized = serialized.concat( this.filtered[property_uri] );
+      uniq = serialized.concat( this.filtered[property_uri] );
     }
     if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
       this.properties[property_uri] = serialized;
@@ -94,6 +94,18 @@ veda.Module(function (veda) { "use strict";
       this.trigger(property_uri, values);
     }
   };
+
+  function unique (arr) {
+    var n = {}, r = [];
+    for(var i = 0, val; i < arr.length; i++) {
+      val = arr[i].type + arr[i].data + (arr[i].lang || "");
+      if (!n[val]) {
+        n[val] = true;
+        r.push(arr[i]);
+      }
+    }
+    return r;
+  }
 
   // Define properties from ontology in veda.IndividualModel.prototype
   veda.IndividualModel.defineProperty = function (property_uri) {

@@ -15,32 +15,41 @@ struct ScriptInfo
     string run_at;
 }
 
-void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_order, Individual ss, ScriptVM script_vm, string first_section,
+class ScriptsWorkPlace
+{
+    public          ScriptInfo[ string ] scripts;
+    public string[] scripts_order;
+}
+
+void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, string first_section,
                     string before_vars,
                     string vars_env, string after_vars,
                     bool trace)
 {
-    if (trace)
-        log.trace("prepare_script uri=%s", ss.uri);
+    //if (trace)
+    //log.trace("prepare_script uri=%s, scripts_order.length=%d", ss.uri, wpl.scripts_order.length);
 
     try
     {
         if (ss.exists(veda_schema__deleted, true) || ss.exists("v-s:disabled", true))
         {
-            //writeln ("@S0 SCRIPT OFF, uri=", ss.uri);
-            ScriptInfo script = scripts.get(ss.uri, ScriptInfo.init);
+            log.trace("disable script %s", ss.uri);
+            ScriptInfo script = wpl.scripts.get(ss.uri, ScriptInfo.init);
 
             if (script !is ScriptInfo.init)
             {
                 script.compiled_script = null;
-                scripts[ ss.uri ]      = script;
+                wpl.scripts[ ss.uri ]  = script;
             }
             return;
         }
 
         string scripts_text = ss.getFirstResource(veda_schema__script).literal;
         if (scripts_text.length <= 0)
+        {
+            log.trace("script %s empty, skip", ss.uri);
             return;
+        }
 
         if (trace)
             log.trace("script_text=%s", scripts_text);
@@ -89,73 +98,48 @@ void prepare_script(ref ScriptInfo[ string ] scripts, ref Array!string scripts_o
             foreach (dp; dependency)
                 script.dependency[ dp.uri ] = true;
 
-            scripts[ ss.uri ] = script;
+            wpl.scripts[ ss.uri ] = script;
 
+            int      count_find_dependency = 0;
+            bool     inserted              = false;
 
-            // удалить вхождение
-            auto rr = scripts_order[].find(ss.uri);
+            string[] new_scripts_order;
 
-            if (rr.length > 0)
-                scripts_order.linearRemove(rr);
-
-            // найти новую позицию с учетом зависимостей
-            long max_pos = 0;
-
-            long idx                = 0;
-            bool need_before_insert = false;
-
-            foreach (oo; scripts_order)
+            foreach (oo; wpl.scripts_order)
             {
-                // проверить зависит ли [oo] от [script]
-                auto soo = scripts[ oo ];
-                foreach (dp; soo.dependency.keys)
+                if (count_find_dependency < script.dependency.length)
                 {
-                    if (script.id == dp)
+                    auto soo = wpl.scripts[ oo ];
+                    foreach (dp; soo.dependency.keys)
                     {
-                        need_before_insert = true;
-                        max_pos            = idx;
+                        if (script.id == dp)
+                            count_find_dependency++;
                     }
                 }
 
-                if (need_before_insert == true)
-                    break;
-
-                // проверить зависит ли [script] от [oo]
-                foreach (dp; script.dependency.keys)
+                if (inserted == false && count_find_dependency >= script.dependency.length)
                 {
-                    if (oo == dp && max_pos < idx)
-                        max_pos = idx;
+                    new_scripts_order ~= script.id;
+                    inserted = true;
                 }
-                idx++;
-            }
-            if (max_pos > 0)
-            {
-                rr = scripts_order[].find(scripts_order[ max_pos ]);
 
-                // добавить новое вхождение
-                if (rr.length > 0)
-                {
-                    if (need_before_insert)
-                        scripts_order.insertBefore(rr, ss.uri);
-                    else
-                        scripts_order.insertAfter(rr, ss.uri);
-                }
-                else
-                    scripts_order.insertBack(ss.uri);
+                if (oo != script.id)
+                    new_scripts_order ~= oo;
             }
-            else
-                scripts_order.insertBack(ss.uri);
+			if (inserted == false)
+	            new_scripts_order ~= script.id;			
+
+            wpl.scripts_order = new_scripts_order;
         }
         catch (Exception ex)
         {
             log.trace("error:compile event script :%s", ex.msg);
         }
+
+//        log.trace("scripts_order.length=%d", wpl.scripts_order.length);
     }
     catch (Exception ex)
     {
         log.trace("error:load event script :%s", ex.msg);
-    }
-    finally
-    {
     }
 }

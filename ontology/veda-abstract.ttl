@@ -937,7 +937,7 @@ v-s:hasMaintainedObject
 .
 v-s:eliminatingTime
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Eliminating time"@en ;
+  rdfs:label "Elimination time"@en ;
   rdfs:label "Время устранения"@ru ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Maintained ;
@@ -1101,7 +1101,7 @@ v-s:signedBy
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Подписавший"@ru ;
   rdfs:label "Signed by"@en ;
-  rdfs:range xsd:string ;
+  rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:sheetsCount

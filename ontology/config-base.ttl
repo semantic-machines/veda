@@ -480,6 +480,13 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
   var exist_journal = get_individual(ticket, journal_uri);
 
   var user = get_individual(ticket, user_uri);
+
+  var actor_uri = hasValue(user, 'v-s:defaultAppointment') ? getUri(user['v-s:defaultAppointment']) :
+                  hasValue(user, 'v-s:hasAppointment') ? getUri(user['v-s:hasAppointment']) :
+                  user_uri;
+
+  var actor = newUri(actor_uri);
+
   if (exist_journal)
   {
     // UPDATE DOCUMENT
@@ -488,7 +495,6 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     {
       journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
     }
-
     if ((!prev_state['v-s:deleted'] || prev_state['v-s:deleted'].data == 'false') &&
         (document['v-s:deleted'] && document['v-s:deleted'].data == 'true'))
     {
@@ -506,11 +512,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
         type: _Uri
       }];
     }
-
-    if (user['v-s:hasAppointment']) {
-      journal_record['v-s:actor'] = user['v-s:hasAppointment']
-    }
-
+    journal_record['v-s:actor'] = actor;
     logToJournal(ticket, journal_uri, journal_record);
     addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
   }
@@ -529,11 +531,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
         data: document['@'],
         type: _Uri
       }],
-      'v-s:actor': user['v-s:hasAppointment']?user['v-s:hasAppointment']:[
-      {
-        data: user_uri,
-        type: _Uri
-      }]
+      'v-s:actor': actor
     };
     put_individual(ticket, new_journal, _event_id);
 
@@ -549,11 +547,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       data: 'v-s:DocumentCreated',
       type: _Uri
     }];
-    journal_record['v-s:actor'] = user['v-s:hasAppointment']?user['v-s:hasAppointment']:[
-    {
-      data: user_uri,
-      type: _Uri
-    }];
+    journal_record['v-s:actor'] = actor;
     logToJournal(ticket, journal_uri, journal_record);
     addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
   }

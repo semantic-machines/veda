@@ -71,7 +71,7 @@ v-s:hasVehicleCategory
   rdf:type owl:ObjectProperty ;
   rdfs:label "Vehicle сategory"@en ;
   rdfs:label "Категория ТС"@ru ;
-  rdfs:range v-s:VehicleСategory ;
+  rdfs:range v-s:VehicleCategory ;
   rdfs:domain  v-s:Vehicle;
 .
 

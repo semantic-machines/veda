@@ -918,6 +918,34 @@ v-ui:ClassNameLabelLinkEditTemplate
   </script>
   """ ;
 .
+v-ui:DraftLinkEditTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон черновика со ссылкой"@ru ;
+  rdfs:label "Draft template with link"@en ;
+  v-ui:template """
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    //# sourceURL=v-ui:DraftLinkEditTemplate_post
+  </script>
+  """ ;
+.
+v-ui:DraftTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон черновика"@ru ;
+  rdfs:label "Draft template"@en ;
+  v-ui:template """
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    if (!individual.hasValue("rdfs:label")) {
+      $("#label", template).text(individual.id);
+    }
+    //# sourceURL=v-ui:DraftLinkEditTemplate_post
+  </script>
+  """ ;
+.
 
 v-ui:RabbitHole
   rdf:type v-ui:ClassTemplate ;
@@ -1484,6 +1512,22 @@ v-ui:JournalTemplate
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
   });
+  
+  $('#createReport',template).on('click', function (e) {
+    e.preventDefault();
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_pdf');
+  });
+  $('#createReport2', template).on('click', function (e) {
+    e.preventDefault();
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_xlsx');
+  });
+  $('#createReport3', template).on('click', function (e) {
+    e.preventDefault();
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
+  });
   //# sourceURL=v-ui:JournalTemplate_pre
 </script>
 <div class="container journal sheet">
@@ -1492,16 +1536,25 @@ v-ui:JournalTemplate
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
   <div class="row">
-    <div class="col-md-10">
-      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  <div class="col-md-8">
+
+  <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  </div>
+  <div class="col-md-4 text-right">
+    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
+      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
+    </button>
+    <div class="btn-group dropup" >
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span about="v-s:CoordinationList" property="rdfs:label"> </span>
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
+        <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
+        <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
+      </ul>
     </div>
-    <div class="col-md-2 text-right">
-      <button type="button" class="action btn btn-info view -edit -search createReport0">
-        <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
-      </button>
-      <button type="button" class="btn btn-default view -edit -search dms-journal hidden">
-        Журнал СЭД
-      </button>
     </div>
   </div>
   <div rel="v-s:onDocument">
@@ -1537,24 +1590,6 @@ v-ui:JournalTemplate
     <div rel="v-s:childRecord"></div>
   </div>
 </div>
-<script>
-  var docId = this["v-s:onDocument"];
-  if (docId) {
-    //var dfJournalUri = 'http://docflow.mp.local/veda-client-workflow/njrl.html?docId=' + docId + '&locale=ru&viewMode=light';
-    var dfJournalUri = 'http://docflow.mp.local/veda-client-workflow/njrl.html?docId=bc9f5df747a74329bf641827042f9522&locale=ru&viewMode=light';
-    $.get({
-      url: 'http://docflow.mp.local/veda-client-workflow/njrl.html',
-      /*data: {
-        'docId': 'bc9f5df747a74329bf641827042f9522',
-        'locale': 'ru',
-        'viewMode': 'light'
-      }*/
-    }).then(function (result) {
-      console.log(result);
-    });
-  }
-  //# sourceURL=v-ui:JournalTemplate_post
-</script>
   """ ;
 .
 v-ui:SubJournalTemplate
@@ -1734,7 +1769,7 @@ v-ui:PermissionStatementTemplate
       <span about="@" property="v-s:endTime"></span>
     </div>
     <div class="col-md-12">
-  <pre style="border:none;background-color:#fff;"></pre>
+      <pre style="border:none;background-color:#fff;"></pre>
     </div>
   </div>
   </div>
@@ -2544,8 +2579,8 @@ td:PropertySpecification1
   v-ui:forProperty v-s:birthday ;
   v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
   v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
+  v-ui:tooltip "Required, single value."@en ;
   v-ui:placeholder "день рождения"@ru ;
   v-ui:placeholder "birthday"@en ;
 .

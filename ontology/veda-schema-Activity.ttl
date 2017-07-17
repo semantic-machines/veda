@@ -24,7 +24,7 @@ v-s:Activity
   rdfs:subClassOf v-s:BackwardLink;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:WorkGroup ;  
+  rdfs:subClassOf v-s:WorkGroup ;
   rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
 .
@@ -161,8 +161,8 @@ v-s:PsDateToForAction
   v-ui:forProperty v-s:dateTo ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-Required, single value. Format: 2011-08-19"@en ;
-  v-ui:tooltip "Небязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Non-Required, single value."@en ;
+  v-ui:tooltip "Небязательно к заполнению, единичное значение."@ru ;
   rdfs:label "Preferences property specification for dateTo in Action class"@en ;
   rdfs:label "Спецификация даты окончания для класса Action"@ru ;
 .

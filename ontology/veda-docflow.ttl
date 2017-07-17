@@ -45,8 +45,8 @@ v-df:PsApprovalTask_dateGiven
   v-ui:forProperty v-wf:dateGiven ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Required, single value."@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
   rdfs:label "Preferences property specification for dateFrom in AgShedule class"@en ;
   rdfs:label "Спецификация даты заседания технического комитета для класса AgShedule"@ru ;
 .
@@ -249,8 +249,8 @@ v-df:PsStartForm_dateTo
   v-ui:forProperty v-s:dateTo ;
   v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:tooltip "Required, single value. Format: 2011-08-19"@en ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Формат ввода: 2011-08-19"@ru ;
+  v-ui:tooltip "Required, single value."@en ;
+  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
   rdfs:label "Preferences property specification for dateFrom QuestionRouteStartForm class"@en ;
   rdfs:label "Спецификация контрольной даты для класса QuestionRouteStartForm"@ru ;
 .
