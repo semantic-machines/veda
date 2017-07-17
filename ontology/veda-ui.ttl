@@ -1514,15 +1514,18 @@ v-ui:JournalTemplate
     veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
   });
   
-  $('#createReport',template).on('click', function () {
+  $('#createReport',template).on('click', function (e) {
+    e.preventDefault();
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_pdf');
   });
-  $('#createReport2', template).on('click', function () {
+  $('#createReport2', template).on('click', function (e) {
+    e.preventDefault();
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_xlsx');
   });
-  $('#createReport3', template).on('click', function () {
+  $('#createReport3', template).on('click', function (e) {
+    e.preventDefault();
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
   });
