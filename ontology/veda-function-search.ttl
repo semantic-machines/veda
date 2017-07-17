@@ -1419,6 +1419,12 @@ v-fs:AttributiveSearchTemplate
     }
   }*/
 
+  // Double click on result table row routes to search result
+  $("#search-result", template).on("dblclick", "tr", function () {
+    var uri = $(this).attr("resource");
+    riot.route("#/" + uri);
+  });
+
   // Manage sort
   var sortBy = "", dir = "";
   if ( !self.hasValue("v-fs:sortOrder") ) {
