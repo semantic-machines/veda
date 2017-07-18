@@ -316,6 +316,20 @@ d:87aa1229b50f42668a45d153930d1b07
   rdfs:label "Заявление"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
+d:b96840fb6d6f4d0996c367f369135f00
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Заявление исковое"^^xsd:string;
+  rdfs:label "Заявление исковое"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
+d:7bfb4059659e45d6bf066e9baf20535e
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Извещение"^^xsd:string;
+  rdfs:label "Извещение"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
 d:2684bf172503479abc5a2613ced7013b
   a v-s:DocumentKind;
   v-s:registrationNumber "0"^^xsd:string;
@@ -739,6 +753,13 @@ d:34ec539caad74a6cb634e700854e0a0d
   v-s:registrationNumber "0"^^xsd:string;
   v-s:shortLabel "Программа"^^xsd:string;
   rdfs:label "Программа"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
+d:abb80d6e3deb4a368faabe3838e41d02
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Прогноз"^^xsd:string;
+  rdfs:label "Прогноз"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
 d:2fb47ad2cca5420686f5722cbadaee51
