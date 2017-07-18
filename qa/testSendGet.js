@@ -52,6 +52,11 @@ basic.getThreeDrivers().forEach(function (drv) {
         basic.execute(driver, 'click', 'span[property="v-s:fileName"]', "Cannot click on file name");
     }
     if (drv.browser == 'internet explorer') {
+        var driver = basic.getDriver(drv);
+        basic.openPage(driver, drv);
+        driver.sleep(basic.SLOW_OPERATION);
+        basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+        
         basic.execute(driver, 'click', '#user-info', "Cannot click on 'user-info' button");
         basic.execute(driver, 'click', 'a[href="#/td:RomanKarpov//v-ui:Graph"]', "Cannot click on 'glyphicon-link'");
         driver.sleep(basic.FAST_OPERATION);
