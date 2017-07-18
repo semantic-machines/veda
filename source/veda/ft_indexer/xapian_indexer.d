@@ -293,6 +293,13 @@ public class IndexerContext
                     string p_text_ru = "";
                     string p_text_en = "";
 
+                    void    doc_add_text_value(int slot_L1, string data, byte *err)
+                    {
+                        if (data.length > 64)
+                            data = data[ 0..63 ];
+                        doc.add_value(slot_L1, data.ptr, data.length, err);
+                    }
+
                     void index_double(string predicate, Resource oo)
                     {
                         int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
@@ -379,7 +386,7 @@ public class IndexerContext
                                 log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
                             indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 
-                            doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+                            //doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
 
                             all_text.write(data);
                             all_text.write('|');
@@ -410,7 +417,7 @@ public class IndexerContext
                                       predicate);
 
                         indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-                        doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+                        doc_add_text_value(slot_L1, oo.literal, &err);
 
                         all_text.write(data);
                         all_text.write('|');
@@ -636,7 +643,7 @@ public class IndexerContext
                             if (trace_msg[ 220 ] == 1)
                                 log.trace("index as ru text:[%s]", p_text_ru);
 
-                            doc.add_value(slot_L1, p_text_ru.ptr, p_text_ru.length, &err);
+                            doc_add_text_value(slot_L1, p_text_ru, &err);
                             //writeln ("slot:", slot_L1, ", value:", p_text_ru);
                         }
 
@@ -650,7 +657,7 @@ public class IndexerContext
                             if (trace_msg[ 220 ] == 1)
                                 log.trace("index as en text:[%s]", p_text_en);
 
-                            doc.add_value(slot_L1, p_text_en.ptr, p_text_en.length, &err);
+                            doc_add_text_value(slot_L1, p_text_en, &err);
                             //writeln ("slot:", slot_L1, ", value:", p_text_en);
                         }
                     }
@@ -672,7 +679,7 @@ public class IndexerContext
                                     sp = false;
                                 }
 
-                                doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+                                doc_add_text_value(slot_L1, oo.literal, &err);
                                 indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
 
                                 if (trace_msg[ 220 ] == 1)
@@ -698,7 +705,7 @@ public class IndexerContext
                                     sp = false;
                                 }
 
-                                doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+                                doc_add_text_value(slot_L1, oo.literal, &err);
                                 indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
 
                                 if (trace_msg[ 220 ] == 1)
