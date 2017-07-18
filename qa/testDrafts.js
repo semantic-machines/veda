@@ -1,13 +1,13 @@
-var console = require('console');
-var webdriver = require('selenium-webdriver'),
+var assert = require('assert'),
     basic = require('./basic.js'),
-    firstName = ''+Math.round(+new Date()/1000),
-    assert = require('assert');
+    console = require('console'),
+    firstName = ''+Math.round(+new Date()/1000);
 
 /**
  * Проверка черновиков
  * @param driver
  * @param count - количество черновиков, которое должно быть
+ * @param phase - текущая фаза теста
  */
 
 function check(driver, count, phase) {
@@ -38,6 +38,7 @@ function check(driver, count, phase) {
  * @param driver
  * @param property - поле
  * @param something - данные
+ * @param phase - текущая фаза теста
  */
 
 function fillProperty(driver, property, something, phase) {
@@ -65,7 +66,7 @@ basic.getDrivers().forEach(function(drv) {
     //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 1);
 
     //PHASE#1: Create draft
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person', 1);

@@ -1,15 +1,15 @@
-var webdriver = require('selenium-webdriver'),
+var assert = require('assert'),
     basic = require('./basic.js'),
     person = require('./person.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
-    assert = require('assert');
+    webdriver = require('selenium-webdriver');
 
 /**
  * Проверка количества всех элементов, созданыых элементов, обновленных элементов в журнале
- *@param driver
- *@param totalCount - необходимое количество всех элементов в журнале
- *@param createCount - необходимое количество созданных элементов в журнале
- *@param updateCount - необходимое количество обновленных элементов в журнале
+ * @param driver
+ * @param totalCount - необходимое количество всех элементов в журнале
+ * @param createCount - необходимое количество созданных элементов в журнале
+ * @param updateCount - необходимое количество обновленных элементов в журнале
 */
 
 function assertCounts(driver, totalCount, createCount, updateCount) {
@@ -49,17 +49,17 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
 */
 
 function update(driver, key) {
-  basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
-  driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
-  basic.execute(driver, 'click' , '#edit', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Edit` button");
-  if (key != '') {
-      driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
-      basic.execute(driver, 'clear', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]', "Cannot find 'shortLabel'");
-      basic.execute(driver, 'click', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]',
-          "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot fill 'v-s:shortLabel' field");
-  }
-  driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-  basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Save` button");
+    basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
+    driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
+    basic.execute(driver, 'click' , '#edit', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Edit` button");
+    if (key != '') {
+        driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
+        basic.execute(driver, 'clear', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]', "Cannot find 'shortLabel'");
+        basic.execute(driver, 'click', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]',
+            "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot fill 'v-s:shortLabel' field");
+    }
+    driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
+    basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Save` button");
 }
 
 /**

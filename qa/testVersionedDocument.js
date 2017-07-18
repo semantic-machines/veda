@@ -1,15 +1,15 @@
-var webdriver = require('selenium-webdriver'),
+var assert = require('assert'),
     basic = require('./basic.js'),
-    timeStamp = ''+Math.round(+new Date()/1000),
-    assert = require('assert');
+    timeStamp = ''+Math.round(+new Date()/1000);
 
 /**
  * Обновление данных мероприятия на новые
  * @param driver
+ * @param task - создать или изменить
  * @param label - новое название
  * @param valueToSearch | Новый
  * @param valueToChoose | Ответственный
- * @param shortLabel - новое короткое название
+ * @param phase - текущая фаза теста
 */
 
 function updateVersion(driver, task, label, valueToSearch, valueToChoose, phase) {
@@ -35,7 +35,7 @@ function updateVersion(driver, task, label, valueToSearch, valueToChoose, phase)
  * @param driver
  * @param version - название версии
  * @param responsible - отвественный
- * @param shortlabel - краткое название
+ * @param phase - текущая фаза теста
 */
 
 function checkVersion(driver, version, responsible, phase) {
@@ -63,7 +63,7 @@ function checkVersion(driver, version, responsible, phase) {
                 }
             }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Invalid element");});
         });
-    };
+    }
 }
 
 /**

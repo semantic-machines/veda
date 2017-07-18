@@ -1,5 +1,5 @@
-var webdriver = require('selenium-webdriver'),
-    basic = require('./basic.js');
+var basic = require('./basic.js');
+
 /**
  * 0.Open page -> login(as karpovrt);
  * 1.Open Administrator graph -> Download ttl;
