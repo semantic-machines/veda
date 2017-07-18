@@ -1,5 +1,5 @@
 /**
- * XAPIAN indexer thread
+ * XAPIAN ft indexer
  */
 
 module veda.ft_indexer.xapian_indexer;
