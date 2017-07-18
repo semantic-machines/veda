@@ -1,6 +1,5 @@
-var webdriver = require('selenium-webdriver'),
+var basic = require('./basic.js'),
     person = require('./person.js'),
-    basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000);
 
 /**
@@ -8,6 +7,7 @@ var webdriver = require('selenium-webdriver'),
  * @param driver
  * @param somethingUnique - имя шаблона, документ которого ищется
  * @param count - количество документов, ожидаемое по окончанию поиска
+ * @param phase - текущая фаза теста
  */
 
 function search(driver, somethingUnique, count, phase) {
@@ -27,6 +27,7 @@ function search(driver, somethingUnique, count, phase) {
         basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " > SEARCH PERSON" + (count + 1) + " : ERROR = Number of documents is incorrect, expected: " + count);});
 }
+
 /**
  * 0.Open page -> Login(as karpovrt);
  * 1.Create Person1;
@@ -49,7 +50,7 @@ basic.getDrivers().forEach (function (drv) {
 
     //PHASE#1: Create document(by karpovrt)
     var now = new Date();
-    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear(), 1);
 
     //PHASE#2: Check
     basic.logout(driver, 2);
@@ -58,8 +59,8 @@ basic.getDrivers().forEach (function (drv) {
     search(driver, timeStamp, 0, 2);
 
     //PHASE#3: Create document(by bychinat)
-    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear());
-    basic.logout(driver);
+    person.createPerson(driver, drv, 'Иванов', 'Иван', timeStamp + 1, ('0' + now.getDate()).slice(-2) + '.' + ('0' + (now.getMonth() + 1)).slice(-2) + '.' + now.getFullYear(), 3);
+    basic.logout(driver, 3);
 
     //PHASE#4: Check
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 4);

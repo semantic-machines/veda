@@ -1,6 +1,7 @@
-var basic = require('./basic.js'),
-    complexRoute = require('./complexRoute.js'),
-    assert = require('assert');
+var assert = require('assert'),
+    basic = require('./basic.js'),
+    complexRoute = require('./complexRoute.js');
+
 /**
  * 0.Open page -> login(as kaprovrt);
  * 1.Open create Complex route test template 2 document form -> Send task to coordinator1(bychinat) -> Logout;

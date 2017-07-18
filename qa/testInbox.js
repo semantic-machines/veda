@@ -1,13 +1,13 @@
-var webdriver = require('selenium-webdriver'),
-    timeStamp = ''+Math.round(+new Date()/1000),
-    complexRoute = require('./complexRoute.js');
-    basic = require('./basic.js');
+var basic = require('./basic.js'),
+    complexRoute = require('./complexRoute.js'),
+    timeStamp = ''+Math.round(+new Date()/1000);
+
 
 /**
  * Отправка задачи
  * @param driver
- * @param personToSearch - значение, которое будет введено в качестве получателя задачи
- * @param personToChoose - значение, которое будет выбрано в качестве получателя задачи
+ * @param valueToSearch - значение, которое будет введено в качестве получателя задачи
+ * @param valueToChoose - значение, которое будет выбрано в качестве получателя задачи
  */
 
 function sendTask(driver, valueToSearch, valueToChoose) {
@@ -19,7 +19,7 @@ function sendTask(driver, valueToSearch, valueToChoose) {
         "****** PHASE#1 > Create task : ERROR = Cannot fill Comment field", timeStamp);
     driver.sleep(basic.FAST_OPERATION * 2);
     basic.execute(driver, "click", 'div[class="modal-dialog modal-lg"] button[id="send"]', "****** PHASE#1 > Create task : ERROR = Cannot click on Send button");
-    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#1 > Create task : ERROR = Cannot click on 'Welcome' button");
 }
 
 
