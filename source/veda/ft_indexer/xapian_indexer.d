@@ -293,11 +293,11 @@ public class IndexerContext
                     string p_text_ru = "";
                     string p_text_en = "";
 
-                    void    doc_add_text_value(int slot_L1, string data, byte *err)
+                    void    doc_add_text_value(int l_slot, string data, byte *err)
                     {
-                        if (data.length > 64)
-                            data = data[ 0..63 ];
-                        doc.add_value(slot_L1, data.ptr, data.length, err);
+                        //if (data.length > 64)
+                        //    data = data[ 0..63 ];
+                        doc.add_value(l_slot, data.ptr, data.length, err);
                     }
 
                     void index_double(string predicate, Resource oo)
