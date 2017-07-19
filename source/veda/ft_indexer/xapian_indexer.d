@@ -1,5 +1,5 @@
 /**
- * XAPIAN indexer thread
+ * XAPIAN ft indexer
  */
 
 module veda.ft_indexer.xapian_indexer;
@@ -295,8 +295,8 @@ public class IndexerContext
 
                     void    doc_add_text_value(int l_slot, string data, byte *err)
                     {
-                        //if (data.length > 64)
-                        //    data = data[ 0..63 ];
+                        if (data.length > 64)
+                            data = data[ 0..63 ];
                         doc.add_value(l_slot, data.ptr, data.length, err);
                     }
 

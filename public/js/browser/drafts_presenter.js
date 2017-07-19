@@ -9,7 +9,8 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     var tmpl = $(template);
     var ol = $("#drafts-list", tmpl);
     var deleteAllBtn = $("#delete-all", tmpl).click( function () {
-      if ( veda.drafts.length && confirm("Вы уверены? / Are you sure?") ) {
+      var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+      if ( veda.drafts.length && confirm(warn) ) {
         ol.empty();
         veda.drafts.clear();
       }
@@ -41,7 +42,10 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
     tmpl.on("click", ".remove-draft", function (e) {
       e.stopPropagation();
       var uri = $(this).parent().find("[resource]").attr("resource");
-      if ( confirm("Вы уверены? / Are you sure?") ) { veda.drafts.remove(uri) }
+      var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+      if ( confirm(warn) ) {
+        veda.drafts.remove(uri);
+      }
     });
 
     function renderDraftsTree(list, el, tmpl) {

@@ -257,6 +257,17 @@ v-s:birthday
   rdfs:label "Дата рождения"@ru ;
   rdfs:range xsd:dateTime ;
 .
+v-s:tabNumber
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "Personnel number"@en ;
+  rdfs:comment "Табельный номер"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Personnel number"@en ;
+  rdfs:label "Табельный номер"@ru ;
+  rdfs:range xsd:integer ;
+.
 v-s:firstName
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "The first name of a person."@en ;

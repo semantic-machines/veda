@@ -1398,7 +1398,8 @@ v-fs:AttributiveSearchTemplate
 
   // All results button handler
   allResults.click(function () {
-    if ( confirm("Вы уверены? / Are you sure?") ) {
+    var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    if ( self.estimated - self.cursor < 100 || confirm(warn) ) {
       getAll();
     }
   });

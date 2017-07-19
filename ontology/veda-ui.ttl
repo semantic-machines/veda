@@ -1820,7 +1820,8 @@ v-ui:DocumentEventTemplate
     if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
       $(".stop-process", template).on("click", function() {
-        if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
+        var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+        if ( confirm(warn) ) {
           process['v-wf:isStopped'] = [ true ];
           process.save();
           $(this).remove();
