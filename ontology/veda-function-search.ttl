@@ -1737,8 +1737,8 @@ v-fs:FulltextBlankTemplate
   </div>
 </div>
 <script>
-  container.siblings(".search-button:first").remove();
-  $("input").keydown(function (e) {
+  container.siblings(".search-button.pull-right").remove();
+  $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;
       individual.set("*", [value]);

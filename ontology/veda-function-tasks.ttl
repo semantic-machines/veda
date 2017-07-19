@@ -682,6 +682,7 @@ v-ft:TaskBlankTemplate
     .filter(function () { return this.hash.substr(2) === folder; })
     .parent()
     .addClass("active");
+  container.siblings(".search-button.pull-right").remove();
   //# sourceURL=v-ft:TaskBlankTemplate_pre
 </script>
 <div>
