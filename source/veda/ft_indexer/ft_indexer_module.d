@@ -36,12 +36,35 @@ class FTIndexerProcess : VedaModule
 {
     IndexerContext ictx = new IndexerContext;
 
-    long           last_update_time = 0;
+    long           last_update_time  = 0;
+    string         low_priority_user = "";
+
+    int indexer_priority(string user_uri)
+    {
+        if (user_uri == low_priority_user)
+            return 1;
+
+        return 0;
+    }
 
     this(string _module_name, Logger log)
     {
         super(_module_name, log);
+
+        priority       = &indexer_priority;
+        main_cs.length = 2;
     }
+
+
+
+    /+  override int priority(string user_uri)
+       {
+          // if (user_uri == low_priority_user)
+              // return 1;
+
+          stderr.writefln("special user uri %s", user_uri);
+          return 0;
+       }+/
 
     override Context create_context()
     {
@@ -94,6 +117,8 @@ class FTIndexerProcess : VedaModule
     {
         ictx.thread_name = process_name;
         ictx.init(&sticket, context);
+
+        low_priority_user = node.getFirstLiteral("cfg:low_priority_user");
         return true;
     }
 
