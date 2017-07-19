@@ -1627,7 +1627,7 @@ v-wf:DecisionRedirectTemplateSpec2_comment
   rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
   rdfs:label "Spec for template for some -Decision- subclasses"@en ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:forProperty rdfs:comment ;
   v-ui:forClass v-wf:DecisionAchieved ;
 .
