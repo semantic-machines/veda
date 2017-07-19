@@ -1539,7 +1539,7 @@ v-ui:SimplifiedJournalTemplate
     </div>
     <div class="col-md-6 text-right">
       <a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a>
-      <button type="button" class="action btn btn-info view -edit -search createReport0" about="mnd-s:PrintBlank" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
       <div class="btn-group dropdown">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-s:CoordinationList" property="rdfs:label"> </span>
@@ -1671,7 +1671,7 @@ v-ui:JournalTemplate
     </div>
     <div class="col-md-6 text-right">
       <a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a>
-      <button type="button" class="action btn btn-info view -edit -search createReport0" about="mnd-s:PrintBlank" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
       <div class="btn-group dropdown">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-s:CoordinationList" property="rdfs:label"> </span>
