@@ -1508,12 +1508,12 @@ v-ui:JournalTemplate
   v-ui:template """
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
- 
+
   $('.createReport0', template).on('click', function () {
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
   });
-  
+
   $('#createReport',template).on('click', function (e) {
     e.preventDefault();
     var documenJournal=individual["v-s:onDocument"][0];
@@ -1677,7 +1677,8 @@ v-ui:DocumentEventTemplate
     if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
       $(".stop-process", template).on("click", function() {
-        if (confirm((new veda.IndividualModel("v-s:AreYouSure"))["rdfs:label"])) {
+        var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+        if ( confirm(warn) ) {
           process['v-wf:isStopped'] = [ true ];
           process.save();
           $(this).remove();

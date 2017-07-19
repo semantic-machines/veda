@@ -257,7 +257,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     //  Delete
     $delete.on("click", function (e) {
       e.preventDefault();
-      if ( confirm("Вы уверены? / Are you sure?") ) { template.trigger("delete"); }
+      var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+      if ( confirm(warn) ) {
+        template.trigger("delete");
+      }
     });
     if ( individual.hasValue("v-s:deleted", true) ) { $delete.hide(); }
 
