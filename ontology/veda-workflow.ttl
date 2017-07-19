@@ -345,8 +345,8 @@ v-wf:varDefineScope
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Определяемая область видимости"@ru ;
   rdfs:domain v-wf:VarDefine ;
-        rdfs:range v-wf:Net ;
-        rdfs:range v-wf:Task ;
+  rdfs:range v-wf:Net ;
+  rdfs:range v-wf:Task ;
 .
 
 
@@ -382,8 +382,8 @@ v-wf:variableScope
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Область видимости"@ru ;
   rdfs:domain v-wf:Variable ;
-        rdfs:range v-wf:Process ;
-        rdfs:range v-wf:WorkItem ;
+  rdfs:range v-wf:Process ;
+  rdfs:range v-wf:WorkItem ;
 .
 
 v-wf:complete
@@ -446,71 +446,71 @@ v-wf:SimpleNetTemplate
     </thead>
     <tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
       <td><span about="rdfs:label" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVClabel" about="@" property="rdfs:label"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+      <td>
+        <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVClabel" about="@" property="rdfs:label"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
       <td><span about="rdfs:comment" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
+      <td>
+        <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
       <td><span about="v-wf:inputVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:inputVariable" data-type="link" class="VCinputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCinputVariable" rel="v-wf:inputVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div class="viewVCinputVariable" about="@" rel="v-wf:inputVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
       <td><span about="v-wf:outputVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:outputVariable" data-type="link" class="VCoutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCoutputVariable" rel="v-wf:outputVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div class="viewVCoutputVariable" about="@" rel="v-wf:outputVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VClocalVariable').show(); $('.viewVClocalVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VClocalVariable').show(); $('.viewVClocalVariable').hide();">
       <td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:localVariable" data-type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VClocalVariable" rel="v-wf:localVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div class="viewVClocalVariable" about="@" rel="v-wf:localVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
       <td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:inputOutputVariable" data-type="link" class="VCinputOutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCinputOutputVariable" rel="v-wf:inputOutputVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div class="viewVCinputOutputVariable" about="@" rel="v-wf:inputOutputVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCcompletedMapping').show()).show();">
-    <td>
-      <span about="v-wf:completedMapping" property="rdfs:label"></span>
-    </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCcompletedMapping').show()).show();">
+      <td>
+        <span about="v-wf:completedMapping" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:completedMapping" data-type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:completedMapping">
           <div class="VCcompletedMapping">
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
-              <span>
-                <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-              </span>
-            </span> =
-            <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            [<span about="@" property="@" data-template="v-ui:LabelTemplateWithEditLink"></span>]
-          </a>
-        <div>
-      </div>
-    </td>
-  </tr>
+                <span>
+                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                </span>
+              </span> =
+              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              [<span about="@" property="@" data-template="v-ui:LabelTemplateWithEditLink"></span>]
+            </a>
+          <div>
+        </div>
+      </td>
+    </tr>
   </table>
 </div>
 <script>
@@ -605,20 +605,20 @@ v-wf:NetTemplate
 </div>
 
 <script>
-var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
-  fullWidth = $("#full-width", template),
-  icon = $("span", fullWidth),
-  propsCol = $("#props-col", template),
-  schema = $("#schema", template);
-wrapper.css("height", height);
-propsCol.css("height", height);
-fullWidth.click(function () {
-  propsCol.toggle();
-  icon.toggleClass("glyphicon-resize-full glyphicon-resize-small");
-  schema.toggleClass("col-md-8 col-md-12");
-});
-jsWorkflow.ready(function () {
+  var wrapper = $(".workflow-canvas-wrapper", template),
+    height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
+    fullWidth = $("#full-width", template),
+    icon = $("span", fullWidth),
+    propsCol = $("#props-col", template),
+    schema = $("#schema", template);
+  wrapper.css("height", height);
+  propsCol.css("height", height);
+  fullWidth.click(function () {
+    propsCol.toggle();
+    icon.toggleClass("glyphicon-resize-full glyphicon-resize-small");
+    schema.toggleClass("col-md-8 col-md-12");
+  });
+  jsWorkflow.ready(function () {
     // Create a new workflow instance as workflow
     var workflow = new jsWorkflow.Instance();
 
@@ -630,8 +630,8 @@ jsWorkflow.ready(function () {
     template.one("remove", function () {
       delete veda.net
     });
-});
-//# sourceURL=v-wf:NetTemplate
+  });
+  //# sourceURL=v-wf:NetTemplate
 </script>
   """ ;
 .
@@ -705,27 +705,27 @@ v-wf:ProcessTemplate
 </div>
 
 <script>
-var wrapper = $(".workflow-canvas-wrapper", template),
-  height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
-  fullWidth = $("#full-width", template),
-  icon = $("span", fullWidth),
-  propsCol = $("#props-col", template),
-  schema = $("#schema", template);
-wrapper.css("height", height);
-propsCol.css("height", height);
-fullWidth.click(function () {
-  propsCol.toggle();
-  icon.toggleClass("glyphicon-resize-full glyphicon-resize-small");
-  schema.toggleClass("col-md-8 col-md-12");
-});
-jsWorkflow.ready(function () {
-    // Create a new workflow instance as workflow
-    var workflow = new jsWorkflow.Instance();
+  var wrapper = $(".workflow-canvas-wrapper", template),
+    height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
+    fullWidth = $("#full-width", template),
+    icon = $("span", fullWidth),
+    propsCol = $("#props-col", template),
+    schema = $("#schema", template);
+  wrapper.css("height", height);
+  propsCol.css("height", height);
+  fullWidth.click(function () {
+    propsCol.toggle();
+    icon.toggleClass("glyphicon-resize-full glyphicon-resize-small");
+    schema.toggleClass("col-md-8 col-md-12");
+  });
+  jsWorkflow.ready(function () {
+      // Create a new workflow instance as workflow
+      var workflow = new jsWorkflow.Instance();
 
-    // Initialize workflow with workflow container id
-    var net = workflow.init('workflow-canvas', veda, individual, template, container);
-});
-//# sourceURL=v-wf:ProcessTemplate
+      // Initialize workflow with workflow container id
+      var net = workflow.init('workflow-canvas', veda, individual, template, container);
+  });
+  //# sourceURL=v-wf:ProcessTemplate
 </script>
   """ ;
 .
@@ -874,57 +874,57 @@ v-wf:TaskTemplateAsProperties
     </thead>
     <tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
       <td><span about="rdfs:label" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVClabel" about="@" property="rdfs:label"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+      <td>
+        <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVClabel" about="@" property="rdfs:label"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
       <td><span about="rdfs:comment" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
+      <td>
+        <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCjoin').show(); $('#viewVCjoin').hide();">
       <td><span about="v-wf:join" property="rdfs:label"></span></td>
       <td>
         <veda-control id="VCjoin" rel="v-wf:join" data-type="select" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
         <div id="viewVCjoin" about="@" rel="v-wf:join" data-template="v-ui:LabelTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('#VCsplit').show(); $('#viewVCsplit').hide();">
+    </tr>
+    <tr onclick="javascript: $('#VCsplit').show(); $('#viewVCsplit').hide();">
       <td><span about="v-wf:split" property="rdfs:label"></span></td>
       <td>
         <veda-control id="VCsplit" rel="v-wf:split" data-type="select" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
         <div id="viewVCsplit" about="@" rel="v-wf:split" data-template="v-ui:LabelTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCdecisionForm').show(); $('.viewVCdecisionForm').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCdecisionForm').show(); $('.viewVCdecisionForm').hide();">
       <td><span about="v-wf:taskDecisionForm" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:taskDecisionForm" data-type="link" class="VCdecisionForm fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCdecisionForm" rel="v-wf:taskDecisionForm" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div about="@" class="viewVCdecisionForm" about="@" rel="v-wf:taskDecisionForm" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCstartDecisionTransform').show(); $('.viewVCstartDecisionTransform').hide();">
-    <td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
+    </tr>
+    <tr onclick="javascript: $('.VCstartDecisionTransform').show(); $('.viewVCstartDecisionTransform').hide();">
+      <td><span about="v-wf:startDecisionTransform" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:startDecisionTransform" data-type="link" class="VCstartDecisionTransform fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCstartDecisionTransform" rel="v-wf:startDecisionTransform" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div class="viewVCstartDecisionTransform" about="@" rel="v-wf:startDecisionTransform" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCcompleteDecisionTransform').show(); $('.viewVCcompleteDecisionTransform').hide();">
-    <td><span about="v-wf:completeDecisionTransform" property="rdfs:label"></span></td>
+    </tr>
+    <tr onclick="javascript: $('.VCcompleteDecisionTransform').show(); $('.viewVCcompleteDecisionTransform').hide();">
+      <td><span about="v-wf:completeDecisionTransform" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:completeDecisionTransform" data-type="link" class="VCcompleteDecisionTransform fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCcompleteDecisionTransform" rel="v-wf:completeDecisionTransform" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div class="viewVCcompleteDecisionTransform" about="@" rel="v-wf:completeDecisionTransform" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCexecutor').show(); $('.viewVCexecutor').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCexecutor').show(); $('.viewVCexecutor').hide();">
       <td><span about="v-wf:executor" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:executor" data-type="link" class="VCexecutor fulltext dropdown create properties-editor" style="display:none;"></veda-control>
@@ -935,286 +935,286 @@ v-wf:TaskTemplateAsProperties
               <span property="v-s:script"></span>
               <span rel="v-s:employee" data-template="v-ui:LabelTemplate"></span>
             </a>
+          </div>
         </div>
-      </div>
-      <div class="viewVCexecutor" about="@" rel="v-wf:executor">
+        <div class="viewVCexecutor" about="@" rel="v-wf:executor">
           <div>
             #<a href="#/@///edit">
               <span property="v-wf:executorExpression"></span>
               <span property="v-s:script"></span>
               <span rel="v-s:employee" data-template="v-ui:LabelTemplate"></span>
             </a>
+          </div>
         </div>
-      </div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCexpectedResultType').show(); $('.viewVCexpectedResultType').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCexpectedResultType').show(); $('.viewVCexpectedResultType').hide();">
       <td><span about="v-wf:expectedResultType" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:expectedResultType" data-type="link" class="VCexpectedResultType fulltext dropdown properties-editor" style="display:none;"></veda-control>
         <div class="VCexpectedResultType" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate" style="display:none;"></div>
         <div class="viewVCexpectedResultType" about="@" rel="v-wf:expectedResultType" data-template="v-ui:LabelTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCinputVariable').show(); $('.viewVCinputVariable').hide();">
       <td><span about="v-wf:inputVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:inputVariable" data-type="link" class="VCinputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCinputVariable" rel="v-wf:inputVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div about="@" class="viewVCinputVariable" rel="v-wf:inputVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCoutputVariable').show(); $('.viewVCoutputVariable').hide();">
       <td><span about="v-wf:outputVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:outputVariable" data-type="link" class="VCoutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCoutputVariable" rel="v-wf:outputVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div about="@" class="viewVCoutputVariable" rel="v-wf:outputVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCinputOutputVariable').show(); $('.viewVCinputOutputVariable').hide();">
       <td><span about="v-wf:inputOutputVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:inputOutputVariable" data-type="link" class="VCinputOutputVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCinputOutputVariable" rel="v-wf:inputOutputVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div about="@" class="viewVCinputOutputVariable" rel="v-wf:inputOutputVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
       <td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:localVariable" data-type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VClocalVariable" rel="v-wf:localVariable" data-template="v-ui:LabelTemplateWithEditLink" style="display:none;"></div>
         <div about="@" class="viewVClocalVariable" rel="v-wf:localVariable" data-template="v-ui:LabelTemplateWithEditLink"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('#VCsubNet').show(); $('#viewVCsubNet').hide();">
+    </tr>
+    <tr onclick="javascript: $('#VCsubNet').show(); $('#viewVCsubNet').hide();">
       <td><span about="v-wf:subNet" property="rdfs:label"></span></td>
       <td>
         <veda-control id="VCsubNet" rel="v-wf:subNet" data-type="link" class="fulltext dropdown properties-editor" style="display:none;"></veda-control>
         <div class="VCsubNet" rel="v-wf:subNet" data-template="v-ui:LabelTemplate" style="display:none;"></div>
         <div class="viewVCsubNet" about="@" rel="v-wf:subNet" data-template="v-ui:LabelTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCstartingMapping').show()).show();">
-    <td>
-      <span about="v-wf:startingMapping" property="rdfs:label"></span>
-    </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCstartingMapping').show()).show();">
+      <td>
+        <span about="v-wf:startingMapping" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:startingMapping" data-type="link" class="VCstartingMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:startingMapping">
           <div class="VCstartingMapping">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCcompletedMapping').show()).show();">
-    <td>
-      <span about="v-wf:completedMapping" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCcompletedMapping').show()).show();">
+      <td>
+        <span about="v-wf:completedMapping" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:completedMapping" data-type="link" class="VCcompletedMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:completedMapping">
           <div class="VCcompletedMapping">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCstartingExecutorJournalMap').show()).show();">
-    <td>
-      <span about="v-wf:startingExecutorJournalMap" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCstartingExecutorJournalMap').show()).show();">
+      <td>
+        <span about="v-wf:startingExecutorJournalMap" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:startingExecutorJournalMap" data-type="link" class="VCstartingExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:startingExecutorJournalMap">
           <div class="VCstartingExecutorJournalMap">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCcompletedExecutorJournalMap').show()).show();">
-    <td>
-      <span about="v-wf:completedExecutorJournalMap" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCcompletedExecutorJournalMap').show()).show();">
+      <td>
+        <span about="v-wf:completedExecutorJournalMap" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:completedExecutorJournalMap" data-type="link" class="VCcompletedExecutorJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:completedExecutorJournalMap">
           <div class="VCcompletedExecutorJournalMap">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCstartingJournalMap').show()).show();">
-    <td>
-      <span about="v-wf:startingJournalMap" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCstartingJournalMap').show()).show();">
+      <td>
+        <span about="v-wf:startingJournalMap" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:startingJournalMap" data-type="link" class="VCstartingJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:startingJournalMap">
           <div class="VCstartingJournalMap">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCcompletedJournalMap').show()).show();">
-    <td>
-      <span about="v-wf:completedJournalMap" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCcompletedJournalMap').show()).show();">
+      <td>
+        <span about="v-wf:completedJournalMap" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:completedJournalMap" data-type="link" class="VCcompletedJournalMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:completedJournalMap">
           <div class="VCcompletedJournalMap">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCstartingMessageMap').show()).show();">
-    <td>
-      <span about="v-wf:startingMessageMap" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCstartingMessageMap').show()).show();">
+      <td>
+        <span about="v-wf:startingMessageMap" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:startingMessageMap" data-type="link" class="VCstartingMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:startingMessageMap">
           <div class="VCstartingMessageMap">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCcompletedMessageMap').show()).show();">
-    <td>
-      <span about="v-wf:completedMessageMap" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCcompletedMessageMap').show()).show();">
+      <td>
+        <span about="v-wf:completedMessageMap" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:completedMessageMap" data-type="link" class="VCcompletedMessageMap fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:completedMessageMap">
           <div class="VCcompletedMap">
             <p>
-            #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-            </a>
-          </p>
-        <div>
-      </div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('.button-delete', $('.VCwosResultsMapping').show()).show();">
-    <td>
-      <span about="v-wf:wosResultsMapping" property="rdfs:label"></span>
-    </td>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('.button-delete', $('.VCwosResultsMapping').show()).show();">
+      <td>
+        <span about="v-wf:wosResultsMapping" property="rdfs:label"></span>
+      </td>
       <td>
         <veda-control rel="v-wf:wosResultsMapping" data-type="link" class="VCwosResultsMapping fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div about="@" rel="v-wf:wosResultsMapping">
           <div class="VCwosResultsMapping">
             <p>
+              #<a href="#/@">
+                <span about="@" rel="v-wf:mapToVariable">
+                  <span>
+                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  </span>
+                </span> =
+                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              </a>
+            </p>
+          <div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td about="v-wf:hasFlow" property="rdfs:label"></td>
+      <td about="@" rel="v-wf:hasFlow">
+        <div>
+          <p>
             #<a href="#/@">
-              <span about="@" rel="v-wf:mapToVariable">
-                <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
-                </span>
-              </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+              <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
+              [<span about="@" property="v-wf:predicate"></span>]
             </a>
           </p>
-        <div>
-      </div>
-    </td>
-  </tr>
+        </div>
+      </td>
+    </tr>
     <tr>
-    <td about="v-wf:hasFlow" property="rdfs:label"></td>
-    <td about="@" rel="v-wf:hasFlow">
-      <div>
-        <p>
-          #<a href="#/@">
-            <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
-            [<span about="@" property="v-wf:predicate"></span>]
-          </a>
-        </p>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td about="v-wf:locationX" property="rdfs:label"></td>
-    <td about="@" property="v-wf:locationX"></td>
-  </tr>
-  <tr>
-    <td about="v-wf:locationY" property="rdfs:label"></td>
-    <td about="@" property="v-wf:locationY"></td>
-  </tr>
+      <td about="v-wf:locationX" property="rdfs:label"></td>
+      <td about="@" property="v-wf:locationX"></td>
+    </tr>
+    <tr>
+      <td about="v-wf:locationY" property="rdfs:label"></td>
+      <td about="@" property="v-wf:locationY"></td>
+    </tr>
   </table>
 </div>
 <script>
@@ -1264,37 +1264,37 @@ v-wf:ConditionTemplateAsProperties
     </thead>
     <tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
       <td><span about="rdfs:label" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVClabel" about="@" property="rdfs:label"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+      <td>
+        <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVClabel" about="@" property="rdfs:label"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
       <td><span about="rdfs:comment" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
-    </td>
-  </tr>
-  <tr>
-    <td about="v-wf:hasFlow" property="rdfs:label"></td>
-    <td about="@" rel="v-wf:hasFlow">
-      <div>
-        #<a href="#/@">
+      <td>
+        <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+      </td>
+    </tr>
+    <tr>
+      <td about="v-wf:hasFlow" property="rdfs:label"></td>
+      <td about="@" rel="v-wf:hasFlow">
+        <div>
+          #<a href="#/@">
             <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
             [<span about="@" property="v-wf:predicate"></span>]
           </a>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td about="v-wf:locationX" property="rdfs:label"></td>
-    <td about="@" property="v-wf:locationX"></td>
-  </tr>
-  <tr>
-    <td about="v-wf:locationY" property="rdfs:label"></td>
-    <td about="@" property="v-wf:locationY"></td>
-  </tr>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td about="v-wf:locationX" property="rdfs:label"></td>
+      <td about="@" property="v-wf:locationX"></td>
+    </tr>
+    <tr>
+      <td about="v-wf:locationY" property="rdfs:label"></td>
+      <td about="@" property="v-wf:locationY"></td>
+    </tr>
   </table>
 </div>
 <script>
@@ -1328,31 +1328,31 @@ v-wf:FlowTemplateAsProperties
     </thead>
     <tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
       <td><span about="rdfs:label" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVClabel" about="@" property="rdfs:label"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
-      <td><span about="rdfs:comment" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCpredicate').show().trigger('edit'); $('#viewVCpredicate').hide();">
+      <td>
+        <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVClabel" about="@" property="rdfs:label"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+        <td><span about="rdfs:comment" property="rdfs:label"></span></td>
+      <td>
+        <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCpredicate').show().trigger('edit'); $('#viewVCpredicate').hide();">
       <td><span about="v-wf:predicate" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCpredicate" data-type="source" data-mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
-      <div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
-    </td>
-  </tr>
-  <tr>
+      <td>
+        <veda-control id="VCpredicate" data-type="source" data-mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
+        <div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
+      </td>
+    </tr>
+    <tr>
       <td><span about="v-wf:flowsInto" property="rdfs:label"></span></td>
-    <td>
-      <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
-    </td>
-  </tr>
+      <td>
+        <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
+      </td>
+    </tr>
   </table>
 </div>
 <script>
@@ -1402,49 +1402,50 @@ v-wf:ProcessPropsTemplate
       <td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
       </tr>
     </thead>
-  <tr onclick="javascript: $('.VClocVariable').show(); javascript: $('.viewVClocVariable').hide();">
+    <tr onclick="javascript: $('.VClocVariable').show(); javascript: $('.viewVClocVariable').hide();">
       <td><span about="v-wf:localVariable" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:localVariable" data-type="link" class="VClocVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VClocVariable" rel="v-wf:localVariable" data-template="v-wf:VariableTemplate" style="display:none;"></div>
         <div about="@" class="viewVClocVariable" rel="v-wf:localVariable" data-template="v-wf:VariableTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
       <td><span about="v-wf:inVars" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:inVars" data-type="link" class="VCinVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCinVariable" rel="v-wf:inVars" data-template="v-wf:VariableTemplate" style="display:none;"></div>
         <div about="@" class="viewVCinVariable" rel="v-wf:inVars" data-template="v-wf:VariableTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
       <td><span about="v-wf:outVars" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:outVars" data-type="link" class="VCoutVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCoutVariable" rel="v-wf:outVars" data-template="v-wf:VariableTemplate" style="display:none;"></div>
         <div about="@" class="viewVCoutVariable" rel="v-wf:outVars" data-template="v-wf:VariableTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VClocalVariable').show(); javascript: $('.viewVClocalVariable').hide();">
       <td><span about="v-wf:localVars" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:localVars" data-type="link" class="VClocalVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VClocalVariable" rel="v-wf:localVars" data-template="v-wf:VariableTemplate" style="display:none;"></div>
         <div about="@" class="viewVClocalVariable" rel="v-wf:localVars" data-template="v-wf:VariableTemplate"></div>
       </td>
-  </tr>
-  <tr id="traceJournal">
-    <td><em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em></td>
-    <td><span rel="v-wf:traceJournal" data-template="v-ui:LabelLinkTemplate"></span></td>
-  </tr>
+    </tr>
+    <tr id="traceJournal">
+      <td><em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em></td>
+      <td><span rel="v-wf:traceJournal" data-template="v-ui:LabelLinkTemplate"></span></td>
+    </tr>
+  </table>
 </div>
 <script>
   if (typeof individual !== "undefined") {
     $('#processTemplateProperties > tbody > tr > td > span[about]').each(function () {
-       if (!individual.hasValue($(this).attr('about'))) {
+      if (!individual.hasValue($(this).attr('about'))) {
         $(this).parent().parent().appendTo($('#workItemTemplateProperties'));
-       }
+      }
     });
   }
   //# sourceURL=v-wf:ProcessPropsTemplate
@@ -1476,37 +1477,38 @@ v-wf:WorkItemTemplate
       <td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
       </tr>
     </thead>
-  <tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
+    <tr onclick="javascript: $('.VCinVariable').show(); javascript: $('.viewVCinVariable').hide();">
       <td><span about="v-wf:inVars" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:inVars" data-type="link" class="VCinVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCinVariable" rel="v-wf:inVars" data-template="v-wf:VariableTemplate" style="display:none;"></div>
         <div about="@" class="viewVCinVariable" rel="v-wf:inVars" data-template="v-wf:VariableTemplate"></div>
       </td>
-  </tr>
-  <tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
+    </tr>
+    <tr onclick="javascript: $('.VCoutVariable').show(); javascript: $('.viewVCoutVariable').hide();">
       <td><span about="v-wf:outVars" property="rdfs:label"></span></td>
       <td>
         <veda-control about="@" rel="v-wf:outVars" data-type="link" class="VCoutVariable fulltext dropdown create properties-editor" style="display:none;"></veda-control>
         <div class="VCoutVariable" rel="v-wf:outVars" data-template="v-wf:VariableTemplate" style="display:none;"></div>
         <div about="@" class="viewVCoutVariable" rel="v-wf:outVars" data-template="v-wf:VariableTemplate"></div>
       </td>
-  </tr>
-  <tr id="workOrderList">
-    <td><em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em></td>
-    <td><span rel="v-wf:workOrderList" data-template="v-wf:WorkOrderTemplate"></span></td>
-  </div>
-  <tr id="traceJournal">
-    <td><em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em></td>
-    <td><span rel="v-wf:traceJournal" data-template="v-ui:LabelLinkTemplate"></span></td>
-  </tr>
+    </tr>
+    <tr id="workOrderList">
+      <td><em><h5 about="v-wf:workOrderList" property="rdfs:label"></h5></em></td>
+      <td><span rel="v-wf:workOrderList" data-template="v-wf:WorkOrderTemplate"></span></td>
+    </tr>
+    <tr id="traceJournal">
+      <td><em><h5 about="v-wf:traceJournal" property="rdfs:label"></h5></em></td>
+      <td><span rel="v-wf:traceJournal" data-template="v-ui:LabelLinkTemplate"></span></td>
+    </tr>
+  </table>
 </div>
 <script>
   if (typeof individual !== "undefined") {
     $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
-       if (!individual.hasValue($(this).attr('about'))) {
+      if (!individual.hasValue($(this).attr('about'))) {
         $(this).parent().parent().appendTo($('#workItemTemplateProperties'));
-       }
+      }
     });
   }
   //# sourceURL=v-wf:WorkItemTemplate
@@ -1776,20 +1778,20 @@ v-wf:Mapping
   rdfs:label "Преобразование"@ru ;
 .
 v-wf:mappingExpression
-        rdf:type rdf:Property ;
+  rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Mapping expression"@en ;
-        rdfs:label "Выражение преобразования"@ru ;
-        rdfs:domain v-wf:Mapping ;
-        rdfs:range xsd:string ;
+  rdfs:label "Mapping expression"@en ;
+  rdfs:label "Выражение преобразования"@ru ;
+  rdfs:domain v-wf:Mapping ;
+  rdfs:range xsd:string ;
 .
 v-wf:mapToVariable
-        rdf:type rdf:Property ;
+  rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Maps to variable"@en ;
-        rdfs:label "Преобразуется в переменную"@ru ;
-        rdfs:domain v-wf:Mapping ;
-        rdfs:range v-wf:VarDefine ;
+  rdfs:label "Maps to variable"@en ;
+  rdfs:label "Преобразуется в переменную"@ru ;
+  rdfs:domain v-wf:Mapping ;
+  rdfs:range v-wf:VarDefine ;
 .
 
 # --------------------------- Transformation ---------------------------
@@ -1802,11 +1804,11 @@ v-wf:Transform
 .
 
 v-wf:transformRule
-        rdf:type owl:ObjectProperty ;
+  rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Правило преобразования"@ru ;
+  rdfs:label "Правило преобразования"@ru ;
   rdfs:domain v-wf:Transform ;
-        rdfs:range v-wf:Rule ;
+  rdfs:range v-wf:Rule ;
 .
 
 v-wf:Rule
@@ -1816,49 +1818,49 @@ v-wf:Rule
 .
 
 v-wf:segregateObject
-        rdf:type owl:DatatypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Выражение для выделения подмножества обьектов"@ru ;
+  rdfs:label "Выражение для выделения подмножества обьектов"@ru ;
   rdfs:domain v-wf:Rule ;
-        rdfs:range xsd:string ;
+  rdfs:range xsd:string ;
 .
 v-wf:segregateElement
-        rdf:type owl:DatatypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Выражение для выделения подмножества элементов"@ru ;
+  rdfs:label "Выражение для выделения подмножества элементов"@ru ;
   rdfs:domain v-wf:Rule ;
-        rdfs:range xsd:string ;
+  rdfs:range xsd:string ;
 .
 v-wf:conversion
-        rdf:type owl:DatatypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Выражение для преобразования элемента"@ru ;
+  rdfs:label "Выражение для преобразования элемента"@ru ;
   rdfs:domain v-wf:Rule ;
-        rdfs:range xsd:string ;
+  rdfs:range xsd:string ;
 .
 
 v-wf:create
-        rdf:type owl:DatatypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Выражение для создания обьекта"@ru ;
+  rdfs:label "Выражение для создания обьекта"@ru ;
   rdfs:domain v-wf:Rule ;
-        rdfs:range xsd:string ;
+  rdfs:range xsd:string ;
 .
 
 v-wf:aggregate
-        rdf:type owl:DatatypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Выражение для размещения элемента в обьекте"@ru ;
+  rdfs:label "Выражение для размещения элемента в обьекте"@ru ;
   rdfs:domain v-wf:Rule ;
-        rdfs:range xsd:string ;
+  rdfs:range xsd:string ;
 .
 
 v-wf:grouping
-        rdf:type owl:DatatypeProperty ;
+  rdf:type owl:DatatypeProperty ;
   rdfs:isDefinedBy v-wf: ;
-        rdfs:label "Выражение для группировки созданных обьектов"@ru ;
+  rdfs:label "Выражение для группировки созданных обьектов"@ru ;
   rdfs:domain v-wf:Rule ;
-        rdfs:range xsd:string ;
+  rdfs:range xsd:string ;
 .
 
 # --------------------------- Process ---------------------------
@@ -2032,7 +2034,8 @@ v-wf:event_df1
 
   if (!parent_script_id
       && document['v-wf:hasStatusWorkflow']
-      && document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent') {
+      && document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent'
+  ) {
     prepare_start_form (ticket, document);
   }
 
@@ -2046,17 +2049,17 @@ v-wf:event_df2
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:Process ;
   v-s:script """
-
-//  print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-
-  if (((!document['v-wf:isStopped'] ||
-      document['v-wf:isStopped'][0].data == false) && parent_script_id &&
-    (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
-  {
+  //print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+  if (
+    (
+      (!document['v-wf:isStopped'] || document['v-wf:isStopped'][0].data == false)
+      && parent_script_id
+      && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')
+    )
+    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
+  ) {
     prepare_process (ticket, document);
   }
-
 """ ;
   rdfs:label "Триггер выполнения маршрута"@ru ;
 .
@@ -2067,13 +2070,14 @@ v-wf:event_df3
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkItem ;
   v-s:script """
-
   //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-
-  if ((parent_script_id &&
-    (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
-  {
+  if (
+    (
+      parent_script_id
+      && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4')
+    )
+    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
+  ) {
     prepare_work_item (ticket, document);
   }
 
@@ -2087,18 +2091,18 @@ v-wf:event_df4
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkOrder ;
   v-s:script """
-
   var enforce_processing = document['v-wf:enforceProcessing'];
-  if (enforce_processing && getFirstValue(enforce_processing) == true)
+  if (enforce_processing && getFirstValue(enforce_processing) == true) {
     enforce_processing = true;
-  else
+  } else {
     enforce_processing = false;
-
+  }
   //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (enforce_processing == true || (parent_script_id &&
-    (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
-  {
+  if (
+    enforce_processing == true
+    || (parent_script_id && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
+  ) {
     prepare_work_order (ticket, document);
   }
 """ ;
@@ -2111,14 +2115,12 @@ v-wf:event_df5
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
-
-  if ((!parent_script_id ||
-    (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' ||
-     parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')) && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false'))
-  {
+  if (
+    (!parent_script_id || (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
+    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
+  ) {
     prepare_decision_form (ticket, document);
   }
-
 """ ;
   rdfs:label "Триггер обработки решения пользователя"@ru ;
 .
@@ -2131,7 +2133,6 @@ v-wf:Decision
   rdfs:label "Decision"@en ;
   rdfs:label "Решение"@ru ;
 .
-
 
 v-wf:startingJournalMap
   rdf:type rdf:Property ;
@@ -2426,19 +2427,19 @@ v-wf:ProcessEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-  <div class="col-md-3 col-sm-3 event-type">
-    <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
-  </div>
-  <div class="col-md-7 col-sm-6 event-desc">
-    <div property="rdfs:label"></div>
-      <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>:
-      <em rel="v-wf:initiator" data-template="v-ui:LabelTemplate"></em>
-    </span>
-  </div>
-  <div class="col-md-2 col-sm-3 event-date text-right">
-    <span property="v-s:created"></span>
-  </div>
+    <div class="col-md-3 col-sm-3 event-type">
+      <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
+    </div>
+    <div class="col-md-7 col-sm-6 event-desc">
+      <div property="rdfs:label"></div>
+        <span id="initiator">
+          <span about="v-wf:initiator" property="rdfs:label"></span>:
+        <em rel="v-wf:initiator" data-template="v-ui:LabelTemplate"></em>
+      </span>
+    </div>
+    <div class="col-md-2 col-sm-3 event-date text-right">
+      <span property="v-s:created"></span>
+    </div>
   </div>
 </div>
   """ ;
@@ -2471,20 +2472,20 @@ v-wf:WorkItemStartedEventTemplate
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
-  <div class="col-md-3 col-sm-3 event-type">
-    <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>
-    <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
-  </div>
-  <div class="col-md-7 col-sm-6 event-desc">
-    <div property="rdfs:label"></div>
-    <span id="initiator">
-        <span about="v-wf:initiator" property="rdfs:label"></span>:
-      <em rel="v-wf:initiator" data-template="v-ui:LabelTemplate"></em>
-    </span>
-  </div>
-  <div class="col-md-2 col-sm-3 event-date text-right">
-    <span property="v-s:created"></span>
-  </div>
+    <div class="col-md-3 col-sm-3 event-type">
+      <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>
+      <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
+    </div>
+    <div class="col-md-7 col-sm-6 event-desc">
+      <div property="rdfs:label"></div>
+      <span id="initiator">
+          <span about="v-wf:initiator" property="rdfs:label"></span>:
+        <em rel="v-wf:initiator" data-template="v-ui:LabelTemplate"></em>
+      </span>
+    </div>
+    <div class="col-md-2 col-sm-3 event-date text-right">
+      <span property="v-s:created"></span>
+    </div>
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
@@ -2781,7 +2782,6 @@ v-wf:ExecutorTemplateEmbedded
         <veda-control rel="@" data-type="link" class="fulltext dropdown"></veda-control>
     </div>
   </div>
-
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
@@ -2808,7 +2808,7 @@ v-wf:ExecutorTemplateEmbedded
     if (individual['rdf:type'][0].id == 'v-s:Codelet') $('#codelet', template).trigger('click');
     if (individual['rdf:type'][0].id == 'v-s:Appointment') $('#appointment', template).trigger('click');
   } else {
-      $('#codelet', template).trigger('click');
+    $('#codelet', template).trigger('click');
   }
 </script>
 """.
@@ -2842,7 +2842,7 @@ v-wf:MappingTemplateEmbedded
 </div>
 <script>
   $('.CodeMirror', template).each(function (idx) {
-  $(this).height(40);
+    $(this).height(40);
   });
 </script>
 """.
@@ -2988,37 +2988,37 @@ v-wf:FlowTemplateAsModal
   <table id="taskTemplateProperties" class="table table-condensed table-hover properties-editor">
     <thead>
       <tr>
-      <td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
-      <td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
+        <td style="width:25%"><span about="v-wf:Net" property="rdfs:label"></span></td>
+        <td><strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong></td>
       </tr>
     </thead>
     <tr onclick="javascript: $('#VClabel').show(); $('#viewVClabel').hide();">
       <td><span about="rdfs:label" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVClabel" about="@" property="rdfs:label"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
+      <td>
+        <veda-control id="VClabel" data-type="string" property="rdfs:label" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVClabel" about="@" property="rdfs:label"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCcomment').show(); $('#viewVCcomment').hide();">
       <td><span about="rdfs:comment" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
-      <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
-    </td>
-  </tr>
-  <tr onclick="javascript: $('#VCpredicate').show().trigger('edit'); $('#viewVCpredicate').hide();">
+      <td>
+        <veda-control id="VCcomment" data-type="string" property="rdfs:comment" class="properties-editor" style="display:none;"></veda-control>
+        <div id="viewVCcomment" about="@" property="rdfs:comment"></div>
+      </td>
+    </tr>
+    <tr onclick="javascript: $('#VCpredicate').show().trigger('edit'); $('#viewVCpredicate').hide();">
       <td><span about="v-wf:predicate" property="rdfs:label"></span></td>
-    <td>
-      <veda-control id="VCpredicate" data-type="source" mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
-      <div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
-    </td>
-  </tr>
-  <tr>
+      <td>
+        <veda-control id="VCpredicate" data-type="source" mode="javascript" property="v-wf:predicate" class="properties-editor" style="display:none;width:75%"></veda-control>
+        <div id="viewVCpredicate" about="@" property="v-wf:predicate"></div>
+      </td>
+    </tr>
+    <tr>
       <td><span about="v-wf:flowsInto" property="rdfs:label"></span></td>
-    <td>
-      <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
-    </td>
-  </tr>
+      <td>
+        <strong><span about="@" rel="v-wf:flowsInto" data-template="v-ui:LabelTemplate"></span></strong>
+      </td>
+    </tr>
   </table>
 </div>
 <script>
