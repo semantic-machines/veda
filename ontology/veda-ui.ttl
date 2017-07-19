@@ -1785,7 +1785,7 @@ v-ui:DocumentEventTemplate
       <div property="rdfs:label"></div>
       <div rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div rel="v-wf:onProcess">
-        <script>
+        <!--script>
           var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
             return vrbl.hasValue("v-wf:variableName",  "startForm_id");
           });
@@ -1794,13 +1794,15 @@ v-ui:DocumentEventTemplate
           } else {
             $("[about='start-form']", template).remove();
           }
-        </script>
+        </script-->
         <div>
           <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
           <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
-          <div about="start-form">
-            <a href="#/@" property="rdf:type"></a>
-          </div>
+          <!--div about="start-form">
+            <div>
+              <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" property="rdf:type"></a>
+            </div>
+          </div-->
         </div>
       </div>
     </div>
