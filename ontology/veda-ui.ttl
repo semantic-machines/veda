@@ -1499,11 +1499,140 @@ v-ui:PsHasImage
   v-ui:forProperty v-s:hasImage ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
+v-ui:SimplifiedJournalTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Упрощенный журнал"@ru ;
+  rdfs:label "Simplified journal"@en ;
+  v-ui:forClass v-s:Journal ;
+  v-ui:template """
+<script>
+  var tbody = $("#tbody", template);
+  var task_template = tbody.html();
+  tbody.empty();
+  this.tmpl = task_template;
 
+  $('.createReport0', template).on('click', function () {
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
+  });
+  $('#createReport',template).on('click', function (e) {
+    e.preventDefault();
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_pdf');
+  });
+  $('#createReport2', template).on('click', function (e) {
+    e.preventDefault();
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_xlsx');
+  });
+  $('#createReport3', template).on('click', function (e) {
+    e.preventDefault();
+    var documenJournal=individual["v-s:onDocument"][0];
+    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
+  });
+  //# sourceURL=v-ui:SimplifiedJournalTemplate_pre
+</script>
+<div class="container sheet">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+    </div>
+    <div class="col-md-6 text-right">
+      <a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a>
+      <button type="button" class="action btn btn-info view -edit -search createReport0" about="mnd-s:PrintBlank" property="rdfs:label"></button>
+      <div class="btn-group dropdown">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span about="v-s:CoordinationList" property="rdfs:label"> </span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
+          <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
+          <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div rel="v-s:onDocument">
+    <h4>
+      <span about="v-wf:onDocument" property="rdfs:label"></span>:
+      <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+    </h4>
+  </div>
+  <div id="tasks" class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr class="active">
+          <th width="1%">#</th>
+          <th width="15%" about="v-wf:from" property="rdfs:label"></th>
+          <th width="15%" about="v-wf:to" property="rdfs:label"></th>
+          <th width="25%" about="v-s:description" property="rdfs:label"></th>
+          <th width="15%"><span about="v-s:created" property="rdfs:label"></span> <span>&uarr;</span></th>
+          <th about="v-wf:takenDecision" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr>
+          <td>###</td>
+          <td property="v-wf:from"></td>
+          <td property="v-wf:to"></td>
+          <td><a href="$$$" property="rdfs:label"></a><div property="v-s:description"></div></td>
+          <td property="v-s:created"></td>
+          <td rel="v-wf:takenDecision">
+            <div>
+              <div property="v-s:creator"></div>
+              <strong property="rdfs:label"></strong><i property="rdfs:comment"></i>
+              <div property="v-s:created"></div>
+            </div>
+          </td>
+        </tr>
+        <script>
+          if ( this.hasValue("v-wf:isCompleted", true) ) {
+            template.children().first().addClass("success");
+          }
+        </script>
+      </tbody>
+    </table>
+    <button class="btn btn-default" id="refresh" about="v-s:RefreshBundle" property="rdfs:label"></button>
+  </div>
+</div>
+<script>
+  var tbody = $("#tbody", template);
+  var task_template = this.tmpl;
+  $("#refresh", template).click(buildJournal);
+
+  buildJournal();
+  function buildJournal() {
+    tbody.empty();
+    var tasks = query({
+      ticket: veda.ticket,
+      query: "'rdf:type'==='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + individual["v-s:onDocument"][0].id + "'",
+      sort: "'v-s:created' asc",
+      async: true
+    }).then(function (query_res) {
+      var tasks_uris = query_res.result;
+      return get_individuals({
+        ticket: veda.ticket,
+        uris: tasks_uris,
+        async: true
+      }).then(function (tasks) {
+        tasks.forEach(function (task, index) {
+          var task_individual = new veda.IndividualModel(task);
+          var tmpl = task_template.replace("###", index + 1).replace("$$$", "#/@")
+          tmpl = $( tmpl );
+          task_individual.present(tbody, tmpl);
+        });
+      });
+    });
+  };
+  //# sourceURL=v-ui:SimplifiedJournalTemplate_post
+</script>
+  """ ;
+.
 v-ui:JournalTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон журнала"@ru ;
-  rdfs:label "Journal template"@en ;
+  rdfs:label "Детальный журнал"@ru ;
+  rdfs:label "Detailed journal"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <script>
@@ -1529,6 +1658,7 @@ v-ui:JournalTemplate
     var documenJournal=individual["v-s:onDocument"][0];
     veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
   });
+  //# sourceURL=v-ui:JournalTemplate_pre
 </script>
 <div class="container journal sheet">
   <style>
@@ -1536,34 +1666,30 @@ v-ui:JournalTemplate
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
   <div class="row">
-  <div class="col-md-8">
-
-  <h2 about="v-s:Journal" property="rdfs:label"></h2>
-  </div>
-  <div class="col-md-4 text-right">
-    <button type="button" class="action btn btn-info view -edit -search createReport0"  >
-      <span about="mnd-s:PrintBlank" property="rdfs:label"></span> <span class="fa fa-file-pdf-o"></span>
-    </button>
-    <div class="btn-group dropup" >
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span about="v-s:CoordinationList" property="rdfs:label"> </span>
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
-        <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
-        <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
-      </ul>
+    <div class="col-md-6">
+      <h2 about="v-s:Journal" property="rdfs:label"></h2>
     </div>
+    <div class="col-md-6 text-right">
+      <a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a>
+      <button type="button" class="action btn btn-info view -edit -search createReport0" about="mnd-s:PrintBlank" property="rdfs:label"></button>
+      <div class="btn-group dropdown">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span about="v-s:CoordinationList" property="rdfs:label"> </span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
+          <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
+          <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div rel="v-s:onDocument">
-    <div>
-      <h4>
-        <span about="v-wf:onDocument" property="rdfs:label"></span>:
-        <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
-      </h4>
-    </div>
+    <h4>
+      <span about="v-wf:onDocument" property="rdfs:label"></span>:
+      <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+    </h4>
   </div>
   <div rel="v-wf:onProcess">
     <div>
@@ -1635,7 +1761,7 @@ v-ui:DocumentEventTemplate
   if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-wf:ProcessStopped') {
     $(".row", template).addClass('text-danger');
   }
-  //# sourceURL=v-ui:DocumentEventTemplateBEfore
+  //# sourceURL=v-ui:DocumentEventTemplate_pre
 </script>
 <div class="journal-record">
   <hr class="margin-sm">
@@ -1659,9 +1785,24 @@ v-ui:DocumentEventTemplate
       <div property="rdfs:label"></div>
       <div rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div rel="v-wf:onProcess">
+        <!--script>
+          var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
+            return vrbl.hasValue("v-wf:variableName",  "startForm_id");
+          });
+          if (startFormVar.length) {
+            $("[about='start-form']", template).attr("about", startFormVar[0]["v-wf:variableValue"][0].id);
+          } else {
+            $("[about='start-form']", template).remove();
+          }
+        </script-->
         <div>
           <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
           <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
+          <!--div about="start-form">
+            <div>
+              <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" property="rdf:type"></a>
+            </div>
+          </div-->
         </div>
       </div>
     </div>
@@ -1689,7 +1830,7 @@ v-ui:DocumentEventTemplate
       $(".start-process > #exp", template).trigger("click");
     }
   }
-  //# sourceURL=v-ui:DocumentEventTemplateAfter
+  //# sourceURL=v-ui:DocumentEventTemplate_post
 </script>
   """ ;
 .

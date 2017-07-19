@@ -376,7 +376,7 @@ td:RomanKarpov-Analyst1
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
   rdfs:label "Администратор2 : Аналитик"@ru ;
-  rdfs:label "Administrator2 : Аналитик"@en ;
+  rdfs:label "Administrator2 : Analyst"@en ;
   v-s:official "true"^^xsd:boolean ;
   v-s:origin "Internal User" ;
 .
