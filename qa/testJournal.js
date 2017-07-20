@@ -24,6 +24,9 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
     driver.executeScript("document.querySelector('#journal').scrollIntoView(true);");
     driver.sleep(basic.SLOW_OPERATION).then(function() {
         basic.execute(driver, 'click', '#journal', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `View Journal` button");
+        driver.sleep(basic.FAST_OPERATION * 2);
+        basic.execute(driver, 'cliсk', 'span[about="v-ui:JournalTemplate"]', 
+            "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `JournalTemplate` button");
     }).then(function() {
         driver.sleep(basic.FAST_OPERATION);
         driver.navigate().refresh();
