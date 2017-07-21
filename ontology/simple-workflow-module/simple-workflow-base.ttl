@@ -2195,7 +2195,7 @@ if (doc) {
         function calculationHeadUnit(occupation){
           if(occupation.hasValue("v-s:hasChief") ) {
             if (occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
-              return occupation["v-s:hasChief"][0];
+              return occupation["v-s:hasChief"];
             } else {return [];}
           } else  if ( !occupation.hasValue("v-s:parentUnit") ){
             return [];
