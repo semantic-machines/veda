@@ -275,6 +275,14 @@ class XapianVQL
                             }
 
                             query = qp.parse_query(cast(char *)query_str, query_str.length, flags, &err);
+
+                            if (err == XapianQueryParserError)
+                            {
+                                log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+                                query_str = "\"" ~ query_str ~ "\"";
+                                query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, &err);
+                            }
+
                             if (err != 0)
                                 throw new XapianError(err, "parse_query1 query=" ~ query_str);
                         }
@@ -303,6 +311,17 @@ class XapianVQL
 
                                     query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                            xtr.length, &err);
+
+                                    if (err == XapianQueryParserError)
+                                    {
+                                        log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+
+                                        query_str = "\"" ~ query_str ~ "\"";
+                                        query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                   xtr.length, &err);
+                                    }
+
+
                                     if (query is null)
                                         throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
 
@@ -339,6 +358,16 @@ class XapianVQL
 
                                         query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                                xtr.length, &err);
+
+                                        if (err == XapianQueryParserError)
+                                        {
+                                            log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+
+                                            query_str = "\"" ~ query_str ~ "\"";
+                                            query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                       xtr.length, &err);
+                                        }
+
                                         if (err != 0)
                                             throw new XapianError(err,
                                                                   cast(string)("parse_query2('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr ~ "'"));
@@ -389,12 +418,21 @@ class XapianVQL
                                                 query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                                        xtr.length, &err);
 
+                                                if (err == XapianQueryParserError)
+                                                {
+                                                    log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+
+                                                    query_str = "\"" ~ query_str ~ "\"";
+                                                    query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                               xtr.length, &err);
+                                                }
+
                                                 if (err != 0)
                                                     throw new XapianError(err,
                                                                           cast(string)("parse_query2.1('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr
                                                                                        ~ "'"));
 
-                                                //log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
+                                                log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
                                             }
                                         }
                                         else
@@ -455,12 +493,29 @@ class XapianVQL
 
                             query = qp.parse_query(cast(char *)xtr, xtr.length, flags, &err);
 
+                            if (err == XapianQueryParserError)
+                            {
+                                log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", xtr, xtr);
+                                xtr   = "\"" ~ xtr ~ "\"";
+                                query = qp.parse_query(cast(char *)xtr, xtr.length, flags, &err);
+                            }
+
                             if (err != 0)
+                            {
                                 throw new XapianError(err, "parse_query4('*'=*) '" ~ xtr ~ "'");
+                            }
                         }
                         else
                         {
                             query = qp.parse_query(cast(char *)xtr, xtr.length, &err);
+
+                            if (err == XapianQueryParserError)
+                            {
+                                log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", xtr, xtr);
+                                xtr = "\"" ~ xtr ~ "\"";
+                                query
+                                    = qp.parse_query(cast(char *)xtr, xtr.length, &err);
+                            }
                             if (err != 0)
                                 throw new XapianError(err, "parse_query5('*'=x) '" ~ xtr ~ "'");
                         }
