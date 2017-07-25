@@ -74,8 +74,9 @@ function create_test_document1(ticket, prefix)
   new_test_doc1['@'] = prefix + new_test_doc1['@']
 
     var res = put_individual(ticket.id, new_test_doc1);
-    wait_module(subject_manager, res.op_id);
+    //wait_module(subject_manager, res.op_id);
     wait_module(acl_manager, res.op_id);
+    wait_module(condition, res.op_id);
     return new_test_doc1;
 }
 
@@ -567,6 +568,7 @@ for (i = 0; i < 1; i++)
             var res = put_individual(ticket.id, new_test_doc1);
             wait_module(acl_manager, res.op_id);
             wait_module(subject_manager, res.op_id);
+            wait_module(condition, res.op_id);
 
             var read_individual = get_individual(ticket.id, new_test_doc1_uri);
 
@@ -580,6 +582,7 @@ for (i = 0; i < 1; i++)
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(acl_manager, res.op_id);
             wait_module(subject_manager, res.op_id);
+            wait_module(condition, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc2_uri);
 
@@ -593,6 +596,7 @@ for (i = 0; i < 1; i++)
             var res = put_individual(ticket.id, new_test_doc3);
             wait_module(subject_manager, res.op_id);
             wait_module(acl_manager, res.op_id);
+            wait_module(condition, res.op_id);
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
 
