@@ -2552,6 +2552,43 @@ if (doc) {
     routes['approval'][simple+'editable'] = [false];
     routes['approval'][simple+'comment'] = [new String('На оформление распорядительного документа и регистрацию')];
   }
+  
+//--------------------------------------------------------------------------------ЗаявкаОЗМ-------
+  if (doc['rdf:type'][0].id === "mnd-s:MaterialRequest") {						
+    routes['introduction'][simple+'visible'] = [false];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [false];
+    routes['coordination2'][simple+'editable'] = [false];
+    routes['coordination3'][simple+'visible'] = [false];
+    routes['coordination3'][simple+'editable'] = [false];
+    routes['sign'][simple+'visible'] = [false];
+    routes['sign'][simple+'editable'] = [false];
+    routes['approval'][simple+'visible'] = [false];
+    routes['approval'][simple+'editable'] = [false];
+    routes['review'][simple+'visible'] = [false];
+    routes['review'][simple+'editable'] = [false];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['instruction'][simple+'deadlineDays'] =[2];
+    routes['instruction'][simple+'comment'] = [new String('создать ОЗМ')];
+//    if (
+//		doc.hasValue('mnd-s:hasMaterialGroup') 
+//		&& doc['mnd-s:hasMaterialGroup'][0].hasValue('v-s:controller')
+//		&& doc['mnd-s:hasMaterialGroup'][0].hasValue('v-s:controller').length ===1
+//		)
+//	{
+		var mrp_contr = new veda.IndividualModel(doc['mnd-s:hasMaterialGroup'][0].id);
+        if (mrp_contr.hasValue('v-s:controller')) 
+        {
+			routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(mrp_contr["v-s:controller"]); // MRP контроллер группы материалов
+        }
+//    }
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];        
+  }  
+  
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
