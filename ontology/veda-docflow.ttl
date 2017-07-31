@@ -989,7 +989,7 @@ v-df:rul_TaskTransform6_0
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionConfirm')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionExamined')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
 .
 v-df:rul_TaskTransform6_3
@@ -1069,7 +1069,7 @@ v-df:rul_DistributionTransform6_0
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionConfirm')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionExamined')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
 .
 v-df:rul_DistributionTransform6_3
