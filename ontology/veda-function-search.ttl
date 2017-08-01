@@ -363,19 +363,9 @@ v-fs:FulltextRequestModel
   //if (q) { self.search() };
 
   function mkQuery () {
-    var type = self.hasValue("v-fs:typeToSearch") ?
-        "(" + self["v-fs:typeToSearch"].map(function (i) {
-          return "'rdf:type'=='" + i.id + "'"
-        }).join("||") + ")"
-      :
-        "";
-    var q = self.hasValue("v-fs:fulltextQuery") ? self["v-fs:fulltextQuery"][0] : "";
-    var re1 = new RegExp('[-*]','g');
-    var re2 = new RegExp('\\s+','g');
-    if (q && q.indexOf("==") < 0) {
-      q = "(" + q.replace(re1, " ").replace(re2, " ").trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
-    }
-    return [type, q].filter(function (item) { return !!item }).join("&&");
+    var type = self.hasValue("v-fs:typeToSearch") ? "('rdf:type'=='" + self["v-fs:typeToSearch"][0].id + "')" : "";
+    var q = self.hasValue("v-fs:fulltextQuery") ? "('*'=='" + self["v-fs:fulltextQuery"][0] + "')" : "";
+    return [type, q].filter(function (item) { return !!item }).join(" && ");
   }
   //# sourceURL=v-fs:FulltextRequestModel
   """
@@ -414,7 +404,6 @@ v-fs:FulltextRequestTemplate
           </div>
         </div>
         <h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
-        <div rel="v-fs:typeToSearch" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
         <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown" data-template="{individual['rdfs:label'].join(' ') + ' (' + individual.id + ')'}"></veda-control>
       </form>
     </div>
@@ -707,6 +696,7 @@ v-fs:AttributiveRequestTemplate
       <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown" data-template="{individual['rdfs:label'].join(' ') + ' (' + individual.id + ')'}"></veda-control>
       <br>
       <div id="form-holder"></div>
+      <br>
       <button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
       <hr>
       <h4 about="v-fs:SetResultsTable" property="rdfs:label"></h4>
