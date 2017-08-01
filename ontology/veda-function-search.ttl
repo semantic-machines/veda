@@ -521,7 +521,7 @@ v-fs:FulltextRequestTemplate
   }
 
   function genericTemplate(individual) {
-    var head = "<strong><a href='#/@' property='rdfs:label'></a></strong>";
+    var head = "<strong><a href='#/@' about='@' data-template='v-ui:ClassNameLabelTemplate'></a></strong>";
     var allprops = Object.getOwnPropertyNames(individual.properties);
     var props = "<div>";
     for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
