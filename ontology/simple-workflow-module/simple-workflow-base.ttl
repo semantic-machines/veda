@@ -3223,6 +3223,16 @@ s-wf:codelet_change_responsible_right
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:codelet_change_projectManager_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Выдать права руководителю проекта" ;
+  v-s:script """
+  process.getInputVariable ('rightset')?
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'projectManager') :
+  change_rights_actor (process, task, newStr ('-ru-'), 'projectManager')
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
 
 # ------------------------------ CODELET : "восстановить права" ----------------------------- #
 s-wf:codelet_restore_right
