@@ -404,6 +404,7 @@ v-fs:FulltextRequestTemplate
           </div>
         </div>
         <h4 about="v-fs:ChooseType" property="rdfs:label"></h4>
+        <div rel="v-fs:typeToSearch" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
         <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown" data-template="{individual['rdfs:label'].join(' ') + ' (' + individual.id + ')'}"></veda-control>
       </form>
     </div>
