@@ -82,6 +82,7 @@ v-s:messageBody
 v-s:Email
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Deliverable ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "E-mail"@en ;
   rdfs:label "Электронное письмо"@ru ;
 .
