@@ -111,7 +111,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
       if (ntlm) {
         var params = {
           type: "POST",
-          url: ntlmAddress + "ad/",
+          url: ntlm + "ad/",
           data: {
             "login": login,
             "password": password
@@ -138,10 +138,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
   // NTLM auth using iframe
   var ntlmProvider = new veda.IndividualModel({uri: "cfg:NTLMAuthProvider", cache: true, init: false}),
-    ntlm = ntlmProvider.properties["rdf:value"] && ntlmProvider.properties["rdf:value"].length,
+    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0],
     iframe = $("<iframe>", {"class": "hidden"});
-  if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
-    var ntlmAddress = ntlmProvider.properties["rdf:value"][0].data;
+  if ( ntlm ) {
     iframe.appendTo(loginContainer);
   }
 
@@ -151,7 +150,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     delete storage.user_uri;
     delete storage.end_time;
     delCookie("ticket");
-    if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
+    if ( ntlm ) {
       iframe.one("load", function () {
         try {
           loginContainer.addClass("hidden");
@@ -174,7 +173,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
         }
       });
       document.domain = document.domain;
-      iframe.attr("src", ntlmAddress);
+      iframe.attr("src", ntlm);
     } else {
       loginContainer.removeClass("hidden");
     }
