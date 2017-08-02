@@ -49,6 +49,7 @@ veda.Module(function (veda) { "use strict";
       }
     } else {
       self.preferences = new veda.IndividualModel();
+      self.preferences.id = self.id + "_pref";
       self.preferences["v-s:author"] = [ self ];
       self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
       self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
@@ -68,6 +69,7 @@ veda.Module(function (veda) { "use strict";
       self.aspect = self["v-s:hasAspect"][0];
     } else {
       self.aspect = new veda.IndividualModel();
+      self.aspect.id = self.id + "_aspect";
       self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
       self.aspect["v-s:owner"] = [ self ];
       self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
