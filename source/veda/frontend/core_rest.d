@@ -820,7 +820,7 @@ class VedaStorageRest : VedaStorageRest_API
                     cs0.get_info();
 
                     Individual indv_res;
-                    indv_res.uri = "_";
+                    indv_res.uri = uri;
 
                     indv_res.addResource(rdf__type, Resource(DataType.Uri, "v-s:AppInfo"));
 
