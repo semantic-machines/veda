@@ -141,6 +141,7 @@ class XapianReader : SearchReader
             return sr;
 
         //log.trace ("@key2slot=%s", key2slot);
+        //log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
 
         XapianQuery query;
         TTA         tta = parse_expr(str_query);
