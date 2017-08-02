@@ -36,7 +36,7 @@ function get_user2_ticket()
 
 function generate_test_document1(ticket)
 {
-    var new_test_doc1_uri = guid();
+    var new_test_doc1_uri = genUri();
     var new_test_doc1 = {
         '@': new_test_doc1_uri,
         'rdf:type': newUri('rdfs:Resource'),
@@ -274,7 +274,7 @@ for (i = 0; i < 1; i++)
             //#2
             ok(ticket_user2.id.length > 0);
 
-            var new_test_doc1_uri = guid();
+            var new_test_doc1_uri = "test5:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
@@ -358,7 +358,7 @@ for (i = 0; i < 1; i++)
 
             var a_ticket = get_admin_ticket();
 
-            var new_test_doc1_uri = guid();
+            var new_test_doc1_uri = "test6:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
@@ -448,10 +448,10 @@ for (i = 0; i < 1; i++)
         {
             var ticket = get_user1_ticket();
 
-            var permissionSubject = guid();
-            var permissionObject = guid();
+            var permissionSubject = "test9:" + guid();
+            var permissionObject = "test9:" + guid();
 
-            var new_test_doc1_uri = guid();
+            var new_test_doc1_uri = "test9:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('v-s:NoPermissionStatement'),
@@ -473,7 +473,7 @@ for (i = 0; i < 1; i++)
             ok(compare(new_test_doc1, read_individual));
 
             var new_test_doc2 = new_test_doc1;
-            var new_test_doc2_uri = guid();
+            var new_test_doc2_uri = "test9:" + guid();
             new_test_doc2['@'] = new_test_doc2_uri;
             new_test_doc2['v-s:canRead'] = newBool(false);
             var res = put_individual(ticket.id, new_test_doc2);
@@ -486,7 +486,7 @@ for (i = 0; i < 1; i++)
             ok(compare(new_test_doc2, read_individual));
 
             var new_test_doc3 = new_test_doc2;
-            var new_test_doc3_uri = guid();
+            var new_test_doc3_uri = "test9:" + guid();
             new_test_doc3['@'] = new_test_doc3_uri;
             new_test_doc3['v-s:canRead'] = newBool(true);
             var res = put_individual(ticket.id, new_test_doc3);
@@ -553,10 +553,10 @@ for (i = 0; i < 1; i++)
         {
             var ticket = get_user1_ticket();
 
-            var memberOf = guid();
-            var resources = guid();
+            var memberOf = "test11:" + guid();
+            var resources = "test11:" + guid();
 
-            var new_test_doc1_uri = guid();
+            var new_test_doc1_uri = "test11:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('v-s:ThisNoMembership'),
@@ -576,9 +576,9 @@ for (i = 0; i < 1; i++)
             ok(compare(new_test_doc1, read_individual));
 
             var new_test_doc2 = new_test_doc1;
-            var new_test_doc2_uri = guid();
+            var new_test_doc2_uri = "test11:" + guid();
             new_test_doc2['@'] = new_test_doc2_uri;
-            new_test_doc2['v-s:memberOf'] = newUri(guid());
+            new_test_doc2['v-s:memberOf'] = newUri("test11:" + guid());
             var res = put_individual(ticket.id, new_test_doc2);
             wait_module(acl_manager, res.op_id);
             wait_module(subject_manager, res.op_id);
@@ -590,7 +590,7 @@ for (i = 0; i < 1; i++)
             ok(compare(new_test_doc2, read_individual));
 
             var new_test_doc3 = new_test_doc2;
-            var new_test_doc3_uri = guid();
+            var new_test_doc3_uri = "test11:" + guid();
             new_test_doc3['@'] = new_test_doc3_uri;
             new_test_doc3['v-s:memberOf'] = newUri(memberOf);
             var res = put_individual(ticket.id, new_test_doc3);
@@ -629,11 +629,10 @@ for (i = 0; i < 1; i++)
             //#2
             ok(ticket_user2.id.length > 0);
 
-            var new_test_doc1_uri_1 = "test12:" + guid();
-
-            var test_data_uid = guid();
+            var test_data_uid = "test12_" + guid();
             var test_data = 'testdata ' + test_data_uid;
 
+            var new_test_doc1_uri_1 = "test12:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri_1,
                 'rdf:type': newUri('rdfs:Resource'),
@@ -741,7 +740,7 @@ for (i = 0; i < 1; i++)
             //#1
             ok(ticket_user1.id.length > 0);
 
-            var test_group_uid = guid();
+            var test_group_uid = "test13:" + guid();
 
             var new_test_doc1_uri = "test13:" + guid();
             var new_test_doc1 = {
