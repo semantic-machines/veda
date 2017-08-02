@@ -220,7 +220,7 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:CoordinationRouteStartForm ;
   v-ui:forClass v-df:SignRouteStartForm ;
   v-ui:forProperty v-s:hasAppointment ;
-  v-ui:maxCardinality 1 ;
+#  v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User' ) || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
   rdfs:label "Task sender property specification for Question task class"@en ;
@@ -332,7 +332,7 @@ v-df:SignRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate"></div>
       <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -393,7 +393,7 @@ v-df:QuestionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate"></div>
       <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -451,7 +451,7 @@ v-df:InstructionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate"></div>
       <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -507,7 +507,7 @@ v-df:TaskRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate"></div>
       <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -558,7 +558,7 @@ v-df:DistributionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate"></div>
       <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
