@@ -1725,7 +1725,7 @@ v-wf:rule1sign
 .
 v-wf:rule2sign
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1756,7 +1756,7 @@ v-wf:rule1question
 .
 v-wf:rule2question
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1786,7 +1786,7 @@ v-wf:rule1instruction
 .
 v-wf:rule2instruction
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1816,7 +1816,7 @@ v-wf:rule1task
 .
 v-wf:rule2task
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1846,7 +1846,7 @@ v-wf:rule1distribution
 .
 v-wf:rule2distribution
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1875,7 +1875,7 @@ v-wf:rule1coordination
 .
 v-wf:rule2coordination
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
