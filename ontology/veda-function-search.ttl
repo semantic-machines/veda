@@ -523,20 +523,19 @@ v-fs:FulltextRequestTemplate
   function genericTemplate(individual) {
     var head = "<strong><a href='#/@' about='@' data-template='v-ui:ClassNameLabelTemplate'></a></strong>";
     var allprops = Object.getOwnPropertyNames(individual.properties);
-    var props = "<div>";
+    var props = "<br>";
     for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
-      if(uri === "@") { continue }
+      if (uri === "@") { continue }
       if ( individual.hasValue(uri) ) {
-        props += "<span about='" + uri + "' property='rdfs:label'></span>: "
-        if (individual[uri][0] instanceof veda.IndividualModel) {
-          props += "<span rel='" + uri + "' data-template='v-ui:LabelEmptyLinkTemplate'></span>; "
+        props += "<i about='" + uri + "' property='rdfs:label'></i>: "
+        if (individual.get(uri)[0] instanceof veda.IndividualModel) {
+          props += "<span about='@' rel='" + uri + "' data-template='v-ui:LabelEmptyLinkTemplate'></span>; "
         } else {
-          props += "<span property='" + uri + "'></span>; "
+          props += "<span about='@' property='" + uri + "'></span>; "
         }
       }
     }
-    props += "</div>";
-    return "<span>" + head + props + "</span>";
+    return "<p>" + head + props + "</p>";
   }
 
   // Present results

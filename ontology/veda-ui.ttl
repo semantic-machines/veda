@@ -867,7 +867,7 @@ v-ui:LabelEmptyLinkTemplate
   rdfs:label "Шаблон без имени класса, но с меткой (модальное окно)"@ru ;
   rdfs:label "Template without class name, with label (modal)"@en ;
   v-ui:template """
-<a href="#" property="rdfs:label" class="label-template"></a>
+<a href="#" property="rdfs:label"></a>
 <script>
   if (!individual.hasValue("rdfs:label")) {
     template.text(individual.id);
