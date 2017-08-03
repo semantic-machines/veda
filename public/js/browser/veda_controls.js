@@ -23,6 +23,7 @@
       .on("change focusout", changeHandler)
       .keyup( function (e) {
         if (!control.isSingle) { return; }
+        if (e.which === 13) { input.change(); }
         if (timeout) { clearTimeout(timeout); }
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
@@ -424,6 +425,7 @@
           individual.set(property_uri, values);
         })
         .keyup( function (e) {
+          if (e.which === 13) { formControl.change(); }
           if (timeout) { clearTimeout(timeout); }
           timeout = setTimeout(keyupHandler, defaultDelay, e);
         });
