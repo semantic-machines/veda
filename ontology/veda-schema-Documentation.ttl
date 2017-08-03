@@ -346,14 +346,14 @@ v-s:hasBusinessTripRegistrationRecord
 .
 v-s:businessTripEmployee
   rdf:type owl:ObjectProperty ;
-  rdfs:label "business trip employee"@en ;
+  rdfs:label "Employee"@en ;
   rdfs:label "Сотрудник"@ru ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:BusinessTrip ;
 .
 v-s:businessTripDepartment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "business trip department"@en ;
+  rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
   rdfs:range v-s:Department ;
   rdfs:domain v-s:BusinessTrip ;
