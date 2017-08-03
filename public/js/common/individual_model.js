@@ -88,8 +88,8 @@ veda.Module(function (veda) { "use strict";
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
       uniq = serialized.concat( this.filtered[property_uri] );
     }
-    if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
-      this.properties[property_uri] = serialized;
+    if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
+      this.properties[property_uri] = uniq;
       this.trigger("propertyModified", property_uri, values);
       this.trigger(property_uri, values);
     }
