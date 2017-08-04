@@ -61,23 +61,13 @@ veda.Module(function (veda) { "use strict";
   proto.get = function (property_uri) {
     var self = this;
     if (!self.properties[property_uri]) return [];
-    var values = self.properties[property_uri]
+    self.filtered[property_uri] = [];
+    return self.properties[property_uri]
       .filter(function (value) {
-        var condition = value.type !== "String" || value.lang === "NONE" || (veda.user && veda.user.language && value.lang in veda.user.language);
-        if (condition === false) {
-          var filtered = self.filtered[property_uri] || [],
-              found = filtered.filter(function (filteredVal) {
-                return filteredVal.data === value.data && filteredVal.lang === value.lang;
-              });
-          if ( !found.length ) {
-            filtered.push( value );
-          }
-          self.filtered[property_uri] = filtered;
-        }
-        return condition;
+        var condition = !value.lang || value.lang === "NONE" || ( veda.user && veda.user.language && value.lang in veda.user.language ) ;
+        return condition ? condition : ( self.filtered[property_uri].push(value), condition );
       })
       .map( parser );
-    return values;
   };
 
   proto.set = function (property_uri, values) {
