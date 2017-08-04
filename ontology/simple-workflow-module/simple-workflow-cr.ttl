@@ -1025,7 +1025,7 @@ s-wf:WrapUniversalNet
   a v-wf:Net;
   v-wf:inputVariable s-wf:var_doc_id, s-wf:var_journal_initiator;
   v-wf:consistsOf s-wf:WrapUniversalNet_ic, s-wf:WrapUniversalNet_oc, s-wf:WrapUniversalNet_t, s-wf:WrapUniversalNet_ic_to_t, s-wf:WrapUniversalNet_t_to_oc;
-  rdfs:label "Обертка универсального маршрута"^^xsd:string.
+  rdfs:label "Универсальный процесс"^^xsd:string.
 
 s-wf:WrapUniversalNet_ic
   a v-wf:InputCondition;
@@ -1106,7 +1106,7 @@ s-wf:map_actor_task_date_to_4_PIV_actor_task_date_to
 
 s-wf:map_possible_decision_4_PIV_possible_decision
   rdf:type v-wf:Mapping ;
-  v-wf:mapToVariable s-wf:var_possible_decision ;
+  v-wf:mapToVariable s-wf:possible_decision ;
   v-wf:mappingExpression  "process.getInputVariable ('possible_decision')" ;
   rdfs:isDefinedBy s-wf: ;
 .
@@ -1117,4 +1117,5 @@ s-wf:map_doc_id_4_PIV_doc_id
   v-wf:mappingExpression  "process.getInputVariable ('docId')" ;
   rdfs:isDefinedBy s-wf: ;
 .
+
 
