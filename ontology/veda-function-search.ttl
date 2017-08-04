@@ -1183,7 +1183,23 @@ v-fs:AttributiveSearchTemplate
     $("#params", template).remove();
   }
 
+
   // Enable swipe for result table
+  $("body").keydown(enableSwipe).keyup(disableSwipe);
+  template.one("remove", function () {
+    $("body").off("keydown", enableSwipe).off("keyup", disableSwipe);
+  });
+  function disableSwipe (e) {
+    if (e.which === 17) {
+      $("#search-result", template).addClass("noSwipe");
+    }
+  }
+  function enableSwipe (e) {
+    if (e.ctrlKey) {
+      $("#search-result", template).removeClass("noSwipe");
+    }
+  }
+
   var prevDistance = 0, delta = 0;
   $("#search-result", template).swipe({
     swipeStatus: function (event, phase, direction, distance, duration) {
@@ -1246,7 +1262,7 @@ v-fs:AttributiveSearchTemplate
         <span class="total-authorized badge">0</span>&nbsp;&nbsp;
       </small>
     </h3>
-    <div id="search-result" class="search-result table-responsive"></div>
+    <div id="search-result" class="search-result table-responsive noSwipe"></div>
     <div class="stats-bottom text-right margin-md">
       <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
       <span class="total-found badge">0</span>&nbsp;&nbsp;
@@ -1412,7 +1428,7 @@ v-fs:AttributiveSearchTemplate
   }*/
 
   // Double click on result table row routes to search result
-  $("#search-result", template).on("dblclick", "tr", function () {
+  $("#search-result", template).on("dblclick", "tbody tr", function () {
     var uri = $(this).attr("resource");
     riot.route("#/" + uri);
   });
