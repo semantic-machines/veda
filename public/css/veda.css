@@ -1258,3 +1258,8 @@ svg.process-path-highlight path
   position: relative!important;
   margin: 0 0 0 7px!important;
 }
+
+/* Buttons */
+.btn-block {
+  white-space: normal;
+}
