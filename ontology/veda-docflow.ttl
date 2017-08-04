@@ -203,15 +203,7 @@ v-df:CoordinationRouteStartForm
   v-ui:hasTemplate v-df:CoordinationRouteStartFormTemplate ;
 .
 
-v-s:hasAppointment
-  rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;
-  rdfs:domain v-df:TaskRouteStartForm ;
-  rdfs:domain v-df:DistributionRouteStartForm ;
-  rdfs:domain v-df:CoordinationRouteStartForm ;
-  rdfs:domain v-df:SignRouteStartForm;
-.
-v-df:PsStartForm_hasAppointmentTo
+v-df:PsStartForm_responsible
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
@@ -219,7 +211,7 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
   v-ui:forClass v-df:SignRouteStartForm ;
-  v-ui:forProperty v-s:hasAppointment ;
+  v-ui:forProperty v-s:responsible ;
   v-ui:maxCardinality 100 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User' ) || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
@@ -227,17 +219,6 @@ v-df:PsStartForm_hasAppointmentTo
   rdfs:label "Спецификация исполнителя задачи для класса Стартовая форма задачи question"@ru ;
 .
 
-v-s:dateTo
-  rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;
-  rdfs:domain v-df:TaskRouteStartForm ;
-  rdfs:domain v-df:DistributionRouteStartForm ;
-  rdfs:domain v-df:CoordinationRouteStartForm ;
-  rdfs:domain v-df:SignRouteStartForm;
-.
-v-wf:dateGiven
-  rdfs:domain v-df:CoordinationRouteStartForm ;
-.
 v-df:PsStartForm_dateTo
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;

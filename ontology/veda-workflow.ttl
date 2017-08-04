@@ -1711,6 +1711,7 @@ v-wf:dateGiven
   rdfs:label "Срок"@ru ;
   rdfs:label "Due date"@en ;
   rdfs:domain v-wf:DecisionForm ;
+  rdfs:domain v-wf:StartForm ;
   rdfs:range xsd:dateTime ;
 .
 
@@ -1730,6 +1731,8 @@ v-wf:StartForm
   rdfs:label "Стартовая форма"@ru ;
   rdfs:label "Start form"@en ;
   rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Temporal ;
 .
 
 v-wf:processedDocument
