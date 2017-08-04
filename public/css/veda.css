@@ -63,6 +63,7 @@ body {
   color: #fff;
   font-weight: bold;
   font-size: 0.9em;
+  white-space: nowrap;
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   z-index: 0;
