@@ -66,7 +66,7 @@ script:
   - node ./qa/testRights.js
   - node ./qa/testComment.js
   - node ./qa/testVersionedDocument.js
-#  - node ./qa/testJournal.js
+  - node ./qa/testJournal.js
   - node ./qa/testAttachment.js
   - node ./qa/testPager.js
   - node ./qa/testSearchRangeOfDates.js
