@@ -700,7 +700,7 @@ v-ui:ResourceTemplate
   v-ui:template """
 <div class="container sheet">
   <div class="clearfix">
-    <h3 class="pull-left" about="@" property="rdf:type"></h3>
+    <h3 class="pull-left" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h3>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
   </div>
   <hr class="margin-sm">
@@ -1170,7 +1170,7 @@ v-ui:TestUITemplate
   v-ui:template """
 <div class="container sheet">
   <div class="clearfix">
-    <h2 class="pull-left" about="@" property="rdf:type"></h2>
+    <h2 class="pull-left" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
     <a class="pull-right" href="#/@"><small property="@"></small></a>
   </div>
 
@@ -1800,7 +1800,7 @@ v-ui:DocumentEventTemplate
           <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
           <!--div about="start-form">
             <div>
-              <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" property="rdf:type"></a>
+              <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>
             </div>
           </div-->
         </div>

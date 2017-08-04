@@ -1760,10 +1760,10 @@ v-fs:FulltextResultTemplate
     <tr>
       <td>###</td>
       <td about="@" data-template="v-ui:IconModalTemplate"></td>
-      <td property="rdf:type"></td>
-      <td property="rdfs:label"></td>
-      <td property="v-s:created"></td>
-      <td property="v-s:creator"></td>
+      <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="rdfs:label"></td>
+      <td about="@" property="v-s:created"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
     </tr>
   </tbody>
 </table>
