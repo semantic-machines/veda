@@ -11,11 +11,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
     }
   }
 
-  //Reload when user changes preferred language
-  veda.on("language:changed", function () {
-    location.reload();
-  });
-
   // Route to resource ttl view on Ctrl + Alt + Click
   $("body").on("click", "[resource][typeof], [about]", function (e) {
     var uri = $(this).attr("resource") || $(this).attr("about");
@@ -107,6 +102,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     try {
       authResult = veda.login(login, hash);
     } catch (ex1) {
+      console.log(ex1);
       authResult = undefined;
       if (ntlm) {
         var params = {
@@ -122,6 +118,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
           authResult = $.ajax(params);
           authResult = JSON.parse( authResult.responseText );
         } catch (ex2) {
+          console.log(ex2);
           authResult = undefined;
         }
       }
@@ -169,6 +166,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
             throw "Not authenticated";
           }
         } catch (ex) {
+          console.log(ex);
           loginContainer.removeClass("hidden");
         }
       });
@@ -218,6 +216,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
       veda.trigger("login:failed");
     }
   } catch (ex) {
+    console.log(ex);
     veda.trigger("login:failed");
   }
 
