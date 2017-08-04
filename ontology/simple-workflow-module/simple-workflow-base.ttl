@@ -2607,6 +2607,59 @@ if (doc) {
     routes['examination'][simple+'editable'] = [true];        
   }  
   
+  
+//--------------------------------------------------------------------------------Доверенность-------
+  if (doc['rdf:type'][0].id === "mnd-s:PowerOfAttorney") {						
+    routes['introduction'][simple+'visible'] = [false];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+
+      // Руководитель того, кто в  v-s:grantee -> v-s:correspondentPerson
+//      if (doc.hasValue('v-s:grantee')) {
+//        var grantee = new veda.IndividualModel(doc['v-s:grantee'][0].id);
+//        var app = new doc['v-s:grantee'][0].hasValue('v-s:correspondentPerson'); 
+//        var position = new doc['v-s:grantee'][0]['v-s:correspondentPerson'][0]['v-s:occupation'][0];         
+//        var dep = new doc['v-s:grantee'][0]['v-s:correspondentPerson'][0]['v-s:occupation'][0]['v-s:parentUnit'][0];
+//        var chief = new veda.IndividualModel(doc['v-s:grantee'][0]['v-s:correspondentPerson'][0]['v-s:occupation'][0]['v-s:parentUnit'][0]['v-s:hasChief'][0]);
+        
+//        if (dep.hasValue('v-s:hasChief')!=null) {
+//          routes['coordination1'][simple+'participant'] = dep.hasValue('v-s:hasChief').id;
+//        }
+//      }
+
+      // ИНАЧЕ Руководитель автора документа
+
+
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [false];
+    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:9d3479d9-992a-4ffa-af5a-cba04574489d")]; //Юрисконсульт. Доверенности 
+
+    routes['coordination3'][simple+'visible'] = [false];
+    routes['coordination3'][simple+'editable'] = [false];
+    routes['coordination4'][simple+'visible'] = [false];
+    routes['coordination4'][simple+'editable'] = [false];
+    routes['coordination5'][simple+'visible'] = [false];
+    routes['coordination5'][simple+'editable'] = [false];
+    routes['coordination6'][simple+'visible'] = [false];
+    routes['coordination6'][simple+'editable'] = [false];
+
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [false];
+    routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")]; //Генеральный директор СЛПК 
+     
+    routes['approval'][simple+'visible'] = [false];
+    routes['approval'][simple+'editable'] = [false];
+    routes['review'][simple+'visible'] = [false];
+    routes['review'][simple+'editable'] = [false];
+ 
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК  
+    routes['instruction'][simple+'comment'] = [new String('Отсканировать и направить на ознакомление')];
+
+  }  
+
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
