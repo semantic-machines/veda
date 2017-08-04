@@ -643,11 +643,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       template.one("remove", function () {
         about.off(property_uri, propertyModifiedHandler);
       });
+
+      // Watch server-side updates
       var updateService = new veda.UpdateService();
       updateService.subscribe(about.id);
       template.one("remove", function () {
         updateService.unsubscribe(about.id);
       });
+
+      // Watch language change
+      veda.on("language:changed", localize);
+      template.one("remove", function () {
+        veda.off("language:changed", localize);
+      });
+      function localize() {
+        if ( about.hasValue(property_uri) && about.properties[property_uri][0].type === "String" ) {
+          about.trigger("propertyModified", property_uri, about.get(property_uri));
+          about.trigger(property_uri, about.get(property_uri));
+        }
+      }
     });
 
     // Validation with support of embedded templates (arbitrary depth)
