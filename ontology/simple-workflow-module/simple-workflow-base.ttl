@@ -2407,6 +2407,24 @@ if (doc) {
     routes['informing'][simple+'editable'] = [true];
     routes['informing'][simple+'comment'] = [new String('Уведомление о начале процесса согласования документа')];
 
+	var informingDecree ;
+    if (doc.hasValue("mnd-s:hasDecreeKind", "d:2283f9f186794145bd6c8e3229f7a009") //(Распоряжение по основной деятельности)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:b7a958be3d14437f98ab414c8ce88977") //(Приказ по основной деятельности)
+//       || doc.hasValue("mnd-s:hasDecreeKind", "d:391362e32a2b48199ef4bebe9b7a611a") //(Приказ по ГО)
+//       || doc.hasValue("mnd-s:hasDecreeKind", "d:9664874293574b79af624f01e3c091cd") //(Распоряжение по ГО)
+    ){
+    informingDecree = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+    routes['informing'][simple+'participant']=routes['informing'][simple+'participant'].concat(informingDecree) ;
+	
+	}
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'visible'] = [true];
+    routes['coordination4'][simple+'editable'] = [true];
 
     routes['sign'][simple+'participant'] = doc["v-s:signedBy"] ;
     routes['sign'][simple+'visible'] = [true];
