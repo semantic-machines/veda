@@ -1191,12 +1191,12 @@ v-fs:AttributiveSearchTemplate
   });
   function disableSwipe (e) {
     if (e.which === 17) {
-      $("#search-result", template).addClass("noSwipe");
+      $("#search-result", template).addClass("noSwipe").removeClass("swipe");
     }
   }
   function enableSwipe (e) {
     if (e.ctrlKey) {
-      $("#search-result", template).removeClass("noSwipe");
+      $("#search-result", template).addClass("swipe").removeClass("noSwipe");
     }
   }
 
@@ -1234,6 +1234,11 @@ v-fs:AttributiveSearchTemplate
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
+  <style>
+    .swipe {
+      cursor: move;
+    }
+  </style>
   <div id="params">
     <br>
     <div class="ribbon-wrapper top-left">
