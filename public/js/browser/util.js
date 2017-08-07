@@ -25,6 +25,7 @@ veda.Module(function Util(veda) { "use strict";
       query({
         ticket: veda.ticket,
         query: q,
+        sort: "'v-s:created' desc",
         from: from,
         top: delta,
         limit: limit,
