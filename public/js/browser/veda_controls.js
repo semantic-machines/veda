@@ -1746,8 +1746,6 @@
 
     }).then(function (individuals) {
 
-      if ( !individuals.length ) { return; }
-
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });
