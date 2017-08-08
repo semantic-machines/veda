@@ -44,21 +44,38 @@ v-s:OrganizationUnitModel
   rdfs:label "Organization unit model"@en ;
   rdfs:label "Модель организационной единицы"@ru ;
   v-s:script """
-/**
- * @method
- * @param unit {String/veda.IndividualModel} Super unit uri or individual.
- * @return {boolean}.
- */
-this.isSubUnitOf = function (unit) {
-  var self = this;
-  if (typeof unit.valueOf() === "string") {
-    unit = new veda.IndividualModel( unit.valueOf() );
-  }
-  if (!this.hasValue("v-s:parentUnit")) return false;
-  return this["v-s:parentUnit"].reduce(function (state, item) {
-    return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
-  }, false);
-};
+  /**
+   * @method
+   * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+   * @return {boolean}.
+   */
+  this.isSubUnitOf = function (unit) {
+    var self = this;
+    if (typeof unit.valueOf() === "string") {
+      unit = new veda.IndividualModel( unit.valueOf() );
+    }
+    if (!this.hasValue("v-s:parentUnit")) return false;
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
+    }, false);
+  };
+
+  /**
+   * @method
+   * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+   * @return {veda.IndividualModel | false }.
+   */
+  this.getChief = function () {
+    var self = this;
+    if ( this.hasValue("v-s:hasChief") ) {
+      return this["v-s:hasChief"][0];
+    }
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || self.getChief.apply(item);
+    }, false);
+  };
+
+  // sourceURL=v-s:OrganizationUnitModel
   """ ;
 .
 v-s:childUnit
