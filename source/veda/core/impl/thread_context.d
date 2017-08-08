@@ -783,6 +783,10 @@ class PThreadContext : Context
                 res = individual_as_binobj;
                 rs  = ResultCode.OK;
             }
+            else
+            {
+                return res;
+            }
 
             if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) != Access.can_read)
             {
