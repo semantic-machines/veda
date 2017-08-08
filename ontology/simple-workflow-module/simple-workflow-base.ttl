@@ -2622,21 +2622,15 @@ if (doc) {
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
 
-      // Руководитель того, кто в  v-s:grantee -> v-s:correspondentPerson
-//      if (doc.hasValue('v-s:grantee')) {
-//        var grantee = new veda.IndividualModel(doc['v-s:grantee'][0].id);
-//        var app = new doc['v-s:grantee'][0].hasValue('v-s:correspondentPerson');
-//        var position = new doc['v-s:grantee'][0]['v-s:correspondentPerson'][0]['v-s:occupation'][0];
-//        var dep = new doc['v-s:grantee'][0]['v-s:correspondentPerson'][0]['v-s:occupation'][0]['v-s:parentUnit'][0];
-//        var chief = new veda.IndividualModel(doc['v-s:grantee'][0]['v-s:correspondentPerson'][0]['v-s:occupation'][0]['v-s:parentUnit'][0]['v-s:hasChief'][0]);
-
-//        if (dep.hasValue('v-s:hasChief')!=null) {
-//          routes['coordination1'][simple+'participant'] = dep.hasValue('v-s:hasChief').id;
-//        }
-//      }
-
-      // ИНАЧЕ Руководитель автора документа
-
+    var chief;
+    if ( doc.hasValue("v-s:grantee") && doc["v-s:grantee"][0].hasValue("v-s:correspondentPerson") && doc["v-s:grantee"][0]["v-s:correspondentPerson"][0].is("v-s:Appointment") ) {
+      chief = doc["v-s:grantee"][0]["v-s:correspondentPerson"][0].getChief();
+    } else {
+      chief = doc["v-s:creator"][0].getChief();
+    }
+    if ( chief ) {
+      routes['coordination1'][simple+'participant'] = [chief];
+    }
 
     routes['coordination2'][simple+'visible'] = [true];
     routes['coordination2'][simple+'editable'] = [false];
