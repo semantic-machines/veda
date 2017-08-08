@@ -1120,6 +1120,13 @@ d:077f148f5f214e42b6f99ca239d88b7b
   rdfs:label "Ярлык"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
+d:agbxssnddkd2rnk4lfofwhi7
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Служебная записка"^^xsd:string;
+  rdfs:label "Служебная записка"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
 
 #-----------------------------------------------------
 d:c3b38c81e1594593932b9872a3257948
