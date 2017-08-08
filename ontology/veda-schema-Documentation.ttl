@@ -448,3 +448,20 @@ v-s:Decree
 # v-s:registrationNumber
 # v-s:registrationDate
 # v-s:title
+
+#-----------------ВНУТРЕННИЙ_ДОКУМЕНТ--------------------
+v-s:InternalDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:label "Internal document"@en ;
+  rdfs:label "Внутренний документ"@ru ;
+.
+# v-s:hasDocumentKind
+# v-s:initiator
+# v-s:supplier
+# v-s:copyTo
+# v-s:theme
+# v-s:content
+# v-s:attachment
+# v-s:hasLink
+# v-s:hasComment
