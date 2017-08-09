@@ -188,6 +188,15 @@ veda.Module(function AppPresenter(veda) { "use strict";
     storage.end_time = authResult.end_time.toString();
     setCookie("ticket", authResult.ticket);
     veda.init();
+
+    // Re-login on ticket expiration
+    var ticketDelay = new Date( parseInt(veda.end_time) ) - new Date();
+    //var ticketDelay = 10000;
+    console.log("Ticket will expire in %s hrs.", (ticketDelay / 1000 / 60 / 60).toFixed(2) );
+    setTimeout(function () {
+      console.log("Ticket expired, re-login.");
+      veda.trigger("login:failed");
+    }, ticketDelay);
   });
 
   // Logout handler

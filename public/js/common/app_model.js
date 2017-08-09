@@ -56,13 +56,6 @@
       self.trigger("started");
     };
 
-    // Logout if server returned 470 or 471 error (ticket not found or expired)
-    self.on("danger", function (msg) {
-      if (msg.status === 470 || msg.status === 471) {
-        veda.logout();
-      }
-    });
-
     function construct (constr, args) {
       function F() {
         return constr.apply(this, args);
