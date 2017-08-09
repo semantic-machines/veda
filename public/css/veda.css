@@ -386,7 +386,9 @@ textarea {
 .deleted, .deleted *:not(.btn) {
   text-decoration: line-through!important;
 }
-.deleted[typeof='v-s:Appointment'], .deleted[typeof='v-s:Appointment'] * {
+.deleted[typeof='v-s:Appointment'], .deleted[typeof='v-s:Appointment'] *,
+.deleted[typeof='v-s:Position'], .deleted[typeof='v-s:Position'] *,
+.deleted[typeof='v-s:Person'], .deleted[typeof='v-s:Person'] * {
   text-decoration: none!important;
   color: #888;
 }
