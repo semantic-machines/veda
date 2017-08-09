@@ -2308,7 +2308,7 @@ if (doc) {
         routes['review'][simple+'comment'] = [new String('Отмена командировки')];
       } else {
         routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
-        routes['review'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
+        routes['review'][simple+'comment'] = [new String('Изменение сроков')];
       }
     }
   }
