@@ -661,7 +661,7 @@ v-df:rul_SignTransform1
 .
 v-df:rul_SignTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -760,7 +760,7 @@ v-df:rul_QuestionTransform1
 .
 v-df:rul_QuestionTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -850,7 +850,7 @@ v-df:rul_InstructionTransform1
 .
 v-df:rul_InstructionTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -940,7 +940,7 @@ v-df:rul_TaskTransform1
 .
 v-df:rul_TaskTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -1020,7 +1020,7 @@ v-df:rul_DistributionTransform1
 .
 v-df:rul_DistributionTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -1101,7 +1101,7 @@ v-df:rul_CoordinationTransform1
 .
 v-df:rul_CoordinationTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:activityCoordinator')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
