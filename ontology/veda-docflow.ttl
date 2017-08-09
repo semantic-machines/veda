@@ -313,7 +313,7 @@ v-df:SignRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -374,7 +374,7 @@ v-df:QuestionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -432,7 +432,7 @@ v-df:InstructionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -488,7 +488,7 @@ v-df:TaskRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
@@ -539,7 +539,7 @@ v-df:DistributionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
