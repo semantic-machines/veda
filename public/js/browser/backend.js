@@ -69,7 +69,7 @@ veda.Module(function Backend(veda) { "use strict";
       serverWatch();
     }
     if (result.status === 470 || result.status === 471) {
-      veda.logout();
+      veda.trigger("login:failed");
     }
   }
   BackendError.prototype = Object.create(Error.prototype);

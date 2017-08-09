@@ -269,6 +269,9 @@ veda.Module(function (veda) { "use strict";
             ],
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
           };
+        } else if (e.code === 470 || e.code === 471) {
+          this.trigger("afterLoad", this);
+          return this;
         } else {
           this.isNew(false);
           this.isSync(false);
