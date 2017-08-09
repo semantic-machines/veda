@@ -250,7 +250,7 @@ veda.Module(function (veda) { "use strict";
         this.isSync(true);
         this.properties = get_individual(veda.ticket, uri);
       } catch (e) {
-        if (e.status === 422) {
+        if (e.code === 422) {
           this.isNew(true);
           this.isSync(false);
           this.properties = {
@@ -258,7 +258,7 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
           };
-        } else if (e.status === 472) {
+        } else if (e.code === 472) {
           this.isNew(false);
           this.isSync(false);
           this.properties = {
@@ -318,7 +318,7 @@ veda.Module(function (veda) { "use strict";
       put_individual(veda.ticket, this.properties);
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      if (error.name !== 472) {
+      if (error.code !== 472) {
         this.draft();
       }
       notify("danger", error);
