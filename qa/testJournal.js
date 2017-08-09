@@ -39,13 +39,13 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
             assert.equal(updateCount, result.length);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 > TEST JOURNAL : ERROR = Invalid `update` journal elements count");});
         //    Return to document
-        basic.execute(driver, 'click', '[rel="v-s:onDocument"] [typeof="v-s:Action"] a', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click to return on main document");
+        basic.execute(driver, 'click', '#on-document a[typeof="v-s:Action"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click to return on main document");
   });
 }
 
 /**
  * Обновление текущего значения shortLabel
- *@param driver 
+ *@param driver
  *@param key - значение, на которое необходимо поменять текущее shortLabel;
 */
 
