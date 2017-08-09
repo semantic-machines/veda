@@ -4619,7 +4619,7 @@ s-wf:map_t2_sm3
 s-wf:map_t2_sm_control
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_actor_task_comment ;
-  v-wf:mappingExpression  "newStr('Принять отчёт, ' + getFirstValue(process.getLocalVariable ('actor_task_comment')))";
+  v-wf:mappingExpression  "newStr(getFirstValue(process.getLocalVariable ('actor_task_comment')) || '')";
   rdfs:isDefinedBy s-wf: ;
 .
 
