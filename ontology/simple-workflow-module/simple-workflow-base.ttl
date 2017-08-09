@@ -2294,15 +2294,18 @@ if (doc) {
       routes['instruction'][simple+'deadlineDays'] =[data];
 
     } else {
-
       routes['sign'][simple+'visible'] = [true];
       routes['sign'][simple+'editable'] = [true];
-      routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
-
       routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
       routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [false];
+
+      if ( doc["mnd-s:hasChangeOfTerms"][0].hasValue("v-s:hasStatus", "v-s:StatusCanceled") ) {
+        routes['sign'][simple+'comment'] = [new String('Отклонено')];
+      } else {
+        routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
+      }
     }
   }
 
