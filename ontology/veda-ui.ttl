@@ -1511,24 +1511,25 @@ v-ui:SimplifiedJournalTemplate
   tbody.empty();
   this.tmpl = task_template;
 
+  var doc_uri = this.id.replace(/.$/, "");
+  var doc = new veda.IndividualModel(doc_uri);
+
+  $("#on-document", template).attr("about", doc_uri);
+
   $('.createReport0', template).on('click', function () {
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
+    veda.Util.createReport(doc,'v-s:Journal_printBlank');
   });
   $('#createReport',template).on('click', function (e) {
     e.preventDefault();
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_pdf');
+    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_pdf');
   });
   $('#createReport2', template).on('click', function (e) {
     e.preventDefault();
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_xlsx');
+    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_xlsx');
   });
   $('#createReport3', template).on('click', function (e) {
     e.preventDefault();
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
+    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_docx');
   });
   //# sourceURL=v-ui:SimplifiedJournalTemplate_pre
 </script>
@@ -1553,12 +1554,7 @@ v-ui:SimplifiedJournalTemplate
       </div>
     </div>
   </div>
-  <div rel="v-s:onDocument">
-    <h4>
-      <span about="v-wf:onDocument" property="rdfs:label"></span>:
-      <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
-    </h4>
-  </div>
+  <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
   <div id="tasks" class="table-responsive">
     <table class="table">
       <thead>
@@ -1601,12 +1597,14 @@ v-ui:SimplifiedJournalTemplate
   var task_template = this.tmpl;
   $("#refresh", template).click(buildJournal);
 
+  var doc_uri = this.id.replace(/.$/, "");
+
   buildJournal();
   function buildJournal() {
     tbody.empty();
     var tasks = query({
       ticket: veda.ticket,
-      query: "'rdf:type'==='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + individual["v-s:onDocument"][0].id + "'",
+      query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
       sort: "'v-s:created' asc",
       async: true
     }).then(function (query_res) {
@@ -1638,25 +1636,25 @@ v-ui:JournalTemplate
 <script>
   individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 
-  $('.createReport0', template).on('click', function () {
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal,'v-s:Journal_printBlank');
-  });
+  var doc_uri = this.id.replace(/.$/, "");
+  var doc = new veda.IndividualModel(doc_uri);
 
+  $("#on-document", template).attr("about", doc_uri);
+
+  $('.createReport0', template).on('click', function () {
+    veda.Util.createReport(doc,'v-s:Journal_printBlank');
+  });
   $('#createReport',template).on('click', function (e) {
     e.preventDefault();
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_pdf');
+    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_pdf');
   });
   $('#createReport2', template).on('click', function (e) {
     e.preventDefault();
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_xlsx');
+    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_xlsx');
   });
   $('#createReport3', template).on('click', function (e) {
     e.preventDefault();
-    var documenJournal=individual["v-s:onDocument"][0];
-    veda.Util.createReport(documenJournal, 'v-s:JournalCoordination_printBlank_docx');
+    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_docx');
   });
   //# sourceURL=v-ui:JournalTemplate_pre
 </script>
@@ -1685,12 +1683,7 @@ v-ui:JournalTemplate
       </div>
     </div>
   </div>
-  <div rel="v-s:onDocument">
-    <h4>
-      <span about="v-wf:onDocument" property="rdfs:label"></span>:
-      <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
-    </h4>
-  </div>
+  <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
   <div rel="v-wf:onProcess">
     <div>
       <h4>
