@@ -47,8 +47,8 @@ veda.Module(function (veda) { "use strict";
         self.preferences.save();
       }
     } else {
-      self.preferences.id = self.id + "_pref";
-      self.preferences = new veda.IndividualModel(self.preferences.id);
+      var preferences_id = self.id + "_pref";
+      self.preferences = new veda.IndividualModel(preferences_id);
       if ( self.preferences.isNew() ) {
         self.preferences["v-s:author"] = [ self ];
         self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
@@ -69,8 +69,8 @@ veda.Module(function (veda) { "use strict";
     if ( self.hasValue("v-s:hasAspect") ) {
       self.aspect = self["v-s:hasAspect"][0];
     } else {
-      self.aspect.id = self.id + "_aspect";
-      self.aspect = new veda.IndividualModel(self.aspect.id);
+      var aspect_id = self.id + "_aspect";
+      self.aspect = new veda.IndividualModel(aspect_id);
       if ( self.aspect.isNew() ) {
         self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
         self.aspect["v-s:owner"] = [ self ];
