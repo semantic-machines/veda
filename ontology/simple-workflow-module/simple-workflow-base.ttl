@@ -2301,10 +2301,14 @@ if (doc) {
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [false];
 
-      if ( doc["mnd-s:hasChangeOfTerms"][0].hasValue("v-s:hasStatus", "v-s:StatusCanceled") ) {
-        routes['sign'][simple+'comment'] = [new String('Отклонено')];
+
+      var lastIndex = doc["mnd-s:hasChangeOfTerms"].length - 1;
+      if ( doc["mnd-s:hasChangeOfTerms"][lastIndex].hasValue("v-s:hasStatus", "v-s:StatusCanceled") ) {
+        routes['sign'][simple+'comment'] = [new String('Отмена командировки')];
+        routes['review'][simple+'comment'] = [new String('Отмена командировки')];
       } else {
         routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
+        routes['review'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
       }
     }
   }
