@@ -168,14 +168,22 @@ function commitValue(ticket, scope, value, _event_id) {
       for ( var i in scope['v-s:numerationCommitedInterval']) {
         var intervalUri = scope['v-s:numerationCommitedInterval'][i];
         var interval = get_individual(ticket, intervalUri.data);
-        if ( (interval['v-s:numerationCommitedIntervalBegin'][0].data <= value) && (value <= interval['v-s:numerationCommitedIntervalEnd'][0].data) ) {
-          // value is already commited
-          return false;
-        } else if (interval['v-s:numerationCommitedIntervalBegin'][0].data == (value + 1)) {
-          nextInterval = interval;
-        } else if (interval['v-s:numerationCommitedIntervalEnd'][0].data == (value - 1)) {
-          prevInterval = interval;
-        }
+		try
+		{
+        	if ( (interval['v-s:numerationCommitedIntervalBegin'][0].data <= value) && (value <= interval['v-s:numerationCommitedIntervalEnd'][0].data) ) {
+        	  // value is already commited
+        	  return false;
+        	} else if (interval['v-s:numerationCommitedIntervalBegin'][0].data == (value + 1)) {
+        	  nextInterval = interval;
+        	} else if (interval['v-s:numerationCommitedIntervalEnd'][0].data == (value - 1)) {
+        	  prevInterval = interval;
+        	}
+		}
+		catch (e)
+		{
+    	    print ("ERR! intervalUri=", toJson (intervalUri));
+	    	print(e.stack);	    
+		}
       }
       if (prevInterval != null && nextInterval != null) {
         // merge prev && value && next

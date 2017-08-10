@@ -11,11 +11,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
     }
   }
 
-  //Reload when user changes preferred language
-  veda.on("language:changed", function () {
-    location.reload();
-  });
-
   // Route to resource ttl view on Ctrl + Alt + Click
   $("body").on("click", "[resource][typeof], [about]", function (e) {
     var uri = $(this).attr("resource") || $(this).attr("about");
@@ -107,11 +102,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
     try {
       authResult = veda.login(login, hash);
     } catch (ex1) {
+      console.log(ex1);
       authResult = undefined;
       if (ntlm) {
         var params = {
           type: "POST",
-          url: ntlmAddress + "ad/",
+          url: ntlm + "ad/",
           data: {
             "login": login,
             "password": password
@@ -122,6 +118,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
           authResult = $.ajax(params);
           authResult = JSON.parse( authResult.responseText );
         } catch (ex2) {
+          console.log(ex2);
           authResult = undefined;
         }
       }
@@ -138,10 +135,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
   // NTLM auth using iframe
   var ntlmProvider = new veda.IndividualModel({uri: "cfg:NTLMAuthProvider", cache: true, init: false}),
-    ntlm = ntlmProvider.properties["rdf:value"] && ntlmProvider.properties["rdf:value"].length,
+    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0],
     iframe = $("<iframe>", {"class": "hidden"});
-  if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
-    var ntlmAddress = ntlmProvider.properties["rdf:value"][0].data;
+  if ( ntlm ) {
     iframe.appendTo(loginContainer);
   }
 
@@ -151,7 +147,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     delete storage.user_uri;
     delete storage.end_time;
     delCookie("ticket");
-    if (ntlm && (!ntlmProvider.properties['v-s:deleted'] || ntlmProvider.properties['v-s:deleted'][0] == false)) {
+    if ( ntlm ) {
       iframe.one("load", function () {
         try {
           loginContainer.addClass("hidden");
@@ -170,11 +166,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
             throw "Not authenticated";
           }
         } catch (ex) {
+          console.log(ex);
           loginContainer.removeClass("hidden");
         }
       });
       document.domain = document.domain;
-      iframe.attr("src", ntlmAddress);
+      iframe.attr("src", ntlm);
     } else {
       loginContainer.removeClass("hidden");
     }
@@ -191,6 +188,15 @@ veda.Module(function AppPresenter(veda) { "use strict";
     storage.end_time = authResult.end_time.toString();
     setCookie("ticket", authResult.ticket);
     veda.init();
+
+    // Re-login on ticket expiration
+    var ticketDelay = new Date( parseInt(veda.end_time) ) - new Date();
+    //var ticketDelay = 10000;
+    console.log("Ticket will expire in %s hrs.", (ticketDelay / 1000 / 60 / 60).toFixed(2) );
+    setTimeout(function () {
+      console.log("Ticket expired, re-login.");
+      veda.trigger("login:failed");
+    }, ticketDelay);
   });
 
   // Logout handler
@@ -219,6 +225,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
       veda.trigger("login:failed");
     }
   } catch (ex) {
+    console.log(ex);
     veda.trigger("login:failed");
   }
 

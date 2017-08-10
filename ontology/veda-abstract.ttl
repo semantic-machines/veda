@@ -1118,4 +1118,10 @@ v-s:dueDate
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Deliverable2 ;
 .
-
+#------------------------------------------------------
+v-s:Document
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Document"@en ;
+  rdfs:label "Документ"@ru ;
+.

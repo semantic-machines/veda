@@ -203,15 +203,7 @@ v-df:CoordinationRouteStartForm
   v-ui:hasTemplate v-df:CoordinationRouteStartFormTemplate ;
 .
 
-v-s:hasAppointment
-  rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;
-  rdfs:domain v-df:TaskRouteStartForm ;
-  rdfs:domain v-df:DistributionRouteStartForm ;
-  rdfs:domain v-df:CoordinationRouteStartForm ;
-  rdfs:domain v-df:SignRouteStartForm;
-.
-v-df:PsStartForm_hasAppointmentTo
+v-df:PsStartForm_responsible
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
   v-ui:forClass v-df:InstructionRouteStartForm ;
@@ -219,25 +211,14 @@ v-df:PsStartForm_hasAppointmentTo
   v-ui:forClass v-df:DistributionRouteStartForm ;
   v-ui:forClass v-df:CoordinationRouteStartForm ;
   v-ui:forClass v-df:SignRouteStartForm ;
-  v-ui:forProperty v-s:hasAppointment ;
-  v-ui:maxCardinality 1 ;
+  v-ui:forProperty v-s:responsible ;
+  v-ui:maxCardinality 100 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User' ) || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
   rdfs:label "Task sender property specification for Question task class"@en ;
   rdfs:label "Спецификация исполнителя задачи для класса Стартовая форма задачи question"@ru ;
 .
 
-v-s:dateTo
-  rdfs:domain v-df:QuestionRouteStartForm ;
-  rdfs:domain v-df:InstructionRouteStartForm ;
-  rdfs:domain v-df:TaskRouteStartForm ;
-  rdfs:domain v-df:DistributionRouteStartForm ;
-  rdfs:domain v-df:CoordinationRouteStartForm ;
-  rdfs:domain v-df:SignRouteStartForm;
-.
-v-wf:dateGiven
-  rdfs:domain v-df:CoordinationRouteStartForm ;
-.
 v-df:PsStartForm_dateTo
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forClass v-df:QuestionRouteStartForm ;
@@ -332,8 +313,8 @@ v-df:SignRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-s:dateTo" property="rdfs:label"></em>
@@ -393,8 +374,8 @@ v-df:QuestionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-s:dateTo" property="rdfs:label"></em>
@@ -451,8 +432,8 @@ v-df:InstructionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-s:dateTo" property="rdfs:label"></em>
@@ -507,8 +488,8 @@ v-df:TaskRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-s:dateTo" property="rdfs:label"></em>
@@ -558,8 +539,8 @@ v-df:DistributionRouteStartFormTemplate
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:responsible" property="rdfs:label"></em>
-      <div rel="v-s:hasAppointment" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext"></veda-control>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-s:dateTo" property="rdfs:label"></em>
@@ -608,9 +589,9 @@ v-df:CoordinationRouteStartFormTemplate
   <div about="@" rel="v-wf:processedDocument" data-template="v-ui:ClassNameLabelLinkTemplate" class="view edit search"></div>
   <div class="row">
     <div class="col-md-6">
-      <em about="v-s:activityCoordinator" property="rdfs:label"></em>
-      <div rel="v-s:activityCoordinator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
-      <veda-control rel="v-s:activityCoordinator" data-type="link" class="-view edit search fulltext"></veda-control>
+      <em about="v-s:responsible" property="rdfs:label"></em>
+      <div rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:responsible" data-type="link" class="-view edit search fulltext"></veda-control>
     </div>
     <div class="col-md-4">
       <em about="v-wf:dateGiven" property="rdfs:label"></em>
@@ -680,7 +661,7 @@ v-df:rul_SignTransform1
 .
 v-df:rul_SignTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -779,7 +760,7 @@ v-df:rul_QuestionTransform1
 .
 v-df:rul_QuestionTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -869,7 +850,7 @@ v-df:rul_InstructionTransform1
 .
 v-df:rul_InstructionTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -959,7 +940,7 @@ v-df:rul_TaskTransform1
 .
 v-df:rul_TaskTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -989,7 +970,7 @@ v-df:rul_TaskTransform6_0
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionConfirm')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionExamined')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
 .
 v-df:rul_TaskTransform6_3
@@ -1039,7 +1020,7 @@ v-df:rul_DistributionTransform1
 .
 v-df:rul_DistributionTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:hasAppointment')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -1069,7 +1050,7 @@ v-df:rul_DistributionTransform6_0
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
-  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionConfirm')";
+  v-wf:aggregate  "putUri ('v-wf:variableValue', 'v-wf:DecisionExamined')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'possible_decision')";
 .
 v-df:rul_DistributionTransform6_3
@@ -1120,7 +1101,7 @@ v-df:rul_CoordinationTransform1
 .
 v-df:rul_CoordinationTransform2
   rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('v-s:activityCoordinator')" ;
+  v-wf:segregateElement "contentName('v-s:responsible')" ;
   v-wf:aggregate  "putUri ('rdf:type', 'v-wf:Variable')";
   v-wf:aggregate  "putValue ('v-wf:variableValue')";
   v-wf:aggregate  "putString ('v-wf:variableName', 'actor')";
@@ -1447,7 +1428,7 @@ v-wf:DecisionExamined
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Decision ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Ознакомлен"@ru ;
+  rdfs:label "Принято к сведению"@ru ;
   rdfs:label "Examined"@en ;
   v-ui:hasTemplate v-wf:DecisionTemplate1 ;
 .
@@ -1627,7 +1608,7 @@ v-wf:DecisionRedirectTemplateSpec2_comment
   rdfs:label "Спецификация к свойству комментарий для некоторых подклассов класса -Решение-"@ru ;
   rdfs:label "Spec for template for some -Decision- subclasses"@en ;
   v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:minCardinality "1"^^xsd:integer ;
+  v-ui:minCardinality "0"^^xsd:integer ;
   v-ui:forProperty rdfs:comment ;
   v-ui:forClass v-wf:DecisionAchieved ;
 .
@@ -1725,7 +1706,7 @@ v-wf:rule1sign
 .
 v-wf:rule2sign
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1756,7 +1737,7 @@ v-wf:rule1question
 .
 v-wf:rule2question
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1786,7 +1767,7 @@ v-wf:rule1instruction
 .
 v-wf:rule2instruction
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1816,7 +1797,7 @@ v-wf:rule1task
 .
 v-wf:rule2task
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1846,7 +1827,7 @@ v-wf:rule1distribution
 .
 v-wf:rule2distribution
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1875,7 +1856,7 @@ v-wf:rule1coordination
 .
 v-wf:rule2coordination
   rdf:type v-wf:Rule ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_coordination')" ;
+  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:WrapUniversalNet')" ;
   v-wf:segregateElement "contentName('@')" ;
   rdfs:isDefinedBy v-wf: ;
   v-wf:grouping "1";
@@ -1934,4 +1915,5 @@ v-wf:ProcessStopEvent
   }
 """ ;
 .
+
 

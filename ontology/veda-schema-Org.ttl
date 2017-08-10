@@ -44,21 +44,38 @@ v-s:OrganizationUnitModel
   rdfs:label "Organization unit model"@en ;
   rdfs:label "Модель организационной единицы"@ru ;
   v-s:script """
-/**
- * @method
- * @param unit {String/veda.IndividualModel} Super unit uri or individual.
- * @return {boolean}.
- */
-this.isSubUnitOf = function (unit) {
-  var self = this;
-  if (typeof unit.valueOf() === "string") {
-    unit = new veda.IndividualModel( unit.valueOf() );
-  }
-  if (!this.hasValue("v-s:parentUnit")) return false;
-  return this["v-s:parentUnit"].reduce(function (state, item) {
-    return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
-  }, false);
-};
+  /**
+   * @method
+   * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+   * @return {boolean}.
+   */
+  this.isSubUnitOf = function (unit) {
+    var self = this;
+    if (typeof unit.valueOf() === "string") {
+      unit = new veda.IndividualModel( unit.valueOf() );
+    }
+    if (!this.hasValue("v-s:parentUnit")) return false;
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
+    }, false);
+  };
+
+  /**
+   * @method
+   * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+   * @return {veda.IndividualModel | false }.
+   */
+  this.getChief = function () {
+    var self = this;
+    if ( this.hasValue("v-s:hasChief") ) {
+      return this["v-s:hasChief"][0];
+    }
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || self.getChief.apply(item);
+    }, false);
+  };
+
+  // sourceURL=v-s:OrganizationUnitModel
   """ ;
 .
 v-s:childUnit
@@ -256,6 +273,17 @@ v-s:birthday
   rdfs:label "Birthday"@en ;
   rdfs:label "Дата рождения"@ru ;
   rdfs:range xsd:dateTime ;
+.
+v-s:tabNumber
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "Personnel number"@en ;
+  rdfs:comment "Табельный номер"@ru ;
+  rdfs:domain v-s:Person ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Personnel number"@en ;
+  rdfs:label "Табельный номер"@ru ;
+  rdfs:range xsd:integer ;
 .
 v-s:firstName
   rdf:type owl:DatatypeProperty ;

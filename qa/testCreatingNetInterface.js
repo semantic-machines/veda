@@ -1,21 +1,12 @@
-var webdriver = require('selenium-webdriver'),
-    basic = require('./basic.js');
-/**
- * Удаление текущего элемента
- * @param driver
- * @param phase - текущая фаза теста
-*/
-function deleteElement(driver, phase) {
-    basic.execute(driver, 'click', '.delete-state', "****** PHASE#" + phase + " : ERROR = Cannot click on 'delete' button");
-    driver.switchTo().alert().accept();
-}
+var basic = require('./basic.js'),
+    webdriver = require('selenium-webdriver');
 
 /**
  * Проверка нахождения элемента
  * @param driver
  * @param element - элемент
  * @param phase - текущая фаза теста
-*/
+ */
 
 function check(driver, element, phase) {
     driver.findElements({css:''+element}).then(function(elements_arr){
@@ -24,6 +15,16 @@ function check(driver, element, phase) {
             process.exit(1);
         }
     }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot find any "+ element);});
+}
+
+/**
+ * Удаление текущего элемента
+ * @param driver
+ * @param phase - текущая фаза теста
+*/
+function deleteElement(driver, phase) {
+    basic.execute(driver, 'click', '.delete-state', "****** PHASE#" + phase + " : ERROR = Cannot click on 'delete' button");
+    driver.switchTo().alert().accept();
 }
 
 /**

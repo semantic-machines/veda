@@ -75,6 +75,9 @@ const string   module_info_path    = "./data/module-info";
 const string   trails_path         = "./data/trails";
 const string   logs_path           = "./logs";
 
+const string   main_queue_name 	     = "individuals-flow";
+const string   ft_indexer_queue_name = "fulltext_indexer0";
+
 const string[] paths_list          =
 [
     tmp_path, logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, individuals_db_path, uris_db_path, tickets_db_path,

@@ -141,6 +141,7 @@ class XapianReader : SearchReader
             return sr;
 
         //log.trace ("@key2slot=%s", key2slot);
+        //log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
 
         XapianQuery query;
         TTA         tta = parse_expr(str_query);
@@ -308,6 +309,8 @@ class XapianReader : SearchReader
         return sr;
     }
 
+    int max_wildcard_expansion = 20_000;
+
 ////////////////////////////////////////////////////////
     long committed_op_id;
 
@@ -336,6 +339,10 @@ class XapianReader : SearchReader
             dbqp.qp = new_QueryParser(&err);
             if (err != 0)
                 log.trace("xapian_reader:new_QueryParser:err=%s", get_xapian_err_msg(err));
+
+            dbqp.qp.set_max_wildcard_expansion(max_wildcard_expansion, &err);
+            if (err != 0)
+                log.trace("xapian_reader:set_max_wildcard_expansion:err=%s", get_xapian_err_msg(err));
 
             xapian_stemmer = new_Stem(cast(char *)xapian_lang, cast(uint)xapian_lang.length, &err);
             dbqp.qp.set_stemmer(xapian_stemmer, &err);

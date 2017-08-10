@@ -362,19 +362,9 @@ v-fs:FulltextRequestModel
   //if (q) { self.search() };
 
   function mkQuery () {
-    var type = self.hasValue("v-fs:typeToSearch") ?
-        "(" + self["v-fs:typeToSearch"].map(function (i) {
-          return "'rdf:type'=='" + i.id + "'"
-        }).join("||") + ")"
-      :
-        "";
-    var q = self.hasValue("v-fs:fulltextQuery") ? self["v-fs:fulltextQuery"][0] : "";
-    var re1 = new RegExp('[-*]','g');
-    var re2 = new RegExp('\\s+','g');
-    if (q && q.indexOf("==") < 0) {
-      q = "(" + q.replace(re1, " ").replace(re2, " ").trim().split(" ").map(function (t) { return "'*'=='" + t + "*'";}).join("&&") + ")";
-    }
-    return [type, q].filter(function (item) { return !!item }).join("&&");
+    var type = self.hasValue("v-fs:typeToSearch") ? "('rdf:type'=='" + self["v-fs:typeToSearch"][0].id + "')" : "";
+    var q = self.hasValue("v-fs:fulltextQuery") ? "('*'=='" + self["v-fs:fulltextQuery"][0] + "')" : "";
+    return [type, q].filter(function (item) { return !!item }).join(" && ");
   }
   //# sourceURL=v-fs:FulltextRequestModel
   """
@@ -530,22 +520,21 @@ v-fs:FulltextRequestTemplate
   }
 
   function genericTemplate(individual) {
-    var head = "<strong><a href='#/@' property='rdfs:label'></a></strong>";
+    var head = "<strong><a href='#/@' about='@' data-template='v-ui:ClassNameLabelTemplate'></a></strong>";
     var allprops = Object.getOwnPropertyNames(individual.properties);
-    var props = "<div>";
+    var props = "<br>";
     for (var i = 0, uri; (uri = allprops && allprops[i]); i++) {
-      if(uri === "@") { continue }
+      if (uri === "@") { continue }
       if ( individual.hasValue(uri) ) {
-        props += "<span about='" + uri + "' property='rdfs:label'></span>: "
-        if (individual[uri][0] instanceof veda.IndividualModel) {
-          props += "<span rel='" + uri + "' data-template='v-ui:LabelEmptyLinkTemplate'></span>; "
+        props += "<i about='" + uri + "' property='rdfs:label'></i>: "
+        if (individual.get(uri)[0] instanceof veda.IndividualModel) {
+          props += "<span about='@' rel='" + uri + "' data-template='v-ui:LabelEmptyLinkTemplate'></span>; "
         } else {
-          props += "<span property='" + uri + "'></span>; "
+          props += "<span about='@' property='" + uri + "'></span>; "
         }
       }
     }
-    props += "</div>";
-    return "<span>" + head + props + "</span>";
+    return "<p>" + head + props + "</p>";
   }
 
   // Present results
@@ -705,6 +694,7 @@ v-fs:AttributiveRequestTemplate
       <veda-control rel="v-fs:typeToSearch" data-type="link" class="fulltext dropdown" data-template="{individual['rdfs:label'].join(' ') + ' (' + individual.id + ')'}"></veda-control>
       <br>
       <div id="form-holder"></div>
+      <br>
       <button type="button" id="find" class="btn btn-primary" about="v-fs:Find" property="rdfs:label"></button>
       <hr>
       <h4 about="v-fs:SetResultsTable" property="rdfs:label"></h4>
@@ -1191,7 +1181,23 @@ v-fs:AttributiveSearchTemplate
     $("#params", template).remove();
   }
 
+
   // Enable swipe for result table
+  $("body").keydown(enableSwipe).keyup(disableSwipe);
+  template.one("remove", function () {
+    $("body").off("keydown", enableSwipe).off("keyup", disableSwipe);
+  });
+  function disableSwipe (e) {
+    if (e.which === 17) {
+      $("#search-result", template).addClass("noSwipe").removeClass("swipe");
+    }
+  }
+  function enableSwipe (e) {
+    if (e.ctrlKey) {
+      $("#search-result", template).addClass("swipe").removeClass("noSwipe");
+    }
+  }
+
   var prevDistance = 0, delta = 0;
   $("#search-result", template).swipe({
     swipeStatus: function (event, phase, direction, distance, duration) {
@@ -1226,11 +1232,17 @@ v-fs:AttributiveSearchTemplate
   //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
 <div class="container sheet">
+  <style>
+    .swipe {
+      cursor: move;
+    }
+  </style>
   <div id="params">
     <br>
     <div class="ribbon-wrapper top-left">
       <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
     </div>
+    <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
     <div id="search-form"></div>
     <br>
     <br>
@@ -1253,7 +1265,7 @@ v-fs:AttributiveSearchTemplate
         <span class="total-authorized badge">0</span>&nbsp;&nbsp;
       </small>
     </h3>
-    <div id="search-result" class="search-result table-responsive"></div>
+    <div id="search-result" class="search-result table-responsive noSwipe"></div>
     <div class="stats-bottom text-right margin-md">
       <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
       <span class="total-found badge">0</span>&nbsp;&nbsp;
@@ -1396,7 +1408,8 @@ v-fs:AttributiveSearchTemplate
 
   // All results button handler
   allResults.click(function () {
-    if ( confirm("Вы уверены? / Are you sure?") ) {
+    var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    if ( self.estimated - self.cursor < 100 || confirm(warn) ) {
       getAll();
     }
   });
@@ -1416,6 +1429,12 @@ v-fs:AttributiveSearchTemplate
       moreResults.click();
     }
   }*/
+
+  // Double click on result table row routes to search result
+  $("#search-result", template).on("dblclick", "tbody tr", function () {
+    var uri = $(this).attr("resource");
+    riot.route("#/" + uri);
+  });
 
   // Manage sort
   var sortBy = "", dir = "";
@@ -1693,6 +1712,77 @@ v-fs:TestResultTemplate
       <td property="v-s:lastName"></td>
       <td property="v-s:firstName"></td>
       <td property="v-s:middleName"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-fs:FulltextSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Полнотекстовый поиск"@ru ;
+  rdfs:label "Fulltext search"@en ;
+  v-fs:searchBlank v-fs:FulltextBlank ;
+  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
+  v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
+.
+
+v-fs:FulltextBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+#  v-fc:targetType v-s:UserThing ;
+.
+
+v-fs:FulltextBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <div class="col-md-12">
+    <h3 about="v-fs:EnterQuery" property="rdfs:label"></h3>
+    <veda-control property="*" data-type="string"></veda-control>
+  </div>
+</div>
+<script>
+  container.siblings(".search-button.pull-right").remove();
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-fs:FulltextBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-fs:FulltextResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска персоны"@ru ;
+  rdfs:label "Person search result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="5%" class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="rdfs:label"></td>
+      <td about="@" property="v-s:created"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
     </tr>
   </tbody>
 </table>

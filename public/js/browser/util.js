@@ -25,6 +25,7 @@ veda.Module(function Util(veda) { "use strict";
       query({
         ticket: veda.ticket,
         query: q,
+        sort: "'v-s:created' desc",
         from: from,
         top: delta,
         limit: limit,
@@ -313,6 +314,9 @@ veda.Module(function Util(veda) { "use strict";
   veda.Util.queryFromIndividual = function (individual) {
     var query;
     var flat = flattenIndividual(individual.properties);
+    if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
+      return individual.get("*")[0];
+    }
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
         if (property_uri === "@" || property_uri === "v-s:isDraft") { return }

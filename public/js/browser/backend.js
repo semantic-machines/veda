@@ -62,13 +62,14 @@ veda.Module(function Backend(veda) { "use strict";
     };
     this.code = result.status;
     this.name = errorCodes[this.code];
-    //this.message = errorCodes[this.code];
+    this.status = result.status;
+    this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
     if (result.status === 0) {
       serverWatch();
     }
     if (result.status === 470 || result.status === 471) {
-      veda.logout();
+      veda.trigger("login:failed");
     }
   }
   BackendError.prototype = Object.create(Error.prototype);
