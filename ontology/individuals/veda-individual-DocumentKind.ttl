@@ -139,6 +139,7 @@ d:5fd9004f075f48b0aacb17379f27e46f
   v-s:shortLabel "Ведомость"^^xsd:string;
   rdfs:label "Ведомость"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:c398f7d2fa5243b8ad7e92aa21558351
   a v-s:DocumentKind;
@@ -175,6 +176,7 @@ d:6634a914828748b5b5be6d569c77ccfa
   v-s:shortLabel "Декларация"^^xsd:string;
   rdfs:label "Декларация"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:4fa2c9f9958b4eda83ef162e4856d98d
   a v-s:DocumentKind;
@@ -1211,6 +1213,7 @@ d:3d210f60b075431792f113af3c974667
   v-s:shortLabel "КС-11. Акт приемки законченного ОС"^^xsd:string;
   rdfs:label "Акт приемки законченного строительством объекта. Форма КС-11"^^xsd:string;
   v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:837027d7e8b04305a5b632224f0d2716
   a v-s:DocumentKind;
@@ -1509,6 +1512,7 @@ d:2b7f2af51d1340d8ad48a29898102b72
   v-s:shortLabel "Претензия"^^xsd:string;
   rdfs:label "Претензионное письмо"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:c25b475f506d47eea1847ea8861ac747
   a v-s:DocumentKind;
@@ -1516,4 +1520,202 @@ d:c25b475f506d47eea1847ea8861ac747
   v-s:shortLabel "Смета"^^xsd:string;
   rdfs:label "Сметная документация"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
+
+
+#-----------------------------------------------------
+d:s4xf96dcdjfmmd87tcc86oed 
+  a v-s:DocumentKind;
+  v-s:shortLabel "Формы документов по лесообеспечению"^^xsd:string;
+  v-s:registrationNumber "0"^^xsd:string;
+  rdfs:label "Формы документов по лесообеспечению"^^xsd:string;
+.
+d:yncyiggv8bmvzbb4qd6407ja
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Разрешение на продление срока заготовки и вывозки"^^xsd:string;
+  rdfs:label "Разрешение на продление срока заготовки и вывозки"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:z5to2ok3unc5ocj3iggh1ru3 
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Разрешение на внутрихозяйственные работы"^^xsd:string;
+  rdfs:label "Разрешение на внутрихозяйственные работы"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:a0hkg9lqlx8g1m7asohd73l70 
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акт приемки технической рекультивации"^^xsd:string;
+  rdfs:label "Акт приемки технической рекультивации"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:oqpmvtjh5xj83udyvjchfurz 
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Тендер (Дорожное строительство)"^^xsd:string;
+  rdfs:label "Тендер (Дорожное строительство)"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:mli0fri1kshbavcmpanr5js9
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "МДО (Дорожное строительство)"^^xsd:string;
+  rdfs:label "МДО (Дорожное строительство)"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:ptwxend7incb7m9stsogx9vq
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Абрис (Дорожное строительство)"^^xsd:string;
+  rdfs:label "Абрис (Дорожное строительство)"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:su7uj8iq8xman67yl6uaqtzk
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Техническое задание"^^xsd:string;
+  rdfs:label "Техническое задание"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:ozhgqf9od3fl0egslfm1hlgz
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Трассировка (карта-схема)"^^xsd:string;
+  rdfs:label "Трассировка (карта-схема)"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:wrwpiem7sm5778hr8pqx247i
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Абрис (Лесовосстановление)"^^xsd:string;
+  rdfs:label "Абрис (Лесовосстановление)"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:gf8yvrldbvyexh7mg8j0gh3x
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Технологическая карта (Лесовосстановление)"^^xsd:string;
+  rdfs:label "Технологическая карта (Лесовосстановление)"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:a9vusrjooxqimm14mo7x8fkfl
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Проект рубок ухода"^^xsd:string;
+  rdfs:label "Проект рубок ухода"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:grdge6045ny1tcxkh3famxb6
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акты по осенней инвентаризации"^^xsd:string;
+  rdfs:label "Акты по осенней инвентаризации"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:s4koueqhejet84ko0vt9bznz
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акт проверки делянки"^^xsd:string;
+  rdfs:label "Акт проверки делянки"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:qyb6yjyd4210fo31lrjdzz3w
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Проект лесовосстановления"^^xsd:string;
+  rdfs:label "Проект лесовосстановления"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:hnqkgonuwxfzp8tyvegcwjfu
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акт аттестации"^^xsd:string;
+  rdfs:label "Акт аттестации"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:k9t0quhmkroo4rel1pkg1p5q
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Решения судов"^^xsd:string;
+  rdfs:label "Решения судов"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:a8y6hdtg8i3omvc3g9725cx6u
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Бланк выделения биотопа"^^xsd:string;
+  rdfs:label "Бланк выделения биотопа"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:kuzsrore0mazdi2s4lvkj6mo
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Ситуационный план"^^xsd:string;
+  rdfs:label "Ситуационный план"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:a03zsidhqw52akuy4bhgu5gnm
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акт освидетельствования"^^xsd:string;
+  rdfs:label "Акт освидетельствования"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:a5le8x80amh7j2rbu92uny4mj
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Предписания лесничеств"^^xsd:string;
+  rdfs:label "Предписания лесничеств"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:emwfl1y9h0nfzue33himkz63
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акт приемо-передачи делянки"^^xsd:string;
+  rdfs:label "Акт приемо-передачи делянки"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:h1zlqfxchlif8fc1992gds38
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Абрис-схема лесонарушения"^^xsd:string;
+  rdfs:label "Абрис-схема лесонарушения"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:ryd85zisn2i8goq8sadltc9r
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Акт о лесонарушении"^^xsd:string;
+  rdfs:label "Акт о лесонарушении"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:vg6dpox8anfkpi864plasluf
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Извещение о проверке государственными органами"^^xsd:string;
+  rdfs:label "Извещение о проверке государственными органами"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:eefi3pal7ir9jitea0wqak3b
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Ведомости перечета"^^xsd:string;
+  rdfs:label "Ведомости перечета"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:l2nzax61buzifev1a8n28iux
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Ведомость МДОЛ"^^xsd:string;
+  rdfs:label "Ведомость МДОЛ"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:a5rrihl8fkpbjuxqo99neiq25
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Абрис"^^xsd:string;
+  rdfs:label "Абрис"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
