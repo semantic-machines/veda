@@ -1,11 +1,13 @@
-var webdriver = require('selenium-webdriver'),
-    basic = require('./basic.js');
+var basic = require('./basic.js'),
+    webdriver = require('selenium-webdriver');
+
 
 /**
  * Проверка текущего языка
  * @param driver
  * @param language - текущий язык
  * @param value - значение, которое должно быть в 'user-info' для языка language
+ * @param phase - текущая фаза теста
  */
 function check(driver, language, value, phase) {
     driver.wait
@@ -14,15 +16,18 @@ function check(driver, language, value, phase) {
         basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Language is incorrect, expected: " + language + "get: " + value);});
 }
+
 /**
  * Нажатие на кнопку языка
  * @param driver
  * @param button - кнопка
+ * @param phase - текущая фаза теста
  */
 function click(driver, button, phase) {
     basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on " + button + " button");
     driver.sleep(basic.FAST_OPERATION);
 }
+
 /**
  * 0.Open Page -> Login(as karpovrt);
  * 1.Click 'Eng' button -> Check language: english+russian;

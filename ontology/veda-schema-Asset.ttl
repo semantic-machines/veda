@@ -24,13 +24,7 @@ v-s:Asset
   rdfs:label "Основное средство"@ru ;
   v-ui:hasTemplate mnd-s:AssetTemplate ;
 .
-v-s:assetNumber
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Fixed asset ID"@en ;
-  rdfs:label "Номер ОС"@ru ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Asset ;
-.
+# v-s:registrationNumber
 
 
 #----------------------------------------------------

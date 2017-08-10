@@ -6,7 +6,7 @@ import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetype
 import properd, TrailDB;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
-import veda.frontend.cbor8vjson;
+import veda.frontend.cbor8vjson, veda.util.queue;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -238,9 +238,9 @@ class VedaStorageRest : VedaStorageRest_API
                     //log.trace("@v originFileName=%s", originFileName);
                     //log.trace("@v getMimeTypeForFile(originFileName)=%s", getMimeTypeForFile(originFileName));
 
-				    string encoded_originFileName = encode(originFileName);
-				    
-				    encoded_originFileName = encoded_originFileName.replace (",", " ");
+                    string encoded_originFileName = encode(originFileName);
+
+                    encoded_originFileName = encoded_originFileName.replace(",", " ");
 
                     string ss = "attachment; filename*=UTF-8''" ~ encoded_originFileName;
 
@@ -774,6 +774,10 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
+    Consumer     cs0;
+    Queue        main_queue;
+    const string queue_state_prefix = "srv:queue-state-";
+
     Json get_individual(string _ticket, string uri, bool reopen = false)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
@@ -792,6 +796,52 @@ class VedaStorageRest : VedaStorageRest_API
 
             try
             {
+                long ppos = uri.indexOf(queue_state_prefix);
+                if (ppos == 0)
+                {
+                    string queue_name = uri[ queue_state_prefix.length..$ ];
+                    log.trace("%s queue_name=%s", queue_state_prefix, queue_name);
+                    //if (main_queue is null)
+                    {
+                        main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
+                        if (main_queue.open())
+                        {
+                            cs0 = new Consumer(main_queue, queue_db_path, queue_name, Mode.R, log);
+                            if (!cs0.open())
+                            {
+                                rc = ResultCode.Invalid_Identifier;
+                                return res;
+                            }
+                        }
+                    }
+
+                    // TODO: ? возможно для скорости следует переделать get_info на rawRead
+                    main_queue.get_info();
+                    cs0.get_info();
+
+                    Individual indv_res;
+                    indv_res.uri = uri;
+
+                    indv_res.addResource(rdf__type, Resource(DataType.Uri, "v-s:AppInfo"));
+
+                    indv_res.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                    indv_res.addResource("srv:queue", Resource(DataType.Uri, "srv:" ~ queue_name));
+                    indv_res.addResource("srv:total_count", Resource(DataType.Integer, main_queue.count_pushed));
+                    indv_res.addResource("srv:current_count", Resource(DataType.Integer, cs0.count_popped));
+
+                    res = individual_to_json(indv_res);
+
+                    rc = ResultCode.OK;
+
+                    cs0.close();
+                    cs0 = null;
+
+                    main_queue.close();
+                    main_queue = null;
+
+                    return res;
+                }
+
                 Individual[ string ] onto_individuals =
                     context.get_onto_as_map_individuals();
 
@@ -1196,9 +1246,9 @@ private Ticket *get_ticket(Context context, string ticket_id)
             }
             else
             {
-		        log.trace("user is external (%s)", ticket.user_uri);
+                log.trace("user is external (%s)", ticket.user_uri);
                 external_users_ticket_id[ ticket.user_uri ] = true;
-            }    
+            }
         }
     }
 

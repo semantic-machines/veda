@@ -6,46 +6,53 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
   veda.on("individual:loaded", function (individual, container, template, mode) {
 
-    //console.log(individual.id, "presenter count:", ++c);
+    try {
 
-    if (typeof container === "string") {
-      container = $(container).empty();
-    }
-    mode = mode || "view";
+      //console.log(individual.id, "presenter count:", ++c);
 
-    if (container.prop("id") === "main") { container.hide(); }
-
-    var ontology = new veda.OntologyModel();
-
-    var specs = $.extend.apply (
-      {}, [].concat(
-        individual["rdf:type"].map( function (_class) {
-          return ontology.getClassSpecifications(_class.id);
-        })
-      )
-    );
-
-    if (template) {
-      if (template instanceof veda.IndividualModel) {
-        template = $( template["v-ui:template"][0].toString() );
-      } else if (typeof template === "string") {
-        template = new veda.IndividualModel(template);
-        template = $( template["v-ui:template"][0].toString() );
+      if (typeof container === "string") {
+        container = $(container).empty();
       }
-      renderTemplate(individual, container, template, mode, specs);
-    } else {
-      individual["rdf:type"].map(function (type) {
-        if ( type.hasValue("v-ui:hasTemplate") ) {
-          template = type["v-ui:hasTemplate"][0];
-        } else {
-          template = new veda.IndividualModel("v-ui:generic");
+      mode = mode || "view";
+
+      if (container.prop("id") === "main") { container.hide(); }
+
+      var ontology = new veda.OntologyModel();
+
+      var specs = $.extend.apply (
+        {}, [].concat(
+          individual["rdf:type"].map( function (_class) {
+            return ontology.getClassSpecifications(_class.id);
+          })
+        )
+      );
+
+      if (template) {
+        if (template instanceof veda.IndividualModel) {
+          template = $( template["v-ui:template"][0].toString() );
+        } else if (typeof template === "string") {
+          template = new veda.IndividualModel(template);
+          template = $( template["v-ui:template"][0].toString() );
         }
-        template = $( template["v-ui:template"][0].toString() );
         renderTemplate(individual, container, template, mode, specs);
-      });
+      } else {
+        individual["rdf:type"].map(function (type) {
+          if ( type.hasValue("v-ui:hasTemplate") ) {
+            template = type["v-ui:hasTemplate"][0];
+          } else {
+            template = new veda.IndividualModel("v-ui:generic");
+          }
+          template = $( template["v-ui:template"][0].toString() );
+          renderTemplate(individual, container, template, mode, specs);
+        });
+      }
+
+      if (container.prop("id") === "main") { container.show("fade", 250); }
+
+    } catch (err) {
+      console.log(err);
     }
 
-    if (container.prop("id") === "main") { container.show("fade", 250); }
   });
 
   function renderTemplate(individual, container, template, mode, specs) {
@@ -496,11 +503,25 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       template.one("remove", function () {
         about.off(property_uri, propertyModifiedHandler);
       });
+
+      // Watch server-side updates
       var updateService = new veda.UpdateService();
       updateService.subscribe(about.id);
       template.one("remove", function () {
         updateService.unsubscribe(about.id);
       });
+
+      // Watch language change
+      veda.on("language:changed", localize);
+      template.one("remove", function () {
+        veda.off("language:changed", localize);
+      });
+      function localize() {
+        if ( about.hasValue(property_uri) && about.properties[property_uri][0].type === "String" ) {
+          about.trigger("propertyModified", property_uri, about.get(property_uri));
+          about.trigger(property_uri, about.get(property_uri));
+        }
+      }
     });
 
     // Validation with support of embedded templates (arbitrary depth)

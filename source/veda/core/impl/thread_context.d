@@ -777,25 +777,23 @@ class PThreadContext : Context
 
         try
         {
-            if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
+            string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
+            if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
-                string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
-
-                if (individual_as_binobj !is null && individual_as_binobj.length > 1)
-                {
-                    res = individual_as_binobj;
-                    rs  = ResultCode.OK;
-                }
-                else
-                {
-                    //writeln ("ERR!: empty binobj: ", uri);
-                }
+                res = individual_as_binobj;
+                rs  = ResultCode.OK;
             }
             else
             {
+                return res;
+            }
+
+            if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) != Access.can_read)
+            {
                 if (trace_msg[ T_API_190 ] == 1)
                     log.trace("get_individual as binobj, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
-                rs = ResultCode.Not_Authorized;
+                rs  = ResultCode.Not_Authorized;
+                res = null;
             }
 
             return res;

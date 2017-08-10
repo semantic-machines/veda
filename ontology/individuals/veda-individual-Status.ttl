@@ -219,3 +219,8 @@ v-s:StatusClosing
   rdfs:label "Closing"@en ;
   rdfs:label "Закрытие"@ru ;
 .
+v-s:StatusCanceled
+  rdf:type v-s:Status ;
+  rdfs:label "Canceled"@en ;
+  rdfs:label "Отменено"@ru ;
+.

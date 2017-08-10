@@ -1,15 +1,15 @@
-var webdriver = require('selenium-webdriver'),
+var assert = require('assert'),
     basic = require('./basic.js'),
     person = require('./person.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
-    assert = require('assert');
+    webdriver = require('selenium-webdriver');
 
 /**
  * Проверка количества всех элементов, созданыых элементов, обновленных элементов в журнале
- *@param driver
- *@param totalCount - необходимое количество всех элементов в журнале
- *@param createCount - необходимое количество созданных элементов в журнале
- *@param updateCount - необходимое количество обновленных элементов в журнале
+ * @param driver
+ * @param totalCount - необходимое количество всех элементов в журнале
+ * @param createCount - необходимое количество созданных элементов в журнале
+ * @param updateCount - необходимое количество обновленных элементов в журнале
 */
 
 function assertCounts(driver, totalCount, createCount, updateCount) {
@@ -24,6 +24,7 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
     driver.executeScript("document.querySelector('#journal').scrollIntoView(true);");
     driver.sleep(basic.SLOW_OPERATION).then(function() {
         basic.execute(driver, 'click', '#journal', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `View Journal` button");
+        driver.executeScript("document.elementFromPoint(800, 130).click();");
     }).then(function() {
         driver.sleep(basic.FAST_OPERATION);
         driver.navigate().refresh();
@@ -38,28 +39,28 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
             assert.equal(updateCount, result.length);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 > TEST JOURNAL : ERROR = Invalid `update` journal elements count");});
         //    Return to document
-        basic.execute(driver, 'click', '[rel="v-s:onDocument"] [typeof="v-s:Action"] a', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click to return on main document");
+        basic.execute(driver, 'click', '#on-document a[typeof="v-s:Action"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click to return on main document");
   });
 }
 
 /**
  * Обновление текущего значения shortLabel
- *@param driver 
+ *@param driver
  *@param key - значение, на которое необходимо поменять текущее shortLabel;
 */
 
 function update(driver, key) {
-  basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
-  driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
-  basic.execute(driver, 'click' , '#edit', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Edit` button");
-  if (key != '') {
-      driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
-      basic.execute(driver, 'clear', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]', "Cannot find 'shortLabel'");
-      basic.execute(driver, 'click', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]',
-          "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot fill 'v-s:shortLabel' field");
-  }
-  driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
-  basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Save` button");
+    basic.isEnabled(driver, '#edit', basic.FAST_OPERATION);
+    driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
+    basic.execute(driver, 'click' , '#edit', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Edit` button");
+    if (key != '') {
+        driver.executeScript("document.querySelector('strong[about=\"v-s:shortLabel\"]').scrollIntoView(true);");
+        basic.execute(driver, 'clear', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]', "Cannot find 'shortLabel'");
+        basic.execute(driver, 'click', 'veda-control[property="v-s:shortLabel"] div[class="input-group"] textarea[class="form-control"]',
+            "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot fill 'v-s:shortLabel' field");
+    }
+    driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
+    basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 > TEST JOURNAL : ERROR = Cannot click on `Save` button");
 }
 
 /**

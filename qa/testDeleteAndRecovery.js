@@ -1,11 +1,13 @@
-var webdriver = require('selenium-webdriver'),
-    timeStamp = ''+Math.round(+new Date()/1000),
-    basic = require('./basic.js');
+var basic = require('./basic.js'),
+    timeStamp = ''+Math.round(+new Date()/1000);
+
+
 
 /**
  * Проверка элементов в результате поиска
  * @param driver
  * @param count - необходимое количество элементов
+ * @param phase - текущая фаза теста
  */
 
 function check(driver, count, phase) {
@@ -31,6 +33,7 @@ function check(driver, count, phase) {
  * Кликаем по кнопке
  * @param driver
  * @param button - кнопка, по которой необходимо кликнуть
+ * @param phase - текущая фаза теста
  */
 
 function clickButton(driver, button, phase) {

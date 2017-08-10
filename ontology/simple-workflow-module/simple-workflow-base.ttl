@@ -2195,7 +2195,7 @@ if (doc) {
         function calculationHeadUnit(occupation){
           if(occupation.hasValue("v-s:hasChief") ) {
             if (occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
-              return occupation["v-s:hasChief"][0];
+              return occupation["v-s:hasChief"];
             } else {return [];}
           } else  if ( !occupation.hasValue("v-s:parentUnit") ){
             return [];
@@ -2225,7 +2225,7 @@ if (doc) {
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:6c0bbecd077d4dff8b9481da73ea5350")//(Общественные организации отраслевые (ЦБП, Леспром))
         || doc.hasValue("mnd-s:hasBusinessTripPurpose", "d:236170912d8f40a08178baab6449ff05")// (Организации конкуренты)
       ) {
-        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Специалист УЦ
+        routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:791faba3-440c-49bd-9d20-4612684f43fb")];//Юрисконсульт по конкурентному праву
         routes['coordination2'][simple+'visible'] = [true];
         routes['coordination2'][simple+'editable'] = [true];
       }
@@ -2294,15 +2294,22 @@ if (doc) {
       routes['instruction'][simple+'deadlineDays'] =[data];
 
     } else {
-
       routes['sign'][simple+'visible'] = [true];
       routes['sign'][simple+'editable'] = [true];
-      routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
-
       routes['review'][simple+'participant'] = [new veda.IndividualModel('d:c273dde3-5a8c-4f83-b9ed-b24f86d1b21d')]; // Бухгалтер КФО
       routes['review'][simple+'participant'] = routes['review'][simple+'participant'].concat(new veda.IndividualModel('d:f90f75d3-0718-45a6-a696-74a8aa24d35c')); // Специалист ОК по командировкам
       routes['review'][simple+'visible'] = [true];
       routes['review'][simple+'editable'] = [false];
+
+
+      var lastIndex = doc["mnd-s:hasChangeOfTerms"].length - 1;
+      if ( doc["mnd-s:hasChangeOfTerms"][lastIndex].hasValue("v-s:hasStatus", "v-s:StatusCanceled") ) {
+        routes['sign'][simple+'comment'] = [new String('Отмена командировки')];
+        routes['review'][simple+'comment'] = [new String('Отмена командировки')];
+      } else {
+        routes['sign'][simple+'comment'] = [new String('Подтвердить изменение сроков')];
+        routes['review'][simple+'comment'] = [new String('Изменение сроков')];
+      }
     }
   }
 
@@ -2407,6 +2414,24 @@ if (doc) {
     routes['informing'][simple+'editable'] = [true];
     routes['informing'][simple+'comment'] = [new String('Уведомление о начале процесса согласования документа')];
 
+  var informingDecree ;
+    if (doc.hasValue("mnd-s:hasDecreeKind", "d:2283f9f186794145bd6c8e3229f7a009") //(Распоряжение по основной деятельности)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:b7a958be3d14437f98ab414c8ce88977") //(Приказ по основной деятельности)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:391362e32a2b48199ef4bebe9b7a611a") //(Приказ по ГО)
+       || doc.hasValue("mnd-s:hasDecreeKind", "d:9664874293574b79af624f01e3c091cd") //(Распоряжение по ГО)
+    ){
+    informingDecree = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+    routes['informing'][simple+'participant']=routes['informing'][simple+'participant'].concat(informingDecree) ;
+
+  }
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'visible'] = [true];
+    routes['coordination4'][simple+'editable'] = [true];
 
     routes['sign'][simple+'participant'] = doc["v-s:signedBy"] ;
     routes['sign'][simple+'visible'] = [true];
@@ -2551,7 +2576,98 @@ if (doc) {
     routes['approval'][simple+'visible'] = [true];
     routes['approval'][simple+'editable'] = [false];
     routes['approval'][simple+'comment'] = [new String('На оформление распорядительного документа и регистрацию')];
+
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['examination'][simple+'deadlineDays'] = [10];
+    routes['examination'][simple+'comment'] = [new String('Ознакомиться с документом для дальнейшей работы')];
+    routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(doc['v-s:copyTo']); // Список ознакомления
+
   }
+
+//--------------------------------------------------------------------------------ЗаявкаОЗМ-------
+  if (doc['rdf:type'][0].id === "mnd-s:MaterialRequest") {
+    routes['introduction'][simple+'visible'] = [false];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [false];
+    routes['coordination2'][simple+'editable'] = [false];
+    routes['coordination3'][simple+'visible'] = [false];
+    routes['coordination3'][simple+'editable'] = [false];
+    routes['sign'][simple+'visible'] = [false];
+    routes['sign'][simple+'editable'] = [false];
+    routes['approval'][simple+'visible'] = [false];
+    routes['approval'][simple+'editable'] = [false];
+    routes['review'][simple+'visible'] = [false];
+    routes['review'][simple+'editable'] = [false];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['instruction'][simple+'deadlineDays'] =[2];
+    routes['instruction'][simple+'comment'] = [new String('создать ОЗМ')];
+//    if (
+//    doc.hasValue('mnd-s:hasMaterialGroup')
+//    && doc['mnd-s:hasMaterialGroup'][0].hasValue('v-s:controller')
+//    && doc['mnd-s:hasMaterialGroup'][0].hasValue('v-s:controller').length ===1
+//    )
+//  {
+    var mrp_contr = new veda.IndividualModel(doc['mnd-s:hasMaterialGroup'][0].id);
+        if (mrp_contr.hasValue('v-s:controller'))
+        {
+      routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(mrp_contr["v-s:controller"]); // MRP контроллер группы материалов
+        }
+//    }
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+  }
+
+
+//--------------------------------------------------------------------------------Доверенность-------
+  if (doc['rdf:type'][0].id === "mnd-s:PowerOfAttorney") {
+    routes['introduction'][simple+'visible'] = [false];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+
+    var chief;
+    if ( doc.hasValue("v-s:grantee") && doc["v-s:grantee"][0].hasValue("v-s:correspondentPerson") && doc["v-s:grantee"][0]["v-s:correspondentPerson"][0].is("v-s:Appointment") ) {
+      chief = doc["v-s:grantee"][0]["v-s:correspondentPerson"][0].getChief();
+    } else {
+      chief = doc["v-s:creator"][0].getChief();
+    }
+    if ( chief ) {
+      routes['coordination1'][simple+'participant'] = [chief];
+    }
+
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [false];
+    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:9d3479d9-992a-4ffa-af5a-cba04574489d")]; //Юрисконсульт. Доверенности
+
+    routes['coordination3'][simple+'visible'] = [false];
+    routes['coordination3'][simple+'editable'] = [false];
+    routes['coordination4'][simple+'visible'] = [false];
+    routes['coordination4'][simple+'editable'] = [false];
+    routes['coordination5'][simple+'visible'] = [false];
+    routes['coordination5'][simple+'editable'] = [false];
+    routes['coordination6'][simple+'visible'] = [false];
+    routes['coordination6'][simple+'editable'] = [false];
+
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [false];
+    routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_70013758")]; //Генеральный директор СЛПК
+
+    routes['approval'][simple+'visible'] = [false];
+    routes['approval'][simple+'editable'] = [false];
+    routes['review'][simple+'visible'] = [false];
+    routes['review'][simple+'editable'] = [false];
+
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:61e1919e-2460-41ed-8692-042d2634542a")]; //Регистратор документов СЛПК
+    routes['instruction'][simple+'comment'] = [new String('Отсканировать и направить на ознакомление')];
+
+  }
+
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
@@ -3186,6 +3302,16 @@ s-wf:codelet_change_responsible_right
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:codelet_change_projectManager_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Выдать права руководителю проекта" ;
+  v-s:script """
+  process.getInputVariable ('rightset')?
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'projectManager') :
+  change_rights_actor (process, task, newStr ('-ru-'), 'projectManager')
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
 
 # ------------------------------ CODELET : "восстановить права" ----------------------------- #
 s-wf:codelet_restore_right
@@ -3239,7 +3365,7 @@ s-wf:UserTaskFormTemplate
     individual["v-wf:possibleDecisionClass"].map( function (value, index) {
       var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
       var input = $("input", tmpl).val(index);
-      $("label", tmpl).append(value["rdfs:label"].join(", "));
+      $("label", tmpl).append("<span about='" + value.id + "' property='rdfs:label'></span>");
       input.change(function () {
         var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
         var decision = createDecision(type);
@@ -4166,7 +4292,7 @@ s-wf:map_jrn_decision_b
 
 s-wf:net_coordination
   a v-wf:Net;
-  rdfs:label "Универсальный маршрут"@ru;
+  rdfs:label "Единичный процесс"@ru;
   rdfs:label "Universal route"@en;
   v-wf:consistsOf s-wf:nc_ic, s-wf:nc_t1, s-wf:nc_t2, s-wf:nc_t3, s-wf:nc_oc, s-wf:nc_f_ic_t1, s-wf:nc_f_t1_t2, s-wf:nc_f_t1_oc, s-wf:nc_f_t1_rti, s-wf:nc_f_t3_t1;
   v-wf:consistsOf s-wf:nc_return_to_initiator, s-wf:nc_r_to_aur, s-wf:nc_to_aur, s-wf:nc_finish, s-wf:nc_to_finish, s-wf:nc_f_t1_oc, s-wf:nc_f_t1_rti;
@@ -4368,9 +4494,9 @@ s-wf:nc_return_to_initiator
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_controller_4_PLV_controller, s-wf:map_doc_id, s-wf:map_from_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision_nct2, s-wf:map_t2_sm3;
   v-wf:startingMapping s-wf:possible_decision_after_return, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
-  v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
+  v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_msg_template_4_SV_default_template, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
-  v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
+  v-wf:startingMessageMap s-wf:map_from_4_TIV_from, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_responsible;
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
   v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
@@ -4391,9 +4517,9 @@ s-wf:nc_oc
   v-wf:expectedResultType s-wf:UserTaskForm;
   v-wf:startingMapping s-wf:map_doc_id, s-wf:map_from_2_result_decision_author, s-wf:map_coord_level, s-wf:map_t2_sm1, s-wf:map_actor_task_action_4LV_result_decision_nct2, s-wf:map_t2_sm_control;
   v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
-  v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
+  v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_msg_template_4_SV_default_template, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
-  v-wf:startingMessageMap s-wf:map_wf_from_4_TIV_initiator, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
+  v-wf:startingMessageMap s-wf:map_from_4_TIV_from, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
   v-wf:executor s-wf:def_exec_controller;
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
   v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;
@@ -4493,7 +4619,7 @@ s-wf:map_t2_sm3
 s-wf:map_t2_sm_control
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_actor_task_comment ;
-  v-wf:mappingExpression  "newStr('Принять отчёт, ' + getFirstValue(process.getLocalVariable ('actor_task_comment')))";
+  v-wf:mappingExpression  "newStr(getFirstValue(process.getLocalVariable ('actor_task_comment')) || '')";
   rdfs:isDefinedBy s-wf: ;
 .
 

@@ -43,12 +43,7 @@ veda.Module(function (veda) { "use strict";
     Object.keys(self._).map(function (key) {
       var draft = self._[key];
       if ( draft ) {
-        var individual;
-        if (draft.individual) {
-          individual = new veda.IndividualModel( draft.individual );
-        } else {
-          individual = new veda.IndividualModel( draft );
-        }
+        var individual = new veda.IndividualModel( draft );
         self.set(individual.id, individual);
       }
     });

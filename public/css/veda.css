@@ -63,6 +63,7 @@ body {
   color: #fff;
   font-weight: bold;
   font-size: 0.9em;
+  white-space: nowrap;
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   z-index: 0;
@@ -385,7 +386,9 @@ textarea {
 .deleted, .deleted *:not(.btn) {
   text-decoration: line-through!important;
 }
-.deleted[typeof='v-s:Appointment'], .deleted[typeof='v-s:Appointment'] * {
+.deleted[typeof='v-s:Appointment'], .deleted[typeof='v-s:Appointment'] *,
+.deleted[typeof='v-s:Position'], .deleted[typeof='v-s:Position'] *,
+.deleted[typeof='v-s:Person'], .deleted[typeof='v-s:Person'] * {
   text-decoration: none!important;
   color: #888;
 }
@@ -1257,4 +1260,9 @@ svg.process-path-highlight path
 .label-template > #rel-actions {
   position: relative!important;
   margin: 0 0 0 7px!important;
+}
+
+/* Buttons */
+.btn-block {
+  white-space: normal;
 }
