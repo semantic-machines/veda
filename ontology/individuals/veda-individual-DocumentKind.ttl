@@ -28,6 +28,7 @@ d:cc87e0778a864272b1b8d366f591da88
   rdfs:label "Контракт"@ru ;
   rdfs:label "Contract"@en ;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:fbf562d8a6a04d72b1034f7f7e4d21de
   a v-s:DocumentKind;
