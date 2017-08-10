@@ -2,6 +2,7 @@ var console = require('console');
 var basic = require('./basic.js'),
     complexRoute = require('./complexRoute.js'),
     assert = require('assert');
+
 /**
  * 0.Open page -> login(as karpovrt);
  * 1.Open create Complex route test template document form -> Start route -> Logout;

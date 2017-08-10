@@ -4,7 +4,7 @@
 
 module veda.core.search.xapian_vql;
 
-import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm, std.uni, utf = std.utf;
+import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm, std.regex, std.uni, utf = std.utf;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
 import veda.core.search.vel;
@@ -15,6 +15,7 @@ class XapianVQL
 {
     private Logger log;
     protected byte err;
+    private auto   r_is_uuid = ctRegex!(`^[a-z0-9_-]+:[a-z0-9_-]*$`, "i");
 
     this(Logger _log)
     {
@@ -253,8 +254,13 @@ class XapianVQL
                 {
                     Names subclasses = ctx.get_onto().get_sub_classes(rs);
 
-                    foreach (classz; subclasses.keys)
-                        rs ~= " OR " ~ classz;
+                    if (subclasses.length > 0)
+                    {
+                        foreach (classz; subclasses.keys)
+                            rs ~= " OR " ~ classz;
+                            
+                        rs = to_lower_and_replace_delimeters(rs);                            
+                    }
                 }
 
                 if (query_l is null && query_r is null)
@@ -275,6 +281,14 @@ class XapianVQL
                             }
 
                             query = qp.parse_query(cast(char *)query_str, query_str.length, flags, &err);
+
+                            if (err == XapianQueryParserError)
+                            {
+                                log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+                                query_str = "\"" ~ query_str ~ "\"";
+                                query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, &err);
+                            }
+
                             if (err != 0)
                                 throw new XapianError(err, "parse_query1 query=" ~ query_str);
                         }
@@ -303,6 +317,17 @@ class XapianVQL
 
                                     query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                            xtr.length, &err);
+
+                                    if (err == XapianQueryParserError)
+                                    {
+                                        log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+
+                                        query_str = "\"" ~ query_str ~ "\"";
+                                        query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                   xtr.length, &err);
+                                    }
+
+
                                     if (query is null)
                                         throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
 
@@ -318,9 +343,12 @@ class XapianVQL
                                             rs = rs.removechars("*");
                                         }
 
-                                        char[] query_str = to_lower_and_replace_delimeters(rs).dup;
+                                        char[] query_str = rs.dup;
                                         if (rs[ 0 ] == '*')
                                             reverse(query_str);
+
+                                        if (!matchFirst(query_str, r_is_uuid).empty)
+                                            query_str = cast(char[]) to_lower_and_replace_delimeters(cast(string)query_str);
 
                                         xtr = "X" ~ text(slot) ~ "X";
 
@@ -339,6 +367,16 @@ class XapianVQL
 
                                         query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                                xtr.length, &err);
+
+                                        if (err == XapianQueryParserError)
+                                        {
+                                            log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+
+                                            query_str = "\"" ~ query_str ~ "\"";
+                                            query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                       xtr.length, &err);
+                                        }
+
                                         if (err != 0)
                                             throw new XapianError(err,
                                                                   cast(string)("parse_query2('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr ~ "'"));
@@ -380,8 +418,6 @@ class XapianVQL
                                                         query_str ~= " OR " ~ classz;
                                                 }
 
-                                                query_str = to_lower_and_replace_delimeters(query_str);
-
                                                 feature_flag flags = feature_flag.FLAG_DEFAULT | feature_flag.FLAG_WILDCARD |
                                                                      feature_flag.FLAG_PHRASE |
                                                                      feature_flag.FLAG_LOVEHATE;
@@ -389,12 +425,21 @@ class XapianVQL
                                                 query = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
                                                                        xtr.length, &err);
 
+                                                if (err == XapianQueryParserError)
+                                                {
+                                                    log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", query_str, query_str);
+
+                                                    query_str = "\"" ~ query_str ~ "\"";
+                                                    query     = qp.parse_query(cast(char *)query_str, query_str.length, flags, cast(char *)xtr,
+                                                                               xtr.length, &err);
+                                                }
+
                                                 if (err != 0)
                                                     throw new XapianError(err,
                                                                           cast(string)("parse_query2.1('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr
                                                                                        ~ "'"));
 
-                                                //log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
+                                                log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
                                             }
                                         }
                                         else
@@ -435,8 +480,10 @@ class XapianVQL
                     }
                     else
                     {
-                        xtr = to_lower_and_replace_delimeters(rs);
-                        //writeln("xtr=", xtr);
+                        if (!matchFirst(rs, r_is_uuid).empty)
+                            xtr = to_lower_and_replace_delimeters(rs);
+                        else
+                            xtr = rs.dup;
 
                         if (indexOf(xtr, '*') > 0 && is_good_token(xtr))
                         {
@@ -455,12 +502,29 @@ class XapianVQL
 
                             query = qp.parse_query(cast(char *)xtr, xtr.length, flags, &err);
 
+                            if (err == XapianQueryParserError)
+                            {
+                                log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", xtr, xtr);
+                                xtr   = "\"" ~ xtr ~ "\"";
+                                query = qp.parse_query(cast(char *)xtr, xtr.length, flags, &err);
+                            }
+
                             if (err != 0)
+                            {
                                 throw new XapianError(err, "parse_query4('*'=*) '" ~ xtr ~ "'");
+                            }
                         }
                         else
                         {
                             query = qp.parse_query(cast(char *)xtr, xtr.length, &err);
+
+                            if (err == XapianQueryParserError)
+                            {
+                                log.trace("WARN: The search query has been changed: [%s]->[\"%s\"]", xtr, xtr);
+                                xtr = "\"" ~ xtr ~ "\"";
+                                query
+                                    = qp.parse_query(cast(char *)xtr, xtr.length, &err);
+                            }
                             if (err != 0)
                                 throw new XapianError(err, "parse_query5('*'=x) '" ~ xtr ~ "'");
                         }

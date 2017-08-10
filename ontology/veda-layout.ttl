@@ -45,6 +45,7 @@ v-l:MainPageTemplate
       </div>
       <div class="collapse navbar-collapse" id="navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
+          <li about="v-fs:FulltextSearch"><a href="#/@"><span class="fa fa-lg fa-search"></span></a></li>
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
           <li about="v-ft:Inbox2" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li about="v-s:Drafts" data-template="v-ui:DraftsIndicatorTemplate"></li>

@@ -191,7 +191,7 @@ class Consumer
         return true;
     }
 
-    private bool get_info()
+    public bool get_info()
     {
         if (!queue.isReady)
             return false;
@@ -529,7 +529,7 @@ class Queue
         ff_info_push_w.writeln(hash_hex);
     }
 
-    private bool get_info()
+    public bool get_info()
     {
         if (!isReady)
             return false;

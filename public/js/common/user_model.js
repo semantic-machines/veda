@@ -12,7 +12,6 @@ veda.Module(function (veda) { "use strict";
       localStorage.clear();
       location.reload();
     }
-
     veda.user = self;
 
     var langs = (new veda.IndividualModel("v-ui:AvailableLanguage"))["rdf:value"];
@@ -34,10 +33,10 @@ veda.Module(function (veda) { "use strict";
       veda.appointment = undefined;
     }
 
-    self.on("v-s:defaultAppointment", function () {
-      if ( veda.appointment && veda.appointment.id === self["v-s:defaultAppointment"][0].id ) { return; }
-      self.save();
-      location.reload();
+    self.on("v-s:defaultAppointment", function (values) {
+      if (self.hasValue("v-s:defaultAppointment")) {
+        veda.appointment = self["v-s:defaultAppointment"][0];
+      }
     });
 
     if ( self.hasValue("v-ui:hasPreferences") ) {
@@ -48,13 +47,16 @@ veda.Module(function (veda) { "use strict";
         self.preferences.save();
       }
     } else {
-      self.preferences = new veda.IndividualModel();
-      self.preferences["v-s:author"] = [ self ];
-      self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
-      self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
-      self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
-      self.preferences["v-ui:displayedElements"] = [ 10 ];
-      self.preferences.save();
+      var preferences_id = self.id + "_pref";
+      self.preferences = new veda.IndividualModel(preferences_id);
+      if ( self.preferences.isNew() ) {
+        self.preferences["v-s:author"] = [ self ];
+        self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
+        self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
+        self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
+        self.preferences["v-ui:displayedElements"] = [ 10 ];
+        self.preferences.save();
+      }
       self["v-ui:hasPreferences"] = [ self.preferences ];
       self.save();
     }
@@ -67,11 +69,14 @@ veda.Module(function (veda) { "use strict";
     if ( self.hasValue("v-s:hasAspect") ) {
       self.aspect = self["v-s:hasAspect"][0];
     } else {
-      self.aspect = new veda.IndividualModel();
-      self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
-      self.aspect["v-s:owner"] = [ self ];
-      self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
-      self.aspect.save();
+      var aspect_id = self.id + "_aspect";
+      self.aspect = new veda.IndividualModel(aspect_id);
+      if ( self.aspect.isNew() ) {
+        self.aspect["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalAspect") ];
+        self.aspect["v-s:owner"] = [ self ];
+        self.aspect["rdfs:label"] = [ "PersonalAspect_" + self.id ];
+        self.aspect.save();
+      }
       self["v-s:hasAspect"] = [ self.aspect ];
       self.save();
     }

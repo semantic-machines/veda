@@ -1,12 +1,12 @@
-var webdriver = require('selenium-webdriver'),
-    basic = require('./basic.js'),
+var basic = require('./basic.js'),
     person = require('./person.js');
 
 /**
  * Проверка поиска
- *@param driver 
- *@param somethingUnique - поисковый запрос;
- *@param count - количество элементов, которое должно быть в результате;
+ * @param driver
+ * @param somethingUnique - поисковый запрос;
+ * @param count - количество элементов, которое должно быть в результате;
+ * @param phase - текущая фаза теста
 */
 
 function search(driver, somethingUnique, count, phase) {
@@ -36,7 +36,6 @@ function search(driver, somethingUnique, count, phase) {
  * 1.Создаем Персону1 -> Создаем Персону2 -> Создаем Персону3-> Создаем Персону4;
  * 2.Поисковые запросы и проверка результатов;
 */
-
 
 basic.getDrivers().forEach(function (drv) {
     var driver = basic.getDriver(drv);

@@ -1,25 +1,25 @@
-var webdriver = require('selenium-webdriver'),
-    timeStamp = ''+Math.round(+new Date()/1000),
-    complexRoute = require('./complexRoute.js');
-    basic = require('./basic.js');
+var basic = require('./basic.js'),
+    complexRoute = require('./complexRoute.js'),
+    timeStamp = ''+Math.round(+new Date()/1000);
+
 
 /**
  * Отправка задачи
  * @param driver
- * @param personToSearch - значение, которое будет введено в качестве получателя задачи
- * @param personToChoose - значение, которое будет выбрано в качестве получателя задачи
+ * @param valueToSearch - значение, которое будет введено в качестве получателя задачи
+ * @param valueToChoose - значение, которое будет выбрано в качестве получателя задачи
  */
 
 function sendTask(driver, valueToSearch, valueToChoose) {
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest', 1);
     basic.execute(driver, "click", 'span[about="v-s:SendTask"]', "****** PHASE#1 > Create task : ERROR = Cannot click on SendTask button");
     basic.execute(driver, "click", 'div[typeof="s-wf:ComplexRouteTest"] ul[id="standard-tasks"]');
-    basic.chooseFromDropdown(driver, 'v-s:hasAppointment', valueToSearch, valueToChoose, 1);
+    basic.chooseFromDropdown(driver, 'v-s:responsible', valueToSearch, valueToChoose, 1);
     basic.execute(driver, "sendKeys", 'veda-control[property="rdfs:comment"] textarea[class="form-control"]',
         "****** PHASE#1 > Create task : ERROR = Cannot fill Comment field", timeStamp);
     driver.sleep(basic.FAST_OPERATION * 2);
     basic.execute(driver, "click", 'div[class="modal-dialog modal-lg"] button[id="send"]', "****** PHASE#1 > Create task : ERROR = Cannot click on Send button");
-    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#1 > Create task : ERROR = Cannot click on 'Welcome' button");
 }
 
 

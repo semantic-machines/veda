@@ -64,12 +64,13 @@ func main() {
 	fmt.Println("CHART netdata.plugin_veda_queue_scripts_main '' 'Veda queue_scripts_main' 'count' " +
 		"veda.d '' area 10000 3")
 
-	fmt.Println("DIMENSION queue_fanout_email 'email' absolute 1 1")
-	fmt.Println("DIMENSION queue_scripts_main 'scripts_main' absolute 1 1")
-	fmt.Println("DIMENSION queue_fanout_sql_lp 'sql_lp' absolute 1 1")
-	fmt.Println("DIMENSION queue_fanout_sql_np 'sql_np' absolute 1 1")
-	fmt.Println("DIMENSION queue_fulltext_indexer 'fulltext_indexer' absolute 1 1")
-	fmt.Println("DIMENSION queue_scripts_main 'scripts_main' absolute 1 1")
+	fmt.Println("DIMENSION queue_fanout_email0 'email' absolute 1 1")
+	fmt.Println("DIMENSION queue_scripts_main0 'scripts_main0' absolute 1 1")
+	fmt.Println("DIMENSION queue_fanout_sql_lp0 'sql_lp' absolute 1 1")
+	fmt.Println("DIMENSION queue_fanout_sql_np0 'sql_np' absolute 1 1")
+	fmt.Println("DIMENSION queue_fulltext_indexer0 'fulltext_indexer0' absolute 1 1")
+	fmt.Println("DIMENSION queue_fulltext_indexer1 'fulltext_indexer1' absolute 1 1")
+	fmt.Println("DIMENSION queue_scripts_main 'scripts_lp0' absolute 1 1")
 	fmt.Println("DIMENSION queue_CCUS 'CCUS' absolute 1 1")
 
 	fmt.Println("CHART netdata.plugin_veda_users '' 'Veda users' 'count' veda.d '' area 10000 3")
@@ -90,25 +91,28 @@ func main() {
 	cs_CCUS := NewConsumer(main_queue, "CCUS", R)
 	cs_CCUS.open()
 
-	cs_fanout_email := NewConsumer(main_queue, "fanout_email", R)
+	cs_fanout_email := NewConsumer(main_queue, "fanout_email0", R)
 	cs_fanout_email.open()
 
-	cs_fanout_sql_lp := NewConsumer(main_queue, "fanout_sql_lp", R)
+	cs_fanout_sql_lp := NewConsumer(main_queue, "fanout_sql_lp0", R)
 	cs_fanout_sql_lp.open()
 
-	cs_fanout_sql_np := NewConsumer(main_queue, "fanout_sql_np", R)
+	cs_fanout_sql_np := NewConsumer(main_queue, "fanout_sql_np0", R)
 	cs_fanout_sql_np.open()
 
-	cs_fulltext_indexer := NewConsumer(main_queue, "fulltext_indexer", R)
-	cs_fulltext_indexer.open()
+	cs_fulltext_indexer0 := NewConsumer(main_queue, "fulltext_indexer0", R)
+	cs_fulltext_indexer0.open()
 
-	cs_scripts_main := NewConsumer(main_queue, "scripts_main", R)
+	cs_fulltext_indexer1 := NewConsumer(main_queue, "fulltext_indexer1", R)
+	cs_fulltext_indexer1.open()
+
+	cs_scripts_main := NewConsumer(main_queue, "scripts_main0", R)
 	cs_scripts_main.open()
 
-	cs_ltr_scripts := NewConsumer(main_queue, "ltr_scripts", R)
+	cs_ltr_scripts := NewConsumer(main_queue, "ltr_scripts0", R)
 	cs_ltr_scripts.open()
 
-	cs_scripts_lp := NewConsumer(main_queue, "scripts_lp", R)
+	cs_scripts_lp := NewConsumer(main_queue, "scripts_lp0", R)
 	cs_scripts_lp.open()
 
 	vedaData := make(map[string]interface{})
@@ -160,7 +164,8 @@ func main() {
     		cs_fanout_email.get_info()
     		cs_fanout_sql_lp.get_info()
     		cs_fanout_sql_np.get_info()
-    		cs_fulltext_indexer.get_info()
+    		cs_fulltext_indexer0.get_info()
+    		cs_fulltext_indexer1.get_info()
     		cs_scripts_main.get_info()
     		cs_ltr_scripts.get_info()
     		cs_scripts_lp.get_info()
@@ -169,12 +174,13 @@ func main() {
 		main_queue.get_info ()
 
 		fmt.Println("BEGIN netdata.plugin_veda_queue_scripts_main")
-		fmt.Printf("SET queue_fanout_email=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)
-		fmt.Printf("SET queue_scripts_main=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
-		fmt.Printf("SET queue_fanout_sql_lp=%d\n", main_queue.count_pushed - cs_fanout_sql_lp.count_popped)
-		fmt.Printf("SET queue_fanout_sql_np=%d\n", main_queue.count_pushed - cs_fanout_sql_np.count_popped)
-		fmt.Printf("SET queue_fulltext_indexer=%d\n", main_queue.count_pushed - cs_fulltext_indexer.count_popped)
-		fmt.Printf("SET queue_scripts_main=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
+		fmt.Printf("SET queue_fanout_email0=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)
+		fmt.Printf("SET queue_scripts_main0=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
+		fmt.Printf("SET queue_fanout_sql_lp0=%d\n", main_queue.count_pushed - cs_fanout_sql_lp.count_popped)
+		fmt.Printf("SET queue_fanout_sql_np0=%d\n", main_queue.count_pushed - cs_fanout_sql_np.count_popped)
+		fmt.Printf("SET queue_fulltext_indexer0=%d\n", main_queue.count_pushed - cs_fulltext_indexer0.count_popped)
+		fmt.Printf("SET queue_fulltext_indexer1=%d\n", main_queue.count_pushed - cs_fulltext_indexer1.count_popped)
+		fmt.Printf("SET queue_scripts_main0=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
 		fmt.Printf("SET queue_CCUS=%d\n", main_queue.count_pushed - cs_CCUS.count_popped)
 		fmt.Println("END")
 

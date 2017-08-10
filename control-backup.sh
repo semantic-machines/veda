@@ -24,7 +24,7 @@ find ./data/lmdb-individuals.* -exec mv {} ./backup-binlogs \;
 find ./data/lmdb-tickets.* -delete
 find ./*.log -delete
 rm ./veda.log
-find ./backup -mmin +7200 -delete
+find ./backup/optiflow-backup* -mmin +7200 -delete
 
 # Start optiflow
 ./control-start.sh

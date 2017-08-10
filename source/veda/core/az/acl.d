@@ -10,7 +10,9 @@ private
     import veda.util.container, veda.util.module_info;
 }
 
-int max_count_in_cache = 200;
+string lstr = "                                                                           ";
+
+int    max_count_in_cache = 200;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -54,7 +56,8 @@ class Authorization : LmdbStorage
                     void delegate(string resource_group) trace_group, void delegate(string log) trace_info
                     )
     {
-        string uri = _uri.idup;
+        int    str_num = 0;
+        string uri     = _uri.idup;
 
         if (db_is_opened == false)
             open_db();
@@ -77,7 +80,8 @@ class Authorization : LmdbStorage
             return res;
 
         if (trace_info !is null)
-            trace_info(format("authorize uri=%s, user=%s, request_access=%s", uri, ticket.user_uri, access_to_pretty_string(request_access)));
+            trace_info(format("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
+                              access_to_pretty_string(request_access)));
 
         MDB_txn *txn_r;
         MDB_dbi dbi;
@@ -147,20 +151,37 @@ class Authorization : LmdbStorage
             MDB_val   data;
             string    skey;
 
-            Right *[] _get_resource_groups(string uri, ubyte access, ref bool[ string ] prepared_uris, int level = 0)
+            Right *[] _get_resource_groups(string uri, ubyte access, ref ubyte[ string ] prepared_uris, int level = 0)
             {
+                if (level > 16)
+                {
+                    log.trace("WARN! level down > 16, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                }
+
+                if (level > 32)
+                {
+                    log.trace("ERR! level down > 32, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                    return (Right *[]).init;
+                }
+
+
                 Right *[] res;
 
-                //writeln ("~10 level=", level, ", uri=", uri);
+                string    ll;
+
+                if (trace_info !is null)
+                {
+                    if (level * 2 < lstr.length)
+                        ll = lstr[ 0..level * 2 ];
+                    else
+                        ll = text(level);
+                }
 
                 try
                 {
                     string groups_str;
                     if (cache_of_group !is null)
-                    {
                         res = cache_of_group.get(uri);
-                        //writeln ("ACL:CACHE:found in cache, uri=", uri);
-                    }
 
                     if (res is null)
                     {
@@ -176,24 +197,57 @@ class Authorization : LmdbStorage
                         }
                     }
 
+                    //if (trace_info !is null)
+                    //{
+                    //    foreach (el; res)
+                    //        trace_info(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
+                    //}
+
                     long res_lenght = res.length;
 
                     for (int idx = 0; idx < res_lenght; idx++)
                     {
                         Right *group = res[ idx ];
 
-                        if (prepared_uris.get(group.id, false) == true)
+                        if (group is null)
+                        {
+                            log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);
                             continue;
+                        }
+
+                        ubyte orig_access = group.access;
+                        ubyte new_access  = group.access & access;
+                        group.access = new_access;
+
+                        if (group.id in prepared_uris)
+                        {
+                            ubyte preur_access = prepared_uris[ group.id ];
+                            if (preur_access == new_access)
+                            {
+                                if (trace_info !is null)
+                                    trace_info(format("%d %s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", str_num++, ll, level, group.id,
+                                                      access_to_pretty_string(preur_access)));
+
+                                continue;
+                            }
+                        }
+
+                        prepared_uris[ group.id ] = new_access;
+
+                        if (trace_info !is null)
+                            trace_info(format("%d %s (%d)GROUP [%s] %s-> %s", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
+                                              access_to_pretty_string(new_access)));
 
                         string group_key = membership_prefix ~ group.id;
-                        group.access = group.access & access;
-                        //res ~= group;
-                        prepared_uris[ group.id ] = true;
-
                         if (uri == group_key)
+                        {
+                            if (trace_info !is null)
+                                trace_info(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key", str_num++, ll, level, group.id,
+                                                  access_to_pretty_string(orig_access)));
                             continue;
+                        }
 
-                        Right *[] up_restrictions = _get_resource_groups(group_key, group.access & access, prepared_uris, level + 1);
+                        Right *[] up_restrictions = _get_resource_groups(group_key, new_access, prepared_uris, level + 1);
                         foreach (restriction; up_restrictions)
                         {
                             res ~= restriction;
@@ -204,13 +258,22 @@ class Authorization : LmdbStorage
                 {
                     log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
                 }
+
                 return res;
             }
 
             RightSet get_resource_groups(string uri, ubyte access)
             {
-                bool[ string ] prepared_uris;
-                return new RightSet(_get_resource_groups(uri, access, prepared_uris, 0), log);
+                ubyte[ string ] prepared_uris;
+                auto groups = _get_resource_groups(uri, access, prepared_uris, 0);
+
+                if (trace_info !is null)
+                {
+                    //foreach (el; groups)
+                    //    trace_info(format("%d FOUND GROUP [%s]", str_num++, *el));
+                }
+
+                return new RightSet(groups, log);
             }
 
             // 0. читаем фильтр прав у object (uri)
@@ -220,33 +283,32 @@ class Authorization : LmdbStorage
             key.mv_data = cast(char *)filter;
             rc          = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
-            {
                 filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-            }
+
+            if (trace_info !is null)
+                trace_info(format("%d user_uri=%s", str_num++, ticket.user_uri));
 
             // 1. читаем группы object (uri)
+            if (trace_info !is null)
+                trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
             RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+            if (trace_info !is null)
+                trace_info(format("%d object_groups=%s", str_num++, object_groups));
 
             // 2. читаем группы subject (ticket.user_uri)
+            if (trace_info !is null)
+                trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
             RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
-
             if (trace_info !is null)
-            {
-                trace_info(format("user_uri=%s", ticket.user_uri));
-                trace_info(format("subject_groups=%s", subject_groups));
-                trace_info(format("object_groups=%s", object_groups));
-            }
-
+                trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
 
             foreach (object_group; object_groups.data)
             {
                 if (trace_group !is null)
-                {
                     trace_group(object_group.id);
-                }
 
                 string acl_key;
                 if (filter_value !is null)
@@ -255,7 +317,7 @@ class Authorization : LmdbStorage
                     acl_key = permission_prefix ~ object_group.id;
 
                 if (trace_info !is null)
-                    trace_info(format("look acl_key: [%s]", acl_key));
+                    trace_info(format("%d look acl_key: [%s]", str_num++, acl_key));
 
                 RightSet permission;
 
@@ -266,7 +328,7 @@ class Authorization : LmdbStorage
                     if (permission !is null)
                     {
                         if (trace_info !is null)
-                            trace_info(format("for [%s] found in cache %s", acl_key, permission));
+                            trace_info(format("%d for [%s] found in cache %s", str_num++, acl_key, permission));
                         permission_2_group[ object_group.id ] = permission;
                     }
                 }
@@ -288,7 +350,7 @@ class Authorization : LmdbStorage
                             cache_of_permission.put(acl_key, pp);
 
                         if (trace_info !is null)
-                            trace_info(format("for [%s] found %s", acl_key, pp));
+                            trace_info(format("%d for [%s] found %s", str_num++, acl_key, pp));
                     }
                 }
             }
@@ -300,7 +362,7 @@ class Authorization : LmdbStorage
                 RightSet permissions = permission_2_group.get(obj_key, null);
 
                 if (trace_info !is null)
-                    trace_info(format("obj_key=%s, permissions=%s", obj_key, permissions));
+                    trace_info(format("%d obj_key=%s, permissions=%s", str_num++, obj_key, permissions));
 
                 if (permissions !is null)
                 {
@@ -312,7 +374,8 @@ class Authorization : LmdbStorage
                             Right *permission  = permissions.data.get(perm_key, null);
 
                             if (trace_info !is null)
-                                trace_info(format("restriction=%s, permission=%s, request=%s", *restriction, *permission, access_to_pretty_string(request_access)));
+                                trace_info(format("%d restriction=%s, permission=%s, request=%s", str_num++, *restriction, *permission,
+                                                  access_to_pretty_string(request_access)));
 
                             ubyte restriction_access, permission_access;
 
@@ -341,7 +404,8 @@ class Authorization : LmdbStorage
                                         res = cast(ubyte)(res | set_bit);
 
                                         if (trace_info !is null)
-                                            trace_info(format("set_bit=%s, res=%s", access_to_pretty_string(set_bit), access_to_pretty_string(res)));
+                                            trace_info(format("%d set_bit=%s, res=%s", str_num++, access_to_pretty_string(set_bit),
+                                                              access_to_pretty_string(res)));
 
                                         if (trace_acl !is null)
                                         {
@@ -362,7 +426,8 @@ class Authorization : LmdbStorage
         scope (exit)
         {
             if (trace_info !is null)
-                trace_info(format("authorize %s, request=%s, answer=[%s]", uri, access_to_pretty_string(request_access), access_to_pretty_string(res)));
+                trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
+                                  access_to_pretty_string(res)));
         }
 
         if (mode == DBMode.R)

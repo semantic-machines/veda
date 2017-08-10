@@ -1,10 +1,10 @@
-var webdriver = require('selenium-webdriver'),
+var basic = require('./basic.js'),
     person = require('./person.js'),
-    basic = require('./basic.js');
+    webdriver = require('selenium-webdriver');
 
 /**
  * Поиск
- *
+ * @param driver
  * @param templateName - поля аттрибутивного поиска "Персона", по которому необходимо произвести поиск
  * @param somethingUnigue - строки, по которой необходимо произвести поиск
  * @param count - количество элементов, ожидаемое по окончанию поиска

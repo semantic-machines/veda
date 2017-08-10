@@ -1,6 +1,7 @@
-var basic = require('./basic.js'),
-    timeStamp = ''+Math.round(+new Date()/1000),
-    assert = require('assert');
+var assert = require('assert'),
+    basic = require('./basic.js'),
+    timeStamp = ''+Math.round(+new Date()/1000);
+
 
 /**
  * Проверка кнопок Комментировать, Ответить, Редактировать, Удалить
@@ -9,8 +10,8 @@ var basic = require('./basic.js'),
  * @param reply - количество кнопок Ответить, которое должно быть;
  * @param edit - количество кнопок Редактировать, которое должно быть;
  * @param del - количество кнопок Удалить, которое должно быть;
+ * @param phase - текущая фаза теста;
 */
-
 
 function check(driver, comment, reply, edit, del, phase) {
     driver.executeScript("document.querySelector('#comment-content').scrollIntoView(true);");

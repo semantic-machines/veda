@@ -62,13 +62,14 @@ veda.Module(function Backend(veda) { "use strict";
     };
     this.code = result.status;
     this.name = errorCodes[this.code];
-    //this.message = errorCodes[this.code];
+    this.status = result.status;
+    this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
     if (result.status === 0) {
       serverWatch();
     }
     if (result.status === 470 || result.status === 471) {
-      veda.logout();
+      veda.trigger("login:failed");
     }
   }
   BackendError.prototype = Object.create(Error.prototype);
@@ -444,6 +445,30 @@ veda.Module(function Backend(veda) { "use strict";
         "event_id" : (isObj ? arg.event_id : event_id) || "",
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }),
+      contentType: "application/json"
+    };
+    return call_server(params);
+  }
+
+  window.put_individuals = function (ticket, individuals, prepare_events, event_id, transaction_id) {
+    var arg = arguments[0];
+    var isObj = typeof arg === "object";
+    var params = {
+      type: "PUT",
+      url: "put_individuals",
+      async: isObj ? arg.async : false,
+      data: JSON.stringify(
+        {
+          "ticket": isObj ? arg.ticket : ticket,
+          "individuals": isObj ? arg.individuals : individuals,
+          "prepare_events" : (isObj ? arg.prepare_events : prepare_events) || true,
+          "event_id" : (isObj ? arg.event_id : event_id) || "",
+          "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
+        },
+        function (key, value) {
+          return key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? value.toString() : value;
+        }
+      ),
       contentType: "application/json"
     };
     return call_server(params);

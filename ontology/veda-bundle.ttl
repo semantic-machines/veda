@@ -357,3 +357,8 @@ v-s:RefreshBundle
   rdfs:label "Обновить"@ru ;
   rdfs:label "Refresh"@en ;
 .
+v-s:CoordinationList
+  rdf:type v-s:Bundle ;
+  rdfs:label "Лист согласования"@ru ;
+  rdfs:label "Coordination list"@en ;
+.

@@ -1,6 +1,7 @@
-var basic = require('./basic.js'),
-    complexRoute = require('./complexRoute.js'),
-    assert = require('assert');
+var assert = require('assert'),
+    basic = require('./basic.js'),
+    complexRoute = require('./complexRoute.js');
+
 /**
  * 0.Open page -> login(as kaprovrt);
  * 1.Open create Complex route test template 2 document form -> Send task to coordinator1(bychinat) -> Logout;
@@ -43,7 +44,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm', 3);
     basic.execute(driver, 'click', 'button[id="submit"]', "****** PHASE#3 : ERROR = Cannot click on 'submit' button");
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION);
     basic.execute(driver, 'click', 'a[typeof="s-wf:ComplexRouteTest2"]', "****** PHASE#3 : ERROR = Cannot click on document id");
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#3 : ERROR = Cannot click on 'Send' button");
     driver.sleep(basic.FAST_OPERATION);
