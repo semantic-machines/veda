@@ -1079,7 +1079,7 @@ if (doc) {
     routes['approval'][simple+'deadlineDays'] = [5];
 
     var chief2;
-    chief = doc["v-s:supplier"][0].getChief();
+    chief2 = doc["v-s:supplier"][0].getChief();
 
     routes['review'][simple+'visible'] = [true];
     routes['review'][simple+'editable'] = [true];
