@@ -5,6 +5,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 owl:AllDifferent a rdfs:Class ;
     rdfs:label "AllDifferent"@en ;
@@ -60,7 +61,9 @@ owl:Class a rdfs:Class ;
     rdfs:label "OWL Класс"@ru ;
     rdfs:comment "The class of OWL classes." ;
     rdfs:isDefinedBy owl: ;
-    rdfs:subClassOf rdfs:Class .
+    rdfs:subClassOf rdfs:Class ;
+    v-ui:hasTemplate v-s:ClassClassTemplate ;
+    v-ui:hasModel v-s:ClassClassModel .
 
 owl:DataRange a rdfs:Class ;
     rdfs:label "DataRange"@en ;
