@@ -337,7 +337,14 @@ v-s:SystemThing
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:label "System thing"@en ;
-  rdfs:label "Любая системная сущность"@ru ;
+  rdfs:label "Системная сущность"@ru ;
+.
+### -------------------------------------------------------
+v-s:Function
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Function"@en ;
+  rdfs:label "Функция"@ru ;
 .
 ### -------------------------------------------------------
 v-s:Temporal
