@@ -473,12 +473,17 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    self["rdf:type"].map(function (_class) {
-      if ( _class.hasValue("v-ui:hasModel") && _class["v-ui:hasModel"][0].hasValue("v-s:script") ) {
-        var model = new Function(_class["v-ui:hasModel"][0]["v-s:script"][0]);
-        model.call(self);
-      }
-    });
+    if ( this.hasValue("v-ui:hasCustomModel") ) {
+      var model = new Function(this["v-ui:hasCustomModel"][0]["v-s:script"][0]);
+      model.call(this);
+    } else {
+      self["rdf:type"].map(function (_class) {
+        if ( _class.hasValue("v-ui:hasModel") && _class["v-ui:hasModel"][0].hasValue("v-s:script") ) {
+          var model = new Function(_class["v-ui:hasModel"][0]["v-s:script"][0]);
+          model.call(self);
+        }
+      });
+    }
     return this;
   };
 

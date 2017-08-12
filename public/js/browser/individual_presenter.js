@@ -36,15 +36,20 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         }
         renderTemplate(individual, container, template, mode, specs);
       } else {
-        individual["rdf:type"].map(function (type) {
-          if ( type.hasValue("v-ui:hasTemplate") ) {
-            template = type["v-ui:hasTemplate"][0];
-          } else {
-            template = new veda.IndividualModel("v-ui:generic");
-          }
-          template = $( template["v-ui:template"][0].toString() );
+        if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
+          template = individual["v-ui:hasCustomTemplate"][0];
           renderTemplate(individual, container, template, mode, specs);
-        });
+        } else {
+          individual["rdf:type"].map(function (type) {
+            if ( type.hasValue("v-ui:hasTemplate") ) {
+              template = type["v-ui:hasTemplate"][0];
+            } else {
+              template = new veda.IndividualModel("v-ui:generic");
+            }
+            template = $( template["v-ui:template"][0].toString() );
+            renderTemplate(individual, container, template, mode, specs);
+          });
+        }
       }
 
       if (container.prop("id") === "main") { container.show("fade", 250); }
