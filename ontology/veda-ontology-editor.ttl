@@ -5,9 +5,10 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
-@prefix v-onto: <http://semantic-machines.com/veda/veda-ontology-editor/> .
 <http://semantic-machines.com/veda/veda-ontology-editor>
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology editor"@en ;
@@ -149,19 +150,49 @@ v-s:PropertiesBundle
   rdfs:label "Properties"@en ;
   rdfs:label "Свойства"@ru ;
 .
+v-s:SuperClassesBundle
+  rdf:type v-s:Bundle;
+  rdfs:label "Super classes"@en ;
+  rdfs:label "Супер классы"@ru ;
+.
 v-s:SpecificationsBundle
   rdf:type v-s:Bundle;
   rdfs:label "Specifications"@en ;
   rdfs:label "Спецификации"@ru ;
 .
 
-v-s:ClassSpec1
+v-s:ClassLabelSpec
   rdf:type v-ui:PropertySpecification;
   v-ui:forClass owl:Class ;
   v-ui:forClass rdfs:Class ;
   v-ui:forProperty rdfs:label ;
   v-ui:minCardinality 1;
-  v-ui:maxCardinality 2;
+.
+v-s:ClassSubClassOfSpec
+  rdf:type v-ui:PropertySpecification;
+  v-ui:forClass owl:Class ;
+  v-ui:forClass rdfs:Class ;
+  v-ui:forProperty rdfs:subClassOf ;
+  v-ui:minCardinality 0;
+  v-ui:maxCardinality 100;
+.
+
+v-s:PropertySpecificationSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Спецификации свойств класса"@ru ;
+  rdfs:label "Property specifications"@en ;
+  v-fs:searchBlank v-s:PropertySpecificationSearchBlank ;
+  v-fs:searchOnLoad true ;
+  v-fs:loadAll true ;
+.
+
+v-s:PropertySpecificationSearchBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Спецификация свойства"@ru ;
+  rdfs:label "Property specification"@en ;
+  v-fc:targetType v-ui:PropertySpecification ;
+  v-fc:targetType v-ui:DatatypePropertySpecification ;
+  v-fc:targetType v-ui:ObjectPropertySpecification ;
 .
 
 v-s:ClassClassTemplate
@@ -171,81 +202,71 @@ v-s:ClassClassTemplate
   v-ui:forClass owl:Class ;
   v-ui:forClass rdfs:Class ;
   v-ui:template """
-  <div class="container-fluid">
-    <h2><span property="rdfs:label"></span> <span class="badge" property="@"></span></h2>
+  <script>
+  //# sourceURL=v-s:ClassClassTemplate_pre
+  </script>
+  <div class="container sheet">
+    <h2><span about="@" property="rdfs:label"></span> <span class="badge" property="@"></span></h2>
     <em class="-view edit search" about="rdfs:label" property="rdfs:label"></em>
     <veda-control data-type="multilingualString" class="-view edit search" property="rdfs:label"></veda-control>
     <hr>
+    <h4 about="v-s:SuperClassesBundle" property="rdfs:label"></h4>
+    <div rel="rdfs:subClassOf" data-template="v-ui:LabelLinkTemplate" class="view edit search"></div>
+    <veda-control rel="rdfs:subClassOf" class="-view edit search fulltext dropdown"></veda-control>
+    <br>
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title" about="v-s:PropertiesBundle" property="rdfs:label"></h3>
           </div>
-          <div class="panel-body">
+          <div class="panel-body" style="height:400px; overflow:auto;">
             <ol id="props"></ol>
-          </div>
-          <div class="panel-footer -view edit -search">
-            <button class="btn btn-default">Создать</button>
-            <button class="btn btn-default">Добавить</button>
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-6">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title" about="v-s:SpecificationsBundle" property="rdfs:label"></h3>
           </div>
-          <div class="panel-body">
+          <div class="panel-body" style="height:400px; overflow:auto;">
             <ol id="specs"></ol>
-          </div>
-          <div class="panel-footer -view edit -search">
-            <button class="btn btn-default">Создать</button>
-            <button class="btn btn-default">Добавить</button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title" about="v-ui:ClassTemplate" property="rdfs:label"></h3>
-          </div>
-          <div class="panel-body" id="tmpl">
-          </div>
-          <div class="panel-footer -view edit -search">
-            <button class="btn btn-default">Создать</button>
-            <button class="btn btn-default">Добавить</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="well well-sm">
+    <div class="row">
+      <div class="col-md-6">
+        <h4 about="v-ui:hasTemplate" property="rdfs:label"></h4>
+        <div rel="v-ui:hasTemplate" data-template="v-ui:LabelLinkTemplate" class="view -edit -search"></div>
+        <veda-control rel="v-ui:hasTemplate" class="-view edit search fulltext dropdown create create-modal"></veda-control>
+      </div>
+      <div class="col-md-6">
+        <h4 about="v-ui:hasModel" property="rdfs:label"></h4>
+        <div rel="v-ui:hasModel" data-template="v-ui:LabelLinkTemplate" class="view -edit -search"></div>
+        <veda-control rel="v-ui:hasModel" class="-view edit search fulltext dropdown create create-modal"></veda-control>
+      </div>
+    </div>
+    <hr>
+    <div class="actions">
       <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
       <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
       <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
       <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    </div>
-    <div class="modal fade" id="objModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-          </div>
-          <div class="modal-body" id="obj"></div>
-        </div>
-      </div>
     </div>
   </div>
   <script>
     var propsContainer = $("#props", template);
     var specsContainer = $("#specs", template);
     var tmplContainer = $("#tmpl", template);
-    var modal = $("#objModal", template);
-    var objContainer = $("#obj", template);
+    var modal = $($("#notification-modal-template").html());
+    var objContainer = $(".holder", modal);
     var labelTemplate = new veda.IndividualModel("v-ui:LabelLinkTemplate");
-    for (var property_uri in individual.domainProperties) {
-      var prop = individual.domainProperties[property_uri];
+
+    var props = veda.ontology.getClassProperties(this.id);
+    props.map(function (property_uri) {
+      var prop = new veda.IndividualModel(property_uri);
       var li = $("<li></li>").appendTo(propsContainer);
       prop.present(li, labelTemplate);
       if ( !prop.hasValue("rdfs:domain", individual) ) {
@@ -255,9 +276,12 @@ v-s:ClassClassTemplate
         })[0];
         small.text(origin.id)
       }
-    }
-    for (var property_uri in individual.specsByProps) {
-      var spec = individual.specsByProps[property_uri];
+    });
+
+    var specs = veda.ontology.getClassSpecifications(this.id);
+    for (var property_uri in specs) {
+      var spec_uri = specs[property_uri];
+      var spec = new veda.IndividualModel(spec_uri);
       var li = $("<li>").appendTo(specsContainer);
       spec.present(li, labelTemplate);
       if ( !spec.hasValue("v-ui:forClass", individual) ) {
@@ -267,10 +291,6 @@ v-s:ClassClassTemplate
         })[0];
         small.text(origin.id)
       }
-    }
-    var tmpl = individual.template;
-    if (tmpl) {
-      tmpl.present(tmplContainer, labelTemplate);
     }
 
     template.on("click", "a[href]", function (e) {
@@ -283,7 +303,7 @@ v-s:ClassClassTemplate
       modal.modal("show");
       e.stopPropagation();
     });
-    //# sourceURL=v-s:ClassClassTemplate
+    //# sourceURL=v-s:ClassClassTemplate_post
   </script>
   """ ;
 .
