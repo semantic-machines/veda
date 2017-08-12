@@ -166,6 +166,11 @@ veda.Module(function (veda) { "use strict";
       return this.properties["@"];
     },
     set: function (value) {
+      var previous = this.properties && this.properties["@"];
+      if (previous && this._.cache && this._.cache[previous]) {
+        delete veda.cache[previous];
+        veda.cache[value] = this;
+      }
       this.properties["@"] = value;
       this.trigger("idChanged", value);
     }
@@ -412,6 +417,25 @@ veda.Module(function (veda) { "use strict";
       this.save();
     }
     this.trigger("afterDelete");
+    return this;
+  };
+
+  /**
+   * @method
+   * Remove individual from database
+   */
+  proto.remove = function () {
+    this.trigger("beforeRemove");
+    if ( this.hasValue("v-s:isDraft", true) ) {
+      veda.drafts.remove(this.id);
+    }
+    if ( !this.isNew() ) {
+      remove_individual(veda.ticket, this.id);
+    }
+    if ( this._.cache && veda.cache && veda.cache[this.id] ) {
+      delete veda.cache[this.id];
+    }
+    this.trigger("afterRemove");
     return this;
   };
 

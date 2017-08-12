@@ -203,10 +203,22 @@ v-s:ClassClassTemplate
   v-ui:forClass rdfs:Class ;
   v-ui:template """
   <script>
+  if ( this.isNew() ) {
+    $("#uri", template)
+      .prop("placeholder", this.id)
+      .change(function () {
+        if (this.value) {
+          individual.id = this.value;
+        }
+      });
+  } else {
+    $("#uri", template).remove();
+  }
   //# sourceURL=v-s:ClassClassTemplate_pre
   </script>
   <div class="container sheet">
     <h2><span about="@" property="rdfs:label"></span> <span class="badge" property="@"></span></h2>
+    <input type="text" id="uri" class="form-control" />
     <em class="-view edit search" about="rdfs:label" property="rdfs:label"></em>
     <veda-control data-type="multilingualString" class="-view edit search" property="rdfs:label"></veda-control>
     <hr>
@@ -249,11 +261,12 @@ v-s:ClassClassTemplate
       </div>
     </div>
     <hr>
-    <div class="actions">
+    <div class="actions clearfix">
       <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
       <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
       <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
       <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+      <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
     </div>
   </div>
   <script>
