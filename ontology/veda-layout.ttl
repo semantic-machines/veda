@@ -47,7 +47,7 @@ v-l:MainPageTemplate
         <ul class="nav navbar-nav navbar-right">
           <li about="v-fs:FulltextSearch"><a href="#/@"><span class="fa fa-lg fa-search"></span></a></li>
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
-          <li about="v-ft:Inbox2" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
+          <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li about="v-s:Drafts" data-template="v-ui:DraftsIndicatorTemplate"></li>
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-l:MainMenu" data-template="v-l:MenuTemplate"></li>
@@ -268,19 +268,19 @@ v-l:Inbox
   rdf:type v-l:Menu ;
   rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
-  v-l:objectLink v-ft:Inbox2 ;
+  v-l:objectLink v-ft:Inbox ;
 .
 v-l:Outbox
   rdf:type v-l:Menu ;
   rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
-  v-l:objectLink v-ft:Outbox2 ;
+  v-l:objectLink v-ft:Outbox ;
 .
 v-l:Completed
   rdf:type v-l:Menu ;
   rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
-  v-l:objectLink v-ft:Completed2 ;
+  v-l:objectLink v-ft:Completed ;
 .
 v-l:Create
   rdf:type v-l:Menu ;
