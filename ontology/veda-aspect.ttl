@@ -113,7 +113,7 @@ v-s:hasAspect
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
   rdfs:label "Персональный аспект"@ru ;
-  rdfs:label "Personal aspect"@ru ;
+  rdfs:label "Personal aspect"@en ;
   rdfs:range v-s:PersonalAspect ;
 .
 
