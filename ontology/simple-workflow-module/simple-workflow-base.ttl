@@ -1056,6 +1056,37 @@ if (doc) {
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
   }
+//--------------------------------------------------------------------------Внутренний документ
+  if (doc['rdf:type'][0].id === "mnd-s:InternalDocument") {
+    routes['introduction'][simple+'visible'] = [true];
+    routes['introduction'][simple+'editable'] = [true];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [true];
+    routes['coordination3'][simple+'editable'] = [true];
+
+    var chief;
+    chief = doc["v-s:initiator"][0].getChief();
+
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    routes['sign'][simple+'deadlineDays'] = [5];
+    routes['sign'][simple+'participant'] = [chief];
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [true];
+    routes['approval'][simple+'deadlineDays'] = [5];
+
+    var chief2;
+    chief2 = doc["v-s:supplier"][0].getChief();
+
+    routes['review'][simple+'visible'] = [true];
+    routes['review'][simple+'editable'] = [true];
+    routes['review'][simple+'deadlineDays'] = [3];
+    routes['review'][simple+'participant'] = [chief2];
+  }
+
 //--------------------------------------------------------------------------Заявка на контракт
   function objectOrParent(doc, objectId) {
     return doc.hasValue('v-s:hasContractObject') &&
