@@ -21,14 +21,14 @@
 
 v-fs:FunctionSearch
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Function Search"@en ;
   rdfs:label "Функция Поиск"@ru ;
   v-ui:hasTemplate v-fs:SearchTemplate ;
 .
 v-fs:FulltextRequest
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Fulltext request"@en ;
   rdfs:label "Полнотекстовый запрос"@ru ;
   v-ui:hasModel v-fs:FulltextRequestModel ;
@@ -36,7 +36,7 @@ v-fs:FulltextRequest
 .
 v-fs:AttributiveRequest
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Attributive request"@en ;
   rdfs:label "Атрибутивный запрос"@ru ;
   v-ui:hasModel v-fs:AttributiveRequestModel ;
@@ -1093,7 +1093,7 @@ v-fs:AttributiveRequestTemplate
 
 v-fs:AttributiveSearch
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Attributive search"@en ;
   rdfs:label "Атрибутивный поиск"@ru ;
   v-ui:hasTemplate v-fs:AttributiveSearchTemplate ;
@@ -1127,6 +1127,13 @@ v-fs:searchOnLoad
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Искать сразу"@ru ;
   rdfs:label "Search on load"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:boolean ;
+.
+v-fs:loadAll
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Загрузить все"@ru ;
+  rdfs:label "Load all"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:boolean ;
 .
@@ -1178,9 +1185,20 @@ v-fs:AttributiveSearchTemplate
     var resultTemplate = resultContainer.html();
     individual.resultTemplate = resultTemplate;
     resultContainer.empty();
+  } else {
+    $(".stats-top, .stats-bottom, .result-header", template).remove();
+    searchResultTemplate = (new veda.IndividualModel("v-fs:MinimalSearchResultTemplate"))["v-ui:template"][0].toString();
+    searchResultContainer.append( $(searchResultTemplate) );
+    var resultContainer = $(".result-container", template);
+    var resultTemplate = resultContainer.html();
+    individual.resultTemplate = resultTemplate;
+    resultContainer.empty();
   }
   if ( !searchBlankTemplate ) {
     $("#params", template).remove();
+  }
+  if ( this.hasValue("v-fs:loadAll", true) ) {
+    $("#no-more-results", template).remove();
   }
 
 
@@ -1255,18 +1273,20 @@ v-fs:AttributiveSearchTemplate
     <br>
   </div>
   <div id="results" class="hidden">
-    <hr>
-    <h3 class="clearfix">
-      <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
-      <small class="stats-top pull-right" style="color:black">
-        <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
-        <span class="total-found badge">0</span>&nbsp;&nbsp;
-        <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
-        <span class="total-processed badge">0</span>&nbsp;&nbsp;
-        <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
-        <span class="total-authorized badge">0</span>&nbsp;&nbsp;
-      </small>
-    </h3>
+    <div class="result-header">
+      <hr>
+      <h3 class="clearfix">
+        <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
+        <small class="stats-top pull-right" style="color:black">
+          <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
+          <span class="total-found badge">0</span>&nbsp;&nbsp;
+          <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
+          <span class="total-processed badge">0</span>&nbsp;&nbsp;
+          <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
+          <span class="total-authorized badge">0</span>&nbsp;&nbsp;
+        </small>
+      </h3>
+    </div>
     <div id="search-result" class="search-result table-responsive noSwipe"></div>
     <div class="stats-bottom text-right margin-md">
       <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
@@ -1412,12 +1432,12 @@ v-fs:AttributiveSearchTemplate
   allResults.click(function () {
     var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
     if ( self.estimated - self.cursor < 100 || confirm(warn) ) {
-      getAll();
+      loadAll();
     }
   });
-  function getAll() {
+  function loadAll() {
     if (self.cursor < self.estimated && template.is(":visible")) {
-      return search(self.cursor).then(getAll);
+      search(self.cursor).then(loadAll);
     }
   }
 
@@ -1525,6 +1545,9 @@ v-fs:AttributiveSearchTemplate
         var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
             item = new veda.IndividualModel(uri);
         item.present(resultContainer, tmpl);
+        if (item.id === self.marked) {
+          tmpl.addClass("warning");
+        }
         setTimeout(function () {
           $("td", tmpl).each( function () {
             var text = getText(this);
@@ -1562,10 +1585,18 @@ v-fs:AttributiveSearchTemplate
 
   // Scroll to position
   function scrollTo(position) {
-    $('html, body').animate({
+    $("html, body").animate({
       scrollTop: position
     });
   }
+
+  // Mark clicked row
+  $(".search-result table", template).on("click", "tr", function () {
+    var that = $(this);
+    that.siblings(".warning").removeClass("warning");
+    that.addClass("warning");
+    self.marked = that.attr("resource");
+  });
 
   // Search
   function search(cursor) {
@@ -1599,6 +1630,10 @@ v-fs:AttributiveSearchTemplate
           self.top = self.result.length;
         }
         renderResult(results.result);
+      }).then(function () {
+        if ( self.hasValue("v-fs:loadAll", true) && self.cursor < self.estimated ) {
+          search(self.cursor);
+        }
       });
     } else {
       return Promise.resolve(self.result);
@@ -1638,6 +1673,32 @@ v-fs:AttributiveSearchTemplate
 
   //# sourceURL=v-fs:AttributiveSearchTemplate_post
 </script>
+  """ ;
+.
+
+v-fs:MinimalSearchResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов минимального поиска"@ru ;
+  rdfs:label "Minimal search result template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-striped">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th>@</th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="@"></td>
+      <td about="@" property="rdfs:label"></td>
+    </tr>
+  </tbody>
+</table>
   """ ;
 .
 
@@ -1763,10 +1824,10 @@ v-fs:FulltextBlankTemplate
 
 v-fs:FulltextResultTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон отображения результатов поиска персоны"@ru ;
-  rdfs:label "Person search result template"@en ;
+  rdfs:label "Шаблон отображения результатов полнотекстового поиска"@ru ;
+  rdfs:label "Fulltext search result template"@en ;
   v-ui:template """
-<table class="table table-bordered">
+<table class="table table-bordered table-condensed">
   <thead class="result-header">
     <tr>
       <th width="1%">#</th>
@@ -1789,4 +1850,20 @@ v-fs:FulltextResultTemplate
   </tbody>
 </table>
   """ ;
+.
+
+v-fs:MinimalSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Минимальный поиск"@ru ;
+  rdfs:label "Minimal search"@en ;
+  v-fs:searchBlank v-fs:MinimalSearchBlank ;
+  v-fs:searchOnLoad true ;
+  v-fs:loadAll true ;
+.
+
+v-fs:MinimalSearchBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+  v-fc:targetType rdf:Property ;
 .
