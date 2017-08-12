@@ -77,7 +77,8 @@ owl:DatatypeProperty a rdfs:Class ;
     rdfs:label "DatatypeProperty"@en ;
     rdfs:comment "The class of data properties." ;
     rdfs:isDefinedBy owl: ;
-    rdfs:subClassOf rdf:Property .
+    rdfs:subClassOf rdf:Property ;
+    v-ui:hasTemplate v-s:PropertyClassTemplate .
 
 owl:DeprecatedClass a rdfs:Class ;
     rdfs:label "DeprecatedClass"@en ;
@@ -132,7 +133,8 @@ owl:ObjectProperty a rdfs:Class ;
     rdfs:label "Объектное свойство"@ru ;
     rdfs:comment "The class of object properties." ;
     rdfs:isDefinedBy owl: ;
-    rdfs:subClassOf rdf:Property .
+    rdfs:subClassOf rdf:Property ;
+    v-ui:hasTemplate v-s:PropertyClassTemplate .
 
 owl:Ontology a rdfs:Class ;
     rdfs:label "Ontology"@en ;

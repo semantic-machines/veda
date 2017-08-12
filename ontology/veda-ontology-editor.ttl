@@ -155,6 +155,11 @@ v-s:SuperClassesBundle
   rdfs:label "Super classes"@en ;
   rdfs:label "Супер классы"@ru ;
 .
+v-s:SuperPropertiesBundle
+  rdf:type v-s:Bundle;
+  rdfs:label "Super properties"@en ;
+  rdfs:label "Супер свойства"@ru ;
+.
 v-s:SpecificationsBundle
   rdf:type v-s:Bundle;
   rdfs:label "Specifications"@en ;
@@ -163,7 +168,6 @@ v-s:SpecificationsBundle
 
 v-s:ClassLabelSpec
   rdf:type v-ui:PropertySpecification;
-  v-ui:forClass owl:Class ;
   v-ui:forClass rdfs:Class ;
   v-ui:forProperty rdfs:label ;
   v-ui:minCardinality 1;
@@ -171,8 +175,14 @@ v-s:ClassLabelSpec
 v-s:ClassSubClassOfSpec
   rdf:type v-ui:PropertySpecification;
   v-ui:forClass owl:Class ;
-  v-ui:forClass rdfs:Class ;
   v-ui:forProperty rdfs:subClassOf ;
+  v-ui:minCardinality 0;
+  v-ui:maxCardinality 100;
+.
+v-s:PropertySubPropertyOfSpec
+  rdf:type v-ui:PropertySpecification;
+  v-ui:forClass rdf:Property ;
+  v-ui:forProperty rdfs:subPropertyOf ;
   v-ui:minCardinality 0;
   v-ui:maxCardinality 100;
 .
@@ -325,14 +335,55 @@ v-s:PropertyClassTemplate
   rdf:type v-ui:ClassTemplate;
   rdfs:label "Property class template"@en ;
   rdfs:label "Шаблон класса Property"@ru ;
-#  v-ui:forClass rdf:Property ;
-#  v-ui:forClass owl:DatatypeProperty ;
-#  v-ui:forClass owl:ObjectProperty ;
+  v-ui:forClass rdf:Property ;
+  v-ui:forClass owl:DatatypeProperty ;
+  v-ui:forClass owl:ObjectProperty ;
   v-ui:template """
-  <div property="rdfs:label"></div>
-  <script>
-    //# sourceURL=v-s:PropertyClassTemplate
+<script>
+  if ( this.isNew() ) {
+    $("#uri", template)
+      .prop("placeholder", this.id)
+      .change(function () {
+        if (this.value) {
+          individual.id = this.value;
+        }
+      });
+  } else {
+    $("#uri", template).remove();
+  }
+  //# sourceURL=v-s:ClassClassTemplate_pre
   </script>
+  <div class="container sheet">
+    <h2><span about="@" property="rdfs:label"></span> <span class="badge" property="@"></span></h2>
+    <input type="text" id="uri" class="form-control" />
+    <em class="-view edit search" about="rdfs:label" property="rdfs:label"></em>
+    <veda-control data-type="multilingualString" class="-view edit search" property="rdfs:label"></veda-control>
+    <hr>
+    <h4 about="v-s:SuperPropertiesBundle" property="rdfs:label"></h4>
+    <div rel="rdfs:subPropertyOf" data-template="v-ui:LabelLinkTemplate" class="view edit search"></div>
+    <veda-control rel="rdfs:subPropertyOf" class="-view edit search fulltext dropdown"></veda-control>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <h4 about="rdfs:domain" property="rdfs:label"></h4>
+        <div rel="rdfs:domain" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control rel="rdfs:domain" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-md-6">
+        <h4 about="rdfs:range" property="rdfs:label"></h4>
+        <div rel="rdfs:range" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control rel="rdfs:range" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
+    <hr>
+    <div class="actions clearfix">
+      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+      <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+    </div>
+  </div>
   """ ;
 .
 

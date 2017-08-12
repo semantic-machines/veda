@@ -4,6 +4,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 rdf:Alt a rdfs:Class ;
     rdfs:label "Alt" ;
@@ -28,7 +29,8 @@ rdf:Property a rdfs:Class ;
     rdfs:label "Свойство"@ru ;
     rdfs:comment "The class of RDF properties." ;
     rdfs:isDefinedBy rdf: ;
-    rdfs:subClassOf rdfs:Resource .
+    rdfs:subClassOf rdfs:Resource ;
+    v-ui:hasTemplate v-s:PropertyClassTemplate .
 
 rdf:Seq a rdfs:Class ;
     rdfs:label "Seq" ;
