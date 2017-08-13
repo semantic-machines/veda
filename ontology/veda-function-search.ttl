@@ -1591,7 +1591,7 @@ v-fs:AttributiveSearchTemplate
   }
 
   // Mark clicked row
-  $(".search-result table", template).on("click", "tr", function () {
+  $(".search-result table", template).on("click", "tbody tr", function () {
     var that = $(this);
     that.siblings(".warning").removeClass("warning");
     that.addClass("warning");
