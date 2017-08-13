@@ -214,19 +214,20 @@ v-s:Event
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Event"@en ;
   rdfs:label "Событие"@ru ;
+  v-ui:hasTemplate v-ui:EventTemplate;
 .
 v-s:triggerByType
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
-  rdfs:label "trigger by type"@en ;
-  rdfs:label "триггер по типу"@ru ;
+  rdfs:label "Trigger by type"@en ;
+  rdfs:label "Срабатывать по типу"@ru ;
   rdfs:range rdfs:Resource ;
 .
 v-s:triggerByUid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
-  rdfs:label "trigger by uid"@en ;
-  rdfs:label "триггер по uid"@ru ;
+  rdfs:label "Trigger by ID"@en ;
+  rdfs:label "Срабатывать по ID"@ru ;
   rdfs:range rdfs:Resource ;
 .
 v-s:dependency
@@ -246,8 +247,8 @@ v-s:disabled
 v-s:runAt
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
-  rdfs:label "исполнять в"@en ;
-  rdfs:label "run at"@ru ;
+  rdfs:label "Исполнять в"@ru ;
+  rdfs:label "Run at"@en ;
   rdfs:range xsd:string ;
 .
 
