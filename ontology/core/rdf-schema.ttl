@@ -12,8 +12,8 @@ rdfs:Class a rdfs:Class ;
     rdfs:comment "The class of classes." ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:subClassOf rdfs:Resource ;
-    v-ui:hasTemplate v-s:ClassClassTemplate ;
-    v-ui:hasModel v-s:ClassClassModel .
+    v-ui:hasTemplate v-ui:ClassClassTemplate ;
+    v-ui:hasModel v-ui:ClassClassModel .
 
 rdfs:Container a rdfs:Class ;
     rdfs:label "Container"@en ;
