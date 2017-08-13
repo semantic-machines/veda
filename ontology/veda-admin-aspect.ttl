@@ -260,6 +260,7 @@ v-s:OntologyRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:OntologyRegistryBlank
   a v-fc:Blank ;
@@ -284,6 +285,7 @@ v-s:ClassRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:ClassRegistryBlank
   a v-fc:Blank ;
@@ -293,15 +295,13 @@ v-s:ClassRegistryBlank
   v-fc:targetType rdfs:Class ;
 .
 
-# -- Свойства --
+# -- СВОЙСТВА --
 
 v-s:PropertyBlank
   a v-fc:Blank ;
   rdfs:label "Свойство"@ru ;
   rdfs:label "Property"@en ;
   v-fc:targetType owl:ObjectProperty ;
-  v-fc:targetType owl:DatatypeProperty ;
-  v-fc:targetType rdf:Property ;
 .
 v-s:PropertyRegistry
   a v-fs:AttributiveSearch;
@@ -311,6 +311,7 @@ v-s:PropertyRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:PropertyRegistryBlank
   a v-fc:Blank ;
@@ -337,6 +338,7 @@ v-s:ClassTemplateRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:ClassTemplateRegistryBlank
   a v-fc:Blank ;
@@ -361,6 +363,7 @@ v-s:PersonRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:PersonRegistryBlank
   a v-fc:Blank ;
@@ -385,6 +388,7 @@ v-s:GroupRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:GroupRegistryBlank
   a v-fc:Blank ;
@@ -409,6 +413,7 @@ v-s:NetRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:NetRegistryBlank
   a v-fc:Blank ;
@@ -435,6 +440,7 @@ v-s:UserScriptRegistry
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:UserScriptRegistryBlank
   rdf:type v-fc:Blank ;
@@ -459,6 +465,7 @@ v-s:EventRegistry
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:EventRegistryBlank
   rdf:type v-fc:Blank ;
@@ -484,6 +491,7 @@ v-s:FunctionRegistry
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:FunctionRegistryBlank
   rdf:type v-fc:Blank ;
@@ -509,6 +517,7 @@ v-s:BlankRegistry
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:BlankRegistryBlank
   rdf:type v-fc:Blank ;
@@ -532,6 +541,7 @@ v-s:RegistryRegistry
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
   v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:RegistryRegistryBlank
   rdf:type v-fc:Blank ;
@@ -664,7 +674,7 @@ v-fs:AdminResultTemplate
   v-ui:template """
 <table class="table table-bordered table-condensed">
   <thead class="result-header">
-    <tr>
+    <tr class="active">
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th width="10%">@</th>
