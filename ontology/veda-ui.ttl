@@ -115,6 +115,7 @@ v-ui:PropertySpecification
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Property specification"@en ;
   rdfs:label "Спецификация свойства"@ru ;
+  v-ui:hasTemplate v-ui:PropertySpecificationTemplate ;
 .
 v-ui:tooltip
   rdf:type owl:DatatypeProperty ;
@@ -174,6 +175,7 @@ v-ui:DatatypePropertySpecification
   rdfs:subClassOf v-ui:PropertySpecification ;
   rdfs:label "Datatype property specification"@en ;
   rdfs:label "Спецификация литерального свойства"@ru ;
+  v-ui:hasTemplate v-ui:DatatypePropertySpecificationTemplate ;
 .
 v-ui:regexp
   rdf:type owl:DatatypeProperty ;
@@ -225,6 +227,7 @@ v-ui:ObjectPropertySpecification
   rdfs:subClassOf v-ui:PropertySpecification ;
   rdfs:label "Object property specification"@en ;
   rdfs:label "Спецификация объектного свойства"@ru ;
+  v-ui:hasTemplate v-ui:ObjectPropertySpecificationTemplate ;
 .
 v-ui:rangeRestriction
   rdf:type owl:ObjectProperty ;
@@ -652,50 +655,6 @@ v-ui:PS_PersonDefaultAppointment
   v-ui:forClass v-s:Person ;
   v-ui:forProperty v-s:defaultAppointment ;
   v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}' && 'v-s:official'=='true')"^^xsd:string ;
-.
-
-v-ui:ClassTemplateTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса -Шаблон класса-"@ru ;
-  rdfs:label "Template for -Class template- class"@en ;
-  v-ui:forClass v-ui:ClassTemplate ;
-  v-ui:template """
-<div class="container sheet">
-  <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
-  <h3><span property="rdfs:label"></span> <span class="badge" property="@"></span></h3>
-  <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
-  <hr>
-  <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-  <div><em property="rdfs:comment"></em></div>
-  <veda-control property="rdfs:comment" data-type="multilingualString" class="-view edit search"></veda-control>
-  <br class="-view edit search">
-  <h4 about="v-ui:forClass" property="rdfs:label"></h4>
-  <div rel="v-ui:forClass" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-  <veda-control rel="v-ui:forClass" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-  <br>
-  <veda-control property="v-ui:template" data-type="source"></veda-control>
-  <br>
-  <div class="actions">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-  </div>
-</div>
-  """ ;
-.
-
-v-ui:PsForClassSpec
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация типа для класса Resource"@ru ;
-  rdfs:label "Type specification for Resource class"@en ;
-  v-ui:forClass v-ui:ClassTemplate ;
-  v-ui:forProperty v-ui:forClass ;
-  v-ui:tooltip "Ссылка на объект типа Класс."@ru ;
-  v-ui:tooltip "Link to object of type Class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='owl:Class' || 'rdf:type'=='rdfs:Class')"^^xsd:string ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 100 ;
 .
 
 v-ui:ResourceTemplate
