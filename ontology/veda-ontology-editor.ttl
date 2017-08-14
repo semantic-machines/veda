@@ -224,7 +224,8 @@ v-ui:CommonOntologyTemplate
   }
   //# sourceURL=v-ui:CommonOntologyTemplate_pre
 </script>
-<div>
+<div style="position:relative;">
+  <a style="position:absolute;top:10px;right:10px;" href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
   <h2><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br><small><span about="@" property="rdfs:label"></span> (<span property="@"></span>)</small></h2>
   <input type="text" id="uri" class="form-control" />
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
@@ -339,7 +340,7 @@ v-ui:ClassClassTemplate
     }
   }
 
-  template.on("click", "a[href]", function (e) {
+  template.on("click", "a[href][resource]", function (e) {
     e.preventDefault();
     var target = $(this);
     var uri = target.attr("href").split("/").pop();

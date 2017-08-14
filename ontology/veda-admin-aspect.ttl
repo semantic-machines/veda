@@ -809,13 +809,13 @@ v-ui:AdministrationAspectTemplate
   rdfs:label "Template for Administration aspect class"@en ;
   v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
-<div class="container-fluid sheet" style="position:relative;">
+<div class="container sheet" style="position:relative;">
   <h1 about="v-s:AdministrationAspect1" property="rdfs:label"></h1>
   <br>
   <ul id="admin-tabs" class="nav nav-pills" role="tablist">
     <li role="presentation"><a href="#Classes" aria-controls="Classes" role="tab" data-toggle="tab" about="v-s:ClassesBundle" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#Blanks" aria-controls="Blanks" role="tab" data-toggle="tab" about="v-s:BlanksBundle" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#Registries" aria-controls="Registries" role="tab" data-toggle="tab" about="v-s:RegistriesBundle" property="rdfs:label"></a></li>
+    <!--li role="presentation"><a href="#Blanks" aria-controls="Blanks" role="tab" data-toggle="tab" about="v-s:BlanksBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Registries" aria-controls="Registries" role="tab" data-toggle="tab" about="v-s:RegistriesBundle" property="rdfs:label"></a></li-->
     <li role="presentation"><a href="#Nets" aria-controls="Nets" role="tab" data-toggle="tab" about="v-s:NetsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
   </ul>
@@ -852,7 +852,7 @@ v-ui:AdministrationAspectTemplate
       </div>
     </div>
 
-    <div role="tabpanel" class="tab-pane" id="Blanks">
+    <!--div role="tabpanel" class="tab-pane" id="Blanks">
       <h2 about="v-s:BlanksBundle" property="rdfs:label"></h2>
       <div class="panel panel-default">
         <div class="panel-heading" about="v-s:BlankRegistry" property="rdfs:label"></div>
@@ -868,7 +868,7 @@ v-ui:AdministrationAspectTemplate
         <div class="panel-body" about="v-s:RegistryRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
 
-    </div>
+    </div-->
 
     <div role="tabpanel" class="tab-pane" id="Nets">
       <h2 about="v-s:NetsBundle" property="rdfs:label"></h2>
