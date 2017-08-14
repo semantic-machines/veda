@@ -198,7 +198,7 @@ v-s:AdministrationAspect
   rdfs:label "Администрирование"@ru ;
   rdfs:comment "Administration aspect"@en ;
   rdfs:comment "Аспект администрирования"@ru ;
-  v-ui:hasTemplate v-s:AdministrationAspectTemplate ;
+  v-ui:hasTemplate v-ui:AdministrationAspectTemplate ;
 .
 
 v-s:AdministrationAspect1
@@ -209,7 +209,7 @@ v-s:AdministrationAspect1
   v-s:shortLabel "Administration"@en ;
   v-s:shortLabel "Администрирование"@ru ;
   v-s:hasImage v-s:AdministrationImage ;
-  v-s:hasBlank v-s:OntologyBlank ;
+#  v-s:hasBlank v-s:OntologyBlank ;
   v-s:hasBlank v-s:ClassBlank ;
   v-s:hasBlank v-s:PropertyBlank ;
   v-s:hasBlank v-s:ClassTemplateBlank ;
@@ -218,10 +218,10 @@ v-s:AdministrationAspect1
   v-s:hasBlank v-s:NetBlank ;
   v-s:hasBlank v-s:UserScriptBlank ;
   v-s:hasBlank v-s:EventBlank ;
-  v-s:hasBlank v-s:FunctionBlank ;
+#  v-s:hasBlank v-s:FunctionBlank ;
   v-s:hasBlank v-s:BlankBlank ;
   v-s:hasBlank v-s:RegistryBlank ;
-  v-s:hasRegistry v-s:OntologyRegistry ;
+#  v-s:hasRegistry v-s:OntologyRegistry ;
   v-s:hasRegistry v-s:ClassRegistry ;
   v-s:hasRegistry v-s:PropertyRegistry ;
   v-s:hasRegistry v-s:ClassTemplateRegistry ;
@@ -230,7 +230,7 @@ v-s:AdministrationAspect1
   v-s:hasRegistry v-s:NetRegistry ;
   v-s:hasRegistry v-s:UserScriptRegistry ;
   v-s:hasRegistry v-s:EventRegistry ;
-  v-s:hasRegistry v-s:FunctionRegistry ;
+#  v-s:hasRegistry v-s:FunctionRegistry ;
   v-s:hasRegistry v-s:BlankRegistry ;
   v-s:hasRegistry v-s:RegistryRegistry ;
 .
@@ -257,8 +257,8 @@ v-s:OntologyRegistry
   rdfs:label "Все онтологии"@ru ;
   rdfs:label "All ontologies"@en ;
   v-fs:searchBlank v-s:OntologyRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -282,8 +282,8 @@ v-s:ClassRegistry
   rdfs:label "Все классы"@ru ;
   rdfs:label "All classes"@en ;
   v-fs:searchBlank v-s:ClassRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -308,8 +308,8 @@ v-s:PropertyRegistry
   rdfs:label "Все свойства"@ru ;
   rdfs:label "All properties"@en ;
   v-fs:searchBlank v-s:PropertyRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -335,8 +335,8 @@ v-s:ClassTemplateRegistry
   rdfs:label "Все шаблоны"@ru ;
   rdfs:label "All templates"@en ;
   v-fs:searchBlank v-s:ClassTemplateRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -360,8 +360,8 @@ v-s:PersonRegistry
   rdfs:label "Все пользователи"@ru ;
   rdfs:label "All users"@en ;
   v-fs:searchBlank v-s:PersonRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -385,8 +385,8 @@ v-s:GroupRegistry
   rdfs:label "Все группы"@ru ;
   rdfs:label "All groups"@en ;
   v-fs:searchBlank v-s:GroupRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -410,8 +410,8 @@ v-s:NetRegistry
   rdfs:label "Все сети"@ru ;
   rdfs:label "All nets"@en ;
   v-fs:searchBlank v-s:NetRegistryBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -437,8 +437,8 @@ v-s:UserScriptRegistry
   v-fs:searchBlank v-s:UserScriptRegistryBlank ;
 #  v-fs:searchBlankTemplate v-s:UserScriptTemplate ;
 #  v-fs:searchResultTemplate v-s:UserScriptResultTemplate ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -463,7 +463,7 @@ v-s:EventRegistry
   rdfs:label "All events"@en ;
   v-fs:searchBlank v-s:EventRegistryBlank ;
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -489,7 +489,7 @@ v-s:FunctionRegistry
   rdfs:label "All functions"@en ;
   v-fs:searchBlank v-s:FunctionRegistryBlank ;
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -515,7 +515,7 @@ v-s:BlankRegistry
   rdfs:label "All blanks"@en ;
   v-fs:searchBlank v-s:BlankRegistryBlank ;
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -539,7 +539,7 @@ v-s:RegistryRegistry
   rdfs:label "All registries"@en ;
   v-fs:searchBlank v-s:RegistryRegistryBlank ;
   v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:AdminResultTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
   v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
@@ -548,6 +548,31 @@ v-s:RegistryRegistryBlank
   rdfs:label "Все реестры"@ru ;
   rdfs:label "All registries"@en ;
   v-fc:targetType v-fs:AttributiveSearch ;
+.
+
+# -- ПРАВА --
+
+v-s:PermissionStatementBlank
+  a v-fc:Blank ;
+  rdfs:label "Право"@ru ;
+  rdfs:label "Permission"@en ;
+  v-fc:targetType v-s:PermissionStatement ;
+.
+v-s:PermissionStatementRegistry
+  a v-fs:AttributiveSearch ;
+  rdfs:label "Все права"@ru ;
+  rdfs:label "All permissions"@en ;
+  v-fs:searchBlank v-s:PermissionStatementRegistryBlank ;
+  v-fs:searchBlankTemplate v-fs:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+  v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+v-s:PermissionStatementRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Все реестры"@ru ;
+  rdfs:label "All registries"@en ;
+  v-fc:targetType v-s:PermissionStatement ;
 .
 
 # -- НАПОЛНЕНИЕ АСПЕКТА АДМИНИСТРИРОВАНИЯ END --
@@ -590,14 +615,97 @@ v-s:UserScriptResultTemplate
   """ ;
 .
 
+# -- ШАБЛОНЫ ДЛЯ ПОИСКА В АСПЕКТЕ АДМИНИСТРИРОВАНИЯ --
+
+v-fs:AdminBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <div class="col-md-12">
+    <h3 about="v-fs:EnterQuery" property="rdfs:label"></h3>
+    <veda-control property="*" data-type="string"></veda-control>
+  </div>
+</div>
+<script>
+  container.siblings(".search-button.pull-right").remove();
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-ui:AdminBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-ui:AdminBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
+  v-ui:template """
+<div>
+  <veda-control property="*" data-type="string"></veda-control>
+</div>
+<script>
+  container.siblings(".search-button.pull-right").remove();
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-ui:AdminBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-ui:AdminResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска для админов"@ru ;
+  rdfs:label "Admin search result template"@en ;
+  v-ui:template """
+<table class="table table-condensed">
+  <thead class="result-header">
+    <tr class="active">
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="10%">@</th>
+      <th class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="@"></td>
+      <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="rdfs:label"></td>
+      <td about="@" property="v-s:created"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+
+
 # -- ШАБЛОН АСПЕКТА АДМИНИСТРИРОВАНИЯ --
-v-s:AdministrationAspectTemplate
+v-ui:AdministrationAspectTemplate1
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
   rdfs:label "Template for Administration aspect class"@en ;
   v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
-<div class="container-fluid" style="position:relative;">
+<div class="container-fluid sheet" style="position:relative;">
   <div class="row">
     <div class="col-md-4">
       <div class="container-fluid">
@@ -636,65 +744,182 @@ v-s:AdministrationAspectTemplate
       </div>
     </div>
   </div>
+
+  <hr>
+  <div about="@" data-template="v-ui:AdministrationAspectTemplate1"></div>
+
 </div>
   """ ;
 .
 
-# -- ШАБЛОНЫ ДЛЯ ПОИСКА В АСПЕКТЕ АДМНИСТРИРОВАНИЯ --
+v-s:ClassesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Классы"@ru ;
+  rdfs:label "Classes"@en ;
+.
+v-s:PropertiesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Свойства"@ru ;
+  rdfs:label "Properties"@en ;
+.
+v-s:TemplatesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Шаблоны"@ru ;
+  rdfs:label "Templates"@en ;
+.
+v-s:RightsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Управление правами"@ru ;
+  rdfs:label "Rights management"@en ;
+.
+v-s:NetsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сети"@ru ;
+  rdfs:label "Nets"@en ;
+.
+v-s:BlanksBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
+.
+v-s:RegistriesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Реестры"@ru ;
+  rdfs:label "Registries"@en ;
+.
+v-s:GroupsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Группы"@ru ;
+  rdfs:label "Groups"@en ;
+.
+v-s:UsersBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Пользователи"@ru ;
+  rdfs:label "Users"@en ;
+.
+v-s:PermissionStatementsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Права"@ru ;
+  rdfs:label "Permissions"@en ;
+.
 
-v-fs:AdminBlankTemplate
+v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон бланка поиска персоны"@ru ;
-  rdfs:label "Person search blank template"@en ;
+  rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
+  rdfs:label "Template for Administration aspect class"@en ;
+  v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
-<div class="row">
-  <div class="col-md-12">
-    <h3 about="v-fs:EnterQuery" property="rdfs:label"></h3>
-    <veda-control property="*" data-type="string"></veda-control>
+<div class="container-fluid sheet" style="position:relative;">
+  <h1 about="v-s:AdministrationAspect1" property="rdfs:label"></h1>
+  <br>
+  <ul id="admin-tabs" class="nav nav-pills" role="tablist">
+    <li role="presentation"><a href="#Classes" aria-controls="Classes" role="tab" data-toggle="tab" about="v-s:ClassesBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Blanks" aria-controls="Blanks" role="tab" data-toggle="tab" about="v-s:BlanksBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Registries" aria-controls="Registries" role="tab" data-toggle="tab" about="v-s:RegistriesBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Nets" aria-controls="Nets" role="tab" data-toggle="tab" about="v-s:NetsBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
+  </ul>
+  <br>
+  <!-- Tab panes -->
+  <div class="tab-content">
+
+    <div role="tabpanel" class="tab-pane" id="Classes">
+
+      <div class="row">
+        <div class="col-md-6">
+          <h2 about="v-s:ClassesBundle" property="rdfs:label"></h2>
+          <div class="panel panel-default">
+            <div class="panel-heading" about="v-s:ClassRegistry" property="rdfs:label"></div>
+            <div class="panel-body" about="v-s:ClassRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h2 about="v-s:PropertiesBundle" property="rdfs:label"></h2>
+          <div class="panel panel-default">
+            <div class="panel-heading" about="v-s:PropertyRegistry" property="rdfs:label"></div>
+            <div class="panel-body" about="v-s:PropertyRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h2 about="v-s:TemplatesBundle" property="rdfs:label"></h2>
+          <div class="panel panel-default">
+            <div class="panel-heading" about="v-s:ClassTemplateRegistry" property="rdfs:label"></div>
+            <div class="panel-body" about="v-s:ClassTemplateRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Blanks">
+      <h2 about="v-s:BlanksBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading" about="v-s:BlankRegistry" property="rdfs:label"></div>
+        <div class="panel-body" about="v-s:BlankRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      </div>
+
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Registries">
+      <h2 about="v-s:RegistriesBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading" about="v-s:RegistryRegistry" property="rdfs:label"></div>
+        <div class="panel-body" about="v-s:RegistryRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      </div>
+
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Nets">
+      <h2 about="v-s:NetsBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading" about="v-s:NetRegistry" property="rdfs:label"></div>
+        <div class="panel-body" about="v-s:NetRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      </div>
+
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Rights">
+      <div class="row">
+        <div class="col-md-6">
+          <h2 about="v-s:GroupsBundle" property="rdfs:label"></h2>
+          <div class="panel panel-default">
+            <div class="panel-heading" about="v-s:GroupRegistry" property="rdfs:label"></div>
+            <div class="panel-body" about="v-s:GroupRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h2 about="v-s:UsersBundle" property="rdfs:label"></h2>
+          <div class="panel panel-default">
+            <div class="panel-heading" about="v-s:PersonRegistry" property="rdfs:label"></div>
+            <div class="panel-body" about="v-s:PersonRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h2 about="v-s:PermissionStatementsBundle" property="rdfs:label"></h2>
+          <div class="panel panel-default">
+            <div class="panel-heading" about="v-s:PermissionStatementRegistry" property="rdfs:label"></div>
+            <div class="panel-body" about="v-s:PermissionStatementRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 <script>
-  container.siblings(".search-button.pull-right").remove();
-  $("input", template).keydown(function (e) {
-    if (e.which === 13) {
-      var value = this.value;
-      individual.set("*", [value]);
-      container.siblings(".search-button").click();
-    }
+  $("#admin-tabs", template).on("click", "a", function (e) {
+    e.preventDefault();
+    individual.activeTab = $(this).attr("href");
   });
-  //# sourceURL=v-fs:FulltextBlankTemplate_post
+  if (individual.activeTab) {
+    $("#admin-tabs a[href='" + individual.activeTab + "']", template).tab("show");
+  } else {
+    $("#admin-tabs a:first", template).tab("show");
+  }
+  //# sourceURL=v-ui:AdministrationAspectTemplate_post
 </script>
-  """ ;
-.
-
-v-fs:AdminResultTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон отображения результатов поиска для админов"@ru ;
-  rdfs:label "Admin search result template"@en ;
-  v-ui:template """
-<table class="table table-bordered table-condensed">
-  <thead class="result-header">
-    <tr class="active">
-      <th width="1%">#</th>
-      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="10%">@</th>
-      <th class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td>###</td>
-      <td about="@" data-template="v-ui:IconModalTemplate"></td>
-      <td property="@"></td>
-      <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
-      <td about="@" property="rdfs:label"></td>
-      <td about="@" property="v-s:created"></td>
-      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
-    </tr>
-  </tbody>
-</table>
   """ ;
 .

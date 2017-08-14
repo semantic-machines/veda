@@ -95,6 +95,7 @@ v-ui:ClassModel
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Class model"@en ;
   rdfs:label "Модель класса"@ru ;
+  v-ui:hasTemplate v-ui:ClassModelTemplate ;
 .
 v-ui:template
   rdf:type owl:DatatypeProperty ;

@@ -260,6 +260,7 @@ v-s:Group
   rdfs:comment "Группа ресурсов"@ru ;
   rdfs:label "Group"@en ;
   rdfs:label "Группа"@ru ;
+  v-ui:hasTemplate v-ui:GroupTemplate ;
 .
 
 # ------------------------------------------------------------
@@ -277,11 +278,36 @@ v-s:memberOf
   rdfs:range v-s:Group ;
 .
 
+# ------------------------------------------------------------
+
+v-s:StatusStatement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:label "Status statement"@en ;
+  rdfs:label "Запись о статусе"@ru ;
+.
+
+# v-s:resource (domain)
+# v-s:hasStatus (v-s:Thing)
+# v-s:backwardTarget (v-s:BackwardLink)
+# v-s:backwardProperty (v-s:BackwardLink)
+
+v-s:hasStatusStatement
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Status statement"@en ;
+  rdfs:label "Запись о статусе"@ru ;
+  rdfs:range v-s:StatusStatement ;
+  rdfs:domain v-s:Thing ;
+.
+
 # Нужен абстрактный класс и наследование не от v-s:Thing
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:StatusStatement ;
+  rdfs:domain v-s:BackwardLink ;
   rdfs:label "Can create"@en ;
   rdfs:label "Можно создавать"@ru ;
   rdfs:range xsd:boolean ;
@@ -290,6 +316,8 @@ v-s:canDelete
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:StatusStatement ;
+  rdfs:domain v-s:BackwardLink ;
   rdfs:label "Can delete"@en ;
   rdfs:label "Можно удалять"@ru ;
   rdfs:range xsd:boolean ;
@@ -298,6 +326,8 @@ v-s:canRead
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:StatusStatement ;
+  rdfs:domain v-s:BackwardLink ;
   rdfs:label "Can read"@en ;
   rdfs:label "Можно читать"@ru ;
   rdfs:range xsd:boolean ;
@@ -306,6 +336,8 @@ v-s:canUpdate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:StatusStatement ;
+  rdfs:domain v-s:BackwardLink ;
   rdfs:label "Can update"@en ;
   rdfs:label "Можно изменять"@ru ;
   rdfs:range xsd:boolean ;
@@ -314,20 +346,12 @@ v-s:canUpdate
 v-s:resource
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Membership ;
+  rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:Container ;
   rdfs:label "Resource"@en ;
   rdfs:label "Ресурс"@ru ;
   rdfs:range rdfs:Resource ;
 .
-# ------------------------------------------------------------
-v-s:PermissionFilter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:comment "Запись о соответствии объекта и значения фильтра прав."@ru ;
-  rdfs:label "Object's permissions filter record"@en ;
-  rdfs:label "Фильтр прав"@ru ;
-.
-
 # ------------------------------------------------------------
 v-s:PermissionStatement
   rdf:type owl:Class ;
@@ -339,24 +363,16 @@ v-s:PermissionStatement
   v-ui:hasTemplate v-ui:PermissionStatementTemplate ;
 .
 
-# Нужен суперкласс
+# v-s:hasStatus (v-s:Thing)
+
 v-s:permissionObject
   rdf:type owl:ObjectProperty ;
   rdfs:comment "An object to which rights are granted."@en ;
   rdfs:comment "Объект, на который выдаются права."@ru ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:PermissionFilter ;
   rdfs:label "Permission resource"@en ;
   rdfs:label "Ресурс полномочий"@ru ;
   rdfs:range rdfs:Resource ;
-.
-v-s:triggerByTypeValue
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Value of permission filter"@en ;
-  rdfs:label "Значение фильтра прав"@ru ;
-  rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:PermissionFilter ;
-  rdfs:range xsd:string ;
 .
 v-s:permissionSubject
   rdf:type owl:ObjectProperty ;

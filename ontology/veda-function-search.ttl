@@ -1867,3 +1867,495 @@ v-fs:MinimalSearchBlank
   rdfs:label "Test blank"@en ;
   v-fc:targetType rdf:Property ;
 .
+
+v-fs:AttributiveSearchInlineTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Model for v-fs:AttributiveSearch class"@en ;
+  rdfs:label "Модель для класса v-fs:AttributiveSearch"@ru ;
+  v-ui:template """
+<script>
+  var self = individual,
+      searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined,
+      searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() : undefined,
+      searchResultContainer = $("#search-result", template);
+  if ( searchResultTemplate ) {
+    searchResultContainer.append( $(searchResultTemplate) );
+    var resultContainer = $(".result-container", template);
+    var resultTemplate = resultContainer.html();
+    individual.resultTemplate = resultTemplate;
+    resultContainer.empty();
+  } else {
+    $(".stats-top, .stats-bottom, .result-header", template).remove();
+    searchResultTemplate = (new veda.IndividualModel("v-fs:MinimalSearchResultTemplate"))["v-ui:template"][0].toString();
+    searchResultContainer.append( $(searchResultTemplate) );
+    var resultContainer = $(".result-container", template);
+    var resultTemplate = resultContainer.html();
+    individual.resultTemplate = resultTemplate;
+    resultContainer.empty();
+  }
+  if ( !searchBlankTemplate ) {
+    $("#params", template).remove();
+  }
+  if ( this.hasValue("v-fs:loadAll", true) ) {
+    $("#no-more-results", template).remove();
+  }
+
+
+  // Enable swipe for result table
+  $("body").keydown(enableSwipe).keyup(disableSwipe);
+  template.one("remove", function () {
+    $("body").off("keydown", enableSwipe).off("keyup", disableSwipe);
+  });
+  function disableSwipe (e) {
+    if (e.which === 17) {
+      $("#search-result", template).addClass("noSwipe").removeClass("swipe");
+    }
+  }
+  function enableSwipe (e) {
+    if (e.ctrlKey) {
+      $("#search-result", template).addClass("swipe").removeClass("noSwipe");
+    }
+  }
+
+  var prevDistance = 0, delta = 0;
+  $("#search-result", template).swipe({
+    swipeStatus: function (event, phase, direction, distance, duration) {
+      if (phase === "move" && event.ctrlKey === true) {
+        this.css("cursor", "move");
+        if (direction === "left") {
+          delta = distance - prevDistance;
+          prevDistance = distance;
+          this.scrollLeft( this.scrollLeft() + delta );
+        } else if (direction === "right") {
+          delta = distance - prevDistance;
+          prevDistance = distance;
+          this.scrollLeft( this.scrollLeft() - delta );
+        } else if (direction === "up") {
+          window.scrollBy(0, distance);
+        } else if (direction === "down") {
+          window.scrollBy(0, -distance);
+        }
+      } else {
+        prevDistance = 0;
+        delta = 0;
+        this.css("cursor", "");
+      }
+    }
+  });
+  template.one("remove", function () {
+    prevDistance = null;
+    delta = null;
+    $("#search-result", template).swipe("destroy");
+  });
+
+  //# sourceURL=v-fs:AttributiveSearchInlineTemplate_pre
+</script>
+<div>
+  <style>
+    .swipe {
+      cursor: move;
+    }
+  </style>
+  <div id="params">
+    <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
+    <div id="search-form"></div>
+    <br>
+    <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
+    <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
+    <br>
+  </div>
+  <div id="results" class="hidden">
+    <div class="result-header">
+      <h3 class="clearfix">
+        <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
+        <small class="stats-top pull-right" style="color:black">
+          <span about="v-fs:TotalFoundBundle" property="rdfs:label"></span>
+          <span class="total-found badge">0</span>&nbsp;&nbsp;
+          <span about="v-fs:TotalProcessedBundle" property="rdfs:label"></span>
+          <span class="total-processed badge">0</span>&nbsp;&nbsp;
+          <strong about="v-fs:TotalAuthorizedBundle" property="rdfs:label"></strong>
+          <span class="total-authorized badge">0</span>&nbsp;&nbsp;
+        </small>
+      </h3>
+    </div>
+    <div id="search-result" class="search-result table-responsive noSwipe"></div>
+    <div class="not-found alert alert-warning hidden">
+      <strong about="v-fs:Empty" property="rdfs:label"></strong> <span about="v-fs:NothingFound" property="rdfs:label"></span>
+    </div>
+    <div id="no-more-results" class="alert alert-success hidden">
+      <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
+    </div>
+    <div class="text-center">
+      <button id="more-results" class="btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
+      <button id="all-results" class="btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+    </div>
+  </div>
+</div>
+<script>
+  var self = individual,
+      searchBlankContainer = $("#search-form", template),
+      searchResultContainer = $("#search-result", template),
+      searchButton = $(".search-button", template),
+      clearButton = $(".clear-button", template),
+      moreResults = $("#more-results", template),
+      allResults = $("#all-results", template),
+      noMoreResults = $("#no-more-results", template),
+      searchBlank = self.hasValue("v-fs:searchBlank") ? self["v-fs:searchBlank"][0] : undefined ,
+      searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined ,
+      resultContainer = $(".result-container", template),
+      resultTemplate = individual.resultTemplate,
+      notFound = $(".not-found", template),
+      totalFound = $(".total-found", template),
+      totalProcessed = $(".total-processed", template),
+      totalAuthorized = $(".total-authorized", template),
+      statsTop = $(".stats-top", template),
+      statsBottom = $(".stats-bottom", template);
+
+  self.cursor = self.cursor || 0;
+  self.top = veda.user.displayedElements || 10;
+  self.limit = self.limit || 1000;
+  self.estimated = self.estimated || 0;
+  self.result = self.result || [];
+  self.scroll = self.scroll || 0;
+
+  // Render search form
+  if ( searchBlank ) {
+    searchBlank._init();
+    searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
+    searchBlank.object.on("search", formHandler);
+    template.one("remove", function () {
+      searchBlank.object.off("search", formHandler);
+    });
+  } else {
+    $("#params", template).remove();
+  }
+  function formHandler () {
+    self.top = veda.user.displayedElements || 10;
+    search();
+  }
+
+  // Show results on load if they are available (e.g. if we came back)
+  if ( self.result.length && location.hash.indexOf(self.id) >= 0 ) {
+    renderResult(self.result).then(function () {
+      scrollTo(self.scroll);
+    });
+  // Search on load
+  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
+    search().then(function () {
+      if (location.hash.indexOf(self.id) >= 0) {
+        scrollTo( $("#results", template).offset().top );
+      }
+    });
+  }
+
+  // Remember scroll position
+  template.one("remove", function () {
+    self.scroll = $(window).scrollTop();
+  });
+
+  // Search button handler
+  searchButton.click(function () {
+    var $this = $(this);
+    // Reset top
+    self.top = veda.user.displayedElements || 10;
+    toggleSpin($this);
+    search().then(function () {
+      scrollTo( $("#results", template).offset().top );
+      toggleSpin($this);
+    });
+  });
+
+  function ctrlEnterHandler (e) {
+    if (e.ctrlKey && e.keyCode === 13) {
+      self.top = veda.user.displayedElements || 10;
+      search().then(function () {
+        scrollTo( $("#results", template).offset().top );
+      });
+    }
+// Очистка поисковой формы по клавишам Ctrl+Delete
+    if (e.ctrlKey && e.keyCode === 46) {
+      var obj = searchBlank.object;
+      Object.keys(obj.properties).map(function (property_uri) {
+        if (property_uri === "@" || property_uri === "rdf:type") {
+          return;
+        }
+        obj.set(property_uri, []);
+      });
+    }
+  }
+
+  $(window).on("keyup", ctrlEnterHandler);
+  template.one("remove", function () {
+    $(window).off("keyup", ctrlEnterHandler);
+  });
+
+  function ctrlDelHandler (e) { }
+
+  // Clear button handler
+  clearButton.click(function () {
+    var obj = searchBlank.object;
+    Object.keys(obj.properties).map(function (property_uri) {
+      if (property_uri === "@" || property_uri === "rdf:type") {
+        return;
+      }
+      obj.set(property_uri, []);
+    });
+  });
+
+  // More results button handler
+  moreResults.click(function () {
+    var $this = $(this);
+    toggleSpin($this);
+    search(self.cursor).then(function () {
+      toggleSpin($this);
+    });
+  });
+
+  // All results button handler
+  allResults.click(function () {
+    var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    if ( self.estimated - self.cursor < 100 || confirm(warn) ) {
+      loadAll();
+    }
+  });
+  function loadAll() {
+    if (self.cursor < self.estimated && template.is(":visible")) {
+      search(self.cursor).then(loadAll);
+    }
+  }
+
+  // Auto load more results when page bottom reached
+/*  $(window).on("scroll", reachedBottom);
+  template.one("remove", function () {
+    $(window).off("scroll", reachedBottom);
+  });
+  function reachedBottom() {
+    if( $(window).scrollTop() + $(window).height() === $(document).height() && moreResults.is(":visible") ) {
+      moreResults.click();
+    }
+  }*/
+
+  // Double click on result table row routes to search result
+  $("#search-result", template).on("dblclick", "tbody tr", function () {
+    var uri = $(this).attr("resource");
+    riot.route("#/" + uri);
+  });
+
+  // Manage sort
+  var sortBy = "", dir = "";
+  if ( !self.hasValue("v-fs:sortOrder") ) {
+    self["v-fs:sortOrder"] = ["'v-s:created' desc"];
+  }
+  var tmp = self["v-fs:sortOrder"][0].split(" ");
+  sortBy = tmp[0]; dir = tmp[1];
+  $(".orderby", template).each( function () {
+    var header = $(this);
+    var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
+    header.prepend(a, " ");
+    var property_uri = header.attr("data-orderby");
+    if (sortBy.indexOf(property_uri) >= 0) {
+      a.removeClass("text-muted");
+      if (dir === "desc") { a.removeClass("glyphicon-sort-by-attributes").addClass("glyphicon-sort-by-attributes-alt"); }
+    }
+    a.click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $this = $(this);
+      $(".orderby a", template).addClass("text-muted");
+      var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
+      $this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
+      self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
+      toggleSpin($this);
+      search().then(function () {
+        scrollTo( $("#results", template).offset().top );
+        toggleSpin($this);
+      });
+    });
+  });
+
+  // Render result
+  function renderResult(resultDelta) {
+
+    // Stats
+    if (self.result.length < 5) {
+      statsBottom.hide();
+    } else {
+      statsBottom.show();
+    }
+    totalFound.text(self.estimated || 0);
+    totalProcessed.text(self.cursor || 0);
+    totalAuthorized.text(self.result.length || 0);
+    $("#results", template).removeClass("hidden");
+
+    // Toggle "more results" button & "no more results" alert
+    if (self.cursor === self.estimated) {
+      moreResults.addClass("hidden");
+      allResults.addClass("hidden");
+      noMoreResults.removeClass("hidden");
+    } else {
+      moreResults.removeClass("hidden");
+      allResults.removeClass("hidden");
+      noMoreResults.addClass("hidden");
+    }
+    // Toggle "not found" alert & "no more results" alert
+    if (self.result.length) {
+      notFound.addClass("hidden");
+    } else {
+      notFound.removeClass("hidden");
+      noMoreResults.addClass("hidden");
+    }
+
+    // Prefetch new search results alltogether
+    var prefetch = [];
+    resultDelta.map(function (uri) {
+      if ( !veda.cache[uri] ) {
+        prefetch.push( uri );
+      }
+    });
+    return get_individuals({
+      ticket: veda.ticket,
+      uris: prefetch,
+      async: true
+    }).then(function (prefetched) {
+      prefetched.map(function (json) {
+        var fetched = new veda.IndividualModel(json);
+      });
+
+      var total = self.result.length;
+      var delta = resultDelta.length;
+      // Render each result
+      resultDelta.map(function (uri, i) {
+        var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
+            item = new veda.IndividualModel(uri);
+        item.present(resultContainer, tmpl);
+        if (item.id === self.marked) {
+          tmpl.addClass("warning");
+        }
+        setTimeout(function () {
+          $("td", tmpl).each( function () {
+            var text = getText(this);
+            if (text && text.length > 200) {
+              this.textContent = text.substring(0, 200) + "...";
+            }
+          });
+          tmpl.show();
+        }, 300);
+      });
+    });
+
+  }
+
+  function getText(node) {
+    if (node.childNodes && node.childNodes.length) {
+      return [].map.call(node.childNodes, getText).join(" ");
+    } else {
+      return node.nodeValue;
+    }
+  }
+
+  // Spinner
+  function toggleSpin(el) {
+    var $el = $(el);
+    var hasSpinner = $el.children(".fa-spinner");
+    if ( hasSpinner.length ) {
+      $el.removeClass("disabled");
+      hasSpinner.remove();
+    } else {
+      $el.addClass("disabled");
+      $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
+    }
+  }
+
+  // Scroll to position
+  function scrollTo(position) {
+    $("html, body").animate({
+      scrollTop: position
+    });
+  }
+
+  // Mark clicked row
+  $(".search-result table", template).on("click", "tbody tr", function () {
+    var that = $(this);
+    that.siblings(".warning").removeClass("warning");
+    that.addClass("warning");
+    self.marked = that.attr("resource");
+  });
+
+  // Search
+  function search(cursor) {
+    if (cursor > 0) {
+      self.cursor = cursor;
+    } else {
+      self.cursor = 0;
+      self.result = [];
+      resultContainer.empty();
+    }
+    var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
+    var queryString = [];
+    if ( searchBlank ) { queryString.push( veda.Util.queryFromIndividual(searchBlank.object) ) }
+    if ( self.hasValue("v-fs:fulltextQuery") ) { queryString.push( self["v-fs:fulltextQuery"][0] ) }
+    queryString = queryString.join(" && ");
+    if ( queryString ) {
+      return query({
+        ticket: veda.ticket,
+        query: queryString,
+        sort: sort,
+        top: self.top,
+        limit: self.limit,
+        from: self.cursor,
+        async: true
+      }).then(function (results) {
+        self.result = self.result.concat(results.result);
+        self.estimated = results.estimated;
+        self.cursor = results.cursor;
+        if (self.cursor === self.estimated) {
+          // Set top to results length to allow sorting of the whole list
+          self.top = self.result.length;
+        }
+        renderResult(results.result);
+      }).then(function () {
+        if ( self.hasValue("v-fs:loadAll", true) && self.cursor < self.estimated ) {
+          search(self.cursor);
+        }
+      });
+    } else {
+      return Promise.resolve(self.result);
+    }
+  }
+
+  // Export to Spreadsheet
+  var tableToExcel = (function () {
+    var uri = 'data:application/vnd.ms-excel;base64,'
+      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+      , format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
+    return function(table, name) {
+      if (!table.nodeType) table = document.getElementById(table);
+      var ctx = {
+        worksheet: name || 'Worksheet',
+        table: table.innerHTML
+      };
+      var formatted = format(template, ctx);
+      var blob = new Blob([formatted], {type: "application/vnd.ms-excel;charset=utf-8"});
+      saveAs(blob, name + ".xls");
+    }
+  })();
+
+  $(".xls", template).click(function (e) {
+    e.preventDefault();
+    var thead = $("thead", searchResultContainer).clone();
+    var tbl = $("<table id='export2xls'>").append(thead, "<tbody></tbody>");
+    for (var i = 0; i < self.result.length; i++) {
+      var tmpl = resultTemplate.replace("###", i + 1);
+      var result = new veda.IndividualModel( self.result[i] );
+      result.present($("tbody", tbl), $(tmpl));
+    }
+    setTimeout(function () {
+      tableToExcel(tbl[0], self["rdfs:label"].join(", "));
+    }, 3000);
+  });
+
+  //# sourceURL=v-fs:AttributiveSearchTemplate_post
+</script>
+  """ ;
+.
