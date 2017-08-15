@@ -2943,18 +2943,20 @@ v-ui:Graph
   // Event handlers
   function onSelect (selected) {
     select = selected;
-    body.one("keydown", function (e) {
-      if (e.which == 46) {
-        nodes.remove(selected.nodes);
-        edges.remove(selected.edges);
-      }
-      if (e.which == 73) {
-        addInLinks(selected.nodes[0]);
-      }
-      if (e.which == 79) {
-        addOutLinks(selected.nodes[0]);
-      }
-    });
+    body.off("keydown", selectedKeydownHandler);
+    body.one("keydown", selected, selectedKeydownHandler);
+  }
+  function selectedKeydownHandler(e) {
+    if (e.which == 46) {
+      nodes.remove(e.data.nodes);
+      edges.remove(e.data.edges);
+    }
+    if (e.which == 73) {
+      addInLinks(e.data.nodes[0]);
+    }
+    if (e.which == 79) {
+      addOutLinks(e.data.nodes[0]);
+    }
   }
 
   function onDoubleClick (selected) {
@@ -3031,14 +3033,14 @@ v-ui:Graph
         case "class-properties" : addInLinks( id, "'rdfs:domain'==='{id}'"); break;
         case "class-templates" : addInLinks( id, "'rdf:type'==='v-ui:ClassTemplate'&&'v-ui:forClass'==='{id}'" ); break;
         case "class-specifications" :
-          addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification'||" +
-                  "'rdf:type'==='v-ui:DatatypePropertySpecification'" +
+          addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification' || " +
+                  "'rdf:type'==='v-ui:DatatypePropertySpecification' || " +
                   "'rdf:type'==='v-ui:ObjectPropertySpecification'" +
                   ")&&'v-ui:forClass'==='{id}'" );
         break;
         case "property-specifications" :
-          addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification'||" +
-                  "'rdf:type'==='v-ui:DatatypePropertySpecification'" +
+          addInLinks( id, "('rdf:type'==='v-ui:PropertySpecification' || " +
+                  "'rdf:type'==='v-ui:DatatypePropertySpecification' || " +
                   "'rdf:type'==='v-ui:ObjectPropertySpecification'" +
                   ")&&'v-ui:forProperty'=='{id}'" );
         break;
