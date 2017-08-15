@@ -1633,5 +1633,4 @@ for (i = 0; i < 1; i++)
         check_rights_fail(ticket1.id, doc1, [can_update]);
         check_rights_fail(ticket1.id, doc1, [can_delete]);
     });
-
 }
