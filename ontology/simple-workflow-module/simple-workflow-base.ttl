@@ -1058,8 +1058,8 @@ if (doc) {
   }
 //--------------------------------------------------------------------------Внутренний документ
   if (doc['rdf:type'][0].id === "mnd-s:InternalDocument") {
-    routes['introduction'][simple+'visible'] = [true];
-    routes['introduction'][simple+'editable'] = [true];
+    routes['informing'][simple+'visible'] = [true];
+    routes['informing'][simple+'editable'] = [true];
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
     routes['coordination2'][simple+'visible'] = [true];
@@ -1068,8 +1068,11 @@ if (doc) {
     routes['coordination3'][simple+'editable'] = [true];
 
     var chief;
-    chief = doc["v-s:initiator"][0].getChief();
-
+    if (doc.hasValue("v-s:initiator")){
+      chief = doc["v-s:initiator"][0].getChief();
+    } else {
+      chief = doc["v-s:creator"][0].getChief();
+    }
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [5];
@@ -1079,8 +1082,11 @@ if (doc) {
     routes['approval'][simple+'deadlineDays'] = [5];
 
     var chief2;
-    chief2 = doc["v-s:supplier"][0].getChief();
-
+    if (doc.hasValue("v-s:responsibleDepartment")){
+      chief2 = doc["v-s:responsibleDepartment"][0].getChief();
+    } else {
+      chief2 = doc["v-s:creator"][0].getChief();
+    }
     routes['review'][simple+'visible'] = [true];
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
