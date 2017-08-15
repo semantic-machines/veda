@@ -2112,22 +2112,20 @@ td:PersonTemplate1
   <hr />
   <div class="row">
     <div class="col-md-6">
-      <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1"></div>
-      <!--veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+      <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1" data-embedded="true"></div>
+      <veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
     </div>
     <div class="col-md-6">
-      <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1"></div>
-      <!--veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+      <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1" data-embedded="true"></div>
+      <veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
       <br>
-      <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1"></div>
-      <!--veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control-->
+      <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1" data-embedded="true"></div>
+      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
     </div>
   </div>
   <br>
-  <!--button class="action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label" /-->
   <button class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
   <button class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
-  <button class="action btn btn-default -view edit -search" id="draft" about="v-s:ToDraft" property="rdfs:label" />
   <button class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
   <button class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
   <!--button class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
@@ -2508,23 +2506,23 @@ td:AccountTemplate1
     <h3 property="rdfs:label"></h3>
     <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
     <em about="v-s:owner" property="rdfs:label">Владелец</em>
-    <div rel="v-s:owner" data-template="v-ui:LabelTemplate"></div>
+    <div rel="v-s:owner" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
     <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
     <br />
     <div class="row">
       <div class="col-md-6">
         <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
-        <div property="v-s:mailbox"></div>
+        <div property="v-s:mailbox" class="view -edit -search"></div>
         <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
       </div>
       <div class="col-md-6">
         <em about="v-s:login" property="rdfs:label">Логин</em>
-        <div property="v-s:login"></div>
+        <div property="v-s:login" class="view -edit -search"></div>
         <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
       </div>
     </div>
   </div>
-  <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+  <!--button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button-->
 </div>
   """ ;
 .
@@ -2536,32 +2534,26 @@ td:PreferencesTemplate1
   v-ui:template """
   <div class="panel panel-default">
     <div class="panel-heading">
-    <div class="row">
-      <div class="col-md-4">
-      <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
+      <div class="row">
+        <div class="col-md-4">
+        <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
+        </div>
+        <div class="col-md-8 text-right">
+        <a href="#/@"><span property="@">ID</span></a>
+        </div>
       </div>
-      <div class="col-md-8 text-right">
-      <a href="#/@"><span property="@">ID</span></a>
-      </div>
-    </div>
     </div>
     <div class="panel-body">
-    <div>
-      <strong about="v-ui:preferredLanguage" property="rdfs:label">Язык</strong>:
-      <ul>
-      <li rel="v-ui:preferredLanguage" data-template="v-ui:LabelTemplate"></li>
-      <!--li rel="v-ui:preferredLanguage">
-        <span>
-          <span property="rdfs:label"></span>
-          <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-        </span>
-      </li-->
-      </ul>
-      <veda-control rel="v-ui:preferredLanguage" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-      <strong about="v-ui:displayedElements" property="rdfs:label">Отображать элементов</strong>:
-      <span property="v-ui:displayedElements"></span>
-      <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
-    </div>
+      <div>
+        <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>
+        <ul rel="v-ui:preferredLanguage">
+          <li><div property="rdfs:label"></div></li>
+        </ul>
+        <veda-control rel="v-ui:preferredLanguage" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+        <em about="v-ui:displayedElements" property="rdfs:label"></em>
+        <div property="v-ui:displayedElements" class="view -edit -search"></div>
+        <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
+      </div>
     </div>
     <!--div class="panel-footer">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
