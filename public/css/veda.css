@@ -865,6 +865,29 @@ button.close {
   display: none;
 }
 
+.sidebar {
+	position:fixed;
+	top:70px;
+	left:0px;
+	bottom:0px;
+	border-right: 1px solid #eee;
+	background-color: #fafafa;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.mainbar {
+	position:fixed;
+	top:70px;
+	rigth:0px;
+	bottom:0px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
 /* [BEGIN] NET EDITOR */
 
 .w {

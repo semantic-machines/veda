@@ -166,6 +166,11 @@ veda.Module(function (veda) { "use strict";
       return this.properties["@"];
     },
     set: function (value) {
+      var previous = this.properties && this.properties["@"];
+      if (previous && this._.cache && this._.cache[previous]) {
+        delete veda.cache[previous];
+        veda.cache[value] = this;
+      }
       this.properties["@"] = value;
       this.trigger("idChanged", value);
     }
@@ -417,6 +422,25 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
+   * Remove individual from database
+   */
+  proto.remove = function () {
+    this.trigger("beforeRemove");
+    if ( this.hasValue("v-s:isDraft", true) ) {
+      veda.drafts.remove(this.id);
+    }
+    if ( !this.isNew() ) {
+      remove_individual(veda.ticket, this.id);
+    }
+    if ( this._.cache && veda.cache && veda.cache[this.id] ) {
+      delete veda.cache[this.id];
+    }
+    this.trigger("afterRemove");
+    return this;
+  };
+
+  /**
+   * @method
    * Recover current individual in database (remove v-s:deleted property)
    */
   proto.recover = function () {
@@ -473,12 +497,17 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    self["rdf:type"].map(function (_class) {
-      if ( _class.hasValue("v-ui:hasModel") && _class["v-ui:hasModel"][0].hasValue("v-s:script") ) {
-        var model = new Function(_class["v-ui:hasModel"][0]["v-s:script"][0]);
-        model.call(self);
-      }
-    });
+    if ( this.hasValue("v-ui:hasCustomModel") ) {
+      var model = new Function(this["v-ui:hasCustomModel"][0]["v-s:script"][0]);
+      model.call(this);
+    } else {
+      self["rdf:type"].map(function (_class) {
+        if ( _class.hasValue("v-ui:hasModel") && _class["v-ui:hasModel"][0].hasValue("v-s:script") ) {
+          var model = new Function(_class["v-ui:hasModel"][0]["v-s:script"][0]);
+          model.call(self);
+        }
+      });
+    }
     return this;
   };
 

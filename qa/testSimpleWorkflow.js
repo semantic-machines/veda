@@ -93,7 +93,7 @@ basic.getDrivers().forEach (function (drv) {
     //PHASE#3: Check message
     basic.logout(driver, 3);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 3);
-    driver.findElement({css:'li[about="v-ft:Inbox2"] span[id=counter]'}).getText().then(function (result) {
+    driver.findElement({css:'li[about="v-ft:Inbox"] span[id=counter]'}).getText().then(function (result) {
         assert.equal(1, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#3 : ERROR = Invalid `message` elements count (inbox task counter)");});
     basic.logout(driver, 3);

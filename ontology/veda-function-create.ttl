@@ -18,7 +18,7 @@
 
 v-fc:FunctionCreate
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
   v-ui:hasModel v-fc:FunctionCreateModel ;
@@ -26,7 +26,7 @@ v-fc:FunctionCreate
 .
 v-fc:Blank
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
   v-ui:hasModel v-fc:BlankModel ;
@@ -38,7 +38,7 @@ v-fc:hasFormBlank
   rdfs:domain v-fc:Blank ;
   rdfs:label "Form blank"@en ;
   rdfs:label "Вид бланка"@ru ;
-  rdfs:range v-fc:Blank ; 
+  rdfs:range v-fc:Blank ;
 .
 
 v-fc:FormBlank
@@ -324,7 +324,7 @@ v-fc:BlankTemplate
 
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
-    object.present(objectContainer, undefined, "edit");
+    object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
     object.one("afterSave", saveHandler);
     object.one("afterReset", cancelHandler);
     template.one("remove", function () {
@@ -376,7 +376,7 @@ v-fc:BlankTemplateShort
 
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
-    object.present(objectContainer, undefined, "edit");
+    object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
     object.one("afterSave", saveHandler);
     object.one("afterReset", cancelHandler);
     template.one("remove", function () {
@@ -400,5 +400,20 @@ v-fc:BlankTemplateShort
   function cancelHandler () { window.history.back(); }
   //# sourceURL=v-fc:BlankTemplateShort
 </script>
+  """
+.
+
+v-fc:CreateBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "v-fc:Blank class template"@en ;
+  rdfs:label "Шаблон класса v-fc:Blank"@ru ;
+  v-ui:forClass v-fc:Blank ;
+  v-ui:template """
+<div class="container sheet">
+  <h3 about="v-fc:Blank" property="rdfs:label"></h3>
+  <em about="v-fc:targetType" property="rdfs:label"></em>
+  <div rel="v-fc:targetType" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-fc:targetType" class="fulltext dropdown -view edit search"></veda-control>
+</div>
   """
 .

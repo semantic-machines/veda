@@ -21,7 +21,7 @@
 
 v-cal:FunctionCalendar
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:Function ;
   rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
   v-ui:hasModel v-cal:FunctionCalendarModel ;
