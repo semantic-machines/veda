@@ -258,8 +258,8 @@ v-ui:ClassClassTemplate
     <div class="col-md-6">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <span class="panel-title" about="v-s:PropertiesBundle" property="rdfs:label"></span>
-          <button type="button" class="action btn btn-xs btn-success pull-right -view edit -search" id="add-property" about="v-s:Create" property="rdfs:label"></button>
+          <span about="v-s:PropertiesBundle" property="rdfs:label"></span>
+          <button type="button" class="action btn btn-xs btn-default pull-right -view edit -search" id="add-property" about="v-s:Create" property="rdfs:label"></button>
         </div>
         <div class="panel-body" style="height:400px; overflow:auto;">
           <ol id="props"></ol>
@@ -270,7 +270,7 @@ v-ui:ClassClassTemplate
       <div class="panel panel-default">
         <div class="panel-heading">
           <span class="panel-title" about="v-s:SpecificationsBundle" property="rdfs:label"></span>
-          <button type="button" class="action btn btn-xs btn-success pull-right -view edit -search" id="add-specification" about="v-s:Create" property="rdfs:label"></button>
+          <button type="button" class="action btn btn-xs btn-default pull-right -view edit -search" id="add-specification" about="v-s:Create" property="rdfs:label"></button>
         </div>
         <div class="panel-body" style="height:400px; overflow:auto;">
           <ol id="specs"></ol>
@@ -284,14 +284,14 @@ v-ui:ClassClassTemplate
       <div rel="v-ui:hasTemplate" data-template="v-ui:LabelLinkTemplate" class="view -edit -search"></div>
       <veda-control rel="v-ui:hasTemplate" class="-view edit search fulltext dropdown"></veda-control>
       <br>
-      <button type="button" class="action btn btn-sm btn-success pull-right -view edit -search" id="add-template" about="v-s:Create" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-xs btn-default pull-right -view edit -search" id="add-template" about="v-s:Create" property="rdfs:label"></button>
     </div>
     <div class="col-md-6">
       <h4 about="v-ui:hasModel" property="rdfs:label"></h4>
       <div rel="v-ui:hasModel" data-template="v-ui:LabelLinkTemplate" class="view -edit -search"></div>
       <veda-control rel="v-ui:hasModel" class="-view edit search fulltext dropdown"></veda-control>
       <br>
-      <button type="button" class="action btn btn-sm btn-success pull-right -view edit -search" id="add-model" about="v-s:Create" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-xs btn-default pull-right -view edit -search" id="add-model" about="v-s:Create" property="rdfs:label"></button>
     </div>
   </div>
   <hr>
@@ -355,7 +355,7 @@ v-ui:ClassClassTemplate
     var _class = new veda.IndividualModel("v-ui:ClassTemplate"),
         classTemplate = new veda.IndividualModel();
     classTemplate["rdf:type"] = [_class];
-    classTemplate["v-ui:forClass"] = [ individual["rdf:type"][0] ];
+    classTemplate["v-ui:forClass"] = [ individual ];
     riot.route( ["#", classTemplate.id, "#main", undefined, "edit"].join("/") );
   });
 
@@ -363,7 +363,7 @@ v-ui:ClassClassTemplate
     var _class = new veda.IndividualModel("v-ui:ClassModel"),
         classTemplate = new veda.IndividualModel();
     classTemplate["rdf:type"] = [_class];
-    classTemplate["v-ui:forClass"] = [ individual["rdf:type"][0] ];
+    classTemplate["v-ui:forClass"] = [ individual ];
     riot.route( ["#", classTemplate.id, "#main", undefined, "edit"].join("/") );
   });
 
@@ -371,7 +371,7 @@ v-ui:ClassClassTemplate
     var _class = new veda.IndividualModel("rdf:Property"),
         classTemplate = new veda.IndividualModel();
     classTemplate["rdf:type"] = [_class];
-    classTemplate["rdfs:domain"] = [ individual["rdf:type"][0] ];
+    classTemplate["rdfs:domain"] = [ individual ];
     riot.route( ["#", classTemplate.id, "#main", undefined, "edit"].join("/") );
   });
 
@@ -379,7 +379,7 @@ v-ui:ClassClassTemplate
     var _class = new veda.IndividualModel("v-ui:PropertySpecification"),
         classTemplate = new veda.IndividualModel();
     classTemplate["rdf:type"] = [_class];
-    classTemplate["v-ui:forClass"] = [ individual["rdf:type"][0] ];
+    classTemplate["v-ui:forClass"] = [ individual ];
     riot.route( ["#", classTemplate.id, "#main", undefined, "edit"].join("/") );
   });
 
@@ -1113,6 +1113,104 @@ v-ui:GroupTemplate
   v-ui:template """
 <div class="container sheet">
   <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
+  <br>
+  <br>
+  <div class="actions clearfix">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  </div>
+</div>
+  """ ;
+.
+
+v-ui:PermissionStatementTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:PermissionStatement"@ru ;
+  rdfs:label "Template for v-s:PermissionStatement class"@en ;
+  v-ui:forClass v-s:PermissionStatement ;
+  v-ui:template """
+<div class="container sheet">
+  <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name">
+      <strong about="v-s:permissionSubject" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7 value">
+      <div rel="v-s:permissionSubject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control property="v-s:permissionSubject" data-type="generic" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name">
+      <strong about="v-s:permissionObject" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7 value">
+      <div rel="v-s:permissionObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control property="v-s:permissionObject" data-type="generic" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canCreate" data-type="boolean"></veda-control>
+          <em about="v-s:canCreate" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canRead" data-type="boolean"></veda-control>
+          <em about="v-s:canRead" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canUpdate" data-type="boolean"></veda-control>
+          <em about="v-s:canUpdate" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canDelete" data-type="boolean"></veda-control>
+          <em about="v-s:canDelete" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name">
+      <strong about="v-s:hasStatus" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7 value">
+      <div rel="v-s:hasStatus" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control rel="v-s:hasStatus" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+    </div>
+  </div>
   <br>
   <br>
   <div class="actions clearfix">

@@ -1788,7 +1788,7 @@ v-ui:DocumentEventTemplate
   """ ;
 .
 
-v-ui:PermissionStatementTemplate
+v-ui:PermissionStatementInlineTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса записи выдачи прав"@ru ;
   rdfs:label "Document event template"@en ;
@@ -1857,11 +1857,11 @@ v-ui:PermissionStatementTemplate
   </div>
   <script>
 //    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
-    //# sourceURL=v-ui:PermissionStatementTemplate
     var dd = individual['rdfs:comment'][0];
     var pre = $("pre", template);
     var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
     pre.html(anchored);
+    //# sourceURL=v-ui:PermissionStatementInlineTemplate_post
   </script>
   """ ;
 .

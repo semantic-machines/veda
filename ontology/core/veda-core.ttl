@@ -370,8 +370,8 @@ v-s:permissionObject
   rdfs:comment "An object to which rights are granted."@en ;
   rdfs:comment "Объект, на который выдаются права."@ru ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:label "Permission resource"@en ;
-  rdfs:label "Ресурс полномочий"@ru ;
+  rdfs:label "Permission object (what)"@en ;
+  rdfs:label "Объект полномочий (что)"@ru ;
   rdfs:range rdfs:Resource ;
 .
 v-s:permissionSubject
@@ -379,8 +379,8 @@ v-s:permissionSubject
   rdfs:comment "Subject whom rights are granted."@en ;
   rdfs:comment "Субъект, которому предоставляются права."@ru ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:label "Permission subject"@en ;
-  rdfs:label "Субъект полномочий"@ru ;
+  rdfs:label "Permission subject (who)"@en ;
+  rdfs:label "Субъект полномочий (кто)"@ru ;
   rdfs:range rdfs:Resource ;
 .
 
@@ -464,6 +464,6 @@ v-s:fullUrl
 # ------------------------------------------------------------ INDIVIDUALS --
 v-s:AllResourcesGroup
   rdf:type v-s:Group ;
-  rdfs:label "All resources"@ru ;
+  rdfs:label "All resources"@en ;
   rdfs:label "Все ресурсы"@ru ;
 .
