@@ -110,24 +110,25 @@ module.exports = {
         driver.sleep(basic.FAST_OPERATION * 2);
         driver.findElement({css:'a[about="v-ft:Inbox"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Inbox messages")});
+        driver.sleep(basi.FAST_OPERATION);
         driver.findElement({css:'span[property="v-ft:inboxCount"]'}).getText().then(function (result) {
             assert.equal(inbox, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of inbox messages is wrong: expected = " + inbox);});
         driver.findElements({css:'a[property="rdfs:label"]'}).then(function(result) {
             assert.equal(inbox, result.length - 3);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of displayed inbox messages in is wrong: expected = " + inbox);});
-        driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'a[about="v-ft:Outbox"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"Cannot click on Outbox messages")});
+        driver.sleep(basi.FAST_OPERATION);    
         driver.findElement({css:'span[property="v-ft:outboxCount"]'}).getText().then(function (result) {
             assert.equal(outbox, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of outbox messages is wrong: expected = " + outbox);});
         driver.findElements({css:'a[property="rdfs:label"]'}).then(function(result) {
             assert.equal(outbox, result.length - 3);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of displayed outbox messages in is wrong: expected = " + outbox);});
-        driver.sleep(basic.FAST_OPERATION);
         driver.findElement({css:'a[about="v-ft:Completed"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Completed messages")});
+        driver.sleep(basi.FAST_OPERATION);
         driver.findElement({css:'span[property="v-ft:completedCount"]'}).getText().then(function (result) {
             assert.equal(completed, result);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of completed messages is wrong: expected = " + completed);});
