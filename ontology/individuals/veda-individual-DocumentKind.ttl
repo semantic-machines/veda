@@ -1237,7 +1237,20 @@ d:a7c3b20d5dc243c9ad078947ede1bb18
   rdfs:label "Требование - накладная на внутреннее перемещение ИХП"^^xsd:string;
   v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
 .
-
+d:s8p7h99m39eptw5s65io7cl1
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Исполнительный лист"^^xsd:string;
+  rdfs:label "Исполнительный лист"^^xsd:string;
+  v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
+.
+d:oqb5kf6uqkwpt00x7ge0htcl
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Расчет арендной платы"^^xsd:string;
+  rdfs:label "Расчет арендной платы"^^xsd:string;
+  v-s:hasParentLink d:c3b38c81e1594593932b9872a3257948;
+.
 #-----------------------------------------------------
 d:3e65a31d4d9340dc8861a452be25e04e
   a v-s:DocumentKind;
