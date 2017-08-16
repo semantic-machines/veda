@@ -74,16 +74,16 @@ basic.getDrivers().forEach(function(drv) {
     var lastName = 'Draft';
     fillProperty(driver, 'lastName', lastName, 1);
     fillProperty(driver, 'firstName', firstName, 1);
-    driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);")
-        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Cannot scroll to draft button");});
-    basic.isEnabled(driver, '#draft', basic.FAST_OPERATION, 1);
-    basic.execute(driver, 'click', '#draft', "****** PHASE#1 > NEW DRAFT : ERROR = Cannot click on 'draft' button");
-    driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
-        assert(txt == firstName);
-    }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/FN");});
-    driver.findElement({css:'div[property="v-s:lastName"] span[class="value-holder"]'}).getText().then(function (txt) {
-        assert(txt == lastName);
-    }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/LN");});
+    //driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);")
+    //    .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Cannot scroll to draft button");});
+    //basic.isEnabled(driver, '#draft', basic.FAST_OPERATION, 1);
+    //basic.execute(driver, 'click', '#draft', "****** PHASE#1 > NEW DRAFT : ERROR = Cannot click on 'draft' button");
+    //driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
+    //    assert(txt == firstName);
+    // }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/FN");});
+    // driver.findElement({css:'div[property="v-s:lastName"] span[class="value-holder"]'}).getText().then(function (txt) {
+    //     assert(txt == lastName);
+    // }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/LN");});
 
     //PHASE#2: Check
     check(driver, "true", 2);
