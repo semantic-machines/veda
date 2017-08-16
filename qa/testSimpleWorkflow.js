@@ -15,7 +15,8 @@ var assert = require('assert'),
 */
 
 function clickButton(driver, button, doctype, phase) {
-    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to " + button + " button");});
     driver.wait
     (
         webdriver.until.elementIsEnabled(driver.findElement({css:'[typeof="'+doctype+'"] button[id="'+ button +'"]'})),
@@ -49,12 +50,15 @@ basic.getDrivers().forEach (function (drv) {
 
     //PHASE#1: Create rule + transformation
     basic.openCreateDocumentForm(driver, 'Правило', 'v-wf:Rule');
-    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'rdfs:label' field");});
     basic.execute(driver, 'sendKeys', 'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]',
         "****** PHASE#1 : ERROR = Cannot fill 'rdfs:label' field", timeStamp);
-    driver.executeScript("document.querySelector('div[property=\"v-wf:segregateElement\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[property=\"v-wf:segregateElement\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'segregateElement' field");});
     put(driver, 'v-wf:segregateElement', "contentName('@')", 1);
-    driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'aggregate' field");});
     put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'v-wf:DecisionForm');", 1);
     put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm');", 1);
     put(driver, 'v-wf:aggregate', "putString ('rdfs:label', 'задание');", 1);
@@ -65,10 +69,12 @@ basic.getDrivers().forEach (function (drv) {
     clickButton(driver, "save", "v-wf:Rule", 1);
     //driver.sleep(basic.FAST_OPERATION);
     basic.openCreateDocumentForm(driver, 'Трансформация', 'v-wf:Transform', 1);
-    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'rdfs:label' field");});
     basic.execute(driver, 'sendKeys', 'div[property="rdfs:label"]+veda-control[data-type="multilingualString"] input[type="text"]',
         "****** PHASE#1 : ERROR = Cannot fill 'rdfs:label' field", timeStamp + 1);
-    driver.executeScript("document.querySelector('strong[about=\"v-wf:transformRule\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-wf:transformRule\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'transformRule' field");});
     basic.chooseFromDropdown(driver, 'v-wf:transformRule', timeStamp, timeStamp, 1);
     clickButton(driver, "save", "v-wf:Transform", 1);
 
@@ -76,12 +82,14 @@ basic.getDrivers().forEach (function (drv) {
     createNet.startNet(driver, timeStamp, 2);
     basic.execute(driver, 'click', '.create-task', "****** PHASE#2 : ERROR = Cannot click on 'create-task' button");
     basic.execute(driver, 'click', '.state-task', "****** PHASE#2 : ERROR = Cannot click on 'state-task' button");
-    driver.executeScript("document.querySelector('span[about=\"v-wf:startDecisionTransform\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('span[about=\"v-wf:startDecisionTransform\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'startDecisionTransform' field");});
     basic.execute(driver, 'click', 'span[about="v-wf:startDecisionTransform"]', "****** PHASE#2 : ERROR = Cannot click on 'v-wf:startDecisionTransform' field ");
     basic.execute(driver, 'click', 'veda-control[class="VCstartDecisionTransform fulltext dropdown create properties-editor"]',
         "****** PHASE#2 : ERROR = Cannot click on 'VCstartDecisionTransform' field ");
     createNet.chooseFromDropdown(driver, 'VCstartDecisionTransform', timeStamp + 1, timeStamp + 1, 2);
-    driver.executeScript("document.querySelector('span[about=\"v-wf:executor\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('span[about=\"v-wf:executor\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'executor' field");});
     basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "****** PHASE#2 : ERROR = Cannot click on 'v-wf:executor' field ");
     basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]',
         "****** PHASE#2 : ERROR = Cannot click on 'VCexecutor' field ");

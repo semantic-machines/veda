@@ -2,10 +2,11 @@ var basic = require('./basic.js'),
     timeStamp = ''+Math.round(+new Date()/1000),
     assert = require('assert');
 
-function welcome(driver) {
-    driver.executeScript("document.querySelector('.navbar-brand').scrollIntoView(true)");
+function welcome(driver, phase) {
+    driver.executeScript("document.querySelector('.navbar-brand').scrollIntoView(true)")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to welcome bar");});
     driver.sleep(basic.FAST_OPERATION * 2);
-    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "Cannot click on 'Welcome' button");
+    basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'Welcome' button");
 }
 
 module.exports = {
@@ -32,13 +33,15 @@ module.exports = {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "****** PHASE#" + phase + " : ERROR = Cannot fill 'comment'", timeStamp);
         }
         if (chooseValue === '+') {
-            driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)");
+            driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)")
+                .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to fulltext button");});
             basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик', phase);
         }
         driver.sleep(basic.FAST_OPERATION);
-        driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
+        driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
+            .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to send button");});
         basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'Ok' button");
-        welcome(driver);
+        welcome(driver, phase);
         basic.logout(driver, phase);
     },
 
@@ -86,7 +89,7 @@ module.exports = {
         driver.findElements({css:'tr[typeof="v-wf:DecisionForm s-wf:UserTaskForm"]'}).then(function (result) {
             assert.equal(count, result.length);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName);});
-        welcome(driver);
+        welcome(driver, phase);
         basic.logout(driver, phase);
     },
 
@@ -131,7 +134,7 @@ module.exports = {
         driver.findElements({css:'a[property="rdfs:label"]'}).then(function(result) {
             assert.equal(completed, result.length - 3);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Seems number of displayed completed messages in is wrong: expected = " + completed);});
-        welcome(driver);
+        welcome(driver, phase);
         basic.logout(driver);
     }
 };

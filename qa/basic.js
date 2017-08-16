@@ -278,7 +278,8 @@ module.exports = {
      * @param phase - текущая фаза теста
      */
     logout: function(driver, phase) {
-        driver.executeScript("document.querySelector('#menu').scrollIntoView(true)");
+        driver.executeScript("document.querySelector('#menu').scrollIntoView(true)")
+            .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Logout:Cannot scroll to settings button");});
         driver.sleep(FAST_OPERATION * 2);
         driver.findElement({id:'menu'}).click()
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Logout:Cannot click on settings button");});

@@ -14,19 +14,23 @@ var assert = require('assert'),
 
 function updateVersion(driver, task, label, valueToSearch, valueToChoose, phase) {
     if(task == 'edit') {
-        driver.executeScript("document.querySelector('#edit').scrollIntoView(true);");
+        driver.executeScript("document.querySelector('#edit').scrollIntoView(true);")
+            .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to edit button");});
         basic.execute(driver, 'click', 'button[id="edit"]', "****** PHASE#" + phase + " : ERROR = Cannot click on `Edit` button");
     }
-    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[property=\"rdfs:label\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to 'rdfs:label' field");});
     basic.execute(driver, 'clear', 'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]',
         "****** PHASE#" + phase + " : ERROR = Cannot fill 'rdfs:label' field");
     basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:label"] div[class="input-group"] input[type="text"]',
         "****** PHASE#" + phase + " : ERROR = Cannot fill 'rdfs:label' field", label);
-    driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to 'responsible' field");});
     basic.execute(driver, 'clear', 'div[rel="v-s:responsible"] + veda-control input[id="fulltext"]',
         "****** PHASE#" + phase + " : ERROR = Cannot find attribute `v-s:responsible`");
     basic.chooseFromDropdown(driver, 'v-s:responsible', valueToSearch, valueToChoose);
-    driver.executeScript("document.querySelector('#save').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#save').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#" + phase + " : ERROR = Cannot click on `Save` button");
 }
 
@@ -50,11 +54,13 @@ function checkVersion(driver, version, responsible, phase) {
                     console.trace("****** PHASE#" + phase + " : ERROR = Seems wrong version, expected: " + version[i]);
                     process.exit(1);
                 } else {
-                    driver.executeScript("document.querySelector('strong[about=\"v-s:previousVersion\"]').scrollIntoView(true);");
+                    driver.executeScript("document.querySelector('strong[about=\"v-s:previousVersion\"]').scrollIntoView(true);")
+                        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to 'previousVersion' field");});
                     basic.execute(driver, 'click', 'div[rel="v-s:previousVersion"] [typeof="v-s:Action v-s:Version"]',
                         "****** PHASE#" + phase + " : ERROR = Cannot click on 'previousVersion'");
                     driver.sleep(basic.FAST_OPERATION);
-                    driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);");
+                    driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);")
+                        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to 'responsible' field");});
                     var b = responsible[i];
                     driver.findElement({css: 'div[rel="v-s:responsible"]'}).getText().then(function (result) {
                         assert.equal("Назначение: " + b, result);
@@ -91,15 +97,18 @@ basic.getDrivers().forEach(function (drv) {
     updateVersion(driver, 'edit', timeStamp + 2, 'Администратор2', 'Администратор2 : Аналитик', 2);
     updateVersion(driver, 'edit', timeStamp + 3, 'Администратор4', 'Администратор4 : Аналитик', 2);
     checkVersion(driver, [timeStamp + 3, timeStamp + 2, timeStamp + 1], ['Администратор4 : Аналитик', 'Администратор2 : Аналитик', 'Администратор2 : Аналитик'], 2);
-    driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'nextVersion' field");});
     basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action v-s:Version"]',
         "****** PHASE#2 > CREATE+CHECK VERSIONS : ERROR = Cannot click on 'nextVersion'");
-    driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'nextVersion' field");});
     basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action v-s:Version"]',
         "****** PHASE#2 > CREATE+CHECK VERSIONS : ERROR = Cannot click on 'nextVersion'");
     updateVersion(driver, 'edit', timeStamp + 4, 'Администратор2', 'Администратор2 : Аналитик', 2);
     driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'nextVersion' field");});
     basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action"]',
         "****** PHASE#2 > CREATE+CHECK VERSIONS : ERROR = Cannot click on 'nextVersion'");
     checkVersion(driver, [timeStamp + 4, timeStamp + 2, timeStamp + 1], ['Администратор2 : Аналитик', 'Администратор2 : Аналитик', 'Администратор2 : Аналитик'], 2);

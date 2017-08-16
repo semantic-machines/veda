@@ -25,10 +25,12 @@ basic.getDrivers().forEach (function (drv) {
 
     //PHASE#1: ComplexRouteTest2
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута 2', 's-wf:ComplexRouteTest2', 1);
-    driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
+    driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to send button");});
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#1 : ERROR = Cannot click on 'Send' button");
     driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
+    driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to save_and_start_process button");});
     driver.sleep(basic.FAST_OPERATION);
     basic.execute(driver, 'click', 'button[id="save_and_start_process"]', "****** PHASE#1 : ERROR = Cannot click on 'save_and_start_process' button");
     driver.sleep(basic.FAST_OPERATION);
@@ -48,7 +50,8 @@ basic.getDrivers().forEach (function (drv) {
     basic.execute(driver, 'click', 'a[typeof="s-wf:ComplexRouteTest2"]', "****** PHASE#3 : ERROR = Cannot click on document id");
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#3 : ERROR = Cannot click on 'Send' button");
     driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)");
+    driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 : ERROR = Cannot scroll to save_and_start_process button");});
     basic.execute(driver, 'click', 'button[id="save_and_start_process"]', "****** PHASE#3 : ERROR = Cannot click on 'save_and_start_process' button");
     driver.sleep(basic.FAST_OPERATION);
     basic.logout(driver, 3);

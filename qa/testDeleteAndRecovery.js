@@ -38,7 +38,8 @@ function check(driver, count, phase) {
 
 function clickButton(driver, button, phase) {
     driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to " + button + " button");});
     basic.execute(driver, 'click', 'button[id="'+ button +'"]', "****** PHASE#" + phase + " : ERROR = Cannot click on "  + button +  " button");
     driver.sleep(basic.FAST_OPERATION);
 }
@@ -67,7 +68,8 @@ basic.getDrivers().forEach(function(drv){
 
     //PHASE#1: New Startform
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm', 1);
-    driver.executeScript("document.querySelector('strong[about=\"rdfs:label\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"rdfs:label\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'rdfs:label' field");});
     basic.execute(driver, 'click', 'veda-control[data-type="multilingualString"]',
         "****** PHASE#1 > CREATE : ERROR = Cannot click on 'rdfs:label' field");
     basic.execute(driver, 'sendKeys', 'veda-control[data-type="multilingualString"] input[type="text"]',

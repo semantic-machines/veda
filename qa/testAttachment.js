@@ -33,23 +33,31 @@ basic.getDrivers().forEach(function (drv) {
     basic.openCreateDocumentForm(driver, 'Отчет', 'v-s:Report', 2);
     var filePath = 'C:/Users/Administrator/Downloads/exported_graph.ttl';
     //var filePath = 'C:/Users/zugzug/Downloads/exported_graph.ttl';
-    driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 ATTACH : ERROR = Cannot scroll to attachment field");});
     basic.execute(driver, 'sendKeys', 'input[type="file"]', "****** PHASE#2 ATTACH : ERROR = Cannot find '" + filePath + "' file", filePath);
-    driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 SAVE : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#2 SAVE : ERROR = Cannot click on 'save' button");
 
     //PHASE#3: Download -> Delete -> Attach -> Save
-    driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 DOWNLOAD : ERROR = Cannot scroll to attachment field");});
     basic.execute(driver, 'click', 'span[property="v-s:fileName"]', "****** PHASE#3 DOWNLOAD : ERROR = Cannot click on 'v-s:fileName'");
-    driver.executeScript("document.querySelector('button[id=\"edit\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('button[id=\"edit\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 EDIT : ERROR = Cannot scroll to edit button");});
     basic.execute(driver, 'click', 'button[id="edit"]', "****** PHASE#3 EDIT : ERROR = Cannot click on 'edit' button");
-    driver.executeScript("document.querySelector('div[rel=\"v-s:attachment\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[rel=\"v-s:attachment\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 ATTACH : ERROR = Cannot scroll to attachment field");});
     basic.isVisible(driver,'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete', basic.SLOW_OPERATION, 3);
-    driver.executeScript("document.elementFromPoint(675, 20).click();");
-    driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);");
+    driver.executeScript("document.elementFromPoint(675, 20).click();")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 DOWNLOAD : ERROR = Cannot click on elementFromPoint");});
+    driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 DOWNLOAD : ERROR = Cannot scroll to attachment field");});
     basic.execute(driver, 'sendKeys', 'input[type="file"]', "****** PHASE#3 ATTACH : ERROR = Cannot find this '" + filePath + "' file", filePath);
     basic.isVisible(driver, 'div[rel="v-s:attachment"]', basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('button[id=\"save\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 SAVE : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'button[id="save"]', "****** PHASE#3 SAVE : ERROR = Cannot click on 'save' button");
     driver.quit();
 });
