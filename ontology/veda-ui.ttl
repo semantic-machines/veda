@@ -2882,22 +2882,20 @@ v-ui:Graph
       var to = id;
       var from = res.id;
       Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
-        if(property_uri === "@") { return }
-        res[property_uri].map(function (item) {
-          if (item instanceof veda.IndividualModel && item.id == to) {
-            var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
-            var options = {
-              filter: function (item) {
-                return  item.from == from &&
-                    item.to == to &&
-                    item.label.toString() == label;
-              }
-            };
-            if ( !edges.get(options).length ) {
-              edges.add([{from: from, to: to, label: label}]);
+        if (property_uri === "@") { return; }
+        if ( res.hasValue(property_uri, id) ) {
+          var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
+          var options = {
+            filter: function (item) {
+              return  item.from === from &&
+                item.to === to &&
+                item.label.toString() === label;
             }
+          };
+          if ( !edges.get(options).length ) {
+            edges.add([{from: from, to: to, label: label}]);
           }
-        });
+        }
       });
     });
   }
