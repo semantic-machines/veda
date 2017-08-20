@@ -52,111 +52,128 @@ veda.Module(function (veda) { "use strict";
       ontology = getOntology();
       storage.ontology = JSON.stringify(ontology);
     }
+    processOntology();
 
-    // Allocate ontology objects
-    Object.keys(ontology).map( function (uri) {
-      var individual_json = ontology[uri];
-      var type = individual_json["rdf:type"][0].data;
-      var individual = new veda.IndividualModel( individual_json, true, false );
-
-      switch ( type ) {
-        case "rdfs:Class" :
-        case "owl:Class" :
-          classes[uri] = individual;
-          break;
-        case "rdf:Property" :
-        case "owl:DatatypeProperty" :
-        case "owl:ObjectProperty" :
-        case "owl:OntologyProperty" :
-        case "owl:AnnotationProperty" :
-          properties[uri] = individual;
-          // Initialize individual properties in {veda.IndividualModel.prototype}
-          if ( !veda.IndividualModel.prototype.hasOwnProperty(uri) ) {
-            veda.IndividualModel.defineProperty(uri);
-          }
-          break;
-        case "v-ui:PropertySpecification" :
-        case "v-ui:DatatypePropertySpecification" :
-        case "v-ui:ObjectPropertySpecification" :
-          specifications[uri] = individual;
-          break;
-      }
+    // Auto update ontology on change
+    var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
+    var updateService = new veda.UpdateService();
+    updateService.subscribe(OntoVsn.id);
+    OntoVsn.on("afterUpdate", function () {
+      ontology = getOntology();
+      storage.ontology = JSON.stringify(ontology);
+      processOntology();
+      console.log("Ontology reloaded!", JSON.stringify(OntoVsn));
     });
 
-    // Initialization percentage
-    veda.trigger("init:progress", 20);
+    function processOntology () {
 
-    // Process classes
-    Object.keys(classes).map( function (uri) {
-      var _class = classes[uri];
-      // populate classTree
-      if ( !classTree[_class.id] ) {
-        classTree[_class.id] = {
-          superClasses: [],
-          properties: [],
-          specifications: {}
-        };
-      }
-      // rdfs:Resource is a top level class
-      if ( _class.id === "rdfs:Resource" ) { return; }
-      // If class is not a subclass of another then make it a subclass of rdfs:Resource
-      if ( !_class.hasValue("rdfs:subClassOf") ) {
-        _class["rdfs:subClassOf"] = [ classes["rdfs:Resource"] ];
-        classTree[_class.id].superClasses.push("rdfs:Resource");
-      }
-      _class["rdfs:subClassOf"].map( function ( superClass ) {
-        classTree[_class.id].superClasses.push( superClass.id );
+      // Allocate ontology objects
+      Object.keys(ontology).map( function (uri) {
+        if (uri === "cfg:OntoVsn") { return; }
+        var individual_json = ontology[uri];
+        var type = individual_json["rdf:type"][0].data;
+        var individual = new veda.IndividualModel( individual_json, true, false );
+
+        switch ( type ) {
+          case "rdfs:Class" :
+          case "owl:Class" :
+            classes[uri] = individual;
+            break;
+          case "rdf:Property" :
+          case "owl:DatatypeProperty" :
+          case "owl:ObjectProperty" :
+          case "owl:OntologyProperty" :
+          case "owl:AnnotationProperty" :
+            properties[uri] = individual;
+            // Initialize individual properties in {veda.IndividualModel.prototype}
+            if ( !veda.IndividualModel.prototype.hasOwnProperty(uri) ) {
+              veda.IndividualModel.defineProperty(uri);
+            }
+            break;
+          case "v-ui:PropertySpecification" :
+          case "v-ui:DatatypePropertySpecification" :
+          case "v-ui:ObjectPropertySpecification" :
+            specifications[uri] = individual;
+            break;
+        }
       });
-    });
 
-    // Initialization percentage
-    veda.trigger("init:progress", 40);
+      // Initialization percentage
+      veda.trigger("init:progress", 20);
 
-    // Process properties
-    Object.keys(properties).map( function (uri) {
-      var property = properties[uri];
-      if (!property["rdfs:domain"]) { return; }
-      property["rdfs:domain"].map( function ( _class ) {
-        classTree[_class.id].properties.push(property.id);
-      });
-    });
-
-    // Initialization percentage
-    veda.trigger("init:progress", 60);
-
-    // Process specifications
-    Object.keys(specifications).map( function (uri) {
-      var spec = specifications[uri];
-      if (!spec["v-ui:forClass"]) { return; }
-      spec["v-ui:forClass"].map( function ( _class ) {
-        spec["v-ui:forProperty"].map( function (prop) {
-          classTree[_class.id].specifications[prop.id] = spec.id;
+      // Process classes
+      Object.keys(classes).map( function (uri) {
+        var _class = classes[uri];
+        // populate classTree
+        if ( !classTree[_class.id] ) {
+          classTree[_class.id] = {
+            superClasses: [],
+            properties: [],
+            specifications: {}
+          };
+        }
+        // rdfs:Resource is a top level class
+        if ( _class.id === "rdfs:Resource" ) { return; }
+        // If class is not a subclass of another then make it a subclass of rdfs:Resource
+        if ( !_class.hasValue("rdfs:subClassOf") ) {
+          _class["rdfs:subClassOf"] = [ classes["rdfs:Resource"] ];
+          classTree[_class.id].superClasses.push("rdfs:Resource");
+        }
+        _class["rdfs:subClassOf"].map( function ( superClass ) {
+          classTree[_class.id].superClasses.push( superClass.id );
         });
       });
-    });
 
-    // Initialization percentage
-    veda.trigger("init:progress", 80);
+      // Initialization percentage
+      veda.trigger("init:progress", 40);
 
-    // Init class individuals
-    Object.keys(classes).map( function (uri) {
-      var _class = classes[uri];
-      _class.init();
-    });
+      // Process properties
+      Object.keys(properties).map( function (uri) {
+        var property = properties[uri];
+        if (!property["rdfs:domain"]) { return; }
+        property["rdfs:domain"].map( function ( _class ) {
+          classTree[_class.id].properties.push(property.id);
+        });
+      });
 
-    // Init property individuals
-    Object.keys(properties).map( function (uri) {
-      var property = properties[uri];
-      property.init();
-    });
+      // Initialization percentage
+      veda.trigger("init:progress", 60);
 
-    // Init specification individuals
-    Object.keys(specifications).map( function (uri) {
-      var spec = specifications[uri];
-      spec.init();
-    });
+      // Process specifications
+      Object.keys(specifications).map( function (uri) {
+        var spec = specifications[uri];
+        if (!spec["v-ui:forClass"]) { return; }
+        spec["v-ui:forClass"].map( function ( _class ) {
+          spec["v-ui:forProperty"].map( function (prop) {
+            classTree[_class.id].specifications[prop.id] = spec.id;
+          });
+        });
+      });
 
-    veda.trigger("init:progress", 100);
+      // Initialization percentage
+      veda.trigger("init:progress", 80);
+
+      // Init class individuals
+      Object.keys(classes).map( function (uri) {
+        var _class = classes[uri];
+        _class.init();
+      });
+
+      // Init property individuals
+      Object.keys(properties).map( function (uri) {
+        var property = properties[uri];
+        property.init();
+      });
+
+      // Init specification individuals
+      Object.keys(specifications).map( function (uri) {
+        var spec = specifications[uri];
+        spec.init();
+      });
+
+      veda.trigger("init:progress", 100);
+
+    }
 
     this.getClassProperties = function (_class_uri) {
       return veda.Util.unique( getProps(_class_uri) );

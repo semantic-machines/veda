@@ -48,7 +48,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.synchronize = function() {
-      if (!self.ready()) { return }
+      //if (!self.ready()) { return }
       if (msgTimeout) {
         msgTimeout = clearTimeout(msgTimeout);
       }
@@ -61,14 +61,14 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.subscribe = function(uri) {
-      if (!self.ready()) { return }
+      //if (!self.ready()) { return }
       if (!uri) { return }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
         return;
       }
       var individual = new veda.IndividualModel(uri);
-      var updateCounter = individual.hasValue("v-s:updateCounter") ? individual["v-s:updateCounter"][0] : 0;
+      var updateCounter = individual.hasValue("v-s:updateCounter") ? individual.get("v-s:updateCounter")[0] : 0;
       list[uri] = {
         subscribeCounter: 1,
         updateCounter: updateCounter
@@ -83,7 +83,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.unsubscribe = function (uri) {
-      if (!self.ready()) { return }
+      //if (!self.ready()) { return }
       if (uri === "*" || !uri) {
         if (msgTimeout) {
           msgTimeout = clearTimeout(msgTimeout);
@@ -212,16 +212,16 @@ veda.Module(function UpdateService(veda) { "use strict";
           if (
             individual.hasValue("v-s:updateCounter", updateCounter)
             || individual.hasValue("v-s:isDraft", true)
-            || ( individual.hasValue("v-s:updateCounter") && individual["v-s:updateCounter"][0] > updateCounter )
+            || ( individual.hasValue("v-s:updateCounter") && individual.get("v-s:updateCounter")[0] > updateCounter )
           ) continue;
 
           individual.update();
-          updateCounter = individual["v-s:updateCounter"][0];
+          updateCounter = individual.get("v-s:updateCounter")[0];
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
           }
         } catch (e) {
-          //console.log("error: individual update service failed for id =", uri, e);
+          console.log("error: individual update service failed for id =", uri, e);
         }
       }
     }
