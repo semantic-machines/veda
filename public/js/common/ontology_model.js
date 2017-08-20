@@ -164,21 +164,31 @@ veda.Module(function (veda) { "use strict";
 
     function getProps (_class_uri) {
       var _class = classTree[_class_uri];
-      var props = _class.properties;
-      return [].concat.apply( props, _class.superClasses.map( getProps ) );
+      var props;
+      if (_class) {
+        props = _class.properties;
+        return [].concat.apply( props, _class.superClasses.map( getProps ) );
+      } else {
+        return getProps("rdfs:Resource");
+      }
     };
 
     this.getClassSpecifications = function getSpecs (_class_uri) {
       var _class = classTree[_class_uri];
-      var specs = _class.specifications;
-      var superSpecsArray = _class.superClasses.map( getSpecs );
-      superSpecsArray.map( function (superSpecs) {
-        for (var property_uri in superSpecs) {
-          if ( !specs[property_uri] ) {
-            specs[property_uri] = superSpecs[property_uri];
+      var specs;
+      if (_class) {
+        specs = _class.specifications;
+        var superSpecsArray = _class.superClasses.map( getSpecs );
+        superSpecsArray.map( function (superSpecs) {
+          for (var property_uri in superSpecs) {
+            if ( !specs[property_uri] ) {
+              specs[property_uri] = superSpecs[property_uri];
+            }
           }
-        }
-      });
+        });
+      } else {
+        specs = getSpecs( "rdfs:Resource" );
+      }
       return specs;
     };
 

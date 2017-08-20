@@ -269,6 +269,7 @@ v-s:Membership
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Membership"@en ;
   rdfs:label "Принадлежность"@ru ;
+  v-ui:hasTemplate v-ui:MembershipTemplate ;
 .
 v-s:memberOf
   rdf:type owl:ObjectProperty ;
