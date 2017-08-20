@@ -802,6 +802,11 @@ v-s:PermissionStatementsBundle
   rdfs:label "Права"@ru ;
   rdfs:label "Permissions"@en ;
 .
+v-s:RightsManagementBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Управление правами"@ru ;
+  rdfs:label "Rights management"@en ;
+.
 
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
