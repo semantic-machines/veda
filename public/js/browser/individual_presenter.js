@@ -17,40 +17,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if (container.prop("id") === "main") { container.hide(); }
 
-      var ontology = new veda.OntologyModel();
-
-      var specs = $.extend.apply (
-        {}, [].concat(
-          individual["rdf:type"].map( function (_class) {
-            return ontology.getClassSpecifications(_class.id);
-          })
-        )
-      );
-
-      if (template) {
-        if (template instanceof veda.IndividualModel) {
-          template = $( template["v-ui:template"][0].toString() );
-        } else if (typeof template === "string") {
-          template = new veda.IndividualModel(template);
-          template = $( template["v-ui:template"][0].toString() );
-        }
-        renderTemplate(individual, container, template, mode, specs);
-      } else {
-        if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
-          template = individual["v-ui:hasCustomTemplate"][0];
-          renderTemplate(individual, container, template, mode, specs);
-        } else {
-          individual["rdf:type"].map(function (type) {
-            if ( type.hasValue("v-ui:hasTemplate") ) {
-              template = type["v-ui:hasTemplate"][0];
-            } else {
-              template = new veda.IndividualModel("v-ui:generic");
-            }
-            template = $( template["v-ui:template"][0].toString() );
-            renderTemplate(individual, container, template, mode, specs);
-          });
-        }
-      }
+      present(individual, container, template, mode);
 
       if (container.prop("id") === "main") { container.show("fade", 250); }
 
@@ -59,6 +26,44 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
 
   });
+
+  function present(individual, container, template, mode) {
+
+    var ontology = new veda.OntologyModel();
+
+    var specs = $.extend.apply (
+      {}, [].concat(
+        individual["rdf:type"].map( function (_class) {
+          return ontology.getClassSpecifications(_class.id);
+        })
+      )
+    );
+
+    if (template) {
+      if (template instanceof veda.IndividualModel) {
+        template = $( template["v-ui:template"][0].toString() );
+      } else if (typeof template === "string") {
+        template = new veda.IndividualModel(template);
+        template = $( template["v-ui:template"][0].toString() );
+      }
+      renderTemplate(individual, container, template, mode, specs);
+    } else {
+      if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
+        template = individual["v-ui:hasCustomTemplate"][0];
+        renderTemplate(individual, container, template, mode, specs);
+      } else {
+        individual["rdf:type"].map(function (type) {
+          if ( type.hasValue("v-ui:hasTemplate") ) {
+            template = type["v-ui:hasTemplate"][0];
+          } else {
+            template = new veda.IndividualModel("v-ui:generic");
+          }
+          template = $( template["v-ui:template"][0].toString() );
+          renderTemplate(individual, container, template, mode, specs);
+        });
+      }
+    }
+  }
 
   function renderTemplate(individual, container, template, mode, specs) {
     var pre_render_src,
