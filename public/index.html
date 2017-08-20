@@ -31,7 +31,8 @@
     <!--link href="/css/flatly.bootstrap.min.css" rel="stylesheet"/-->
     <!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
 
-    <link href="/css/codemirror.css" rel="stylesheet"/>
+    <link href="/css/codemirror/codemirror.css" rel="stylesheet"/>
+    <link href="/css/codemirror/fullscreen.css" rel="stylesheet"/>
     <link href="/css/fullcalendar.min.css" rel="stylesheet"/>
     <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
     <link href="/css/veda.css" rel="stylesheet"/>
@@ -325,9 +326,7 @@
 
     <!-- Source code control template -->
     <script type="html/template" id="source-control-template">
-      <div class="panel panel-default codemirror-editor">
-        <button id="full-screen" class="fs-btn btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
-      </div>
+      <div class="panel panel-default codemirror-editor"></div>
     </script>
 
     <!-- Datetime control template -->
@@ -456,6 +455,7 @@
     <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchtags.js"></script>
     <script type="text/javascript" src="/js/browser/lib/codemirror/addon/fold/xml-fold.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/display/fullscreen.js"></script>
 
     <!-- Veda browser & server -->
     <script type="text/javascript" src="/js/common/lib/riot.js"></script>

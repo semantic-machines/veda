@@ -1110,7 +1110,6 @@
         control = $(opts.template),
         individual = opts.individual,
         property_uri = opts.property_uri,
-        fscreen = $("#full-screen", control),
         editorEl = control.get(0);
 
     opts.value = individual.hasValue(property_uri) ? individual.get(property_uri)[0].toString() : "";
@@ -1128,8 +1127,17 @@
       autoCloseBrackets: true,
       matchTags: true,
       autoCloseTags: true,
-      lineNumbers: true
+      lineNumbers: true,
+      extraKeys: {
+        "F9": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
     });
+
     setTimeout( function () {
       editor.refresh();
     }, 100);
@@ -1158,31 +1166,6 @@
     individual.on(property_uri, handler );
     this.on("remove", function () {
       individual.off(property_uri, handler);
-    });
-
-    fscreen.click(function () {
-      var body = $("body"),
-          all = $("body > *:not(script)"),
-          parent = control.parent(),
-          wrapper = $("<div class='fs-wrapper'></div>"),
-          cm = $(".CodeMirror", control);
-      if ( !parent.hasClass("fs-wrapper") ) {
-        control.wrap( wrapper );
-        cm.addClass("CodeMirror-fs");
-        parent = control.parent();
-        parent.detach();
-        all.hide();
-        body.append(parent);
-      } else {
-        parent.detach();
-        cm.removeClass("CodeMirror-fs");
-        self.append(parent);
-        control.unwrap();
-        all.show();
-      }
-      control.toggleClass("fs");
-      fscreen.toggleClass("glyphicon-resize-full glyphicon-resize-small");
-      editor.refresh();
     });
 
     this.append(control);
