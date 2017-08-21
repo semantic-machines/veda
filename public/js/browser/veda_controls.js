@@ -158,6 +158,27 @@
     isSingle: true
   };
 
+  // Password input
+  $.fn.veda_password = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_password.defaults, options ),
+      control = veda_literal_input.call(this, opts);
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_password.defaults = {
+    template: $("#password-control-template").html(),
+    parser: function (input) {
+      if (input.length === 64) {
+        return new String( input );
+      } else if (input) {
+        return new String( Sha256.hash(input) );
+      } else {
+        return null;
+      }
+    },
+    isSingle: true
+  };
+
   // Text input
   $.fn.veda_text = function( options ) {
     var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
