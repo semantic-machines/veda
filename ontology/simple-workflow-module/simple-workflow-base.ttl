@@ -712,7 +712,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div style="min-height:300px">
+<div style="min-height:300px; height:300px; overflow-y:auto; overflow-x:hidden;">
   <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
   <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
@@ -729,7 +729,7 @@ s-wf:SimpleRouteStartFormShort_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div style="min-height:300px">
+<div style="min-height:300px; height:300px; overflow-y:auto; overflow-x:hidden;">
   <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
   <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
@@ -749,7 +749,7 @@ s-wf:SimpleRouteStartFormFull_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div style="min-height:300px">
+<div style="min-height:300px; height:300px; overflow-y:auto; overflow-x:hidden;">
   <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
   <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
@@ -1056,6 +1056,56 @@ if (doc) {
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
   }
+//--------------------------------------------------------------------------------Демонтаж-------
+  if (doc['rdf:type'][0].id === "mnd-s:DismantlingProject") {
+    var chief, owner;
+    if (doc.hasValue("v-s:projectManager")){
+      chief = doc["v-s:projectManager"][0].getChief();
+    }
+    if (doc.hasValue("v-s:owner") && (doc["v-s:owner"][0] == doc["v-s:creator"][0])){
+      owner = [];
+    } else {
+      owner = doc["v-s:owner"];
+    }
+    var arr = owner.concat(chief);/*
+    routes['introduction'][simple+'visible'] = [false];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'participant'] = arr;
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [false];
+    routes['coordination3'][simple+'editable'] = [false];
+    routes['sign'][simple+'visible'] = [false];
+    routes['sign'][simple+'editable'] = [false];
+    routes['approval'][simple+'visible'] = [false];
+    routes['approval'][simple+'editable'] = [false];
+    routes['review'][simple+'visible'] = [false];
+    routes['review'][simple+'editable'] = [false];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'participant'] =  [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")];
+    routes['instruction'][simple+'deadlineDays'] =[2];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];*/
+
+
+
+
+    routes['coordination1'][simple+'visible'] = [true]; //согласование 1
+    routes['coordination1'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'participant'] = arr;
+    routes['coordination2'][simple+'visible'] = [true]; //согласование 2
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'participant'] =  [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")];
+    routes['instruction'][simple+'deadlineDays'] =[2];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+  }
+
 //--------------------------------------------------------------------------Внутренний документ
   if (doc['rdf:type'][0].id === "mnd-s:InternalDocument") {
     routes['informing'][simple+'visible'] = [true];
