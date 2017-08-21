@@ -2491,6 +2491,14 @@ td:AccountTemplate1
   rdfs:label "Account template"@en ;
   v-ui:forClass v-s:Account ;
   v-ui:template """
+<script>
+  var _class = new veda.IndividualModel("v-s:Credential");
+  var canCreate = _class.rights.hasValue("v-s:canCreate", true);
+  if ( !canCreate ) {
+    $("[rel='v-s:usesCredential']", template).remove();
+  }
+  //# sourceURL=td:AccountTemplate1_pre
+</script>
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="row">
@@ -2508,7 +2516,6 @@ td:AccountTemplate1
     <em about="v-s:owner" property="rdfs:label">Владелец</em>
     <div rel="v-s:owner" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
     <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
-    <br />
     <div class="row">
       <div class="col-md-6">
         <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
@@ -2519,6 +2526,12 @@ td:AccountTemplate1
         <em about="v-s:login" property="rdfs:label">Логин</em>
         <div property="v-s:login" class="view -edit -search"></div>
         <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <div class="row" rel="v-s:usesCredential" data-embedded="true">
+      <div class="col-md-6">
+        <em about="v-s:password" property="rdfs:label"></em>
+        <veda-control property="v-s:password" data-type="password" class="-view edit search"></veda-control>
       </div>
     </div>
   </div>
