@@ -1128,19 +1128,13 @@ function removeFromGroup(ticket, group, resource)
 
 function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
 {
-    if (subj_uri == undefined || obj_uri == undefined) 
-    {
-	var error = new Error();
-	print("ERR! addRight: INVALID ARGS IN");
-	print("subj_uri=", subj_uri);
-	print("obj_uri=", obj_uri);
-	print("Error stack:", error.stack);
-	return;
+    if (subj_uri == undefined || obj_uri == undefined) {
+  var error = new Error();
+  print("ERR! INVALID ARGS IN addRigth");
+  print("subj_uri=", subj_uri);
+  print("obj_uri=", obj_uri);
+  print("Error stack:", error.stack);
     }
-
-
-  if (!new_uri)
-    new_uri = genUri();
 
 
   if (new_uri)
@@ -1148,12 +1142,13 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
     var prev = get_individual(ticket, new_uri);
     if (prev)
     {
-      print ("ERR! addRight: INDIVIDUAL ALREADY EXISTS, URI=" + new_uri);
-      print("Error stack:", error.stack);
+      //print ("JS: RIGHT ALREADY EXISTS");
       return;
     }
   }
 
+  if (!new_uri)
+    new_uri = genUri();
 
   var new_permission = {
     '@': new_uri,
