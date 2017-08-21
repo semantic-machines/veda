@@ -117,7 +117,7 @@ var err_count = 0;
 var errs_objs = [];
 var errs = [];
 
-veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='true' ) && ( 'v-wf:takenDecision.isExists'=='true' ) && ( 'v-s:created'==[2017-06-01T21:00:00.000Z,2017-08-08T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='true' ) && ( 'v-wf:takenDecision.isExists'=='true' ) && ( 'v-s:created'==[2017-08-13T21:00:00.000Z,2017-08-21T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
   try {
     var form = new veda.IndividualModel(uri);
     var decision = form["v-wf:takenDecision"][0];
@@ -185,3 +185,27 @@ errs_objs = [
   {"form":"d:q47rnf4ywu73f43flegg8vjv","decision":"d:a0kynxpxgvqh55yjnjpakxwwc"},
   {"form":"d:l9o4byrdv3dsqx46bzsgudji","decision":"d:i2i81jr946ytnejs16yutm1y"}
 ];
+
+
+// Restore write permission for UserTaskForms
+
+veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='false' ) && ( 'v-s:created'==[2017-08-16T21:00:00.000Z,2017-08-21T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+  try {
+    var form = new veda.IndividualModel(uri);
+    form.get("v-wf:to").map(function (to) {
+      var new_permission = {
+        "@": genUri(),
+        "rdf:type": [{type:"Uri", data: "v-s:PermissionStatement"}],
+        "v-s:permissionObject": [{type:"Uri", data: uri}],
+        "v-s:permissionSubject": [{type:"Uri", data: to.id}],
+        "v-s:canRead": [{type:"Boolean", data: true}],
+        "v-s:canUpdate": [{type:"Boolean", data: true}],
+        "v-s:canDelete": [{type:"Boolean", data: true}]
+      };
+      put_individual(veda.ticket, new_permission);
+    });
+  } catch (err) {
+    console.log("Error.", uri, err);
+  }
+});
+
