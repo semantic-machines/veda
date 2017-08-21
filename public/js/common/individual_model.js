@@ -367,40 +367,24 @@ veda.Module(function (veda) { "use strict";
   proto.update = function () {
     this.trigger("beforeUpdate");
     var self = this;
-    if (!this.isNew()) {
-      this.filtered = {};
-      var original;
-      try {
-        original = get_individual(veda.ticket, this.id);
-      } catch (e) {
-        original = {};
-      }
-      var updated = [];
-      Object.keys(self.properties).forEach(function (property_uri) {
-        if (property_uri === "@") { return; }
-        if (original[property_uri] && original[property_uri].length) {
-          self.properties[property_uri] = original[property_uri];
-        } else {
-          self.properties[property_uri] = [];
-        }
-        delete original[property_uri];
-        updated.push(property_uri);
-      });
-      Object.keys(original).forEach(function (property_uri) {
-        if (property_uri === "@") { return; }
-        self.properties[property_uri] = original[property_uri];
-        updated.push(property_uri);
-      });
-      updated.forEach(function (property_uri) {
-        self.trigger("propertyModified", property_uri, self[property_uri]);
-        self.trigger(property_uri, self[property_uri]);
-      });
+    self.filtered = {};
+    get_individual({
+      ticket: veda.ticket,
+      uri: self.id,
+      async: true
+    }).then(function (original) {
+      self.properties = original;
       self.isNew(false);
       self.isSync(true);
-    }
-    veda.drafts.remove(this.id);
-    this.trigger("afterUpdate");
-    return this;
+      for(var property_uri in self.properties) {
+        if (property_uri === "@") { continue; }
+        self.trigger("propertyModified", property_uri, self.get(property_uri));
+        self.trigger(property_uri, self.get(property_uri));
+      }
+      veda.drafts.remove(self.id);
+      self.trigger("afterUpdate");
+    });
+    return self;
   };
 
   /**

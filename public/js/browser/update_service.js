@@ -209,17 +209,11 @@ veda.Module(function UpdateService(veda) { "use strict";
               updateCounter = parseInt(tmp[1]),
               individual = new veda.IndividualModel(uri),
               list = self.list();
-          if (
-            individual.hasValue("v-s:updateCounter", updateCounter)
-            || individual.hasValue("v-s:isDraft", true)
-            || ( individual.hasValue("v-s:updateCounter") && individual.get("v-s:updateCounter")[0] > updateCounter )
-          ) continue;
-
-          individual.update();
-          updateCounter = individual.get("v-s:updateCounter")[0];
+          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.hasValue("v-s:isDraft", true) ) { continue; }
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
           }
+          individual.update();
         } catch (e) {
           console.log("error: individual update service failed for id =", uri, e);
         }
