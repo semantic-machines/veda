@@ -189,7 +189,8 @@ errs_objs = [
 
 // Restore write permission for UserTaskForms
 
-veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='false' ) && ( 'v-s:created'==[2017-08-16T21:00:00.000Z,2017-08-21T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+//veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='false' ) && ( 'v-s:created'==[2017-08-20T21:00:00.000Z,2017-08-22T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='false' ) && ( 'rdfs:label'=='Доработать')", 100000, 100, 1000, function (uri) {
   try {
     var form = new veda.IndividualModel(uri);
     form.get("v-wf:to").map(function (to) {
@@ -202,7 +203,8 @@ veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isComplet
         "v-s:canUpdate": [{type:"Boolean", data: true}],
         "v-s:canDelete": [{type:"Boolean", data: true}]
       };
-      put_individual(veda.ticket, new_permission);
+      //put_individual(veda.ticket, new_permission);
+      console.log( new_permission["@"] );
     });
   } catch (err) {
     console.log("Error.", uri, err);
