@@ -373,15 +373,17 @@ veda.Module(function (veda) { "use strict";
       uri: self.id,
       async: true
     }).then(function (original) {
+      var self_property_uris = Object.keys(self.properties);
+      var original_property_uris = Object.keys(original);
+      var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
       self.properties = original;
       self.isNew(false);
       self.isSync(true);
-      for(var property_uri in self.properties) {
-        if (property_uri === "@") { continue; }
+      union.forEach( function (property_uri) {
+        if (property_uri === "@") { return; }
         self.trigger("propertyModified", property_uri, self.get(property_uri));
         self.trigger(property_uri, self.get(property_uri));
-      }
-      veda.drafts.remove(self.id);
+      });
       self.trigger("afterUpdate");
     });
     return self;
