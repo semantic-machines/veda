@@ -79,10 +79,22 @@ veda.Module(function (veda) { "use strict";
     return this;
   };
 
-  proto.remove = function (uri) {
+  proto.reset = function (uri) {
     if ( typeof this[uri] === "object" ) {
       var individual = this.get(uri);
       individual.reset();
+      delete this[uri];
+      delete this._[uri];
+      storage.drafts = JSON.stringify(this._);
+      veda.trigger("update:drafts", this);
+    }
+    return this;
+  };
+
+  proto.remove = function (uri) {
+    if ( typeof this[uri] === "object" ) {
+      var individual = this.get(uri);
+      individual.isSync(true);
       delete this[uri];
       delete this._[uri];
       storage.drafts = JSON.stringify(this._);
@@ -97,7 +109,7 @@ veda.Module(function (veda) { "use strict";
       if ( typeof self[uri] === "object" ) {
         var individual = self.get(uri);
         individual["v-s:isDraft"] = [];
-        individual.isSync(true);
+        individual.reset();
         delete self[uri];
         delete self._[uri];
       }

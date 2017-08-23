@@ -312,7 +312,7 @@ veda.Module(function (veda) { "use strict";
     if (self.isSync()) { return; }
     self.trigger("beforeSave");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
+      veda.drafts.reset(this.id);
     }
     Object.keys(self.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
@@ -357,6 +357,10 @@ veda.Module(function (veda) { "use strict";
     this.trigger("beforeReset");
     var self = this;
     self.filtered = {};
+    if ( self.hasValue("v-s:isDraft") ) {
+      var drafts = new veda.DraftsModel();
+      drafts.remove(self.id);
+    }
     get_individual({
       ticket: veda.ticket,
       uri: self.id,
@@ -374,6 +378,9 @@ veda.Module(function (veda) { "use strict";
         self.trigger(property_uri, self.get(property_uri));
       });
       self.trigger("afterReset");
+    }).catch(function (error) {
+      self.isSync(false);
+      self.trigger("afterReset");
     });
     return self;
   };
@@ -385,7 +392,7 @@ veda.Module(function (veda) { "use strict";
   proto.delete = function () {
     this.trigger("beforeDelete");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
+      veda.drafts.reset(this.id);
     }
     if ( !this.isNew() ) {
       this["v-s:deleted"] = [ true ];
@@ -402,7 +409,7 @@ veda.Module(function (veda) { "use strict";
   proto.remove = function () {
     this.trigger("beforeRemove");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
+      veda.drafts.reset(this.id);
     }
     if ( !this.isNew() ) {
       remove_individual(veda.ticket, this.id);
@@ -421,7 +428,7 @@ veda.Module(function (veda) { "use strict";
   proto.recover = function () {
     this.trigger("beforeRecover");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
+      veda.drafts.reset(this.id);
     }
     this["v-s:deleted"] = [];
     this.save();
