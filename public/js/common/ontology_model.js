@@ -58,7 +58,7 @@ veda.Module(function (veda) { "use strict";
     var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
     var updateService = new veda.UpdateService();
     updateService.subscribe(OntoVsn.id);
-    OntoVsn.on("afterUpdate", function () {
+    OntoVsn.on("afterReset", function () {
       ontology = getOntology();
       storage.ontology = JSON.stringify(ontology);
       processOntology();

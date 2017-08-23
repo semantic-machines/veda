@@ -355,17 +355,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.reset = function () {
     this.trigger("beforeReset");
-    this.update();
-    this.trigger("afterReset");
-    return this;
-  };
-
-  /**
-   * @method
-   * Update current individual with values from database & merge with local changes
-   */
-  proto.update = function () {
-    this.trigger("beforeUpdate");
     var self = this;
     self.filtered = {};
     get_individual({
@@ -384,7 +373,7 @@ veda.Module(function (veda) { "use strict";
         self.trigger("propertyModified", property_uri, self.get(property_uri));
         self.trigger(property_uri, self.get(property_uri));
       });
-      self.trigger("afterUpdate");
+      self.trigger("afterReset");
     });
     return self;
   };

@@ -213,7 +213,7 @@ veda.Module(function UpdateService(veda) { "use strict";
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
           }
-          individual.update();
+          individual.reset(); // Reset to DB
         } catch (e) {
           console.log("error: individual update service failed for id =", uri, e);
         }
