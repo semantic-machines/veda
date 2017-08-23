@@ -489,7 +489,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
     });
     if (abouts.length) {
-      get_individuals(veda.ticket, abouts).map(function (item) {
+      get_individuals(veda.ticket, veda.Util.unique(abouts) ).map(function (item) {
         var about = new veda.IndividualModel(item);
       });
     }

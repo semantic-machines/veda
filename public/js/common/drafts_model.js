@@ -82,6 +82,7 @@ veda.Module(function (veda) { "use strict";
   proto.reset = function (uri) {
     if ( typeof this[uri] === "object" ) {
       var individual = this.get(uri);
+      individual["v-s:isDraft"] = [];
       individual.reset();
       delete this[uri];
       delete this._[uri];
@@ -95,6 +96,7 @@ veda.Module(function (veda) { "use strict";
     if ( typeof this[uri] === "object" ) {
       var individual = this.get(uri);
       individual.isSync(true);
+      individual["v-s:isDraft"] = [];
       delete this[uri];
       delete this._[uri];
       storage.drafts = JSON.stringify(this._);

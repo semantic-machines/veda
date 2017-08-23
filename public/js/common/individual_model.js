@@ -312,7 +312,7 @@ veda.Module(function (veda) { "use strict";
     if (self.isSync()) { return; }
     self.trigger("beforeSave");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.reset(this.id);
+      veda.drafts.remove(this.id);
     }
     Object.keys(self.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
@@ -324,16 +324,13 @@ veda.Module(function (veda) { "use strict";
     }, self.properties);
     try {
       put_individual(veda.ticket, this.properties);
+      this.isNew(false);
+      this.isSync(true);
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      if (error.code !== 472) {
-        this.draft();
-      }
+      this.draft();
       notify("danger", error);
     }
-    this.isNew(false);
-    this.isSync(true);
-    if (this._.cache) veda.cache[this.id] = self;
     this.trigger("afterSave");
     return this;
   }
@@ -392,7 +389,7 @@ veda.Module(function (veda) { "use strict";
   proto.delete = function () {
     this.trigger("beforeDelete");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.reset(this.id);
+      veda.drafts.remove(this.id);
     }
     if ( !this.isNew() ) {
       this["v-s:deleted"] = [ true ];
@@ -409,7 +406,7 @@ veda.Module(function (veda) { "use strict";
   proto.remove = function () {
     this.trigger("beforeRemove");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.reset(this.id);
+      veda.drafts.remove(this.id);
     }
     if ( !this.isNew() ) {
       remove_individual(veda.ticket, this.id);
@@ -428,7 +425,7 @@ veda.Module(function (veda) { "use strict";
   proto.recover = function () {
     this.trigger("beforeRecover");
     if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.reset(this.id);
+      veda.drafts.remove(this.id);
     }
     this["v-s:deleted"] = [];
     this.save();
@@ -446,7 +443,6 @@ veda.Module(function (veda) { "use strict";
     if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
-        //return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
         return ( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
     }
