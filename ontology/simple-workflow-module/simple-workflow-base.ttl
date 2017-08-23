@@ -3460,7 +3460,6 @@ s-wf:UserTaskFormTemplate
       });
       if (
         individual.hasValue("v-wf:takenDecision")
-        && individual.isSync()
         && individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
       ) {
         input.prop("checked", true);
@@ -3549,9 +3548,11 @@ s-wf:UserTaskFormTemplate
             || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
             || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
             || individual.rights.hasValue("v-s:canUpdate", true);
-  var isOpen = !individual.hasValue("v-wf:takenDecision") || !individual.isSync();
+  var isOpen = ( !individual.hasValue("v-wf:takenDecision") || !individual.isSync() );
   if (isMine && isOpen) {
-    $(".radio.decision input", template).first().prop("checked", true).change();
+    if ( !individual.hasValue("v-wf:takenDecision") ) {
+      $(".radio.decision input", template).first().prop("checked", true).change();
+    }
     template.trigger("edit");
   } else {
     template.trigger("view");
