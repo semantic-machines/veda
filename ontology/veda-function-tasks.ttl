@@ -562,9 +562,9 @@ v-ft:TaskResultTemplate
       <td property="v-wf:dateGiven"></td>
     </tr>
     <script>
-      if ( !individual.hasValue("v-wf:read", true) ) {
+      /*if ( !individual.hasValue("v-wf:read", true) ) {
         template.css("font-weight", "bold");
-      }
+      }*/
       individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);
@@ -656,9 +656,9 @@ v-ft:RelatedTasksResultTemplate
       <td property="v-wf:dateGiven"></td>
     </tr>
     <script>
-      if ( !individual.hasValue("v-wf:read", true) ) {
+      /*if ( !individual.hasValue("v-wf:read", true) ) {
         template.css("font-weight", "bold");
-      }
+      }*/
       individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);

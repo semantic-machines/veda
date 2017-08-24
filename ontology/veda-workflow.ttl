@@ -1600,10 +1600,10 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <script>
-  if ( !individual.hasValue("v-wf:read") && individual.isSync() && individual.rights.hasValue("v-s:canUpdate", true) ) {
+  /*if ( !individual.hasValue("v-wf:read") && individual.isSync() && individual.rights.hasValue("v-s:canUpdate", true) ) {
     individual["v-wf:read"] = [true];
     individual.save();
-  }
+  }*/
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
 <div class="hidden"></div>
