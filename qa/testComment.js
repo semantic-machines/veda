@@ -103,12 +103,12 @@ basic.getDrivers().forEach(function (drv) {
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
-    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.sleep(basic.SLOW_OPERATION);
     check(driver, 2, 2, 1, 1, 2);
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
-    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.sleep(basic.SLOW_OPERATION);
     check(driver, 1, 1, 1, 1, 2);
 
     //PHASE#3: Check
