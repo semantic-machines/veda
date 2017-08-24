@@ -358,7 +358,7 @@ veda.Module(function (veda) { "use strict";
       var drafts = new veda.DraftsModel();
       drafts.remove(self.id);
     }
-    get_individual({
+    return get_individual({
       ticket: veda.ticket,
       uri: self.id,
       async: true
@@ -379,7 +379,6 @@ veda.Module(function (veda) { "use strict";
       self.isSync(false);
       self.trigger("afterReset");
     });
-    return self;
   };
 
   /**

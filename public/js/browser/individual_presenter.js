@@ -170,10 +170,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function cancelHandler (e, parent) {
       template.trigger("view");
       if (parent !== individual.id) {
-        individual.reset();
-        if (container.prop("id") === "main") {
-          window.history.back();
-        }
+        individual.reset()
+          .then( function () {
+            if (container.prop("id") === "main") {
+              window.history.back();
+            }
+          }, function () {
+            if (container.prop("id") === "main") {
+              window.history.back();
+            }
+          });
       }
       e.stopPropagation();
     }
