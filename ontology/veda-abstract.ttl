@@ -963,7 +963,7 @@ v-s:hasMaintenanceKind
   rdfs:range v-s:MaintenanceKind ;
   rdfs:domain v-s:Maintained ;
 .
-v-s:productionСondition
+v-s:productionCondition
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Production condition"@en ;
   rdfs:label "Производственные условия"@ru ;
