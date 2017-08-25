@@ -2755,6 +2755,19 @@ if (doc) {
 
   }
 
+  //--------------------------------------------------------------------------------Акт уничтожения СИЗ-------
+  if (doc['rdf:type'][0].id === "mnd-s:ActOfPpeDestruction") {
+    routes['coordination1'][simple+'participant'] = doc["v-s:member"];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:3833560e-5211-4097-850d-72311be239e0")];
+    routes['instruction'][simple+'comment'] = [new String('Исполнить поручение')];
+
+  }
+
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
