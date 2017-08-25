@@ -1600,10 +1600,10 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <script>
-  /*if ( !individual.hasValue("v-wf:read") && individual.isSync() && individual.rights.hasValue("v-s:canUpdate", true) ) {
+  if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
     individual["v-wf:read"] = [true];
     individual.save();
-  }*/
+  }
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
 <div class="hidden"></div>
@@ -2108,9 +2108,18 @@ v-wf:event_df5
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
-  if (
-    (!parent_script_id || (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
+  if ( true
+    /*(
+      !parent_script_id
+      || parent_script_id == 'v-wf:event_df1'
+      || parent_script_id == 'v-wf:event_df2'
+      || parent_script_id == 'v-wf:event_df3'
+      || parent_script_id == 'v-wf:event_df4'
+      || parent_script_id == 'v-wf:event_df5'
+    ) && (
+      !document['v-s:deleted']
+      || document['v-s:deleted'][0].data == 'false'
+    )*/
   ) {
     prepare_decision_form (ticket, document);
   }
@@ -2120,8 +2129,9 @@ v-wf:event_df5
 
 v-wf:Decision
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
+#  rdfs:subClassOf v-s:SystemThing ;
+#  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision"@en ;
   rdfs:label "Решение"@ru ;

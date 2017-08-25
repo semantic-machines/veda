@@ -3496,7 +3496,8 @@ s-wf:UserTaskFormTemplate
       input.change(function () {
         var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
         var decision = createDecision(type);
-        individual["v-wf:takenDecision"] = [ decision ];
+        var holder = $("#newDecisionHolder", template).empty();
+        decision.present(holder, undefined, "edit");
       });
       if (
         individual.hasValue("v-wf:takenDecision")
@@ -3507,16 +3508,13 @@ s-wf:UserTaskFormTemplate
     });
   }
   radioTmpl.remove();
-  template.on("view edit search", function (e) {
-    e.type === "view" ? $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true) :
-    e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) :
-              $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
-  });
+
   function createDecision(type) {
     var decision = new veda.IndividualModel();
     decision["rdf:type"] = [ type ];
     decision.properties["rdfs:label"] = type.properties["rdfs:label"];
-    decision["v-s:parent"] = [ individual ];
+    decision["v-s:backwardTarget"] = [ individual ];
+    decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
     return decision;
   }
   //# sourceURL=s-wf:UserTaskFormTemplate_pre
@@ -3562,21 +3560,8 @@ s-wf:UserTaskFormTemplate
         <input type="radio" name="decisionRadios">
       </label>
     </div>
-    <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
-    <br>
-    <div class="actions">
-      <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
-      <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-      <!--Добавить кнопку Выдать задачу-->
-      <!--div class="btn-group dropup">
-        <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
-          <span about="v-s:SendTask" property="rdfs:label"> </span>
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" id="standard-tasks">
-        </ul>
-      </div-->
-    </div>
+    <div about="@" rel="v-wf:takenDecision"></div>
+    <div id="newDecisionHolder"></div>
   </div>
   <br>
   <div about="@" class="view edit -search sheet" data-template="v-ft:TaskRelatedTasksTemplate"></div>
@@ -3584,19 +3569,27 @@ s-wf:UserTaskFormTemplate
   <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
-  var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
-            || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
-            || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
-            || individual.rights.hasValue("v-s:canUpdate", true);
-  var isOpen = ( !individual.hasValue("v-wf:takenDecision") || !individual.isSync() );
-  if (isMine && isOpen) {
-    if ( !individual.hasValue("v-wf:takenDecision") ) {
+  function decisionHandler () {
+    var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
+              || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
+              || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
+              || individual.rights.hasValue("v-s:canUpdate", true);
+    var isOpen = !individual.hasValue("v-wf:isCompleted", true);
+    if (isMine && isOpen) {
+      $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
       $(".radio.decision input", template).first().prop("checked", true).change();
+    } else {
+      $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true);
+      $("#newDecisionHolder", template).empty();
     }
-    template.trigger("edit");
-  } else {
-    template.trigger("view");
   }
+  decisionHandler();
+
+  individual.on("v-wf:isCompleted", decisionHandler);
+  template.one("remove", function () {
+    individual.off("v-wf:isCompleted", decisionHandler);
+  });
+
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>
   """ ;

@@ -1186,9 +1186,19 @@ v-df:DecisionTemplate2
   rdfs:label "Template for -Decision- class "@en ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:template """
+<script>
+  $("#cancel.action", template).click(function () {
+    window.history.back();
+  });
+</script>
 <div>
   <div rel="v-s:hasActivity" data-template="v-df:ActionInDecisionTemplate" data-embedded="true"></div>
   <veda-control rel="v-s:hasActivity" data-type="link" class="-view edit search fulltext create"></veda-control>
+  <br>
+  <div class="actions">
+    <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
@@ -1511,14 +1521,23 @@ v-wf:DecisionRedirectTemplate
   rdfs:label "Template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:template """
+<script>
+  $("#cancel.action", template).click(function () {
+    window.history.back();
+  });
+</script>
 <div>
   <em about="v-wf:to" property="rdfs:label"></em>
   <div rel="v-wf:to" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
   <veda-control rel="v-wf:to" data-type="link" class="-view edit search fulltext"></veda-control>
-  <br>
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+  <br>
+  <div class="actions">
+    <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
@@ -1556,10 +1575,20 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
   v-ui:template """
+<script>
+  $("#cancel.action", template).click(function () {
+    window.history.back();
+  });
+</script>
 <div>
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+  <br>
+  <div class="actions">
+    <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
