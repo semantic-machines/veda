@@ -1900,10 +1900,12 @@ for (i = 0; i < 1; i++)
             };
             
             var new_test_doc5_uri = "test30.2:" + guid();
+            var comment2 = "comm1" + guid();
             var new_test_doc5 = {
-                '@': new_test_doc5_uri,
+                '@': new_test_doc5_uri, 
                 'rdf:type': newUri('rdfs:Resource'),
                 'rdfs:label': newUri(label1),
+                'rdfs:comment' : newUri(comment2),
                 'v-s:test_group': newUri(test_group_uid),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
                 'v-s:created': newDate(new Date())
@@ -1957,54 +1959,95 @@ for (i = 0; i < 1; i++)
             
             var data = query(ticket_user1.id, "'rdfs:label.isExists' == 'true' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
-            //#5
-            ok(compare(data.length, 5));
-            
-            var data = query(ticket_user1.id, "'rdfs:label.isExists' == 'true' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-
-            //#5
+            //#6
             ok(compare(data.length, 5));
             
             var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
-            //#5
+            //#7
             ok(compare(data.length, 1));            
-            
             
             res = remove_individual(ticket_user1.id, new_test_doc1['@']);
             wait_module(condition, res.op_id);
             
-            //#
+            //#8
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+            
+            var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:deleted' === true && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#9
+            ok(compare(data.length, 1));            
+            
+            
+            var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#10
+            ok(compare(data.length, 1));            
+            
+            //var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1* && 'v-s:system' === true && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#
+            //ok(compare(data.length, 1));            
+            
+            var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' == true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#11
+            ok(compare(data.length, 1));            
+            
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*') || ('rdfs:comment' == 'comment*' && 'v-s:deleted' == true)) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#
+            //ok(compare(data.length, 2));//0
+            
+            
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*' && 'v-s:basic' === true) || ('rdfs:comment' == 'comment*' && 'v-s:deleted' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#
+            //ok(compare(data.length, 2));//0
+            
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*' && 'v-s:basic' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#
+            //ok(compare(data.length, 2));//0            
+            
+            res = remove_individual(ticket_user1.id, new_test_doc5['@']);
+            wait_module(condition, res.op_id);
+            
+            //#12
+            test_fail_read(ticket_user1, new_test_doc5['@'], new_test_doc5);
+            
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*' && 'v-s:basic' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            //
+            //#
+            //ok(compare(data.length, 2));//0            
+            
+            var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            
+            //#13
+            ok(compare(data.length, 2));
             
             res = remove_individual(ticket_user1.id, new_test_doc2['@']);
             wait_module(condition, res.op_id);
             
-            //#
+            //#14
             test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
             
             res = remove_individual(ticket_user1.id, new_test_doc3['@']);
             wait_module(condition, res.op_id);
             
-            //#
+            //#15
             test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
             
             res = remove_individual(ticket_user1.id, new_test_doc4['@']);
             wait_module(condition, res.op_id);
         
-            //#
+            //#16
             test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
-            
-            res = remove_individual(ticket_user1.id, new_test_doc5['@']);
-            wait_module(condition, res.op_id);
-            
-            //#
-            test_fail_read(ticket_user1, new_test_doc5['@'], new_test_doc5);
             
             res = remove_individual(ticket_user1.id, new_test_doc6['@']);
             wait_module(condition, res.op_id);
             
-            //#
+            //#17
             test_fail_read(ticket_user1, new_test_doc6['@'], new_test_doc6);
         }
     );  
