@@ -1171,8 +1171,8 @@ v-fs:CtrlEnterBundle
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Model for v-fs:AttributiveSearch class"@en ;
-  rdfs:label "Модель для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   v-ui:template """
 <script>
   var self = individual,
@@ -1871,8 +1871,8 @@ v-fs:MinimalSearchBlank
 v-fs:AttributiveSearchInlineTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Model for v-fs:AttributiveSearch class"@en ;
-  rdfs:label "Модель для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   v-ui:template """
 <script>
   var self = individual,
@@ -2355,7 +2355,7 @@ v-fs:AttributiveSearchInlineTemplate
     }, 3000);
   });
 
-  //# sourceURL=v-fs:AttributiveSearchTemplate_post
+  //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
 </script>
   """ ;
 .
