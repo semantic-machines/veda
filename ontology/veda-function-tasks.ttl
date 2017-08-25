@@ -417,6 +417,7 @@ v-ft:TaskBlankTemplate
     .parent()
     .addClass("active");
   container.siblings(".search-button.pull-right").remove();
+
   //# sourceURL=v-ft:TaskBlankTemplate_pre
 </script>
 <div>
@@ -491,29 +492,6 @@ v-ft:ActorFilterTemplate
         "</a>" +
       "</li>";
     template.append(actor_template);
-
-    var interval;
-    var counter = new veda.IndividualModel(counter_uri);
-    var previousCount = counter[counter_prop] && counter[counter_prop][0];
-    counter.on(counter_prop, counterUpdateHandler);
-    template.one("remove", function () {
-      if (interval) {
-        interval = clearInterval(interval);
-      }
-      counter.off(counter_prop, counterUpdateHandler);
-    });
-    function counterUpdateHandler(values) {
-      var owner = individual[actor_property] && individual[actor_property][0];
-      if ( this.hasValue("v-s:owner", owner) && values.length && values[0] >= previousCount) {
-        previousCount = values[0];
-        interval = setTimeout( function () {
-          if (interval) {
-            interval = clearInterval(interval);
-          }
-          individual.trigger("search");
-        }, 5000);
-      }
-    }
   });
 
   template.on("click", "li a", function (e) {
@@ -562,18 +540,18 @@ v-ft:TaskResultTemplate
       <td property="v-wf:dateGiven"></td>
     </tr>
     <script>
-      /*if ( !individual.hasValue("v-wf:read", true) ) {
+      if ( !individual.hasValue("v-wf:read", true) ) {
         template.css("font-weight", "bold");
-      }*/
+      }
       individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);
       });
       var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
       var remove = (folder === "v-ft:Inbox") || (folder === "v-ft:Outbox");
-      removeCompleted(individual["v-wf:isCompleted"]);
-      function removeCompleted(values) {
-        if (remove && values[0] === true) {
+      removeCompleted.call(this);
+      function removeCompleted() {
+        if (remove && this.hasValue("v-wf:isCompleted", true)) {
           template.remove();
         }
       }
@@ -589,19 +567,11 @@ v-ft:RelatedTasks
   rdf:type v-fs:AttributiveSearch ;
   rdfs:label "Related tasks"@en ;
   rdfs:label "Связанные задачи"@ru ;
-  v-fs:searchBlank v-ft:RelatedTasksBlank ;
   v-fs:searchResultTemplate v-ft:RelatedTasksResultTemplate ;
   v-fs:sortOrder "'v-wf:from' desc,'v-s:created' desc" ;
   v-fs:searchOnLoad true ;
 .
 
-v-ft:RelatedTasksBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Бланк входящих задач"@ru ;
-  rdfs:label "Blank inbox task"@en ;
-  v-fc:targetType v-wf:DecisionForm ;
-  v-wf:isCompleted false ;
-.
 
 v-ft:TaskRelatedTasksTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -614,7 +584,9 @@ v-ft:TaskRelatedTasksTemplate
   var docId = this.hasValue("v-wf:onDocument") && this["v-wf:onDocument"][0].id;
   var queryStr = [
     "'@' != '" + taskId + "'",
-    "'v-wf:onDocument' == '" + docId + "'"
+    "'v-wf:onDocument' == '" + docId + "'",
+    "'rdf:type'==='v-wf:DecisionForm'",
+    "'v-wf:isCompleted'== false "
   ].join(" && ");
   relatedTasks["v-fs:fulltextQuery"] = [ queryStr ];
   //# sourceURL=v-ft:TaskRelatedTasksTemplate_pre
@@ -656,18 +628,16 @@ v-ft:RelatedTasksResultTemplate
       <td property="v-wf:dateGiven"></td>
     </tr>
     <script>
-      /*if ( !individual.hasValue("v-wf:read", true) ) {
+      if ( !individual.hasValue("v-wf:read", true) ) {
         template.css("font-weight", "bold");
-      }*/
+      }
       individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);
       });
-      var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
-      var remove = (folder === "v-ft:Inbox") || (folder === "v-ft:Outbox");
-      removeCompleted(individual["v-wf:isCompleted"]);
-      function removeCompleted(values) {
-        if (remove && values[0] === true) {
+      removeCompleted.call(this);
+      function removeCompleted() {
+        if ( this.hasValue("v-wf:isCompleted", true) ) {
           template.remove();
         }
       }
