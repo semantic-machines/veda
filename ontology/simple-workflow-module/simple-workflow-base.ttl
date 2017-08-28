@@ -3515,18 +3515,13 @@ s-wf:UserTaskFormTemplate
   v-ui:forClass s-wf:UserTaskForm ;
   v-ui:template """
 <script>
+  // Render possible decisions radios
   var radioTmpl = $(".radio.decision", template);
   if (individual.hasValue("v-wf:possibleDecisionClass")) {
     individual["v-wf:possibleDecisionClass"].map( function (value, index) {
       var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
       var input = $("input", tmpl).val(index);
       $("label", tmpl).append("<span about='" + value.id + "' property='rdfs:label'></span>");
-      input.change(function () {
-        var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
-        var decision = createDecision(type);
-        var holder = $("#newDecisionHolder", template).empty();
-        decision.present(holder, undefined, "edit");
-      });
       if (
         individual.hasValue("v-wf:takenDecision")
         && individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
@@ -3537,14 +3532,6 @@ s-wf:UserTaskFormTemplate
   }
   radioTmpl.remove();
 
-  function createDecision(type) {
-    var decision = new veda.IndividualModel();
-    decision["rdf:type"] = [ type ];
-    decision.properties["rdfs:label"] = type.properties["rdfs:label"];
-    decision["v-s:backwardTarget"] = [ individual ];
-    decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
-    return decision;
-  }
   //# sourceURL=s-wf:UserTaskFormTemplate_pre
 </script>
 <div class="container">
@@ -3597,6 +3584,36 @@ s-wf:UserTaskFormTemplate
   <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
+  $(".radio.decision input", template).change(function () {
+    var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
+    var decision = createDecision(type);
+    var holder = $("#newDecisionHolder", template).empty();
+    decision.present(holder, undefined, "edit");
+    // Disable decision radios a decision is saved
+    decision.one("afterSave", disableRadios);
+    template.one("remove", function () {
+      decision.off("afterSave", disableRadios);
+    });
+  });
+
+  decisionHandler();
+
+  individual.on("v-wf:isCompleted", decisionHandler);
+  template.one("remove", function () {
+    individual.off("v-wf:isCompleted", decisionHandler);
+  });
+
+  function disableRadios () {
+    $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true);
+  }
+  function createDecision(type) {
+    var decision = new veda.IndividualModel();
+    decision["rdf:type"] = [ type ];
+    decision.properties["rdfs:label"] = type.properties["rdfs:label"];
+    decision["v-s:backwardTarget"] = [ individual ];
+    decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
+    return decision;
+  }
   function decisionHandler () {
     var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
               || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
@@ -3608,15 +3625,9 @@ s-wf:UserTaskFormTemplate
       $(".radio.decision input", template).first().prop("checked", true).change();
     } else {
       $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true);
-      $("#newDecisionHolder", template).empty();
+      $("#newDecisionHolder", template).remove();
     }
   }
-  decisionHandler();
-
-  individual.on("v-wf:isCompleted", decisionHandler);
-  template.one("remove", function () {
-    individual.off("v-wf:isCompleted", decisionHandler);
-  });
 
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>

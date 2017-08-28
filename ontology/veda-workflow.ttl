@@ -1602,7 +1602,12 @@ v-wf:DecisionFormTemplate
 <script>
   if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
     individual["v-wf:read"] = [true];
-    individual.save();
+    //individual.save();
+    put_individual({
+      ticket: veda.ticket,
+      individual: individual.properties,
+      async: true
+    });
   }
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
