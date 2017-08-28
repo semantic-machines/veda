@@ -55,7 +55,7 @@ veda.Module(function (veda) { "use strict";
     processOntology();
 
     // Auto update ontology on change
-    var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
+    /*var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
     var updateService = new veda.UpdateService();
     updateService.subscribe(OntoVsn.id);
     OntoVsn.on("afterReset", function () {
@@ -63,7 +63,7 @@ veda.Module(function (veda) { "use strict";
       storage.ontology = JSON.stringify(ontology);
       processOntology();
       console.log("Ontology reloaded!", JSON.stringify(OntoVsn));
-    });
+    });*/
 
     function processOntology () {
 
