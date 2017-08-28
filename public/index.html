@@ -31,7 +31,8 @@
     <!--link href="/css/flatly.bootstrap.min.css" rel="stylesheet"/-->
     <!--link href="/css/superhero.bootstrap.min.css" rel="stylesheet"/-->
 
-    <link href="/css/codemirror.css" rel="stylesheet"/>
+    <link href="/css/codemirror/codemirror.css" rel="stylesheet"/>
+    <link href="/css/codemirror/fullscreen.css" rel="stylesheet"/>
     <link href="/css/fullcalendar.min.css" rel="stylesheet"/>
     <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
     <link href="/css/veda.css" rel="stylesheet"/>
@@ -240,6 +241,7 @@
           <div class="modal-content">
             <div class="modal-body">
                <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
+               <div class="holder"></div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary pull-left" id="ok" data-dismiss="modal">Ok</button>
@@ -257,6 +259,7 @@
             <div class="modal-body">
               <button id="follow" class="close" style="margin-right:20px;" data-dismiss="modal"><span class="fa fa-window-maximize"></span></button>
               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
+              <div class="holder"></div>
             </div>
           </div>
         </div>
@@ -294,6 +297,13 @@
       </div>
     </script>
 
+    <!-- Password control template -->
+    <script type="html/template" id="password-control-template">
+      <div>
+        <input type="password" class="form-control" autocomplete="on" />
+      </div>
+    </script>
+
     <!-- Text control template -->
     <script type="html/template" id="text-control-template">
       <div>
@@ -323,9 +333,7 @@
 
     <!-- Source code control template -->
     <script type="html/template" id="source-control-template">
-      <div class="panel panel-default codemirror-editor">
-        <button id="full-screen" class="fs-btn btn btn-xs btn-default glyphicon glyphicon-resize-full"></button>
-      </div>
+      <div class="panel panel-default codemirror-editor"></div>
     </script>
 
     <!-- Datetime control template -->
@@ -454,6 +462,7 @@
     <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchbrackets.js"></script>
     <script type="text/javascript" src="/js/browser/lib/codemirror/addon/edit/matchtags.js"></script>
     <script type="text/javascript" src="/js/browser/lib/codemirror/addon/fold/xml-fold.js"></script>
+    <script type="text/javascript" src="/js/browser/lib/codemirror/addon/display/fullscreen.js"></script>
 
     <!-- Veda browser & server -->
     <script type="text/javascript" src="/js/common/lib/riot.js"></script>

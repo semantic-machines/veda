@@ -712,7 +712,7 @@ s-wf:SimpleRouteStartFormMinimal_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div style="min-height:300px">
+<div style="min-height:300px; height:300px; overflow-y:auto; overflow-x:hidden;">
   <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
   <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
@@ -729,7 +729,7 @@ s-wf:SimpleRouteStartFormShort_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div style="min-height:300px">
+<div style="min-height:300px; height:300px; overflow-y:auto; overflow-x:hidden;">
   <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
   <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
@@ -749,7 +749,7 @@ s-wf:SimpleRouteStartFormFull_Template
   rdfs:label "Шаблон стартовых данных простого маршрута"@ru ;
   rdfs:label "Single route start form template"@en ;
   v-ui:template """
-<div style="min-height:300px">
+<div style="min-height:300px; height:300px; overflow-y:auto; overflow-x:hidden;">
   <em about="s-wf:SimpleRouteStartForm_participant" property="rdfs:label"></em>
   <div rel="s-wf:SimpleRouteStartForm_participant" class="view edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="s-wf:SimpleRouteStartForm_participant" class="-view edit search fulltext"></veda-control>
@@ -1056,10 +1056,86 @@ if (doc) {
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
   }
+//-----------------------------------------------------------------Заявка на энергоресурсы-------
+
+  if (doc['rdf:type'][0].id === "mnd-s:EnergyResourceRequest") {
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['sign'][simple+'visible'] = [true];
+    routes['sign'][simple+'editable'] = [true];
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'editable'] = [false];
+    routes['approval'][simple+'deadlineDays'] = [5];
+    routes['approval'][simple+'participant'] =  [new veda.IndividualModel("d:mondi_position_71025564")];
+    routes['review'][simple+'visible'] = [true];
+    routes['review'][simple+'editable'] = [false];
+    routes['review'][simple+'deadlineDays'] = [3];
+    routes['review'][simple+'participant'] =  [new veda.IndividualModel("d:SYK-EDISP_appointment")];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['distribution'][simple+'visible'] = [true];
+    routes['distribution'][simple+'editable'] = [true];
+
+  }
+
+//--------------------------------------------------------------------------------Демонтаж-------
+  if (doc['rdf:type'][0].id === "mnd-s:DismantlingProject") {
+    var chief, owner;
+    if (doc.hasValue("v-s:projectManager")){
+      chief = doc["v-s:projectManager"][0].getChief();
+    }
+    if (doc.hasValue("v-s:owner") && (doc["v-s:owner"][0] == doc["v-s:creator"][0])){
+      owner = [];
+    } else {
+      owner = doc["v-s:owner"];
+    }
+    var arr = owner.concat(chief);/*
+    routes['introduction'][simple+'visible'] = [false];
+    routes['introduction'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'participant'] = arr;
+    routes['coordination2'][simple+'visible'] = [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible'] = [false];
+    routes['coordination3'][simple+'editable'] = [false];
+    routes['sign'][simple+'visible'] = [false];
+    routes['sign'][simple+'editable'] = [false];
+    routes['approval'][simple+'visible'] = [false];
+    routes['approval'][simple+'editable'] = [false];
+    routes['review'][simple+'visible'] = [false];
+    routes['review'][simple+'editable'] = [false];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'participant'] =  [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")];
+    routes['instruction'][simple+'deadlineDays'] =[2];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];*/
+
+
+
+
+    routes['coordination1'][simple+'visible'] = [true]; //согласование 1
+    routes['coordination1'][simple+'editable'] = [false];
+    routes['coordination1'][simple+'participant'] = arr;
+    routes['coordination2'][simple+'visible'] = [true]; //согласование 2
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [false];
+    routes['instruction'][simple+'participant'] =  [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")];
+    routes['instruction'][simple+'deadlineDays'] =[2];
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+  }
+
 //--------------------------------------------------------------------------Внутренний документ
   if (doc['rdf:type'][0].id === "mnd-s:InternalDocument") {
-    routes['introduction'][simple+'visible'] = [true];
-    routes['introduction'][simple+'editable'] = [true];
+    routes['informing'][simple+'visible'] = [true];
+    routes['informing'][simple+'editable'] = [true];
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
     routes['coordination2'][simple+'visible'] = [true];
@@ -1068,8 +1144,11 @@ if (doc) {
     routes['coordination3'][simple+'editable'] = [true];
 
     var chief;
-    chief = doc["v-s:initiator"][0].getChief();
-
+    if (doc.hasValue("v-s:initiator")){
+      chief = doc["v-s:initiator"][0].getChief();
+    } else {
+      chief = doc["v-s:creator"][0].getChief();
+    }
     routes['sign'][simple+'visible'] = [true];
     routes['sign'][simple+'editable'] = [true];
     routes['sign'][simple+'deadlineDays'] = [5];
@@ -1079,8 +1158,11 @@ if (doc) {
     routes['approval'][simple+'deadlineDays'] = [5];
 
     var chief2;
-    chief2 = doc["v-s:supplier"][0].getChief();
-
+    if (doc.hasValue("v-s:responsibleDepartment")){
+      chief2 = doc["v-s:responsibleDepartment"][0].getChief();
+    } else {
+      chief2 = doc["v-s:creator"][0].getChief();
+    }
     routes['review'][simple+'visible'] = [true];
     routes['review'][simple+'editable'] = [true];
     routes['review'][simple+'deadlineDays'] = [3];
@@ -2699,6 +2781,48 @@ if (doc) {
 
   }
 
+  //--------------------------------------------------------------------------------Акт уничтожения СИЗ-------
+  if (doc['rdf:type'][0].id === "mnd-s:ActOfPpeDestruction") {
+    routes['coordination1'][simple+'participant'] = doc["v-s:member"];
+    routes['coordination1'][simple+'visible'] = [true];
+    routes['coordination1'][simple+'editable'] = [true];
+
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+    routes['instruction'][simple+'participant'] = [new veda.IndividualModel("d:3833560e-5211-4097-850d-72311be239e0")];
+    routes['instruction'][simple+'comment'] = [new String('Исполнить поручение')];
+
+  }
+
+//--------------------------------------------------------------------------------Инвестиционная заявка-------
+  if (doc['rdf:type'][0].id === "mnd-s:ProjectCapex") {
+    routes['coordination1'][simple+'visible']  =  [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible']  =  [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible']  =  [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'visible']  =  [true];
+    routes['coordination4'][simple+'editable'] = [true];
+
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:554f8555-af9a-436d-ada9-09458614e878")];
+    routes['approval'][simple+'editable'] = [false];
+    routes['approval'][simple+'comment'] = [new String('Указать решение инвестиционного комитета')];
+
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['examination'][simple+'participant']=[new veda.IndividualModel("d:554f8555-af9a-436d-ada9-09458614e878")].concat(doc["v-s:owner"]) ;
+    routes['examination'][simple+'comment'] = [new String('Ознакомиться')];
+
+
+
+  }
+
+
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
@@ -3391,20 +3515,15 @@ s-wf:UserTaskFormTemplate
   v-ui:forClass s-wf:UserTaskForm ;
   v-ui:template """
 <script>
+  // Render possible decisions radios
   var radioTmpl = $(".radio.decision", template);
   if (individual.hasValue("v-wf:possibleDecisionClass")) {
     individual["v-wf:possibleDecisionClass"].map( function (value, index) {
       var tmpl = radioTmpl.clone().insertBefore(radioTmpl);
       var input = $("input", tmpl).val(index);
       $("label", tmpl).append("<span about='" + value.id + "' property='rdfs:label'></span>");
-      input.change(function () {
-        var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
-        var decision = createDecision(type);
-        individual["v-wf:takenDecision"] = [ decision ];
-      });
       if (
         individual.hasValue("v-wf:takenDecision")
-        && individual.isSync()
         && individual["v-wf:takenDecision"][0]["rdf:type"][0].id === individual["v-wf:possibleDecisionClass"][index].id
       ) {
         input.prop("checked", true);
@@ -3412,18 +3531,7 @@ s-wf:UserTaskFormTemplate
     });
   }
   radioTmpl.remove();
-  template.on("view edit search", function (e) {
-    e.type === "view" ? $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true) :
-    e.type === "edit" ? $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false) :
-              $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
-  });
-  function createDecision(type) {
-    var decision = new veda.IndividualModel();
-    decision["rdf:type"] = [ type ];
-    decision.properties["rdfs:label"] = type.properties["rdfs:label"];
-    decision["v-s:parent"] = [ individual ];
-    return decision;
-  }
+
   //# sourceURL=s-wf:UserTaskFormTemplate_pre
 </script>
 <div class="container">
@@ -3467,21 +3575,8 @@ s-wf:UserTaskFormTemplate
         <input type="radio" name="decisionRadios">
       </label>
     </div>
-    <div about="@" rel="v-wf:takenDecision" data-embedded="true"></div>
-    <br>
-    <div class="actions">
-      <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
-      <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-      <!--Добавить кнопку Выдать задачу-->
-      <!--div class="btn-group dropup">
-        <button class="btn btn-warning btn-block dropdown-toggle sendbutton" data-toggle="dropdown">
-          <span about="v-s:SendTask" property="rdfs:label"> </span>
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" id="standard-tasks">
-        </ul>
-      </div-->
-    </div>
+    <div about="@" rel="v-wf:takenDecision"></div>
+    <div id="newDecisionHolder"></div>
   </div>
   <br>
   <div about="@" class="view edit -search sheet" data-template="v-ft:TaskRelatedTasksTemplate"></div>
@@ -3489,17 +3584,51 @@ s-wf:UserTaskFormTemplate
   <div about="@" rel="v-wf:onDocument" class="view edit -search sheet"></div>
 </div>
 <script>
-  var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
-            || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
-            || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
-            || individual.rights.hasValue("v-s:canUpdate", true);
-  var isOpen = !individual.hasValue("v-wf:takenDecision") || !individual.isSync();
-  if (isMine && isOpen) {
-    $(".radio.decision input", template).first().prop("checked", true).change();
-    template.trigger("edit");
-  } else {
-    template.trigger("view");
+  $(".radio.decision input", template).change(function () {
+    var type = individual["v-wf:possibleDecisionClass"][$(this).val()];
+    var decision = createDecision(type);
+    var holder = $("#newDecisionHolder", template).empty();
+    decision.present(holder, undefined, "edit");
+    // Disable decision radios a decision is saved
+    decision.one("afterSave", disableRadios);
+    template.one("remove", function () {
+      decision.off("afterSave", disableRadios);
+    });
+  });
+
+  decisionHandler();
+
+  individual.on("v-wf:isCompleted", decisionHandler);
+  template.one("remove", function () {
+    individual.off("v-wf:isCompleted", decisionHandler);
+  });
+
+  function disableRadios () {
+    $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true);
   }
+  function createDecision(type) {
+    var decision = new veda.IndividualModel();
+    decision["rdf:type"] = [ type ];
+    decision.properties["rdfs:label"] = type.properties["rdfs:label"];
+    decision["v-s:backwardTarget"] = [ individual ];
+    decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
+    return decision;
+  }
+  function decisionHandler () {
+    var isMine = (veda.appointment && veda.appointment.id === individual["v-wf:to"][0].id)
+              || (veda.appointment && veda.appointment.hasValue("v-s:occupation") && veda.appointment["v-s:occupation"][0].id === individual["v-wf:to"][0].id)
+              || (veda.user && veda.user.id === individual["v-wf:to"][0].id)
+              || individual.rights.hasValue("v-s:canUpdate", true);
+    var isOpen = !individual.hasValue("v-wf:isCompleted", true);
+    if (isMine && isOpen) {
+      $(".radio.decision", template).removeClass("disabled").find("input").prop("disabled", false);
+      $(".radio.decision input", template).first().prop("checked", true).change();
+    } else {
+      $(".radio.decision", template).addClass("disabled").find("input").prop("disabled", true);
+      $("#newDecisionHolder", template).remove();
+    }
+  }
+
   //# sourceURL=s-wf:UserTaskFormTemplate_post
 </script>
   """ ;
@@ -4550,7 +4679,7 @@ s-wf:nc_oc
   v-wf:startingMapping s-wf:possible_decision_for_controller, s-wf:map_decision_route_to_add_reaction, s-wf:map_decision_form_type_4_PIV_decision_form_type, s-wf:map_actor_task_description_from_LV_result_decision, s-wf:map_redirect_from_4_PLV_redirect_from;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_comment, s-wf:map_msg_template_4_SV_default_template, s-wf:map_document_4_TIV_docId, s-wf:map_vf_to_4_O_executor;
   v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl;
-  v-wf:startingMessageMap s-wf:map_from_4_TIV_from, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
+  v-wf:startingMessageMap s-wf:map_from_4_TIV_from, s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor, s-wf:map_wf_from_4_TIV_initiator;
   v-wf:executor s-wf:def_exec_controller;
   v-wf:completedMapping s-wf:map_set_decision_from_local, s-wf:map_set_result_decision_from_TR_result_data, s-wf:map_actor_task_action_return_result_decision;
   v-wf:completedMapping s-wf:map_set_actor_task_description_from_TR_result_data, s-wf:map_t2_sm5, s-wf:map_redirect_from_2_undefine;

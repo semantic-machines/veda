@@ -1599,24 +1599,19 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
-<div class="hidden"></div>
 <script>
-  if ( individual.rights.hasValue("v-s:canUpdate", true) && !individual.isNew() ) {
-    individual.one("beforeSave", function () {
-      if ( !individual.hasValue("v-wf:read", true) ) {
-        individual["v-wf:read"] = [true];
-      }
-    });
-    template.one("remove", function () {
-      if ( !individual.hasValue("v-wf:read", true) ) {
-        individual.reset();
-        individual["v-wf:read"] = [true];
-        individual.save();
-      }
+  if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
+    individual["v-wf:read"] = [true];
+    //individual.save();
+    put_individual({
+      ticket: veda.ticket,
+      individual: individual.properties,
+      async: true
     });
   }
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
+<div class="hidden"></div>
   """ ;
   .
 
@@ -2119,8 +2114,16 @@ v-wf:event_df5
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
   if (
-    (!parent_script_id || (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
+    ( !document['v-s:deleted']
+      || document['v-s:deleted'][0].data == 'false'
+    ) /*&& (
+      !parent_script_id
+      || parent_script_id == 'v-wf:event_df1'
+      || parent_script_id == 'v-wf:event_df2'
+      || parent_script_id == 'v-wf:event_df3'
+      || parent_script_id == 'v-wf:event_df4'
+      || parent_script_id == 'v-wf:event_df5'
+    )*/
   ) {
     prepare_decision_form (ticket, document);
   }
@@ -2130,8 +2133,8 @@ v-wf:event_df5
 
 v-wf:Decision
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision"@en ;
   rdfs:label "Решение"@ru ;

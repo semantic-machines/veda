@@ -60,7 +60,8 @@ basic.getDrivers().forEach(function (drv) {
         function(result){basic.clickUp(result);});
     basic.execute(driver, 'click', 'div[class="radio decision"] input[value="0"]', "****** PHASE#4 : ERROR = Cannot click on '0' decision");
     driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('#send').scrollIntoView(true)");
+    driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#4 : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#4 : ERROR = Cannot click on 'Ok' button");
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#4 : ERROR = Cannot click on 'Welcome' button");
     basic.logout(driver, 4);

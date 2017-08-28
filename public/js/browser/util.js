@@ -28,7 +28,7 @@ veda.Module(function Util(veda) { "use strict";
         sort: "'v-s:created' desc",
         from: from,
         top: delta,
-        limit: limit,
+        //limit: limit,
         async: true
       }).then(function (query_result) {
         var cursor = query_result.cursor;
@@ -134,20 +134,6 @@ veda.Module(function Util(veda) { "use strict";
   veda.Util.formatNumber = function (n) {
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
   };
-
-  veda.Util.TTLtoJSON = function (ttl) {
-    var parser = N3.Parser();
-    var triples = [];
-    var prefixes;
-    var result = parser.parse(ttl, function (error, triple, prefixez) {
-      if (triple) {
-        triples.push(triple);
-      } else {
-        prefixes = prefixez;
-      }
-    });
-    console.log('triples:', triples, 'prefixes:', prefixes);
-  }
 
   veda.Util.toTTL = function (individualList, callback) {
     var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'").result,
@@ -582,13 +568,13 @@ veda.Module(function Util(veda) { "use strict";
 
     var rights = individual['rights'];
     var holder = $("<div>");
-    rights.present(holder);
+    rights.present(holder, "v-ui:PermissionStatementInlineTemplate");
     holder.appendTo(modalBody);
 
     var origin = individual['rightsOrigin'];
     origin.forEach(function (rightRecord) {
       var holder = $("<div>");
-      rightRecord.present(holder);
+      rightRecord.present(holder, "v-ui:PermissionStatementInlineTemplate");
       holder.appendTo(modalBody);
     });
   }

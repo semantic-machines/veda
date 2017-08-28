@@ -158,6 +158,27 @@
     isSingle: true
   };
 
+  // Password input
+  $.fn.veda_password = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_password.defaults, options ),
+      control = veda_literal_input.call(this, opts);
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_password.defaults = {
+    template: $("#password-control-template").html(),
+    parser: function (input) {
+      if (input.length === 64) {
+        return new String( input );
+      } else if (input) {
+        return new String( Sha256.hash(input) );
+      } else {
+        return null;
+      }
+    },
+    isSingle: true
+  };
+
   // Text input
   $.fn.veda_text = function( options ) {
     var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
@@ -1110,7 +1131,6 @@
         control = $(opts.template),
         individual = opts.individual,
         property_uri = opts.property_uri,
-        fscreen = $("#full-screen", control),
         editorEl = control.get(0);
 
     opts.value = individual.hasValue(property_uri) ? individual.get(property_uri)[0].toString() : "";
@@ -1128,8 +1148,17 @@
       autoCloseBrackets: true,
       matchTags: true,
       autoCloseTags: true,
-      lineNumbers: true
+      lineNumbers: true,
+      extraKeys: {
+        "F9": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
     });
+
     setTimeout( function () {
       editor.refresh();
     }, 100);
@@ -1158,31 +1187,6 @@
     individual.on(property_uri, handler );
     this.on("remove", function () {
       individual.off(property_uri, handler);
-    });
-
-    fscreen.click(function () {
-      var body = $("body"),
-          all = $("body > *:not(script)"),
-          parent = control.parent(),
-          wrapper = $("<div class='fs-wrapper'></div>"),
-          cm = $(".CodeMirror", control);
-      if ( !parent.hasClass("fs-wrapper") ) {
-        control.wrap( wrapper );
-        cm.addClass("CodeMirror-fs");
-        parent = control.parent();
-        parent.detach();
-        all.hide();
-        body.append(parent);
-      } else {
-        parent.detach();
-        cm.removeClass("CodeMirror-fs");
-        self.append(parent);
-        control.unwrap();
-        all.show();
-      }
-      control.toggleClass("fs");
-      fscreen.toggleClass("glyphicon-resize-full glyphicon-resize-small");
-      editor.refresh();
     });
 
     this.append(control);
@@ -1504,7 +1508,9 @@
               modal.modal("hide").remove();
             });
             var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-            $(".action", tmpl).remove();
+            if (tmpl) {
+              $(".action", tmpl).remove();
+            }
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
             template.on("internal-validated", function () {

@@ -265,7 +265,6 @@ v-s:Person
 .
 v-s:birthday
   rdf:type owl:DatatypeProperty ;
-  rdf:type owl:FunctionalProperty ;
   rdfs:comment "The birthday of this Person."@en ;
   rdfs:comment "День рождения этой персоны"@ru ;
   rdfs:domain v-s:Person ;
@@ -276,7 +275,6 @@ v-s:birthday
 .
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;
-  rdf:type owl:FunctionalProperty ;
   rdfs:comment "Personnel number"@en ;
   rdfs:comment "Табельный номер"@ru ;
   rdfs:domain v-s:Person ;

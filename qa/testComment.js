@@ -14,7 +14,8 @@ var assert = require('assert'),
 */
 
 function check(driver, comment, reply, edit, del, phase) {
-    driver.executeScript("document.querySelector('#comment-content').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#comment-content').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to comment-content field");});
     driver.findElements({css:'#comment-content'}).then(function (result) {
         assert.equal(comment, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " > CHECK COMMENTS : ERROR = Seems number of 'comments' is wrong, expected: " + comment);});
@@ -42,9 +43,11 @@ function check(driver, comment, reply, edit, del, phase) {
 */
 
 function comment(driver, somethingUnique) {
-    driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to comment field");});
     basic.execute(driver, 'sendKeys', 'div[typeof="v-s:Comment"] textarea[class="form-control"]', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot input comment", somethingUnique);
-    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click  on 'save' button");
     driver.sleep(basic.SLOW_OPERATION/2);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
@@ -70,36 +73,42 @@ basic.getDrivers().forEach(function (drv) {
 
     //PHASE#1: Comment
     basic.execute(driver, 'click', '#user-info', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'user-info' button");
-    driver.executeScript("document.querySelector('#add-comment').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#add-comment').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to add-comment field");});
     basic.execute(driver, 'click', '#add-comment', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'add-comment' button");
     comment(driver, timeStamp);
-    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to reply button");});
     basic.execute(driver, 'click', '#reply', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'reexply' button");
     comment(driver, timeStamp + 1);
     driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to reply button");});
     basic.execute(driver, 'click', '#reply', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on 'reply' button");
-    driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to rdfs:comment field");});
     driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] textarea[class="form-control"]', 1, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on comment field"),
         basic.FAST_OPERATION).then(function(result){basic.clickUp(result);});
-    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to save(comment) button");});
     driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] button[id="save"]', 1, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on save button"),
         basic.FAST_OPERATION).then(function(result){basic.clickUp(result);});
-    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.sleep(basic.SLOW_OPERATION / 2);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
 
     //PHASE#2: Delete
     check(driver, 3, 3, 2, 2, 2);
-    driver.executeScript("document.querySelector('#delete').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#delete').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot scroll to delete button");});
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
-    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.sleep(basic.SLOW_OPERATION);
     check(driver, 2, 2, 1, 1, 2);
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
         basic.clickUp(result);});
     driver.switchTo().alert().accept();
-    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.sleep(basic.SLOW_OPERATION);
     check(driver, 1, 1, 1, 1, 2);
 
     //PHASE#3: Check
@@ -107,7 +116,8 @@ basic.getDrivers().forEach(function (drv) {
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 3);
     driver.navigate().refresh();
     driver.sleep(basic.SLOW_OPERATION);
-    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);");
+    driver.executeScript("document.querySelector('#reply').scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 CHECK : ERROR = Cannot scroll to reply button");});
     check(driver, 1, 1, 0, 0, 3);
     driver.quit();
 });

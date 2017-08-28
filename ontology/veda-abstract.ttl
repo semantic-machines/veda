@@ -323,7 +323,7 @@ v-s:UserThing
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "User thing"@en ;
-  rdfs:label "Любая пльзовательская сущность"@ru ;
+  rdfs:label "Пользовательская сущность"@ru ;
 .
 v-s:hasStatusManual
   rdf:type owl:ObjectProperty ;
@@ -337,7 +337,14 @@ v-s:SystemThing
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:label "System thing"@en ;
-  rdfs:label "Любая системная сущность"@ru ;
+  rdfs:label "Системная сущность"@ru ;
+.
+### -------------------------------------------------------
+v-s:Function
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Function"@en ;
+  rdfs:label "Функция"@ru ;
 .
 ### -------------------------------------------------------
 v-s:Temporal
@@ -407,6 +414,13 @@ v-s:dateToFact
   rdfs:label "Date finish actual"@en ;
   rdfs:label "Дата окончания фактическая"@ru ;
   rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateOfReceiving
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date of receiving"@en ;
+  rdfs:label "Дата получения"@ru ;
+  rdfs:range xsd:date ;
   rdfs:domain v-s:Temporal ;
 .
 v-s:year
@@ -954,6 +968,13 @@ v-s:hasMaintenanceKind
   rdfs:label "Equipment shutdown kind"@en ;
   rdfs:label "Вид останова оборудования"@ru ;
   rdfs:range v-s:MaintenanceKind ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:productionCondition
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Production condition"@en ;
+  rdfs:label "Производственные условия"@ru ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Maintained ;
 .
 

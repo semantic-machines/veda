@@ -17,23 +17,39 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if (container.prop("id") === "main") { container.hide(); }
 
-      var ontology = new veda.OntologyModel();
+      present(individual, container, template, mode);
 
-      var specs = $.extend.apply (
-        {}, [].concat(
-          individual["rdf:type"].map( function (_class) {
-            return ontology.getClassSpecifications(_class.id);
-          })
-        )
-      );
+      if (container.prop("id") === "main") { container.show("fade", 250); }
 
-      if (template) {
-        if (template instanceof veda.IndividualModel) {
-          template = $( template["v-ui:template"][0].toString() );
-        } else if (typeof template === "string") {
-          template = new veda.IndividualModel(template);
-          template = $( template["v-ui:template"][0].toString() );
-        }
+    } catch (err) {
+      console.log(err);
+    }
+
+  });
+
+  function present(individual, container, template, mode) {
+
+    var ontology = new veda.OntologyModel();
+
+    var specs = $.extend.apply (
+      {}, [].concat(
+        individual["rdf:type"].map( function (_class) {
+          return ontology.getClassSpecifications(_class.id);
+        })
+      )
+    );
+
+    if (template) {
+      if (template instanceof veda.IndividualModel) {
+        template = $( template["v-ui:template"][0].toString() );
+      } else if (typeof template === "string") {
+        template = new veda.IndividualModel(template);
+        template = $( template["v-ui:template"][0].toString() );
+      }
+      renderTemplate(individual, container, template, mode, specs);
+    } else {
+      if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
+        template = individual["v-ui:hasCustomTemplate"][0];
         renderTemplate(individual, container, template, mode, specs);
       } else {
         individual["rdf:type"].map(function (type) {
@@ -46,14 +62,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           renderTemplate(individual, container, template, mode, specs);
         });
       }
-
-      if (container.prop("id") === "main") { container.show("fade", 250); }
-
-    } catch (err) {
-      console.log(err);
     }
-
-  });
+  }
 
   function renderTemplate(individual, container, template, mode, specs) {
     var pre_render_src,
@@ -130,7 +140,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
       e.stopPropagation();
     }
-    template.on("view edit search save cancel delete recover draft", syncEmbedded);
+    template.on("view edit search save cancel delete recover draft destroy", syncEmbedded);
 
     // Define handlers
     function saveHandler (e) {
@@ -155,9 +165,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     function cancelHandler (e) {
       template.trigger("view");
-      individual.reset();
-      if (container.prop("id") === "main") {
-        window.history.back();
+      if (parent !== individual.id) {
+        individual.reset()
+          .then( function () {
+            if (container.prop("id") === "main") {
+              window.history.back();
+            }
+          }, function () {
+            if (container.prop("id") === "main") {
+              window.history.back();
+            }
+          });
       }
       e.stopPropagation();
     }
@@ -264,8 +282,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
           spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
+
+      function idModifiedHandler() {
+        propertyContainer.text(individual.id);
+      }
       if (property_uri === "@") {
         propertyContainer.text(individual.id);
+        individual.on("idChanged", idModifiedHandler);
+        template.one("remove", function () {
+          individual.off(property_uri, idModifiedHandler);
+        });
         return;
       }
       renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
@@ -304,7 +330,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
     });
     if (abouts.length) {
-      get_individuals(veda.ticket, abouts).map(function (item) {
+      get_individuals(veda.ticket, veda.Util.unique(abouts) ).map(function (item) {
         var about = new veda.IndividualModel(item);
       });
     }

@@ -1126,29 +1126,36 @@ function removeFromGroup(ticket, group, resource)
   return [new_membership, res];
 }
 
-function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
-{
-    if (subj_uri == undefined || obj_uri == undefined) {
-  var error = new Error();
-  print("ERR! INVALID ARGS IN addRigth");
-  print("subj_uri=", subj_uri);
-  print("obj_uri=", obj_uri);
-  print("Error stack:", error.stack);
-    }
+function addRight(ticket, rights, subj_uri, obj_uri, new_uri) {
 
-
-  if (new_uri)
-  {
-    var prev = get_individual(ticket, new_uri);
-    if (prev)
-    {
-      //print ("JS: RIGHT ALREADY EXISTS");
-      return;
-    }
+  if (subj_uri == undefined || obj_uri == undefined) {
+    var error = new Error();
+    print("ERR! addRight: INVALID ARGS IN");
+    print("subj_uri=", subj_uri);
+    print("obj_uri=", obj_uri);
+    print("Error stack:", error.stack);
+    return;
   }
 
-  if (!new_uri)
+  if (!new_uri) {
     new_uri = genUri();
+  }
+
+  if (new_uri) {
+    try {
+      var prev = get_individual(ticket, new_uri);
+      if (prev) {
+        if ( getUri(prev["rdf:type"]) !== "v-s:PermissionStatement" ) {
+          var error = new Error();
+          print ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
+          print("Error stack:", error.stack);
+          return;
+        }
+      }
+    } catch (e) {
+      print("Error stack:", e.stack);
+    }
+  }
 
   var new_permission = {
     '@': new_uri,
@@ -1157,8 +1164,7 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri)
     'v-s:permissionSubject': newUri(subj_uri)
   };
 
-  for (var i = 0; i < rights.length; i++)
-  {
+  for (var i = 0; i < rights.length; i++) {
     if (rights[i] == can_read)
       new_permission['v-s:canRead'] = newBool(true);
     else if (rights[i] == can_update)

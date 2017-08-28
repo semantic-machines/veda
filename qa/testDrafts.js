@@ -1,7 +1,8 @@
 var assert = require('assert'),
     basic = require('./basic.js'),
     console = require('console'),
-    firstName = ''+Math.round(+new Date()/1000);
+    firstName = ''+Math.round(+new Date()/1000),
+    webdriver = require('selenium-webdriver');
 
 /**
  * Проверка черновиков
@@ -73,15 +74,16 @@ basic.getDrivers().forEach(function(drv) {
     var lastName = 'Draft';
     fillProperty(driver, 'lastName', lastName, 1);
     fillProperty(driver, 'firstName', firstName, 1);
-    driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);");
-    basic.isEnabled(driver, '#draft', basic.FAST_OPERATION, 1);
-    basic.execute(driver, 'click', '#draft', "****** PHASE#1 > NEW DRAFT : ERROR = Cannot click on 'draft' button");
-    driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
-        assert(txt == firstName);
-    }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/FN");});
-    driver.findElement({css:'div[property="v-s:lastName"] span[class="value-holder"]'}).getText().then(function (txt) {
-        assert(txt == lastName);
-    }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/LN");});
+    //driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#draft')[0].scrollIntoView(true);")
+    //    .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Cannot scroll to draft button");});
+    //basic.isEnabled(driver, '#draft', basic.FAST_OPERATION, 1);
+    //basic.execute(driver, 'click', '#draft', "****** PHASE#1 > NEW DRAFT : ERROR = Cannot click on 'draft' button");
+    //driver.findElement({css:'div[property="v-s:firstName"] span[class="value-holder"]'}).getText().then(function (txt) {
+    //    assert(txt == firstName);
+    // }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/FN");});
+    // driver.findElement({css:'div[property="v-s:lastName"] span[class="value-holder"]'}).getText().then(function (txt) {
+    //     assert(txt == lastName);
+    // }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > NEW DRAFT : ERROR = Seems that person is not saved properly/LN");});
 
     //PHASE#2: Check
     check(driver, "true", 2);
@@ -93,7 +95,8 @@ basic.getDrivers().forEach(function(drv) {
         now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2), 3);
     basic.execute(driver, 'click', '[property="v-s:lastName"] + veda-control input',
         "****** PHASE#3 > EDIT DRAFT : ERROR = Cannot click on 'last name control' for person");
-    driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#save')[0].scrollIntoView(true);");
+    driver.executeScript("$('div[typeof=\"v-s:Person\"] > .action#save')[0].scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 EDIT DRAFT : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', '#save', "****** PHASE#3 > EDIT DRAFT : ERROR = Cannot click on 'save' button");
 
     //PHASE#4: Check
