@@ -416,6 +416,13 @@ v-s:dateToFact
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
+v-s:dateOfReceiving
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date of receiving"@en ;
+  rdfs:label "Дата получения"@ru ;
+  rdfs:range xsd:date ;
+  rdfs:domain v-s:Temporal ;
+.
 v-s:year
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Year"@en ;
