@@ -2795,6 +2795,35 @@ if (doc) {
 
   }
 
+//--------------------------------------------------------------------------------Инвестиционная заявка-------
+  if (doc['rdf:type'][0].id === "mnd-s:ProjectCapex") {
+    routes['coordination1'][simple+'visible']  =  [true];
+    routes['coordination1'][simple+'editable'] = [true];
+    routes['coordination2'][simple+'visible']  =  [true];
+    routes['coordination2'][simple+'editable'] = [true];
+    routes['coordination3'][simple+'visible']  =  [true];
+    routes['coordination3'][simple+'editable'] = [true];
+    routes['coordination4'][simple+'visible']  =  [true];
+    routes['coordination4'][simple+'editable'] = [true];
+
+    routes['approval'][simple+'visible'] = [true];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:554f8555-af9a-436d-ada9-09458614e878")];
+    routes['approval'][simple+'editable'] = [false];
+    routes['approval'][simple+'comment'] = [new String('Указать решение инвестиционного комитета')];
+
+    routes['instruction'][simple+'visible'] = [true];
+    routes['instruction'][simple+'editable'] = [true];
+
+    routes['examination'][simple+'visible'] = [true];
+    routes['examination'][simple+'editable'] = [true];
+    routes['examination'][simple+'participant']=[new veda.IndividualModel("d:554f8555-af9a-436d-ada9-09458614e878")].concat(doc["v-s:owner"]) ;
+    routes['examination'][simple+'comment'] = [new String('Ознакомиться')];
+
+
+
+  }
+
+
 
   if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
       routes['coordination1'][simple+'participant'] = [
