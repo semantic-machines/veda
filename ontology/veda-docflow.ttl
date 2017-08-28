@@ -1650,7 +1650,7 @@ v-wf:DecisionRedirectTemplateSpec3
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
-  v-ui:forProperty v-wf:to, rdfs:comment ;
+  v-ui:forProperty v-wf:to ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User') || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
