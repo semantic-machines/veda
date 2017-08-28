@@ -2113,17 +2113,16 @@ v-wf:event_df5
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
-  if ( true
-    /*(
+  if (
+    ( !document['v-s:deleted']
+      || document['v-s:deleted'][0].data == 'false'
+    ) /*&& (
       !parent_script_id
       || parent_script_id == 'v-wf:event_df1'
       || parent_script_id == 'v-wf:event_df2'
       || parent_script_id == 'v-wf:event_df3'
       || parent_script_id == 'v-wf:event_df4'
       || parent_script_id == 'v-wf:event_df5'
-    ) && (
-      !document['v-s:deleted']
-      || document['v-s:deleted'][0].data == 'false'
     )*/
   ) {
     prepare_decision_form (ticket, document);
