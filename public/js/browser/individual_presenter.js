@@ -165,18 +165,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     function cancelHandler (e) {
       template.trigger("view");
-      if (parent !== individual.id) {
-        individual.reset()
-          .then( function () {
-            if (container.prop("id") === "main") {
-              window.history.back();
-            }
-          }, function () {
-            if (container.prop("id") === "main") {
-              window.history.back();
-            }
-          });
-      }
+      individual.reset()
+        .then( function () {
+          if (container.prop("id") === "main") {
+            window.history.back();
+          }
+        }, function () {
+          if (container.prop("id") === "main") {
+            window.history.back();
+          }
+        });
       e.stopPropagation();
     }
     template.on("cancel", cancelHandler);
