@@ -2134,8 +2134,7 @@ v-wf:event_df5
 
 v-wf:Decision
   rdf:type owl:Class ;
-#  rdfs:subClassOf v-s:SystemThing ;
-#  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Decision"@en ;
