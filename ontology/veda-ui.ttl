@@ -2041,19 +2041,16 @@ v-ui:TreeTemplate
   function getIn(self) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.inProperty) {
-      var query = individual.treeConfig.inProperty.map(function (property) {
+      var q = individual.treeConfig.inProperty.map(function (property) {
           return "'" + property.id + "'=='" + self.id + "'";
         }).join(" || ");
       if (individual.treeConfig.allowedClass) {
-        query = "(" + query + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
+        q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
           return "'rdf:type'=='" + _class.id + "'";
         }).join(" || ") + ")";
       }
-      var search = new veda.IndividualModel();
-      search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-      search["v-fs:fulltextQuery"] = [ query ];
-      search.search();
-      search.result.map( function (uri) {
+      var result = query(veda.ticket, q).result;
+      result.map( function (uri) {
         res.push( new veda.IndividualModel(uri) );
       });
     }
