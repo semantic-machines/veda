@@ -1175,15 +1175,15 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri) {
           return;
         }
       }
-    } catch (error) {
+    } catch (ex) {
 
 	  if (typeof window === "undefined")
 	  {
-            print("Error stack:", error.stack);
+            print("addRight:Error stack:", ex.stack);
 	  }
 	  else
 	  {
-            console.log("Error stack:", error.stack);
+            console.log("addRight:Error stack:", ex.stack);
 	  }
 
     }
