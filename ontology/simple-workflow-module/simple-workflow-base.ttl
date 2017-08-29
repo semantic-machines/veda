@@ -2782,7 +2782,7 @@ if (doc) {
   }
 
   //--------------------------------------------------------------------------------Акт уничтожения СИЗ-------
-  if (doc['rdf:type'][0].id === "mnd-s:ActOfPpeDestruction") {
+  if (doc['rdf:type'][0].id === "mnd-s:PpeDestructionRequest") {
     routes['coordination1'][simple+'participant'] = doc["v-s:member"];
     routes['coordination1'][simple+'visible'] = [true];
     routes['coordination1'][simple+'editable'] = [true];
