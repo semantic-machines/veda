@@ -726,6 +726,18 @@ v-s:OrganizationTemplate
     });
   });
 
+   //перезапись лабел досье контрагента
+  function shortLabelFunction () {
+    if (individual.hasValue("v-s:shortLabel") && individual.hasValue("v-s:hasContractorProfile")){
+      individual["v-s:hasContractorProfile"][0]["rdfs:label"] = individual["v-s:shortLabel"];
+      individual["v-s:hasContractorProfile"][0].save();
+    }
+  }
+    individual.on("beforeSave", shortLabelFunction);
+    template.one("remove", function () {
+    individual.off("beforeSave", shortLabelFunction);
+  });
+
     $("#add-subsidiary", template).click(function () {
     var modal = $("#notification-modal-template").html();
     modal = $(modal);
@@ -778,6 +790,9 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
   });
+
+
+
 
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
