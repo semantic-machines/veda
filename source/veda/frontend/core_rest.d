@@ -801,43 +801,42 @@ class VedaStorageRest : VedaStorageRest_API
                 {
                     string queue_name = uri[ queue_state_prefix.length..$ ];
                     log.trace("%s queue_name=%s", queue_state_prefix, queue_name);
-                    //if (main_queue is null)
+
+                    main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
+                    if (main_queue.open())
                     {
-                        main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
-                        if (main_queue.open())
+                        cs0 = new Consumer(main_queue, queue_db_path, queue_name, Mode.R, log);
+                        if (!cs0.open())
                         {
-                            cs0 = new Consumer(main_queue, queue_db_path, queue_name, Mode.R, log);
-                            if (!cs0.open())
-                            {
-                                rc = ResultCode.Invalid_Identifier;
-                                return res;
-                            }
+                            rc = ResultCode.Invalid_Identifier;
+                            return res;
                         }
+
+
+                        // TODO: ? возможно для скорости следует переделать get_info на rawRead
+                        main_queue.get_info();
+                        cs0.get_info();
+
+                        Individual indv_res;
+                        indv_res.uri = uri;
+
+                        indv_res.addResource(rdf__type, Resource(DataType.Uri, "v-s:AppInfo"));
+
+                        indv_res.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                        indv_res.addResource("srv:queue", Resource(DataType.Uri, "srv:" ~ queue_name));
+                        indv_res.addResource("srv:total_count", Resource(DataType.Integer, main_queue.count_pushed));
+                        indv_res.addResource("srv:current_count", Resource(DataType.Integer, cs0.count_popped));
+
+                        res = individual_to_json(indv_res);
+
+                        rc = ResultCode.OK;
+
+                        cs0.close();
+                        cs0 = null;
+
+                        main_queue.close();
+                        main_queue = null;
                     }
-
-                    // TODO: ? возможно для скорости следует переделать get_info на rawRead
-                    main_queue.get_info();
-                    cs0.get_info();
-
-                    Individual indv_res;
-                    indv_res.uri = uri;
-
-                    indv_res.addResource(rdf__type, Resource(DataType.Uri, "v-s:AppInfo"));
-
-                    indv_res.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-                    indv_res.addResource("srv:queue", Resource(DataType.Uri, "srv:" ~ queue_name));
-                    indv_res.addResource("srv:total_count", Resource(DataType.Integer, main_queue.count_pushed));
-                    indv_res.addResource("srv:current_count", Resource(DataType.Integer, cs0.count_popped));
-
-                    res = individual_to_json(indv_res);
-
-                    rc = ResultCode.OK;
-
-                    cs0.close();
-                    cs0 = null;
-
-                    main_queue.close();
-                    main_queue = null;
 
                     return res;
                 }
