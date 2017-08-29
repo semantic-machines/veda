@@ -935,24 +935,32 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        try
+        {
+            ulong      timestamp = Clock.currTime().stdTime() / 10;
 
-        Ticket     *ticket;
-        ResultCode rc = ResultCode.Internal_Server_Error;
+            Ticket     *ticket;
+            ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = get_ticket(context, _ticket);
-        rc     = ticket.result;
+            ticket = get_ticket(context, _ticket);
+            rc     = ticket.result;
 
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc, text(rc));
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
-        rc = op_res[ 0 ].result;
+            OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
+            rc = op_res[ 0 ].result;
 
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc, text(rc));
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
 
-        return op_res[ 0 ];
+            return op_res[ 0 ];
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
+        }
     }
 
     OpResult[] put_individuals(string _ticket, Json[] individuals_json, bool prepare_events, string event_id)
