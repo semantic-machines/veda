@@ -197,6 +197,14 @@ v-s:scanAttachment
   rdfs:domain v-s:Thing ;
   rdfs:subPropertyOf v-s:attachment ;
 .
+v-s:companionAttachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Companion document"@en ;
+  rdfs:label "Сопутствующий документ"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ;
+  rdfs:subPropertyOf v-s:attachment ;
+.
 v-s:hasClassifiedAttachment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Classified attachment"@en ;
