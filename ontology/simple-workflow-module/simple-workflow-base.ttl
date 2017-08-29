@@ -3082,7 +3082,7 @@ s-wf:ComplexRouteTest_Template
             </ul>
         </div>
         <div class="panel-footer">
-            <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
+            <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
         </div>
     </div>
 </div>
@@ -3123,7 +3123,7 @@ s-wf:ComplexRouteTest2_Template
             </div>
         </div>
         <div class="panel-footer">
-            <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
+            <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
         </div>
     </div>
 </div>

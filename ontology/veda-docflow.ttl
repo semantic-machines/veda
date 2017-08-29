@@ -135,9 +135,9 @@ v-df:ApprovalTaskTemplate
   </div>
   <br><br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -336,7 +336,7 @@ v-df:SignRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -397,7 +397,7 @@ v-df:QuestionRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -454,7 +454,7 @@ v-df:InstructionRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -507,7 +507,7 @@ v-df:TaskRouteStartFormTemplate
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -558,7 +558,7 @@ v-df:DistributionRouteStartFormTemplate
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -608,7 +608,7 @@ v-df:CoordinationRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -1196,7 +1196,7 @@ v-df:DecisionTemplate2
   <veda-control rel="v-s:hasActivity" data-type="link" class="-view edit search fulltext create"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="submit" class="action btn btn-primary -view edit -search" id="send">Ok</button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -1535,7 +1535,7 @@ v-wf:DecisionRedirectTemplate
   <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="submit" class="action btn btn-primary -view edit -search" id="send">Ok</button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -1586,7 +1586,7 @@ v-wf:DecisionTemplate1
   <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="submit" class="action btn btn-primary -view edit -search" id="send">Ok</button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>

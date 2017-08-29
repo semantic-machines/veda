@@ -42,12 +42,17 @@
     <meta http-equiv="cache-control" content="no-cache" />
   </head>
   <body>
-    <!-- Application container -->
-    <div id="app"></div>
 
 
     <!-- Login form -->
     <div id="login-container" class="hidden"></div>
+
+    <!-- Autocomplete feature -->
+    <iframe id="autocomplete-frame" name="autocomplete-frame" style="display:none" src="about:blank"></iframe>
+    <form id="autocomplete-form" target="autocomplete-frame" action="about:blank">
+      <!-- Application container -->
+      <div id="app"></div>
+    </form>
 
     <!-- App loading indicator -->
     <div class="text-center hidden" id="app-load-indicator" >

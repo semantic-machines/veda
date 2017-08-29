@@ -427,7 +427,7 @@ v-fs:FulltextRequestTemplate
       <br>
       <div>
         <button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
+        <button type="submit" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
         <button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
       </div>
     </div>
@@ -737,7 +737,7 @@ v-fs:AttributiveRequestTemplate
       <br>
       <div>
         <button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="button" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
+        <button type="submit" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
         <button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
       </div>
     </div>

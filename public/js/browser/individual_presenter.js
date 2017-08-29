@@ -267,7 +267,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     // Save
     $save.on("click", function (e) {
-      e.preventDefault();
       template.trigger("save");
     });
 
