@@ -2717,7 +2717,16 @@ if (doc) {
     routes['instruction'][simple+'visible'] = [true];
     routes['instruction'][simple+'editable'] = [true];
     routes['instruction'][simple+'deadlineDays'] =[2];
-    routes['instruction'][simple+'comment'] = [new String('создать ОЗМ')];
+
+    if (doc["mnd-s:hasMaterialRequestKind"][0].id === 'd:688f20468e1b4fbd8fb8e4e8c7b05e5f'){
+        routes['instruction'][simple+'comment'] = [new String('Создание ОЗМ')];
+
+      } else if (doc["mnd-s:hasMaterialRequestKind"][0].id === 'd:3ae657fee4ea41308acd5e239660976f'){
+        routes['instruction'][simple+'comment'] = [new String('Изменение ОЗМ')];
+
+      } else if (doc["mnd-s:hasMaterialRequestKind"][0].id === 'd:1d53b0e615ef446bb25c877cdbe1a0e4'){
+        routes['instruction'][simple+'comment'] = [new String('Удаление ОЗМ')];
+      }
 
     if(doc.hasValue('mnd-s:hasMaterialGroup')){
       var mrp_contr = new veda.IndividualModel(doc['mnd-s:hasMaterialGroup'][0].id);
