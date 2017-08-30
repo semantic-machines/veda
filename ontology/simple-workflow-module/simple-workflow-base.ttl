@@ -2698,7 +2698,7 @@ if (doc) {
 
   }
 
-//--------------------------------------------------------------------------------ЗаявкаОЗМ-------
+//--------------------------------------------------------------------------------Заявка ОЗМ-------
   if (doc['rdf:type'][0].id === "mnd-s:MaterialRequest") {
     routes['introduction'][simple+'visible'] = [false];
     routes['introduction'][simple+'editable'] = [false];
@@ -2730,8 +2730,8 @@ if (doc) {
 
     if(doc.hasValue('mnd-s:hasMaterialGroup')){
       var mrp_contr = new veda.IndividualModel(doc['mnd-s:hasMaterialGroup'][0].id);
-      if (mrp_contr.hasValue('v-s:controller')){
-        routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(mrp_contr["v-s:controller"]); // MRP контроллер группы материалов
+      if (mrp_contr.hasValue('mnd-s:controllerMRP')){
+        routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(mrp_contr["mnd-s:controllerMRP"]); // MRP контроллер группы материалов
       }
     }
     routes['examination'][simple+'visible'] = [true];
