@@ -2718,18 +2718,13 @@ if (doc) {
     routes['instruction'][simple+'editable'] = [true];
     routes['instruction'][simple+'deadlineDays'] =[2];
     routes['instruction'][simple+'comment'] = [new String('создать ОЗМ')];
-//    if (
-//    doc.hasValue('mnd-s:hasMaterialGroup')
-//    && doc['mnd-s:hasMaterialGroup'][0].hasValue('v-s:controller')
-//    && doc['mnd-s:hasMaterialGroup'][0].hasValue('v-s:controller').length ===1
-//    )
-//  {
-    var mrp_contr = new veda.IndividualModel(doc['mnd-s:hasMaterialGroup'][0].id);
-        if (mrp_contr.hasValue('v-s:controller'))
-        {
-      routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(mrp_contr["v-s:controller"]); // MRP контроллер группы материалов
-        }
-//    }
+
+    if(doc.hasValue('mnd-s:hasMaterialGroup')){
+      var mrp_contr = new veda.IndividualModel(doc['mnd-s:hasMaterialGroup'][0].id);
+      if (mrp_contr.hasValue('v-s:controller')){
+        routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(mrp_contr["v-s:controller"]); // MRP контроллер группы материалов
+      }
+    }
     routes['examination'][simple+'visible'] = [true];
     routes['examination'][simple+'editable'] = [true];
   }
