@@ -67,7 +67,7 @@ basic.getDrivers().forEach(function(drv) {
     //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 1);
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
     //PHASE#1: Create draft
     basic.openCreateDocumentForm(driver, 'Персона', 'v-s:Person', 1);

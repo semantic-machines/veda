@@ -244,6 +244,9 @@ module.exports = {
     */
     login: function (driver, login, password, assertUserFirstName, assertUserLastName, phase) {
         // Вводим логин и пароль
+        driver.sleep(FAST_OPERATION);
+        driver.navigate().refresh();
+        driver.sleep(SLOW_OPERATION);
         driver.findElement({css:'input#login'}).sendKeys(login).thenCatch(function (e) {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot input login")});
         driver.findElement({css:'input#password'}).sendKeys(password).thenCatch(function (e) {
