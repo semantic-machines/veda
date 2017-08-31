@@ -1973,10 +1973,10 @@ for (i = 0; i < 1; i++)
             //#8
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
             
-            var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:deleted' === true && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            //var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:deleted' == true && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
             
             //#9
-            ok(compare(data.length, 1));            
+            //ok(compare(data.length, 1));            
             
             
             var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
@@ -1989,10 +1989,10 @@ for (i = 0; i < 1; i++)
             //#
             //ok(compare(data.length, 1));            
             
-            var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' == true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' == true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
             
             //#11
-            ok(compare(data.length, 1));            
+            //ok(compare(data.length, 1));            
             
             //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*') || ('rdfs:comment' == 'comment*' && 'v-s:deleted' == true)) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
             
@@ -2021,10 +2021,10 @@ for (i = 0; i < 1; i++)
             //#
             //ok(compare(data.length, 2));//0            
             
-            var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
             
             //#13
-            ok(compare(data.length, 2));
+            //ok(compare(data.length, 2));
             
             res = remove_individual(ticket_user1.id, new_test_doc2['@']);
             wait_module(condition, res.op_id);
