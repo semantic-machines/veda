@@ -114,7 +114,7 @@ basic.getDrivers().forEach(function (drv) {
     //PHASE#3: Check
     basic.logout(driver, 3);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 3);
-    driver.navigate().refresh();
+    //driver.navigate().refresh();
     driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#reply').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 CHECK : ERROR = Cannot scroll to reply button");});

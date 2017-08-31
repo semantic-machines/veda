@@ -15,7 +15,7 @@ function check(driver, count, phase) {
     basic.execute(driver, 'clear', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input', '', '');
     basic.execute(driver, 'sendKeys', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input',
         "****** PHASE#" + phase + " : ERROR = Cannot input search request", timeStamp);
-    basic.execute(driver, 'click', 'button[id="submit"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'submit' button");
+    basic.execute(driver, 'click', 'button[about="v-fs:Find"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'submit' button");
     driver.wait
     (
         function () {
@@ -78,7 +78,7 @@ basic.getDrivers().forEach(function(drv){
     driver.sleep(basic.FAST_OPERATION);
 
     //PHASE#2: Delete
-    check(driver, 1, 2);
+    check(driver, 1, 2); 
     basic.execute(driver, 'click', 'span[typeof="v-wf:StartForm"]', "****** PHASE#2 > DELETE : ERROR = Cannot click on 'StartForm' button");
     clickButton(driver, "delete", 2);
     driver.switchTo().alert().accept();

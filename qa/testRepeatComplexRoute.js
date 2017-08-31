@@ -45,7 +45,7 @@ basic.getDrivers().forEach (function (drv) {
     //PHASE#3: Repeat
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm', 3);
-    basic.execute(driver, 'click', 'button[id="submit"]', "****** PHASE#3 : ERROR = Cannot click on 'submit' button");
+    basic.execute(driver, 'click', 'button[about="v-fs:Find"]', "****** PHASE#3 : ERROR = Cannot click on 'submit' button");
     driver.sleep(basic.SLOW_OPERATION);
     basic.execute(driver, 'click', 'a[typeof="s-wf:ComplexRouteTest2"]', "****** PHASE#3 : ERROR = Cannot click on document id");
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#3 : ERROR = Cannot click on 'Send' button");
