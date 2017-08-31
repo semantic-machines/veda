@@ -2302,21 +2302,8 @@ if (doc) {
         routes['coordination1'][simple+'deadlineDays'] = [10];
         routes['coordination1'][simple+'comment'] = [new String('Согласовать заявку на контракт')];
       } else if (doc.hasValue("v-s:businessTripEmployee")) {
-        var headUnit;
-        headUnit = calculationHeadUnit(doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0]);
-
-        function calculationHeadUnit(occupation){
-          if(occupation.hasValue("v-s:hasChief") ) {
-            if (occupation["v-s:hasChief"][0]["rdf:type"][0].id !== "rdfs:Resource") {
-              return occupation["v-s:hasChief"];
-            } else {return [];}
-          } else  if ( !occupation.hasValue("v-s:parentUnit") ){
-            return [];
-          } else {
-          return calculationHeadUnit(occupation["v-s:parentUnit"][0]);
-          }
-        }
-        routes['coordination1'][simple+'participant'] = headUnit;
+        var chief = doc["v-s:businessTripEmployee"][0]["v-s:occupation"][0].getChief();
+        routes['coordination1'][simple+'participant'] = [chief];
         routes['coordination1'][simple+'visible'] = [true];
         routes['coordination1'][simple+'editable'] = [true];
       } else {
