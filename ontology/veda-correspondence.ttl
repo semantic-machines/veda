@@ -169,6 +169,17 @@ v-s:LetterRegistrationRecordRecipient
 # v-s:registrationDate
 
 
+# ------------------------------------------------------------
+v-s:ThirdPartyParticipant
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Correspondent ;
+  rdfs:label "Third-party participant"@en ;
+  rdfs:label "Сторонние участники"@ru ;
+  v-ui:hasTemplate mnd-s:ThirdPartyParticipantTemplate ;
+.
+# v-s:correspondentOrganization
+# v-s:correspondentPersonDescription
+
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasDocumentKindForLetter
