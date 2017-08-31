@@ -244,13 +244,13 @@ module.exports = {
     */
     login: function (driver, login, password, assertUserFirstName, assertUserLastName, phase) {
         // Вводим логин и пароль
-        driver.findElement({css:'input[id="login"]'}).sendKeys(login).thenCatch(function (e) {
+        driver.findElement({css:'input#login'}).sendKeys(login).thenCatch(function (e) {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot input login")});
-        driver.findElement({css:'input[id="password"]'}).sendKeys(password).thenCatch(function (e) {
+        driver.findElement({css:'input#password'}).sendKeys(password).thenCatch(function (e) {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot input password")});
-        driver.findElement({css:'button[id="submit"]'}).click().thenCatch(function (e) {
+        driver.findElement({css:'button#submit'}).click().thenCatch(function (e) {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot submit login/password")});
-        driver.findElement({css:'button[id="submit"]'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {})
+        driver.findElement({css:'button#submit'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {})
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot press enter")});
         driver.sleep(FAST_OPERATION);
         driver.wait
