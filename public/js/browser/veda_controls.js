@@ -22,7 +22,7 @@
     input
       .attr({
         "placeholder": placeholder,
-        "name": individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
       })
       .on("change focusout", changeHandler)
       .keyup( function (e) {
@@ -264,7 +264,7 @@
 
     input.attr({
       "placeholder": placeholder,
-      "name": individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri
+      "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
     });
 
     var singleValueHandler = function (values) {
@@ -447,7 +447,7 @@
         .attr({
           "lang": language_name,
           "placeholder": placeholder,
-          "name": individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
         })
         .on("change focusout", function () {
           var values = control.find(".form-control").map(function () {
@@ -1062,7 +1062,7 @@
 
     input.attr({
       "placeholder": placeholder,
-      "name": individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri
+      "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
     });
 
     function singleValueHandler (values) {
@@ -1594,7 +1594,7 @@
 
       fulltext.attr({
         "placeholder": placeholder,
-        "name": individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
       });
 
       var timeout;
