@@ -2049,7 +2049,7 @@ v-ui:TreeTemplate
           return "'rdf:type'=='" + _class.id + "'";
         }).join(" || ") + ")";
       }
-      var result = query(veda.ticket, q).result;
+      var result = query(veda.ticket, q, "'rdfs:label' desc").result;
       result.map( function (uri) {
         res.push( new veda.IndividualModel(uri) );
       });
