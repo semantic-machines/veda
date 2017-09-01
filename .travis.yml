@@ -55,7 +55,6 @@ before_script:
 
 # Run API & integration test
 script:
-  - travis_wait mvn install
   - grunt test --stack --verbose
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
@@ -75,7 +74,7 @@ script:
   - node ./qa/testCreatingNetInterface.js
   - node ./qa/testInbox.js
   - node ./qa/testRepeatComplexRoute.js
-  - node ./qa/testNetComplexRoute.js
+#  - node ./qa/testNetComplexRoute.js
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
