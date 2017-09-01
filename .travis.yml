@@ -27,6 +27,7 @@ before_install:
 
 # Build
 install:
+  - travis_wait mvn install
   - ./build.sh
 
 # Run service as daemon and GUI
