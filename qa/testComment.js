@@ -88,11 +88,11 @@ basic.getDrivers().forEach(function (drv) {
     driver.executeScript("document.querySelector('em[about=\"rdfs:comment\"').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to rdfs:comment field");});
     driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] textarea[class="form-control"]', 1, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on comment field"),
-        basic.FAST_OPERATION).then(function(result){basic.clickUp(result);});
+        basic.FAST_OPERATION).then(function(result){basic.clickUp(result, "****** PHASE#1 : ERROR = Cannot click on 'v-s:Comment'");});
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to save(comment) button");});
     driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] button[id="save"]', 1, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on save button"),
-        basic.FAST_OPERATION).then(function(result){basic.clickUp(result);});
+        basic.FAST_OPERATION).then(function(result){basic.clickUp(result, "****** PHASE#1 : ERROR = Cannot click on 'save' button");});
     driver.sleep(basic.SLOW_OPERATION / 2);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
 
@@ -101,12 +101,12 @@ basic.getDrivers().forEach(function (drv) {
     driver.executeScript("document.querySelector('#delete').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot scroll to delete button");});
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
-        basic.clickUp(result);});
+        basic.clickUp(result, "****** PHASE#2 : ERROR = Cannot clcik on 'delete comment' button");});
     driver.switchTo().alert().accept();
     driver.sleep(basic.SLOW_OPERATION);
     check(driver, 2, 2, 1, 1, 2);
     driver.wait(basic.findUp(driver, '#delete', 1, "****** PHASE#2 > DELETE COMMENT : ERROR = Cannot find delete buttons"), basic.FAST_OPERATION).then(function (result) {
-        basic.clickUp(result);});
+        basic.clickUp(result, "****** PHASE#2 : ERROR = Cannot click on 'delete comment' button");});
     driver.switchTo().alert().accept();
     driver.sleep(basic.SLOW_OPERATION);
     check(driver, 1, 1, 1, 1, 2);

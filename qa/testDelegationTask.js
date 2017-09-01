@@ -57,7 +57,7 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#4 : ERROR = Cannot click on 'td:CommercialDirector' actor")});
     driver.sleep(basic.SLOW_OPERATION);
     driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#4 : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
-        function(result){basic.clickUp(result);});
+        function(result){basic.clickUp(result, "****** PHASE#4 : ERROR = Cannot click on message");});
     basic.execute(driver, 'click', 'div[class="radio decision"] input[value="0"]', "****** PHASE#4 : ERROR = Cannot click on '0' decision");
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)")

@@ -27,7 +27,7 @@ module.exports = {
         basic.menu(driver, 'Inbox', phase);
         driver.sleep(basic.SLOW_OPERATION);
         driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
-            function(result){basic.clickUp(result);});
+            function(result){basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on message. Seems message is not located");});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
         if (commentValue === '+') {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "****** PHASE#" + phase + " : ERROR = Cannot fill 'comment'", timeStamp);
@@ -61,7 +61,7 @@ module.exports = {
         basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'Submit/Отправить' button");
         driver.sleep(basic.SLOW_OPERATION);
         driver.wait(basic.findUp(driver, 'span[rel="v-wf:isProcess"]', docNumber, "Cannot find isProcess"),
-            basic.FAST_OPERATION).then(function(result) {basic.clickUp(result);});
+            basic.FAST_OPERATION).then(function(result) {basic.clickUp(result, "****** PHASE# : ERROR = Cannot click on isProcess");});
         driver.sleep(basic.FAST_OPERATION);
         basic.execute(driver, 'click', '.glyphicon-share-alt', "Cannot click on 'glyphicon-share-alt'");
         for (var i = 0; i < element.length; i++) {

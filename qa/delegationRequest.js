@@ -49,9 +49,9 @@ module.exports = {
         basic.execute(driver, 'click', 'veda-control[property="v-s:dateTo"] input[type="text"]',
             "****** PHASE#" + phase + " : ERROR = Cannot click on 'dateTo' input");
         driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "****** PHASE#" + phase + " : ERROR = Cannot find 'glyphicon-chevron-up' button"),
-            basic.FAST_OPERATION).then(function (result) {basic.clickUp(result)});
+            basic.FAST_OPERATION).then(function (result) {basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on glyphicon-chevron-up")});
         driver.wait(basic.findUp(driver, '.glyphicon-chevron-up', 1, "****** PHASE#" + phase + " : ERROR = Cannot find 'glyphicon-chevron-up' button"),
-            basic.FAST_OPERATION).then(function (result) {basic.clickUp(result)});
+            basic.FAST_OPERATION).then(function (result) {basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on glyphicon-chevron-up")});
         driver.findElement({css:'veda-control[rel="v-s:delegate"] input[id="fulltext"]'}).click();
         driver.executeScript("document.querySelector('#save').scrollIntoView(true);")
             .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to save button");});

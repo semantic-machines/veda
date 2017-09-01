@@ -156,9 +156,9 @@ module.exports = {
      * Клик по элементу
      * @param element - элемент
      */
-    clickUp: function (element) {
+    clickUp: function (element, message) {
         element.click()
-            .thenCatch(function(e) {errrorHandlerFunction(e, "Cannot click on" + element)})
+            .thenCatch(function(e) {errrorHandlerFunction(e, message)})
     },
 
     /**
