@@ -188,8 +188,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     // Deleted alert
     function deletedHandler () {
       if ( this.hasValue("v-s:deleted", true) ) {
-        template.addClass("deleted");
-        if ( container.prop("id") === "main" ) {
+        if ( container.prop("id") === "main" && !template.hasClass("deleted") ) {
+          template.addClass("deleted");
           var deletedAlert = $(
             '<div id="deleted-alert" class="alert alert-warning no-margin" role="alert">\
               <p>Объект удален.  <button class="btn btn-default btn-sm">Восстановить</button></p>\
