@@ -383,12 +383,10 @@ textarea {
   border: none;
   box-shadow: none;
 }
-
 .deleted, .deleted * {
   text-decoration: none!important;
-  color: #888;
+  color: #aaa;
 }
-
 dl {
   margin-top: 0;
   margin-bottom: 10px;
