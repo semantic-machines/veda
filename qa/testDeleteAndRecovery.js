@@ -78,7 +78,7 @@ basic.getDrivers().forEach(function(drv){
     driver.sleep(basic.FAST_OPERATION);
 
     //PHASE#2: Delete
-    check(driver, 1, 2); 
+    check(driver, 1, 2);
     basic.execute(driver, 'click', 'span[typeof="v-wf:StartForm"]', "****** PHASE#2 > DELETE : ERROR = Cannot click on 'StartForm' button");
     clickButton(driver, "delete", 2);
     driver.switchTo().alert().accept();
@@ -92,7 +92,7 @@ basic.getDrivers().forEach(function(drv){
         "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");
     clickButton(driver, "search-submit", 5);
     basic.execute(driver, 'click', 'span[id="individual-label"]', "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'individual-label'");
-    basic.execute(driver, 'click', 'div[role="alert"] button[class="btn btn-default btn-sm"]',
+    basic.execute(driver, 'click', '#deleted-alert .recover',
         "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'Recovery' button");
     check(driver, 1, 5);
     driver.quit();
