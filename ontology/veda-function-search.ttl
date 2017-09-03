@@ -1581,10 +1581,10 @@ v-fs:AttributiveSearchTemplate
     var $el = $(el);
     var hasSpinner = $el.children(".fa-spinner");
     if ( hasSpinner.length ) {
-      $el.removeClass("disabled");
+      $el.removeClass("disabled").removeAttr("disabled");
       hasSpinner.remove();
     } else {
-      $el.addClass("disabled");
+      $el.addClass("disabled").attr("disabled", "disabled");
       $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
     }
   }
@@ -1687,6 +1687,8 @@ v-fs:AttributiveSearchTemplate
   })();
 
   $(".files", template).click(function (e) {
+    var btn = $(this);
+    toggleSpin(btn);
     e.preventDefault();
     var $resultTable = $(".search-result > table").clone();
     var filePromises = $("[typeof='v-s:File']", $resultTable).map(function () {
@@ -1713,6 +1715,7 @@ v-fs:AttributiveSearchTemplate
 
       zip.generateAsync({type:"blob"}).then(function(content) {
         saveAs(content, "registry.zip");
+        toggleSpin(btn);
       });
     }).catch(function (error) {
       console.log(error, error.stack);
