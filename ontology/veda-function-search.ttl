@@ -1659,16 +1659,8 @@ v-fs:AttributiveSearchTemplate
 
   $(".xls", template).click(function (e) {
     e.preventDefault();
-    var thead = $("thead", searchResultContainer).clone();
-    var tbl = $("<table id='export2xls'>").append(thead, "<tbody></tbody>");
-    for (var i = 0; i < self.result.length; i++) {
-      var tmpl = resultTemplate.replace("###", i + 1);
-      var result = new veda.IndividualModel( self.result[i] );
-      result.present($("tbody", tbl), $(tmpl));
-    }
-    setTimeout(function () {
-      tableToExcel(tbl[0], self["rdfs:label"].join(", "));
-    }, 3000);
+    var resultTable = $(".search-result > table").get(0);
+    tableToExcel(resultTable, self["rdfs:label"].join(", "));
   });
 
   //# sourceURL=v-fs:AttributiveSearchTemplate_post
