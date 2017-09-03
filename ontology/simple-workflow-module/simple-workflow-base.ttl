@@ -3526,7 +3526,7 @@ s-wf:UserTaskFormTemplate
   //# sourceURL=s-wf:UserTaskFormTemplate_pre
 </script>
 <div class="container">
-  <div class="sheet">
+  <div class="sheet clearfix">
     <h2 about="@" property="rdfs:label"></h2>
     <div class="row">
       <div class="col-md-3">
@@ -3568,6 +3568,16 @@ s-wf:UserTaskFormTemplate
     </div>
     <div about="@" rel="v-wf:takenDecision"></div>
     <div id="newDecisionHolder"></div>
+    <!--div class="actions view edit -search pull-right">
+      <div class="btn-group dropup">
+        <button class="btn btn-warning dropdown-toggle sendbutton view -edit -search" data-toggle="dropdown">
+          <span about="v-s:SendTask" property="rdfs:label"> </span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" id="standard-tasks">
+        </ul>
+      </div>
+    </div-->
   </div>
   <br>
   <div about="@" class="view edit -search sheet" data-template="v-ft:TaskRelatedTasksTemplate"></div>
