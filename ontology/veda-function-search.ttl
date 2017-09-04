@@ -1719,6 +1719,9 @@ v-fs:AttributiveSearchTemplate
       });
     }).catch(function (error) {
       console.log(error, error.stack);
+      toggleSpin(btn);
+      var notify = new veda.Notify();
+      notify("danger", { message: "Ошибка выгрузки реестра. Обратитесь в поддержку." });
     });
 
   });
