@@ -636,13 +636,14 @@ v-s:LetterRegistryResultTemplate
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="2" about="v-s:Letter" property="rdfs:label"></th>
+      <th colspan="3" about="v-s:Letter" property="rdfs:label"></th>
       <th colspan="3" about="v-s:sender" property="rdfs:label"></th>
       <th colspan="3" about="v-s:recipient" property="rdfs:label"></th>
       <th colspan="10" about="v-s:Letter" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="10%" class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
 <!--Отправитель //v-s:sender -->
       <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordSender" property="rdfs:label"></span></th>
@@ -668,6 +669,7 @@ v-s:LetterRegistryResultTemplate
   <tbody class="result-container">
     <tr>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
       <td property="v-s:created"></td>
 <!--Отправитель //v-s:sender -->
       <td rel="v-s:hasLetterRegistrationRecordSender">
