@@ -1273,8 +1273,8 @@ v-fs:AttributiveSearchTemplate
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
     <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
-    <button class="btn btn-default xls"><span  about="v-fs:Excel" property="rdfs:label"></span></button>
-    <button class="btn btn-default files"><span  about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
+    <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
+    <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
     <br>
   </div>
@@ -1691,7 +1691,7 @@ v-fs:AttributiveSearchTemplate
     toggleSpin(btn);
     e.preventDefault();
     var $resultTable = $(".search-result > table").clone();
-    var filePromises = $("[typeof='v-s:File']", $resultTable).map(function () {
+    var filesPromises = $("[typeof='v-s:File']", $resultTable).map(function () {
       var $this = $(this);
       var fileUri = $this.attr("resource").replace(":", "_");
       var fileName = $("span", $this).text().replace(/([a-zA-Z0-9]+)$/, fileUri + ".$1");
@@ -1702,17 +1702,14 @@ v-fs:AttributiveSearchTemplate
       return filePromise(fileUrl, fileName);
     });
 
-    Promise.all(filePromises).then(function (files) {
+    Promise.all(filesPromises).then(function (files) {
       var zip = new JSZip();
-
       var registry = tableToBlob($resultTable.get(0), self["rdfs:label"].join(", "));
       zip.file("registry.html", registry);
-
       var folder = zip.folder("files");
       files.forEach(function (file) {
         folder.file(file.name, file);
       });
-
       zip.generateAsync({type:"blob"}).then(function(content) {
         saveAs(content, "registry.zip");
         toggleSpin(btn);
@@ -1723,7 +1720,6 @@ v-fs:AttributiveSearchTemplate
       var notify = new veda.Notify();
       notify("danger", { message: "Ошибка выгрузки реестра. Обратитесь в поддержку." });
     });
-
   });
 
   function filePromise(url, name) {
