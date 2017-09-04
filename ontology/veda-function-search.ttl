@@ -1693,8 +1693,8 @@ v-fs:AttributiveSearchTemplate
     var $resultTable = $(".search-result > table").clone();
     var filePromises = $("[typeof='v-s:File']", $resultTable).map(function () {
       var $this = $(this);
-      var fileUri = $this.attr("resource");
-      var fileName = $("span", $this).text();
+      var fileUri = $this.attr("resource").replace(":", "_");
+      var fileName = $("span", $this).text().replace(/([a-zA-Z0-9]+)$/, fileUri + ".$1");
       var localFileUrl = "./files/" + fileName;
       var link = $("a", $this);
       var fileUrl = link.attr("href");
