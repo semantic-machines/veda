@@ -10,7 +10,7 @@ module veda.common.type;
 import std.math, std.stdio, std.conv, std.string;
 
 /// id компонентов
-public enum COMPONENT : byte
+public enum COMPONENT : int
 {
     /// Выдача и проверка тикетов
     ticket_manager             = 0,
@@ -24,34 +24,34 @@ public enum COMPONENT : byte
     /// Полнотекстовое индексирование
     fulltext_indexer           = 4,
 
-    /// Сбор статистики
-    statistic_data_accumulator = 5,
-
-    /// исполнение скриптов
-    scripts_main               = 6,
-
-    /// Сохранение накопленных в памяти данных
-    commiter                   = 7,
-
-    /// Вывод статистики
-    print_statistic            = 8,
-
-    /// Загрузка из файлов
-    file_reader                = 10,
-
     /// Отправка email
-    fanout_email               = 12,
+    fanout_email               = 8,
 
     //// data change signal
-    ltr_scripts                = 14,
-
-    n_channel                  = 16,
+    ltr_scripts                = 16,
 
     /// Выгрузка в sql, высокоприоритетное исполнение
-    fanout_sql_np              = 20,
+    fanout_sql_np              = 32,
 
     /// Выгрузка в sql, низкоприоритетное исполнение
-    fanout_sql_lp              = 21
+    fanout_sql_lp              = 64,
+
+    /// Сбор статистики
+    statistic_data_accumulator = 128,
+
+    /// исполнение скриптов
+    scripts_main               = 256,
+
+    /// Сохранение накопленных в памяти данных
+    commiter                   = 512,
+
+    /// Вывод статистики
+    print_statistic            = 1024,
+
+    /// Загрузка из файлов
+    file_reader                = 2048,
+
+    n_channel                  = 4096
 }
 
 
@@ -69,7 +69,7 @@ public enum P_MODULE : COMPONENT
 }
 
 /// id модулей обрабатывающих очередь
-public enum MODULE : byte
+public enum MODULE : COMPONENT
 {
     ticket_manager   = COMPONENT.ticket_manager,
     subject_manager  = COMPONENT.subject_manager,

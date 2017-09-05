@@ -1,6 +1,12 @@
 // Common utility functions
 "use strict";
 
+var m_ticket = 0;
+var m_subject = 1;
+var m_acl = 2;
+var m_fulltext_indexer = 4;
+var m_scripts = 256;
+
 var _Uri = 1;
 var _String = 2;
 var _Integer = 4;
@@ -116,12 +122,6 @@ function sleep(usec)
   var endtime = new Date().getTime() + usec;
   while (new Date().getTime() < endtime);
 }
-
-var ticket_manager = 0;
-var subject_manager = 1;
-var acl_manager = 2;
-var fulltext_indexer = 4;
-var condition = 6;
 
 function get_property_chain(ticket, first, rest)
 {
