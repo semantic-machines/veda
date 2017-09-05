@@ -1,8 +1,7 @@
 /**
-
-Update service for individuals that were changed on server
-
- */
+  Update service for individuals that were changed on server
+  NB: Access has to be configured via haproxy or the like
+*/
 
 veda.Module(function UpdateService(veda) { "use strict";
 
@@ -18,7 +17,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var self = riot.observable(this);
 
-    var address = (new veda.IndividualModel("cfg:ClientUpdateServiceAddress"))["rdf:value"][0],
+    var address = ["ws://", location.host, "/ccus"].join(""),
         socket,
         msgTimeout,
         msgDelay = 1000,
