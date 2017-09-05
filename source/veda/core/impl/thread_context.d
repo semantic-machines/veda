@@ -145,59 +145,73 @@ class PThreadContext : Context
 
         private OpResult[] reqrep_json_2_main_module(ref JSONValue jreq)
         {
-            OpResult[] ress;
             string     req = jreq.toString();
+            string     rep;
 
-            int        sock = get_sock_2_main_module();
+            OpResult[] ress;
 
-            if (sock >= 0)
+            try
             {
-                char *buf = cast(char *)0;
-                int  bytes;
+                int sock = get_sock_2_main_module();
 
-                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                //log.trace("N_CHANNEL send (%s)", req);
-                bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                if (bytes > 0)
+                if (sock >= 0)
                 {
-                    string rep = to!string(buf);
-                    //log.trace("N_CHANNEL recv (%s)", rep);
+                    char *buf = cast(char *)0;
+                    int  bytes;
 
-                    JSONValue jres = parseJSON(rep);
-
-                    if (jres[ "type" ].str == "OpResult")
+                    bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+                    //log.trace("N_CHANNEL send (%s)", req);
+                    bytes = nn_recv(sock, &buf, NN_MSG, 0);
+                    if (bytes > 0)
                     {
-                        JSONValue data = jres[ "data" ];
-                        if (data !is JSONValue.init)
+                        rep = to!string(buf);
+                        //log.trace("N_CHANNEL recv (%s)", rep);
+
+                        JSONValue jres = parseJSON(rep);
+
+                        if (jres[ "type" ].str == "OpResult")
                         {
-                            foreach (ii; data.array)
+                            if ("data" in jres)
+                            {
+                                JSONValue data = jres[ "data" ];
+                                if (data !is JSONValue.init)
+                                {
+                                    foreach (ii; data.array)
+                                    {
+                                        OpResult res;
+
+                                        res.op_id  = ii[ "op_id" ].integer;
+                                        res.result = cast(ResultCode)ii[ "result" ].integer;
+                                        ress ~= res;
+                                    }
+                                }
+                            }
+                            else
                             {
                                 OpResult res;
-
-
-                                res.op_id  = ii[ "op_id" ].integer;
-                                res.result = cast(ResultCode)ii[ "result" ].integer;
+                                res.op_id  = jres[ "op_id" ].integer;
+                                res.result = cast(ResultCode)jres[ "result" ].integer;
                                 ress ~= res;
                             }
                         }
-                        else
-                        {
-                            OpResult res;
-                            res.op_id  = jres[ "op_id" ].integer;
-                            res.result = cast(ResultCode)jres[ "result" ].integer;
-                            ress ~= res;
-                        }
+
+                        nn_freemsg(buf);
                     }
-
-                    nn_freemsg(buf);
                 }
-            }
-            else
-            {
-                log.trace("ERR! N_CHANNEL: invalid socket");
-            }
+                else
+                {
+                    log.trace("ERR! N_CHANNEL: invalid socket");
+                }
 
-            return ress;
+                return ress;
+            }
+            catch (Throwable tr)
+            {
+                log.trace("ERR! reqrep_json_2_main_module, %s", tr.info);
+                log.trace("req: %s", req);
+                log.trace("rep: %s", rep);
+                return ress;
+            }
         }
     }
 
@@ -846,6 +860,8 @@ class PThreadContext : Context
                     scmd = "set_in";
                 else if (cmd == INDV_OP.REMOVE_FROM)
                     scmd = "remove_from";
+                else if (cmd == INDV_OP.REMOVE)
+                    scmd = "remove";
 
                 JSONValue req_body;
                 req_body[ "function" ]       = scmd;

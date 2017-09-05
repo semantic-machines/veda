@@ -890,35 +890,24 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
-
-        OpResult[] op_res;
-        ResultCode rc = ResultCode.Internal_Server_Error;
-        Ticket     *ticket;
-        Json       jreq = Json.emptyObject;
-
         try
         {
+            ulong      timestamp = Clock.currTime().stdTime() / 10;
+
+            Ticket     *ticket;
+            ResultCode rc = ResultCode.Internal_Server_Error;
+
             ticket = get_ticket(context, _ticket);
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            if (wsc_server_task is Task.init)
-            {
-                rc = ResultCode.Internal_Server_Error;
-                throw new HTTPStatusException(rc, text(rc));
-            }
+            Json individual_json = Json.emptyObject;
 
-            jreq[ "function" ]       = "remove";
-            jreq[ "ticket" ]         = _ticket;
-            jreq[ "uri" ]            = uri;
-            jreq[ "prepare_events" ] = prepare_events;
-            jreq[ "event_id" ]       = event_id;
+            individual_json[ "@" ] = uri;
 
-            vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
-            vibe.core.concurrency.receive((string res){ op_res = parseOpResults(res); });
+            OpResult[] op_res = modify_individuals(context, "remove", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
             rc = op_res[ 0 ].result;
 
             if (rc != ResultCode.OK)
@@ -926,9 +915,10 @@ class VedaStorageRest : VedaStorageRest_API
 
             return op_res[ 0 ];
         }
-        finally
+        catch (Throwable tr)
         {
-            trail(_ticket, ticket.user_uri, "remove_individual", jreq, "", op_res[ 0 ].result, timestamp);
+            log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
         }
     }
 

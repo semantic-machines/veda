@@ -683,22 +683,23 @@ public string execute_json(string in_msg, Context ctx)
             }
             else if (sfn == "remove")
             {
-                JSONValue  uri = jsn[ "uri" ];
+                JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                Individual individual;
+                foreach (individual_json; individuals_json)
+                {
+                    Individual  individual = json_to_individual(individual_json);
 
-                individual.uri = uri.str();
+                    Transaction tnx;
+                    tnx.id            = transaction_id;
+                    tnx.is_autocommit = true;
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str,
+                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptTrace.NONE);
 
-                Transaction tnx;
-                tnx.id            = transaction_id;
-                tnx.is_autocommit = true;
-                OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str,
-                                                   OptFreeze.NONE, OptAuthorize.YES,
-                                                   OptTrace.NONE);
-
-                rc ~= ires;
-                if (transaction_id <= 0)
-                    transaction_id = ires.op_id;
+                    rc ~= ires;
+                    if (transaction_id <= 0)
+                        transaction_id = ires.op_id;
+                }
             }
 
             JSONValue[] all_res;

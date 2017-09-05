@@ -46,6 +46,38 @@ shared static this()
 
 Ticket sticket;
 
+private void wait_complete_operations(Context context, long last_op_id)
+{
+    bool complete_ft      = false;
+    bool complete_script  = false;
+    bool complete_subject = false;
+
+    while (true)
+    {
+        core.thread.Thread.sleep(dur!("seconds")(1));
+
+        long cur_opid;
+
+        cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
+        log.tracec("INFO: last_op_id=%d, ft_opid=%d", last_op_id, cur_opid);
+        if (cur_opid >= last_op_id)
+            complete_ft = true;
+
+        cur_opid = context.get_operation_state(P_MODULE.scripts_main, false);
+        log.tracec("INFO: last_op_id=%d, script_opid=%d", last_op_id, cur_opid);
+        if (cur_opid >= last_op_id)
+            complete_script = true;
+
+        cur_opid = context.get_operation_state(P_MODULE.subject_manager, false);
+        log.tracec("INFO: last_op_id=%d, subject_opid=%d", last_op_id, cur_opid);
+        if (cur_opid >= last_op_id)
+            complete_subject = true;
+
+        if (complete_subject && complete_script && complete_ft)
+            break;
+    }
+}
+
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void main(char[][] args)
 {
@@ -97,36 +129,8 @@ void main(char[][] args)
             res = context.remove_individual(&sticket, uri, true, "ttl-reader", -1, OptFreeze.NONE, OptAuthorize.NO);
         }
 
-        bool complete_ft      = false;
-        bool complete_script  = false;
-        bool complete_subject = false;
-
-        while (true)
-        {
-            core.thread.Thread.sleep(dur!("seconds")(1));
-
-            long cur_opid;
-
-            cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
-            log.tracec("INFO: res.op_id=%d, ft_opid=%d", res.op_id, cur_opid);
-            if (cur_opid >= res.op_id)
-                complete_ft = true;
-
-            cur_opid = context.get_operation_state(P_MODULE.scripts_main, false);
-            log.tracec("INFO: res.op_id=%d, script_opid=%d", res.op_id, cur_opid);
-            if (cur_opid >= res.op_id)
-                complete_script = true;
-
-            cur_opid = context.get_operation_state(P_MODULE.subject_manager, false);
-            log.tracec("INFO: res.op_id=%d, subject_opid=%d", res.op_id, cur_opid);
-            if (cur_opid >= res.op_id)
-                complete_subject = true;
-
-            if (complete_subject && complete_script && complete_ft)
-                break;
-        }
-
-        log.tracec("WARN: !!!! VEDA SYSTEM NEED RESTART");
+        wait_complete_operations(context, res.op_id);
+        log.tracec("WARN: REMOVE ONTOLOGY FINISH !!!! VEDA SYSTEM NEED RESTART");
 
 
         //kill(pid, SIGKILL);
@@ -214,6 +218,22 @@ void main(char[][] args)
     {
         if (o.isDir)
             watcher.watchDir(o.name);
+    }
+
+    if (need_reload_ontology)
+    {
+        Individual new_indv;
+
+        new_indv.uri = "cfg:file_reader_info";
+        new_indv.addResource("rdf:type", Resource(DataType.Uri, "rdf:Resource"));
+        new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+        new_indv.addResource("rdfs:label", Resource("RELOAD ONTOLOGY"));
+
+        OpResult res = context.put_individual(&sticket, new_indv.uri, new_indv, true, null, -1, OptFreeze.NONE, OptAuthorize.NO);
+
+        wait_complete_operations(context, res.op_id);
+        log.tracec("WARN: RELOAD ONTO FINISH !!!! VEDA SYSTEM NEED RESTART");
+        return;
     }
 
     while (ev_loop.loop())
