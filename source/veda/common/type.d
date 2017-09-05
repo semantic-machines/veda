@@ -1,7 +1,7 @@
 /**
  * Общие определения
 
-   Copyright: © 2014-2016 Semantic Machines
+   Copyright: © 2014-2017 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
  */
@@ -9,20 +9,17 @@ module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
-/// Имена процессов
-public enum P_MODULE : byte
+/// id компонентов
+public enum COMPONENT : byte
 {
     /// Выдача и проверка тикетов
-    ticket_manager  = 0,
+    ticket_manager             = 0,
 
     /// Чтение и сохранение индивидуалов
-    subject_manager = 1,
+    subject_manager            = 1,
 
     /// Индексирование прав
-    acl_preparer    = 2,
-
-    /// Полнотекстовое индексирование
-    //xapian_thread_context      = 3,
+    acl_preparer               = 2,
 
     /// Полнотекстовое индексирование
     fulltext_indexer           = 4,
@@ -33,7 +30,7 @@ public enum P_MODULE : byte
     /// исполнение скриптов
     scripts_main               = 6,
 
-    /// Сохранение накопленных данных в полнотекстовом индексаторе
+    /// Сохранение накопленных в памяти данных
     commiter                   = 7,
 
     /// Вывод статистики
@@ -42,24 +39,47 @@ public enum P_MODULE : byte
     /// Загрузка из файлов
     file_reader                = 10,
 
-    zmq_listener               = 11,
-
+    /// Отправка email
     fanout_email               = 12,
 
     //// data change signal
     ltr_scripts                = 14,
 
-    webserver                  = 15,
-
     n_channel                  = 16,
 
-    ccus_channel               = 17,
-    
+    /// Выгрузка в sql, высокоприоритетное исполнение
     fanout_sql_np              = 20,
-    
-    fanout_sql_lp              = 21,
 
-    nop                        = 99
+    /// Выгрузка в sql, низкоприоритетное исполнение
+    fanout_sql_lp              = 21
+}
+
+
+/// id процессов
+public enum P_MODULE : COMPONENT
+{
+    ticket_manager             = COMPONENT.ticket_manager,
+    subject_manager            = COMPONENT.subject_manager,
+    acl_preparer               = COMPONENT.acl_preparer,
+    statistic_data_accumulator = COMPONENT.statistic_data_accumulator,
+    commiter                   = COMPONENT.commiter,
+    print_statistic            = COMPONENT.print_statistic,
+    file_reader                = COMPONENT.file_reader,
+    n_channel                  = COMPONENT.n_channel
+}
+
+/// id модулей обрабатывающих очередь
+public enum MODULE : byte
+{
+    ticket_manager   = COMPONENT.ticket_manager,
+    subject_manager  = COMPONENT.subject_manager,
+    acl_preparer     = COMPONENT.acl_preparer,
+    fulltext_indexer = COMPONENT.fulltext_indexer,
+    scripts_main     = COMPONENT.scripts_main,
+    fanout_email     = COMPONENT.fanout_email,
+    ltr_scripts      = COMPONENT.ltr_scripts,
+    fanout_sql_np    = COMPONENT.fanout_sql_np,
+    fanout_sql_lp    = COMPONENT.fanout_sql_lp
 }
 
 /**
@@ -144,20 +164,20 @@ public enum ResultCode
 
 enum OptFreeze
 {
-	INGORE,
-	NONE 
+    INGORE,
+    NONE
 }
 
 enum OptAuthorize
 {
-	NO,
-	YES
+    NO,
+    YES
 }
 
 enum OptTrace
 {
-	TRACE,
-	NONE
+    TRACE,
+    NONE
 }
 
 public struct OpResult

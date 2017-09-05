@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_email), new Logger("veda-core-fanout-email", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(text(MODULE.fanout_email), new Logger("veda-core-fanout-email", "log", ""));
 
     p_fanout.run();
 }

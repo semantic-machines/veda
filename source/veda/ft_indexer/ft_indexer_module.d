@@ -27,7 +27,7 @@ void main(char[][] args)
     Thread.sleep(dur!("seconds")(1));
     process_name = ft_indexer_queue_name;
 
-    auto p_module = new FTIndexerProcess(text(P_MODULE.fulltext_indexer), new Logger("veda-core-fulltext_indexer", "log", ""));
+    auto p_module = new FTIndexerProcess(text(MODULE.fulltext_indexer), new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }

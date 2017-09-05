@@ -526,7 +526,7 @@ class VedaStorageRest : VedaStorageRest_API
         {
             try
             {
-                res = context.get_operation_state(cast(P_MODULE)module_id, wait_op_id);
+                res = context.get_operation_state(cast(MODULE)module_id, wait_op_id);
             }
             catch (Throwable tr)
             {

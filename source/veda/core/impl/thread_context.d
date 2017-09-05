@@ -25,7 +25,7 @@ private
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    bool[ P_MODULE ] is_traced_module;
+    //bool[ P_MODULE ] is_traced_module;
 
     private Ticket *[ string ] user_of_ticket;
 
@@ -263,8 +263,8 @@ class PThreadContext : Context
 
         ctx.name = context_name;
 
-        ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
-        ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
+        //ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
+        //ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
 
         ctx.get_configuration();
 
@@ -497,7 +497,7 @@ class PThreadContext : Context
                 string when     = null;
                 int    duration = 0;
 
-                MInfo  mi = get_info(P_MODULE.ticket_manager);
+                MInfo  mi = get_info(MODULE.ticket_manager);
 
                 //log.trace ("last_ticket_manager_op_id=%d, mi.op_id=%d,  mi.committed_op_id=%d", last_ticket_manager_op_id, mi.op_id, mi.committed_op_id);
                 if (last_ticket_manager_op_id < mi.op_id)
@@ -975,8 +975,8 @@ class PThreadContext : Context
 
     //////////////////////////////////////////////// MODULES INTERACTION
 
-    private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
-    public MInfo get_info(P_MODULE module_id)
+    private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
+    public MInfo get_info(MODULE module_id)
     {
         ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
 
@@ -990,7 +990,7 @@ class PThreadContext : Context
     }
 
 
-    public long get_operation_state(P_MODULE module_id, long wait_op_id)
+    public long get_operation_state(MODULE module_id, long wait_op_id)
     {
         long  res = -1;
 
@@ -998,7 +998,7 @@ class PThreadContext : Context
 
         if (info.is_Ok)
         {
-            if (module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.scripts_main)
+            if (module_id == MODULE.fulltext_indexer || module_id == MODULE.scripts_main)
                 res = info.committed_op_id;
             else
                 res = info.op_id;
@@ -1006,13 +1006,13 @@ class PThreadContext : Context
 
         version (WebServer)
         {
-            if (module_id == P_MODULE.subject_manager)
+            if (module_id == MODULE.subject_manager)
                 this.reopen_ro_individuals_storage_db();
 
-            if (module_id == P_MODULE.acl_preparer)
+            if (module_id == MODULE.acl_preparer)
                 this.reopen_ro_acl_storage_db();
 
-            if (module_id == P_MODULE.fulltext_indexer)
+            if (module_id == MODULE.fulltext_indexer)
                 this.reopen_ro_fulltext_indexer_db();
         }
 
@@ -1021,7 +1021,7 @@ class PThreadContext : Context
         return res;
     }
 
-    private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
+    private bool wait_module(MODULE pm, long wait_op_id, long timeout)
     {
         long wait_time         = 0;
         long op_id_from_module = 0;

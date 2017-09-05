@@ -58,17 +58,17 @@ private void wait_complete_operations(Context context, long last_op_id)
 
         long cur_opid;
 
-        cur_opid = context.get_operation_state(P_MODULE.fulltext_indexer, false);
+        cur_opid = context.get_operation_state(MODULE.fulltext_indexer, false);
         log.tracec("INFO: last_op_id=%d, ft_opid=%d", last_op_id, cur_opid);
         if (cur_opid >= last_op_id)
             complete_ft = true;
 
-        cur_opid = context.get_operation_state(P_MODULE.scripts_main, false);
+        cur_opid = context.get_operation_state(MODULE.scripts_main, false);
         log.tracec("INFO: last_op_id=%d, script_opid=%d", last_op_id, cur_opid);
         if (cur_opid >= last_op_id)
             complete_script = true;
 
-        cur_opid = context.get_operation_state(P_MODULE.subject_manager, false);
+        cur_opid = context.get_operation_state(MODULE.subject_manager, false);
         log.tracec("INFO: last_op_id=%d, subject_opid=%d", last_op_id, cur_opid);
         if (cur_opid >= last_op_id)
             complete_subject = true;

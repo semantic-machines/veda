@@ -18,7 +18,7 @@ void main(string[] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_sql_lp), new Logger("veda-core-fanout-sql-lp", "log", ""), priority);
+    FanoutProcess p_fanout = new FanoutProcess(text(MODULE.fanout_sql_lp), new Logger("veda-core-fanout-sql-lp", "log", ""), priority);
 
     p_fanout.run();
 }
