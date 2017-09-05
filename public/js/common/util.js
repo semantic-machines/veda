@@ -1,11 +1,11 @@
 // Common utility functions
 "use strict";
 
-var m_ticket = 0;
 var m_subject = 1;
 var m_acl = 2;
 var m_fulltext_indexer = 4;
-var m_scripts = 256;
+var m_fanout_email = 8;
+var m_scripts = 16;
 
 var _Uri = 1;
 var _String = 2;

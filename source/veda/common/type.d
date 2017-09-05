@@ -12,10 +12,7 @@ import std.math, std.stdio, std.conv, std.string;
 /// id компонентов
 public enum COMPONENT : int
 {
-    /// Выдача и проверка тикетов
-    ticket_manager             = 0,
-
-    /// Чтение и сохранение индивидуалов
+    /// сохранение индивидуалов
     subject_manager            = 1,
 
     /// Индексирование прав
@@ -27,31 +24,36 @@ public enum COMPONENT : int
     /// Отправка email
     fanout_email               = 8,
 
-    //// data change signal
-    ltr_scripts                = 16,
-
-    /// Выгрузка в sql, высокоприоритетное исполнение
-    fanout_sql_np              = 32,
-
-    /// Выгрузка в sql, низкоприоритетное исполнение
-    fanout_sql_lp              = 64,
-
-    /// Сбор статистики
-    statistic_data_accumulator = 128,
-
     /// исполнение скриптов
-    scripts_main               = 256,
+    scripts_main               = 16,
 
-    /// Сохранение накопленных в памяти данных
-    commiter                   = 512,
-
-    /// Вывод статистики
-    print_statistic            = 1024,
+    /// Выдача и проверка тикетов
+    ticket_manager             = 32,
 
     /// Загрузка из файлов
-    file_reader                = 2048,
+    file_reader                = 64,
 
-    n_channel                  = 4096
+    /// Выгрузка в sql, высокоприоритетное исполнение
+    fanout_sql_np              = 128,
+
+    //// data change signal
+    ltr_scripts                = 256,
+
+    /// Выгрузка в sql, низкоприоритетное исполнение
+    fanout_sql_lp              = 512,
+
+    /// Сбор статистики
+    statistic_data_accumulator = 1024,
+
+    /// Сохранение накопленных в памяти данных
+    commiter                   = 2048,
+
+    /// Вывод статистики
+    print_statistic            = 4096,
+
+    n_channel                  = 8192,
+
+    webserver                  = 16384
 }
 
 
@@ -65,7 +67,8 @@ public enum P_MODULE : COMPONENT
     commiter                   = COMPONENT.commiter,
     print_statistic            = COMPONENT.print_statistic,
     file_reader                = COMPONENT.file_reader,
-    n_channel                  = COMPONENT.n_channel
+    n_channel                  = COMPONENT.n_channel,
+    webserver                  = COMPONENT.webserver    
 }
 
 /// id модулей обрабатывающих очередь
