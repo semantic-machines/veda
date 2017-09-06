@@ -399,8 +399,8 @@ for (i = 0; i < 1; i++)
         //#1
         ok(compare(new_test_doc1, read_individual));
 
-        read_individual = remove_individual (ticket.id, new_test_doc1['@']);
-        wait_module(m_scripts, read_individual.op_id);
+        var res = remove_individual (ticket.id, new_test_doc1['@']);
+        wait_module(m_scripts, res.op_id);
 
         //#2
         test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
@@ -472,6 +472,12 @@ for (i = 0; i < 1; i++)
             //#1
             ok(compare(new_test_doc1, read_individual));
 
+            res = remove_individual(ticket.id, new_test_doc1['@']);
+            wait_module(m_scripts, res.op_id);
+
+            //#2
+            test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
+
             var new_test_doc2 = new_test_doc1;
             var new_test_doc2_uri = "test9:" + guid();
             new_test_doc2['@'] = new_test_doc2_uri;
@@ -482,8 +488,15 @@ for (i = 0; i < 1; i++)
 
             read_individual = get_individual(ticket.id, new_test_doc2_uri);
 
-            //#2
+            //#3
             ok(compare(new_test_doc2, read_individual));
+
+
+            res = remove_individual(ticket.id, new_test_doc2['@']);
+            wait_module(m_scripts, res.op_id);
+
+            //#4
+            test_fail_read(ticket, new_test_doc2['@'], new_test_doc2);
 
             var new_test_doc3 = new_test_doc2;
             var new_test_doc3_uri = "test9:" + guid();
@@ -495,26 +508,14 @@ for (i = 0; i < 1; i++)
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
 
-            //#3
+            //#5
             ok((read_individual['@'] == new_test_doc3_uri) == true);
 
-            read_individual = remove_individual(ticket.id, new_test_doc3['@']);
-            wait_module(m_scripts, res.op_id);
-
-            //#4
-            test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
-            
-            read_individual = remove_individual(ticket.id, new_test_doc2['@']);
-            wait_module(m_scripts, res.op_id);
-
-            //#5
-            test_fail_read(ticket, new_test_doc2['@'], new_test_doc2);
-            
-            read_individual = remove_individual(ticket.id, new_test_doc1['@']);
+            res = remove_individual(ticket.id, new_test_doc3['@']);
             wait_module(m_scripts, res.op_id);
 
             //#6
-            test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
+            test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);            
         });
 
     test("#010 Individual of [v-s:Membership]",
@@ -587,6 +588,12 @@ for (i = 0; i < 1; i++)
             //#1
             ok(compare(new_test_doc1, read_individual));
 
+            res = remove_individual(ticket.id, new_test_doc1['@']);
+            wait_module(m_scripts, res.op_id);
+
+            //#2
+            test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
+
             var new_test_doc2 = new_test_doc1;
             var new_test_doc2_uri = "test11:" + guid();
             new_test_doc2['@'] = new_test_doc2_uri;
@@ -598,8 +605,14 @@ for (i = 0; i < 1; i++)
 
             read_individual = get_individual(ticket.id, new_test_doc2_uri);
 
-            //#2
+            //#3
             ok(compare(new_test_doc2, read_individual));
+
+            res = remove_individual(ticket.id, new_test_doc2['@']);
+            wait_module(m_scripts, res.op_id);
+
+            //#4
+            test_fail_read(ticket, new_test_doc2['@'], new_test_doc2);
 
             var new_test_doc3 = new_test_doc2;
             var new_test_doc3_uri = "test11:" + guid();
@@ -612,22 +625,10 @@ for (i = 0; i < 1; i++)
 
             read_individual = get_individual(ticket.id, new_test_doc3_uri);
 
-            //#3
+            //#5
             ok((read_individual['@'] == new_test_doc3_uri) == true);
 
-            read_individual = remove_individual(ticket.id, new_test_doc1['@']);
-            wait_module(m_scripts, res.op_id);
-
-            //#4
-            test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
-            
-            read_individual = remove_individual(ticket.id, new_test_doc2['@']);
-            wait_module(m_scripts, res.op_id);
-
-            //#5
-            test_fail_read(ticket, new_test_doc2['@'], new_test_doc2);
-
-            read_individual = remove_individual(ticket.id, new_test_doc3['@']);
+            res = remove_individual(ticket.id, new_test_doc3['@']);
             wait_module(m_scripts, res.op_id);
 
             //#6
