@@ -412,6 +412,9 @@ class VedaModule
 
             onto.update_onto_hierarchy(new_indv, true);
 
+	        if (new_indv.uri is null)
+		    	log.trace ("WARN! individual not contain uri: %s", new_indv);
+
             cache_of_indv.put(new_indv.uri, new_bin);
 
             try

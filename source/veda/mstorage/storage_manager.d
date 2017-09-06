@@ -411,7 +411,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
 
-                                            //writeln ("*imm=[", imm, "]");
+                                            //log.trace ("imm=[%s]", imm);
 
                                             string binobj = imm.serialize();
                                             //writeln("*binobj.length=", binobj.length);
