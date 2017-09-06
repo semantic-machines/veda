@@ -24,7 +24,7 @@ public enum COMPONENT : int
     /// Отправка email
     fanout_email               = 8,
 
-    /// исполнение скриптов
+    /// исполнение скриптов, normal priority
     scripts_main               = 16,
 
     /// Выдача и проверка тикетов
@@ -36,24 +36,27 @@ public enum COMPONENT : int
     /// Выгрузка в sql, высокоприоритетное исполнение
     fanout_sql_np              = 128,
 
-    //// data change signal
-    ltr_scripts                = 256,
+    /// исполнение скриптов, low priority
+    scripts_lp                 = 256,
+
+    //// long time run scripts
+    ltr_scripts                = 512,
 
     /// Выгрузка в sql, низкоприоритетное исполнение
-    fanout_sql_lp              = 512,
+    fanout_sql_lp              = 1024,
 
     /// Сбор статистики
-    statistic_data_accumulator = 1024,
+    statistic_data_accumulator = 2048,
 
     /// Сохранение накопленных в памяти данных
-    commiter                   = 2048,
+    commiter                   = 4096,
 
     /// Вывод статистики
-    print_statistic            = 4096,
+    print_statistic            = 8192,
 
-    n_channel                  = 8192,
+    n_channel                  = 16384,
 
-    webserver                  = 16384
+    webserver                  = 32768
 }
 
 
@@ -68,7 +71,7 @@ public enum P_MODULE : COMPONENT
     print_statistic            = COMPONENT.print_statistic,
     file_reader                = COMPONENT.file_reader,
     n_channel                  = COMPONENT.n_channel,
-    webserver                  = COMPONENT.webserver    
+    webserver                  = COMPONENT.webserver
 }
 
 /// id модулей обрабатывающих очередь
@@ -79,6 +82,7 @@ public enum MODULE : COMPONENT
     acl_preparer     = COMPONENT.acl_preparer,
     fulltext_indexer = COMPONENT.fulltext_indexer,
     scripts_main     = COMPONENT.scripts_main,
+    scripts_lp       = COMPONENT.scripts_lp,
     fanout_email     = COMPONENT.fanout_email,
     ltr_scripts      = COMPONENT.ltr_scripts,
     fanout_sql_np    = COMPONENT.fanout_sql_np,

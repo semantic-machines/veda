@@ -48,7 +48,7 @@ void main(char[][] args)
 {
     core.thread.Thread.sleep(dur!("seconds")(2));
 
-    ScriptProcess p_script = new ScriptProcess(text(MODULE.ltr_scripts), new Logger("veda-core-ltr_scripts", "log", ""));
+    ScriptProcess p_script = new ScriptProcess(MODULE.ltr_scripts, new Logger("veda-core-ltr_scripts", "log", ""));
     //log = p_script.log();
 
     tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
@@ -71,22 +71,22 @@ private struct Tasks
     Task *[ string ] list;
 }
 
-Onto    onto;
-Context context;
+Onto             onto;
+Context          context;
 ScriptsWorkPlace _wpl;
 
-VQL      vql;
-string   empty_uid;
-string   vars_for_codelet_script;
+VQL              vql;
+string           empty_uid;
+string           vars_for_codelet_script;
 
-ScriptVM script_vm;
+ScriptVM         script_vm;
 
 Tasks *[ int ] tasks_2_priority;
 Task *task;
 
 private void ltrs_thread(string parent_url)
 {
-	_wpl = new ScriptsWorkPlace ();
+    _wpl         = new ScriptsWorkPlace();
     process_name = "ltr_scripts";
 
     g_vm_id = "main";
@@ -314,9 +314,9 @@ class ScriptProcess : VedaModule
 {
     long count_sckip = 0;
 
-    this(string _module_name, Logger _log)
+    this(MODULE _module_id, Logger _log)
     {
-        super(_module_name, _log);
+        super(_module_id, _log);
     }
 
     override void thread_id()

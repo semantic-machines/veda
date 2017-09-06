@@ -12,6 +12,9 @@ private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
                veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
 
+alias MODULES_MASK = long;
+const ALL_MODULES = 0;
+
 /**
  * Обьект - сессионный тикет
  */
@@ -118,7 +121,7 @@ interface Context
     public VQL get_vql();
     public Authorization acl_indexes();
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_modules, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_modules,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
@@ -218,20 +221,19 @@ interface Context
        Returns:
                 Код результата операции
      */
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                    OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id, OptFreeze opt_freeze = OptFreeze.NONE,
-                                      OptAuthorize opt_request = OptAuthorize.YES);
+    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_modules, 
+							    	OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           long transaction_id,
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                            OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////

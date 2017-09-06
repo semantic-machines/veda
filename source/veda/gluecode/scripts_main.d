@@ -17,7 +17,7 @@ int main(string[] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    ScriptProcess p_script = new ScriptProcess(vm_id, process_name, log);
+    ScriptProcess p_script = new ScriptProcess(vm_id, MODULE.scripts_main, log);
     p_script.run();
 
     return 0;

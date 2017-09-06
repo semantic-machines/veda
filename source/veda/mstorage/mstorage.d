@@ -586,15 +586,15 @@ public string execute_json(string in_msg, Context ctx)
         {
             OpResult[] rc;
 
-            JSONValue  _ticket         = jsn[ "ticket" ];
+            JSONValue  _ticket           = jsn[ "ticket" ];
             JSONValue  jassigned_modules = jsn[ "assigned_modules" ];
 
             long       assigned_modules = jassigned_modules.integer();
 
-            JSONValue event_id       = jsn[ "event_id" ];
-            long      transaction_id = 0;
+            JSONValue  event_id       = jsn[ "event_id" ];
+            long       transaction_id = 0;
 
-            Ticket    *ticket = ctx.get_ticket(_ticket.str);
+            Ticket     *ticket = ctx.get_ticket(_ticket.str);
 
             if (sfn == "put")
             {

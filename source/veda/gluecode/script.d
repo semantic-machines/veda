@@ -126,8 +126,8 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
                 if (oo != script.id)
                     new_scripts_order ~= oo;
             }
-			if (inserted == false)
-	            new_scripts_order ~= script.id;			
+            if (inserted == false)
+                new_scripts_order ~= script.id;
 
             wpl.scripts_order = new_scripts_order;
         }

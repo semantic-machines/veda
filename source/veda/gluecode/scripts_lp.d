@@ -19,7 +19,7 @@ int main(string[] args)
 
     Thread.getThis().priority(Thread.PRIORITY_MIN);
 
-    ScriptProcess p_script = new ScriptProcess("V8.LowPriority", process_name, log);
+    ScriptProcess p_script = new ScriptProcess("V8.LowPriority", MODULE.scripts_lp, log);
     p_script.run();
 
     return 0;

@@ -18,10 +18,10 @@ public class FanoutProcess : VedaModule
     string low_priority_user;
     string priority;
 
-    this(string _module_name, Logger log, string _priority)
+    this(MODULE _module_id, Logger log, string _priority)
     {
         priority = _priority;
-        super(_module_name, log);
+        super(_module_id, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,

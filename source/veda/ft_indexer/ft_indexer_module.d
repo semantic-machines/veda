@@ -27,7 +27,7 @@ void main(char[][] args)
     Thread.sleep(dur!("seconds")(1));
     process_name = ft_indexer_queue_name;
 
-    auto p_module = new FTIndexerProcess(text(MODULE.fulltext_indexer), new Logger("veda-core-fulltext_indexer", "log", ""));
+    auto p_module = new FTIndexerProcess(MODULE.fulltext_indexer, new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }
@@ -47,9 +47,9 @@ class FTIndexerProcess : VedaModule
         return 0;
     }
 
-    this(string _module_name, Logger log)
+    this(MODULE _module_id, Logger log)
     {
-        super(_module_name, log);
+        super(_module_id, log);
 
         priority       = &indexer_priority;
         main_cs.length = 2;

@@ -823,7 +823,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_modules, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_modules,
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
@@ -893,41 +893,41 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                    OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.PUT, &individual, event_id, assigned_modules, opt_freeze, opt_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         Individual individual;
 
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, event_id, assigned_modules, opt_freeze, opt_request);
     }
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, event_id, assigned_modules, opt_freeze, opt_request);
     }
 
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_modules,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, event_id, assigned_modules, opt_freeze, opt_request);
     }
 
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           long transaction_id, OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, string event_id,
+                                           long transaction_id, MODULES_MASK assigned_modules, OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, event_id, assigned_modules, opt_freeze, opt_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -1074,7 +1074,7 @@ class PThreadContext : Context
                 Ticket *ticket = this.get_ticket(item.ticket_id);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, OptFreeze.NONE, OptAuthorize.YES).result;
+                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_modules, OptFreeze.NONE, OptAuthorize.YES).result;
 
                 if (rc == ResultCode.No_Content)
                 {

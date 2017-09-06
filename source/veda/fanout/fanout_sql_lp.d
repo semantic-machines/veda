@@ -14,11 +14,12 @@ private import veda.vmodule.vmodule, veda.fanout.to_sql;
 void main(string[] args)
 {
     string priority = "low";
+
     process_name = "fanout-sql-lp";
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text(MODULE.fanout_sql_lp), new Logger("veda-core-fanout-sql-lp", "log", ""), priority);
+    FanoutProcess p_fanout = new FanoutProcess(MODULE.fanout_sql_lp, new Logger("veda-core-fanout-sql-lp", "log", ""), priority);
 
     p_fanout.run();
 }
