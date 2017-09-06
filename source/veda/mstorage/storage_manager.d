@@ -125,7 +125,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutabl
 public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
                          string new_binobj,
                          long update_counter,
-                         string event_id, long tnx_id, OptFreeze opt_freeze,
+                         string event_id, long tnx_id, long assigned_modules, OptFreeze opt_freeze,
                          out long op_id)
 {
     ResultCode rc;
@@ -134,7 +134,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP 
     if (tid != Tid.init)
     {
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
-                                                                  false);
+                                                                  false, assigned_modules);
 
         send(tid, opt_request, [ ti ], tnx_id, opt_freeze, thisTid);
 

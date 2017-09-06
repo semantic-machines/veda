@@ -118,7 +118,7 @@ interface Context
     public VQL get_vql();
     public Authorization acl_indexes();
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_modules, string event_id,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);

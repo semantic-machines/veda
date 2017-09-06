@@ -823,7 +823,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_modules, string event_id,
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
@@ -867,7 +867,7 @@ class PThreadContext : Context
                 req_body[ "function" ]       = scmd;
                 req_body[ "ticket" ]         = ticket.id;
                 req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
-                req_body[ "prepare_events" ] = prepare_events;
+                req_body[ "assigned_modules" ] = assigned_modules;
                 req_body[ "event_id" ]       = event_id;
                 req_body[ "tnx_id" ]         = tnx_id;
 
