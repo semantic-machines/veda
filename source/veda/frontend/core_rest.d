@@ -954,22 +954,30 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult[] put_individuals(string _ticket, Json[] individuals_json, long assigned_subsystems, string event_id)
     {
-        OpResult[] res;
+        try
+        {
+            OpResult[] res;
 
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+            ulong      timestamp = Clock.currTime().stdTime() / 10;
 
-        Ticket     *ticket;
-        ResultCode rc = ResultCode.Internal_Server_Error;
+            Ticket     *ticket;
+            ResultCode rc = ResultCode.Internal_Server_Error;
 
-        ticket = get_ticket(context, _ticket);
-        rc     = ticket.result;
+            ticket = get_ticket(context, _ticket);
+            rc     = ticket.result;
 
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc, text(rc));
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
 
-        res = modify_individuals(context, "put", _ticket, individuals_json, assigned_subsystems, event_id, timestamp);
+            res = modify_individuals(context, "put", _ticket, individuals_json, assigned_subsystems, event_id, timestamp);
 
-        return res;
+            return res;
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
+        }
     }
 
     OpResult add_to_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
@@ -1132,11 +1140,11 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
 
     string res;
     Json   jreq = Json.emptyObject;
-    jreq[ "function" ]       = cmd;
-    jreq[ "ticket" ]         = _ticket;
-    jreq[ "individuals" ]    = individuals_json;
+    jreq[ "function" ]            = cmd;
+    jreq[ "ticket" ]              = _ticket;
+    jreq[ "individuals" ]         = individuals_json;
     jreq[ "assigned_subsystems" ] = assigned_subsystems;
-    jreq[ "event_id" ]       = event_id;
+    jreq[ "event_id" ]            = event_id;
 
     vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
     vibe.core.concurrency.receive((string _res){ res = _res; op_res = parseOpResults(_res); });
