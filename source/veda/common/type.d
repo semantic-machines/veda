@@ -12,12 +12,12 @@ import std.math, std.stdio, std.conv, std.string;
 /// id подсистем
 public enum SUBSYSTEM : long
 {
-	STORAGE = 1,
-	ACL = 2,
-	FULL_TEXT_INDEXER = 4,
-	SCRIPTS = 16,
-	FANOUT_EMAIL = 8,
-	FANOUT_SQL = 128				
+    STORAGE           = 1,
+    ACL               = 2,
+    FULL_TEXT_INDEXER = 4,
+    SCRIPTS           = 16,
+    FANOUT_EMAIL      = 8,
+    FANOUT_SQL        = 128
 }
 
 /// id компонентов
@@ -411,32 +411,24 @@ struct decimal
         if (num is null)
             return;
 
+        string[] ff;
+
         if (num.indexOf(',') > 0)
-        {
-            string[] ff = split(num, ",");
-            writeln("ff=", ff);
-            if (ff.length == 2)
-            {
-                mantissa = to!long (ff[ 0 ]);
-                exponent = to!byte (ff[ 1 ]);
-            }
-        }
+            ff = split(num, ",");
         else
+            ff = split(num, ".");
+
+        if (ff.length == 2)
         {
-            string[] ff = split(num, ".");
+            byte sfp = cast(byte)ff[ 1 ].length;
 
-            if (ff.length == 2)
-            {
-                byte sfp = cast(byte)ff[ 1 ].length;
-
-                mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
-                exponent = -sfp;
-            }
-            else if (ff.length == 1)
-            {
-                mantissa = to!long (num);
-                exponent = 0;
-            }
+            mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
+            exponent = -sfp;
+        }
+        else if (ff.length == 1)
+        {
+            mantissa = to!long (num);
+            exponent = 0;
         }
     }
 
