@@ -335,13 +335,13 @@ function prepare_work_order(ticket, document)
                     {
                         for (var i = 0; i < transform_result.length; i++)
                         {
-        		    if (transform_result[i]['v-s:created'] == undefined)
-            			transform_result[i]['v-s:created'] = newDate(new Date());
-        		    else
-            			transform_result[i]['v-s:edited'] = newDate(new Date());
+                            if (transform_result[i]['v-s:created'] == undefined)
+                                transform_result[i]['v-s:created'] = newDate(new Date());
+                            else
+                                transform_result[i]['v-s:edited'] = newDate(new Date());
 
-        		    if (transform_result[i]['v-s:creator'] == undefined)
-            			transform_result[i]['v-s:creator'] = newUri('cfg:VedaSystem');
+                            if (transform_result[i]['v-s:creator'] == undefined)
+                                transform_result[i]['v-s:creator'] = newUri('cfg:VedaSystem');
 
                             put_individual(ticket, transform_result[i], _event_id);
                             decisionFormList.push(
