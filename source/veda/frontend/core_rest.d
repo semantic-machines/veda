@@ -116,22 +116,22 @@ interface VedaStorageRest_API {
     Json get_individual(string ticket, string uri, bool reopen = false);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    OpResult put_individual(string ticket, Json individual, long assigned_modules, string event_id);
+    OpResult put_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 
     @path("put_individuals") @method(HTTPMethod.PUT)
-    OpResult[] put_individuals(string ticket, Json[] individual, long assigned_modules, string event_id);
+    OpResult[] put_individuals(string ticket, Json[] individual, long assigned_subsystems, string event_id);
 
     @path("remove_individual") @method(HTTPMethod.PUT)
-    OpResult remove_individual(string ticket, string uri, long assigned_modules, string event_id);
+    OpResult remove_individual(string ticket, string uri, long assigned_subsystems, string event_id);
 
     @path("remove_from_individual") @method(HTTPMethod.PUT)
-    OpResult remove_from_individual(string ticket, Json individual, long assigned_modules, string event_id);
+    OpResult remove_from_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 
     @path("set_in_individual") @method(HTTPMethod.PUT)
-    OpResult set_in_individual(string ticket, Json individual, long assigned_modules, string event_id);
+    OpResult set_in_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
-    OpResult add_to_individual(string ticket, Json individual, long assigned_modules, string event_id);
+    OpResult add_to_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 }
 
 extern (C) void handleTerminationR(int _signal)
@@ -888,7 +888,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult remove_individual(string _ticket, string uri, long assigned_modules, string event_id)
+    OpResult remove_individual(string _ticket, string uri, long assigned_subsystems, string event_id)
     {
         try
         {
@@ -907,7 +907,7 @@ class VedaStorageRest : VedaStorageRest_API
 
             individual_json[ "@" ] = uri;
 
-            OpResult[] op_res = modify_individuals(context, "remove", _ticket, [ individual_json ], assigned_modules, event_id, timestamp);
+            OpResult[] op_res = modify_individuals(context, "remove", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
             rc = op_res[ 0 ].result;
 
             if (rc != ResultCode.OK)
@@ -922,7 +922,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult put_individual(string _ticket, Json individual_json, long assigned_modules, string event_id)
+    OpResult put_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         try
         {
@@ -937,7 +937,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], assigned_modules, event_id, timestamp);
+            OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
             rc = op_res[ 0 ].result;
 
             if (rc != ResultCode.OK)
@@ -952,7 +952,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult[] put_individuals(string _ticket, Json[] individuals_json, long assigned_modules, string event_id)
+    OpResult[] put_individuals(string _ticket, Json[] individuals_json, long assigned_subsystems, string event_id)
     {
         OpResult[] res;
 
@@ -967,12 +967,12 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        res = modify_individuals(context, "put", _ticket, individuals_json, assigned_modules, event_id, timestamp);
+        res = modify_individuals(context, "put", _ticket, individuals_json, assigned_subsystems, event_id, timestamp);
 
         return res;
     }
 
-    OpResult add_to_individual(string _ticket, Json individual_json, long assigned_modules, string event_id)
+    OpResult add_to_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -984,7 +984,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "add_to", _ticket, [ individual_json ], assigned_modules, event_id, timestamp);
+        OpResult[] op_res = modify_individuals(context, "add_to", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
         rc = op_res[ 0 ].result;
 
         if (rc != ResultCode.OK)
@@ -993,7 +993,7 @@ class VedaStorageRest : VedaStorageRest_API
         return op_res[ 0 ];
     }
 
-    OpResult set_in_individual(string _ticket, Json individual_json, long assigned_modules, string event_id)
+    OpResult set_in_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -1005,7 +1005,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "set_in", _ticket, [ individual_json ], assigned_modules, event_id, timestamp);
+        OpResult[] op_res = modify_individuals(context, "set_in", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
         rc = op_res[ 0 ].result;
 
         if (rc != ResultCode.OK)
@@ -1014,7 +1014,7 @@ class VedaStorageRest : VedaStorageRest_API
         return op_res[ 0 ];
     }
 
-    OpResult remove_from_individual(string _ticket, Json individual_json, long assigned_modules, string event_id)
+    OpResult remove_from_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -1026,7 +1026,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "remove_from", _ticket, [ individual_json ], assigned_modules, event_id, timestamp);
+        OpResult[] op_res = modify_individuals(context, "remove_from", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
         rc = op_res[ 0 ].result;
 
         if (rc != ResultCode.OK)
@@ -1113,7 +1113,7 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 }
 
 //////////////////////////////////////////////////////////////////// ws-server-transport
-private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, long assigned_modules, string event_id,
+private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, long assigned_subsystems, string event_id,
                                       ulong start_time)
 {
     OpResult[] op_res;
@@ -1135,7 +1135,7 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
     jreq[ "function" ]       = cmd;
     jreq[ "ticket" ]         = _ticket;
     jreq[ "individuals" ]    = individuals_json;
-    jreq[ "assigned_modules" ] = assigned_modules;
+    jreq[ "assigned_subsystems" ] = assigned_subsystems;
     jreq[ "event_id" ]       = event_id;
 
     vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());

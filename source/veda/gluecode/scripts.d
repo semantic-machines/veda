@@ -23,9 +23,9 @@ class ScriptProcess : VedaModule
     private ScriptVM         script_vm;
     private string           vm_id;
 
-    this(string _vm_id, MODULE _module_id, Logger log)
+    this(string _vm_id, SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
-        super(_module_id, log);
+        super(_subsystem_id, _module_id, log);
 
         vm_id           = _vm_id;
         g_vm_id         = vm_id;

@@ -6,6 +6,7 @@ var m_acl = 2;
 var m_fulltext_indexer = 4;
 var m_fanout_email = 8;
 var m_scripts = 16;
+var m_fanout_sql = 128;
 
 var _Uri = 1;
 var _String = 2;

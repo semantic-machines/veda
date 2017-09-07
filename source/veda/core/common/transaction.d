@@ -24,12 +24,12 @@ struct TransactionItem
     bool       is_acl_element;
     bool       is_onto;
     
-    long assigned_modules;
+    long assigned_subsystems;
 
     ResultCode rc;
 
     immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id
-                   , bool _is_acl_element, bool _is_onto, long _assigned_modules)
+                   , bool _is_acl_element, bool _is_onto, long _assigned_subsystems)
     {
         cmd            = _cmd;
         user_uri       = _user_uri;
@@ -40,7 +40,7 @@ struct TransactionItem
         event_id       = _event_id;
         is_acl_element = _is_acl_element;
         is_onto        = _is_onto;
-        assigned_modules = _assigned_modules;
+        assigned_subsystems = _assigned_subsystems;
     }
 
     immutable this(TransactionItem ti)
@@ -54,7 +54,7 @@ struct TransactionItem
         event_id       = ti.event_id;
         is_acl_element = ti.is_acl_element;
         is_onto        = ti.is_onto;
-        assigned_modules = ti.assigned_modules;
+        assigned_subsystems = ti.assigned_subsystems;
     }
 }
 
@@ -71,7 +71,7 @@ TransactionItem copy_from_immutable(immutable TransactionItem ti)
     res.event_id       = ti.event_id;
     res.is_acl_element 	= ti.is_acl_element;
     res.is_onto        = ti.is_onto;
-    res.assigned_modules = ti.assigned_modules;
+    res.assigned_subsystems = ti.assigned_subsystems;
     return res;
 }
 
@@ -86,7 +86,7 @@ TransactionItem from_json(JSONValue jsn)
     res.new_binobj     = jsn[ "new_binobj" ].str;
     res.update_counter = jsn[ "update_counter" ].integer;
     res.event_id       = jsn[ "event_id" ].str;
-    res.assigned_modules = jsn[ "assigned_modules" ].integer;
+    res.assigned_subsystems = jsn[ "assigned_subsystems" ].integer;
 
     return res;
 }

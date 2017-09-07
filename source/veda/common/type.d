@@ -9,8 +9,19 @@ module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
+/// id подсистем
+public enum SUBSYSTEM : long
+{
+	STORAGE = 1,
+	ACL = 2,
+	FULL_TEXT_INDEXER = 4,
+	SCRIPTS = 16,
+	FANOUT_EMAIL = 8,
+	FANOUT_SQL = 128				
+}
+
 /// id компонентов
-public enum COMPONENT : int
+public enum COMPONENT : long
 {
     /// сохранение индивидуалов
     subject_manager            = 1,

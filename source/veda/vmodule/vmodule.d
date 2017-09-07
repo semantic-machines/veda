@@ -75,6 +75,7 @@ class VedaModule
     bool[ string ]   subsrc;
 
     long   module_id;
+	long   subsystem_id;
 
     Logger log;
 
@@ -83,7 +84,7 @@ class VedaModule
         return 0;
     }
 
-    this(MODULE _module_id, Logger in_log)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger in_log)
     {
         priority       = &basic_priority;
         module_uid     = text(_module_id).replace("-", "_");
@@ -93,6 +94,7 @@ class VedaModule
         log            = _log;
         main_cs.length = 1;
         module_id      = _module_id;
+        subsystem_id = _subsystem_id;
     }
 
     ~this()
@@ -387,22 +389,22 @@ class VedaModule
             string user_uri         = imm.getFirstLiteral("user_uri");
             string event_id         = imm.getFirstLiteral("event_id");
             long   transaction_id   = imm.getFirstInteger("tnx_id");
-            long   assigned_modules = imm.getFirstInteger("assigned_modules");
+            long   assigned_subsystems = imm.getFirstInteger("assigned_subsystems");
 
-            if (assigned_modules > 0)
+            if (assigned_subsystems > 0)
             {
-                if ((assigned_modules & module_id) != module_id)
+                if ((assigned_subsystems & subsystem_id) != subsystem_id)
                 {
-                    log.trace("INFO! skip, assigned_modules[%d], module_id[%d] ", assigned_modules, module_id);
+                    log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
                     continue;
                 }
             }
 
-            if (assigned_modules < 0)
+            if (assigned_subsystems < 0)
             {
-                if (((assigned_modules * -1) & module_id) == module_id)
+                if (((assigned_subsystems * -1) & subsystem_id) == subsystem_id)
                 {
-                    log.trace("INFO! skip, assigned_modules[%d], module_id[%d] ", assigned_modules, module_id);
+                    log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
                     continue;
                 }
             }

@@ -125,7 +125,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutabl
 public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
                          string new_binobj,
                          long update_counter,
-                         string event_id, long tnx_id, long assigned_modules, OptFreeze opt_freeze,
+                         string event_id, long tnx_id, long assigned_subsystems, OptFreeze opt_freeze,
                          out long op_id)
 {
     ResultCode rc;
@@ -134,7 +134,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP 
     if (tid != Tid.init)
     {
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
-                                                                  false, assigned_modules);
+                                                                  false, assigned_subsystems);
 
         send(tid, opt_request, [ ti ], tnx_id, opt_freeze, thisTid);
 
@@ -410,7 +410,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
-                                            imm.addResource("assigned_modules", Resource(ti.assigned_modules));
+                                            imm.addResource("assigned_subsystems", Resource(ti.assigned_subsystems));
 
                                             //log.trace ("imm=[%s]", imm);
 
