@@ -26,6 +26,11 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
     	    {
         	data: new Date(),
         	type: _Datetime
+            }],
+    	    'v-s:creator': [
+    	    {
+        	data: 'cfg:VedaSystem',
+        	type: _Uri
             }]
         };
 
@@ -407,12 +412,22 @@ function store_items_and_set_minimal_rights(ticket, data)
         var ids = [];
         for (var i = 0; i < data.length; i++)
         {
+            if (data[i]['v-s:created'] == undefined)
+                data[i]['v-s:created'] = newDate(new Date());
+            else
+                data[i]['v-s:edited'] = newDate(new Date());
+
+            if (data[i]['v-s:creator'] == undefined)
+                data[i]['v-s:creator'] = newUri('cfg:VedaSystem');
+
             put_individual(ticket, data[i], _event_id);
+
             ids.push(
             {
                 data: data[i]['@'],
                 type: _Uri
             });
+
             addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
         }
         return ids;
