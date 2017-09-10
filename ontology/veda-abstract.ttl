@@ -289,6 +289,7 @@ v-s:origin
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
 .
+# Плохо. что такой общий предикат определен для ЛНД но поднят в абстрактный класс. А еще перекликается с rdfs:isDefinedBy
 v-s:isDefinedBy
   rdf:type owl:ObjectProperty ;
   rdfs:label "Is defined by"@en ;
