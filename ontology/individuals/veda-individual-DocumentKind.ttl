@@ -22,10 +22,10 @@ d:97a6c9fbbc15418f8309490b2b6d3d6e
 .
 d:cc87e0778a864272b1b8d366f591da88
   a v-s:DocumentKind;
-  v-s:shortLabel "Контракт"@ru ;
+  v-s:shortLabel "Контракт / договор"@ru ;
   v-s:shortLabel "Contract"@en ;
   v-s:registrationNumber "0"^^xsd:string;
-  rdfs:label "Контракт"@ru ;
+  rdfs:label "Контракт / договор"@ru ;
   rdfs:label "Contract"@en ;
   v-s:hasParentLink d:97a6c9fbbc15418f8309490b2b6d3d6e;
   v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
@@ -140,7 +140,6 @@ d:5fd9004f075f48b0aacb17379f27e46f
   v-s:shortLabel "Ведомость"^^xsd:string;
   rdfs:label "Ведомость"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
-  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:c398f7d2fa5243b8ad7e92aa21558351
   a v-s:DocumentKind;
@@ -1130,7 +1129,14 @@ d:agbxssnddkd2rnk4lfofwhi7
   rdfs:label "Служебная записка"^^xsd:string;
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
 .
-
+d:id9fvum63d7t73lp6kos6brc
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Технологическая карта"^^xsd:string;
+  rdfs:label "Технологическая карта"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
 #-----------------------------------------------------
 d:c3b38c81e1594593932b9872a3257948
   a v-s:DocumentKind;
@@ -1404,6 +1410,7 @@ d:0e013b49ee56476897656015c1ca6c94
   v-s:shortLabel "Акт выполненных работ"^^xsd:string;
   rdfs:label "Акт о приемке выполненных работ (по форме КС-2 или в произвольной форме)"^^xsd:string;
   v-s:hasParentLink d:3e65a31d4d9340dc8861a452be25e04e;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:8737ebad40db4fafbf1cd5929f580c3a
   a v-s:DocumentKind;
@@ -1715,8 +1722,8 @@ d:vg6dpox8anfkpi864plasluf
 d:eefi3pal7ir9jitea0wqak3b
   a v-s:DocumentKind;
   v-s:registrationNumber "0"^^xsd:string;
-  v-s:shortLabel "Ведомости перечета"^^xsd:string;
-  rdfs:label "Ведомости перечета"^^xsd:string;
+  v-s:shortLabel "Ведомость перечета"^^xsd:string;
+  rdfs:label "Ведомость перечета"^^xsd:string;
   v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
 d:l2nzax61buzifev1a8n28iux
@@ -1731,5 +1738,12 @@ d:a5rrihl8fkpbjuxqo99neiq25
   v-s:registrationNumber "0"^^xsd:string;
   v-s:shortLabel "Абрис"^^xsd:string;
   rdfs:label "Абрис"^^xsd:string;
+  v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
+.
+d:ze6ghob5hg98m05rk7hs7ryb
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Ведомость объемов работ"^^xsd:string;
+  rdfs:label "Ведомость объемов работ"^^xsd:string;
   v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
