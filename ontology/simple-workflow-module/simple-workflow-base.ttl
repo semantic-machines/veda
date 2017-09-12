@@ -4282,7 +4282,7 @@ s-wf:map_redirect_from_2_result_decision
   v-wf:mappingExpression """
 
   get_properties_chain (process.getLocalVariable('result_decision'),
-              [{$get:'v-s:parent'}] )
+              [{$get:'v-s:backwardTarget'}] )
 
   """;
   rdfs:label "Задача из формы решения пользователя"@ru ;
