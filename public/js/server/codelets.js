@@ -40,6 +40,21 @@ function change_rights_actor(process, task, rightset, actor)
             //print ("@JS2 executor=", toJson(process.getExecutor()));
             var executor = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
 
+            var employee = get_properties_chain(executor, [
+            {
+                $get: 'v-s:employee'
+            }], undefined);
+
+            if (employee)
+            {
+                var employee_uri = getUri(employee);
+
+                if (employee_uri)
+                    addRight(ticket, rset, employee_uri, getUri(doc_id));
+                else
+                    print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+            }
+
             executor = get_properties_chain(executor, [
             {
                 $get: 'v-s:occupation'
