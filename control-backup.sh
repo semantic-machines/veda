@@ -11,7 +11,11 @@ export PATH="$PATH:/sbin/"
 ./control-stop.sh
 
 # Create backup of databases
-zip $backup_path/data.zip ./data -r -x "./data/files/*"
+#zip $backup_path/data.zip ./data -r -x "./data/files/*"
+zip $backup_path/data-ft.gz ./data/xapian-info ./data/xapian-search-base ./data/xapian-search-deleted ./data/xapian-search-system -r -1
+zip $backup_path/data-indv.zip ./data/acl-indexes ./data/lmdb-individuals ./data/uris -r -1
+zip $backup_path/data-queue.zip ./data/lmdb-tickets ./data/module-info ./data/queue -r -1
+zip $backup_path/data-trails.zip ./data/trails -r -1
 
 # Craete backup of logs
 zip $backup_path/log.zip ./*.log -r
