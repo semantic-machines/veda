@@ -32,6 +32,7 @@ void FatalErrorCallback_r(const char *location, const char *message)
 static std::string to_string(double d)
 {
     std::ostringstream oss;
+
     oss.precision(std::numeric_limits<double>::digits10);
     oss << std::fixed << d;
     std::string str = oss.str();
@@ -39,37 +40,38 @@ static std::string to_string(double d)
     // Remove padding
     // This must be done in two steps because of numbers like 700.00
     std::size_t pos1 = str.find_last_not_of("0");
-    if(pos1 != std::string::npos)
-        str.erase(pos1+1);
+    if (pos1 != std::string::npos)
+        str.erase(pos1 + 1);
 
     std::size_t pos2 = str.find_last_not_of(".");
-    if(pos2 != std::string::npos)
-        str.erase(pos2+1);
+    if (pos2 != std::string::npos)
+        str.erase(pos2 + 1);
 
     return str;
 }
 
 /// Stringify V8 value to JSON
 /// return empty string for empty value
-std::string json_str(v8::Isolate* isolate, v8::Handle<v8::Value> value)
+std::string json_str(v8::Isolate *isolate, v8::Handle<v8::Value> value)
 {
     if (value.IsEmpty())
     {
         return std::string();
     }
- 
-    v8::HandleScope scope(isolate);
- 
-    v8::Local<v8::Object> json = isolate->GetCurrentContext()->
-        Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
-    v8::Local<v8::Function> stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
- 
-    v8::Local<v8::Value> result = stringify->Call(json, 1, &value);
-    v8::String::Utf8Value const str(result);
- 
-    return std::string(*str, str.length());
- }
 
+    v8::HandleScope             scope(isolate);
+
+    v8::Local<v8::Object>       json = isolate->GetCurrentContext()->
+                                       Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
+    v8::Local<v8::Function>     stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
+
+    v8::Local<v8::Value>        result = stringify->Call(json, 1, &value);
+    v8::String::Utf8Value const str(result);
+
+    return std::string(*str, str.length());
+}
+
+string nullz = "00000000000000000000000000000000";
 
 Handle<Value>
 individual2jsobject(Individual *individual, Isolate *isolate)
@@ -106,14 +108,49 @@ individual2jsobject(Individual *individual, Isolate *isolate)
             }
             else if (value.type == _Decimal)
             {
-				//std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_exponent_data=" << value.decimal_exponent_data << std::endl;
+                //std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_exponent_data=" << value.decimal_exponent_data << std::endl;
 
-				//string ss = to_string(value.decimal_mantissa_data * pow(10.0, value.decimal_exponent_data));
-                //in_obj->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
+                string str_res;
+                string sign = "";
+                string str_mantissa;
 
-                in_obj->Set(f_data,
-                            v8::Number::New(isolate, value.decimal_mantissa_data * pow(10.0, value.decimal_exponent_data)));
-				//std::cout << "@c individual2jsobject #Q ss=" << ss << std::endl;
+                if (value.decimal_mantissa_data < 0)
+                {
+                    sign         = "-";
+                    str_mantissa = to_string(-value.decimal_mantissa_data);
+                }
+                else
+                    str_mantissa = to_string(value.decimal_mantissa_data);
+
+                long lh = value.decimal_exponent_data * -1;
+
+                lh = str_mantissa.length() - lh;
+                string slh;
+
+                if (lh >= 0)
+                {
+                    if (lh <= str_mantissa.length())
+                        slh = str_mantissa.substr(0, lh);
+                }
+                else
+                    slh = "";
+
+                string slr;
+
+                if (lh >= 0)
+                {
+                    slr = str_mantissa.substr(lh, str_mantissa.length());
+                }
+                else
+                {
+                    slr = nullz.substr(0, (-lh)) + str_mantissa;
+                }
+
+                string ss = sign + slh + "." + slr;
+
+                in_obj->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
+
+                //std::cout << "@c individual2jsobject #Q ss=" << ss << std::endl;
             }
             else if (value.type == _Integer)
             {
@@ -345,9 +382,17 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
                 Resource         rc;
                 rc.type = type;
 
-                double dd = v_data->ToNumber()->Value();
-
-                double_to_mantissa_exponent(dd, &rc.decimal_mantissa_data, &rc.decimal_exponent_data);
+                if (v_data->IsString())
+                {
+                    v8::String::Utf8Value s1_1(v_data);
+                    std::string           std_s1_1 = std::string(*s1_1);
+                    rc.str_data = std_s1_1;
+                }
+                else
+                {
+                    double dd = v_data->ToNumber()->Value();
+                    double_to_mantissa_exponent(dd, &rc.decimal_mantissa_data, &rc.decimal_exponent_data);
+                }
 
                 values.push_back(rc);
                 indv->resources[ predicate ] = values;
@@ -424,10 +469,10 @@ struct _Buff
     int  allocated_size;
 };
 
-_Buff* get_from_ght(const char *name, int name_length);
+_Buff *get_from_ght(const char *name, int name_length);
 void put_to_ght(const char *name, int name_length, const char *value, int value_length);
-_Buff* uris_pop(const char *consumer_id, int consumer_id_length);
-_Buff* new_uris_consumer();
+_Buff *uris_pop(const char *consumer_id, int consumer_id_length);
+_Buff *new_uris_consumer();
 bool uris_commit_and_next(const char *_consumer_id, int _consumer_id_length, bool is_sync_data);
 
 _Buff *
@@ -632,19 +677,19 @@ void
 NewUrisConsumer(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     Isolate *isolate = args.GetIsolate();
- 
-     if (args.Length() != 0)
+
+    if (args.Length() != 0)
     {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
 
-    _Buff *res = new_uris_consumer ();
+    _Buff *res = new_uris_consumer();
     if (res != NULL)
     {
-        std::string data(res->data, res->length);
-		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
-		args.GetReturnValue().Set(oo);
+        std::string   data(res->data, res->length);
+        Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+        args.GetReturnValue().Set(oo);
     }
 }
 
@@ -659,18 +704,18 @@ UrisPop(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
     }
 
-	v8::String::Utf8Value _id(args[ 0 ]);    
-    const char* cid = ToCString(_id);
+    v8::String::Utf8Value _id(args[ 0 ]);
+    const char            *cid = ToCString(_id);
 
-    _Buff *res = uris_pop (cid, _id.length());
+    _Buff                 *res = uris_pop(cid, _id.length());
 
     if (res != NULL)
     {
-        std::string data(res->data, res->length);
+        std::string   data(res->data, res->length);
 
-		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+        Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
 
-		args.GetReturnValue().Set(oo);
+        args.GetReturnValue().Set(oo);
     }
 }
 
@@ -685,14 +730,14 @@ UrisCommitAndNext(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
     }
 
-	v8::String::Utf8Value _id(args[ 0 ]);    
-    const char* cid = ToCString(_id);
-    
-    bool is_sync_data = args[1]->BooleanValue();
+    v8::String::Utf8Value _id(args[ 0 ]);
+    const char            *cid = ToCString(_id);
 
-    bool res = uris_commit_and_next (cid, _id.length(), is_sync_data);
+    bool                  is_sync_data = args[ 1 ]->BooleanValue();
 
-	args.GetReturnValue().Set(res);
+    bool                  res = uris_commit_and_next(cid, _id.length(), is_sync_data);
+
+    args.GetReturnValue().Set(res);
 }
 
 /////////////////////
@@ -705,16 +750,16 @@ void GetFromGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
-    
-	v8::String::Utf8Value _name(args[ 0 ]);    
-    const char* cname = ToCString(_name);
-    	
-    _Buff *res = get_from_ght (cname, _name.length());
+
+    v8::String::Utf8Value _name(args[ 0 ]);
+    const char            *cname = ToCString(_name);
+
+    _Buff                 *res = get_from_ght(cname, _name.length());
     if (res != NULL)
     {
-        std::string data(res->data, res->length);
-		Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
-		args.GetReturnValue().Set(oo);
+        std::string   data(res->data, res->length);
+        Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
+        args.GetReturnValue().Set(oo);
     }
 }
 
@@ -728,13 +773,13 @@ void PutToGHT(const v8::FunctionCallbackInfo<v8::Value>& args)
         return;
     }
 
-	v8::String::Utf8Value _name(args[ 0 ]);
-    const char* cname = ToCString(_name);
+    v8::String::Utf8Value _name(args[ 0 ]);
+    const char            *cname = ToCString(_name);
 
-	v8::String::Utf8Value _value(args[ 1 ]);
-    const char* cvalue = ToCString(_value);
+    v8::String::Utf8Value _value(args[ 1 ]);
+    const char            *cvalue = ToCString(_value);
 
-	put_to_ght(cname, _name.length(), cvalue, _value.length());
+    put_to_ght(cname, _name.length(), cvalue, _value.length());
 }
 
 ////////////////////
@@ -769,11 +814,11 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         Individual  individual;
         cbor2individual(&individual, data);
 
-		//std::cout << "@c #get_individual uri=" << cstr << std::endl;
+        //std::cout << "@c #get_individual uri=" << cstr << std::endl;
 
         Handle<Value> oo = individual2jsobject(&individual, isolate);
 
-		//std::cout << "@c #get_individual #E" << std::endl;
+        //std::cout << "@c #get_individual #E" << std::endl;
         args.GetReturnValue().Set(oo);
     }
 }
@@ -824,8 +869,8 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     if (args[ 1 ]->IsObject())
     {
-		string jsnstr = json_str(isolate, args[ 1 ]);
-		//std::cout << "@c #put_individual json=" << jsnstr << std::endl;
+        string     jsnstr = json_str(isolate, args[ 1 ]);
+        //std::cout << "@c #put_individual json=" << jsnstr << std::endl;
         Individual individual;
         jsobject2individual(args[ 1 ], &individual, NULL, "");
 
@@ -838,7 +883,7 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         std::vector<char>     buff;
         individual2cbor(&individual, buff);
         char                  *ptr = buff.data();
-		//std::cout << "@c #put_individual uri=" << individual.uri << std::endl;
+        //std::cout << "@c #put_individual uri=" << individual.uri << std::endl;
         res = put_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
 
         buff.clear();
