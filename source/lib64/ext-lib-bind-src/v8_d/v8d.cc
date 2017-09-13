@@ -106,13 +106,13 @@ individual2jsobject(Individual *individual, Isolate *isolate)
             }
             else if (value.type == _Decimal)
             {
-				//std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_expanent_data=" << value.decimal_expanent_data << std::endl;
+				//std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_exponent_data=" << value.decimal_exponent_data << std::endl;
 
-				//string ss = to_string(value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data));
+				//string ss = to_string(value.decimal_mantissa_data * pow(10.0, value.decimal_exponent_data));
                 //in_obj->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
 
                 in_obj->Set(f_data,
-                            v8::Number::New(isolate, value.decimal_mantissa_data * pow(10.0, value.decimal_expanent_data)));
+                            v8::Number::New(isolate, value.decimal_mantissa_data * pow(10.0, value.decimal_exponent_data)));
 				//std::cout << "@c individual2jsobject #Q ss=" << ss << std::endl;
             }
             else if (value.type == _Integer)
@@ -245,7 +245,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
         double dd = value->ToNumber()->Value();
 
         resource->type = _Decimal;
-        double_to_mantissa_exponent(dd, &resource->decimal_mantissa_data, &resource->decimal_expanent_data);
+        double_to_mantissa_exponent(dd, &resource->decimal_mantissa_data, &resource->decimal_exponent_data);
 
         return true;
     }
@@ -347,7 +347,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
 
                 double dd = v_data->ToNumber()->Value();
 
-                double_to_mantissa_exponent(dd, &rc.decimal_mantissa_data, &rc.decimal_expanent_data);
+                double_to_mantissa_exponent(dd, &rc.decimal_mantissa_data, &rc.decimal_exponent_data);
 
                 values.push_back(rc);
                 indv->resources[ predicate ] = values;
