@@ -1057,6 +1057,107 @@ if (doc['rdf:type'][0].id === "mnd-s:Claim") {
   routes['review'][simple+'editable'] = [true];
   routes['review'][simple+'deadlineDays'] = [3];
 }
+//------------------------------------------Версия локальный нормативный документ----------------
+
+if (doc['rdf:type'][0].id === "mnd-s:VersionOfLocalRegulatoryDocument") {
+  routes['coordination1'][simple+'visible'] = [true];
+  routes['coordination1'][simple+'editable'] = [true];
+  routes['coordination2'][simple+'visible'] = [true];
+  routes['coordination2'][simple+'editable'] = [true];
+  routes['coordination3'][simple+'visible'] = [true];
+  routes['coordination3'][simple+'editable'] = [true];
+  routes['coordination4'][simple+'visible'] = [true];
+  routes['coordination4'][simple+'editable'] = [true];
+  routes['sign'][simple+'visible'] = [true];
+  routes['sign'][simple+'editable'] = [false];
+  routes['sign'][simple+'comment'] = [new String('Подписание локального правового документа')];
+  if ( doc.hasValue("v-s:signedBy") ){
+    var sign = doc["v-s:signedBy"][0];
+    routes['sign'][simple+'participant'] = [sign];
+  }
+  routes['approval'][simple+'visible'] = [true];
+  routes['approval'][simple+'editable'] = [true];
+  routes['approval'][simple+'comment'] = [new String('На регистрацию локального правового документа')];
+  if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001663' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:1b69d188-8268-4c22-8deb-3bbc0abd249f")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003376' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:06e9adee-8349-4ec0-8095-7a7b142c9709")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001690' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:2474d195-0bc4-4bc6-83d4-b4a4eb2fb350")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001658' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:424e1e88-ed4e-424d-abc7-a829c0f4d11c")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003351' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:aa4374af-380a-4f19-a415-4c32d8d1b3e4")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003410' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:f63d88c8-42c7-4a7b-a1b4-57204bc86541")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001665' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:1ca57ded-c051-4ca4-bc33-fb8994b04d8f")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001666' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:869ca4e0-eb52-4612-a0b8-a66659720c24")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001667' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:8d5a2a33-d646-4006-89ab-bc97064fcc24")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001659' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:dece060b-d010-46e5-95e4-e69244f43e53")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003657' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:cca0e582-3b9d-4858-98bf-45fe03d1ceb1")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003626' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:8467ac45-59b9-4c94-833a-330da3683069")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001721' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:e88d9685-d02f-46bc-8e23-7038f018e2bd")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001664' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:beec6105-4511-4c63-861a-d6cde0dfc58b")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001744' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:6f55fed4-5eff-4afe-b00e-e7df7c53be9e")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001669' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:8c81cb04-be5c-442f-bfa2-49f9f47458c2")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001662' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:4f6f2f60-a0cd-49bc-9b0d-d0166909285a")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003642' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:6990c8e9-f6f4-423d-ac46-b892f64ff3df")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50002528' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:976ffdfe-7a2f-48a7-a64c-eddd4b32c7b6")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50003527' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:f4497f08-5038-4be6-abb8-2fbf28882c8b")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001698' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:2a2fad9b-af5e-47bf-aab8-5e1c5ebd925d")];
+  } else if ( doc["v-s:backwardTarget"][0].hasValue("v-s:owner") &&  doc["v-s:backwardTarget"][0]["v-s:owner"][0].id == 'd:mondi_department_50001677' ){
+    var owner = doc["v-s:owner"][0];
+    routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:4f93874c-3ec5-480f-9a5a-fdf05d63ce48")];
+  } else {
+    routes['approval'][simple+'participant'] = [];
+    }
+  routes['instruction'][simple+'visible'] = [true];
+  routes['instruction'][simple+'editable'] = [true];
+  routes['instruction'][simple+'deadlineDays'] =[10];
+   if ( doc.hasValue("v-s:creator") ){
+    var creator = doc["v-s:creator"][0];
+    routes['instruction'][simple+'controller'] = [creator];
+  } else {
+    routes['instruction'][simple+'controller'] = [];
+  }
+}
+
 //-----------------------------------------------------------------Заявка на энергоресурсы-------
 
 if (doc['rdf:type'][0].id === "mnd-s:EnergyResourceRequest") {
@@ -2704,7 +2805,7 @@ if (doc['rdf:type'][0].id === "mnd-s:MaterialRequest") {
   routes['review'][simple+'editable'] = [false];
   routes['instruction'][simple+'visible'] = [true];
   routes['instruction'][simple+'editable'] = [true];
-  routes['instruction'][simple+'deadlineDays'] =[2];
+  routes['instruction'][simple+'deadlineDays'] =[10];
 
   if (doc["mnd-s:hasMaterialRequestKind"][0].id === 'd:688f20468e1b4fbd8fb8e4e8c7b05e5f'){
       routes['instruction'][simple+'comment'] = [new String('Создание ОЗМ')];
@@ -3551,7 +3652,8 @@ s-wf:UserTaskFormTemplate
       <div class="row">
         <div class="col-md-3">
           <em about="v-s:TaskIsRedirectedFrom" property="rdfs:label"> </em>
-          <span rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
+          <span rel="v-wf:to" data-template="v-ui:LabelTemplate"></span>
+          <!--span rel="v-s:creator v-wf:from" data-template="v-ui:LabelTemplate"></span-->
         </div>
         <div rel="v-wf:takenDecision" class="col-md-3">
           <em about="rdfs:comment" property="rdfs:label"> </em>
