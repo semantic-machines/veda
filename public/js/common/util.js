@@ -1127,7 +1127,7 @@ function removeFromGroup(ticket, group, resource)
   return [new_membership, res];
 }
 
-function addRight(ticket, rights, subj_uri, obj_uri, new_uri) {
+function addRight(ticket, rights, subj_uri, obj_uri) {
 
   if (subj_uri == undefined || obj_uri == undefined) {
     var error = new Error();
@@ -1150,9 +1150,7 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri) {
     return;
   }
 
-  if (!new_uri) {
-    new_uri = genUri();
-  }
+  var new_uri = genUri() + "_r";
 
   if (new_uri) {
     try {
@@ -1165,12 +1163,16 @@ function addRight(ticket, rights, subj_uri, obj_uri, new_uri) {
 	  if (typeof window === "undefined")
 	  {
             print ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
+	    print("subj_uri=", subj_uri);
+    	    print("obj_uri=", obj_uri);
             print("Error stack:", error.stack);
 	  }
 	  else
 	  {
             console.log ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
             console.log("Error stack:", error.stack);
+	    console.log("subj_uri=", subj_uri);
+	    console.log("obj_uri=", obj_uri);
 	  }
 
           return;
