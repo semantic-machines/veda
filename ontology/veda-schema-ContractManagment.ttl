@@ -189,6 +189,7 @@ v-s:PSBoleanAllContractor
   v-ui:forProperty v-s:deletedInOrigin ;
   v-ui:forProperty v-s:isCreditor ;
   v-ui:forProperty v-s:isDebitor ;
+  v-ui:forProperty v-s:linkedOrganization ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
   rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
