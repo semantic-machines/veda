@@ -27,4 +27,4 @@
 	по окончании рекомендуется перезагрузить систему.
 	пример запуска: $ ./veda reload-ontology
 
-Переиндексация для полнотекстовго поиска - /send_to_module?module_id=4&msg=reindex_batch
+Переиндексация для полнотекстового поиска - /send_to_module?module_id=20&msg=unload_batch
