@@ -140,6 +140,8 @@ public class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
+            	mysql_conn.startTransaction();
+            	
                 // создаем таблицы если их не было
                 foreach (predicate, rss; new_indv.resources)
                 {
@@ -237,7 +239,8 @@ public class FanoutProcess : VedaModule
                         }
                     }
                 }
-            }
+            }            
+            mysql_conn.query("COMMIT");
 
             //writeln ("@@@@1 insert TO MYSQL IS OK ", text (mysql_conn));
         }
