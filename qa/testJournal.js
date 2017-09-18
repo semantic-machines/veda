@@ -28,8 +28,8 @@ function assertCounts(driver, totalCount, createCount, updateCount) {
         driver.executeScript("document.elementFromPoint(800, 130).click();")
             .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 TEST JOURNAL : ERROR = Cannot click on elementFromPoint");});
     }).then(function() {
-        //driver.sleep(basic.FAST_OPERATION);
-        //driver.navigate().refresh();
+        driver.sleep(basic.FAST_OPERATION);
+        driver.navigate().refresh();
         driver.sleep(basic.SLOW_OPERATION);
         driver.findElements({css:'div.journal-record'}).then(function (result) {
             assert.equal(totalCount, result.length);
