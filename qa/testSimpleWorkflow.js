@@ -63,7 +63,7 @@ basic.getDrivers().forEach (function (drv) {
     put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm');", 1);
     put(driver, 'v-wf:aggregate', "putString ('rdfs:label', 'задание');", 1);
     put(driver, 'v-wf:aggregate', "putBoolean ('v-wf:isCompleted', false);", 1);
-    put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to');", 1);
+    put(driver, 'v-wf:aggregate', "if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));    } else {      putExecutor ('v-wf:to');    }", 1);
     put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');", 1);
     put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');", 1);
     clickButton(driver, "save", "v-wf:Rule", 1);
@@ -93,7 +93,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "****** PHASE#2 : ERROR = Cannot click on 'v-wf:executor' field ");
     basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]',
         "****** PHASE#2 : ERROR = Cannot click on 'VCexecutor' field ");
-    createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4', 2);
+    createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик', 2);
     createNet.connectNet(driver, 'true');
     createNet.saveNet(driver, 2);
     createNet.checkNet(driver, timeStamp, 'red', 'red', '-', 2);
