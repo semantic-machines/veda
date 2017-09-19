@@ -93,7 +93,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "****** PHASE#2 : ERROR = Cannot click on 'v-wf:executor' field ");
     basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]',
         "****** PHASE#2 : ERROR = Cannot click on 'VCexecutor' field ");
-    createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4 : Аналитик', 2);
+    createNet.chooseFromDropdown(driver, 'VCexecutor', 'Администратор4', 'Администратор4', 2);
     createNet.connectNet(driver, 'true');
     createNet.saveNet(driver, 2);
     createNet.checkNet(driver, timeStamp, 'red', 'red', '-', 2);
