@@ -7,6 +7,8 @@ addons:
     access_key: 0fdd3d85-3d51-4fd5-89ed-10980baa57a5
     no_ssl_bump_domains: localhost
 
+language: rust
+
 env:
   global:
     - secure: PYwCZBpLe87Qg2RXibiGk9LrNrkFMlGuFnf/mp+f5kc4bFoVMo7Pl+Rdl4S1H33kLYK6d3pFggddwWxO7HGH9IyHzQ6Gfu3u9gR9rJXovQYfEp8muDCJDXvLEUoMxRgnRPa202p+BUnrNMwebxYHmwgef0s1dYQpRsewmPWHevk=
