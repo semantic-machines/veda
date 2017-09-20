@@ -33,7 +33,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.chooseFromDropdown(driver, 'v-s:responsible', 'Администратор2', 'Администратор2 : Коммерческий директор', 1);
     basic.execute(driver, "sendKeys", 'veda-control[property="rdfs:comment"] textarea[class="form-control"]',
         "****** PHASE#1 > Create task : ERROR = Cannot fill Comment field", timeStamp);
-    driver.sleep(basic.FAST_OPERATION * 4);
+    driver.sleep(basic.FAST_OPERATION * 2);
     basic.execute(driver, "click", 'div[class="modal-dialog modal-lg"] button[id="send"]', "****** PHASE#1 > Create task : ERROR = Cannot click on Send button");
     basic.logout(driver, 1);
 
@@ -45,21 +45,21 @@ basic.getDrivers().forEach(function (drv) {
     //PHASE#3: Delegation request
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
     delegationRequest.createRequestDelegation(driver, 'Администратор4', 'Администратор4 : Аналитик', "td:CommercialDirector", 3);
-    driver.sleep(basic.FAST_OPERATION * 2);
+    driver.sleep(basic.FAST_OPERATION);
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#3 : ERROR = Cannot click on 'Welcome' button");
     basic.logout(driver, 3);
 
     //PHASE#4: Check person
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 4);
     basic.menu(driver, 'Inbox', 4);
-    driver.sleep(basic.SLOW_OPERATION * 2);
+    driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'span[about="td:CommercialDirector"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#4 : ERROR = Cannot click on 'td:CommercialDirector' actor")});
-    driver.sleep(basic.SLOW_OPERATION * 2);
-    driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#4 : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION * 2).then(
+    driver.sleep(basic.SLOW_OPERATION);
+    driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#4 : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
         function(result){basic.clickUp(result, "****** PHASE#4 : ERROR = Cannot click on message");});
     basic.execute(driver, 'click', 'div[class="radio decision"] input[value="0"]', "****** PHASE#4 : ERROR = Cannot click on '0' decision");
-    driver.sleep(basic.FAST_OPERATION * 2);
+    driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#4 : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#4 : ERROR = Cannot click on 'Ok' button");

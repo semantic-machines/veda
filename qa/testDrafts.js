@@ -13,7 +13,7 @@ var assert = require('assert'),
 
 function check(driver, count, phase) {
     basic.menu(driver, 'Drafts', phase);
-    driver.sleep(basic.FAST_OPERATION*2);
+    driver.sleep(basic.FAST_OPERATION);
     driver.findElements({css:'div[id="drafts"] [typeof="v-s:Person"]'}).then(function(elements_arr){
         if (elements_arr.length > 0) {
             if (count == "true") {

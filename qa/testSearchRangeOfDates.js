@@ -14,7 +14,7 @@ function search(driver, somethingUnique, count, phase) {
     basic.execute(driver, 'sendKeys', '#q', "****** PHASE#" + phase + " : ERROR = Cannot fill input field", somethingUnique);
     driver.executeScript("document.querySelector('button[id=\"search-submit\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to search-submit button");});
-    basic.isEnabled(driver, 'button[id="search-submit"]', basic.SLOW_OPERATION * 2, phase);
+    basic.isEnabled(driver, 'button[id="search-submit"]', basic.SLOW_OPERATION, phase);
     driver.wait
     (
         function () {
@@ -24,7 +24,7 @@ function search(driver, somethingUnique, count, phase) {
                 return text == count;
             });
         },
-        basic.EXTRA_SLOW_OPERATION * 2
+        basic.EXTRA_SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Number of elements is wrong, expected: " + count);});
 }
 

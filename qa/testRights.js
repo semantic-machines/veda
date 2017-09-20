@@ -24,7 +24,7 @@ function search(driver, somethingUnique, count, phase) {
                 return txt == count;
             });
         },
-        basic.SLOW_OPERATION * 2
+        basic.SLOW_OPERATION
     ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " > SEARCH PERSON" + (count + 1) + " : ERROR = Number of documents is incorrect, expected: " + count);});
 }
 
