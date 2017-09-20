@@ -74,13 +74,13 @@ basic.getDrivers().forEach(function (drv) {
 
     //PHASE#1: Open form
     basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net', 1);
-    basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION, 1);
+    basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION * 2, 1);
     // basic.execute(driver, 'click', '.workflow-canvas-wrapper', "Cannot click on net canvas");
     var startPoint = driver.findElement({css:'.glyphicon-play'});
     var actionSequence = webdriver.ActionSequence;        
     var act = new actionSequence(driver);
     act.mouseMove(startPoint, {x: 200, y: 0}).click().perform();
-    basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION, 1);
+    basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION * 2, 1);
 
     //PHASE#2: Flow
     new webdriver.ActionSequence(driver).dragAndDrop(driver.findElement({css:'.state-io-condition-input .ep'}),

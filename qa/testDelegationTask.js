@@ -52,10 +52,10 @@ basic.getDrivers().forEach(function (drv) {
     //PHASE#4: Check person
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 4);
     basic.menu(driver, 'Inbox', 4);
-    driver.sleep(basic.SLOW_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION * 2);
     driver.findElement({css:'span[about="td:CommercialDirector"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#4 : ERROR = Cannot click on 'td:CommercialDirector' actor")});
-    driver.sleep(basic.SLOW_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION * 2);
     driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#4 : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION * 2).then(
         function(result){basic.clickUp(result, "****** PHASE#4 : ERROR = Cannot click on message");});
     basic.execute(driver, 'click', 'div[class="radio decision"] input[value="0"]', "****** PHASE#4 : ERROR = Cannot click on '0' decision");

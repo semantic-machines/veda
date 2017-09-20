@@ -20,7 +20,7 @@ function check(driver, count, phase) {
     (
         function () {
             basic.execute(driver, 'click', 'div[id="fulltext-search"] a[id="refresh"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'refresh' button");
-            driver.sleep(basic.FAST_OPERATION);
+            driver.sleep(basic.FAST_OPERATION * 2);
             return driver.findElement({css:'span[href="#params-ft"]+span[class="badge"]'}).getText().then(function (txt) {
                 return txt == count;
             });
@@ -37,11 +37,11 @@ function check(driver, count, phase) {
  */
 
 function clickButton(driver, button, phase) {
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.FAST_OPERATION * 2);
     driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to " + button + " button");});
     basic.execute(driver, 'click', 'button[id="'+ button +'"]', "****** PHASE#" + phase + " : ERROR = Cannot click on "  + button +  " button");
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.FAST_OPERATION * 2);
 }
 
 /**
@@ -75,7 +75,7 @@ basic.getDrivers().forEach(function(drv){
     basic.execute(driver, 'sendKeys', 'veda-control[data-type="multilingualString"] input[type="text"]',
         "****** PHASE#1 > CREATE : ERROR = Cannot fill 'rdfs:label' field", timeStamp);
     clickButton(driver, "save", 1);
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.FAST_OPERATION * 2);
 
     //PHASE#2: Delete
     check(driver, 1, 2);

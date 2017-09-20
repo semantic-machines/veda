@@ -24,7 +24,7 @@ function check(driver, somethingUnique, count, phase) {
                 return txt == count;
             });
         },
-        basic.EXTRA_SLOW_OPERATION
+        basic.EXTRA_SLOW_OPERATION * 2
     ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Number of documents is incorrect, expected: " + count);});
 }
 
