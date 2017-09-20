@@ -54,10 +54,10 @@ basic.getDrivers().forEach (function (drv) {
     driver.sleep(basic.SLOW_OPERATION);
     driver.executeScript("document.querySelector('#save_and_start_process').scrollIntoView(true)")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to save_and_start_process button");});
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.FAST_OPERATION * 2);
     basic.execute(driver, 'click', 'button[id="save_and_start_process"]',
         "****** PHASE#1 : ERROR = Cannot click on 'save_and_start_process' button");
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.FAST_OPERATION * 2);
     basic.logout(driver, 1);
 
     //PHASE#2: Coordination1

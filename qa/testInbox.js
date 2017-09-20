@@ -17,7 +17,7 @@ function sendTask(driver, valueToSearch, valueToChoose) {
     basic.chooseFromDropdown(driver, 'v-s:responsible', valueToSearch, valueToChoose, 1);
     basic.execute(driver, "sendKeys", 'veda-control[property="rdfs:comment"] textarea[class="form-control"]',
         "****** PHASE#1 > Create task : ERROR = Cannot fill Comment field", timeStamp);
-    driver.sleep(basic.FAST_OPERATION * 2);
+    driver.sleep(basic.FAST_OPERATION * 4);
     basic.execute(driver, "click", 'div[class="modal-dialog modal-lg"] button[id="send"]', "****** PHASE#1 > Create task : ERROR = Cannot click on Send button");
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#1 > Create task : ERROR = Cannot click on 'Welcome' button");
 }

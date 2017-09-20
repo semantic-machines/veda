@@ -25,7 +25,7 @@ function check(driver, language, value, phase) {
  */
 function click(driver, button, phase) {
     basic.execute(driver, 'click', 'button[about="v-ui:' + button + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on " + button + " button");
-    driver.sleep(basic.FAST_OPERATION);
+    driver.sleep(basic.FAST_OPERATION * 2);
 }
 
 /**
