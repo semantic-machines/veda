@@ -35,9 +35,8 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
-#  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda_s.log 2>&1"
   - ./control-start.sh
-  - sleep 100  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 120  # give Web server some time to bind to sockets, load startup data, etc
 
 # Run API & integration test
 script:
@@ -70,9 +69,8 @@ script:
 
 # Stop deamon and show log
 after_script:
-  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
+  - ./control-stop.sh
 #  - grunt coveralls
-  - date    
 
 after_failure:
   - ./send-to-chunk-io.sh
