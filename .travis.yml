@@ -72,15 +72,15 @@ script:
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
-  - node ./qa/testInbox.js
-  - node ./qa/testRepeatComplexRoute.js
-  - node ./qa/testNetComplexRoute.js
-  - node ./qa/testSimpleNet.js
-  - node ./qa/testSimpleNet2.js
-  - node ./qa/testSimpleNet3.js
-  - node ./qa/testSimpleWorkflow.js
-  - node ./qa/testDelegationDocument.js
-  - node ./qa/testDelegationTask.js
+  - travis_wait 20 node ./qa/testInbox.js
+  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+  - travis_wait 20 node ./qa/testNetComplexRoute.js
+  - travis_wait 20 node ./qa/testSimpleNet.js
+  - travis_wait 20 node ./qa/testSimpleNet2.js
+  - travis_wait 20 node ./qa/testSimpleNet3.js
+  - travis_wait 20 node ./qa/testSimpleWorkflow.js
+  - travis_wait 20 node ./qa/testDelegationDocument.js
+  - travis_wait 20 node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
