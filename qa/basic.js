@@ -244,9 +244,9 @@ module.exports = {
     */
     login: function (driver, login, password, assertUserFirstName, assertUserLastName, phase) {
         // Вводим логин и пароль
-        driver.sleep(FAST_OPERATION);
+        driver.sleep(FAST_OPERATION/10);
         driver.navigate().refresh();
-        driver.sleep(SLOW_OPERATION);
+        driver.sleep(SLOW_OPERATION/10);
         driver.findElement({css:'input#login'}).sendKeys(login).thenCatch(function (e) {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot input login")});
         driver.findElement({css:'input#password'}).sendKeys(password).thenCatch(function (e) {
@@ -255,23 +255,23 @@ module.exports = {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot submit login/password")});
         driver.findElement({css:'button#submit'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {})
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot press enter")});
-        driver.sleep(FAST_OPERATION);
+        driver.sleep(FAST_OPERATION/10);
         driver.wait
         (
             webdriver.until.elementIsVisible(driver.findElement({id:'user-info'})),
-            FAST_OPERATION
+            FAST_OPERATION/10
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Login:Seems 'user-info' is not visible");});
 
         // Проверям что мы залогинены корректно
         driver.wait
         (
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserFirstName),
-            FAST_OPERATION
+            FAST_OPERATION/10
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Login:Cannot find user first name")});
         driver.wait
         (
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),
-            FAST_OPERATION
+            FAST_OPERATION/10
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Login:Cannot find user last name")});
     },
 
