@@ -16,7 +16,6 @@ env:
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
   - ./control-install.sh&>install.log    
-#  - cat install.log
   - dub -v fetch vibe-d --version=0.7.30
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
@@ -36,7 +35,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - ./control-start.sh
-  - sleep 120  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
 
 # Run API & integration test
 script:
@@ -44,7 +43,7 @@ script:
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
 #  - node ./qa/testSendGet.js
-  - node ./qa/testLogin.js
+#  - node ./qa/testLogin.js
   - node ./qa/testDrafts.js
   - node ./qa/testLanguage.js
   - node ./qa/testDeleteAndRecovery.js
