@@ -255,7 +255,7 @@ module.exports = {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot submit login/password")});
         driver.findElement({css:'button#submit'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {})
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot press enter")});
-        driver.sleep(FAST_OPERATION);
+        driver.sleep(FAST_OPERATION/2);
         driver.wait
         (
             webdriver.until.elementIsVisible(driver.findElement({id:'user-info'})),
@@ -266,12 +266,12 @@ module.exports = {
         driver.wait
         (
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserFirstName),
-            FAST_OPERATION
+            FAST_OPERATION/10
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Login:Cannot find user first name")});
         driver.wait
         (
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),
-            FAST_OPERATION
+            FAST_OPERATION/10
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Login:Cannot find user last name")});
     },
 
