@@ -827,6 +827,8 @@ class PThreadContext : Context
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
+        stderr.writeln("@1");
+
         //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
         StopWatch sw; sw.start;
@@ -873,10 +875,12 @@ class PThreadContext : Context
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
+        stderr.writeln("@2");
                 res = reqrep_json_2_main_module(req_body)[ 0 ];
                 //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
+        stderr.writeln("@e");
             return res;
         }
         finally
