@@ -60,7 +60,7 @@ basic.getDrivers().forEach (function (drv) {
     driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'aggregate' field");});
     put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'v-wf:DecisionForm');", 1);
-    put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm');", 1);
+    put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 's-wf:UserTaskForm');", 1);
     put(driver, 'v-wf:aggregate', "putString ('rdfs:label', 'задание');", 1);
     put(driver, 'v-wf:aggregate', "putBoolean ('v-wf:isCompleted', false);", 1);
     put(driver, 'v-wf:aggregate', "if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));    } else {      putExecutor ('v-wf:to');    }", 1);
