@@ -1868,7 +1868,6 @@ for (i = 0; i < 1; i++)
                 'v-s:created': newDate(new Date())
             };
             
-
             var new_test_doc2_uri = "test30:" + guid();
             var label2 = "test30.2:" + guid();
             var new_test_doc2 = {
@@ -1921,6 +1920,8 @@ for (i = 0; i < 1; i++)
                 'v-s:created': newDate(new Date())
             };
 
+        console.log("@1");
+
             res = put_individual(ticket_user1.id, new_test_doc1, false);
             res = put_individual(ticket_user1.id, new_test_doc2, false);
             res = put_individual(ticket_user1.id, new_test_doc3, false);
@@ -1928,12 +1929,20 @@ for (i = 0; i < 1; i++)
             res = put_individual(ticket_user1.id, new_test_doc5, false);
             res = put_individual(ticket_user1.id, new_test_doc6, false);
 
+        console.log("@2");
+
             flush (m_fulltext_indexer, res.op_id);
+
+        console.log("@3");
 
             wait_module(m_fulltext_indexer, res.op_id);
             wait_module(m_subject, res.op_id);
+
+        console.log("@4");
             
             var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
+
+        console.log("@5");
 
             //#1
             ok(compare(data.length, 6));
@@ -1968,6 +1977,8 @@ for (i = 0; i < 1; i++)
             //#7
             ok(compare(data.length, 1));            
             
+        console.log("@6");
+
             res = remove_individual(ticket_user1.id, new_test_doc1['@']);
             //wait_module(m_scripts, res.op_id);
             
@@ -1979,6 +1990,7 @@ for (i = 0; i < 1; i++)
             //#9
             //ok(compare(data.length, 1));            
             
+        console.log("@7");
             
             var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
             
@@ -2010,6 +2022,7 @@ for (i = 0; i < 1; i++)
             
             //#
             //ok(compare(data.length, 2));//0            
+        console.log("@8");
             
             res = remove_individual(ticket_user1.id, new_test_doc5['@']);
             //wait_module(m_scripts, res.op_id);
@@ -2026,6 +2039,8 @@ for (i = 0; i < 1; i++)
             
             //#13
             //ok(compare(data.length, 2));
+
+        console.log("@9");
             
             res = remove_individual(ticket_user1.id, new_test_doc2['@']);
             //wait_module(m_scripts, res.op_id);
@@ -2050,6 +2065,9 @@ for (i = 0; i < 1; i++)
             
             //#17
             test_fail_read(ticket_user1, new_test_doc6['@'], new_test_doc6);
+
+        console.log("@10");
+
         }
     );  
 }
