@@ -64,7 +64,7 @@ script:
   - travis_wait 20 node ./qa/testSimpleNet3.js
   - travis_wait 20 node ./qa/testSimpleWorkflow.js
   - travis_wait 20 node ./qa/testDelegationDocument.js
-  - travis_wait 20 node ./qa/testDelegationTask.js
+#  - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
