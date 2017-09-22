@@ -203,6 +203,14 @@ class PThreadContext : Context
                     log.trace("ERR! N_CHANNEL: invalid socket");
                 }
 
+                if (ress.length == 0)
+                {
+                    OpResult res;
+                    res.op_id  = -1;
+                    res.result = ResultCode.Internal_Server_Error;
+                    return [ res ];
+                }
+
                 return ress;
             }
             catch (Throwable tr)
@@ -210,6 +218,15 @@ class PThreadContext : Context
                 log.trace("ERR! reqrep_json_2_main_module, %s", tr.info);
                 log.trace("req: %s", req);
                 log.trace("rep: %s", rep);
+
+                if (ress.length == 0)
+                {
+                    OpResult res;
+                    res.op_id  = -1;
+                    res.result = ResultCode.Internal_Server_Error;
+                    return [ res ];
+                }
+
                 return ress;
             }
         }
@@ -866,21 +883,21 @@ class PThreadContext : Context
                     scmd = "remove";
 
                 JSONValue req_body;
-                req_body[ "function" ]       = scmd;
-                req_body[ "ticket" ]         = ticket.id;
-                req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
+                req_body[ "function" ]            = scmd;
+                req_body[ "ticket" ]              = ticket.id;
+                req_body[ "individuals" ]         = [ individual_to_json(*indv) ];
                 req_body[ "assigned_subsystems" ] = assigned_subsystems;
-                req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ]         = tnx_id;
+                req_body[ "event_id" ]            = event_id;
+                req_body[ "tnx_id" ]              = tnx_id;
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
-        stderr.writeln("@2");
+                stderr.writeln("@2");
                 res = reqrep_json_2_main_module(req_body)[ 0 ];
                 //log.trace("[%s] add_to_transaction: (isModule), rep=(%s)", name, res);
             }
 
-        stderr.writeln("@e");
+            stderr.writeln("@e");
             return res;
         }
         finally
@@ -928,7 +945,8 @@ class PThreadContext : Context
     }
 
     public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, string event_id,
-                                           long transaction_id, MODULES_MASK assigned_subsystems, OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
+                                           long transaction_id, MODULES_MASK assigned_subsystems, OptFreeze opt_freeze = OptFreeze.NONE,
+                                           OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
         return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
