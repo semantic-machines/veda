@@ -39,8 +39,8 @@ basic.getDrivers().forEach(function (drv) {
 
 
     //PHASE#2: Check person
-    complexRoute.checkTask(driver, '0', 'bychinat', '123', '4', 'Администратор4', 2);
     complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', 2);
+    complexRoute.checkTask(driver, '0', 'bychinat', '123', '4', 'Администратор4', 2);
 
     //PHASE#3: Delegation request
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
