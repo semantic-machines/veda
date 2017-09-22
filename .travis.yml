@@ -36,10 +36,10 @@ before_script:
   - sleep 3 # give xvfb some time to start
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
+  - grunt test --stack --verbose
 
 # Run API & integration test
 script:
-  - grunt test --stack --verbose
 #  - grunt coveralls
 #  - node ./qa/testAPI.js
 #  - node ./qa/testSendGet.js
