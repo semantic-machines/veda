@@ -69,6 +69,7 @@ script:
 # Stop deamon and show log
 after_script:
   - ./control-stop.sh
+  - ./send-to-chunk-io.sh
 #  - grunt coveralls
 
 after_failure:
