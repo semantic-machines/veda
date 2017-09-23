@@ -152,6 +152,41 @@ module.exports = {
         }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `"+valueToChoose+"` from dropdown")});
     },
 
+    /** Очистка входящих сообщений(пока без заполения поля комментарий и без повторных проверок количества сообщений) 
+     * @param driver
+    */
+    clearInbox: function(driver){
+        driver.executeScript("document.querySelector('a[href=\"#/v-ft:Inbox\"]').scrollIntoView(true)")
+              .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to send button");});
+        driver.findElement({css:'a[href="#/v-ft:Inbox"]'}).click()
+              .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Ok' button");});
+        driver.sleep(FAST_OPERATION);
+        driver.findElements({css:'div[id="results"] a[property="rdfs:label"] span[class="value-holder"]'}).then(function(result) {
+            var countMessages = result.length;
+            console.log(countMessages);
+            while (countMessages > 0) {
+                driver.executeScript("document.querySelector('div[id=\"results\"] a[property=\"rdfs:label\"] span[class=\"value-holder\"]').scrollIntoView(true);")
+                driver.findElement({css:'div[id="results"] a[property="rdfs:label"] span[class="value-holder"]'}).click()
+                    .thenCatch(function(e){errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot find message")});                
+                driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
+                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to send button");});
+                driver.findElement({css:'button[id="send"]'}).click()
+                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Ok' button");});
+                driver.executeScript("document.querySelector('a[href=\"#/v-ft:Inbox\"]').scrollIntoView(true)")
+                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to send button");});
+                driver.findElement({css:'a[href="#/v-ft:Inbox"]'}).click()
+                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Ok' button");});                  
+                countMessages--;
+            }
+        }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot find message page");});
+        driver.executeScript("document.querySelector('.navbar-brand').scrollIntoView(true)")
+        .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to welcome bar");});
+        driver.sleep(FAST_OPERATION * 2);
+        driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
+            .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Welcome' button");});
+    },
+
+
     /**
      * Клик по элементу
      * @param element - элемент
