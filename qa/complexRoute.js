@@ -29,6 +29,7 @@ module.exports = {
         driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
             function(result){basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on message. Seems message is not located");});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
+        driver.sleep(basic.FAST_OPERATION * 2);
         if (commentValue === '+') {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "****** PHASE#" + phase + " : ERROR = Cannot fill 'comment'", timeStamp);
         }
@@ -106,7 +107,7 @@ module.exports = {
      */
     checkTasks: function (driver, inbox, outbox, completed, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName);
-        basic.menu(driver, 'Inbox');
+        basic.menu(driver, 'Inbox', phase);
         driver.sleep(basic.FAST_OPERATION * 2);
         driver.findElement({css:'a[about="v-ft:Inbox"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Inbox messages")});
