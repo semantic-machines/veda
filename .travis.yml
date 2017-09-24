@@ -40,17 +40,15 @@ before_script:
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
   - grunt test --stack --verbose
-  - node ./qa/testLogin.js
   - date
 
 # Run API & integration test
 script:
-  - sudo date --set "15:01:00"
+# - grunt coveralls
+#  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
   - sudo date --set "15:02:00"
-# - grunt coveralls
-  - node ./qa/testAPI.js
-  - node ./qa/testSendGet.js
+#  - node ./qa/testSendGet.js
   - sudo date --set "15:03:00"
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
