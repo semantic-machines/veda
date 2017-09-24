@@ -47,12 +47,11 @@ script:
 # - grunt coveralls
 #  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
-  - sudo date --set "15:02:00"
+#  - sudo date --set "15:02:00"
 #  - node ./qa/testSendGet.js
-  - sudo date --set "15:03:00"
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
-  - sudo date --set "15:04:00"
+#  - sudo date --set "15:04:00"
   - node ./qa/testComment.js
   - node ./qa/testVersionedDocument.js
   - sudo date --set "15:05:00"
