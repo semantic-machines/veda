@@ -28,9 +28,6 @@ before_install:
 install:
   - go version
   - ./build.sh
-
-# Run service as daemon and GUI
-before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
@@ -59,6 +56,10 @@ before_script:
   - travis_wait 20 node ./qa/testSimpleNet3.js
   - travis_wait 20 node ./qa/testSimpleWorkflow.js
   - travis_wait 20 node ./qa/testDelegationDocument.js
+
+
+# Run service as daemon and GUI
+before_script:
 
 # Run API & integration test
 script:
