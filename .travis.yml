@@ -29,7 +29,6 @@ install:
   - go version
   - ./build.sh
   - sudo timedatectl set-ntp no
-  - sudo date --set "15:00:00"
 
 
 # Run service as daemon and GUI
@@ -37,9 +36,9 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
+  - sudo date --set "15:00:00"
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
-  - sudo date --set "15:01:00"
   - date
 
 # Run API & integration test
@@ -48,27 +47,19 @@ script:
 # - grunt coveralls
 #  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
-#  - sudo date --set "15:02:00"
 #  - node ./qa/testSendGet.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
-#  - sudo date --set "15:04:00"
   - node ./qa/testComment.js
   - node ./qa/testVersionedDocument.js
-  - sudo date --set "15:05:00"
   - node ./qa/testJournal.js
   - node ./qa/testAttachment.js
-  - sudo date --set "15:06:00"
-  - date
   - node ./qa/testPager.js
   - node ./qa/testSearchRangeOfDates.js
-  - sudo date --set "15:07:00"
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
-  - sudo date --set "15:08:00"
   - travis_wait 20 node ./qa/testInbox.js
   - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-  - sudo date --set "15:09:00"
   - travis_wait 20 node ./qa/testNetComplexRoute.js
   - travis_wait 20 node ./qa/testSimpleNet.js
   - sudo date --set "15:10:00"
