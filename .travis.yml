@@ -28,6 +28,8 @@ before_install:
 install:
   - go version
   - ./build.sh
+  - sudo timedatectl set-ntp no
+  - sudo date --set "15:00:00"
 
 
 # Run service as daemon and GUI
@@ -39,51 +41,46 @@ before_script:
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
   - grunt test --stack --verbose
   - node ./qa/testLogin.js
-  - travis_wait 20 node ./qa/testAPI.js
-  - travis_wait 20 node ./qa/testDrafts.js
-  - travis_wait 20 node ./qa/testLanguage.js
-  - travis_wait 20 node ./qa/testDeleteAndRecovery.js
-  - travis_wait 20 node ./qa/testRights.js
-  - travis_wait 20 node ./qa/testComment.js
-  - travis_wait 20 node ./qa/testVersionedDocument.js
-  - travis_wait 20 node ./qa/testJournal.js
-  - travis_wait 20 node ./qa/testAttachment.js
-  - travis_wait 20 node ./qa/testPager.js
-  - travis_wait 20 node ./qa/testSearchRangeOfDates.js
-  - travis_wait 20 node ./qa/testAttributiveSearchPerson.js
-#  - travis_wait 20 node ./qa/testCreatingNetInterface.js
-#  - travis_wait 20 node ./qa/testInbox.js
-#  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-#  - travis_wait 20 node ./qa/testNetComplexRoute.js
-#  - travis_wait 20 node ./qa/testSimpleNet.js
-#  - travis_wait 20 node ./qa/testSimpleNet2.js
-#  - travis_wait 20 node ./qa/testSimpleNet3.js
-#  - travis_wait 20 node ./qa/testSimpleWorkflow.js
-#  - travis_wait 20 node ./qa/testDelegationDocument.js
+  - date
 
 # Run API & integration test
 script:
+   - sudo date --set "15:00:00"
+  - node ./qa/testLogin.js
+   - sudo date --set "15:00:00"
 #  - grunt coveralls
-#  - node ./qa/testAPI.js
-#  - node ./qa/testSendGet.js
-#  - node ./qa/testDeleteAndRecovery.js
-#  - node ./qa/testRights.js
-#  - node ./qa/testComment.js
-#  - node ./qa/testVersionedDocument.js
-#  - node ./qa/testJournal.js
-#  - node ./qa/testAttachment.js
-#  - node ./qa/testPager.js
-#  - node ./qa/testSearchRangeOfDates.js
-#  - node ./qa/testAttributiveSearchPerson.js
+  - node ./qa/testAPI.js
+  - node ./qa/testSendGet.js
+   - sudo date --set "15:00:00"
+  - node ./qa/testDeleteAndRecovery.js
+  - node ./qa/testRights.js
+   - sudo date --set "15:00:00"
+  - node ./qa/testComment.js
+  - node ./qa/testVersionedDocument.js
+   - sudo date --set "15:00:00"
+  - node ./qa/testJournal.js
+  - node ./qa/testAttachment.js
+   - sudo date --set "15:00:00"
+  - date
+  - node ./qa/testPager.js
+  - node ./qa/testSearchRangeOfDates.js
+   - sudo date --set "15:00:00"
+  - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
+   - sudo date --set "15:00:00"
   - travis_wait 20 node ./qa/testInbox.js
   - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+   - sudo date --set "15:00:00"
   - travis_wait 20 node ./qa/testNetComplexRoute.js
   - travis_wait 20 node ./qa/testSimpleNet.js
+   - sudo date --set "15:00:00"
   - travis_wait 20 node ./qa/testSimpleNet2.js
   - travis_wait 20 node ./qa/testSimpleNet3.js
+   - sudo date --set "15:00:00"
   - travis_wait 20 node ./qa/testSimpleWorkflow.js
   - travis_wait 20 node ./qa/testDelegationDocument.js
+   - sudo date --set "15:00:00"
+  - date
   - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
