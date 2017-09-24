@@ -36,9 +36,9 @@ before_script:
   - sleep 3 # give xvfb some time to start
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
-  - grunt test --stack --verbose>>logs/tests.log
-  - node node ./qa/testLogin.js>>logs/testLogin.log
-  - node ./qa/testAPI.js
+  - grunt test --stack --verbose
+  - travis_wait 20 node ./qa/testAPI.js
+  - node ./qa/testLogin.js
   - travis_wait 20 node ./qa/testDrafts.js
   - travis_wait 20 node ./qa/testLanguage.js
   - travis_wait 20 node ./qa/testDeleteAndRecovery.js
@@ -92,4 +92,5 @@ after_script:
 #  - grunt coveralls
 
 after_failure:
+  - ./control-stop.sh
   - ./send-to-chunk-io.sh
