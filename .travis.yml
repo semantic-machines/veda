@@ -34,8 +34,12 @@ install:
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
   - grunt test --stack --verbose
-  - travis_wait 20 node ./qa/testAPI.js
   - node ./qa/testLogin.js
+
+
+# Run service as daemon and GUI
+before_script:
+  - travis_wait 20 node ./qa/testAPI.js
   - travis_wait 20 node ./qa/testDrafts.js
   - travis_wait 20 node ./qa/testLanguage.js
   - travis_wait 20 node ./qa/testDeleteAndRecovery.js
@@ -47,19 +51,15 @@ install:
   - travis_wait 20 node ./qa/testPager.js
   - travis_wait 20 node ./qa/testSearchRangeOfDates.js
   - travis_wait 20 node ./qa/testAttributiveSearchPerson.js
-  - travis_wait 20 node ./qa/testCreatingNetInterface.js
-  - travis_wait 20 node ./qa/testInbox.js
-  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-  - travis_wait 20 node ./qa/testNetComplexRoute.js
-  - travis_wait 20 node ./qa/testSimpleNet.js
-  - travis_wait 20 node ./qa/testSimpleNet2.js
-  - travis_wait 20 node ./qa/testSimpleNet3.js
-  - travis_wait 20 node ./qa/testSimpleWorkflow.js
-  - travis_wait 20 node ./qa/testDelegationDocument.js
-
-
-# Run service as daemon and GUI
-before_script:
+#  - travis_wait 20 node ./qa/testCreatingNetInterface.js
+#  - travis_wait 20 node ./qa/testInbox.js
+#  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+#  - travis_wait 20 node ./qa/testNetComplexRoute.js
+#  - travis_wait 20 node ./qa/testSimpleNet.js
+#  - travis_wait 20 node ./qa/testSimpleNet2.js
+#  - travis_wait 20 node ./qa/testSimpleNet3.js
+#  - travis_wait 20 node ./qa/testSimpleWorkflow.js
+#  - travis_wait 20 node ./qa/testDelegationDocument.js
 
 # Run API & integration test
 script:
@@ -75,16 +75,16 @@ script:
 #  - node ./qa/testPager.js
 #  - node ./qa/testSearchRangeOfDates.js
 #  - node ./qa/testAttributiveSearchPerson.js
-#  - node ./qa/testCreatingNetInterface.js
-#  - travis_wait 20 node ./qa/testInbox.js
-#  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-#  - travis_wait 20 node ./qa/testNetComplexRoute.js
-#  - travis_wait 20 node ./qa/testSimpleNet.js
-#  - travis_wait 20 node ./qa/testSimpleNet2.js
-#  - travis_wait 20 node ./qa/testSimpleNet3.js
-#  - travis_wait 20 node ./qa/testSimpleWorkflow.js
-#  - travis_wait 20 node ./qa/testDelegationDocument.js
-#  - node ./qa/testDelegationTask.js
+  - node ./qa/testCreatingNetInterface.js
+  - travis_wait 20 node ./qa/testInbox.js
+  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+  - travis_wait 20 node ./qa/testNetComplexRoute.js
+  - travis_wait 20 node ./qa/testSimpleNet.js
+  - travis_wait 20 node ./qa/testSimpleNet2.js
+  - travis_wait 20 node ./qa/testSimpleNet3.js
+  - travis_wait 20 node ./qa/testSimpleWorkflow.js
+  - travis_wait 20 node ./qa/testDelegationDocument.js
+  - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
