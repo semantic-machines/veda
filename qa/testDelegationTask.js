@@ -52,12 +52,13 @@ basic.getDrivers().forEach(function (drv) {
     //PHASE#4: Check person
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 4);
     basic.menu(driver, 'Inbox', 4);
-    driver.sleep(basic.SLOW_OPERATION);
+    driver.sleep(basic.SLOW_OPERATION/2);
     driver.findElement({css:'span[about="td:CommercialDirector"]'}).click()
         .thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#4 : ERROR = Cannot click on 'td:CommercialDirector' actor")});
-    driver.sleep(basic.SLOW_OPERATION);
-    driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#4 : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
-        function(result){basic.clickUp(result, "****** PHASE#4 : ERROR = Cannot click on message");});
+    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.executeScript("document.querySelector('div[id=\"results\"] a[property=\"rdfs:label\"] span[class=\"value-holder\"]').scrollIntoView(true);")
+        driver.findElement({css:'div[id="results"] a[property="rdfs:label"] span[class="value-holder"]'}).click()
+            .thenCatch(function(e){basic.errorHandler(e, "****** PHASE#0 : ERROR = Cannot find a message");}); 
     basic.execute(driver, 'click', 'div[class="radio decision"] input[value="0"]', "****** PHASE#4 : ERROR = Cannot click on '0' decision");
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
