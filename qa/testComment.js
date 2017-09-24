@@ -49,7 +49,7 @@ function comment(driver, somethingUnique) {
     driver.executeScript("document.querySelector('div[typeof=\"v-s:Comment\"] button[id=\"save\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to save button");});
     basic.execute(driver, 'click', 'div[typeof="v-s:Comment"] button[id="save"]', "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click  on 'save' button");
-    driver.sleep(basic.SLOW_OPERATION/2);
+    driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
 }
 
