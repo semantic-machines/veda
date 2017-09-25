@@ -60,10 +60,10 @@ basic.getDrivers().forEach (function (drv) {
     driver.executeScript("document.querySelector('div[property=\"v-wf:aggregate\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to 'aggregate' field");});
     put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'v-wf:DecisionForm');", 1);
-    put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 'mnd-wf:UserTaskForm');", 1);
+    put(driver, 'v-wf:aggregate', "putUri ('rdf:type', 's-wf:UserTaskForm');", 1);
     put(driver, 'v-wf:aggregate', "putString ('rdfs:label', 'задание');", 1);
     put(driver, 'v-wf:aggregate', "putBoolean ('v-wf:isCompleted', false);", 1);
-    put(driver, 'v-wf:aggregate', "putExecutor ('v-wf:to');", 1);
+    put(driver, 'v-wf:aggregate', "if ( getUri(get_properties_chain(executor, [{$get: 'rdf:type'}], [executor])) === 'v-s:Appointment' ) {      putUri ('v-wf:to', getUri(get_properties_chain(executor, [{$get: 'v-s:employee'}], [executor])));    } else {      putExecutor ('v-wf:to');    }", 1);
     put(driver, 'v-wf:aggregate', "putWorkOrder ('v-wf:onWorkOrder');", 1);
     put(driver, 'v-wf:aggregate', "putUri ('v-wf:possibleDecisionClass', 'v-wf:DecisionAchieved');", 1);
     clickButton(driver, "save", "v-wf:Rule", 1);
@@ -102,7 +102,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver, 3);
     basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 3);
     driver.findElement({css:'li[about="v-ft:Inbox"] span[id=counter]'}).getText().then(function (result) {
-        assert.equal(1, result.length);
+        assert.equal('1', result);
     }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#3 : ERROR = Invalid `message` elements count (inbox task counter)");});
     basic.logout(driver, 3);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 3);

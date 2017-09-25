@@ -125,7 +125,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutabl
 public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
                          string new_binobj,
                          long update_counter,
-                         string event_id, long tnx_id, OptFreeze opt_freeze,
+                         string event_id, long tnx_id, long assigned_subsystems, OptFreeze opt_freeze,
                          out long op_id)
 {
     ResultCode rc;
@@ -134,7 +134,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP 
     if (tid != Tid.init)
     {
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
-                                                                  false);
+                                                                  false, assigned_subsystems);
 
         send(tid, opt_request, [ ti ], tnx_id, opt_freeze, thisTid);
 
@@ -159,25 +159,25 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbStorage                  storage              = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
-    
-    long count = storage.count_entries();
-    
-    log.trace ("COUNT INDIVIDUALS=%d", count);
-     
-    int                          size_bin_log         = 0;
-    int                          max_size_bin_log     = 10_000_000;
-    string                       bin_log_name         = get_new_binlog_name(db_path);
-    long                         last_reopen_rw_op_id = 0;
-    int                          max_count_updates    = 10_000;
+    LmdbStorage                  storage = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
 
-    long                         op_id           = storage.last_op_id;
-    long                         committed_op_id = 0;
+    long                         count = storage.count_entries();
 
-    string                       notify_channel_url = "tcp://127.0.0.1:9111\0";
-    int                          sock;
-    bool                         already_notify_channel = false;
-    ModuleInfoFile               module_info;
+    log.trace("COUNT INDIVIDUALS=%d", count);
+
+    int            size_bin_log         = 0;
+    int            max_size_bin_log     = 10_000_000;
+    string         bin_log_name         = get_new_binlog_name(db_path);
+    long           last_reopen_rw_op_id = 0;
+    int            max_count_updates    = 10_000;
+
+    long           op_id           = storage.last_op_id;
+    long           committed_op_id = 0;
+
+    string         notify_channel_url = "tcp://127.0.0.1:9111\0";
+    int            sock;
+    bool           already_notify_channel = false;
+    ModuleInfoFile module_info;
 
     try
     {
@@ -410,8 +410,9 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
+                                            imm.addResource("assigned_subsystems", Resource(ti.assigned_subsystems));
 
-                                            //writeln ("*imm=[", imm, "]");
+                                            //log.trace ("imm=[%s]", imm);
 
                                             string binobj = imm.serialize();
                                             //writeln("*binobj.length=", binobj.length);

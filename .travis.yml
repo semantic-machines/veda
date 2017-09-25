@@ -16,7 +16,6 @@ env:
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
   - ./control-install.sh&>install.log    
-#  - cat install.log
   - dub -v fetch vibe-d --version=0.7.30
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
@@ -27,41 +26,28 @@ before_install:
 
 # Build
 install:
+  - go version
   - ./build.sh
+  - sudo timedatectl set-ntp no
+
 
 # Run service as daemon and GUI
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
-#  - start-stop-daemon --start --verbose --chdir $PWD --make-pidfile --pidfile $PWD/veda-pid --background --startas /bin/bash -- -c "exec ./veda >> $PWD/veda_s.log 2>&1"
+  - sudo date --set "15:00:00"
   - ./control-start.sh
-  - sleep 90  # give Web server some time to bind to sockets, load startup data, etc
-  - ls  $PWD   
-  - ls  $PWD/logs   
-#  - cat $PWD/logs/veda-fanout-email-stderr.log
-#  - cat $PWD/logs/veda-fanout-sql-stderr.log
-#  - cat $PWD/logs/veda-ft-indexer-stderr.log
-#  - cat $PWD/logs/veda-ltr-scripts-stderr.log
-#  - cat $PWD/logs/veda-scripts-lp-stderr.log
-#  - cat $PWD/logs/veda-scripts-main-stderr.log
-#  - cat $PWD/logs/veda-mstorage-stderr.log
-#  - cat $PWD/logs/veda-ttlreader-stderr.log
-#  - cat $PWD/logs/veda-webserver-stderr.log 
-#  - cat $PWD/veda_s.log
-#  - cat $PWD/logs/veda-core-mstorage_*.log          
-#  - setsid ./qa/uptime-to-log.sh&
-#  - cat ./uptime.log
+  - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
+  - date
 
 # Run API & integration test
 script:
   - grunt test --stack --verbose
-#  - grunt coveralls
+# - grunt coveralls
 #  - node ./qa/testAPI.js
-#  - node ./qa/testSendGet.js
   - node ./qa/testLogin.js
-  - node ./qa/testDrafts.js
-  - node ./qa/testLanguage.js
+#  - node ./qa/testSendGet.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testComment.js
@@ -72,28 +58,26 @@ script:
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
-  - node ./qa/testInbox.js
-  - node ./qa/testRepeatComplexRoute.js
-  - node ./qa/testNetComplexRoute.js
-  - node ./qa/testSimpleNet.js
-  - node ./qa/testSimpleNet2.js
-  - node ./qa/testSimpleNet3.js
-  - node ./qa/testSimpleWorkflow.js
-  - node ./qa/testDelegationDocument.js
+  - travis_wait 20 node ./qa/testInbox.js
+  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+  - travis_wait 20 node ./qa/testNetComplexRoute.js
+  - travis_wait 20 node ./qa/testSimpleNet.js
+  - sudo date --set "15:10:00"
+  - travis_wait 20 node ./qa/testSimpleNet2.js
+  - travis_wait 20 node ./qa/testSimpleNet3.js
+  - sudo date --set "15:11:00"
+  - travis_wait 20 node ./qa/testSimpleWorkflow.js
+  - travis_wait 20 node ./qa/testDelegationDocument.js
+  - sudo date --set "15:12:00"
+  - date
   - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
-  - start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
-  - cat ./uptime.log
+  - ./control-stop.sh
+  - ./send-to-chunk-io.sh
 #  - grunt coveralls
-  - date    
-  - cat $PWD/veda_s.log
-#  - cat logs/veda-core-_*.log 
-#  - cat logs/veda-core-fanout_*.log
-#  - cat logs/veda-core-fulltext_indexer_*.log
-#  - cat logs/veda-core-ltr_scripts_*.log
-#  - cat veda-core-scripts_*.log
-#  - cat logs/veda-core-mstorage_*.log
-#  - cat logs/veda-core-ttl_reader_*.log
-#  - cat logs/veda-core-webserver_*.log 
+
+after_failure:
+  - ./control-stop.sh
+  - ./send-to-chunk-io.sh

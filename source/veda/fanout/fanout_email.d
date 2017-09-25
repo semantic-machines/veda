@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(text(P_MODULE.fanout_email), new Logger("veda-core-fanout-email", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(SUBSYSTEM.FANOUT_EMAIL,  MODULE.fanout_email, new Logger("veda-core-fanout-email", "log", ""));
 
     p_fanout.run();
 }
@@ -28,9 +28,9 @@ class FanoutProcess : VedaModule
 
     MailSender smtp_conn;
 
-    this(string _module_name, Logger log)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
-        super(_module_name, log);
+        super(_subsystem_id, _module_id, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,

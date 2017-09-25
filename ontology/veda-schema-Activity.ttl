@@ -80,7 +80,13 @@ v-s:isActivityAccidental
   rdfs:label "Нарушение существенное?"@ru ;
   rdfs:range xsd:boolean ;
 .
-
+v-s:hasThirdPartyParticipant
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Third-party participant"@en ;
+  rdfs:label "Сторонние участники"@ru ;
+  rdfs:range v-s:ThirdPartyParticipant ;
+  rdfs:domain v-s:Activity ;
+.
 #---------------------------------------------------------
 v-s:Meeting
   rdf:type owl:Class ;

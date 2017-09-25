@@ -23,7 +23,7 @@ basic.getDrivers().forEach(function (drv) {
     //basic.menu(driver, 'Graph');
     //basic.execute(driver, 'click', 'button[id="export-ttl"]', "Cannot click on 'export-ttl' button");
     basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person', 1);
-    basic.execute(driver, 'click', 'button[id="submit"]', "****** PHASE#1 DOWNLOAD : ERROR = Cannot click on 'submit' button");
+    basic.execute(driver, 'click', 'button[about="v-fs:Find"]', "****** PHASE#1 DOWNLOAD : ERROR = Cannot click on 'submit' button");
     driver.sleep(basic.SLOW_OPERATION);
     basic.execute(driver, 'click', 'a[href="#/cfg:Administrator"]', "****** PHASE#1 DOWNLOAD : ERROR = Cannot click on 'Администратор'");
     basic.execute(driver, 'click', 'a[href="#/cfg:Administrator//v-ui:Graph"]', "****** PHASE#1 DOWNLOAD : ERROR = Cannot click on 'glyphicon-link'");

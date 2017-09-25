@@ -70,9 +70,12 @@ class VedaModule
     string               main_module_url = "tcp://127.0.0.1:9112\0";
     Ticket               sticket;
     string               message_header;
-    string               module_id;
+    string               module_uid;
     int delegate(string) priority;
     bool[ string ]   subsrc;
+
+    long   module_id;
+	long   subsystem_id;
 
     Logger log;
 
@@ -81,15 +84,17 @@ class VedaModule
         return 0;
     }
 
-    this(string _module_id, Logger in_log)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger in_log)
     {
         priority       = &basic_priority;
-        module_id      = _module_id.replace("-", "_");
-        process_name   = text(module_id);
-        message_header = "MSG:" ~ module_id ~ ":";
+        module_uid     = text(_module_id).replace("-", "_");
+        process_name   = module_uid;
+        message_header = "MSG:" ~ module_uid ~ ":";
         _log           = in_log;
         log            = _log;
         main_cs.length = 1;
+        module_id      = _module_id;
+        subsystem_id = _subsystem_id;
     }
 
     ~this()
@@ -122,6 +127,12 @@ class VedaModule
 
     void run()
     {
+        if (module_id == 0)
+        {
+            log.trace("%s terminated, module_id not setting", process_name);
+            return;
+        }
+
         module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
         if (!module_info.is_ready)
         {
@@ -373,11 +384,30 @@ class VedaModule
                 continue;
             }
 
-            string new_bin        = imm.getFirstLiteral("new_state");
-            string prev_bin       = imm.getFirstLiteral("prev_state");
-            string user_uri       = imm.getFirstLiteral("user_uri");
-            string event_id       = imm.getFirstLiteral("event_id");
-            long   transaction_id = imm.getFirstInteger("tnx_id");
+            string new_bin          = imm.getFirstLiteral("new_state");
+            string prev_bin         = imm.getFirstLiteral("prev_state");
+            string user_uri         = imm.getFirstLiteral("user_uri");
+            string event_id         = imm.getFirstLiteral("event_id");
+            long   transaction_id   = imm.getFirstInteger("tnx_id");
+            long   assigned_subsystems = imm.getFirstInteger("assigned_subsystems");
+
+            if (assigned_subsystems > 0)
+            {
+                if ((assigned_subsystems & subsystem_id) != subsystem_id)
+                {
+                    log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
+                    continue;
+                }
+            }
+
+            if (assigned_subsystems < 0)
+            {
+                if (((assigned_subsystems * -1) & subsystem_id) == subsystem_id)
+                {
+                    log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
+                    continue;
+                }
+            }
 
             if (priority(user_uri) != i)
             {
@@ -411,6 +441,9 @@ class VedaModule
                 onto = context.get_onto();
 
             onto.update_onto_hierarchy(new_indv, true);
+
+            if (new_indv.uri is null)
+                log.trace("WARN! individual not contain uri: %s", new_indv);
 
             cache_of_indv.put(new_indv.uri, new_bin);
 

@@ -56,7 +56,7 @@ class XapianReader : SearchReader
     {
         if (mdif is null)
         {
-            mdif = new ModuleInfoFile(text(P_MODULE.fulltext_indexer), log, OPEN_MODE.READER);
+            mdif = new ModuleInfoFile(text(MODULE.fulltext_indexer), log, OPEN_MODE.READER);
         }
         MInfo info = mdif.get_info();
         return info;

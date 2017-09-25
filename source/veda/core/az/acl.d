@@ -445,8 +445,8 @@ class Authorization : LmdbStorage
     }
 }
 
-private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
-private MInfo get_info(P_MODULE module_id)
+private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
+private MInfo get_info(MODULE module_id)
 {
     ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
 
@@ -463,7 +463,7 @@ int  _timeout                         = 10;
 long last_committed_op_id_acl_manager = 0;
 public bool acl_check_for_reload(void delegate() load)
 {
-    MInfo mi = get_info(P_MODULE.acl_preparer);
+    MInfo mi = get_info(MODULE.acl_preparer);
 
     //log.trace ("acl_check_for_reload #1, last_committed_op_id_acl_manager=%d, mi=%s", last_committed_op_id_acl_manager, mi);
     if (last_committed_op_id_acl_manager < mi.committed_op_id)

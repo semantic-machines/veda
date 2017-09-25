@@ -19,7 +19,11 @@
 
     control.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
 
-    input.attr("placeholder", placeholder)
+    input
+      .attr({
+        "placeholder": placeholder,
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+      })
       .on("change focusout", changeHandler)
       .keyup( function (e) {
         if (!control.isSingle) { return; }
@@ -258,7 +262,10 @@
       input = $("input", control),
       change;
 
-    input.attr("placeholder", placeholder);
+    input.attr({
+      "placeholder": placeholder,
+      "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+    });
 
     var singleValueHandler = function (values) {
       if (values.length) {
@@ -437,8 +444,11 @@
 
       var formControl = localedInput.find(".form-control");
       formControl
-        .attr("lang", language_name)
-        .attr("placeholder", placeholder)
+        .attr({
+          "lang": language_name,
+          "placeholder": placeholder,
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+        })
         .on("change focusout", function () {
           var values = control.find(".form-control").map(function () {
             return opts.parser( this.value, this );
@@ -1050,7 +1060,10 @@
       input = $(".form-control", control),
       button = $(".get-numeration-value", control);
 
-    input.attr("placeholder", placeholder);
+    input.attr({
+      "placeholder": placeholder,
+      "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+    });
 
     function singleValueHandler (values) {
       input.val( values[0] );
@@ -1414,7 +1427,7 @@
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" "),
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined,
-      sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
+      sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
       inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
@@ -1553,6 +1566,7 @@
         targetRel_uri: rel_uri,
         inProperty: inProperty,
         outProperty: outProperty,
+        sort: sort,
         allowedClass: allowedClass,
         selectableClass: selectableClass,
         selectableFilter: selectableFilter,
@@ -1579,7 +1593,10 @@
     // Fulltext search feature
     if ( this.hasClass("fulltext") || this.hasClass("full") ) {
 
-      fulltext.attr("placeholder", placeholder);
+      fulltext.attr({
+        "placeholder": placeholder,
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+      });
 
       var timeout;
 

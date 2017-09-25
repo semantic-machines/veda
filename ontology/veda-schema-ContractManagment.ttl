@@ -189,6 +189,7 @@ v-s:PSBoleanAllContractor
   v-ui:forProperty v-s:deletedInOrigin ;
   v-ui:forProperty v-s:isCreditor ;
   v-ui:forProperty v-s:isDebitor ;
+  v-ui:forProperty v-s:linkedOrganization ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
   rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
@@ -540,7 +541,7 @@ v-s:ContractorTemplate
   <!-- BUTTONS -->
   <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
     <!--button type="button" class="action btn btn-info view -edit -search" id="clone" about="v-s:Clone" property="rdfs:label" /-->
   </div>
@@ -611,7 +612,7 @@ v-s:CurrencyExchangeRateTemplate
   <div class="actions view edit -search">
     <br>
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
   </div>
 </div>

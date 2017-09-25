@@ -46,7 +46,7 @@ basic.getDrivers().forEach(function(drv) {
 
     //PHASE#2: Find menu
 	basic.openFulltextSearchDocumentForm(driver, 'Персона', 'v-s:Person');
-	basic.execute(driver, 'click', 'button[id="submit"]', "****** PHASE#2 : ERROR = Cannot click on 'submit' button");
+	basic.execute(driver, 'click', 'button[about="v-fs:Find"]', "****** PHASE#2 : ERROR = Cannot click on 'submit' button");
 	driver.sleep(basic.EXTRA_SLOW_OPERATION);
 	testPager(driver, 2);
 	// TO DO: testPager in messages; OPTIMIZATION;

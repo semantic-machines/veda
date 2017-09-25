@@ -1,7 +1,7 @@
 /**
  * Общие определения
 
-   Copyright: © 2014-2016 Semantic Machines
+   Copyright: © 2014-2017 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
  */
@@ -9,57 +9,95 @@ module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
-/// Имена процессов
-public enum P_MODULE : byte
+/// id подсистем
+public enum SUBSYSTEM : long
 {
-    /// Выдача и проверка тикетов
-    ticket_manager  = 0,
+    STORAGE           = 1,
+    ACL               = 2,
+    FULL_TEXT_INDEXER = 4,
+    SCRIPTS           = 16,
+    FANOUT_EMAIL      = 8,
+    FANOUT_SQL        = 128
+}
 
-    /// Чтение и сохранение индивидуалов
-    subject_manager = 1,
+/// id компонентов
+public enum COMPONENT : long
+{
+    /// сохранение индивидуалов
+    subject_manager            = 1,
 
     /// Индексирование прав
-    acl_preparer    = 2,
-
-    /// Полнотекстовое индексирование
-    //xapian_thread_context      = 3,
+    acl_preparer               = 2,
 
     /// Полнотекстовое индексирование
     fulltext_indexer           = 4,
 
-    /// Сбор статистики
-    statistic_data_accumulator = 5,
+    /// Отправка email
+    fanout_email               = 8,
 
-    /// исполнение скриптов
-    scripts_main               = 6,
+    /// исполнение скриптов, normal priority
+    scripts_main               = 16,
 
-    /// Сохранение накопленных данных в полнотекстовом индексаторе
-    commiter                   = 7,
-
-    /// Вывод статистики
-    print_statistic            = 8,
+    /// Выдача и проверка тикетов
+    ticket_manager             = 32,
 
     /// Загрузка из файлов
-    file_reader                = 10,
+    file_reader                = 64,
 
-    zmq_listener               = 11,
+    /// Выгрузка в sql, высокоприоритетное исполнение
+    fanout_sql_np              = 128,
 
-    fanout_email               = 12,
+    /// исполнение скриптов, low priority
+    scripts_lp                 = 256,
 
-    //// data change signal
-    ltr_scripts                = 14,
+    //// long time run scripts
+    ltr_scripts                = 512,
 
-    webserver                  = 15,
+    /// Выгрузка в sql, низкоприоритетное исполнение
+    fanout_sql_lp              = 1024,
 
-    n_channel                  = 16,
+    /// Сбор статистики
+    statistic_data_accumulator = 2048,
 
-    ccus_channel               = 17,
-    
-    fanout_sql_np              = 20,
-    
-    fanout_sql_lp              = 21,
+    /// Сохранение накопленных в памяти данных
+    commiter                   = 4096,
 
-    nop                        = 99
+    /// Вывод статистики
+    print_statistic            = 8192,
+
+    n_channel                  = 16384,
+
+    webserver                  = 32768
+}
+
+
+/// id процессов
+public enum P_MODULE : COMPONENT
+{
+    ticket_manager             = COMPONENT.ticket_manager,
+    subject_manager            = COMPONENT.subject_manager,
+    acl_preparer               = COMPONENT.acl_preparer,
+    statistic_data_accumulator = COMPONENT.statistic_data_accumulator,
+    commiter                   = COMPONENT.commiter,
+    print_statistic            = COMPONENT.print_statistic,
+    file_reader                = COMPONENT.file_reader,
+    n_channel                  = COMPONENT.n_channel,
+    webserver                  = COMPONENT.webserver
+}
+
+/// id модулей обрабатывающих очередь
+public enum MODULE : COMPONENT
+{
+    ticket_manager   = COMPONENT.ticket_manager,
+    subject_manager  = COMPONENT.subject_manager,
+    acl_preparer     = COMPONENT.acl_preparer,
+    fulltext_indexer = COMPONENT.fulltext_indexer,
+    scripts_main     = COMPONENT.scripts_main,
+    scripts_lp       = COMPONENT.scripts_lp,
+    fanout_email     = COMPONENT.fanout_email,
+    ltr_scripts      = COMPONENT.ltr_scripts,
+    fanout_sql_np    = COMPONENT.fanout_sql_np,
+    fanout_sql_lp    = COMPONENT.fanout_sql_lp
 }
 
 /**
@@ -144,20 +182,20 @@ public enum ResultCode
 
 enum OptFreeze
 {
-	INGORE,
-	NONE 
+    INGORE,
+    NONE
 }
 
 enum OptAuthorize
 {
-	NO,
-	YES
+    NO,
+    YES
 }
 
 enum OptTrace
 {
-	TRACE,
-	NONE
+    TRACE,
+    NONE
 }
 
 public struct OpResult
@@ -373,32 +411,24 @@ struct decimal
         if (num is null)
             return;
 
+        string[] ff;
+
         if (num.indexOf(',') > 0)
-        {
-            string[] ff = split(num, ",");
-            writeln("ff=", ff);
-            if (ff.length == 2)
-            {
-                mantissa = to!long (ff[ 0 ]);
-                exponent = to!byte (ff[ 1 ]);
-            }
-        }
+            ff = split(num, ",");
         else
+            ff = split(num, ".");
+
+        if (ff.length == 2)
         {
-            string[] ff = split(num, ".");
+            byte sfp = cast(byte)ff[ 1 ].length;
 
-            if (ff.length == 2)
-            {
-                byte sfp = cast(byte)ff[ 1 ].length;
-
-                mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
-                exponent = -sfp;
-            }
-            else if (ff.length == 1)
-            {
-                mantissa = to!long (num);
-                exponent = 0;
-            }
+            mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
+            exponent = -sfp;
+        }
+        else if (ff.length == 1)
+        {
+            mantissa = to!long (num);
+            exponent = 0;
         }
     }
 

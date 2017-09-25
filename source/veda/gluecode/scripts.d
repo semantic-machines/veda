@@ -23,9 +23,9 @@ class ScriptProcess : VedaModule
     private ScriptVM         script_vm;
     private string           vm_id;
 
-    this(string _vm_id, string _module_name, Logger log)
+    this(string _vm_id, SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
-        super(_module_name, log);
+        super(_subsystem_id, _module_id, log);
 
         vm_id           = _vm_id;
         g_vm_id         = vm_id;
@@ -169,6 +169,11 @@ class ScriptProcess : VedaModule
                     tnx.id            = transaction_id;
                     ResultCode res = g_context.commit(&tnx);
 
+		            foreach (item; tnx.get_queue())
+		            {
+		                log.trace ("tnx item: cmd=%s, uri=%s ", item.cmd, item.new_indv.uri);
+		            }
+
                     if (res != ResultCode.OK)
                     {
                         log.trace("fail exec event script : %s", script_id);
@@ -248,12 +253,12 @@ class ScriptProcess : VedaModule
         Ticket       sticket = context.sys_ticket();
         Individual[] res;
 
-        auto         si = context.get_info(P_MODULE.subject_manager);
+        auto         si = context.get_info(MODULE.subject_manager);
 
         bool         is_ft_busy = true;
         while (is_ft_busy)
         {
-            auto mi = context.get_info(P_MODULE.fulltext_indexer);
+            auto mi = context.get_info(MODULE.fulltext_indexer);
 
             log.trace("wait for the ft-index to finish subject.op_id=%d ft.committed_op_id=%d ...", si.op_id, mi.committed_op_id);
 

@@ -121,7 +121,7 @@ void main(string[] args)
 
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
-    bool need_watchdog = true;
+    bool need_watchdog        = true;
 
     foreach (arg; args)
     {
@@ -269,19 +269,39 @@ void main(string[] args)
             }
         }
 
-        if (webserver_ports.length > 0)
+        if (need_remove_ontology == false && need_reload_ontology == false)
         {
-            foreach (port; webserver_ports)
+            if (webserver_ports.length > 0)
+            {
+                foreach (port; webserver_ports)
+                {
+                    string[] sargs;
+
+                    string   ml = "veda-webserver";
+                    sargs = [ "./" ~ ml, "--http_port=" ~ port ];
+
+                    if (ext_user_port_str.length > 0)
+                        sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
+
+                    auto _logFile = File("logs/" ~ ml ~ port ~ "-stderr.log", "w");
+                    writeln("start " ~ ml);
+
+                    auto _pid = spawnProcess(sargs,
+                                             std.stdio.stdin,
+                                             std.stdio.stdout,
+                                             _logFile, env, Config.suppressConsole);
+
+                    started_modules ~= array_to_str(sargs);
+                }
+            }
+            else
             {
                 string[] sargs;
 
                 string   ml = "veda-webserver";
-                sargs = [ "./" ~ ml, "--http_port=" ~ port ];
+                sargs = [ "./" ~ ml ];
 
-                if (ext_user_port_str.length > 0)
-                    sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
-
-                auto _logFile = File("logs/" ~ ml ~ port ~ "-stderr.log", "w");
+                auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
                 writeln("start " ~ ml);
 
                 auto _pid = spawnProcess(sargs,
@@ -293,22 +313,7 @@ void main(string[] args)
             }
         }
         else
-        {
-            string[] sargs;
-
-            string   ml = "veda-webserver";
-            sargs = [ "./" ~ ml ];
-
-            auto _logFile = File("logs/" ~ ml ~ "-stderr.log", "w");
-            writeln("start " ~ ml);
-
-            auto _pid = spawnProcess(sargs,
-                                     std.stdio.stdin,
-                                     std.stdio.stdout,
-                                     _logFile, env, Config.suppressConsole);
-
-            started_modules ~= array_to_str(sargs);
-        }
+            is_main_loop = false;
 
         bool is_next = true;
 

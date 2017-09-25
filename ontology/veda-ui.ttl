@@ -823,7 +823,7 @@ v-ui:ResourceTemplate
   <br>
   <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -1100,7 +1100,7 @@ v-ui:SavedSearchTemplate
     <div property="v-s:query"></div>
     <br/>
     <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -1328,7 +1328,7 @@ v-ui:TestUITemplate
 
   <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -2163,19 +2163,17 @@ v-ui:TreeTemplate
   function getIn(self) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.inProperty) {
-      var query = individual.treeConfig.inProperty.map(function (property) {
+      var q = individual.treeConfig.inProperty.map(function (property) {
           return "'" + property.id + "'=='" + self.id + "'";
         }).join(" || ");
       if (individual.treeConfig.allowedClass) {
-        query = "(" + query + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
+        q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
           return "'rdf:type'=='" + _class.id + "'";
         }).join(" || ") + ")";
       }
-      var search = new veda.IndividualModel();
-      search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-      search["v-fs:fulltextQuery"] = [ query ];
-      search.search();
-      search.result.map( function (uri) {
+      var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+      var result = query(veda.ticket, q, sort).result;
+      result.map( function (uri) {
         res.push( new veda.IndividualModel(uri) );
       });
     }
@@ -2303,7 +2301,7 @@ td:AppointmentTemplate1
     </div>
     <!--div class="panel-footer">
       <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label">Редактировать</button>
-      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
+      <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
       <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label">Отмена</button>
       <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label">Удалить</button>
     </div-->
@@ -2581,7 +2579,7 @@ v-ui:generic
   <br>
   <div class="actions pull-left">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
     <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
@@ -2654,7 +2652,7 @@ td:AccountTemplate1
       </div>
     </div>
   </div>
-  <!--button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button-->
+  <!--button type="submit" class="action btn btn-success -view edit -search" id="save">Сохранить</button-->
 </div>
   """ ;
 .
@@ -2689,7 +2687,7 @@ td:PreferencesTemplate1
     </div>
     <!--div class="panel-footer">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-    <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
     <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
     </div-->

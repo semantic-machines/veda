@@ -1,8 +1,8 @@
 /**
+  Update service for individuals that were changed on server
+  NB: Access has to be configured via haproxy or the like
+*/
 
-Update service for individuals that were changed on server
-
- */
 
 veda.Module(function UpdateService(veda) { "use strict";
 
@@ -18,7 +18,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var self = riot.observable(this);
 
-    var address = (new veda.IndividualModel("cfg:ClientUpdateServiceAddress"))["rdf:value"][0],
+    var address0 = ["ws://", location.host, "/ccus"].join(""),
         socket,
         msgTimeout,
         msgDelay = 1000,
@@ -30,6 +30,21 @@ veda.Module(function UpdateService(veda) { "use strict";
         list = {},
         delta = {},
         ready;
+
+    var	address1 = "ws://" + location.hostname + ":8088/ccus",
+        socket,
+        msgTimeout,
+        msgDelay = 1000,
+        connectTimeout,
+        connectTries = 0,
+        initialDelay = Math.round(1000 + 4000 * Math.random()),
+        connectDelay = 10000,
+        maxConnectDelay = 60000,
+        list = {},
+        delta = {},
+        ready;
+
+    var address = address0;
 
     this.ready = function () {
       return !!ready;
@@ -179,6 +194,12 @@ veda.Module(function UpdateService(veda) { "use strict";
       //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
+
+	if (address == address0)
+	    address = address1;
+	else
+	    address = address0;
+
         socket = initSocket();
       }, delay);
     }

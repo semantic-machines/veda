@@ -105,7 +105,7 @@ v-ft:Event_UpdateTaskCounter
 var forceUpdate = hasValue(document, "v-ft:forceUpdate", {data: true, type: _Boolean}),
     counterOwner = getUri(document["v-s:owner"]);
 if ( forceUpdate && counterOwner ) {
-  // print("re-create task counter, owner =", counterOwner);
+  //print("re-create task counter, owner =", counterOwner);
   createTaskCounter(counterOwner);
   return;
 }

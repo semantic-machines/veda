@@ -15,7 +15,7 @@ function check(driver, count, phase) {
     basic.execute(driver, 'clear', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input', '', '');
     basic.execute(driver, 'sendKeys', 'h4[about="v-fs:EnterQuery"]+div[class="form-group"] input',
         "****** PHASE#" + phase + " : ERROR = Cannot input search request", timeStamp);
-    basic.execute(driver, 'click', 'button[id="submit"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'submit' button");
+    basic.execute(driver, 'click', 'button[about="v-fs:Find"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'submit' button");
     driver.wait
     (
         function () {
@@ -64,7 +64,7 @@ basic.getDrivers().forEach(function(drv){
     //PHASE#0: Login
     var driver = basic. getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
     //PHASE#1: New Startform
     basic.openCreateDocumentForm(driver, 'Стартовая форма', 'v-wf:StartForm', 1);
@@ -92,7 +92,7 @@ basic.getDrivers().forEach(function(drv){
         "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");
     clickButton(driver, "search-submit", 5);
     basic.execute(driver, 'click', 'span[id="individual-label"]', "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'individual-label'");
-    basic.execute(driver, 'click', 'div[role="alert"] button[class="btn btn-default btn-sm"]',
+    basic.execute(driver, 'click', '#deleted-alert .recover',
         "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'Recovery' button");
     check(driver, 1, 5);
     driver.quit();

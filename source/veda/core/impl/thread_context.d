@@ -25,7 +25,7 @@ private
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    bool[ P_MODULE ] is_traced_module;
+    //bool[ P_MODULE ] is_traced_module;
 
     private Ticket *[ string ] user_of_ticket;
 
@@ -145,59 +145,90 @@ class PThreadContext : Context
 
         private OpResult[] reqrep_json_2_main_module(ref JSONValue jreq)
         {
-            OpResult[] ress;
             string     req = jreq.toString();
+            string     rep;
 
-            int        sock = get_sock_2_main_module();
+            OpResult[] ress;
 
-            if (sock >= 0)
+            try
             {
-                char *buf = cast(char *)0;
-                int  bytes;
+                int sock = get_sock_2_main_module();
 
-                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                //log.trace("N_CHANNEL send (%s)", req);
-                bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                if (bytes > 0)
+                if (sock >= 0)
                 {
-                    string rep = to!string(buf);
-                    //log.trace("N_CHANNEL recv (%s)", rep);
+                    char *buf = cast(char *)0;
+                    int  bytes;
 
-                    JSONValue jres = parseJSON(rep);
-
-                    if (jres[ "type" ].str == "OpResult")
+                    bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+                    //log.trace("N_CHANNEL send (%s)", req);
+                    bytes = nn_recv(sock, &buf, NN_MSG, 0);
+                    if (bytes > 0)
                     {
-                        JSONValue data = jres[ "data" ];
-                        if (data !is JSONValue.init)
+                        rep = to!string(buf);
+                        //log.trace("N_CHANNEL recv (%s)", rep);
+
+                        JSONValue jres = parseJSON(rep);
+
+                        if (jres[ "type" ].str == "OpResult")
                         {
-                            foreach (ii; data.array)
+                            if ("data" in jres)
+                            {
+                                JSONValue data = jres[ "data" ];
+                                if (data !is JSONValue.init)
+                                {
+                                    foreach (ii; data.array)
+                                    {
+                                        OpResult res;
+
+                                        res.op_id  = ii[ "op_id" ].integer;
+                                        res.result = cast(ResultCode)ii[ "result" ].integer;
+                                        ress ~= res;
+                                    }
+                                }
+                            }
+                            else
                             {
                                 OpResult res;
-
-
-                                res.op_id  = ii[ "op_id" ].integer;
-                                res.result = cast(ResultCode)ii[ "result" ].integer;
+                                res.op_id  = jres[ "op_id" ].integer;
+                                res.result = cast(ResultCode)jres[ "result" ].integer;
                                 ress ~= res;
                             }
                         }
-                        else
-                        {
-                            OpResult res;
-                            res.op_id  = jres[ "op_id" ].integer;
-                            res.result = cast(ResultCode)jres[ "result" ].integer;
-                            ress ~= res;
-                        }
+
+                        nn_freemsg(buf);
                     }
-
-                    nn_freemsg(buf);
                 }
-            }
-            else
-            {
-                log.trace("ERR! N_CHANNEL: invalid socket");
-            }
+                else
+                {
+                    log.trace("ERR! N_CHANNEL: invalid socket");
+                }
 
-            return ress;
+                if (ress.length == 0)
+                {
+                    OpResult res;
+                    res.op_id  = -1;
+                    res.result = ResultCode.Internal_Server_Error;
+                    return [ res ];
+                }
+
+                return ress;
+            }
+            catch (Throwable tr)
+            {
+                log.trace("ERR! reqrep_json_2_main_module, %s", tr.info);
+                log.trace("req: %s", req);
+                log.trace("rep: %s", rep);
+
+                if (ress.length == 0)
+                {
+                    OpResult res;
+                    res.op_id  = -1;
+                    res.result = ResultCode.Internal_Server_Error;
+                    return [ res ];
+                }
+
+                return ress;
+            }
         }
     }
 
@@ -249,8 +280,8 @@ class PThreadContext : Context
 
         ctx.name = context_name;
 
-        ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
-        ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
+        //ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
+        //ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
 
         ctx.get_configuration();
 
@@ -483,7 +514,7 @@ class PThreadContext : Context
                 string when     = null;
                 int    duration = 0;
 
-                MInfo  mi = get_info(P_MODULE.ticket_manager);
+                MInfo  mi = get_info(MODULE.ticket_manager);
 
                 //log.trace ("last_ticket_manager_op_id=%d, mi.op_id=%d,  mi.committed_op_id=%d", last_ticket_manager_op_id, mi.op_id, mi.committed_op_id);
                 if (last_ticket_manager_op_id < mi.op_id)
@@ -809,7 +840,7 @@ class PThreadContext : Context
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events, string event_id,
+    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
@@ -846,14 +877,16 @@ class PThreadContext : Context
                     scmd = "set_in";
                 else if (cmd == INDV_OP.REMOVE_FROM)
                     scmd = "remove_from";
+                else if (cmd == INDV_OP.REMOVE)
+                    scmd = "remove";
 
                 JSONValue req_body;
-                req_body[ "function" ]       = scmd;
-                req_body[ "ticket" ]         = ticket.id;
-                req_body[ "individuals" ]    = [ individual_to_json(*indv) ];
-                req_body[ "prepare_events" ] = prepare_events;
-                req_body[ "event_id" ]       = event_id;
-                req_body[ "tnx_id" ]         = tnx_id;
+                req_body[ "function" ]            = scmd;
+                req_body[ "ticket" ]              = ticket.id;
+                req_body[ "individuals" ]         = [ individual_to_json(*indv) ];
+                req_body[ "assigned_subsystems" ] = assigned_subsystems;
+                req_body[ "event_id" ]            = event_id;
+                req_body[ "tnx_id" ]              = tnx_id;
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
 
@@ -877,41 +910,42 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                    OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.PUT, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.PUT, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
     }
 
-    public OpResult remove_individual(Ticket *ticket, string uri, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         Individual individual;
 
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
     }
 
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
     }
 
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id, long transaction_id,
+    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
     }
 
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, bool prepareEvents, string event_id,
-                                           long transaction_id, OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
+    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, string event_id,
+                                           long transaction_id, MODULES_MASK assigned_subsystems, OptFreeze opt_freeze = OptFreeze.NONE,
+                                           OptAuthorize opt_request = OptAuthorize.YES)
     {
         individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, prepareEvents, event_id, opt_freeze, opt_request);
+        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
     }
 
     public void set_trace(int idx, bool state)
@@ -959,8 +993,8 @@ class PThreadContext : Context
 
     //////////////////////////////////////////////// MODULES INTERACTION
 
-    private ModuleInfoFile[ P_MODULE ] info_r__2__pmodule;
-    public MInfo get_info(P_MODULE module_id)
+    private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
+    public MInfo get_info(MODULE module_id)
     {
         ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
 
@@ -974,7 +1008,7 @@ class PThreadContext : Context
     }
 
 
-    public long get_operation_state(P_MODULE module_id, long wait_op_id)
+    public long get_operation_state(MODULE module_id, long wait_op_id)
     {
         long  res = -1;
 
@@ -982,7 +1016,7 @@ class PThreadContext : Context
 
         if (info.is_Ok)
         {
-            if (module_id == P_MODULE.fulltext_indexer || module_id == P_MODULE.scripts_main)
+            if (module_id == MODULE.fulltext_indexer || module_id == MODULE.scripts_main)
                 res = info.committed_op_id;
             else
                 res = info.op_id;
@@ -990,13 +1024,13 @@ class PThreadContext : Context
 
         version (WebServer)
         {
-            if (module_id == P_MODULE.subject_manager)
+            if (module_id == MODULE.subject_manager)
                 this.reopen_ro_individuals_storage_db();
 
-            if (module_id == P_MODULE.acl_preparer)
+            if (module_id == MODULE.acl_preparer)
                 this.reopen_ro_acl_storage_db();
 
-            if (module_id == P_MODULE.fulltext_indexer)
+            if (module_id == MODULE.fulltext_indexer)
                 this.reopen_ro_fulltext_indexer_db();
         }
 
@@ -1005,7 +1039,7 @@ class PThreadContext : Context
         return res;
     }
 
-    private bool wait_module(P_MODULE pm, long wait_op_id, long timeout)
+    private bool wait_module(MODULE pm, long wait_op_id, long timeout)
     {
         long wait_time         = 0;
         long op_id_from_module = 0;
@@ -1058,7 +1092,7 @@ class PThreadContext : Context
                 Ticket *ticket = this.get_ticket(item.ticket_id);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, true, item.event_id, OptFreeze.NONE, OptAuthorize.YES).result;
+                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, OptAuthorize.YES).result;
 
                 if (rc == ResultCode.No_Content)
                 {
