@@ -44,7 +44,8 @@ createPerson: function (driver, drv, lastName, firstName, middleName, date, phas
 
     //basic.chooseFromDropdown(driver, 'v-s:hasAppointment', 'Администратор2', 'Администратор2 : Аналитик');
 
-    driver.executeScript("$('div[typeof=\"v-s:Person\"] > button#save.action')[0].scrollIntoView(true);");
+    driver.executeScript("$('div[typeof=\"v-s:Person\"] > button#save.action')[0].scrollIntoView(true);")
+        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to save button");});
 
     // Документ становится возможно сохранить
     basic.isEnabled(driver, '#save', basic.FAST_OPERATION, phase);

@@ -357,7 +357,7 @@ public Ticket create_new_ticket(string user_id, string duration = "40000", strin
     long       op_id;
     ResultCode rc =
         ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
-                                     -1,
+                                     -1, 0,
                                      OptFreeze.NONE,
                                      op_id);
     ticket.result = rc;
@@ -497,7 +497,7 @@ public string execute_binobj(string in_msg, Context ctx)
                                                                              item.getFirstLiteral("prev_binobj"), item.getFirstLiteral(
                                                                                                                                        "new_binobj"),
                                                                              item.getFirstInteger("update_counter"), item.getFirstLiteral("event_id"),
-                                                                             false, false);
+                                                                             false, false, item.getFirstInteger("assigned_subsystems"));
 
                     log.trace("@ ti= %s", ti);
 
@@ -586,17 +586,15 @@ public string execute_json(string in_msg, Context ctx)
         {
             OpResult[] rc;
 
-            JSONValue  _ticket         = jsn[ "ticket" ];
-            JSONValue  jprepare_events = jsn[ "prepare_events" ];
+            JSONValue  _ticket           = jsn[ "ticket" ];
+            JSONValue  jassigned_modules = jsn[ "assigned_subsystems" ];
 
-            bool       prepare_events;
-            if (jprepare_events.type() == JSON_TYPE.TRUE)
-                prepare_events = true;
+            long       assigned_subsystems = jassigned_modules.integer();
 
-            JSONValue event_id       = jsn[ "event_id" ];
-            long      transaction_id = 0;
+            JSONValue  event_id       = jsn[ "event_id" ];
+            long       transaction_id = 0;
 
-            Ticket    *ticket = ctx.get_ticket(_ticket.str);
+            Ticket     *ticket = ctx.get_ticket(_ticket.str);
 
             if (sfn == "put")
             {
@@ -610,7 +608,7 @@ public string execute_json(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
-                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, prepare_events, event_id.str,
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -632,7 +630,7 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, prepare_events, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -652,7 +650,7 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, prepare_events, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -672,7 +670,7 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, prepare_events, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -683,22 +681,23 @@ public string execute_json(string in_msg, Context ctx)
             }
             else if (sfn == "remove")
             {
-                JSONValue  uri = jsn[ "uri" ];
+                JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                Individual individual;
+                foreach (individual_json; individuals_json)
+                {
+                    Individual  individual = json_to_individual(individual_json);
 
-                individual.uri = uri.str();
+                    Transaction tnx;
+                    tnx.id            = transaction_id;
+                    tnx.is_autocommit = true;
+                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, assigned_subsystems, event_id.str,
+                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptTrace.NONE);
 
-                Transaction tnx;
-                tnx.id            = transaction_id;
-                tnx.is_autocommit = true;
-                OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, prepare_events, event_id.str,
-                                                   OptFreeze.NONE, OptAuthorize.YES,
-                                                   OptTrace.NONE);
-
-                rc ~= ires;
-                if (transaction_id <= 0)
-                    transaction_id = ires.op_id;
+                    rc ~= ires;
+                    if (transaction_id <= 0)
+                        transaction_id = ires.op_id;
+                }
             }
 
             JSONValue[] all_res;
@@ -724,7 +723,7 @@ public string execute_json(string in_msg, Context ctx)
                 rc = flush_storage();
             else if (f_module_id == P_MODULE.acl_preparer)
                 rc = acl_module.flush(false);
-            else if (f_module_id == P_MODULE.fulltext_indexer)
+            else if (f_module_id == MODULE.fulltext_indexer)
                 flush_ext_module(f_module_id, wait_op_id);
 
             res[ "type" ]   = "OpResult";
@@ -814,7 +813,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
 
             long op_id;
             ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
-                                         -1, OptFreeze.NONE,
+                                         -1, 0, OptFreeze.NONE,
                                          op_id);
             log.trace("systicket [%s] was created", ticket.id);
 
@@ -964,7 +963,7 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
-public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, bool prepare_events,
+public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_subsystems,
                                    string event_id,
                                    OptFreeze opt_freeze,
                                    OptAuthorize opt_request, OptTrace opt_trace)
@@ -1084,11 +1083,11 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto);
+                                          event_id, is_acl_element, is_onto, assigned_subsystems);
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
-                                          event_id, is_acl_element, is_onto);
+                                          event_id, is_acl_element, is_onto, assigned_subsystems);
 
             if (tnx.is_autocommit)
             {
@@ -1130,7 +1129,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto);
+                                          event_id, is_acl_element, is_onto, assigned_subsystems);
 
             if (tnx.is_autocommit)
             {

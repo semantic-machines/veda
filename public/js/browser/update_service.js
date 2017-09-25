@@ -1,8 +1,8 @@
 /**
+  Update service for individuals that were changed on server
+  NB: Access has to be configured via haproxy or the like
+*/
 
-Update service for individuals that were changed on server
-
- */
 
 veda.Module(function UpdateService(veda) { "use strict";
 
@@ -18,7 +18,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var self = riot.observable(this);
 
-    var address = (new veda.IndividualModel("cfg:ClientUpdateServiceAddress"))["rdf:value"][0],
+    var address0 = ["ws://", location.host, "/ccus"].join(""),
         socket,
         msgTimeout,
         msgDelay = 1000,
@@ -30,6 +30,21 @@ veda.Module(function UpdateService(veda) { "use strict";
         list = {},
         delta = {},
         ready;
+
+    var	address1 = "ws://" + location.hostname + ":8088/ccus",
+        socket,
+        msgTimeout,
+        msgDelay = 1000,
+        connectTimeout,
+        connectTries = 0,
+        initialDelay = Math.round(1000 + 4000 * Math.random()),
+        connectDelay = 10000,
+        maxConnectDelay = 60000,
+        list = {},
+        delta = {},
+        ready;
+
+    var address = address0;
 
     this.ready = function () {
       return !!ready;
@@ -48,7 +63,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.synchronize = function() {
-      if (!self.ready()) { return }
+      //if (!self.ready()) { return }
       if (msgTimeout) {
         msgTimeout = clearTimeout(msgTimeout);
       }
@@ -61,14 +76,14 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.subscribe = function(uri) {
-      if (!self.ready()) { return }
+      //if (!self.ready()) { return }
       if (!uri) { return }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
         return;
       }
       var individual = new veda.IndividualModel(uri);
-      var updateCounter = individual.hasValue("v-s:updateCounter") ? individual["v-s:updateCounter"][0] : 0;
+      var updateCounter = individual.hasValue("v-s:updateCounter") ? individual.get("v-s:updateCounter")[0] : 0;
       list[uri] = {
         subscribeCounter: 1,
         updateCounter: updateCounter
@@ -83,7 +98,7 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.unsubscribe = function (uri) {
-      if (!self.ready()) { return }
+      //if (!self.ready()) { return }
       if (uri === "*" || !uri) {
         if (msgTimeout) {
           msgTimeout = clearTimeout(msgTimeout);
@@ -179,6 +194,12 @@ veda.Module(function UpdateService(veda) { "use strict";
       //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
+
+	if (address == address0)
+	    address = address1;
+	else
+	    address = address0;
+
         socket = initSocket();
       }, delay);
     }
@@ -209,19 +230,13 @@ veda.Module(function UpdateService(veda) { "use strict";
               updateCounter = parseInt(tmp[1]),
               individual = new veda.IndividualModel(uri),
               list = self.list();
-          if (
-            individual.hasValue("v-s:updateCounter", updateCounter)
-            || individual.hasValue("v-s:isDraft", true)
-            || ( individual.hasValue("v-s:updateCounter") && individual["v-s:updateCounter"][0] > updateCounter )
-          ) continue;
-
-          individual.update();
-          updateCounter = individual["v-s:updateCounter"][0];
+          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.hasValue("v-s:isDraft", true) ) { continue; }
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
           }
+          individual.reset(); // Reset to DB
         } catch (e) {
-          //console.log("error: individual update service failed for id =", uri, e);
+          console.log("error: individual update service failed for id =", uri, e);
         }
       }
     }

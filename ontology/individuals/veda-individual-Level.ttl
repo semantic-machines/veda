@@ -33,3 +33,8 @@ d:913b746aded06653b193ab11d9ce531c
   rdfs:label "Undefined"@en ;
   rdfs:label "Отсутствует"@ru ;
 .
+d:25341f858eaa42ecbd1b6dd7656f9745
+  rdf:type v-s:Level ;
+  rdfs:label "Fatal"@en ;
+  rdfs:label "Фатальный"@ru ;
+.

@@ -701,7 +701,7 @@ v-ui:ResourceTemplate
   <br>
   <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -978,7 +978,7 @@ v-ui:SavedSearchTemplate
     <div property="v-s:query"></div>
     <br/>
     <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -1206,7 +1206,7 @@ v-ui:TestUITemplate
 
   <div class="actions">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -1738,7 +1738,7 @@ v-ui:DocumentEventTemplate
       <div property="rdfs:label"></div>
       <div rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div rel="v-wf:onProcess">
-        <!--script>
+        <script>
           var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
             return vrbl.hasValue("v-wf:variableName",  "startForm_id");
           });
@@ -1747,15 +1747,15 @@ v-ui:DocumentEventTemplate
           } else {
             $("[about='start-form']", template).remove();
           }
-        </script-->
+        </script>
         <div>
           <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
           <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
-          <!--div about="start-form">
+          <div about="start-form">
             <div>
               <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>
             </div>
-          </div-->
+          </div>
         </div>
       </div>
     </div>
@@ -2041,19 +2041,17 @@ v-ui:TreeTemplate
   function getIn(self) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.inProperty) {
-      var query = individual.treeConfig.inProperty.map(function (property) {
+      var q = individual.treeConfig.inProperty.map(function (property) {
           return "'" + property.id + "'=='" + self.id + "'";
         }).join(" || ");
       if (individual.treeConfig.allowedClass) {
-        query = "(" + query + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
+        q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
           return "'rdf:type'=='" + _class.id + "'";
         }).join(" || ") + ")";
       }
-      var search = new veda.IndividualModel();
-      search["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
-      search["v-fs:fulltextQuery"] = [ query ];
-      search.search();
-      search.result.map( function (uri) {
+      var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+      var result = query(veda.ticket, q, sort).result;
+      result.map( function (uri) {
         res.push( new veda.IndividualModel(uri) );
       });
     }
@@ -2184,7 +2182,7 @@ td:AppointmentTemplate1
     </div>
     <!--div class="panel-footer">
       <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label">Редактировать</button>
-      <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
+      <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
       <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label">Отмена</button>
       <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label">Удалить</button>
     </div-->
@@ -2462,7 +2460,7 @@ v-ui:generic
   <br>
   <div class="actions pull-left">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
     <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
@@ -2491,6 +2489,14 @@ td:AccountTemplate1
   rdfs:label "Account template"@en ;
   v-ui:forClass v-s:Account ;
   v-ui:template """
+<script>
+  var _class = new veda.IndividualModel("v-s:Credential");
+  var canCreate = _class.rights.hasValue("v-s:canCreate", true);
+  if ( !canCreate ) {
+    $("[rel='v-s:usesCredential']", template).remove();
+  }
+  //# sourceURL=td:AccountTemplate1_pre
+</script>
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="row">
@@ -2508,7 +2514,6 @@ td:AccountTemplate1
     <em about="v-s:owner" property="rdfs:label">Владелец</em>
     <div rel="v-s:owner" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
     <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
-    <br />
     <div class="row">
       <div class="col-md-6">
         <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
@@ -2521,8 +2526,14 @@ td:AccountTemplate1
         <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
       </div>
     </div>
+    <div class="row" rel="v-s:usesCredential" data-embedded="true">
+      <div class="col-md-6">
+        <em about="v-s:password" property="rdfs:label"></em>
+        <veda-control property="v-s:password" data-type="password" class="-view edit search"></veda-control>
+      </div>
+    </div>
   </div>
-  <!--button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button-->
+  <!--button type="submit" class="action btn btn-success -view edit -search" id="save">Сохранить</button-->
 </div>
   """ ;
 .
@@ -2557,7 +2568,7 @@ td:PreferencesTemplate1
     </div>
     <!--div class="panel-footer">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-    <button type="button" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
     <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
     </div-->
@@ -2882,22 +2893,20 @@ v-ui:Graph
       var to = id;
       var from = res.id;
       Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
-        if(property_uri === "@") { return }
-        res[property_uri].map(function (item) {
-          if (item instanceof veda.IndividualModel && item.id == to) {
-            var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
-            var options = {
-              filter: function (item) {
-                return  item.from == from &&
-                    item.to == to &&
-                    item.label.toString() == label;
-              }
-            };
-            if ( !edges.get(options).length ) {
-              edges.add([{from: from, to: to, label: label}]);
+        if (property_uri === "@") { return; }
+        if ( res.hasValue(property_uri, id) ) {
+          var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
+          var options = {
+            filter: function (item) {
+              return  item.from === from &&
+                item.to === to &&
+                item.label.toString() === label;
             }
+          };
+          if ( !edges.get(options).length ) {
+            edges.add([{from: from, to: to, label: label}]);
           }
-        });
+        }
       });
     });
   }

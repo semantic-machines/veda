@@ -44,7 +44,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
       var uri = $(this).parent().find("[resource]").attr("resource");
       var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
       if ( confirm(warn) ) {
-        veda.drafts.remove(uri);
+        veda.drafts.reset(uri);
       }
     });
 
@@ -75,7 +75,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
       var draft = veda.drafts[uri],
           parent = draft.hasValue("v-s:parent") && draft["v-s:parent"][0].id;
       if ( parent && !veda.drafts[parent] ) {
-        veda.drafts.remove(uri);
+        veda.drafts.reset(uri);
       }
     });
   });*/

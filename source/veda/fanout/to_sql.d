@@ -18,10 +18,10 @@ public class FanoutProcess : VedaModule
     string low_priority_user;
     string priority;
 
-    this(string _module_name, Logger log, string _priority)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log, string _priority)
     {
         priority = _priority;
-        super(_module_name, log);
+        super(_subsystem_id, _module_id, log);
     }
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
@@ -140,6 +140,8 @@ public class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
+            	mysql_conn.startTransaction();
+            	
                 // создаем таблицы если их не было
                 foreach (predicate, rss; new_indv.resources)
                 {
@@ -237,7 +239,8 @@ public class FanoutProcess : VedaModule
                         }
                     }
                 }
-            }
+            }            
+            mysql_conn.query("COMMIT");
 
             //writeln ("@@@@1 insert TO MYSQL IS OK ", text (mysql_conn));
         }

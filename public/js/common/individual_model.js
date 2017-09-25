@@ -324,16 +324,13 @@ veda.Module(function (veda) { "use strict";
     }, self.properties);
     try {
       put_individual(veda.ticket, this.properties);
+      this.isNew(false);
+      this.isSync(true);
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      if (error.code !== 472) {
-        this.draft();
-      }
+      this.draft();
       notify("danger", error);
     }
-    this.isNew(false);
-    this.isSync(true);
-    if (this._.cache) veda.cache[this.id] = self;
     this.trigger("afterSave");
     return this;
   }
@@ -355,52 +352,33 @@ veda.Module(function (veda) { "use strict";
    */
   proto.reset = function () {
     this.trigger("beforeReset");
-    this.update();
-    this.trigger("afterReset");
-    return this;
-  };
-
-  /**
-   * @method
-   * Update current individual with values from database & merge with local changes
-   */
-  proto.update = function () {
-    this.trigger("beforeUpdate");
     var self = this;
-    if (!this.isNew()) {
-      this.filtered = {};
-      var original;
-      try {
-        original = get_individual(veda.ticket, this.id);
-      } catch (e) {
-        original = {};
-      }
-      var updated = [];
-      Object.keys(self.properties).forEach(function (property_uri) {
-        if (property_uri === "@") { return; }
-        if (original[property_uri] && original[property_uri].length) {
-          self.properties[property_uri] = original[property_uri];
-        } else {
-          self.properties[property_uri] = [];
-        }
-        delete original[property_uri];
-        updated.push(property_uri);
-      });
-      Object.keys(original).forEach(function (property_uri) {
-        if (property_uri === "@") { return; }
-        self.properties[property_uri] = original[property_uri];
-        updated.push(property_uri);
-      });
-      updated.forEach(function (property_uri) {
-        self.trigger("propertyModified", property_uri, self[property_uri]);
-        self.trigger(property_uri, self[property_uri]);
-      });
+    self.filtered = {};
+    if ( self.hasValue("v-s:isDraft") ) {
+      var drafts = new veda.DraftsModel();
+      drafts.remove(self.id);
+    }
+    return get_individual({
+      ticket: veda.ticket,
+      uri: self.id,
+      async: true
+    }).then(function (original) {
+      var self_property_uris = Object.keys(self.properties);
+      var original_property_uris = Object.keys(original);
+      var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
+      self.properties = original;
       self.isNew(false);
       self.isSync(true);
-    }
-    veda.drafts.remove(this.id);
-    this.trigger("afterUpdate");
-    return this;
+      union.forEach( function (property_uri) {
+        if (property_uri === "@") { return; }
+        self.trigger("propertyModified", property_uri, self.get(property_uri));
+        self.trigger(property_uri, self.get(property_uri));
+      });
+      self.trigger("afterReset");
+    }).catch(function (error) {
+      self.isSync(false);
+      self.trigger("afterReset");
+    });
   };
 
   /**
@@ -464,7 +442,6 @@ veda.Module(function (veda) { "use strict";
     if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
-        //return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
         return ( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
     }

@@ -62,6 +62,7 @@ owl:Class a rdfs:Class ;
     rdfs:comment "The class of OWL classes." ;
     rdfs:isDefinedBy owl: ;
     rdfs:subClassOf rdfs:Class ;
+    rdfs:subClassOf v-s:Exportable ; 
     v-ui:hasTemplate v-ui:ClassClassTemplate ;
     v-ui:hasModel v-ui:ClassClassModel .
 

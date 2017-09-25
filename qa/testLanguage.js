@@ -44,7 +44,7 @@ basic.getDrivers().forEach (function (drv) {
     //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
+    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
     //PHASE#1: RU + EN
     click(driver, 'EN', 1);

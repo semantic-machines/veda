@@ -133,6 +133,9 @@ v-ui:ClassClassModel
   }
 
   this.isSubClassOf = function (_super) {
+    if (_super === "rdfs:Resource" || _super.id === "rdfs:Resource") {
+      return true;
+    }
     if (!self.hasValue("rdfs:subClassOf")) return false;
     if (typeof _super === "string") {
       _super = new veda.IndividualModel(_super);
@@ -238,7 +241,6 @@ v-ui:CommonOntologyTemplate
   """ ;
 .
 
-
 v-ui:ClassClassTemplate
   rdf:type v-ui:ClassTemplate;
   rdfs:label "Class class template"@en ;
@@ -297,7 +299,7 @@ v-ui:ClassClassTemplate
   <hr>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -432,7 +434,7 @@ v-ui:PropertyClassTemplate
   <hr>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -557,7 +559,7 @@ v-ui:PropertySpecificationTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -717,7 +719,7 @@ v-ui:DatatypePropertySpecificationTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -926,7 +928,7 @@ v-ui:ObjectPropertySpecificationTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -978,7 +980,7 @@ v-ui:ClassTemplateTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -1002,7 +1004,7 @@ v-ui:ClassModelTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -1096,7 +1098,7 @@ v-ui:EventTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -1105,19 +1107,60 @@ v-ui:EventTemplate
   """ ;
 .
 
+
+
+# -- ПРАВА --
+
+v-s:MembershipBlank
+  a v-fc:Blank ;
+  rdfs:label "Запись о включении в группу"@ru ;
+  rdfs:label "Membership"@en ;
+  v-fc:targetType v-s:Membership ;
+.
+v-s:MembershipRegistry
+  a v-fs:AttributiveSearch ;
+  rdfs:label "Члены группы"@ru ;
+  rdfs:label "Group members"@en ;
+  v-fs:searchBlank v-s:MembershipRegistryBlank ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+  v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+v-s:MembershipRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Члены группы"@ru ;
+  rdfs:label "Group members"@en ;
+  v-fc:targetType v-s:Membership ;
+.
+
 v-ui:GroupTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Group"@ru ;
   rdfs:label "Template for v-s:Group class"@en ;
   v-ui:forClass v-s:Group ;
   v-ui:template """
+<script>
+  var membershipRegistryBlank = new veda.IndividualModel("v-s:MembershipRegistryBlank");
+  delete membershipRegistryBlank.object;
+  membershipRegistryBlank["v-s:memberOf"] = [this];
+
+  var membershipBlank = new veda.IndividualModel("v-s:MembershipBlank");
+  delete membershipBlank.object;
+  membershipBlank["v-s:memberOf"] = [this];
+  //# sourceURL=v-ui:GroupTemplate_pre
+</script>
 <div class="container sheet">
   <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
+  <div class="panel panel-default">
+    <div class="panel-heading"><span about="v-s:MembershipRegistry" property="rdfs:label"></span><a href="#/v-s:MembershipBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+    <div class="panel-body" about="v-s:MembershipRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+  </div>
   <br>
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
@@ -1215,7 +1258,95 @@ v-ui:PermissionStatementTemplate
   <br>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  </div>
+</div>
+  """ ;
+.
+
+v-ui:MembershipTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:PermissionStatement"@ru ;
+  rdfs:label "Template for v-s:PermissionStatement class"@en ;
+  v-ui:forClass v-s:Membership ;
+  v-ui:template """
+<div class="container sheet">
+  <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name">
+      <strong about="v-s:memberOf" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7 value">
+      <div rel="v-s:memberOf" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control property="v-s:memberOf" data-type="generic" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name">
+      <strong about="v-s:resource" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-8 col-xs-7 value">
+      <div rel="v-s:resource" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+      <veda-control property="v-s:resource" data-type="generic" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canCreate" data-type="boolean"></veda-control>
+          <em about="v-s:canCreate" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canRead" data-type="boolean"></veda-control>
+          <em about="v-s:canRead" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canUpdate" data-type="boolean"></veda-control>
+          <em about="v-s:canUpdate" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <hr class="margin-md">
+  <div class="row">
+    <div class="col-md-4 col-xs-5 text-right name"></div>
+    <div class="col-md-8 col-xs-7 value">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:canDelete" data-type="boolean"></veda-control>
+          <em about="v-s:canDelete" property="rdfs:label"></em>
+        </label>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <div class="actions clearfix">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
     <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>

@@ -4,7 +4,7 @@
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
-GO_VER=go1.8.1
+GO_VER=go1.9
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
@@ -38,28 +38,33 @@ LIB_NAME[11]="automake"
 LIB_OK="Status: install ok installed"
 F_UL=0
 
-# install golang and dependency
-if ! go version | grep $GO_VER ; then    
     mkdir tmp
     cd tmp
-    wget https://storage.googleapis.com/golang/$GO_VER.linux-amd64.tar.gz
-    tar -xvf $GO_VER.linux-amd64.tar.gz
-    sudo rm -r /usr/local/go
-    sudo rm /usr/bin/go
-    sudo rm /usr/bin/gofmt
-    sudo mv go /usr/local
-    export GOROOT=/usr/local/go
-    export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
-    echo 'export GOROOT=/usr/local/go'  >> ~/.bashrc
-    echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin'  >> ~/.bashrc
+    wget -q https://storage.googleapis.com/golang/$GO_VER.linux-amd64.tar.gz
+    tar -xf $GO_VER.linux-amd64.tar.gz
+
+    if env | grep -q ^GOROOT=
+    then
+        sudo rm -rf $GOROOT
+    else
+        export GOROOT=/usr/local/go
+        export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
+        echo 'export GOROOT=/usr/local/go'  >> $HOME/.profile
+        echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin'  >> $HOME/.profile
+    fi
+
+    export GOPATH=$HOME/go
+    echo 'export GOPATH=$HOME/go'  >> $HOME/.bashrc
     source ~/.bashrc
+
+#    sudo rm -rf /usr/local/go
+#    sudo rm -rf /usr/bin/go
+#    sudo rm -rf /usr/bin/gofmt
+    sudo mv go $GOROOT
+
     go version
     cd ..
-fi
 
-export GOPATH=$HOME/go
-echo 'export GOPATH=$HOME/go'  >> ~/.bashrc
-source ~/.bashrc
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
 cp -a ./source/golang-third-party/cbor $GOPATH/src

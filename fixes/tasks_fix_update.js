@@ -111,77 +111,58 @@ del_positions.map(function (del_pos) {
 });
 
 
-// UserTaskForm with non-existing decision
+// Restore write permission for UserTaskForms
 
-var err_count = 0;
-var errs_objs = [];
-var errs = [];
-
-veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='true' ) && ( 'v-wf:takenDecision.isExists'=='true' ) && ( 'v-s:created'==[2017-06-01T21:00:00.000Z,2017-08-08T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+//veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='false' ) && ( 'v-s:created'==[2017-08-20T21:00:00.000Z,2017-08-22T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='false' ) && ( 'rdfs:label'=='Доработать')", 100000, 100, 1000, function (uri) {
   try {
     var form = new veda.IndividualModel(uri);
-    var decision = form["v-wf:takenDecision"][0];
-    if ( decision["rdf:type"][0].id === "rdfs:Resource" ) {
-      errs.push(uri);
-      errs_objs.push({form: uri, decision: decision.id});
-      console.log(++err_count, "form_uri", uri, "decision_uri", decision.id);
-    }
+    form.get("v-wf:to").map(function (to) {
+      var new_permission = {
+        "@": genUri(),
+        "rdf:type": [{type:"Uri", data: "v-s:PermissionStatement"}],
+        "v-s:permissionObject": [{type:"Uri", data: uri}],
+        "v-s:permissionSubject": [{type:"Uri", data: to.id}],
+        "v-s:canRead": [{type:"Boolean", data: true}],
+        "v-s:canUpdate": [{type:"Boolean", data: true}],
+        "v-s:canDelete": [{type:"Boolean", data: true}]
+      };
+      //put_individual(veda.ticket, new_permission);
+      console.log( new_permission["@"] );
+    });
   } catch (err) {
     console.log("Error.", uri, err);
   }
 });
 
 
-errs = [
-  "d:a4kqji6hisx0sx5jl8jrz3z54",
-  "d:fd4j1rlkvnur3bcddguw20eb",
-  "d:dzecuonwtscxcdujjdnwkj14",
-  "d:lbw3mz3xjwming7az8hb15do",
-  "d:sdmzfphw4t55f2y818pfafkd",
-  "d:q29lnnzzwfnyzd91sapbakrv",
-  "d:nrzpgc40rk2xlrqhjjejdlz0",
-  "d:a3xk63r578gdu3re9cqbl5n0d",
-  "d:ox5qm69rfskduitunb3rgqym",
-  "d:e5ijfhmlzpacc4vfn4kb5pqe",
-  "d:n2r3kugohsnzywq0f4yzakz2",
-  "d:frhgo9p55tkim5sefxyr8w0n",
-  "d:jtzrlsqgvxdy7v6gv63stkm3",
-  "d:a5bboa6w1as1hawt5k18x4rb4",
-  "d:sw7nm4f2dnmyjtpmu30fap42",
-  "d:a9cuichxkmbh83u7q6btcefy9",
-  "d:jt9meugj29vkhatteuq1eih2",
-  "d:tmvi9kf7giv9niki59mcvgbg",
-  "d:kf44vhna8fyahsftisa4gm6z",
-  "d:ib3emdhv0pn4dvarbr68bnvx",
-  "d:a2och6psiwy0aramkpqnxhosj",
-  "d:sz6j18euqocwoy02zd4xb2rp",
-  "d:q47rnf4ywu73f43flegg8vjv",
-  "d:l9o4byrdv3dsqx46bzsgudji"
-];
 
-errs_objs = [
-  {"form":"d:a4kqji6hisx0sx5jl8jrz3z54","decision":"d:a7idjk6it1q5qj0hc9vutuleb"},
-  {"form":"d:fd4j1rlkvnur3bcddguw20eb","decision":"d:ejm03bkcp2fc3zy79dpkisud"},
-  {"form":"d:dzecuonwtscxcdujjdnwkj14","decision":"d:m7gk5ukro8myows6k6bl4us6"},
-  {"form":"d:lbw3mz3xjwming7az8hb15do","decision":"d:moe3quiin1lvefemaqki5e7y"},
-  {"form":"d:sdmzfphw4t55f2y818pfafkd","decision":"d:yy8mzx7rxn361d3gtnmoq21t"},
-  {"form":"d:q29lnnzzwfnyzd91sapbakrv","decision":"d:prvkxtqnrqdhsod8ox6nhitm"},
-  {"form":"d:nrzpgc40rk2xlrqhjjejdlz0","decision":"d:bqpff90us3ivi7r4k7toguom"},
-  {"form":"d:a3xk63r578gdu3re9cqbl5n0d","decision":"d:a1jrrlbu5qighweekzypq0kv"},
-  {"form":"d:ox5qm69rfskduitunb3rgqym","decision":"d:a8n6lzy6u85khdgffil2feub3"},
-  {"form":"d:e5ijfhmlzpacc4vfn4kb5pqe","decision":"d:x99wel0dgn04i69tmfnajg2r"},
-  {"form":"d:n2r3kugohsnzywq0f4yzakz2","decision":"d:eviy0wrxs9irutrb3lfwx25u"},
-  {"form":"d:frhgo9p55tkim5sefxyr8w0n","decision":"d:rrmsnqnnsnj5m8gj0yqk8qy7"},
-  {"form":"d:jtzrlsqgvxdy7v6gv63stkm3","decision":"d:orl3bgoe7ft6ipth7hhtd6ne"},
-  {"form":"d:a5bboa6w1as1hawt5k18x4rb4","decision":"d:hm0z2s0qfsk1s1l82ps01g73"},
-  {"form":"d:sw7nm4f2dnmyjtpmu30fap42","decision":"d:liiv8xg7vw8vacvc7b0hrnh4"},
-  {"form":"d:a9cuichxkmbh83u7q6btcefy9","decision":"d:hsuuhmi6o0m60olhd610kg5s"},
-  {"form":"d:jt9meugj29vkhatteuq1eih2","decision":"d:tanmk8aq3n43oh50ibr5yf6w"},
-  {"form":"d:tmvi9kf7giv9niki59mcvgbg","decision":"d:ohn4jq5l5rf8084elclt4qrl"},
-  {"form":"d:kf44vhna8fyahsftisa4gm6z","decision":"d:q71oxwwyvblg4grs77c6zm92"},
-  {"form":"d:ib3emdhv0pn4dvarbr68bnvx","decision":"d:a1ojfys4el4agaku650qlll8u"},
-  {"form":"d:a2och6psiwy0aramkpqnxhosj","decision":"d:myb19rpcchh7lldmxdlenay3"},
-  {"form":"d:sz6j18euqocwoy02zd4xb2rp","decision":"d:l0pdvrh7lob0sjkm9dijdasn"},
-  {"form":"d:q47rnf4ywu73f43flegg8vjv","decision":"d:a0kynxpxgvqh55yjnjpakxwwc"},
-  {"form":"d:l9o4byrdv3dsqx46bzsgudji","decision":"d:i2i81jr946ytnejs16yutm1y"}
-];
+// UserTaskForm with non-existing decision
+
+var err_count = 0;
+var errs_objs = [];
+var errs = [];
+
+veda.Util.processQuery("( 'rdf:type'=='v-wf:DecisionForm' ) && ( 'v-wf:isCompleted'=='true' ) && ( 'v-wf:takenDecision.isExists'=='true' ) && ( 'v-s:created'==[2017-08-20T21:00:00.000Z,2017-08-22T20:59:59.999Z] )", 100000, 100, 1000, function (uri) {
+  try {
+    var form = new veda.IndividualModel(uri);
+    var decision = form.get("v-wf:takenDecision")[0];
+    if ( !decision || decision["rdf:type"][0].id === "rdfs:Resource" ) {
+      errs.push(uri);
+      errs_objs.push({form: uri, decision: decision.id});
+      console.log(++err_count, "form_uri", uri, "decision_uri", decision.id);
+      //form["v-wf:isCompleted"] = [ false ];
+      //form["v-wf:takenDecision"] = [];
+      //form.save();
+    }
+  } catch (err) {
+    console.log("Error.", uri, err);
+  }
+});
+
+errs = ["d:hhi944jcyc68wwzvn62hkalu","d:a4mftigyzzhk7cgum8nvo0rzp","d:ntjub9bg59am43bxyuv99if3","d:vsoixpuvind5hbhhl4rqzrml","d:a24onsybic8ula3wxbegdr9ty","d:a30ktptswjwd1gdtn73jhbup9","d:u9eomkaxe7bpc6ah89lhl8h6","d:a948yxdpw0k3wfo7pzuy5lewa","d:j7flhct3gfnyxfzi8cr3lovw","d:fux9froqhgh7vxy76ww1an9x","d:duw0hgog4shfb9xvqif4lqsx","d:p85bnxbg85v37ndg4gicscof","d:a8qufarpbg7skilcucg9gfd6s","d:opclm0reen93qkkafrv54uck","d:fg6al4il2fnsb1vzamqdkgll","d:imfxj3kk8ezg8systkz4l5t0","d:a8tjg0ug0i528e5mhlboffopb"];
+
+errs = ["d:pml16pzymirfvbhp491datw2","d:a4mftigyzzhk7cgum8nvo0rzp","d:a3sbggc84l2i6kvbj80jk6fdk","d:j43034hrfn6zslpxsplaxh99","d:tdpc3ijaeg1mdpgb951de5w5","d:a6ubspjrfjwhxtpaqlpe7dg7q","d:imfxj3kk8ezg8systkz4l5t0"]
+
+errs = ["d:sz6j18euqocwoy02zd4xb2rp","d:kfvs3nuy5q07jfq0wbolmoi6","d:hctb6vz92vcyn04eljklchfv","d:lvxhl5n99lv49fou5d1ubr75","d:hyrhkzo4ui9sz5t6e3pu4jgy","d:lzckerflmtl68fzm8ip6lkcg","d:jyk6qkvawt2zgzeiyf3cvsyp","d:a9z2dkc48w1d2mg5gois5tr7h","d:a4mftigyzzhk7cgum8nvo0rzp","d:imfxj3kk8ezg8systkz4l5t0"]"
+

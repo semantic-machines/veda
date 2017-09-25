@@ -116,22 +116,22 @@ interface VedaStorageRest_API {
     Json get_individual(string ticket, string uri, bool reopen = false);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    OpResult put_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult put_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 
     @path("put_individuals") @method(HTTPMethod.PUT)
-    OpResult[] put_individuals(string ticket, Json[] individual, bool prepare_events, string event_id);
+    OpResult[] put_individuals(string ticket, Json[] individual, long assigned_subsystems, string event_id);
 
     @path("remove_individual") @method(HTTPMethod.PUT)
-    OpResult remove_individual(string ticket, string uri, bool prepare_events, string event_id);
+    OpResult remove_individual(string ticket, string uri, long assigned_subsystems, string event_id);
 
     @path("remove_from_individual") @method(HTTPMethod.PUT)
-    OpResult remove_from_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult remove_from_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 
     @path("set_in_individual") @method(HTTPMethod.PUT)
-    OpResult set_in_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult set_in_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
-    OpResult add_to_individual(string ticket, Json individual, bool prepare_events, string event_id);
+    OpResult add_to_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
 }
 
 extern (C) void handleTerminationR(int _signal)
@@ -526,7 +526,7 @@ class VedaStorageRest : VedaStorageRest_API
         {
             try
             {
-                res = context.get_operation_state(cast(P_MODULE)module_id, wait_op_id);
+                res = context.get_operation_state(cast(MODULE)module_id, wait_op_id);
             }
             catch (Throwable tr)
             {
@@ -801,43 +801,42 @@ class VedaStorageRest : VedaStorageRest_API
                 {
                     string queue_name = uri[ queue_state_prefix.length..$ ];
                     log.trace("%s queue_name=%s", queue_state_prefix, queue_name);
-                    //if (main_queue is null)
+
+                    main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
+                    if (main_queue.open())
                     {
-                        main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
-                        if (main_queue.open())
+                        cs0 = new Consumer(main_queue, queue_db_path, queue_name, Mode.R, log);
+                        if (!cs0.open())
                         {
-                            cs0 = new Consumer(main_queue, queue_db_path, queue_name, Mode.R, log);
-                            if (!cs0.open())
-                            {
-                                rc = ResultCode.Invalid_Identifier;
-                                return res;
-                            }
+                            rc = ResultCode.Invalid_Identifier;
+                            return res;
                         }
+
+
+                        // TODO: ? возможно для скорости следует переделать get_info на rawRead
+                        main_queue.get_info();
+                        cs0.get_info();
+
+                        Individual indv_res;
+                        indv_res.uri = uri;
+
+                        indv_res.addResource(rdf__type, Resource(DataType.Uri, "v-s:AppInfo"));
+
+                        indv_res.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                        indv_res.addResource("srv:queue", Resource(DataType.Uri, "srv:" ~ queue_name));
+                        indv_res.addResource("srv:total_count", Resource(DataType.Integer, main_queue.count_pushed));
+                        indv_res.addResource("srv:current_count", Resource(DataType.Integer, cs0.count_popped));
+
+                        res = individual_to_json(indv_res);
+
+                        rc = ResultCode.OK;
+
+                        cs0.close();
+                        cs0 = null;
+
+                        main_queue.close();
+                        main_queue = null;
                     }
-
-                    // TODO: ? возможно для скорости следует переделать get_info на rawRead
-                    main_queue.get_info();
-                    cs0.get_info();
-
-                    Individual indv_res;
-                    indv_res.uri = uri;
-
-                    indv_res.addResource(rdf__type, Resource(DataType.Uri, "v-s:AppInfo"));
-
-                    indv_res.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-                    indv_res.addResource("srv:queue", Resource(DataType.Uri, "srv:" ~ queue_name));
-                    indv_res.addResource("srv:total_count", Resource(DataType.Integer, main_queue.count_pushed));
-                    indv_res.addResource("srv:current_count", Resource(DataType.Integer, cs0.count_popped));
-
-                    res = individual_to_json(indv_res);
-
-                    rc = ResultCode.OK;
-
-                    cs0.close();
-                    cs0 = null;
-
-                    main_queue.close();
-                    main_queue = null;
 
                     return res;
                 }
@@ -889,37 +888,26 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult remove_individual(string _ticket, string uri, bool prepare_events, string event_id)
+    OpResult remove_individual(string _ticket, string uri, long assigned_subsystems, string event_id)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
-
-        OpResult[] op_res;
-        ResultCode rc = ResultCode.Internal_Server_Error;
-        Ticket     *ticket;
-        Json       jreq = Json.emptyObject;
-
         try
         {
+            ulong      timestamp = Clock.currTime().stdTime() / 10;
+
+            Ticket     *ticket;
+            ResultCode rc = ResultCode.Internal_Server_Error;
+
             ticket = get_ticket(context, _ticket);
             rc     = ticket.result;
 
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
 
-            if (wsc_server_task is Task.init)
-            {
-                rc = ResultCode.Internal_Server_Error;
-                throw new HTTPStatusException(rc, text(rc));
-            }
+            Json individual_json = Json.emptyObject;
 
-            jreq[ "function" ]       = "remove";
-            jreq[ "ticket" ]         = _ticket;
-            jreq[ "uri" ]            = uri;
-            jreq[ "prepare_events" ] = prepare_events;
-            jreq[ "event_id" ]       = event_id;
+            individual_json[ "@" ] = uri;
 
-            vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
-            vibe.core.concurrency.receive((string res){ op_res = parseOpResults(res); });
+            OpResult[] op_res = modify_individuals(context, "remove", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
             rc = op_res[ 0 ].result;
 
             if (rc != ResultCode.OK)
@@ -927,16 +915,74 @@ class VedaStorageRest : VedaStorageRest_API
 
             return op_res[ 0 ];
         }
-        finally
+        catch (Throwable tr)
         {
-            trail(_ticket, ticket.user_uri, "remove_individual", jreq, "", op_res[ 0 ].result, timestamp);
+            log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
         }
     }
 
-    OpResult put_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult put_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
+    {
+        try
+        {
+            ulong      timestamp = Clock.currTime().stdTime() / 10;
+
+            Ticket     *ticket;
+            ResultCode rc = ResultCode.Internal_Server_Error;
+
+            ticket = get_ticket(context, _ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
+            rc = op_res[ 0 ].result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            return op_res[ 0 ];
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
+        }
+    }
+
+    OpResult[] put_individuals(string _ticket, Json[] individuals_json, long assigned_subsystems, string event_id)
+    {
+        try
+        {
+            OpResult[] res;
+
+            ulong      timestamp = Clock.currTime().stdTime() / 10;
+
+            Ticket     *ticket;
+            ResultCode rc = ResultCode.Internal_Server_Error;
+
+            ticket = get_ticket(context, _ticket);
+            rc     = ticket.result;
+
+            if (rc != ResultCode.OK)
+                throw new HTTPStatusException(rc, text(rc));
+
+            res = modify_individuals(context, "put", _ticket, individuals_json, assigned_subsystems, event_id, timestamp);
+
+            return res;
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+            throw new HTTPStatusException(ResultCode.Internal_Server_Error, text(ResultCode.Internal_Server_Error));
+        }
+    }
+
+    OpResult add_to_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
-
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -946,7 +992,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
+        OpResult[] op_res = modify_individuals(context, "add_to", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
         rc = op_res[ 0 ].result;
 
         if (rc != ResultCode.OK)
@@ -955,27 +1001,7 @@ class VedaStorageRest : VedaStorageRest_API
         return op_res[ 0 ];
     }
 
-    OpResult[] put_individuals(string _ticket, Json[] individuals_json, bool prepare_events, string event_id)
-    {
-        OpResult[] res;
-
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
-
-        Ticket     *ticket;
-        ResultCode rc = ResultCode.Internal_Server_Error;
-
-        ticket = get_ticket(context, _ticket);
-        rc     = ticket.result;
-
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc, text(rc));
-
-        res = modify_individuals(context, "put", _ticket, individuals_json, prepare_events, event_id, timestamp);
-
-        return res;
-    }
-
-    OpResult add_to_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult set_in_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -987,7 +1013,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "add_to", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
+        OpResult[] op_res = modify_individuals(context, "set_in", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
         rc = op_res[ 0 ].result;
 
         if (rc != ResultCode.OK)
@@ -996,7 +1022,7 @@ class VedaStorageRest : VedaStorageRest_API
         return op_res[ 0 ];
     }
 
-    OpResult set_in_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
+    OpResult remove_from_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -1008,28 +1034,7 @@ class VedaStorageRest : VedaStorageRest_API
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
 
-        OpResult[] op_res = modify_individuals(context, "set_in", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
-        rc = op_res[ 0 ].result;
-
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc, text(rc));
-
-        return op_res[ 0 ];
-    }
-
-    OpResult remove_from_individual(string _ticket, Json individual_json, bool prepare_events, string event_id)
-    {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
-        Ticket     *ticket;
-        ResultCode rc = ResultCode.Internal_Server_Error;
-
-        ticket = get_ticket(context, _ticket);
-        rc     = ticket.result;
-
-        if (rc != ResultCode.OK)
-            throw new HTTPStatusException(rc, text(rc));
-
-        OpResult[] op_res = modify_individuals(context, "remove_from", _ticket, [ individual_json ], prepare_events, event_id, timestamp);
+        OpResult[] op_res = modify_individuals(context, "remove_from", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
         rc = op_res[ 0 ].result;
 
         if (rc != ResultCode.OK)
@@ -1116,7 +1121,7 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 }
 
 //////////////////////////////////////////////////////////////////// ws-server-transport
-private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, bool prepare_events, string event_id,
+private OpResult[] modify_individuals(Context context, string cmd, string _ticket, Json[] individuals_json, long assigned_subsystems, string event_id,
                                       ulong start_time)
 {
     OpResult[] op_res;
@@ -1135,11 +1140,11 @@ private OpResult[] modify_individuals(Context context, string cmd, string _ticke
 
     string res;
     Json   jreq = Json.emptyObject;
-    jreq[ "function" ]       = cmd;
-    jreq[ "ticket" ]         = _ticket;
-    jreq[ "individuals" ]    = individuals_json;
-    jreq[ "prepare_events" ] = prepare_events;
-    jreq[ "event_id" ]       = event_id;
+    jreq[ "function" ]            = cmd;
+    jreq[ "ticket" ]              = _ticket;
+    jreq[ "individuals" ]         = individuals_json;
+    jreq[ "assigned_subsystems" ] = assigned_subsystems;
+    jreq[ "event_id" ]            = event_id;
 
     vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
     vibe.core.concurrency.receive((string _res){ res = _res; op_res = parseOpResults(_res); });
