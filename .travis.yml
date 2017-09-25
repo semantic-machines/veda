@@ -59,17 +59,14 @@ script:
   - node ./qa/testAttributiveSearchPerson.js
   - node ./qa/testCreatingNetInterface.js
   - travis_wait 20 node ./qa/testInbox.js
+  - sudo date --set "15:10:00"
   - travis_wait 20 node ./qa/testRepeatComplexRoute.js
   - travis_wait 20 node ./qa/testNetComplexRoute.js
   - travis_wait 20 node ./qa/testSimpleNet.js
-  - sudo date --set "15:10:00"
   - travis_wait 20 node ./qa/testSimpleNet2.js
   - travis_wait 20 node ./qa/testSimpleNet3.js
-  - sudo date --set "15:11:00"
   - travis_wait 20 node ./qa/testSimpleWorkflow.js
   - travis_wait 20 node ./qa/testDelegationDocument.js
-  - sudo date --set "15:12:00"
-  - date
   - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
