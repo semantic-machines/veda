@@ -1951,27 +1951,37 @@ for (i = 0; i < 1; i++)
 
             //#2
             ok(compare(data.length, 3));
+
+        console.log("@5.1");
             
             var data = query(ticket_user1.id, "'@' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
             //#3
             ok(compare(data.length, 2));
             
+        console.log("@5.2");
+
             var data = query(ticket_user1.id, "('@' == 'test30.1*' || '@' == 'test30.2*') && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
             //#4
             ok(compare(data.length, 4));
             
+        console.log("@5.3");
+
             var data = query(ticket_user1.id, "'@' == 'test30*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
             //#5
             ok(compare(data.length, 6));
+
+        console.log("@5.4");
             
             var data = query(ticket_user1.id, "'rdfs:label.isExists' == 'true' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
             //#6
             ok(compare(data.length, 5));
             
+        console.log("@5.5");
+
             var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
             //#7
