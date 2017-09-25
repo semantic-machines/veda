@@ -210,7 +210,7 @@ Element read_element(Individual *individual, const char *src, int b_pos, int e_p
             Resource rr;
             rr.type                  = _Decimal;
             rr.decimal_mantissa_data = mantissa.v_long;
-            rr.decimal_expanent_data = exponent.v_long;
+            rr.decimal_exponent_data = exponent.v_long;
             resources.push_back(rr);
             individual->resources[ predicate_uri ] = resources;
         }
@@ -284,7 +284,7 @@ void write_resources(string uri, vector <Resource> vv, std::vector<char> &ou)
             write_type_value(TAG, DECIMAL_FRACTION, ou);
             write_type_value(ARRAY, 2, ou);
             write_integer(value.decimal_mantissa_data, ou);
-            write_integer(value.decimal_expanent_data, ou);
+            write_integer(value.decimal_exponent_data, ou);
         }
         else if (value.type == _Boolean)
         {

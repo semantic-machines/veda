@@ -325,6 +325,14 @@ cfg:Permission_6
 #  v-s:deleted "true"^^xsd:boolean ;
 #.
 
+cfg:Membership_AllUsersGroup_WorkFlowReadUser
+  rdf:type v-s:Membership ;
+  v-s:author cfg:VedaSystem ;
+  v-s:memberOf v-wf:WorkflowReadUser ;
+  v-s:resource cfg:AllUsersGroup ;
+  rdfs:label "All users group is member of v-wf:WorkflowReadUser" ;
+.
+
 ##################### EVENT HANDLERS #####################
 
 cfg:Event_0

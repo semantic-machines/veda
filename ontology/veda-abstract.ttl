@@ -197,6 +197,14 @@ v-s:scanAttachment
   rdfs:domain v-s:Thing ;
   rdfs:subPropertyOf v-s:attachment ;
 .
+v-s:companionAttachment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Companion document"@en ;
+  rdfs:label "Сопутствующий документ"@ru ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ;
+  rdfs:subPropertyOf v-s:attachment ;
+.
 v-s:hasClassifiedAttachment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Classified attachment"@en ;
@@ -281,6 +289,7 @@ v-s:origin
   rdfs:range xsd:string ;
   rdfs:domain v-s:Thing ;
 .
+# Плохо. что такой общий предикат определен для ЛНД но поднят в абстрактный класс. А еще перекликается с rdfs:isDefinedBy
 v-s:isDefinedBy
   rdf:type owl:ObjectProperty ;
   rdfs:label "Is defined by"@en ;
@@ -323,7 +332,7 @@ v-s:UserThing
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "User thing"@en ;
-  rdfs:label "Любая пльзовательская сущность"@ru ;
+  rdfs:label "Пользовательская сущность"@ru ;
 .
 v-s:hasStatusManual
   rdf:type owl:ObjectProperty ;
@@ -337,7 +346,14 @@ v-s:SystemThing
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:label "System thing"@en ;
-  rdfs:label "Любая системная сущность"@ru ;
+  rdfs:label "Системная сущность"@ru ;
+.
+### -------------------------------------------------------
+v-s:Function
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Function"@en ;
+  rdfs:label "Функция"@ru ;
 .
 ### -------------------------------------------------------
 v-s:Temporal
@@ -407,6 +423,13 @@ v-s:dateToFact
   rdfs:label "Date finish actual"@en ;
   rdfs:label "Дата окончания фактическая"@ru ;
   rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Temporal ;
+.
+v-s:dateOfReceiving
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Date of receiving"@en ;
+  rdfs:label "Дата получения"@ru ;
+  rdfs:range xsd:date ;
   rdfs:domain v-s:Temporal ;
 .
 v-s:year
@@ -954,6 +977,13 @@ v-s:hasMaintenanceKind
   rdfs:label "Equipment shutdown kind"@en ;
   rdfs:label "Вид останова оборудования"@ru ;
   rdfs:range v-s:MaintenanceKind ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:productionCondition
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Production condition"@en ;
+  rdfs:label "Производственные условия"@ru ;
+  rdfs:range xsd:string ;
   rdfs:domain v-s:Maintained ;
 .
 

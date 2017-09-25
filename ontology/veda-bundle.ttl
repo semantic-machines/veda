@@ -186,6 +186,11 @@ v-s:Delete
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
 .
+v-s:Destroy
+  rdf:type v-s:Bundle ;
+  rdfs:label "Уничтожить"@ru ;
+  rdfs:label "Destroy"@en ;
+.
 v-s:DeleteAll
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить все"@ru ;

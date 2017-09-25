@@ -434,6 +434,13 @@ v-s:member
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:WorkGroup ;
 .
+v-s:chiefOfWorkGroup
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Chief of workGroup"@en ;
+  rdfs:label "Руководитель рабочей группы"@ru ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:WorkGroup ;
+.
 #--------------------------------------------------
 v-s:MemberOfWorkGroup
   rdf:type owl:Class ;

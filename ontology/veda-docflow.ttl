@@ -135,9 +135,9 @@ v-df:ApprovalTaskTemplate
   </div>
   <br><br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="button" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
@@ -336,7 +336,7 @@ v-df:SignRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -397,7 +397,7 @@ v-df:QuestionRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -454,7 +454,7 @@ v-df:InstructionRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -507,7 +507,7 @@ v-df:TaskRouteStartFormTemplate
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -558,7 +558,7 @@ v-df:DistributionRouteStartFormTemplate
   <veda-control property="rdfs:comment" rows="3" data-type="text" class="-view edit search"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -608,7 +608,7 @@ v-df:CoordinationRouteStartFormTemplate
   <veda-control rel="v-s:controller" data-type="link" class="-view edit search fulltext"></veda-control>
   <br>
   <div class="actions">
-    <button type="button" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
+    <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   </div>
 </div>
@@ -1186,9 +1186,19 @@ v-df:DecisionTemplate2
   rdfs:label "Template for -Decision- class "@en ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
   v-ui:template """
+<script>
+  $("#cancel.action", template).click(function () {
+    window.history.back();
+  });
+</script>
 <div>
   <div rel="v-s:hasActivity" data-template="v-df:ActionInDecisionTemplate" data-embedded="true"></div>
   <veda-control rel="v-s:hasActivity" data-type="link" class="-view edit search fulltext create"></veda-control>
+  <br>
+  <div class="actions pull-left">
+    <button type="submit" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
@@ -1511,14 +1521,23 @@ v-wf:DecisionRedirectTemplate
   rdfs:label "Template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:template """
+<script>
+  $("#cancel.action", template).click(function () {
+    window.history.back();
+  });
+</script>
 <div>
   <em about="v-wf:to" property="rdfs:label"></em>
   <div rel="v-wf:to" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
   <veda-control rel="v-wf:to" data-type="link" class="-view edit search fulltext"></veda-control>
-  <br>
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+  <br>
+  <div class="actions pull-left">
+    <button type="submit" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
@@ -1556,10 +1575,20 @@ v-wf:DecisionTemplate1
   v-ui:forClass v-wf:DecisionAgreedToExecuteComment ;
   v-ui:forClass v-wf:DecisionCalculationsPerformed ;
   v-ui:template """
+<script>
+  $("#cancel.action", template).click(function () {
+    window.history.back();
+  });
+</script>
 <div>
   <em about="rdfs:comment" property="rdfs:label"></em>
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+  <br>
+  <div class="actions pull-left">
+    <button type="submit" class="action btn btn-primary -view edit -search" id="send">Ok</button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  </div>
 </div>
   """ ;
 .
@@ -1621,7 +1650,7 @@ v-wf:DecisionRedirectTemplateSpec3
   rdfs:label "Spec for template for -Decision Redirect- class"@en ;
   v-ui:forClass v-wf:DecisionRedirect ;
   v-ui:forClass v-wf:DecisionAgreedToExecute ;
-  v-ui:forProperty v-wf:to, rdfs:comment ;
+  v-ui:forProperty v-wf:to ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User') || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;

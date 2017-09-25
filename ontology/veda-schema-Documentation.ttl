@@ -453,12 +453,15 @@ v-s:Decree
 v-s:InternalDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Internal document"@en ;
   rdfs:label "Внутренний документ"@ru ;
 .
 # v-s:hasDocumentKind
 # v-s:initiator
-# v-s:supplier
+# v-s:responsibleDepartment
 # v-s:copyTo
 # v-s:theme
 # v-s:content

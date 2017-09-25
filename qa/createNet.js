@@ -85,7 +85,8 @@ module.exports = {
         basic.execute(driver, 'click', '.create-task', "****** PHASE#" + phase + " : ERROR = Cannot click on 'create-task' button");
         if (taskExecutor != "false") {
             basic.execute(driver, 'click', '.state-task', "****** PHASE#" + phase + " : ERROR = Cannot click on 'state-task' button");
-            driver.executeScript("$('span[about=\"v-wf:executor\"]')[0].scrollIntoView(true);");
+            driver.executeScript("$('span[about=\"v-wf:executor\"]')[0].scrollIntoView(true);")
+                .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to executor field");});
             basic.execute(driver, 'click', 'span[about="v-wf:executor"]', "****** PHASE#" + phase + " : ERROR = Cannot click on 'executor' field ");
             basic.execute(driver, 'click', 'veda-control[class="VCexecutor fulltext dropdown create properties-editor"]',
                 "****** PHASE#" + phase + " : ERROR = Cannot click on 'VCexecutor' field ");

@@ -19,7 +19,11 @@
 
     control.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
 
-    input.attr("placeholder", placeholder)
+    input
+      .attr({
+        "placeholder": placeholder,
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+      })
       .on("change focusout", changeHandler)
       .keyup( function (e) {
         if (!control.isSingle) { return; }
@@ -158,6 +162,27 @@
     isSingle: true
   };
 
+  // Password input
+  $.fn.veda_password = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_password.defaults, options ),
+      control = veda_literal_input.call(this, opts);
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_password.defaults = {
+    template: $("#password-control-template").html(),
+    parser: function (input) {
+      if (input.length === 64) {
+        return new String( input );
+      } else if (input) {
+        return new String( Sha256.hash(input) );
+      } else {
+        return null;
+      }
+    },
+    isSingle: true
+  };
+
   // Text input
   $.fn.veda_text = function( options ) {
     var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
@@ -237,7 +262,10 @@
       input = $("input", control),
       change;
 
-    input.attr("placeholder", placeholder);
+    input.attr({
+      "placeholder": placeholder,
+      "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+    });
 
     var singleValueHandler = function (values) {
       if (values.length) {
@@ -416,8 +444,11 @@
 
       var formControl = localedInput.find(".form-control");
       formControl
-        .attr("lang", language_name)
-        .attr("placeholder", placeholder)
+        .attr({
+          "lang": language_name,
+          "placeholder": placeholder,
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+        })
         .on("change focusout", function () {
           var values = control.find(".form-control").map(function () {
             return opts.parser( this.value, this );
@@ -1029,7 +1060,10 @@
       input = $(".form-control", control),
       button = $(".get-numeration-value", control);
 
-    input.attr("placeholder", placeholder);
+    input.attr({
+      "placeholder": placeholder,
+      "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
+    });
 
     function singleValueHandler (values) {
       input.val( values[0] );
@@ -1110,7 +1144,6 @@
         control = $(opts.template),
         individual = opts.individual,
         property_uri = opts.property_uri,
-        fscreen = $("#full-screen", control),
         editorEl = control.get(0);
 
     opts.value = individual.hasValue(property_uri) ? individual.get(property_uri)[0].toString() : "";
@@ -1128,8 +1161,17 @@
       autoCloseBrackets: true,
       matchTags: true,
       autoCloseTags: true,
-      lineNumbers: true
+      lineNumbers: true,
+      extraKeys: {
+        "F9": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
     });
+
     setTimeout( function () {
       editor.refresh();
     }, 100);
@@ -1158,31 +1200,6 @@
     individual.on(property_uri, handler );
     this.on("remove", function () {
       individual.off(property_uri, handler);
-    });
-
-    fscreen.click(function () {
-      var body = $("body"),
-          all = $("body > *:not(script)"),
-          parent = control.parent(),
-          wrapper = $("<div class='fs-wrapper'></div>"),
-          cm = $(".CodeMirror", control);
-      if ( !parent.hasClass("fs-wrapper") ) {
-        control.wrap( wrapper );
-        cm.addClass("CodeMirror-fs");
-        parent = control.parent();
-        parent.detach();
-        all.hide();
-        body.append(parent);
-      } else {
-        parent.detach();
-        cm.removeClass("CodeMirror-fs");
-        self.append(parent);
-        control.unwrap();
-        all.show();
-      }
-      control.toggleClass("fs");
-      fscreen.toggleClass("glyphicon-resize-full glyphicon-resize-small");
-      editor.refresh();
     });
 
     this.append(control);
@@ -1410,7 +1427,7 @@
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" "),
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined,
-      sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
+      sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
       inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
@@ -1504,7 +1521,9 @@
               modal.modal("hide").remove();
             });
             var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-            $(".action", tmpl).remove();
+            if (tmpl) {
+              $(".action", tmpl).remove();
+            }
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
             template.on("internal-validated", function () {
@@ -1547,6 +1566,7 @@
         targetRel_uri: rel_uri,
         inProperty: inProperty,
         outProperty: outProperty,
+        sort: sort,
         allowedClass: allowedClass,
         selectableClass: selectableClass,
         selectableFilter: selectableFilter,
@@ -1573,7 +1593,10 @@
     // Fulltext search feature
     if ( this.hasClass("fulltext") || this.hasClass("full") ) {
 
-      fulltext.attr("placeholder", placeholder);
+      fulltext.attr({
+        "placeholder": placeholder,
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+      });
 
       var timeout;
 
