@@ -92,7 +92,7 @@ basic.getDrivers().forEach (function (drv) {
 
     //PHASE#5:
     // ? complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', '?');
-    complexRoute.acceptTask(driver, '3', '+', '-', 'karpovrt', '123', '2', 'Администратор2', 5);
+    complexRoute.acceptTask(driver, '3', '+', '+', 'karpovrt', '123', '2', 'Администратор2', 5);
     complexRoute.acceptTask(driver, '4', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5);
     complexRoute.acceptTask(driver, '1', '+', '-', 'karpovrt', '123', '2', 'Администратор2', 5);
     complexRoute.acceptTask(driver, '2', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5);
