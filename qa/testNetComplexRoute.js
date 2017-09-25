@@ -42,6 +42,8 @@ var basic = require('./basic.js'),
 
 basic.getDrivers().forEach (function (drv) {
     //PHASE#0: Login
+    console.log("testNetComplexRoute.js");
+
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
