@@ -25,7 +25,7 @@ module.exports = {
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName, phase);
         basic.menu(driver, 'Inbox', phase);
-        driver.sleep(basic.SLOW_OPERATION);
+        driver.sleep(basic.SLOW_OPERATION*2);
         driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
             function(result){basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on message. Seems message is not located");});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
