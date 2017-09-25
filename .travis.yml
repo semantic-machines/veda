@@ -46,19 +46,19 @@ script:
   - grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
-#  - node ./qa/testLogin.js
-#  - node ./qa/testDeleteAndRecovery.js
-#  - node ./qa/testRights.js
-#  - node ./qa/testComment.js
-#  - node ./qa/testVersionedDocument.js
-#  - node ./qa/testJournal.js
-#  - node ./qa/testAttachment.js
-#  - node ./qa/testPager.js
-#  - node ./qa/testSearchRangeOfDates.js
-#  - node ./qa/testAttributiveSearchPerson.js
-#  - node ./qa/testCreatingNetInterface.js
-#  - node ./qa/testInbox.js
-#  - node ./qa/testRepeatComplexRoute.js
+  - node ./qa/testLogin.js
+  - node ./qa/testDeleteAndRecovery.js
+  - node ./qa/testRights.js
+  - node ./qa/testComment.js
+  - node ./qa/testVersionedDocument.js
+  - node ./qa/testJournal.js
+  - node ./qa/testAttachment.js
+  - node ./qa/testPager.js
+  - node ./qa/testSearchRangeOfDates.js
+  - node ./qa/testAttributiveSearchPerson.js
+  - node ./qa/testCreatingNetInterface.js
+  - node ./qa/testInbox.js
+  - node ./qa/testRepeatComplexRoute.js
   - node ./qa/testNetComplexRoute.js
 #  - node ./qa/testSimpleNet.js
 #  - node ./qa/testSimpleNet2.js
