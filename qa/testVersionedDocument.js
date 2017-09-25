@@ -45,8 +45,6 @@ function updateVersion(driver, task, label, valueToSearch, valueToChoose, phase)
 function checkVersion(driver, version, responsible, phase) {
     var i = 0;
     driver.sleep(basic.FAST_OPERATION);
-    driver.navigate().refresh();
-    driver.sleep(basic.SLOW_OPERATION);
     for(var j = 0; j < version.length; j++) {
         driver.sleep(basic.FAST_OPERATION).then(function() {
         var a;
