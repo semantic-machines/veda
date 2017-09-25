@@ -25,12 +25,10 @@ module.exports = {
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName, phase);
         basic.menu(driver, 'Inbox', phase);
-        driver.sleep(basic.SLOW_OPERATION/2);
-        driver.executeScript("document.querySelector('div[id=\"results\"] a[property=\"rdfs:label\"] span[class=\"value-holder\"]').scrollIntoView(true);")
-        driver.findElement({css:'div[id="results"] a[property="rdfs:label"] span[class="value-holder"]'}).click()
-            .thenCatch(function(e){basic.errorHandler(e, "****** PHASE#0 : ERROR = Cannot find a message");}); 
+        driver.sleep(basic.SLOW_OPERATION);
+        driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
+            function(result){basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on message. Seems message is not located");});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
-        driver.sleep(basic.FAST_OPERATION * 2);
         if (commentValue === '+') {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "****** PHASE#" + phase + " : ERROR = Cannot fill 'comment'", timeStamp);
         }
@@ -87,7 +85,7 @@ module.exports = {
     checkTask: function (driver, count, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName, phase);
         basic.menu(driver, 'Inbox', phase);
-        driver.sleep(basic.SLOW_OPERATION/2);
+        driver.sleep(basic.SLOW_OPERATION);
         driver.findElements({css:'tr[typeof="v-wf:DecisionForm s-wf:UserTaskForm"]'}).then(function (result) {
             assert.equal(count, result.length);
         }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = checkTask:Invalid `message` elements count (inbox task counter), user=" + login + ':' + firstName + ':' + lastName);});
@@ -108,7 +106,7 @@ module.exports = {
      */
     checkTasks: function (driver, inbox, outbox, completed, login, password, firstName, lastName, phase) {
         basic.login(driver, login, password, firstName, lastName);
-        basic.menu(driver, 'Inbox', phase);
+        basic.menu(driver, 'Inbox');
         driver.sleep(basic.FAST_OPERATION * 2);
         driver.findElement({css:'a[about="v-ft:Inbox"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Inbox messages")});
@@ -141,6 +139,7 @@ module.exports = {
         basic.logout(driver);
     }
 };
+
 
 
 
