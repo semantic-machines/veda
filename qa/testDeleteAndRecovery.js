@@ -61,6 +61,8 @@ function clickButton(driver, button, phase) {
  */
 
 basic.getDrivers().forEach(function(drv){
+    console.log("testDeleteAndRecovery.js");
+
     //PHASE#0: Login
     var driver = basic. getDriver(drv);
     basic.openPage(driver, drv);
