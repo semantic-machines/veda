@@ -23,10 +23,11 @@ module.exports = {
      * @param phase - текущая фаза теста
     */
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase) {
-        driver.sleep(basic.SLOW_OPERATION*2);
+        driver.sleep(basic.SLOW_OPERATION);
         basic.login(driver, login, password, firstName, lastName, phase);
+        driver.sleep(basic.SLOW_OPERATION);
         basic.menu(driver, 'Inbox', phase);
-        driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION).then(
+        driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION*2).then(
             function(result){basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on message. Seems message is not located");});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
         if (commentValue === '+') {
