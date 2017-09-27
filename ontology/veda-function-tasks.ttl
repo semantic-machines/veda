@@ -534,7 +534,10 @@ v-ft:TaskResultTemplate
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
-      <td><a href="#/@" property="rdfs:label"></a></td>
+      <td>
+        <a href="#/@" property="rdfs:label"></a>
+        <i property="v-s:description"></i>
+      </td>
       <td rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
       <td property="v-s:created"></td>
       <td property="v-wf:dateGiven"></td>
