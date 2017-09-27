@@ -195,12 +195,12 @@ class XapianReader : SearchReader
         long cur_committed_op_id = get_info().committed_op_id;
         if (cur_committed_op_id > committed_op_id)
         {
-            log.trace("reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
+            log.trace("search:reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
             reopen_db();
         }
         else
         {
-            //log.trace ("cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
+            log.trace ("search:check reopen_db: cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
         }
 
         Database_QueryParser db_qp = get_dbqp(db_names);
