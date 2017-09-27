@@ -36,7 +36,7 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
-  - sudo date --set "15:00:00"
+  - sudo date --set "00:00:00"
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
   - date
@@ -70,7 +70,7 @@ script:
 # Stop deamon and show log
 after_script:
   - ./control-stop.sh
-  - ./send-to-chunk-io.sh
+#  - ./send-to-chunk-io.sh
 #  - grunt coveralls
 
 after_failure:
