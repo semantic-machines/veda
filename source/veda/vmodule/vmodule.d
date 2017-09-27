@@ -455,6 +455,7 @@ class VedaModule
                 {
                     main_cs[ i ].commit_and_next(true);
                     module_info.put_info(op_id, committed_op_id);
+                    log.trace("put info: op_id=%d, committed_op_id=%d", op_id, committed_op_id);
                 }
                 else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
                          res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
