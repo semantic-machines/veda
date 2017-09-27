@@ -762,7 +762,7 @@ td > #rel-actions {
   position:absolute !important;
   top:0px;
   right:0px;
-  z-index:1;
+  z-index:2;
   padding:inherit;
 }
 .red-outline {
