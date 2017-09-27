@@ -425,10 +425,16 @@ fieldset[disabled] .form-control {
   .modal-lg {
     width: 900px;
   }
+  .modal-xl {
+    width: 96%;
+  }
 }
 @media (min-width: 1250px) {
   .modal-lg {
     width: 1200px;
+  }
+  .modal-xl {
+    width: 96%;
   }
 }
 
