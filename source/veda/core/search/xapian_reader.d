@@ -306,7 +306,7 @@ class XapianReader : SearchReader
             log.trace("invalid query [%s]", str_query);
         }
 
-        log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.processed);
+        log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.count, sr.processed);
  
         return sr;
     }
