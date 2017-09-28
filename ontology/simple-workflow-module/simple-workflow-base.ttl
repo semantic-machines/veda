@@ -1057,6 +1057,40 @@ if (doc['rdf:type'][0].id === "mnd-s:Claim") {
   routes['review'][simple+'editable'] = [true];
   routes['review'][simple+'deadlineDays'] = [3];
 }
+//------------------------------------------------------Внутренний бухгалтерский документ-------
+if (doc['rdf:type'][0].id === "mnd-s:InternalAccountingDocument") {
+  routes['coordination1'][simple+'visible'] = [true];
+  routes['coordination1'][simple+'editable'] = [true];
+  routes['coordination2'][simple+'visible'] = [true];
+  routes['coordination2'][simple+'editable'] = [true];
+  routes['coordination3'][simple+'visible'] = [true];
+  routes['coordination3'][simple+'editable'] = [true];
+  routes['sign'][simple+'visible'] = [true];
+  routes['sign'][simple+'editable'] = [true];
+  routes['sign'][simple+'deadlineDays'] = [5];
+  routes['approval'][simple+'visible'] = [true];
+  routes['approval'][simple+'editable'] = [true];
+  routes['approval'][simple+'deadlineDays'] = [5];
+  routes['review'][simple+'visible'] = [true];
+  routes['review'][simple+'editable'] = [true];
+  routes['review'][simple+'deadlineDays'] = [3];
+  if ( (doc.hasValue("v-s:hasDocumentKind", "d:837027d7e8b04305a5b632224f0d2716")) || (doc.hasValue("v-s:hasDocumentKind", "d:90209600a3a44baa9e185809e4ecd866"))){
+    routes['review'][simple+'participant'] = [new veda.IndividualModel("d:2ee64753-2e4c-4e33-8a30-b14d1ab45854")];
+  } else if ( doc.hasValue("v-s:hasDocumentKind", "d:a7c3b20d5dc243c9ad078947ede1bb18") ){
+    routes['review'][simple+'participant'] = [new veda.IndividualModel("d:4ec0c188-45cb-437b-97c2-3d87251f9594")];
+  }
+  if ( (doc.hasValue("v-s:hasDocumentKind", "d:837027d7e8b04305a5b632224f0d2716")) && (doc.hasValue("v-s:hasDocumentKind", "d:a7c3b20d5dc243c9ad078947ede1bb18"))){
+    routes['review'][simple+'participant'] = [new veda.IndividualModel("d:4ec0c188-45cb-437b-97c2-3d87251f9594"), new veda.IndividualModel("d:2ee64753-2e4c-4e33-8a30-b14d1ab45854")];
+  }
+
+  if ( (doc.hasValue("v-s:hasDocumentKind", "d:90209600a3a44baa9e185809e4ecd866")) && (doc.hasValue("v-s:hasDocumentKind", "d:a7c3b20d5dc243c9ad078947ede1bb18"))){
+    routes['review'][simple+'participant'] = [new veda.IndividualModel("d:4ec0c188-45cb-437b-97c2-3d87251f9594"), new veda.IndividualModel("d:2ee64753-2e4c-4e33-8a30-b14d1ab45854")];
+  }
+
+  routes['instruction'][simple+'visible'] = [true];
+  routes['instruction'][simple+'editable'] = [true];
+
+}
 //------------------------------------------Версия локальный нормативный документ----------------
 
 if (doc['rdf:type'][0].id === "mnd-s:VersionOfLocalRegulatoryDocument") {
