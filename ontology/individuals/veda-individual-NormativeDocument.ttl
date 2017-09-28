@@ -53,6 +53,7 @@ d:2d21e7eaab284fafa112caade001d482
   v-s:hasNormativeDocumentRequirement d:bf854beeeca747edbc4b46dcdcbec539;
   v-s:hasNormativeDocumentRequirement d:9e99430ba1a1491099af7ffb17eae65b;
   v-s:hasNormativeDocumentRequirement d:e75590ca4c884079a9a1612c4a072cd6;
+  v-s:hasNormativeDocumentRequirement d:cf91a07922264ee5ae34cd01aa3d495b;  
   v-s:hasNormativeDocumentRequirement d:906ceff01ab1490594af30e2b9bd1b48;
   v-s:hasNormativeDocumentRequirement d:fae7683aa6d14b66b55bd395d6ed54f9;
   v-s:hasNormativeDocumentRequirement d:fd03031e97b745d9ba06e04d89d5dd74;
@@ -82,7 +83,6 @@ d:58d89d397b754f50a254292c0dca7dc8
   v-s:hasNormativeDocumentRequirement d:07717105cb514453aa401001aac134ef_2;
   v-s:hasNormativeDocumentRequirement d:b452a1ca1c2b4b3d93208342f95e50a7;
   v-s:hasNormativeDocumentRequirement d:e75590ca4c884079a9a1612c4a072cd6_2;
-  v-s:hasNormativeDocumentRequirement d:cf91a07922264ee5ae34cd01aa3d495b;
   v-s:hasNormativeDocumentRequirement d:fd03031e97b745d9ba06e04d89d5dd74_2;
   v-s:hasNormativeDocumentRequirement d:2cd7e57f91f640ee862625e914e00a4b_2;
   v-s:hasNormativeDocumentRequirement d:e8f87beb58bb4ed3a1a9c05c9d6e7dfe;
@@ -91,25 +91,25 @@ d:58d89d397b754f50a254292c0dca7dc8
 d:4aec74ad30f34d86b52c3669f4fa56b4
   a v-s:NormativeDocument;
   rdfs:label "OHSAS 18001"^^xsd:string;
-  v-s:hasNormativeDocumentRequirement d:e51808ab8a194c5fb3cead784926f4d5_3;
-  v-s:hasNormativeDocumentRequirement d:9f3f7c34c88a469e98fbda717bd682bd_3;
-  v-s:hasNormativeDocumentRequirement d:5217800f0875448ebd5cb1698b914dbb_3;
-  v-s:hasNormativeDocumentRequirement d:6021beebda1b4a0cb7e96e74d992e4cf_3;
-  v-s:hasNormativeDocumentRequirement d:b92ac488c3a34448bd1252223ef3836a_3;
-  v-s:hasNormativeDocumentRequirement d:38613e761d29408b91f5635fd4bfa9ae;
-  v-s:hasNormativeDocumentRequirement d:c623453605d545d38b34bd555c66076e;
-  v-s:hasNormativeDocumentRequirement d:ed402fec3b7d48dcac54c303124d7d32_3;
-  v-s:hasNormativeDocumentRequirement d:7642d6b75a7f47999ea52869a2b2d980_3;
-  v-s:hasNormativeDocumentRequirement d:6052083b95e2453e9c9079c9183a77fa_3;
-  v-s:hasNormativeDocumentRequirement d:0ce38f9d862349c6a75df0b4f68d4ece_3;
-  v-s:hasNormativeDocumentRequirement d:07717105cb514453aa401001aac134ef_3;
-  v-s:hasNormativeDocumentRequirement d:b452a1ca1c2b4b3d93208342f95e50a7_3;
-  v-s:hasNormativeDocumentRequirement d:e75590ca4c884079a9a1612c4a072cd6_3;
-  v-s:hasNormativeDocumentRequirement d:e20757d3fc814ca8a3ace74e7cf15fbe;
-  v-s:hasNormativeDocumentRequirement d:fd03031e97b745d9ba06e04d89d5dd74_3;
-  v-s:hasNormativeDocumentRequirement d:2cd7e57f91f640ee862625e914e00a4b_3;
-  v-s:hasNormativeDocumentRequirement d:e8f87beb58bb4ed3a1a9c05c9d6e7dfe_3;
-  v-s:hasNormativeDocumentRequirement d:cf4aac9cf3f44edd8af4af6811590c6b;
+  v-s:hasNormativeDocumentRequirement   d:e51808ab8a194c5fb3cead784926f4d5_3;
+  v-s:hasNormativeDocumentRequirement   d:9f3f7c34c88a469e98fbda717bd682bd_3;
+  v-s:hasNormativeDocumentRequirement   d:5217800f0875448ebd5cb1698b914dbb_3;
+  v-s:hasNormativeDocumentRequirement   d:6021beebda1b4a0cb7e96e74d992e4cf_3;
+  v-s:hasNormativeDocumentRequirement   d:b92ac488c3a34448bd1252223ef3836a_3;
+  v-s:hasNormativeDocumentRequirement   d:38613e761d29408b91f5635fd4bfa9ae;
+  v-s:hasNormativeDocumentRequirement   d:c623453605d545d38b34bd555c66076e;
+  v-s:hasNormativeDocumentRequirement   d:ed402fec3b7d48dcac54c303124d7d32_3;
+  v-s:hasNormativeDocumentRequirement   d:7642d6b75a7f47999ea52869a2b2d980_3;
+  v-s:hasNormativeDocumentRequirement   d:6052083b95e2453e9c9079c9183a77fa_3;
+  v-s:hasNormativeDocumentRequirement   d:0ce38f9d862349c6a75df0b4f68d4ece_3;
+  v-s:hasNormativeDocumentRequirement   d:07717105cb514453aa401001aac134ef_3;
+  v-s:hasNormativeDocumentRequirement   d:b452a1ca1c2b4b3d93208342f95e50a7_3;
+  v-s:hasNormativeDocumentRequirement   d:e75590ca4c884079a9a1612c4a072cd6_3;
+  v-s:hasNormativeDocumentRequirement   d:e20757d3fc814ca8a3ace74e7cf15fbe;
+  v-s:hasNormativeDocumentRequirement   d:fd03031e97b745d9ba06e04d89d5dd74_3;
+  v-s:hasNormativeDocumentRequirement   d:e8f87beb58bb4ed3a1a9c05c9d6e7dfe_3;
+  v-s:hasNormativeDocumentRequirement   d:cf4aac9cf3f44edd8af4af6811590c6b;
+  v-s:hasNormativeDocumentRequirement   d:eb7d17e601174f93925b1ad638204b58_3;  
 .
 
 d:c4edc01cf20a4500ba6378ad2ea06a8f
