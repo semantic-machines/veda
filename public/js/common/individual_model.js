@@ -121,6 +121,8 @@ veda.Module(function (veda) { "use strict";
       return new veda.IndividualModel(value.data);
     } else if (value.type === "Datetime" || value.type === 8) {
       return new Date(Date.parse(value.data));
+    } else if (value.type === "Decimal" || value.type === 32) {
+      return parseFloat(value.data);
     } else {
       return value.data;
     }
