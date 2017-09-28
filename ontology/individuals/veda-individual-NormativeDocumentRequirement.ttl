@@ -633,8 +633,8 @@ d:7642d6b75a7f47999ea52869a2b2d980_3
 d:eb7d17e601174f93925b1ad638204b58_3
   a v-s:NormativeDocumentRequirement;
   rdfs:label "4.3.4 Программа(ы) менеджмента в области охраны здоровья и безопасности"^^xsd:string;
-  v-s:parent d:2d21e7eaab284fafa112caade001d482;
-  v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
+  v-s:parent d:4aec74ad30f34d86b52c3669f4fa56b4;
+  v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:requirementGroupNumber 10;
 .
 d:b92ac488c3a34448bd1252223ef3836a_3
