@@ -2560,9 +2560,11 @@ if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
   if ( (doc.hasValue("mnd-s:hasPassRequestGoal", "d:ac519d730b3347069f86f38673522918")) || (doc.hasValue("mnd-s:hasPassRequestGoal", "d:b8186a3dd9254a048c4a26044518b129"))){
     routes['coordination2'][simple+'visible'] = [true];
     routes['coordination2'][simple+'editable'] = [false];
+    routes['coordination2'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
     routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:js1nnk9i8lnlfsai1tl6ks5t")];
     routes['coordination3'][simple+'visible'] = [true];
     routes['coordination3'][simple+'editable'] = [false];
+    routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
     routes['coordination3'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71013321")];
   }
 
