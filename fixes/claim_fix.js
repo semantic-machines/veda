@@ -13,3 +13,17 @@ veda.Util.processQuery("'rdf:type'==='mnd-s:Claim' && 'v-s:datePlan'==[150000000
     console.log(err);
   }
 });
+
+veda.Util.processQuery("'*'=='d:mondi_department_50001654' || '*'=='d:mondi_department_50000001'", 10000, 100, 100, function (uri) {
+  try {
+    var individual = get_individual(veda.ticket, uri);
+    //console.log( "before", individual );
+    var str = JSON.stringify(individual);
+    str = str.replace(/(d:mondi_department_50001654|d:mondi_department_50000001)/g, "d:org_RU1121003135");
+    individual = JSON.parse(str);
+    //console.log( "after", individual );
+    put_individual(veda.ticket, individual);
+  } catch (err) {
+    console.log(err);
+  }
+});
