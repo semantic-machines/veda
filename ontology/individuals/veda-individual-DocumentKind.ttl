@@ -1137,6 +1137,13 @@ d:id9fvum63d7t73lp6kos6brc
   v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
   v-s:hasParentLink d:s4xf96dcdjfmmd87tcc86oed;
 .
+d:a68iimapjlsr0m7d7uoernuww
+  a v-s:DocumentKind;
+  v-s:registrationNumber "0"^^xsd:string;
+  v-s:shortLabel "Справка о премировании"^^xsd:string;
+  rdfs:label "Справка о премировании"^^xsd:string;
+  v-s:hasParentLink d:391696576b33490bb7fb3744cbcbccf6;
+.
 #-----------------------------------------------------
 d:c3b38c81e1594593932b9872a3257948
   a v-s:DocumentKind;
