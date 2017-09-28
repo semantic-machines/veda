@@ -645,7 +645,8 @@ d:7642d6b75a7f47999ea52869a2b2d980_3
   rdfs:label "4.3.3 Цели и программа(ы)"^^xsd:string;
   v-s:parent d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
-  v-s:requirementGroupNumber 10;
+  v-s:requirementGroupNumber 9;
+  v-s:requirementGroupNumber 37;
 .
 d:eb7d17e601174f93925b1ad638204b58_3
   a v-s:NormativeDocumentRequirement;
