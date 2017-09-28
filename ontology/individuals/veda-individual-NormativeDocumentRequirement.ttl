@@ -22,6 +22,7 @@ d:e51808ab8a194c5fb3cead784926f4d5
   v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
   v-s:requirementGroupNumber 1;
 .
+
 d:35d88efa327a4741a5f2597aae4b490b
   a v-s:NormativeDocumentRequirement;
   rdfs:label "4.2 Требования к документации"^^xsd:string;
@@ -40,7 +41,7 @@ d:0fe7f69c01824d33b03530482d7a81d4
   rdfs:label "4.2.2 Руководство по качеству"^^xsd:string;
   v-s:parent d:2d21e7eaab284fafa112caade001d482;
   v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
-  v-s:requirementGroupNumber 3;  
+  v-s:requirementGroupNumber 3;
 .
 d:5217800f0875448ebd5cb1698b914dbb
   a v-s:NormativeDocumentRequirement;
@@ -58,14 +59,14 @@ d:6021beebda1b4a0cb7e96e74d992e4cf
   rdfs:label "4.2.4 Управление записями"^^xsd:string;
   v-s:parent d:2d21e7eaab284fafa112caade001d482;
   v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
-  v-s:requirementGroupNumber 5;  
+  v-s:requirementGroupNumber 5;
 .
 d:5e8937fccc534308ab5a3410e1792e8d
   a v-s:NormativeDocumentRequirement;
   rdfs:label "5.1 Обязательства руководства"^^xsd:string;
   v-s:parent d:2d21e7eaab284fafa112caade001d482;
   v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
-  v-s:requirementGroupNumber 6;  
+  v-s:requirementGroupNumber 6;
 .
 d:f29948a3c7fb4c2baaf3ac2d47a27d04
   a v-s:NormativeDocumentRequirement;
@@ -80,7 +81,7 @@ d:ed402fec3b7d48dcac54c303124d7d32
   rdfs:label "5.3 Политика в области качества"^^xsd:string;
   v-s:parent d:2d21e7eaab284fafa112caade001d482;
   v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
-  v-s:requirementGroupNumber 8;  
+  v-s:requirementGroupNumber 8;
 .
 d:f63d10b4d89347e181322021f204962a
   a v-s:NormativeDocumentRequirement;
@@ -105,7 +106,7 @@ d:7642d6b75a7f47999ea52869a2b2d980
   rdfs:label "5.4.1 Цели в области качества"^^xsd:string;
   v-s:parent d:2d21e7eaab284fafa112caade001d482;
   v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
-  v-s:requirementGroupNumber 9;  
+  v-s:requirementGroupNumber 9;
 .
 d:eb7d17e601174f93925b1ad638204b58
   a v-s:NormativeDocumentRequirement;
@@ -466,7 +467,7 @@ d:b92ac488c3a34448bd1252223ef3836a
   v-s:requirementGroupNumber 12;
   v-s:requirementGroupNumber 15;
   v-s:requirementGroupNumber 17;
-  v-s:requirementGroupNumber 18;          
+  v-s:requirementGroupNumber 18;
 .
 d:07717105cb514453aa401001aac134ef_2
   a v-s:NormativeDocumentRequirement;
@@ -475,7 +476,7 @@ d:07717105cb514453aa401001aac134ef_2
   rdfs:label "4.4.2 Компетенция, обучение и осведомленность"^^xsd:string;
   v-s:parent d:58d89d397b754f50a254292c0dca7dc8;
   v-s:hasNormativeDocument d:58d89d397b754f50a254292c0dca7dc8;
-  v-s:requirementGroupNumber 16;  
+  v-s:requirementGroupNumber 16;
 .
 d:6052083b95e2453e9c9079c9183a77fa_2
   a v-s:NormativeDocumentRequirement;
@@ -517,7 +518,7 @@ d:b452a1ca1c2b4b3d93208342f95e50a7
   v-s:requirementGroupNumber 26;
   v-s:requirementGroupNumber 27;
   v-s:requirementGroupNumber 28;
-  v-s:requirementGroupNumber 29;      
+  v-s:requirementGroupNumber 29;
 .
 d:e8f87beb58bb4ed3a1a9c05c9d6e7dfe
   a v-s:NormativeDocumentRequirement;
@@ -546,7 +547,7 @@ d:2cd7e57f91f640ee862625e914e00a4b_2
   v-s:parent d:58d89d397b754f50a254292c0dca7dc8;
   v-s:hasNormativeDocument d:58d89d397b754f50a254292c0dca7dc8;
   v-s:requirementGroupNumber 33;
-  v-s:requirementGroupNumber 34;  
+  v-s:requirementGroupNumber 34;
 .
 d:fadb8b24ef0d4b7fa38ea181ae26806e
   a v-s:NormativeDocumentRequirement;
@@ -583,7 +584,7 @@ d:0ce38f9d862349c6a75df0b4f68d4ece_2
   v-s:parent d:58d89d397b754f50a254292c0dca7dc8;
   v-s:hasNormativeDocument d:58d89d397b754f50a254292c0dca7dc8;
   v-s:requirementGroupNumber 14;
-  v-s:requirementGroupNumber 37;  
+  v-s:requirementGroupNumber 37;
 .
 
 #-------------  OHSAS 18001 ---
@@ -593,14 +594,14 @@ d:e51808ab8a194c5fb3cead784926f4d5_3
   v-s:parent d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:checkQuestion "Какие цели установлены в подразделении на текущий год:\nв области качества\nохраны окружающей среды\nохраны труда и техники безопасности?\nЧерез какие показатели достигаются поставленные цели? Являются ли они измеряемыми?\nСвязаны ли цели в области качества, экологии, безопасности труда с KPI, показателями качества, идентифицированными экологическими аспектами, выявленными рисками?\nОтслеживается ли выполнение целей, важных показателей?\nДокументируется ли выполнение важных показателей?\nИмеются ли записи (отчеты) с данными о выполнении целей и основных показателей?\nПрослеживается ли динамика выполнения основных показателей за несколько месяцев? (мониторинг и измерение процесса)\nПри выявлении отклонений какие действия предпринимаются?\nОпределяются ли причины в случаях, когда цели и основные показатели не достигаются?\nРазрабатываются ли мероприятия с указанием сроков и ответственных (корректирующие и предупреждающие действия), направленные на устранение причин, которые не позволяют достичь целей, выполнить основные показатели? (записи)\nПроверяется ли выполнение и результативность предпринятых действий?\nПроводится ли анализ для определения возможностей для улучшения? (записи)\nПредоставляются ли фактические данные по выполнению целей и основных показателей процесса руководству?\nВ каком виде?"^^xsd:string;
-  v-s:requirementGroupNumber 1;  
+  v-s:requirementGroupNumber 1;
 .
 d:ed402fec3b7d48dcac54c303124d7d32_3
   a v-s:NormativeDocumentRequirement;
   rdfs:label "4.2 Политика в области ОЗ и ОТБ"^^xsd:string;
   v-s:parent d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
-  v-s:requirementGroupNumber 8;  
+  v-s:requirementGroupNumber 8;
 .
 d:38613e761d29408b91f5635fd4bfa9ae
   a v-s:NormativeDocumentRequirement;
@@ -609,7 +610,7 @@ d:38613e761d29408b91f5635fd4bfa9ae
   v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:requirementGroupNumber 7;
   v-s:requirementGroupNumber 20;
-  v-s:requirementGroupNumber 21;  
+  v-s:requirementGroupNumber 21;
 .
 d:c623453605d545d38b34bd555c66076e
   a v-s:NormativeDocumentRequirement;
@@ -626,13 +627,14 @@ d:7642d6b75a7f47999ea52869a2b2d980_3
   rdfs:label "4.3.3 Цели и программа(ы)"^^xsd:string;
   v-s:parent d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
-  v-s:requirementGroupNumber 10;
+  v-s:requirementGroupNumber 9;
+  v-s:requirementGroupNumber 37;
 .
 d:eb7d17e601174f93925b1ad638204b58_3
   a v-s:NormativeDocumentRequirement;
   rdfs:label "4.3.4 Программа(ы) менеджмента в области охраны здоровья и безопасности"^^xsd:string;
-  v-s:parent d:2d21e7eaab284fafa112caade001d482;
-  v-s:hasNormativeDocument d:2d21e7eaab284fafa112caade001d482;
+  v-s:parent d:4aec74ad30f34d86b52c3669f4fa56b4;
+  v-s:hasNormativeDocument d:4aec74ad30f34d86b52c3669f4fa56b4;
   v-s:requirementGroupNumber 10;
 .
 d:b92ac488c3a34448bd1252223ef3836a_3
