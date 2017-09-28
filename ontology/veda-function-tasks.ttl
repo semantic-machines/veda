@@ -546,7 +546,7 @@ v-ft:TaskResultTemplate
       if ( !individual.hasValue("v-wf:read", true) ) {
         template.css("font-weight", "bold");
       }
-      /*individual.on("v-wf:isCompleted", removeCompleted);
+      individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);
       });
@@ -557,7 +557,7 @@ v-ft:TaskResultTemplate
         if (remove && this.hasValue("v-wf:isCompleted", true)) {
           template.remove();
         }
-      }*/
+      }
     </script>
   </tbody>
 </table>
@@ -634,7 +634,7 @@ v-ft:RelatedTasksResultTemplate
       if ( !individual.hasValue("v-wf:read", true) ) {
         template.css("font-weight", "bold");
       }
-      /*individual.on("v-wf:isCompleted", removeCompleted);
+      individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);
       });
@@ -643,7 +643,7 @@ v-ft:RelatedTasksResultTemplate
         if ( this.hasValue("v-wf:isCompleted", true) ) {
           template.remove();
         }
-      }*/
+      }
     </script>
   </tbody>
 </table>  """
