@@ -58,6 +58,7 @@ basic.getDrivers().forEach(function (drv) {
     complexRoute.checkTasks(driver, 2, 3, 0, 'karpovrt', '123', '2', 'Администратор2', 2);
 
     //PHASE#3: Accept + Check
+    complexRoute.checkTasks(driver, 1, 0, 0, 'bychinat', '123', '4', 'Администратор4', 2);
     complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 3);
     complexRoute.checkTasks(driver, 0, 0, 1, 'bychinat', '123', '4', 'Администратор4', 3);
     complexRoute.checkTasks(driver, 2, 2, 0, 'karpovrt', '123', '2', 'Администратор2', 3);
