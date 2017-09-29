@@ -9,15 +9,15 @@ var basic = require('./basic.js'),
 /**
  * 0.Open page -> login(as karpovrt)
  * 1.Create task for karpovrt -> Logout
- * 2.Check number of tasks as bychinat(0) -> Check number of tasks as karpovrt(1);
- * 3.Create delegation request as karpovrt(for bychinat);
- * 4.Accept task as bychinat -> Check number of tasks as bychinat(0) -> Check number of tasks as karpovrt(0);
+ * 2.Check number of tasks as khvostiat(0) -> Check number of tasks as karpovrt(1);
+ * 3.Create delegation request as karpovrt(for khvostiat);
+ * 4.Accept task as khvostiat -> Check number of tasks as khvostiat(0) -> Check number of tasks as karpovrt(0);
  *
  * 0.Открываем страницу -> Входим в систему под karpovrt;
  * 1.Создаем задачу для karpovrt -> Выходим из системы;
- * 2.Проверяем, что нет задачи у bychinat -> Проверяем, что у karpovt она есть;
+ * 2.Проверяем, что нет задачи у khvostiat -> Проверяем, что у karpovt она есть;
  * 3.Создаем делегирование под karpovrt для bychiant;
- * 4.Отвечаем на появившуюся задачу у bychinat -> Проверяем, что нет задачи у bychinat -> Проверяем, что нет задачи у karpovrt;
+ * 4.Отвечаем на появившуюся задачу у khvostiat -> Проверяем, что нет задачи у khvostiat -> Проверяем, что нет задачи у karpovrt;
  */
 
 basic.getDrivers().forEach(function (drv) {
@@ -40,17 +40,17 @@ basic.getDrivers().forEach(function (drv) {
 
     //PHASE#2: Check person
     complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', 2);
-    complexRoute.checkTask(driver, '0', 'bychinat', '123', '4', 'Администратор4', 2);
+    complexRoute.checkTask(driver, '0', 'khvostiat', '123', '4', 'Администратор1', 2);
 
     //PHASE#3: Delegation request
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
-    delegationRequest.createRequestDelegation(driver, 'Администратор4', 'Администратор4 : Аналитик', "td:CommercialDirector", 3);
+    delegationRequest.createRequestDelegation(driver, 'Администратор1', 'Администратор1 : Аналитик', "td:CommercialDirector", 3);
     driver.sleep(basic.FAST_OPERATION);
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#3 : ERROR = Cannot click on 'Welcome' button");
     basic.logout(driver, 3);
 
     //PHASE#4: Check person
-    basic.login(driver, 'bychinat', '123', '4', 'Администратор4', 4);
+    basic.login(driver, 'khvostiat', '123', '4', 'Администратор1', 4);
     basic.menu(driver, 'Inbox', 4);
     driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'span[about="td:CommercialDirector"]'}).click()
@@ -65,7 +65,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#4 : ERROR = Cannot click on 'Ok' button");
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#4 : ERROR = Cannot click on 'Welcome' button");
     basic.logout(driver, 4);
-    complexRoute.checkTask(driver, '0', 'bychinat', '123', '4', 'Администратор4', 4);
+    complexRoute.checkTask(driver, '0', 'khvostiat', '123', '4', 'Администратор1', 4);
     complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2', 4);
     driver.quit();
 });
