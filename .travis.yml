@@ -36,7 +36,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
   - ./control-start.sh
-  - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 120  # give Web server some time to bind to sockets, load startup data, etc
   - date
 
 # Run API & integration test
@@ -61,9 +61,9 @@ script:
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
-#  - node ./qa/testSimpleWorkflow.js
-#  - node ./qa/testDelegationDocument.js
-#  - node ./qa/testDelegationTask.js
+  - node ./qa/testSimpleWorkflow.js
+  - node ./qa/testDelegationDocument.js
+  - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
