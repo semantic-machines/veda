@@ -1282,7 +1282,7 @@ v-fs:AttributiveSearchTemplate
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
 
     <div class="dropup pull-right set-columns-wrapper">
-      <button type="button" class="btn btn-default set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span about="v-fs:SetColumns" property="rdfs:label"></span>
         <span class="caret"></span>
       </button>
