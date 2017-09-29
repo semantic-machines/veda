@@ -195,12 +195,12 @@ class XapianReader : SearchReader
         long cur_committed_op_id = get_info().committed_op_id;
         if (cur_committed_op_id > committed_op_id)
         {
-            log.trace("search:reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
+            //log.trace("search:reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
             reopen_db();
         }
         else
         {
-            log.trace ("search:check reopen_db: cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
+            //log.trace ("search:check reopen_db: cur_committed_op_id=%d, committed_op_id=%d", cur_committed_op_id, committed_op_id);
         }
 
         Database_QueryParser db_qp = get_dbqp(db_names);
@@ -306,7 +306,7 @@ class XapianReader : SearchReader
             log.trace("invalid query [%s]", str_query);
         }
 
-        log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.count, sr.processed);
+        //log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.count, sr.processed);
  
         return sr;
     }
