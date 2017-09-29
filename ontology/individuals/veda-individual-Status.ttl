@@ -224,3 +224,8 @@ v-s:StatusCanceled
   rdfs:label "Canceled"@en ;
   rdfs:label "Отменено"@ru ;
 .
+v-s:StatusElimination
+  rdf:type v-s:Status ;
+  rdfs:label "Eliminating"@en ;
+  rdfs:label "Устранение"@ru ;
+.
