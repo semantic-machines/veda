@@ -208,6 +208,11 @@ v-fs:FilesRegistry
   rdfs:label "Registry with files"@en ;
   rdfs:label "Реестр с файлами"@ru ;
 .
+v-fs:SetColumns
+  rdf:type v-s:Bundle ;
+  rdfs:label "Set columns"@en ;
+  rdfs:label "Настроить столбцы"@ru ;
+.
 v-fs:Results
   rdf:type v-s:Bundle ;
   rdfs:label "Results"@en ;
@@ -1206,7 +1211,6 @@ v-fs:AttributiveSearchTemplate
     $("#no-more-results", template).remove();
   }
 
-
   // Enable swipe for result table
   $("body").keydown(enableSwipe).keyup(disableSwipe);
   template.one("remove", function () {
@@ -1262,7 +1266,7 @@ v-fs:AttributiveSearchTemplate
       cursor: move;
     }
   </style>
-  <div id="params">
+  <div id="params" class="clearfix">
     <br>
     <div class="ribbon-wrapper top-left">
       <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
@@ -1276,6 +1280,21 @@ v-fs:AttributiveSearchTemplate
     <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
     <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+
+    <div class="dropup pull-right set-columns-wrapper">
+      <button type="button" class="btn btn-default set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span about="v-fs:SetColumns" property="rdfs:label"></span>
+        <span class="caret"></span>
+      </button>
+      <div class="dropdown-menu" style="padding:15px;">
+        <div class="checkbox">
+          <label>
+            <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
     <br>
   </div>
   <div id="results" class="hidden">
@@ -1340,6 +1359,50 @@ v-fs:AttributiveSearchTemplate
   self.estimated = self.estimated || 0;
   self.result = self.result || [];
   self.scroll = self.scroll || 0;
+
+  // Set columns
+  individual.hiddenColumns = individual.hiddenColumns || {};
+  var checksContainer = $(".set-columns-wrapper .dropdown-menu", template).on('click', function (e) {
+    e.stopPropagation();
+  });
+  var checkTmpl = $(".set-columns-wrapper .dropdown-menu .checkbox", template).remove().get(0).outerHTML;
+  $("#search-result table > thead > tr:last > th", template).each(function (index) {
+    var th = $(this);
+    var check = $(checkTmpl);
+    var checkbox = $("input", check);
+    var columnName = $(this).find("span").clone();
+    if ( columnName.length ) {
+      $(".column-name", check).append(columnName);
+    } else {
+      $(".column-name", check).text( th.text() );
+    }
+    if (index in individual.hiddenColumns) {
+      checkbox.prop("checked", false);
+    } else {
+      checkbox.prop("checked", true);
+    }
+    checkbox.change(checkHandler);
+    checkHandler.call(checkbox.get(0));
+    checksContainer.append(check);
+
+    function checkHandler() {
+      if ( $(this).is(":checked") ) {
+        th.removeClass("hidden");
+        $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
+        resultTemplate = $(resultTemplate);
+        resultTemplate.children().eq(index).removeClass("hidden");
+        resultTemplate = resultTemplate.get(0).outerHTML;
+        delete individual.hiddenColumns[index];
+      } else {
+        th.addClass("hidden");
+        $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
+        resultTemplate = $(resultTemplate);
+        resultTemplate.children().eq(index).addClass("hidden");
+        resultTemplate = resultTemplate.get(0).outerHTML;
+        individual.hiddenColumns[index] = true;
+      }
+    }
+  });
 
   // Render search form
   if ( searchBlank ) {
@@ -1665,7 +1728,9 @@ v-fs:AttributiveSearchTemplate
 
   $(".xls", template).click(function (e) {
     e.preventDefault();
-    var resultTable = $(".search-result > table").get(0);
+    var resultTable = $(".search-result > table").clone();
+    resultTable.find(".hidden").remove();
+    resultTable = resultTable.get(0);
     tableToExcel(resultTable, self["rdfs:label"].join(", "));
   });
 
@@ -1690,8 +1755,11 @@ v-fs:AttributiveSearchTemplate
     var btn = $(this);
     toggleSpin(btn);
     e.preventDefault();
-    var $resultTable = $(".search-result > table").clone();
-    var filesPromises = $("[typeof='v-s:File']", $resultTable).map(function () {
+    var resultTable = $(".search-result > table").clone();
+    resultTable.find(".hidden").remove();
+    resultTable = resultTable.get(0);
+
+    var filesPromises = $("[typeof='v-s:File']", resultTable).map(function () {
       var $this = $(this);
       var fileUri = $this.attr("resource").replace(":", "_");
       var fileName = $("span", $this).text().replace(/([a-zA-Z0-9]+)$/, fileUri + ".$1");
@@ -1704,7 +1772,7 @@ v-fs:AttributiveSearchTemplate
 
     Promise.all(filesPromises).then(function (files) {
       var zip = new JSZip();
-      var registry = tableToBlob($resultTable.get(0), self["rdfs:label"].join(", "));
+      var registry = tableToBlob(resultTable, self["rdfs:label"].join(", "));
       zip.file("registry.html", registry);
       var folder = zip.folder("files");
       files.forEach(function (file) {
@@ -1972,7 +2040,6 @@ v-fs:AttributiveSearchInlineTemplate
   if ( this.hasValue("v-fs:loadAll", true) ) {
     $("#no-more-results", template).remove();
   }
-
 
   // Enable swipe for result table
   $("body").keydown(enableSwipe).keyup(disableSwipe);
@@ -2395,37 +2462,6 @@ v-fs:AttributiveSearchInlineTemplate
       return Promise.resolve(self.result);
     }
   }
-
-  // Export to Spreadsheet
-  var tableToExcel = (function () {
-    var uri = 'data:application/vnd.ms-excel;base64,'
-      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
-      , format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
-    return function(table, name) {
-      if (!table.nodeType) table = document.getElementById(table);
-      var ctx = {
-        worksheet: name || 'Worksheet',
-        table: table.innerHTML
-      };
-      var formatted = format(template, ctx);
-      var blob = new Blob([formatted], {type: "application/vnd.ms-excel;charset=utf-8"});
-      saveAs(blob, name + ".xls");
-    }
-  })();
-
-  $(".xls", template).click(function (e) {
-    e.preventDefault();
-    var thead = $("thead", searchResultContainer).clone();
-    var tbl = $("<table id='export2xls'>").append(thead, "<tbody></tbody>");
-    for (var i = 0; i < self.result.length; i++) {
-      var tmpl = resultTemplate.replace("###", i + 1);
-      var result = new veda.IndividualModel( self.result[i] );
-      result.present($("tbody", tbl), $(tmpl));
-    }
-    setTimeout(function () {
-      tableToExcel(tbl[0], self["rdfs:label"].join(", "));
-    }, 3000);
-  });
 
   //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
 </script>
