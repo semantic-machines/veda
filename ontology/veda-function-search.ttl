@@ -1382,9 +1382,10 @@ v-fs:AttributiveSearchTemplate
       checkbox.prop("checked", true);
     }
     checkbox.change(checkHandler);
-    checkHandler.call(checkbox.get(0));
+    checkHandler.call( checkbox.get(0) );
     checksContainer.append(check);
 
+    // Show/hide result table columns & update resultTemplate accordingly
     function checkHandler() {
       if ( $(this).is(":checked") ) {
         th.removeClass("hidden");
