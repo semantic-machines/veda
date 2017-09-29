@@ -38,6 +38,7 @@ module.exports = {
         if (commentValue === '+') {
             basic.execute(driver, 'sendKeys', 'veda-control[property="rdfs:comment"] div textarea', "****** PHASE#" + phase + " : ERROR = Cannot fill 'comment'", timeStamp);
         }
+        driver.sleep(basic.FAST_OPERATION);
         if (chooseValue === '+') {
             driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)")
                 .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to fulltext button");});
