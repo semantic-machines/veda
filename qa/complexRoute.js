@@ -26,9 +26,11 @@ module.exports = {
         basic.login(driver, login, password, firstName, lastName, phase);
         basic.menu(driver, 'Inbox', phase);
         driver.sleep(basic.FAST_OPERATION * 2);
+//  ------ без этого кода тесты часто не проходят ! ???? 
         driver.findElement({css:'a[about="v-ft:Inbox"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Inbox messages")});
         driver.sleep(basic.FAST_OPERATION);
+//  ------
         driver.wait(basic.findUp(driver, 'a[property="rdfs:label"]', 3, "****** PHASE#" + phase + " : ERROR = Cannot find 'rdfs:label'"), basic.FAST_OPERATION*2).then(
             function(result){basic.clickUp(result, "****** PHASE#" + phase + " : ERROR = Cannot click on message. Seems message is not located");});
         basic.execute(driver, 'click', 'div[class="radio decision"] input[value="' + decision + '"]', "****** PHASE#" + phase + " : ERROR = Cannot click on '" + decision + "' decision");
