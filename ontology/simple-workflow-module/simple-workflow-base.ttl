@@ -2561,11 +2561,7 @@ if (doc['rdf:type'][0].id === "mnd-s:PassRequest") {
     routes['coordination2'][simple+'visible'] = [true];
     routes['coordination2'][simple+'editable'] = [false];
     routes['coordination2'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
-    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:js1nnk9i8lnlfsai1tl6ks5t")];
-    routes['coordination3'][simple+'visible'] = [true];
-    routes['coordination3'][simple+'editable'] = [false];
-    routes['coordination3'][simple+'comment'] = [new String('Согласовать заявку на пропуск')];
-    routes['coordination3'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71013321")];
+    routes['coordination2'][simple+'participant'] = [new veda.IndividualModel("d:js1nnk9i8lnlfsai1tl6ks5t"), new veda.IndividualModel("d:mondi_position_71013321")];
   }
 
   routes['sign'][simple+'visible'] = [true];
