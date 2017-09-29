@@ -1104,7 +1104,7 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
         tdb_cons.add(uuid, timestamp / 1000, vals);
         count_trails++;
 
-        log.trace("REST:%s", vals);
+        //log.trace("REST:%s", vals);
 
         if (count_trails > 1000)
         {
