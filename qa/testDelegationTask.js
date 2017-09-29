@@ -40,7 +40,7 @@ basic.getDrivers().forEach(function (drv) {
 
     //PHASE#2: Check person
     complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', 2);
-    complexRoute.checkTask(driver, '0', 'khvostiat', '123', '4', 'Администратор1', 2);
+    complexRoute.checkTask(driver, '0', 'khvostiat', '123', '1', 'Администратор1', 2);
 
     //PHASE#3: Delegation request
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
@@ -50,7 +50,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.logout(driver, 3);
 
     //PHASE#4: Check person
-    basic.login(driver, 'khvostiat', '123', '4', 'Администратор1', 4);
+    basic.login(driver, 'khvostiat', '123', '1', 'Администратор1', 4);
     basic.menu(driver, 'Inbox', 4);
     driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'span[about="td:CommercialDirector"]'}).click()
@@ -65,7 +65,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#4 : ERROR = Cannot click on 'Ok' button");
     basic.execute(driver, 'click', 'a[href="#/v-l:Welcome"]', "****** PHASE#4 : ERROR = Cannot click on 'Welcome' button");
     basic.logout(driver, 4);
-    complexRoute.checkTask(driver, '0', 'khvostiat', '123', '4', 'Администратор1', 4);
+    complexRoute.checkTask(driver, '0', 'khvostiat', '123', '1', 'Администратор1', 4);
     complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2', 4);
     driver.quit();
 });
