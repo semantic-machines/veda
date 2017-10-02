@@ -113,7 +113,7 @@ s-wf:cr_informing_task a v-wf:Task;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_to_1_informing_task;
     v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_var_wf_to_task_to;
     v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl, s-wf:map_wf_from_4_TIV_initiator;
-    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
+    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_var_to_task_to;
     .
 
 s-wf:cr_introduction a v-wf:Task;
@@ -653,10 +653,10 @@ s-wf:cr_distribution a v-wf:Task;
     v-wf:hasFlow s-wf:crf_d_to_rr;
     v-wf:locationX "1950"^^xsd:integer;
     v-wf:locationY "200"^^xsd:integer;
-    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator;
+    v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_to_1_distribution_task;
     v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_var_wf_to_task_to;
     v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl, s-wf:map_wf_from_4_TIV_initiator;
-    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_to_4_O_executor;
+    v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_var_to_task_to;
     .
 
 s-wf:crf_d_to_rr a v-wf:Flow;
@@ -796,7 +796,15 @@ s-wf:crf_dr_to_c1 a v-wf:Flow;
 s-wf:map_to_1_informing_task
   rdf:type v-wf:Mapping ;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:mapToVariable s-wf:to ;
+  v-wf:mapToVariable s-wf:var_wf_to ;
   v-wf:mappingExpression  "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_informing'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
   rdfs:label "map_to_1_informing_task" ;
+.
+
+s-wf:map_to_1_distribution_task
+  rdf:type v-wf:Mapping ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-wf:mapToVariable s-wf:var_wf_to ;
+  v-wf:mappingExpression  "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_distribution'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
+  rdfs:label "map_to_2_informing_task" ;
 .
