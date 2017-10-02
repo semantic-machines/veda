@@ -5226,6 +5226,13 @@ s-wf:map_doc_url_4_vedaInfo_appUrl
   """;
 .
 
+s-wf:map_var_wf_to_task_to
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_wf_to ;
+  v-wf:mappingExpression  "task.getInputVariable ('docId')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_msg_executor_informing
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_wf_to ;
