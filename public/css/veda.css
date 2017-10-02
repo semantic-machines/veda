@@ -383,7 +383,7 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted, .deleted * {
+.deleted, .deleted *:not(#deleted-alert):not(#deleted-alert-msg):not(#deleted-alert-recover) {
   text-decoration: none!important;
   color: #aaa;
 }

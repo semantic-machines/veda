@@ -192,8 +192,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var alert = new veda.IndividualModel("v-s:DeletedAlert")["rdfs:label"].join(" ");
           var recover = new veda.IndividualModel("v-s:Recover")["rdfs:label"].join(" ");
           var deletedAlert = $(
-            '<div id="deleted-alert" class="alert alert-warning no-margin" role="alert">\
-              <p>' + alert + '  <button class="btn btn-default btn-sm recover">' + recover + '</button></p>\
+            '<div id="deleted-alert" class="alert alert-warning no-margin clearfix" role="alert">\
+              <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
             </div>'
           );
           template.prepend(deletedAlert);
@@ -434,8 +434,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var alert = new veda.IndividualModel("v-s:VersionAlert")["rdfs:label"].join(" ");
           var actual = new veda.IndividualModel("v-s:actualVersion")["rdfs:label"].join(" ");
           var versionAlert = $(
-            '<div id="version-alert" class="alert alert-info no-margin" role="alert">\
-              <p>' + alert + ' <a href="#/' + individual["v-s:actualVersion"][0] + '" class="btn btn-primary">' + actual + '</a></p>\
+            '<div id="version-alert" class="alert alert-info no-margin clearfix" role="alert">\
+              <p>' + alert + ' <a href="#/' + individual["v-s:actualVersion"][0].id + '" class="btn btn-xs btn-primary pull-right">' + actual + '</a></p>\
             </div>'
           );
           $(".btn", template).attr("disabled", true);
