@@ -1391,15 +1391,15 @@ v-fs:AttributiveSearchTemplate
         th.removeClass("hidden");
         $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
         resultTemplate = $(resultTemplate);
-        resultTemplate.children().eq(index).removeClass("hidden");
-        resultTemplate = resultTemplate.get(0).outerHTML;
+        resultTemplate.not("script").children().eq(index).removeClass("hidden");
+        resultTemplate = resultTemplate.map(function () { return this.outerHTML; }).get().join("");
         delete individual.hiddenColumns[index];
       } else {
         th.addClass("hidden");
         $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
         resultTemplate = $(resultTemplate);
-        resultTemplate.children().eq(index).addClass("hidden");
-        resultTemplate = resultTemplate.get(0).outerHTML;
+        resultTemplate.not("script").children().eq(index).addClass("hidden");
+        resultTemplate = resultTemplate.map(function () { return this.outerHTML; }).get().join("");
         individual.hiddenColumns[index] = true;
       }
     }
