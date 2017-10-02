@@ -1285,13 +1285,6 @@ if (doc['rdf:type'][0].id === "mnd-s:InternalDocument") {
   } else {
     chief = doc["v-s:creator"][0].getChief();
   }
-  routes['sign'][simple+'visible'] = [true];
-  routes['sign'][simple+'editable'] = [true];
-  routes['sign'][simple+'deadlineDays'] = [5];
-  routes['sign'][simple+'participant'] = [chief];
-  routes['approval'][simple+'visible'] = [true];
-  routes['approval'][simple+'editable'] = [true];
-  routes['approval'][simple+'deadlineDays'] = [5];
 
   var chief2;
   if (doc.hasValue("v-s:responsibleDepartment")){
@@ -1299,10 +1292,28 @@ if (doc['rdf:type'][0].id === "mnd-s:InternalDocument") {
   } else {
     chief2 = doc["v-s:creator"][0].getChief();
   }
+  
+//для Запросов, созданных из Инвест заявки
+  if (doc.hasValue('v-s:hasDocumentKind', 'd:c526a7045dd340c793a43c09ab1b8885') && doc.hasValue('v-s:theme', 'Согласование графика')) 
+  {
+	routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71024461")]; // Начальник отдела. Отдел кап.стр. и реконструкции УР и Р
+	routes['review'][simple+'participant'] = [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")]; // Специалист ОУП
+	} else {    
+    routes['sign'][simple+'participant'] = [chief];
+    routes['review'][simple+'participant'] = [chief2];
+    
+  }
+
+  routes['sign'][simple+'visible'] = [true];
+  routes['sign'][simple+'editable'] = [true];
+  routes['sign'][simple+'deadlineDays'] = [5];
+  routes['approval'][simple+'visible'] = [true];
+  routes['approval'][simple+'editable'] = [true];
+  routes['approval'][simple+'deadlineDays'] = [5];
+
   routes['review'][simple+'visible'] = [true];
   routes['review'][simple+'editable'] = [true];
   routes['review'][simple+'deadlineDays'] = [3];
-  routes['review'][simple+'participant'] = [chief2];
 }
 
 //--------------------------------------------------------------------------Заявка на контракт
@@ -2951,11 +2962,50 @@ if (doc['rdf:type'][0].id === "mnd-s:ProjectCapex") {
   routes['examination'][simple+'editable'] = [true];
   routes['examination'][simple+'participant']=[new veda.IndividualModel("d:554f8555-af9a-436d-ada9-09458614e878")].concat(doc["v-s:owner"]) ;
   routes['examination'][simple+'comment'] = [new String('Ознакомиться')];
-
-
-
 }
 
+//--------------------------------------------------------------------------------Запрос на изменения в проекте-------
+if (doc['rdf:type'][0].id === "mnd-s:ProjectCapexRequestChange") {
+  routes['coordination1'][simple+'visible']  =  [true];
+  routes['coordination1'][simple+'editable'] = [true];
+  routes['coordination1'][simple+'participant'] = doc['v-s:backwardTarget'][0]['v-s:owner']; //Заказчик проекта
+  routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_employee_00004758")); //БезбородоваНВ
+  routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71023848")); //Руководитель группы. Группа по капитальным вложениям ОТЗ УЗ
+  routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_employee_00069811")); //Сабо
+  routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_employee_00064183")); //Плавюк
+  routes['coordination1'][simple+'participant'] = routes['coordination1'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_employee_00058045")); //Урнышев    
+
+  routes['coordination2'][simple+'visible']  =  [true];
+  routes['coordination2'][simple+'editable'] = [true];
+  routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71024462")); //Начальник ОУП УРиР
+  routes['coordination2'][simple+'participant'] = routes['coordination2'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_employee_00051823")); //ПоважановаЭ
+
+  routes['coordination3'][simple+'visible']  =  [false];
+  routes['coordination3'][simple+'editable'] = [false];
+  routes['coordination4'][simple+'visible']  =  [false];
+  routes['coordination4'][simple+'editable'] = [false];
+
+  routes['sign'][simple+'visible'] = [true];
+  routes['sign'][simple+'editable'] = [true];
+  routes['sign'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71024461")]; // Начальник отдела. Отдел кап.стр. и реконструкции УР и Р
+
+  routes['approval'][simple+'visible'] = [true];
+  routes['approval'][simple+'editable'] = [true];
+  routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71021843")]; //Начальник УРиР  
+
+  routes['review'][simple+'visible'] = [true];
+  routes['review'][simple+'editable'] = [true];
+  routes['review'][simple+'participant'] = [new veda.IndividualModel("d:ff670646-d509-4ff9-92f2-482c255441e8")]; // Специалист ОУП
+
+  routes['instruction'][simple+'visible'] = [false];
+  routes['instruction'][simple+'editable'] = [false];
+
+  routes['examination'][simple+'visible'] = [true];
+  routes['examination'][simple+'editable'] = [true];
+  routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:mondi_employee_00066642")]; //ПыстинаС
+  routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel("d:mondi_position_71017956")); //Начальник УПБ
+  
+}
 
 
 if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый маршрут
