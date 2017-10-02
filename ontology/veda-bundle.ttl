@@ -186,6 +186,11 @@ v-s:Delete
   rdfs:label "Удалить"@ru ;
   rdfs:label "Delete"@en ;
 .
+v-s:DeletedAlert
+  rdf:type v-s:Bundle ;
+  rdfs:label "Объект удален"@ru ;
+  rdfs:label "Object is deleted"@en ;
+.
 v-s:Destroy
   rdf:type v-s:Bundle ;
   rdfs:label "Уничтожить"@ru ;
@@ -236,15 +241,20 @@ v-s:Reset
   rdfs:label "Сбросить"@ru ;
   rdfs:label "Reset"@en ;
 .
+v-s:Recover
+  rdf:type v-s:Bundle ;
+  rdfs:label "Восстановить"@ru ;
+  rdfs:label "Recover"@en ;
+.
 v-s:Instruction
   rdf:type v-s:Bundle ;
   rdfs:label "Поручение"@ru ;
   rdfs:label "Instruction"@en ;
 .
-v-s:DocumentIsVersion
+v-s:VersionAlert
   rdf:type v-s:Bundle ;
-  rdfs:label "Документ устарел. Существует более поздняя версия данного документа"@ru ;
-  rdfs:label "Document expired. New version of this document exists."@en ;
+  rdfs:label "Вы просматриваете версию объекта"@ru ;
+  rdfs:label "This is a version of an object"@en ;
 .
 v-s:Distribution
   rdf:type v-s:Bundle ;
