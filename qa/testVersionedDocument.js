@@ -105,12 +105,13 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'nextVersion' field");});
     basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action v-s:Version"]',
         "****** PHASE#2 > CREATE+CHECK VERSIONS : ERROR = Cannot click on 'nextVersion'");
-    updateVersion(driver, 'edit', timeStamp + 4, 'Администратор2', 'Администратор2 : Аналитик', 2);
+    /*updateVersion(driver, 'edit', timeStamp + 4, 'Администратор2', 'Администратор2 : Аналитик', 2);
     driver.sleep(basic.FAST_OPERATION);
     driver.executeScript("document.querySelector('strong[about=\"v-s:nextVersion\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot scroll to 'nextVersion' field");});
     basic.execute(driver, 'click', 'div[rel="v-s:nextVersion"] [typeof="v-s:Action"]',
         "****** PHASE#2 > CREATE+CHECK VERSIONS : ERROR = Cannot click on 'nextVersion'");
     checkVersion(driver, [timeStamp + 4, timeStamp + 2, timeStamp + 1], ['Администратор2 : Аналитик', 'Администратор2 : Аналитик', 'Администратор2 : Аналитик'], 2);
+    */
     driver.quit();
 });
