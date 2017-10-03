@@ -54,18 +54,18 @@ basic.getDrivers().forEach(function (drv) {
     basic.logout(driver, 1);
 
     //PHASE#2: Check tasks
-    complexRoute.checkTasks(driver, 1, 0, 0, 'bushenevvt', '123', '4', 'Администратор3', 2);
+    complexRoute.checkTasks(driver, 1, 0, 0, 'bushenevvt', '123', '3', 'Администратор3', 2);
     complexRoute.checkTasks(driver, 2, 3, 0, 'karpovrt', '123', '2', 'Администратор2', 2);
 
     //PHASE#3: Accept + Check
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bushenevvt', '123', '4', 'Администратор3', 3);
-    complexRoute.checkTasks(driver, 0, 0, 1, 'bushenevvt', '123', '4', 'Администратор3', 3);
+    complexRoute.acceptTask(driver, '0', '-', '-', 'bushenevvt', '123', '3', 'Администратор3', 3);
+    complexRoute.checkTasks(driver, 0, 0, 1, 'bushenevvt', '123', '3', 'Администратор3', 3);
     complexRoute.checkTasks(driver, 2, 2, 0, 'karpovrt', '123', '2', 'Администратор2', 3);
     complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3);
-    complexRoute.checkTasks(driver, 0, 0, 1, 'bushenevvt', '123', '4', 'Администратор3', 3);
+    complexRoute.checkTasks(driver, 0, 0, 1, 'bushenevvt', '123', '3', 'Администратор3', 3);
     complexRoute.checkTasks(driver, 1, 1, 1, 'karpovrt', '123', '2', 'Администратор2', 3);
     complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3);
-    complexRoute.checkTasks(driver, 0, 0, 1, 'bushenevvt', '123', '4', 'Администратор3', 3);
+    complexRoute.checkTasks(driver, 0, 0, 1, 'bushenevvt', '123', '3', 'Администратор3', 3);
     complexRoute.checkTasks(driver, 0, 0, 2, 'karpovrt', '123', '2', 'Администратор2', 3);
     
     driver.quit();
