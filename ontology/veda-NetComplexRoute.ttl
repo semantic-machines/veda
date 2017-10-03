@@ -796,7 +796,7 @@ s-wf:crf_dr_to_c1 a v-wf:Flow;
 s-wf:map_to_1_informing_task
   rdf:type v-wf:Mapping ;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:mapToVariable s-wf:var_wf_to ;
+  v-wf:mapToVariable s-wf:var_to ;
   v-wf:mappingExpression  "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_informing'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
   rdfs:label "map_to_1_informing_task" ;
 .
@@ -804,7 +804,7 @@ s-wf:map_to_1_informing_task
 s-wf:map_to_1_distribution_task
   rdf:type v-wf:Mapping ;
   rdfs:isDefinedBy s-wfc: ;
-  v-wf:mapToVariable s-wf:var_wf_to ;
+  v-wf:mapToVariable s-wf:var_to ;
   v-wf:mappingExpression  "get_properties_chain (process.getInputVariable ('startForm_id'), [{$go:'s-wf:ComplexRouteStartForm_distribution'}, {$get:'s-wf:SimpleRouteStartForm_participant'}])" ;
   rdfs:label "map_to_2_informing_task" ;
 .
