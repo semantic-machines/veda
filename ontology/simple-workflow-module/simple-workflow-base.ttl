@@ -5451,4 +5451,47 @@ s-wf:complexRouteRule
   v-wf:grouping "1";
 .
 
+#Шаблоны писем уведомлений рассылки
 
+s-wf:msg-template-universal-notification_processStart
+  rdf:type v-s:TemplateForText ;
+  v-s:templateLanguage v-ui:RU ;
+  v-s:templateSubject "Optiflow Уведомление о старте процесса по документу {{document}}" ;
+  v-s:templateBody
+  """<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h3><img src="cid:m-l:OptiflowLogoOrange" alt="Optiflow" /></h3>
+    <p>Уважаемый пользователь: {{to}}</p>
+    <p>
+      Документ <a href="{{document_url}}">{{document}}</a> запущен по процессу.
+    </p>
+    <p>
+      <small>Данное сообщение является автоматической рассылкой. Отвечать на него не нужно.</small>
+    </p>
+  </body>
+</html>""" ;
+.
+s-wf:msg-template-universal-notification_processEnd
+  rdf:type v-s:TemplateForText ;
+  v-s:templateLanguage v-ui:RU ;
+  v-s:templateSubject "Optiflow Уведомление об окончании процесса по документу {{document}}" ;
+  v-s:templateBody
+  """<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <h3><img src="cid:m-l:OptiflowLogoOrange" alt="Optiflow" /></h3>
+    <p>Уважаемый пользователь: {{to}}</p>
+    <p>
+      По документу <a href="{{document_url}}">{{document}}</a> завершен процесс .
+    </p>
+    <p>
+      <small>Данное сообщение является автоматической рассылкой. Отвечать на него не нужно.</small>
+    </p>
+  </body>
+</html>""" ;
+.
