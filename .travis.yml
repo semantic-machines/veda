@@ -49,21 +49,21 @@ script:
   - node ./qa/testRights.js
   - node ./qa/testComment.js
   - node ./qa/testVersionedDocument.js
-  - node ./qa/testJournal.js
   - node ./qa/testAttachment.js
   - node ./qa/testPager.js
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
+  - node ./qa/testJournal.js
   - node ./qa/testCreatingNetInterface.js
-  - travis_wait 20 node ./qa/testInbox.js
-  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-  - travis_wait 20 node ./qa/testNetComplexRoute.js
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
   - node ./qa/testSimpleWorkflow.js
   - node ./qa/testDelegationDocument.js
   - node ./qa/testDelegationTask.js
+  - travis_wait 20 node ./qa/testInbox.js
+  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+  - travis_wait 20 node ./qa/testNetComplexRoute.js
 
 # Stop deamon and show log
 after_script:
