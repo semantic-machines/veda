@@ -111,7 +111,7 @@ s-wf:cr_informing_task a v-wf:Task;
     v-wf:locationY "294"^^xsd:integer;
     v-wf:split v-wf:None;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_to_1_informing_task;
-    v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_var_wf_to_task_to;
+    v-wf:startingMessageMap s-wf:map_msg_template_4_SV_processStart, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_var_wf_to_task_to;
     v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl, s-wf:map_wf_from_4_TIV_initiator;
     v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_var_to_task_to;
     .
@@ -654,7 +654,7 @@ s-wf:cr_distribution a v-wf:Task;
     v-wf:locationX "1950"^^xsd:integer;
     v-wf:locationY "200"^^xsd:integer;
     v-wf:startingMapping s-wf:map_doc_id, s-wf:map_initiator, s-wf:map_to_1_distribution_task;
-    v-wf:startingMessageMap s-wf:map_msg_template_4_SV_default_template, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_var_wf_to_task_to;
+    v-wf:startingMessageMap s-wf:map_msg_template_4_SV_processEnd, s-wf:map_from_4_TIV_initiator, s-wf:map_document_4_TIV_docId, s-wf:map_var_wf_to_task_to;
     v-wf:startingMessageMap s-wf:map_comment_4_TIV_actor_task_action, s-wf:map_inbox_url_4_vedaInfo_appInboxUrl, s-wf:map_doc_url_4_vedaInfo_appUrl, s-wf:map_wf_from_4_TIV_initiator;
     v-wf:startingMessageMap s-wf:map_rdf_type_4_v_s_Email, s-wf:map_task_url_4_O_DecisionForms, s-wf:map_var_to_task_to;
     .

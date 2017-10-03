@@ -5149,6 +5149,20 @@ s-wf:map_msg_template_4_SV_default_template_notification_coordinationEnd
   rdfs:isDefinedBy s-wf: ;
 .
 
+s-wf:map_msg_template_4_SV_processStart
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "newUri ('s-wf:msg-template-universal-notification_processStart')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_msg_template_4_SV_processEnd
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_msg_template ;
+  v-wf:mappingExpression  "newUri ('s-wf:msg-template-universal-notification_processEnd')";
+  rdfs:isDefinedBy s-wf: ;
+.
+
 s-wf:map_from_4_TIV_initiator
   rdf:type v-wf:Mapping ;
   v-wf:mapToVariable s-wf:var_from ;
