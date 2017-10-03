@@ -3,7 +3,7 @@
  */
 var webdriver = require('selenium-webdriver'),
     FAST_OPERATION = 1000, // ms time limit for fast operations
-    SLOW_OPERATION = 4000, // ms time limit for slow operations
+    SLOW_OPERATION = 6000, // ms time limit for slow operations
     EXTRA_SLOW_OPERATION = 10000, // ms time limit for extra slow operations
     SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://localhost:8080/';
     //SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://live.semantic-machines.com:8080/':'http://127.0.0.1:8080/';
