@@ -926,3 +926,42 @@ td:AndreySidorov-Analyst2
   v-s:official "true"^^xsd:boolean ;
   v-s:origin "Internal User" ;
 .
+
+td:JoeAT
+  rdf:type v-s:Account ;
+  v-s:login "JoeAT"^^xsd:string ;
+  v-s:mailbox "andrey.joe@mondigroup.com"^^xsd:string ;
+  v-s:owner td:AndreyJoe ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "JoeAT" ;
+.
+
+td:AndreyJoe
+  rdf:type v-s:Person ;
+  v-s:actualVersion td:AndreyJoe ;
+  v-s:birthday "1976-05-03"^^xsd:dateTime ;
+  v-s:firstName "J"@en ;
+  v-s:firstName "J"@ru ;
+  v-s:hasAccount td:JoeAT ;
+  v-s:lastName "АдминистраторJ"@ru ;
+  v-s:lastName "AdministratorJ"@en ;
+  v-ui:hasPreferences td:Preferences_AndreyJoe ;
+  v-s:hasAppointment td:AndreyJoe-Analyst2 ;
+  rdfs:label "АдминистраторJ"@ru ;
+  rdfs:label "AdministratorJ"@en ;
+  v-s:owner td:AndreyJoe ;
+.
+td:AndreyJoe-Analyst2
+  rdf:type v-s:Appointment ;
+  v-s:author td:RomanKarpov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee td:AndreyJoe ;
+  v-s:occupation td:Analyst2 ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+  rdfs:label "АдминистраторJ : Аналитик"@ru ;
+  rdfs:label "AdministratorJ : Analyst"@en ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:origin "Internal User" ;
+.
