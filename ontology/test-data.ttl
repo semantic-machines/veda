@@ -77,6 +77,13 @@ td:CommercialDirector
   rdfs:label "Коммерческий директор"@ru ;
 .
 
+td:CommercialDirector2
+  rdf:type v-s:Position ;
+  v-s:parentUnit d:org_RU1121001280 ;
+  rdfs:label "Commercial director"@en ;
+  rdfs:label "Коммерческий директор"@ru ;
+.
+
 td:ExecutiveDirector
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
@@ -856,7 +863,7 @@ td:RomanPetrov-Analyst1
   v-s:author td:RomanPetrov-Analyst1 ;
   v-s:created "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:employee td:RomanPetrov ;
-  v-s:occupation td:Analyst1 ;
+  v-s:occupation td:Analyst2 ;
   v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
@@ -871,7 +878,7 @@ td:RomanPetrov-CommercialDirector
   v-s:author td:RomanPetrov-Analyst1 ;
   v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:employee td:RomanPetrov ;
-  v-s:occupation td:CommercialDirector ;
+  v-s:occupation td:CommercialDirector2 ;
   v-s:official "true"^^xsd:boolean ;
   v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
