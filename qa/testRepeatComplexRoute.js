@@ -9,10 +9,10 @@ var assert = require('assert'),
  * 3.Login(as kaprovrt) -> Search s-wf:ComplexRouteStartForm -> Open our Complex route test template 2 -> Send task again;
  * 4.Do p.2 again;
  *
- * 0.Открываем страницу -> Входим в систему под karpovrt;
+ * 0.Открываем страницу -> Входим в систему под petrovrt;
  * 1.Открываем форму создания Тестовый шаблон комплексного маршурута 2 -> Отправляем задачу Согласующему1 -> Выходим из системы;
  * 2.Входим в систему под bychinat -> Проверяем количество задач -> Подтверждаем задачу -> Выходим из системы;
- * 3.Входим в систему под karpovrt -> Ищем Стартовую форму комплексного маршрута -> Открываем наш тестовый шаблон комплексного маршрута 2 ->
+ * 3.Входим в систему под petrovrt -> Ищем Стартовую форму комплексного маршрута -> Открываем наш тестовый шаблон комплексного маршрута 2 ->
  * -> Посылаем задачу заново;
  * 4.Делаем п.2 снова;
 */
@@ -21,7 +21,7 @@ basic.getDrivers().forEach (function (drv) {
     //PHASE#0: Login
     var driver = basic.getDriver(drv);
     basic.openPage(driver, drv);
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
+    basic.login(driver, 'petrovrt', '123', '6', 'Администратор6', 0);
 
     //PHASE#1: ComplexRouteTest2
     basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута 2', 's-wf:ComplexRouteTest2', 1);
@@ -43,7 +43,7 @@ basic.getDrivers().forEach (function (drv) {
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 0);
 
     //PHASE#3: Repeat
-    basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 3);
+    basic.login(driver, 'petrovrt', '123', '6', 'Администратор6', 3);
     basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm', 3);
     basic.execute(driver, 'click', 'button[about="v-fs:Find"]', "****** PHASE#3 : ERROR = Cannot click on 'submit' button");
     driver.sleep(basic.SLOW_OPERATION);

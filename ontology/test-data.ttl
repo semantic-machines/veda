@@ -816,3 +816,67 @@ td:RomanIvanov-CommercialDirector
   v-s:parentUnit d:org_RU1121001280 ;
   v-s:origin "Internal User" ;
 .
+
+td:PetrovRT
+  rdf:type v-s:Account ;
+  v-s:login "PetrovRT"^^xsd:string ;
+  v-s:mailbox "roman.petrov@mondigroup.com"^^xsd:string ;
+  v-s:owner td:RomanPetrov ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "PetrovRT" ;
+.
+
+td:Membership_50_su
+  rdf:type v-s:Membership ;
+  v-s:memberOf cfg:SuperUser ;
+  v-s:resource td:RomanPetrov ;
+  rdfs:label "Membership_50"@en ;
+  rdfs:label "Членство_50"@ru ;
+.
+
+td:RomanPetrov
+  rdf:type v-s:Person ;
+  v-s:actualVersion td:RomanPetrov ;
+  v-s:birthday "1981-01-09"^^xsd:dateTime ;
+  v-s:firstName "6"@en ;
+  v-s:firstName "6"@ru ;
+  v-s:hasAccount td:PetrovRT ;
+  v-s:lastName "Администратор6"@ru ;
+  v-s:lastName "Administrator6"@en ;
+  v-ui:hasPreferences td:Preferences_RomanPetrov ;
+  rdfs:label "Администратор6"@ru ;
+  rdfs:label "Administrator6"@en ;
+  v-s:hasAppointment td:RomanPetrov-Analyst1 ;
+  v-s:hasAspect v-s:PersonalAspectPetrovr ;
+  v-s:owner td:RomanPetrov ;
+.
+
+td:RomanPetrov-Analyst1
+  rdf:type v-s:Appointment ;
+  v-s:author td:RomanPetrov-Analyst1 ;
+  v-s:created "2014-01-30T15:22:33"^^xsd:dateTime ;
+  v-s:employee td:RomanPetrov ;
+  v-s:occupation td:Analyst1 ;
+  v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
+  v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  rdfs:label "Администратор6 : Аналитик"@ru ;
+  rdfs:label "Administrator6 : Analyst"@en ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:origin "Internal User" ;
+.
+
+td:RomanPetrov-CommercialDirector
+  rdf:type v-s:Appointment ;
+  v-s:author td:RomanPetrov-Analyst1 ;
+  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:employee td:RomanPetrov ;
+  v-s:occupation td:CommercialDirector ;
+  v-s:official "true"^^xsd:boolean ;
+  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
+  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
+  rdfs:label "Администратор6 : Коммерческий директор"@ru ;
+  rdfs:label "Administrator6 : CommercialDirector"@en ;
+  v-s:parentUnit d:org_RU1121001280 ;
+  v-s:origin "Internal User" ;
+.
