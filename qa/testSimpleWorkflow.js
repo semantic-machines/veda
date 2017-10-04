@@ -105,6 +105,6 @@ basic.getDrivers().forEach (function (drv) {
         assert.equal(1, result.length);
     }).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#3 : ERROR = Invalid `message` elements count (inbox task counter)");});
     basic.logout(driver, 3);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 3);
+    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 3, 'Администратор4', 'Администратор4 : Аналитик');
     driver.quit();
 });

@@ -22,7 +22,7 @@ module.exports = {
      * @param lastName    |
      * @param phase - текущая фаза теста
     */
-    acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase) {
+    acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase, to1, to2) {
         basic.login(driver, login, password, firstName, lastName, phase);
         basic.menu(driver, 'Inbox', phase);
         driver.sleep(basic.FAST_OPERATION);
@@ -42,7 +42,7 @@ module.exports = {
         if (chooseValue === '+') {
             driver.executeScript("document.querySelector('#fulltext').scrollIntoView(true)")
                 .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to fulltext button");});
-            basic.chooseFromDropdown(driver, 'v-wf:to', 'Администратор4', 'Администратор4 : Аналитик', phase);
+            basic.chooseFromDropdown(driver, 'v-wf:to', to1, to2, phase);
         }
         driver.sleep(basic.FAST_OPERATION);
         driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
@@ -63,7 +63,6 @@ module.exports = {
     */
 
     checkRouteStatus: function (driver, element, color, count, docNumber) {
-        basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
         basic.openFulltextSearchDocumentForm(driver, 'Стартовая форма сети Комплексный маршрут', 's-wf:ComplexRouteStartForm');
         basic.execute(driver, 'click', 'button[id="submit"]', "Cannot click on 'Submit/Отправить' button");
         driver.sleep(basic.SLOW_OPERATION);

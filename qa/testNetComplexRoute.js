@@ -63,50 +63,50 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver, 1);
 
     //PHASE#2: Coordination1
-    complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 2);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 2);
+    complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 2, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 2, 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_c1', 's-wf:cr_c2'], ['green', 'red'], 1, 2);
 
     //PHASE#3: Coordination2
-    complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3);
-    complexRoute.acceptTask(driver, '1', '+', '-', 'bychinat', '123', '4', 'Администратор4', 3);
+    complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '1', '+', '-', 'bychinat', '123', '4', 'Администратор4', 3, 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_c2', 's-wf:cr_rework'], ['green', 'red'], 1, 2);
-    complexRoute.acceptTask(driver, '1', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 3);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3);
+    complexRoute.acceptTask(driver, '1', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 3, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '0', '-', '-', 'karpovrt', '123', '2', 'Администратор2', 3, 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination'],
     //    ['red', 'red', 'red'], 1, 2);
 
     //PHASE#4: Review, instruction, examination -> instruction2
     complexRoute.checkTask(driver, '2', 'bychinat', '123', '4', 'Администратор4', 4);
     complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2', 4);
-    complexRoute.acceptTask(driver, '0', '+', '-',  'bychinat', '123', '4', 'Администратор4', 4);
+    complexRoute.acceptTask(driver, '0', '+', '-',  'bychinat', '123', '4', 'Администратор4', 4, 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
     //    ['red', 'red', 'green', 'red'], 1);
     complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2', 4);
-    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 4);
+    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 4, 'Администратор4', 'Администратор4 : Аналитик');
     // complexRoute.checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
     //     ['green', 'red', 'green', 'red'], 1);
     // complexRoute.checkTask(driver, '0', 'karpovrt', '123', '2', 'Администратор2', 'examination');
-    // complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4');
+    // complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_review', 's-wf:cr_instruction', 's-wf:cr_examination', 's-wf:cr_instruction2'],
     //    ['green', 'green', 'green', 'red'], 1, 2);
 
     //PHASE#5:
     // ? complexRoute.checkTask(driver, '1', 'karpovrt', '123', '2', 'Администратор2', '?');
-    complexRoute.acceptTask(driver, '3', '+', '+', 'karpovrt', '123', '2', 'Администратор2', 5);
-    complexRoute.acceptTask(driver, '4', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5);
-    complexRoute.acceptTask(driver, '1', '+', '-', 'karpovrt', '123', '2', 'Администратор2', 5);
-    complexRoute.acceptTask(driver, '2', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5);
-    complexRoute.acceptTask(driver, '1', '+', '-', 'karpovrt', '123', '2', 'Администратор2', 5);
-    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5);
+    complexRoute.acceptTask(driver, '3', '+', '+', 'karpovrt', '123', '2', 'Администратор2', 5, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '4', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '1', '+', '-', 'karpovrt', '123', '2', 'Администратор2', 5, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '2', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '1', '+', '-', 'karpovrt', '123', '2', 'Администратор2', 5, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 5, 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 2);
 
     //PHASE#6: Simple route
-    complexRoute.acceptTask(driver, '2', '+', '+', 'karpovrt', '123', '2', 'Администратор2', 6);
-    complexRoute.acceptTask(driver, '1', '+', '-', 'bychinat', '123', '4', 'Администратор4', 6);
-    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 6);
-    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 6);
+    complexRoute.acceptTask(driver, '2', '+', '+', 'karpovrt', '123', '2', 'Администратор2', 6, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '1', '+', '-', 'bychinat', '123', '4', 'Администратор4', 6, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 6, 'Администратор4', 'Администратор4 : Аналитик');
+    complexRoute.acceptTask(driver, '0', '+', '-', 'bychinat', '123', '4', 'Администратор4', 6, 'Администратор4', 'Администратор4 : Аналитик');
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_instruction2', 's-wf:cr_finish'], ['red' , 'red'], 1, 2);
     driver.quit();
 });
