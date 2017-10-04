@@ -3050,13 +3050,14 @@ if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest") { //Тестовый ма
 }
 
 if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest2") { //Тестовый маршрут2
-/*
-    routes['introduction'][simple+'participant'] = [
-                   new veda.IndividualModel("td:AndreyBychin-Analyst2")]
-    routes['introduction'][simple+'visible'] = [true];
-*/
     routes['coordination1'][simple+'participant'] = [
                  new veda.IndividualModel("td:AndreyBychin-Analyst2")]
+    routes['coordination1'][simple+'visible'] = [true];
+}
+
+if (doc['rdf:type'][0].id === "s-wf:ComplexRouteTest3") { //Тестовый маршрут3
+    routes['coordination1'][simple+'participant'] = [
+                 new veda.IndividualModel("td:AndreySidorov-Analyst2")]
     routes['coordination1'][simple+'visible'] = [true];
 }
 
@@ -3307,6 +3308,15 @@ s-wf:ComplexRouteTest2
   v-ui:hasTemplate s-wf:ComplexRouteTest2_Template ;
 .
 
+s-wf:ComplexRouteTest3
+  rdf:type rdfs:Class ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Тестовый шаблон комплексного маршурута 3"@ru;
+  rdfs:label "Complex route test template 3"@en;
+  rdfs:isDefinedBy s-wf: ;
+  v-ui:hasTemplate s-wf:ComplexRouteTest3_Template ;
+.
+
 s-wf:ComplexRouteTest2_Template
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy s-wf: ;
@@ -3320,6 +3330,38 @@ s-wf:ComplexRouteTest2_Template
             <div class="row">
                 <div class="col-md-6">
                     <span about="s-wf:ComplexRouteTest2" property="rdfs:label" />
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="#/@"><span property="@">ID</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="action btn btn-warning" id="send" about="v-s:Send" property="rdfs:label"></button>
+        </div>
+    </div>
+</div>
+<script>
+    $('#send.action', template).on('click', function () {
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+    });
+</script>
+""" ;
+.
+
+s-wf:ComplexRouteTest3_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy s-wf: ;
+  rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута 3"@ru;
+  rdfs:label "Template for Complex route test template 3"@en;
+  v-ui:forClass s-wf:ComplexRouteTest3 ;
+  v-ui:template """
+<div class="container sheet">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <span about="s-wf:ComplexRouteTest3" property="rdfs:label" />
                 </div>
                 <div class="col-md-6 text-right">
                     <a href="#/@"><span property="@">ID</span></a>
