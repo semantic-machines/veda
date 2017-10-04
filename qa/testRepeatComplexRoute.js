@@ -4,14 +4,14 @@ var assert = require('assert'),
 
 /**
  * 0.Open page -> login(as kaprovrt);
- * 1.Open create Complex route test template 2 document form -> Send task to coordinator1(bychinat) -> Logout;
- * 2.Login(as bychinat) -> Check task numbers(as bychinat) -> Accept task(as bychinat) -> Logout;
+ * 1.Open create Complex route test template 2 document form -> Send task to coordinator1(sidorovat) -> Logout;
+ * 2.Login(as sidorovat) -> Check task numbers(as sidorovat) -> Accept task(as sidorovat) -> Logout;
  * 3.Login(as kaprovrt) -> Search s-wf:ComplexRouteStartForm -> Open our Complex route test template 2 -> Send task again;
  * 4.Do p.2 again;
  *
  * 0.Открываем страницу -> Входим в систему под petrovrt;
  * 1.Открываем форму создания Тестовый шаблон комплексного маршурута 2 -> Отправляем задачу Согласующему1 -> Выходим из системы;
- * 2.Входим в систему под bychinat -> Проверяем количество задач -> Подтверждаем задачу -> Выходим из системы;
+ * 2.Входим в систему под sidorovat -> Проверяем количество задач -> Подтверждаем задачу -> Выходим из системы;
  * 3.Входим в систему под petrovrt -> Ищем Стартовую форму комплексного маршрута -> Открываем наш тестовый шаблон комплексного маршрута 2 ->
  * -> Посылаем задачу заново;
  * 4.Делаем п.2 снова;
@@ -37,9 +37,9 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver, 1);
 
     //PHASE#2: Check&Accept
-    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 2);
+    complexRoute.checkTask(driver, '1', 'sidorovat', '123', '7', 'Администратор7', 2);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 0);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 2);
+    complexRoute.acceptTask(driver, '0', '-', '-', 'sidorovat', '123', '4', 'Администратор7', 2);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 0);
 
     //PHASE#3: Repeat
@@ -57,9 +57,9 @@ basic.getDrivers().forEach (function (drv) {
     basic.logout(driver, 3);
 
     //PHASE#4: Check&Accept
-    complexRoute.checkTask(driver, '1', 'bychinat', '123', '4', 'Администратор4', 4);
+    complexRoute.checkTask(driver, '1', 'sidorovat', '123', '4', 'Администратор7', 4);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 0, 1);
-    complexRoute.acceptTask(driver, '0', '-', '-', 'bychinat', '123', '4', 'Администратор4', 4);
+    complexRoute.acceptTask(driver, '0', '-', '-', 'sidorovat', '123', '4', 'Администратор7', 4);
     //complexRoute.checkRouteStatus(driver, ['s-wf:cr_finish'] ,['red'], 1, 1);
     driver.quit();
 });
