@@ -59,11 +59,11 @@ script:
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
   - node ./qa/testSimpleWorkflow.js
+  - travis_wait 20 node ./qa/testInbox.js
+  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+  - travis_wait 20 node ./qa/testNetComplexRoute.js
   - node ./qa/testDelegationDocument.js
   - node ./qa/testDelegationTask.js
-  - travis_wait 20 node ./qa/testInbox.js
-#  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-#  - travis_wait 20 node ./qa/testNetComplexRoute.js
 
 # Stop deamon and show log
 after_script:
