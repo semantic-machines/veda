@@ -25,7 +25,7 @@ module.exports = {
     acceptTask: function (driver, decision, commentValue, chooseValue, login, password, firstName, lastName, phase, to1, to2) {
         basic.login(driver, login, password, firstName, lastName, phase);
         basic.menu(driver, 'Inbox', phase);
-        driver.sleep(basic.FAST_OPERATION);
+        driver.sleep(basic.FAST_OPERATION*2);
 //  ------ без этого кода тесты часто не проходят ! ???? 
         driver.findElement({css:'a[about="v-ft:Inbox"]'}).click()
             .thenCatch(function (e) {basic.errorHandler(e,"****** PHASE#" + phase + " : ERROR = Cannot click on Inbox messages")});
