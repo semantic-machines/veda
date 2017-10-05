@@ -3404,7 +3404,7 @@ s-wf:ComplexRouteTest3_Template
 s-wf:ComplexRouteTest0
     rdf:type rdfs:Class ;
     rdfs:label "Тестовый шаблон комплексного маршурута 0"@ru;
-    rdfs:label "Complex route test template"@en;
+    rdfs:label "Complex route test template 0"@en;
     rdfs:isDefinedBy s-wf: ;
     v-ui:hasTemplate s-wf:ComplexRouteTest0_Template ;
 .
@@ -3413,7 +3413,7 @@ s-wf:ComplexRouteTest0_Template
     rdf:type v-ui:ClassTemplate ;
     rdfs:isDefinedBy s-wf: ;
     rdfs:label "Шаблон для Тестовый шаблон комплексного маршурута 0"@ru;
-    rdfs:label "Template for Complex route test template"@en;
+    rdfs:label "Template for Complex route test template 0"@en;
     v-ui:forClass s-wf:ComplexRouteTest0 ;
     v-ui:template """
 <div class="container sheet">

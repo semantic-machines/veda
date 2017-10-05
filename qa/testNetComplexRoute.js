@@ -49,7 +49,7 @@ basic.getDrivers().forEach (function (drv) {
     basic.login(driver, 'karpovrt', '123', '2', 'Администратор2', 0);
 
     //PHASE#1: Start route
-    basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута', 's-wf:ComplexRouteTest0', 1);
+    basic.openCreateDocumentForm(driver, 'Тестовый шаблон комплексного маршурута 0', 's-wf:ComplexRouteTest0', 1);
     driver.executeScript("document.querySelector('#send').scrollIntoView(true)")    
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 : ERROR = Cannot scroll to send button");});
     basic.execute(driver, 'click', 'button[id="send"]', "****** PHASE#1 : ERROR = Cannot click on 'Send' button");
