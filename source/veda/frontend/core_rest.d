@@ -915,6 +915,10 @@ class VedaStorageRest : VedaStorageRest_API
 
             return op_res[ 0 ];
         }
+        catch (HTTPStatusException ex)
+        {
+            throw ex;
+        }
         catch (Throwable tr)
         {
             log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
@@ -945,6 +949,10 @@ class VedaStorageRest : VedaStorageRest_API
 
             return op_res[ 0 ];
         }
+        catch (HTTPStatusException ex)
+        {
+            throw ex;
+        }
         catch (Throwable tr)
         {
             log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
@@ -972,6 +980,10 @@ class VedaStorageRest : VedaStorageRest_API
             res = modify_individuals(context, "put", _ticket, individuals_json, assigned_subsystems, event_id, timestamp);
 
             return res;
+        }
+        catch (HTTPStatusException ex)
+        {
+            throw ex;
         }
         catch (Throwable tr)
         {
@@ -1118,7 +1130,7 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
     }
     catch (Throwable tr)
     {
-        log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+        log.trace("ERR: trail:error=[%s], stack=%s", tr.msg, tr.info);
     }
 }
 
