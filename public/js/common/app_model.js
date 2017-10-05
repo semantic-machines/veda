@@ -50,6 +50,10 @@
     // Load ontology
     self.init = function () {
       self.ontology = new veda.OntologyModel();
+    };
+
+    // Start application
+    self.start = function () {
       self.user = new veda.UserModel(self.user_uri);
       self.drafts = new veda.DraftsModel();
       self.status = "started";

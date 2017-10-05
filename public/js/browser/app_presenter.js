@@ -58,7 +58,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     }
   });
 
-  // Triggered in veda.init()
+  // Triggered in veda.start()
   veda.one("started", function () {
     var welcome;
     if (veda.user.hasValue("v-s:origin", "External User")) {
@@ -187,7 +187,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     storage.user_uri = authResult.user_uri;
     storage.end_time = authResult.end_time.toString();
     setCookie("ticket", authResult.ticket);
-    veda.init();
+    veda.start();
 
     // Re-login on ticket expiration
     var ticketDelay = new Date( parseInt(veda.end_time) ) - new Date();
@@ -208,6 +208,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
     delCookie("ticket");
     loginContainer.removeClass("hidden");
   });
+
+  // Load ontology
+  veda.init();
 
   try {
     // Check if ticket in cookies is valid
