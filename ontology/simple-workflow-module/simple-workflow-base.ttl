@@ -2081,6 +2081,75 @@ if (doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd
     routes['examination'][simple+'participant'] = routes['examination'][simple+'participant'].concat(new veda.IndividualModel('d:3faff975-440f-4499-98c5-eb5eaf4fb04a')); // Специалист по ведению кредиторов
   }
 
+//----------------------------------------------------------------------------------Выдача ОС для контрактов и Допов
+if ((doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") 
+		&& (doc.hasValue('mnd-s:isReadyForOsExtradition') && doc['mnd-s:isReadyForOsExtradition'][0] == true)
+		&& (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135')
+	)
+{
+//Согласование - начальник СЭБ
+  routes['coordination1'][simple+'visible'] = [true];
+  routes['coordination1'][simple+'editable'] = [true];
+  routes['coordination1'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71021621")]; // начальник СЭБ
+
+  routes['coordination2'][simple+'visible'] = [false];
+  routes['coordination2'][simple+'editable'] = [false];
+  routes['coordination2'][simple+'participant'] = [];
+  routes['coordination3'][simple+'visible'] = [false];
+  routes['coordination3'][simple+'editable'] = [false];
+  routes['coordination3'][simple+'participant'] = [];
+  routes['coordination4'][simple+'visible'] = [false];
+  routes['coordination4'][simple+'editable'] = [false];
+  routes['coordination4'][simple+'participant'] = [];
+  routes['coordination5'][simple+'visible'] = [false];
+  routes['coordination5'][simple+'editable'] = [false];
+  routes['coordination5'][simple+'participant'] = [];
+  routes['coordination6'][simple+'visible'] = [false];
+  routes['coordination6'][simple+'editable'] = [false];
+  routes['coordination6'][simple+'participant'] = [];
+
+  routes['sign'][simple+'visible'] = [false];
+  routes['sign'][simple+'editable'] = [false];
+  routes['sign'][simple+'participant'] = [];
+  routes['approval'][simple+'visible'] = [false];
+  routes['approval'][simple+'editable'] = [false];
+  routes['approval'][simple+'participant'] = [];
+  routes['review'][simple+'visible'] = [false];
+  routes['review'][simple+'editable'] = [false];
+  routes['review'][simple+'participant'] = [];
+
+//Поручение "Подготовить документы и передать балансодержателю"
+  routes['instruction'][simple+'visible'] = [true];
+  routes['instruction'][simple+'editable'] = [true];
+  routes['instruction'][simple+'comment'] = [new String('Подготовить документы и передать балансодержателю')];
+  if (
+    doc.hasValue('v-s:hasContractObject') && (doc['v-s:hasContractObject'][0].id === 'd:0c350969f2b8449c93594ee767cb27ef') //Транспорт
+  ) {
+    routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71020169')); // Начальник отдела. Технический отдел УГИ
+  }
+  if (
+    doc.hasValue('v-s:hasContractObject') && (doc['v-s:hasContractObject'][0].id === 'd:hu9k3dm2635jg0w46ehtahyk') //Недвижимое имущество
+  ) {
+    routes['instruction'][simple+'participant'] = routes['instruction'][simple+'participant'].concat(new veda.IndividualModel('d:mondi_position_71024462')); // Начальник отдела. Отдел управления проектами УР и Р
+  }
+
+//Поручение2 - балансодержатель ОС, то есть hasChief у поля v-s:initiator
+  routes['instruction2'][simple+'visible'] = [true];
+  routes['instruction2'][simple+'editable'] = [true];
+  routes['instruction2'][simple+'comment'] = [new String('Выдать ОС покупателю')];
+  if (doc.hasValue('v-s:initiator')) {
+	var dep = new veda.IndividualModel(doc['v-s:initiator'][0].id);
+	if (dep.hasValue('v-s:hasChief')) {
+	  routes['instruction2'][simple+'participant'] = dep["v-s:hasChief"]; 
+	}
+  }  
+
+//Ознакомление - Роль Бухгалтер ОС
+  routes['examination'][simple+'visible'] = [true];
+  routes['examination'][simple+'editable'] = [true];
+  routes['examination'][simple+'participant'] = [new veda.IndividualModel("d:2ee64753-2e4c-4e33-8a30-b14d1ab45854")]; // Бухгалтер ОС
+}
+
 /*
   if (doc.hasValue('v-s:hasDocumentKind') && doc['v-s:hasDocumentKind'][0].id == 'd:fecef6b8058549cfb0203b55bd2425de') {
     // Заказ Спецификация. Разовая закупка
