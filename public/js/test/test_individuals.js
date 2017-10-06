@@ -1942,10 +1942,10 @@ for (i = 0; i < 1; i++)
             
             var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
 
-        console.log("@5");
-
             //#1
             ok(compare(data.length, 6));
+
+        console.log("@5");
             
             var data = query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
