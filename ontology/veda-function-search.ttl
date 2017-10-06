@@ -1365,45 +1365,48 @@ v-fs:AttributiveSearchTemplate
   var checksContainer = $(".set-columns-wrapper .dropdown-menu", template).on('click', function (e) {
     e.stopPropagation();
   });
-  var checkTmpl = $(".set-columns-wrapper .dropdown-menu .checkbox", template).remove().get(0).outerHTML;
-  $("#search-result table > thead > tr:last > th", template).each(function (index) {
-    var th = $(this);
-    var check = $(checkTmpl);
-    var checkbox = $("input", check);
-    var columnName = $(this).find("span").clone();
-    if ( columnName.length ) {
-      $(".column-name", check).append(columnName);
-    } else {
-      $(".column-name", check).text( th.text() );
-    }
-    if (index in individual.hiddenColumns) {
-      checkbox.prop("checked", false);
-    } else {
-      checkbox.prop("checked", true);
-    }
-    checkbox.change(checkHandler);
-    checkHandler.call( checkbox.get(0) );
-    checksContainer.append(check);
-
-    // Show/hide result table columns & update resultTemplate accordingly
-    function checkHandler() {
-      if ( $(this).is(":checked") ) {
-        th.removeClass("hidden");
-        $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
-        resultTemplate = $(resultTemplate);
-        resultTemplate.not("script").children().eq(index).removeClass("hidden");
-        resultTemplate = resultTemplate.map(function () { return this.outerHTML; }).get().join("");
-        delete individual.hiddenColumns[index];
+  var checkTmpl = $(".set-columns-wrapper .dropdown-menu .checkbox", template).remove();
+  if (checkTmpl.length) {
+    checkTmpl = checkTmpl.get(0).outerHTML;
+    $("#search-result table > thead > tr:last > th", template).each(function (index) {
+      var th = $(this);
+      var check = $(checkTmpl);
+      var checkbox = $("input", check);
+      var columnName = $(this).find("span").clone();
+      if ( columnName.length ) {
+        $(".column-name", check).append(columnName);
       } else {
-        th.addClass("hidden");
-        $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
-        resultTemplate = $(resultTemplate);
-        resultTemplate.not("script").children().eq(index).addClass("hidden");
-        resultTemplate = resultTemplate.map(function () { return this.outerHTML; }).get().join("");
-        individual.hiddenColumns[index] = true;
+        $(".column-name", check).text( th.text() );
       }
-    }
-  });
+      if (index in individual.hiddenColumns) {
+        checkbox.prop("checked", false);
+      } else {
+        checkbox.prop("checked", true);
+      }
+      checkbox.change(checkHandler);
+      checkHandler.call( checkbox.get(0) );
+      checksContainer.append(check);
+
+      // Show/hide result table columns & update resultTemplate accordingly
+      function checkHandler() {
+        if ( $(this).is(":checked") ) {
+          th.removeClass("hidden");
+          $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
+          resultTemplate = $(resultTemplate);
+          resultTemplate.not("script").children().eq(index).removeClass("hidden");
+          resultTemplate = resultTemplate.map(function () { return this.outerHTML; }).get().join("");
+          delete individual.hiddenColumns[index];
+        } else {
+          th.addClass("hidden");
+          $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
+          resultTemplate = $(resultTemplate);
+          resultTemplate.not("script").children().eq(index).addClass("hidden");
+          resultTemplate = resultTemplate.map(function () { return this.outerHTML; }).get().join("");
+          individual.hiddenColumns[index] = true;
+        }
+      }
+    });
+  }
 
   // Render search form
   if ( searchBlank ) {
