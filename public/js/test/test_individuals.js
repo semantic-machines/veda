@@ -1940,17 +1940,18 @@ for (i = 0; i < 1; i++)
 
         console.log("@4");
             
+            var data = query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+        console.log("@4.1");
+            //#2
+            ok(compare(data.length, 3));
+
+        console.log("@5");            
+
             var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
 
             //#1
             ok(compare(data.length, 6));
-
-        console.log("@5");
-            
-            var data = query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-
-            //#2
-            ok(compare(data.length, 3));
 
         console.log("@5.1");
             
