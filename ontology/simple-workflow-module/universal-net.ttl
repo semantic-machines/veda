@@ -1,0 +1,119 @@
+@prefix s-wfc: <http://semantic-machines.com/veda/simple-workflow-cr/> .
+@prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+@prefix cfg: <http://semantic-machines.com/veda/cfg/> .
+
+<http://semantic-machines.com/veda/universal-net>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология бизнес процессов"@ru ;
+  rdfs:label "Simple workflow ontology"@en ;
+  rdfs:isDefinedBy s-wfc: ;
+  v-s:loadPriority 21 ;
+.
+
+s-wf:WrapUniversalNet
+  a v-wf:Net;
+  v-wf:inputVariable s-wf:var_doc_id, s-wf:var_journal_initiator;
+  v-wf:consistsOf s-wf:WrapUniversalNet_ic, s-wf:WrapUniversalNet_oc, s-wf:WrapUniversalNet_t, s-wf:WrapUniversalNet_ic_to_t, s-wf:WrapUniversalNet_t_to_oc;
+  rdfs:label "Универсальный процесс"^^xsd:string.
+
+s-wf:WrapUniversalNet_ic
+  a v-wf:InputCondition;
+  v-wf:hasFlow s-wf:WrapUniversalNet_ic_to_t;
+  v-wf:locationX "-294"^^xsd:integer;
+  v-wf:locationY "34"^^xsd:integer.
+
+s-wf:WrapUniversalNet_oc
+  a v-wf:OutputCondition;
+  v-wf:locationX "429"^^xsd:integer;
+  v-wf:locationY "-7"^^xsd:integer.
+
+
+s-wf:WrapUniversalNet_t
+  a v-wf:Task;
+  v-wf:subNet s-wf:net_coordination;
+  v-wf:split v-wf:None;
+  v-wf:startingMapping s-wf:map_controller_4_PIV_controller, s-wf:map_initiator_4_PIV_initiator, s-wf:map_actor_task_comment_4_PIV_actor_task_comment, s-wf:map_actor_task_date_to_4_PIV_actor_task_date_to, s-wf:map_possible_decision_4_PIV_possible_decision,s-wf:map_doc_id_4_PIV_doc_id,s-wf:map_decision_form_type_4_PIV_decision_form_type,s-wf:map_actor_task_action_4_PIV_actor_task_action;
+  v-wf:join v-wf:None;
+  v-wf:executor s-wf:WrapUniversalNet_executor;
+  v-wf:hasFlow s-wf:WrapUniversalNet_t_to_oc;
+  v-wf:locationX "73"^^xsd:integer;
+  rdfs:label "запуск универсальных маршрутов"^^xsd:string;
+  v-wf:locationY "-12"^^xsd:integer;
+.
+
+s-wf:WrapUniversalNet_ic_to_t
+  a v-wf:Flow;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:WrapUniversalNet_t;
+  rdfs:label ""^^xsd:string.
+
+s-wf:WrapUniversalNet_t_to_oc
+  a v-wf:Flow;
+  v-wf:predicate "true"^^xsd:string;
+  v-wf:flowsInto s-wf:WrapUniversalNet_oc;
+  rdfs:label ""^^xsd:string.
+
+s-wf:WrapUniversalNet_executor
+  rdf:type v-wf:ExecutorDefinition ;
+  v-wf:executorExpression "process.getInputVariable ('actor')";
+  rdfs:label "Исполнители из стартовой формы"@ru.
+
+s-wf:map_controller_4_PIV_controller
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_controller ;
+  v-wf:mappingExpression  "process.getInputVariable ('controller')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_initiator_4_PIV_initiator
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_initiator ;
+  v-wf:mappingExpression  "process.getInputVariable ('initiator')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_actor_4_PIV_actor
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_actor ;
+  v-wf:mappingExpression  "process.getInputVariable ('actor')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_actor_task_comment_4_PIV_actor_task_comment
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_actor_task_comment ;
+  v-wf:mappingExpression  "process.getInputVariable ('actor_task_comment')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_actor_task_date_to_4_PIV_actor_task_date_to
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_actor_task_date_to ;
+  v-wf:mappingExpression  "process.getInputVariable ('actor_task_date_to')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_possible_decision_4_PIV_possible_decision
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:possible_decision ;
+  v-wf:mappingExpression  "process.getInputVariable ('possible_decision')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:map_doc_id_4_PIV_doc_id
+  rdf:type v-wf:Mapping ;
+  v-wf:mapToVariable s-wf:var_doc_id ;
+  v-wf:mappingExpression  "process.getInputVariable ('docId')" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+
