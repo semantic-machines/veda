@@ -436,16 +436,6 @@ s-wf:map_t1_e
   rdfs:label "Вытащить из задачи результаты работы"@ru ;
 .
 
-# ------------------------------- NET Complex Route : User Form ---------------------------- #
-s-wf:ComplexRouteStartForm
-  rdf:type rdfs:Class ;
-  rdfs:subClassOf v-wf:StartForm ;
-  rdfs:label "Стартовая форма сети Комплексный маршрут"@ru ;
-  rdfs:label "Complex route start form"@en ;
-  rdfs:isDefinedBy s-wf: ;
-  v-ui:hasTemplate s-wf:ComplexRouteStartForm_Template ;
-.
-
 s-wf:SimpleRouteStartForm
   rdf:type rdfs:Class ;
   rdfs:subClassOf v-s:Embedded ;
@@ -792,6 +782,8 @@ s-wf:participantSpecification
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )&& ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal User' || 'v-s:origin'=='Group User') || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string ;
 .
 
+<<<<<<< HEAD
+=======
 s-wf:ComplexRouteStartForm_Template
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy s-wf: ;
@@ -3339,6 +3331,7 @@ stages.forEach(function(stage) {
 </div>
   """ ;
 .
+>>>>>>> origin/master
 
 
 #--------------------------------------------------------------------------------------
