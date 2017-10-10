@@ -330,8 +330,8 @@ veda.Module(function (veda) { "use strict";
       this.isSync(true);
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      this.draft();
       notify("danger", error);
+      if ( this.is("v-s:UserThing") ) { this.draft() }
     }
     this.trigger("afterSave");
     return this;

@@ -262,7 +262,7 @@ hr.black {
   float: right;
 }
 
-#credentials {
+.credentials {
   max-width: 330px;
   padding: 15px;
   margin-top: 10%;
@@ -270,13 +270,13 @@ hr.black {
   margin-right: auto;
 }
 
-#credentials input#login {
+.credentials input#login {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-#credentials input#password {
+.credentials input#password {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }

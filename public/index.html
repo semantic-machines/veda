@@ -44,7 +44,7 @@
   <body>
 
     <!-- Login form -->
-    <div id="login-container" class="hidden"></div>
+    <div class="hidden credentials"></div>
 
     <!-- Autocomplete feature -->
     <iframe name="autocomplete-frame" style="display:none" src="about:blank"></iframe>
@@ -72,7 +72,7 @@
 
     <!-- Login -->
     <script type="html/template" id="login-template">
-      <form role="form" id="credentials">
+      <form role="form">
         <h3>Войдите / Sign in</h3>
         <input class="form-control input-lg" id="login" required="required" placeholder="login" type="text" name="login" autofocus="autofocus"/>
         <input class="form-control input-lg" id="password" required="required" placeholder="password" type="password" name="password"/>
