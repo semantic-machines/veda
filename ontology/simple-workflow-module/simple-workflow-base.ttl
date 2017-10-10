@@ -2082,10 +2082,10 @@ if (doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd
   }
 
 //----------------------------------------------------------------------------------Выдача ОС для контрактов и Допов
-if ((doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement") 
-		&& (doc.hasValue('mnd-s:isReadyForOsExtradition') && doc['mnd-s:isReadyForOsExtradition'][0] == true)
-		&& (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135')
-	)
+if ((doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mnd-s:AdditionalAgreement")
+    && (doc.hasValue('mnd-s:isReadyForOsExtradition') && doc['mnd-s:isReadyForOsExtradition'][0] == true)
+    && (doc.hasValue('v-s:supplier') && doc['v-s:supplier'][0].id === 'd:org_RU1121003135')
+  )
 {
 //Согласование - начальник СЭБ
   routes['coordination1'][simple+'visible'] = [true];
@@ -2138,11 +2138,11 @@ if ((doc['rdf:type'][0].id === "mnd-s:Contract" || doc['rdf:type'][0].id === "mn
   routes['instruction2'][simple+'editable'] = [true];
   routes['instruction2'][simple+'comment'] = [new String('Выдать ОС покупателю')];
   if (doc.hasValue('v-s:initiator')) {
-	var dep = new veda.IndividualModel(doc['v-s:initiator'][0].id);
-	if (dep.hasValue('v-s:hasChief')) {
-	  routes['instruction2'][simple+'participant'] = dep["v-s:hasChief"]; 
-	}
-  }  
+  var dep = new veda.IndividualModel(doc['v-s:initiator'][0].id);
+  if (dep.hasValue('v-s:hasChief')) {
+    routes['instruction2'][simple+'participant'] = dep["v-s:hasChief"];
+  }
+  }
 
 //Ознакомление - Роль Бухгалтер ОС
   routes['examination'][simple+'visible'] = [true];
@@ -2459,7 +2459,7 @@ if (doc['rdf:type'][0].id === "mnd-s:RequestWasteWaterDischarge") {
   routes['instruction3'][simple+'comment'] = [new String('Ознакомиться с результатами')];
 
   // #informing----------------------------------------------------------------------------------------------------------------------------------------
-  routes['introduction'][simple+'participant'] = [new veda.IndividualModel("d:SYK-SMEN-WATR_appointment")]; // Сотрудник. Мастер УВКХ
+  routes['introduction'][simple+'participant'] = [new veda.IndividualModel("d:SYK-SMEN-WATR_appointment"), new veda.IndividualModel("d:mondi_appointment_00050268_71025321")] // инженер по развитию БОСВ Плоскова Оксана Николаевна, Сотрудник. Мастер УВКХ
   routes['introduction'][simple+'visible'] = [true];
   routes['introduction'][simple+'editable'] = [false];
   routes['introduction'][simple+'deadlineDays'] = [10];
@@ -3041,7 +3041,7 @@ if (doc['rdf:type'][0].id === "mnd-s:ProjectCapex") {
 
   routes['approval'][simple+'visible'] = [true];
   routes['approval'][simple+'editable'] = [true];
-  routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71021843")]; //Начальник УРиР  
+  routes['approval'][simple+'participant'] = [new veda.IndividualModel("d:mondi_position_71021843")]; //Начальник УРиР
 
   routes['instruction'][simple+'visible'] = [false];
   routes['instruction'][simple+'editable'] = [false];
