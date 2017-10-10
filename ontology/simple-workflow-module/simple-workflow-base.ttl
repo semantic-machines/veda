@@ -1000,7 +1000,8 @@ s-wf:codelet_distribution
   rdfs:isDefinedBy s-wf: ;
 .
 
-# ------------------------------- NET Complex Route : User Form ---------------------------- #
+# ------------------------------------------------------------------------------------------
+
 s-wf:UserTaskForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:DecisionForm ;
@@ -2766,22 +2767,6 @@ s-wf:rule2currentNetFromIsProcess
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate  "removeThisProcess ('v-wf:isProcess')";
   v-wf:grouping "@", "1";
-.
-
-s-wf:complexRouteTransform
-  rdf:type v-wf:Transform ;
-  v-wf:transformRule s-wf:complexRouteRule ;
-  rdfs:isDefinedBy s-wf: ;
-.
-s-wf:complexRouteRule
-  rdf:type v-wf:Rule ;
-  v-wf:segregateElement "contentName('@')" ;
-  v-wf:aggregate "putValue ('v-wf:processedDocument')" ;
-  v-wf:aggregate "putUri ('v-wf:forNet', 's-wf:net_complex_route')" ;
-  v-wf:aggregate "putUri ('rdf:type', 's-wf:ComplexRouteStartForm')" ;
-  v-wf:aggregate "putUri ('v-wf:useTransformation', 's-wf:complexRouteStartFormToNet')" ;
-  rdfs:isDefinedBy s-wf: ;
-  v-wf:grouping "1";
 .
 
 #Шаблоны писем уведомлений рассылки

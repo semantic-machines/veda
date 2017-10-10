@@ -287,11 +287,6 @@ v-s:SendTask
   rdfs:label "Выдать задачу"@ru ;
   rdfs:label "Send task"@en ;
 .
-v-s:SendComplex
-  rdf:type v-s:Bundle ;
-  rdfs:label "Отправить по комплексному маршруту"@ru ;
-  rdfs:label "Complex workflow route"@en ;
-.
 v-s:Total
   rdf:type v-s:Bundle ;
   rdfs:label "Всего"@ru ;
