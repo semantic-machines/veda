@@ -1950,6 +1950,7 @@ for (i = 0; i < 1; i++)
 
             var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
 
+        console.log("@5.0");            
             //#1
             ok(compare(data.length, 6));
 
