@@ -41,7 +41,7 @@ before_script:
 
 # Run API & integration test
 script:
-  - grunt test --stack --verbose
+  - travis_wait 20 grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
 #  - node ./qa/testLogin.js
