@@ -19,8 +19,6 @@
   v-s:loadPriority 21 ;
 .
 
-# Прослойка комплексный - универсальный
-
 s-wf:adf43bae5-d0ce-62e4-5e11-e127df46ecc4
   a v-wf:Mapping;
   v-wf:mappingExpression """
@@ -49,7 +47,7 @@ s-wf:InterlayerNet
   v-wf:inputVariable s-wf:var_doc_id, s-wf:var_journal_initiator;
   v-wf:consistsOf s-wf:InterlayerNet_ic, s-wf:InterlayerNet_oc, s-wf:InterlayerNet_t, s-wf:InterlayerNet_ic_to_t, s-wf:InterlayerNet_t_to_oc;
   v-wf:completedMapping s-wf:map_set_result_from_local, s-wf:map_set_result_decision_from_local;
-  rdfs:label "Прослойка между комплексным и универсальным маршрутом"^^xsd:string.
+  rdfs:label "прослойка для множествеенного запуска универсального маршрута"^^xsd:string.
 
 s-wf:InterlayerNet_ic
   a v-wf:InputCondition;
