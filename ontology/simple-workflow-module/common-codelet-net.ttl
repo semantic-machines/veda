@@ -1,0 +1,152 @@
+@prefix s-wfb: <http://semantic-machines.com/veda/simple-workflow-base/> .
+@prefix : <http://semantic-machines.com/veda/simple-workflow/> .
+@prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+
+<http://semantic-machines.com/veda/common-codelet-net>
+  rdf:type owl:Ontology ;
+  owl:imports <http://semantic-machines.com/veda/veda-workflow> ;
+  rdfs:label "Simple workflow base ontology"@en ;
+  rdfs:label "Онтология бизнес процессов базовая"@ru ;
+  v-s:loadPriority 21 ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
+s-wf:codelet_create_use_transformation
+  rdf:type v-s:Codelet ;
+  rdfs:label "Создать на основе трансформации (src_uri, transformation_uri)" ;
+  v-s:script """
+  create_use_transformation (process, task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
+s-wf:codelet_add_value_to_document
+  rdf:type v-s:Codelet ;
+  rdfs:label "Добавить значение в поле документа (src_uri, name_uri, value)" ;
+  v-s:script """
+  add_value_to_document(process, task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
+s-wf:codelet_set_value_to_document
+  rdf:type v-s:Codelet ;
+  rdfs:label "Заменить значение в поле документа (src_uri, name_uri, value)" ;
+  v-s:script """
+  set_value_to_document(process, task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : ------------------------------------- #
+
+s-wf:codelet_get_type_of_docId
+  rdf:type v-s:Codelet ;
+  rdfs:label "Взять тип документа в переменной docId" ;
+  v-s:script """
+  get_type_of_docId (task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : "запущен ли процесс по документу" ------------------------------------- #
+s-wf:codelet_is_run
+  rdf:type v-s:Codelet ;
+  rdfs:label "Запущен ли процесс по документу" ;
+  v-s:script """
+  is_in_docflow_and_set_if_true (task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : "понизить права" ----------------------------- #
+s-wf:codelet_down_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Понизить права" ;
+  v-s:script """
+  process.getInputVariable ('rightset')?
+  change_rights (process, task, process.getInputVariable ('rightset')) :
+  down_right_and_store (process, task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:codelet_change_controller_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Выдать права контролирующему" ;
+  v-s:script """
+  process.getInputVariable ('rightset')?
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'controller') :
+  change_rights_actor (process, task, newStr ('-r--'), 'controller')
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:codelet_change_responsible_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Выдать права ответственному" ;
+  v-s:script """
+  process.getInputVariable ('rightset')?
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'responsible') :
+  change_rights_actor (process, task, newStr ('-r--'), 'responsible')
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+s-wf:codelet_change_projectManager_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Выдать права руководителю проекта" ;
+  v-s:script """
+  process.getInputVariable ('rightset')?
+  change_rights_actor (process, task, process.getInputVariable ('rightset'), 'projectManager') :
+  change_rights_actor (process, task, newStr ('-ru-'), 'projectManager')
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : "восстановить права" ----------------------------- #
+s-wf:codelet_restore_right
+  rdf:type v-s:Codelet ;
+  rdfs:label "Восстановить права" ;
+  v-s:script """
+  restore_right (task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : "вывести из документооборота" ----------------------------- #
+s-wf:codelet_interrupt_process
+  rdf:type v-s:Codelet ;
+  rdfs:label "Вывести из документооборота" ;
+  v-s:script """
+  interrupt_process (process.ticket, process, "")
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
+# ------------------------------ CODELET : "рассылка" ----------------------------- #
+s-wf:codelet_distribution
+  rdf:type v-s:Codelet ;
+  rdfs:label "Рассылка" ;
+  v-s:script """
+  distribution (process, task)
+""" ;
+  rdfs:isDefinedBy s-wf: ;
+.
+
