@@ -5,7 +5,8 @@
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2", 
                 "d-nanomsg": "0.2.0",
-                "libasync": "0.8.2"
+                "libasync": "0.8.2",
+				"urld": "2.0.1"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
