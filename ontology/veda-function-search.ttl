@@ -1703,6 +1703,11 @@ v-fs:AttributiveSearchTemplate
           self.top = self.result.length;
         }
         renderResult(results.result);
+
+        // Notify search blank on search complete
+        if ( searchBlank && searchBlank.object ) {
+          searchBlank.object.trigger("search:complete", results);
+        }
       }).then(function () {
         if ( self.hasValue("v-fs:loadAll", true) && self.cursor < self.estimated ) {
           search(self.cursor);

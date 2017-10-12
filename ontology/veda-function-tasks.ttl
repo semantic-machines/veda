@@ -104,11 +104,11 @@ v-ft:Event_UpdateTaskCounter
 // Force update task counter
 var forceUpdate = hasValue(document, "v-ft:forceUpdate", {data: true, type: _Boolean}),
     counterOwner = getUri(document["v-s:owner"]);
-if ( forceUpdate && counterOwner ) {
+//if ( forceUpdate && counterOwner ) {
   //print("re-create task counter, owner =", counterOwner);
-  createTaskCounter(counterOwner);
-  return;
-}
+  //createTaskCounter(counterOwner);
+  //return;
+//}
 
 // Update task counter on task
 var task = document,
@@ -273,8 +273,8 @@ v-ft:TaskCounterTemplate
   var that = this;
   if (that.rights && individual.rights.hasValue("v-s:canUpdate")) {
     $("#refresh", template).click(function () {
-      that["v-ft:forceUpdate"] = [true];
-      that.save();
+      //that["v-ft:forceUpdate"] = [true];
+      //that.save();
     });
   } else {
     $("#refresh", template).remove();
@@ -314,7 +314,7 @@ v-ft:TaskCounterModel
   rdfs:label "Модель v-ft:TaskCounter"@ru ;
   v-s:script """
 // Force update outdated counter
-function getMonday(date) {
+/*function getMonday(date) {
   var monday = new Date(date);
   var day = monday.getDay();
   var diff = monday.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
@@ -327,7 +327,7 @@ var forceUpdate = !created || created < monday;
 if ( forceUpdate ) {
   this["v-ft:forceUpdate"] = [true];
   this.save();
-}
+}*/
 //# sourceURL=v-ft:TaskCounterModel
   """ ;
 .
@@ -503,6 +503,23 @@ v-ft:ActorFilterTemplate
     individual[actor_property] = [new veda.IndividualModel(actor_uri)];
     individual.trigger("search");
   });
+
+  // Update counter if counter & results count do not match
+  individual.on("search:complete", checkCounter);
+  template.one("remove", function () {
+    individual.off(checkCounter);
+  });
+  function checkCounter(results) {
+    var counter_el = $("li.active #counter", template);
+    var counter_uri = counter_el.attr("about");
+    var property_uri = counter_el.attr("property");
+    var counter_val = parseInt( counter_el.text() );
+    if (counter_uri && property_uri && counter_val !== results.estimated) {
+      var counter = new veda.IndividualModel(counter_uri);
+      counter[property_uri] = [ results.estimated ];
+      counter.save();
+    }
+  }
 
   //# sourceURL=v-ft:ActorFilterTemplate_pre
 </script>
