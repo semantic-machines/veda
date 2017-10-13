@@ -75,9 +75,22 @@ class UserModuleInfo
             stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
     }
 
-    bool uninstall(string module_id)
+    bool uninstall()
     {
-        log.trace("UNINSTALL MODULE [%s] ", module_id);
+    	log.trace ("@1 prev_module_name=%s", prev_module_name);
+        string module_id = prev_module_name;
+
+        log.trace("UNINSTALL MODULE [%s]", module_id);
+
+        foreach (dep; dependecies)
+        {
+            if (dep.uninstall() == false)
+                return false;
+        }
+
+        if (module_id is null)
+            return true;
+
         SearchResult sr =
             context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy' === '" ~ module_id ~ "'", "'rdfs:isDefinedBy' asc", "base,system,deleted", 0, 100000,
                                                   10000,
@@ -90,7 +103,7 @@ class UserModuleInfo
 
         foreach (uid; sr.result)
         {
-            log.trace("UNINSTALL [%s]", uid);
+            log.trace("REMOVE [%s] %s", prev_module_name, uid);
             OpResult res = context.remove_individual(&sticket, uid, "", -1, ALL_MODULES, OptFreeze.NONE,
                                                      OptAuthorize.NO);
             if (res.result != ResultCode.OK)
@@ -119,6 +132,8 @@ class UserModuleInfo
 
     bool install()
     {
+        log.trace("INSTALL MODULE [%s]", module_indv.uri);
+
         foreach (dep; dependecies)
         {
             if (dep.install() == false)
@@ -132,7 +147,7 @@ class UserModuleInfo
         {
             OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], null, -1, ALL_MODULES, OptFreeze.NONE,
                                                   OptAuthorize.NO);
-            log.trace("INSTALL [%s][%s] %s", this.module_indv.uri, this.ver, uid);
+            log.trace("INSERT [%s][%s] %s", this.module_indv.uri, this.ver, uid);
 
             if (orc.result == ResultCode.OK)
                 installed[ uid ] = true;
@@ -161,6 +176,7 @@ class UserModuleInfo
         return true;
     }
 
+	// TODO разделить на get_unpack_module + check   
     void get_unpack_module_and_check()
     {
         log.trace("\nprepare %s", module_indv);
@@ -175,7 +191,7 @@ class UserModuleInfo
 
             if (pp.length != 3)
             {
-                log.trace("ERR! unknown url format [%s], break installation", url);
+                log.trace("ERR! unknown url format [%s], break check", url);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -193,7 +209,7 @@ class UserModuleInfo
             }
             catch (Throwable tr)
             {
-                log.trace("ERR! %s can't create tmp folder %s, break installation", tr.msg, modile_temp_dir);
+                log.trace("ERR! %s can't create tmp folder %s, break check", tr.msg, modile_temp_dir);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -210,7 +226,7 @@ class UserModuleInfo
             string js_releases = readText(releases_path);
             if (js_releases is null || js_releases == "")
             {
-                log.trace("ERR! fail read json file of releases [%s], break installation", releases_path);
+                log.trace("ERR! fail read json file of releases [%s], break check", releases_path);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -236,7 +252,7 @@ class UserModuleInfo
             {
                 log.trace("ERR! [%s] fail parse release.json [%s] ", tr.msg, js_releases);
 
-                log.trace("ERR! fail parse json file of releases [%s], break installation", releases_path);
+                log.trace("ERR! fail parse json file of releases [%s], break check", releases_path);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -252,7 +268,7 @@ class UserModuleInfo
 
             if (module_url is null)
             {
-                log.trace("ERR! fail read module url from json file [%s], break installation", releases_path);
+                log.trace("ERR! fail read module url from json file [%s], break check", releases_path);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -266,7 +282,7 @@ class UserModuleInfo
             auto   ps         = executeShell(unpack_cmd);
             if (ps.status != 0)
             {
-                log.trace("ERR! fail unpack module [%s], break installation", unpack_cmd);
+                log.trace("ERR! fail unpack module [%s], break check", unpack_cmd);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -293,7 +309,7 @@ class UserModuleInfo
 
         if (unpacked_module_folder_name is null)
         {
-            log.trace("ERR! fail unpack module [%s], break installation", module_file_path);
+            log.trace("ERR! fail unpack module [%s], break check", module_file_path);
             res = ErrCode.FAIL;
             return;
         }
@@ -321,7 +337,7 @@ class UserModuleInfo
 
         if (root_indv is null)
         {
-            log.trace("ERR! not found root element [v-s:moduleUrl=%s] in [%s], break installation", url, module_ttl_path);
+            log.trace("ERR! not found root element [v-s:moduleUrl=%s] in [%s], break check", url, module_ttl_path);
             res = ErrCode.FAIL;
             return;
         }
@@ -351,7 +367,7 @@ class UserModuleInfo
                         {
                             if (indv_module.exists("rdf:type", "v-s:Module") == true)
                             {
-                                log.trace("[%s] already exist, and found module rdfs:isDefinedBy=%s, break installation", uid, is_defined_by);
+                                log.trace("[%s] already exist, and found module rdfs:isDefinedBy=%s, break check", uid, is_defined_by);
                                 prev_module_name = is_defined_by;
                                 res              = ErrCode.FOUND_ANOTHER_VERSION;
                                 return;
@@ -360,7 +376,7 @@ class UserModuleInfo
                     }
                     else
                     {
-                        log.trace("[%s] already exist, and rdfs:isDefinedBy=%s, break installation", uid, is_defined_by);
+                        log.trace("[%s] already exist, and rdfs:isDefinedBy=%s, break check", uid, is_defined_by);
                         prev_module_name = is_defined_by;
                         res              = ErrCode.FOUND_ANOTHER_VERSION;
                         return;
@@ -390,7 +406,7 @@ class UserModuleInfo
 
             if (dep_indv is null)
             {
-                log.trace("ERR! not found dependency element [%s] in [%s], break installation", dep.uri, module_ttl_path);
+                log.trace("ERR! not found dependency element [%s] in [%s], break check", dep.uri, module_ttl_path);
                 res = ErrCode.FAIL;
                 return;
             }
@@ -399,10 +415,10 @@ class UserModuleInfo
             duim.get_unpack_module_and_check();
             dependecies[ duim.module_indv.uri ] = duim;
 
-            if (duim.res == ErrCode.FAIL)
+            if (duim.res != ErrCode.OK)
             {
-                res = ErrCode.FAIL;
-                return;
+                res = duim.res;
+                //return;
             }
         }
 
@@ -558,17 +574,14 @@ class UserModulesTool : VedaModule
 
         if (im.res == ErrCode.OK)
         {
-            log.trace("check module and dependency is Ok, now install it");
-
             im.install();
+        }
+        else if (im.res == ErrCode.FOUND_ANOTHER_VERSION)
+        {
+            im.uninstall();
         }
         else if (im.res == ErrCode.FAIL)
             log.trace("installation module [%s][%s] if fail", im.url, im.ver);
-        else if (im.res == ErrCode.FOUND_ANOTHER_VERSION)
-        {
-            log.trace("need uninstall module [%s]", im.prev_module_name);
-            im.uninstall(im.prev_module_name);
-        }
     }
 
     private void uninstall_user_module(string module_id)
@@ -576,7 +589,7 @@ class UserModulesTool : VedaModule
         Ticket         sticket = context.sys_ticket();
         UserModuleInfo im      = new UserModuleInfo(context, sticket);
 
-        im.uninstall(module_id);
+        im.uninstall();
     }
 }
 
