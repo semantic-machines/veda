@@ -51,6 +51,17 @@ class UserModuleInfo
     Ticket  sticket;
     Logger  log;
 
+    this(Context _context, Ticket _sticket)
+    {
+        context = _context;
+        sticket = _sticket;
+
+        if (context !is null)
+            log = context.get_logger();
+        else
+            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+    }
+
     this(Context _context, Ticket _sticket, string _install_id, Individual _module_indv)
     {
         module_indv = _module_indv;
@@ -64,7 +75,93 @@ class UserModuleInfo
             stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
     }
 
-    void get_check_and_unpack_module()
+    bool uninstall(string module_id)
+    {
+        log.trace("UNINSTALL MODULE [%s] ", module_id);
+        SearchResult sr =
+            context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy' === '" ~ module_id ~ "'", "'rdfs:isDefinedBy' asc", "base,system,deleted", 0, 100000,
+                                                  10000,
+                                                  null,
+                                                  false);
+
+        log.trace("found %s ", sr.result);
+
+        bool is_success = true;
+
+        foreach (uid; sr.result)
+        {
+            log.trace("UNINSTALL [%s]", uid);
+            OpResult res = context.remove_individual(&sticket, uid, "", -1, ALL_MODULES, OptFreeze.NONE,
+                                                     OptAuthorize.NO);
+            if (res.result != ResultCode.OK)
+            {
+                log.trace("ERR! fail remove [%s], err=[%s]", uid, res.result);
+                is_success = false;
+                break;
+            }
+        }
+
+        if (is_success == true)
+        {
+            OpResult res = context.remove_individual(&sticket, module_id, "", -1, ALL_MODULES, OptFreeze.NONE,
+                                                     OptAuthorize.NO);
+            if (res.result != ResultCode.OK)
+            {
+                log.trace("ERR! fail remove [%s], err=[%s]", module_id, res.result);
+                return false;
+            }
+
+            return true;
+        }
+        else
+            return false;
+    }
+
+    bool install()
+    {
+        foreach (dep; dependecies)
+        {
+            if (dep.install() == false)
+                return false;
+        }
+
+        bool[ string ] installed;
+        bool is_sucess = true;
+
+        foreach (uid; module_individuals.keys)
+        {
+            OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], null, -1, ALL_MODULES, OptFreeze.NONE,
+                                                  OptAuthorize.NO);
+            log.trace("INSTALL [%s][%s] %s", this.module_indv.uri, this.ver, uid);
+
+            if (orc.result == ResultCode.OK)
+                installed[ uid ] = true;
+            else
+            {
+                log.trace("ERR! fail store indvidual %s, errcode=%s", *module_individuals[ uid ], orc.result);
+                is_sucess = false;
+                break;
+            }
+        }
+
+        if (is_sucess == false)
+        {
+            log.trace("fail installation, remove installed individuals");
+
+            foreach (uid; installed.keys)
+            {
+                context.remove_individual(&sticket, uid, null, -1, ALL_MODULES, OptFreeze.NONE,
+                                          OptAuthorize.NO);
+            }
+
+            return false;
+        }
+        else
+            log.trace("installation module [%s][%s] is success", url, ver);
+        return true;
+    }
+
+    void get_unpack_module_and_check()
     {
         log.trace("\nprepare %s", module_indv);
 
@@ -149,9 +246,9 @@ class UserModuleInfo
 
             module_url = ver_2_url.get(ver, string.init);
 
-            log.trace("@ ver_2_url=%s pos_2_ver=%s", ver_2_url, pos_2_ver);
-            log.trace("@ module_url=[%s]", module_url);
-            log.trace("@ ver=[%s]", ver);
+            //log.trace("@ ver_2_url=%s pos_2_ver=%s", ver_2_url, pos_2_ver);
+            //log.trace("@ module_url=[%s]", module_url);
+            //log.trace("@ ver=[%s]", ver);
 
             if (module_url is null)
             {
@@ -201,12 +298,8 @@ class UserModuleInfo
             return;
         }
 
-        log.trace("@1unpacked_module_folder_name=%s", unpacked_module_folder_name);
-
         if (unpacked_module_folder_name[ $ - 1 ] == '/')
             unpacked_module_folder_name = unpacked_module_folder_name[ 0..$ - 1 ];
-
-        log.trace("@2unpacked_module_folder_name=%s", unpacked_module_folder_name);
 
         // found module.ttl
         string[ string ] prefixes;
@@ -244,7 +337,7 @@ class UserModuleInfo
 
             foreach (uid; tmp_individuals.keys)
             {
-                log.trace("check individual [%s]", uid);
+                //log.trace("check individual [%s]", uid);
                 Individual indv_in_storage = context.get_individual(&sticket, uid);
                 if (indv_in_storage.getStatus() == ResultCode.OK)
                 {
@@ -286,7 +379,7 @@ class UserModuleInfo
         }
 
 
-        log.trace("@root indv=%s", root_indv);
+        //log.trace("@root indv=%s", root_indv);
 
         // go tree
         Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
@@ -303,7 +396,7 @@ class UserModuleInfo
             }
 
             UserModuleInfo duim = new UserModuleInfo(context, sticket, install_id, *dep_indv);
-            duim.get_check_and_unpack_module();
+            duim.get_unpack_module_and_check();
             dependecies[ duim.module_indv.uri ] = duim;
 
             if (duim.res == ErrCode.FAIL)
@@ -391,7 +484,7 @@ class UserModulesTool : VedaModule
                 if (new_is_deleted == false && prev_is_deleted == true)
                 {
                     log.trace("module unmarked as deleted, install");
-                    uninstall_user_module(new_indv);
+                    uninstall_user_module(new_indv.uri);
                     return ResultCode.OK;
                 }
                 else
@@ -456,57 +549,34 @@ class UserModulesTool : VedaModule
 
     private void install_user_module(ref Individual new_indv)
     {
-        Ticket sticket = context.sys_ticket();
+        Ticket         sticket    = context.sys_ticket();
+        string         install_id = "veda-install-" ~ randomUUID().toString();
 
-        string install_id = "veda-install-" ~ randomUUID().toString();
+        UserModuleInfo im = new UserModuleInfo(context, sticket, install_id, new_indv);
 
-        Individual *[ string ] module_individuals;
+        im.get_unpack_module_and_check();
 
-        UserModuleInfo installed_module = new UserModuleInfo(context, sticket, install_id, new_indv);
-        installed_module.get_check_and_unpack_module();
-
-        bool[ string ] installed;
-        bool is_sucess = true;
-
-        if (installed_module.res == ErrCode.OK)
+        if (im.res == ErrCode.OK)
         {
             log.trace("check module and dependency is Ok, now install it");
 
-            foreach (uid; module_individuals.keys)
-            {
-                OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], null, -1, ALL_MODULES, OptFreeze.NONE,
-                                                      OptAuthorize.NO);
-
-                if (orc.result == ResultCode.OK)
-                    installed[ uid ] = true;
-                else
-                {
-                    log.trace("ERR! fail store indvidual %s, errcode=%s", *module_individuals[ uid ], orc.result);
-                    is_sucess = false;
-                    break;
-                }
-            }
-
-            if (is_sucess == false)
-            {
-                //fail installation, remove installed individuals
-            }
-            else
-                log.trace("installation module [%s][%s] is success", installed_module.url, installed_module.ver);
-
-
-            // install
+            im.install();
         }
-        else if (installed_module.res == ErrCode.FAIL)
-            log.trace("installation module [%s][%s] if fail", installed_module.url, installed_module.ver);
-        else if (installed_module.res == ErrCode.FOUND_ANOTHER_VERSION)
+        else if (im.res == ErrCode.FAIL)
+            log.trace("installation module [%s][%s] if fail", im.url, im.ver);
+        else if (im.res == ErrCode.FOUND_ANOTHER_VERSION)
         {
-            log.trace("need uninstall module [%s]", installed_module.prev_module_name);
+            log.trace("need uninstall module [%s]", im.prev_module_name);
+            im.uninstall(im.prev_module_name);
         }
     }
 
-    private void uninstall_user_module(ref Individual new_indv)
+    private void uninstall_user_module(string module_id)
     {
+        Ticket         sticket = context.sys_ticket();
+        UserModuleInfo im      = new UserModuleInfo(context, sticket);
+
+        im.uninstall(module_id);
     }
 }
 
