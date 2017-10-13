@@ -473,7 +473,7 @@ class VedaModule
             }
             catch (Throwable ex)
             {
-                log.trace("ERR! ex=%s", ex.msg);
+                log.trace("ERR! ex=%s %s", ex.msg, ex.info);
             }
 
             //if (count_success_prepared % 1000 == 0)

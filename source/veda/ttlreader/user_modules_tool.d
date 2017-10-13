@@ -41,12 +41,15 @@ class UserModuleInfo
     string     install_id;
     Individual module_indv;
 
+    string     prev_module_name;
+
     UserModuleInfo[ string ] dependecies;
 
     ErrCode res;
 
     Context context;
     Ticket  sticket;
+    Logger  log;
 
     this(Context _context, Ticket _sticket, string _install_id, Individual _module_indv)
     {
@@ -54,6 +57,11 @@ class UserModuleInfo
         install_id  = _install_id;
         context     = _context;
         sticket     = _sticket;
+
+        if (context !is null)
+            log = context.get_logger();
+        else
+            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
     }
 
     void get_check_and_unpack_module()
@@ -110,18 +118,30 @@ class UserModuleInfo
                 return;
             }
 
-            JSONValue jva = parseJSON(js_releases);
+            string module_url;
             string[ string ] ver_2_url;
             string[ int ] pos_2_ver;
-            string module_url;
 
-            int    pos = 0;
-            foreach (jv; jva.array())
+            try
             {
-                string tag_name = jv[ "tag_name" ].str;
-                ver_2_url[ tag_name ] = jv[ "zipball_url" ].str;
-                pos_2_ver[ pos ]      = tag_name;
-                pos++;
+                JSONValue jva = parseJSON(js_releases);
+
+                int       pos = 0;
+                foreach (jv; jva.array())
+                {
+                    string tag_name = jv[ "tag_name" ].str;
+                    ver_2_url[ tag_name ] = jv[ "zipball_url" ].str;
+                    pos_2_ver[ pos ]      = tag_name;
+                    pos++;
+                }
+            }
+            catch (Throwable tr)
+            {
+                log.trace("ERR! [%s] fail parse release.json [%s] ", tr.msg, js_releases);
+
+                log.trace("ERR! fail parse json file of releases [%s], break installation", releases_path);
+                res = ErrCode.FAIL;
+                return;
             }
 
             if (ver is null)
@@ -181,9 +201,12 @@ class UserModuleInfo
             return;
         }
 
-        if (unpacked_module_folder_name[ $ ] == '/')
+        log.trace("@1unpacked_module_folder_name=%s", unpacked_module_folder_name);
+
+        if (unpacked_module_folder_name[ $ - 1 ] == '/')
             unpacked_module_folder_name = unpacked_module_folder_name[ 0..$ - 1 ];
 
+        log.trace("@2unpacked_module_folder_name=%s", unpacked_module_folder_name);
 
         // found module.ttl
         string[ string ] prefixes;
@@ -235,15 +258,18 @@ class UserModuleInfo
                         {
                             if (indv_module.exists("rdf:type", "v-s:Module") == true)
                             {
-                                log.trace("[%s] already exist, and rdfs:isDefinedBy=%s, break installation", uid, is_defined_by);
-                                res = ErrCode.FOUND_ANOTHER_VERSION;
+                                log.trace("[%s] already exist, and found module rdfs:isDefinedBy=%s, break installation", uid, is_defined_by);
+                                prev_module_name = is_defined_by;
+                                res              = ErrCode.FOUND_ANOTHER_VERSION;
                                 return;
                             }
                         }
                     }
                     else
                     {
-                        res = ErrCode.FOUND_ANOTHER_VERSION;
+                        log.trace("[%s] already exist, and rdfs:isDefinedBy=%s, break installation", uid, is_defined_by);
+                        prev_module_name = is_defined_by;
+                        res              = ErrCode.FOUND_ANOTHER_VERSION;
                         return;
                     }
                 }
@@ -302,93 +328,95 @@ class UserModulesTool : VedaModule
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id)
     {
-        //log.trace("[%s]: start prepare", module_indv.uri);
-
-        //scope (exit)
-        //{
-        //    log.trace("[%s]: end prepare", module_indv.uri);
-        //}
-
-        ResultCode res = ResultCode.OK;
-
-        Resources  types = new_indv.getResources("rdf:type");
-        //log.trace("[%s]: types: %s", module_indv.uri, types);
-        bool       need_prepare = false;
-
-        foreach (type; types)
+        try
         {
-            if (type.uri == "v-s:Module")
+            //log.trace("[%s]: start prepare", module_indv.uri);
+
+            //scope (exit)
+            //{
+            //    log.trace("[%s]: end prepare", module_indv.uri);
+            //}
+
+            ResultCode res = ResultCode.OK;
+
+            Resources  types = new_indv.getResources("rdf:type");
+            //log.trace("[%s]: types: %s", module_indv.uri, types);
+            bool       need_prepare = false;
+
+            foreach (type; types)
             {
-                need_prepare = true;
-                break;
+                if (type.uri == "v-s:Module")
+                {
+                    need_prepare = true;
+                    break;
+                }
+                else if (context.get_onto().isSubClasses(type.uri, []))
+                {
+                    need_prepare = true;
+                    break;
+                }
             }
-            else if (context.get_onto().isSubClasses(type.uri, []))
-            {
-                need_prepare = true;
-                break;
-            }
-        }
 
 
-        if (!need_prepare)
-            return ResultCode.OK;
-
-        log.trace("[%s]: v-s:Module individual changed", new_indv.uri);
-
-        bool new_is_deleted = new_indv.exists("v-s:deleted", true);
-
-        if (prev_indv is Individual.init)
-        {
-            if (new_is_deleted == true)
-            {
-                log.trace("module already deleted, nothing");
+            if (!need_prepare)
                 return ResultCode.OK;
-            }
 
-            log.trace("is new module, install");
-            install_user_module(new_indv);
-            return ResultCode.OK;
-        }
-        else
-        {
-            bool prev_is_deleted = prev_indv.exists("v-s:deleted", true);
+            log.trace("[%s]: v-s:Module individual changed", new_indv.uri);
 
-            if (new_is_deleted == true && prev_is_deleted == false)
+            bool new_is_deleted = new_indv.exists("v-s:deleted", true);
+
+            if (prev_indv is Individual.init)
             {
-                log.trace("module marked as deleted, uninstall");
+                if (new_is_deleted == true)
+                {
+                    log.trace("module already deleted, nothing");
+                    return ResultCode.OK;
+                }
+
+                log.trace("is new module, install");
                 install_user_module(new_indv);
                 return ResultCode.OK;
             }
             else
-            if (new_is_deleted == false && prev_is_deleted == true)
             {
-                log.trace("module unmarked as deleted, install");
-                uninstall_user_module(new_indv);
-                return ResultCode.OK;
-            }
-            else
+                bool prev_is_deleted = prev_indv.exists("v-s:deleted", true);
 
-            if (new_is_deleted == true && prev_is_deleted == true)
-            {
-                log.trace("module already deleted, nothing");
-                return ResultCode.OK;
-            }
-            else
+                if (new_is_deleted == true && prev_is_deleted == false)
+                {
+                    log.trace("module marked as deleted, uninstall");
+                    install_user_module(new_indv);
+                    return ResultCode.OK;
+                }
+                else
+                if (new_is_deleted == false && prev_is_deleted == true)
+                {
+                    log.trace("module unmarked as deleted, install");
+                    uninstall_user_module(new_indv);
+                    return ResultCode.OK;
+                }
+                else
 
-            if (new_is_deleted == false && prev_is_deleted == false)
-            {
-                log.trace("module changed");
-                return ResultCode.OK;
+                if (new_is_deleted == true && prev_is_deleted == true)
+                {
+                    log.trace("module already deleted, nothing");
+                    return ResultCode.OK;
+                }
+                else
+
+                if (new_is_deleted == false && prev_is_deleted == false)
+                {
+                    log.trace("module changed");
+                    return ResultCode.OK;
+                }
             }
         }
-
-        if (res == ResultCode.OK)
+        catch (Throwable tr)
         {
-            committed_op_id = op_id;
-            return ResultCode.OK;
+            log.trace("ERR! %s %s", tr.msg, tr.info);
         }
-        else
-            return ResultCode.Fail_Commit;
+
+        committed_op_id = op_id;
+        return ResultCode.OK;
     }
 
     override void thread_id()
@@ -473,7 +501,7 @@ class UserModulesTool : VedaModule
             log.trace("installation module [%s][%s] if fail", installed_module.url, installed_module.ver);
         else if (installed_module.res == ErrCode.FOUND_ANOTHER_VERSION)
         {
-            log.trace("need uninstall module [%s][%s]", installed_module.url, installed_module.ver);
+            log.trace("need uninstall module [%s]", installed_module.prev_module_name);
         }
     }
 
