@@ -1286,7 +1286,7 @@ v-fs:AttributiveSearchTemplate
         <span about="v-fs:SetColumns" property="rdfs:label"></span>
         <span class="caret"></span>
       </button>
-      <div class="dropdown-menu" style="padding:15px;">
+      <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
         <div class="checkbox">
           <label>
             <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
