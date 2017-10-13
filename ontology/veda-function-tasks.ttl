@@ -510,14 +510,17 @@ v-ft:ActorFilterTemplate
     individual.off(checkCounter);
   });
   function checkCounter(results) {
-    var counter_el = $("li.active #counter", template);
-    var counter_uri = counter_el.attr("about");
-    var property_uri = counter_el.attr("property");
-    var counter_val = parseInt( counter_el.text() );
-    if (counter_uri && property_uri && counter_val !== results.estimated) {
+    try {
+      var actor_uri = individual[actor_property][0].id;
+      var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
       var counter = new veda.IndividualModel(counter_uri);
-      counter[property_uri] = [ results.estimated ];
-      counter.save();
+      var counter_val = counter[counter_prop][0];
+      if ( counter_val !== results.estimated ) {
+        counter[counter_prop] = [ results.estimated ];
+        counter.save();
+      }
+    } catch (err) {
+      console.log("Counter update error");
     }
   }
 
