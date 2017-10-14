@@ -49,7 +49,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.execute(driver, 'click', 'button[id="edit"]', "****** PHASE#3 EDIT : ERROR = Cannot click on 'edit' button");
     driver.executeScript("document.querySelector('div[rel=\"v-s:attachment\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 ATTACH : ERROR = Cannot scroll to attachment field");});
-    basic.isVisible(driver,'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete', basic.SLOW_OPERATION, 3);
+    basic.isVisible(driver,'div[rel="v-s:attachment"] div+div[id="rel-actions"] .button-delete', basic.SLOW_OPERATION*2, 3);
     driver.executeScript("document.elementFromPoint(675, 20).click();")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#3 DOWNLOAD : ERROR = Cannot click on elementFromPoint");});
     driver.executeScript("document.querySelector('strong[about=\"v-s:attachment\"]').scrollIntoView(true);")

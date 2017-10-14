@@ -93,7 +93,7 @@ basic.getDrivers().forEach(function (drv) {
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot scroll to save(comment) button");});
     driver.wait(basic.findUp(driver, 'div[typeof="v-s:Comment"] button[id="save"]', 1, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot click on save button"),
         basic.FAST_OPERATION).then(function(result){basic.clickUp(result, "****** PHASE#1 : ERROR = Cannot click on 'save' button");});
-    driver.sleep(basic.SLOW_OPERATION / 2);
+    driver.sleep(basic.SLOW_OPERATION);
     driver.findElement({css:'div[id="comment-content"]'}).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#1 > ADD+REPLY COMMENT : ERROR = Cannot find new comment");});
 
     //PHASE#2: Delete

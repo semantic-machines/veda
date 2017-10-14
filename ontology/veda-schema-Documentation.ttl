@@ -21,7 +21,7 @@ v-s:NormativeDocument
   rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
 .
-v-s:hasRequiremen
+v-s:hasNormativeDocumentRequirement
   rdf:type owl:ObjectProperty ;
   rdfs:label "Requirement"@en ;
   rdfs:label "Требование"@ru ;
@@ -48,6 +48,13 @@ v-s:hasNormativeDocument
   rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
   rdfs:range v-s:NormativeDocument ;
+  rdfs:domain v-s:NormativeDocumentRequirement ;
+.
+v-s:requirementGroupNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Requirement group number"@en ;
+  rdfs:label "Номер группы требований"@ru ;
+  rdfs:range xsd:integer ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
 #---------------------------------------------------------
@@ -206,6 +213,7 @@ v-s:LocalRegulatoryDocument
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Local Regulatory document"@en ;
   rdfs:label "Локальный нормативный документ"@ru ;
 .
@@ -456,6 +464,7 @@ v-s:InternalDocument
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Internal document"@en ;
   rdfs:label "Внутренний документ"@ru ;
 .

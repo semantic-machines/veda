@@ -2,7 +2,7 @@
  * You can specify OS/browsers in `drivers` method
  */
 var webdriver = require('selenium-webdriver'),
-    FAST_OPERATION = 2000, // ms time limit for fast operations
+    FAST_OPERATION = 5000, // ms time limit for fast operations
     SLOW_OPERATION = 10000, // ms time limit for slow operations
     EXTRA_SLOW_OPERATION = 20000, // ms time limit for extra slow operations
     SERVER_ADDRESS = (process.env.TRAVIS_BUILD_NUMBER === undefined)?'http://veda:8080/':'http://localhost:8080/';
@@ -152,41 +152,6 @@ module.exports = {
         }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on `"+valueToChoose+"` from dropdown")});
     },
 
-    /** Очистка входящих сообщений(пока без заполения поля комментарий и без повторных проверок количества сообщений) 
-     * @param driver
-    */
-    clearInbox: function(driver){
-        driver.executeScript("document.querySelector('a[href=\"#/v-ft:Inbox\"]').scrollIntoView(true)")
-              .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to send button");});
-        driver.findElement({css:'a[href="#/v-ft:Inbox"]'}).click()
-              .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Ok' button");});
-        driver.sleep(FAST_OPERATION);
-        driver.findElements({css:'div[id="results"] a[property="rdfs:label"] span[class="value-holder"]'}).then(function(result) {
-            var countMessages = result.length;
-            console.log(countMessages);
-            while (countMessages > 0) {
-                driver.executeScript("document.querySelector('div[id=\"results\"] a[property=\"rdfs:label\"] span[class=\"value-holder\"]').scrollIntoView(true);")
-                driver.findElement({css:'div[id="results"] a[property="rdfs:label"] span[class="value-holder"]'}).click()
-                    .thenCatch(function(e){errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot find message")});                
-                driver.executeScript("document.querySelector('#send').scrollIntoView(true)")
-                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to send button");});
-                driver.findElement({css:'button[id="send"]'}).click()
-                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Ok' button");});
-                driver.executeScript("document.querySelector('a[href=\"#/v-ft:Inbox\"]').scrollIntoView(true)")
-                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to send button");});
-                driver.findElement({css:'a[href="#/v-ft:Inbox"]'}).click()
-                    .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Ok' button");});                  
-                countMessages--;
-            }
-        }).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot find message page");});
-        driver.executeScript("document.querySelector('.navbar-brand').scrollIntoView(true)")
-        .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot scroll to welcome bar");});
-        driver.sleep(FAST_OPERATION * 2);
-        driver.findElement({css:'a[href="#/v-l:Welcome"]'}).click()
-            .thenCatch(function(e) {errrorHandlerFunction(e, "****** PHASE#0 : ERROR = Cannot click on 'Welcome' button");});
-    },
-
-
     /**
      * Клик по элементу
      * @param element - элемент
@@ -279,9 +244,9 @@ module.exports = {
     */
     login: function (driver, login, password, assertUserFirstName, assertUserLastName, phase) {
         // Вводим логин и пароль
-        driver.sleep(FAST_OPERATION/10);
+        //driver.sleep(FAST_OPERATION/10);
         driver.navigate().refresh();
-        driver.sleep(SLOW_OPERATION/3);
+        driver.sleep(SLOW_OPERATION/2);
         driver.findElement({css:'input#login'}).sendKeys(login).thenCatch(function (e) {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot input login")});
         driver.findElement({css:'input#password'}).sendKeys(password).thenCatch(function (e) {
@@ -290,7 +255,7 @@ module.exports = {
             errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot submit login/password")});
         driver.findElement({css:'button#submit'}).sendKeys(webdriver.Key.ENTER).thenCatch(function (e) {})
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot press enter")});
-        driver.sleep(FAST_OPERATION/2);
+        //driver.sleep(FAST_OPERATION/2);
         driver.wait
         (
             webdriver.until.elementIsVisible(driver.findElement({id:'user-info'})),
@@ -303,6 +268,7 @@ module.exports = {
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserFirstName),
             FAST_OPERATION/10
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Login:Cannot find user first name")});
+
         driver.wait
         (
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), assertUserLastName),

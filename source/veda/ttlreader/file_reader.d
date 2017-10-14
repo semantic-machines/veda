@@ -10,8 +10,8 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates,
-       veda.core.common.log_msg;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool;
+
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -81,6 +81,8 @@ private void wait_complete_operations(Context context, long last_op_id)
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void main(char[][] args)
 {
+    spawn(&user_modules_tool_thread);
+
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
 
