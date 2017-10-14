@@ -782,6 +782,11 @@ v-s:RightsManagementBundle
   rdfs:label "Управление правами"@ru ;
   rdfs:label "Rights management"@en ;
 .
+v-s:ScriptsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Скрипты"@ru ;
+  rdfs:label "Scripts"@en ;
+.
 
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -789,7 +794,7 @@ v-ui:AdministrationAspectTemplate
   rdfs:label "Template for Administration aspect class"@en ;
   v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
-<div class="container sheet" style="position:relative;">
+<div class="container-fluid sheet" style="position:relative;">
   <h1 about="v-s:AdministrationAspect1" property="rdfs:label"></h1>
   <br>
   <ul id="admin-tabs" class="nav nav-pills" role="tablist">
@@ -798,6 +803,7 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Registries" aria-controls="Registries" role="tab" data-toggle="tab" about="v-s:RegistriesBundle" property="rdfs:label"></a></li-->
     <li role="presentation"><a href="#Nets" aria-controls="Nets" role="tab" data-toggle="tab" about="v-s:NetsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Scripts" aria-controls="Scripts" role="tab" data-toggle="tab" about="v-s:ScriptsBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -884,6 +890,13 @@ v-ui:AdministrationAspectTemplate
             <div class="panel-body" about="v-s:PermissionStatementRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Scripts">
+      <div class="panel panel-default">
+        <div class="panel-heading"><span about="v-s:UserScriptRegistry" property="rdfs:label"></span><a href="#/v-s:UserScriptBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+        <div class="panel-body" about="v-s:UserScriptRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
     </div>
 
