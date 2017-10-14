@@ -6,7 +6,6 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
-@prefix m-l: <http://semantic-machines.com/veda/mondi-layout/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
@@ -1161,18 +1160,26 @@ cfg:Event_16
   if (!backwardTarget || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
     return;
   }
-  var membershipUri = 'd:backward_membership_' + backwardLinkUri.split(':').join('_') + '_' + backwardTargetUri.split(':').join('_'),
-      membership = get_individual(ticket, membershipUri);
-  if (!membership) {
-    membership = {
-      '@' : membershipUri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:memberOf' : newUri(backwardTargetUri),
-      'v-s:resource' : newUri(backwardLinkUri),
-      'rdfs:comment' : newStr('создано cfg:Event_16'),
-      'v-s:canRead'  : newBool(true)
-    };
+
+  if (!omitGroup) {
+    var membershipUri = 'd:backward_membership_' + backwardLinkUri.split(':').join('_') + '_' + backwardTargetUri.split(':').join('_'),
+        membership = get_individual(ticket, membershipUri);
+    if (!membership) {
+      membership = {
+        '@' : membershipUri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : newUri(backwardTargetUri),
+        'v-s:resource' : newUri(backwardLinkUri),
+        'rdfs:comment' : newStr('создано cfg:Event_16'),
+        'v-s:canRead'  : newBool(true),
+      };
+    }
+    if (isDeleted) {
+      membership['v-s:deleted'] = newBool(true);
+    }
+    put_individual(ticket, membership, _event_id);
   }
+
   if (isDeleted) {
     for (var property_uri in backwardTarget) {
       if (property_uri === "@") { continue; }
@@ -1180,7 +1187,6 @@ cfg:Event_16
         return (item.data !== backwardLinkUri);
       });
     }
-    membership['v-s:deleted'] = newBool(true);
   } else if (backwardPropertyUri) {
     backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
     backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri].filter(function (item) {
@@ -1190,9 +1196,6 @@ cfg:Event_16
   }
   if (JSON.stringify(backwardTarget).length !== backwardTarget_original.length) {
     put_individual(ticket, backwardTarget, _event_id);
-    if (!omitGroup) {
-      put_individual(ticket, membership, _event_id);
-    }
   }
   """ ;
 .

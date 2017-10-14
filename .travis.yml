@@ -21,61 +21,54 @@ before_install:
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
   - npm install grunt --save-dev
-  - npm install coveralls --save-dev
-  - npm install grunt-coveralls --save-dev
+#  - npm install coveralls --save-dev
+#  - npm install grunt-coveralls --save-dev
 
 # Build
 install:
   - go version
   - ./build.sh
-  - sudo timedatectl set-ntp no
 
 
 # Run service as daemon and GUI
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - sudo date --set "15:00:00"
+  #- "export DISPLAY=:99.0"
+  #- "sh -e /etc/init.d/xvfb start"
+  #- sleep 3 # give xvfb some time to start
   - ./control-start.sh
-  - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 160  # give Web server some time to bind to sockets, load startup data, etc
   - date
 
 # Run API & integration test
 script:
-  - grunt test --stack --verbose
+  - travis_wait 20 grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
-  - node ./qa/testLogin.js
-#  - node ./qa/testSendGet.js
+#  - node ./qa/testLogin.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testComment.js
   - node ./qa/testVersionedDocument.js
-  - node ./qa/testJournal.js
   - node ./qa/testAttachment.js
   - node ./qa/testPager.js
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
+  - node ./qa/testJournal.js
   - node ./qa/testCreatingNetInterface.js
-  - travis_wait 20 node ./qa/testInbox.js
-  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-  - travis_wait 20 node ./qa/testNetComplexRoute.js
-  - travis_wait 20 node ./qa/testSimpleNet.js
-  - sudo date --set "15:10:00"
-  - travis_wait 20 node ./qa/testSimpleNet2.js
-  - travis_wait 20 node ./qa/testSimpleNet3.js
-  - sudo date --set "15:11:00"
-  - travis_wait 20 node ./qa/testSimpleWorkflow.js
-  - travis_wait 20 node ./qa/testDelegationDocument.js
-  - sudo date --set "15:12:00"
-  - date
-  - node ./qa/testDelegationTask.js
+  - node ./qa/testSimpleNet.js
+  - node ./qa/testSimpleNet2.js
+  - node ./qa/testSimpleNet3.js
+#  - node ./qa/testSimpleWorkflow.js
+#  - travis_wait 20 node ./qa/testInbox.js
+#  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
+#  - travis_wait 20 node ./qa/testNetComplexRoute.js
+#  - node ./qa/testDelegationDocument.js
+#  - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
   - ./control-stop.sh
-  - ./send-to-chunk-io.sh
+#  - ./send-to-chunk-io.sh
 #  - grunt coveralls
 
 after_failure:

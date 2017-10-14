@@ -6,7 +6,6 @@
 #include <string>
 #include <string.h>
 #include <math.h>
-#include <string>
 #include <sstream>
 #include <limits>
 #include <iomanip>
@@ -25,7 +24,7 @@ namespace
 {
 void FatalErrorCallback_r(const char *location, const char *message)
 {
-    std::cout << "Fatal error in V8: " << location << " " << message;
+    std::cerr << "Fatal error in V8: " << location << " " << message;
 }
 }
 
@@ -76,7 +75,7 @@ string nullz = "00000000000000000000000000000000";
 Handle<Value>
 individual2jsobject(Individual *individual, Isolate *isolate)
 {
-//    std::cout << "@#1" << std::endl;
+//    std::cerr << "@#1" << std::endl;
     Handle<Object>                           js_map = Object::New(isolate);
 
     Handle<Value>                            f_data = String::NewFromUtf8(isolate, "data");
@@ -105,10 +104,12 @@ individual2jsobject(Individual *individual, Isolate *isolate)
                     in_obj->Set(f_lang, Integer::New(isolate, 2));
 
                 in_obj->Set(f_data, String::NewFromUtf8(isolate, value.str_data.c_str()));
+                in_obj->Set(f_type, Integer::New(isolate, value.type));
+                arr_1->Set(i, in_obj);
             }
             else if (value.type == _Decimal)
             {
-                //std::cout << "@c individual2jsobject #Q value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_exponent_data=" << value.decimal_exponent_data << std::endl;
+                //std::cerr << "@c individual2jsobject #Q [" << key_str << "] ,value.decimal_mantissa_data=" << value.decimal_mantissa_data << ", value.decimal_exponent_data=" << value.decimal_exponent_data << std::endl;
 
                 string str_res;
                 string sign = "";
@@ -149,33 +150,44 @@ individual2jsobject(Individual *individual, Isolate *isolate)
                 string ss = sign + slh + "." + slr;
 
                 in_obj->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
+                in_obj->Set(f_type, Integer::New(isolate, value.type));
+                arr_1->Set(i, in_obj);
 
-                //std::cout << "@c individual2jsobject #Q ss=" << ss << std::endl;
+                //std::cerr << "@c individual2jsobject #Q [" << key_str << "], ss=" << ss << std::endl;
             }
             else if (value.type == _Integer)
             {
                 in_obj->Set(f_data, v8::Integer::New(isolate, value.long_data));
+                in_obj->Set(f_type, Integer::New(isolate, value.type));
+                arr_1->Set(i, in_obj);
             }
             else if (value.type == _Datetime)
             {
                 in_obj->Set(f_data, v8::Date::New(isolate, value.long_data * 1000));
+                in_obj->Set(f_type, Integer::New(isolate, value.type));
+                arr_1->Set(i, in_obj);
             }
             else if (value.type == _Boolean)
             {
                 in_obj->Set(f_data, v8::Boolean::New(isolate, value.bool_data));
+                in_obj->Set(f_type, Integer::New(isolate, value.type));
+                arr_1->Set(i, in_obj);
             }
             else if (value.type == _Uri)
             {
                 in_obj->Set(f_data, String::NewFromUtf8(isolate, value.str_data.c_str()));
+                in_obj->Set(f_type, Integer::New(isolate, value.type));
+                arr_1->Set(i, in_obj);
             }
 
-            in_obj->Set(f_type, Integer::New(isolate, value.type));
-
-            arr_1->Set(i, in_obj);
+            //in_obj->Set(f_type, Integer::New(isolate, value.type));
+            //arr_1->Set(i, in_obj);
+            if (arr_1->Length() > 0)
+            {
+                Handle<Value> js_key = String::NewFromUtf8(isolate, key_str.c_str());
+                js_map->Set(js_key, arr_1);
+            }
         }
-
-        Handle<Value> js_key = String::NewFromUtf8(isolate, key_str.c_str());
-        js_map->Set(js_key, arr_1);
     }
 
     js_map->Set(String::NewFromUtf8(isolate, "@"), String::NewFromUtf8(isolate, individual->uri.c_str()));
@@ -197,17 +209,17 @@ void double_to_mantissa_exponent(double inp, int64_t *mantissa, int64_t *exponen
     *mantissa = (int64_t)inp;
     *exponent = power;
 
-    //std::cout << "@c double_to_mantissa_exponent inp=" << inp << ", mantissa=" << *mantissa << ", exponent=" << *exponent << std::endl;
+    //std::cerr << "@c double_to_mantissa_exponent inp=" << inp << ", mantissa=" << *mantissa << ", exponent=" << *exponent << std::endl;
 }
 
 bool
 jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, string predicate)
 {
-    //std::cout << "@json->cbor #0 predicate=" << predicate << std::endl;
+    //std::cerr << "@json->cbor #0 predicate=" << predicate << std::endl;
 
     if (value->IsArray())
     {
-        //std::cout << "@json->cbor # is array" << std::endl;
+        //std::cerr << "@json->cbor # is array" << std::endl;
         Local<v8::Array> js_arr = Local<v8::Array>::Cast(value);
 
         if (js_arr->Length() == 1)
@@ -229,9 +241,10 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
         if (resource == NULL)
             return false;
 
-        //std::cout << "@json->cbor #is sring" << std::endl;
+        //std::cerr << "@json->cbor #is sring" << std::endl;
         v8::String::Utf8Value s1(value);
         std::string           vv = std::string(*s1);
+        //std::cerr << "@json->cbor vv=" << vv << std::endl;
 
         resource->type     = _String;
         resource->str_data = vv;
@@ -243,7 +256,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
         if (resource == NULL)
             return false;
 
-        //std::cout << "@json->cbor #is boolean" << std::endl;
+        //std::cerr << "@json->cbor #is boolean" << std::endl;
 
         resource->type      = _Boolean;
         resource->bool_data = value->ToBoolean()->Value();
@@ -255,7 +268,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
         if (resource == NULL)
             return false;
 
-//        std::cout << "@json->cbor #10" << std::endl;
+//        std::cerr << "@json->cbor #10" << std::endl;
         resource->type      = _Datetime;
         resource->long_data = value->ToInteger()->Value();
 
@@ -266,7 +279,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
         if (resource == NULL)
             return false;
 
-//        std::cout << "@json->cbor #10" << std::endl;
+//        std::cerr << "@json->cbor #10" << std::endl;
         resource->type      = _Integer;
         resource->long_data = value->ToInteger()->Value();
 
@@ -277,9 +290,11 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
         if (resource == NULL)
             return false;
 
-        //std::cout << "@json->cbor #is sring" << std::endl;
+        //std::cerr << "@json->cbor #is number" << std::endl;
 
         double dd = value->ToNumber()->Value();
+
+        //std::cerr << "@json->cbor #dd" << dd << std::endl;
 
         resource->type = _Decimal;
         double_to_mantissa_exponent(dd, &resource->decimal_mantissa_data, &resource->decimal_exponent_data);
@@ -288,7 +303,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
     }
     else if (value->IsObject())
     {
-        //std::cout << "@json->cbor #is object" << std::endl;
+        //std::cerr << "@json->cbor #is object" << std::endl;
         Local<Object>         obj = Local<Object>::Cast(value);
 
         v8::Handle<v8::Array> propertyNames = obj->GetPropertyNames();
@@ -307,7 +322,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
             v8::String::Utf8Value s1(js_key);
             std::string           name = std::string(*s1);
 
-            //std::cout << "$#1 name=" << name << std::endl;
+            //std::cerr << "$#1 name=" << name << std::endl;
 
             if (name == "data")
             {
@@ -360,7 +375,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
 
         if (is_individual_value == true)
         {
-            //std::cout << "@json->cbor #4" << std::endl;
+            //std::cerr << "@json->cbor #4" << std::endl;
             int type = v_type->ToInt32()->Value();
 
             //Resource rc;
@@ -382,11 +397,34 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
                 Resource         rc;
                 rc.type = type;
 
+                //std::cerr << "@jsobject2individual [" << predicate << "]" << std::endl;
+
                 if (v_data->IsString())
                 {
                     v8::String::Utf8Value s1_1(v_data);
-                    std::string           std_s1_1 = std::string(*s1_1);
-                    rc.str_data = std_s1_1;
+                    std::string           num = std::string(*s1_1);
+                    //std::cerr << "@jsobject2individual value=" << num << std::endl;
+                    //rc.str_data = std_s1_1;
+
+                    size_t pos = num.find('.');
+                    if (pos < 0)
+                        pos = num.find(',');
+
+                    if (pos > 0)
+                    {
+                        string ll = num.substr(0, pos);
+                        string rr = num.substr(pos + 1, num.length());
+
+                        size_t sfp = rr.length();
+
+                        rc.decimal_mantissa_data = stol(ll + rr);
+                        rc.decimal_exponent_data = -sfp;
+                    }
+                    else
+                    {
+                        rc.decimal_mantissa_data = stol(num);
+                        rc.decimal_exponent_data = 0;
+                    }
                 }
                 else
                 {
@@ -437,7 +475,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
                 v8::String::Utf8Value s1_1(v_data);
                 std::string           std_s1_1 = std::string(*s1_1);
 
-                //std::cout << "@json->cbor #4.1" << std_s1_1 << std::endl;
+                //std::cerr << "@json->cbor #4.1" << std_s1_1 << std::endl;
 
                 vector<Resource> values = indv->resources[ predicate ];
 
@@ -456,7 +494,7 @@ jsobject2individual(Local<Value> value, Individual *indv, Resource *resource, st
 //        }
     }
 
-    //std::cout << "@json->cbor #12" << std::endl;
+    //std::cerr << "@json->cbor #12" << std::endl;
     return true;
 }
 
@@ -560,8 +598,8 @@ GetEnvStrVariable(const v8::FunctionCallbackInfo<v8::Value>& args)
     {
         std::string data(res->data, res->length);
 
-        //std::cout << "@c:get #3 " << std::endl;
-//        std::cout << "@c:get #3 [" << vv << "]" << std::endl;
+        //std::cerr << "@c:get #3 " << std::endl;
+//        std::cerr << "@c:get #3 [" << vv << "]" << std::endl;
         Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
         args.GetReturnValue().Set(oo);
     }
@@ -583,7 +621,7 @@ std::string prepare_str_list_element(std::string data, std::string::size_type b_
 
     std::string substring(data.substr(b_p, e_p - b_p));
 
-    //std::cout << "@c:query, ss= " << substring << std::endl;
+    //std::cerr << "@c:query, ss= " << substring << std::endl;
 
     return substring;
 }
@@ -814,11 +852,11 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         Individual  individual;
         cbor2individual(&individual, data);
 
-        //std::cout << "@c #get_individual uri=" << cstr << std::endl;
+        //std::cerr << "@c #get_individual uri=" << cstr << std::endl;
 
         Handle<Value> oo = individual2jsobject(&individual, isolate);
 
-        //std::cout << "@c #get_individual #E" << std::endl;
+        //std::cerr << "@c #get_individual #E" << std::endl;
         args.GetReturnValue().Set(oo);
     }
 }
@@ -870,7 +908,7 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     if (args[ 1 ]->IsObject())
     {
         string     jsnstr = json_str(isolate, args[ 1 ]);
-        //std::cout << "@c #put_individual json=" << jsnstr << std::endl;
+        //std::cerr << "@c #put_individual json=" << jsnstr << std::endl;
         Individual individual;
         jsobject2individual(args[ 1 ], &individual, NULL, "");
 
@@ -883,7 +921,7 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         std::vector<char>     buff;
         individual2cbor(&individual, buff);
         char                  *ptr = buff.data();
-        //std::cout << "@c #put_individual uri=" << individual.uri << std::endl;
+        //std::cerr << "@c #put_individual uri=" << individual.uri << std::endl;
         res = put_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
 
         buff.clear();

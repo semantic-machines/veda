@@ -148,22 +148,6 @@ v-s:sql_database
   rdfs:range xsd:string ;
 .
 
-v-s:amqp_vhost
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Connection ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Amqp vhost" ;
-  rdfs:range xsd:string ;
-.
-
-v-s:amqp_routingkey
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Connection ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Amqp routing key" ;
-  rdfs:range xsd:string ;
-.
-
 v-s:login
   rdfs:domain v-s:Connection ;
 .
@@ -221,3 +205,31 @@ v-s:appUrl
   rdfs:label "App url"@ru ;
   rdfs:range xsd:string ;
 .
+
+
+v-s:Module
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Module"@en ;
+  rdfs:label "Модуль"@ru ;
+.
+
+v-s:moduleUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Module ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Module url"@ru ;
+  rdfs:label "Url модуля"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:moduleVersion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Module ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Module url"@ru ;
+  rdfs:label "Url модуля"@ru ;
+  rdfs:range xsd:string ;
+.
+

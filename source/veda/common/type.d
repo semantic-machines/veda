@@ -17,7 +17,8 @@ public enum SUBSYSTEM : long
     FULL_TEXT_INDEXER = 4,
     SCRIPTS           = 16,
     FANOUT_EMAIL      = 8,
-    FANOUT_SQL        = 128
+    FANOUT_SQL        = 128,
+    USER_MODULES_TOOL = 256
 }
 
 /// id компонентов
@@ -67,7 +68,9 @@ public enum COMPONENT : long
 
     n_channel                  = 16384,
 
-    webserver                  = 32768
+    webserver                  = 32768,
+    
+    user_modules_tool		   = 65536
 }
 
 
@@ -95,6 +98,7 @@ public enum MODULE : COMPONENT
     scripts_main     = COMPONENT.scripts_main,
     scripts_lp       = COMPONENT.scripts_lp,
     fanout_email     = COMPONENT.fanout_email,
+    user_modules_tool = COMPONENT.user_modules_tool,
     ltr_scripts      = COMPONENT.ltr_scripts,
     fanout_sql_np    = COMPONENT.fanout_sql_np,
     fanout_sql_lp    = COMPONENT.fanout_sql_lp

@@ -1,3 +1,4 @@
+
 /**
  * XAPIAN ft indexer
  */
@@ -187,8 +188,8 @@ public class IndexerContext
     {
         bool is_deleted, prev_is_deleted, is_restored;
 
-        if (is_trace)
-            log.trace("index msg %s", indv.uri);
+        //if (is_trace)
+            log.trace("index uri=%s", indv.uri);
 
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
