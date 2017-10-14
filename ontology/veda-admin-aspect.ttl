@@ -120,20 +120,9 @@ v-s:UserScriptTemplate
   rdfs:label "Template for v-s:UserScript class"@en ;
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   v-ui:template """
-<div class="container-fluid sheet">
-  <h2 about="v-s:UserScript" property="rdfs:label"></h2>
-
+<div class="container sheet">
+  <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
   <div class="row">
-    <div class="col-md-2">
-      <em about="rdfs:label" property="rdfs:label"></em>
-      <div property="rdfs:label" class="view -edit -search"></div>
-      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-    </div>
-    <div class="col-md-4">
-      <em about="rdfs:comment" property="rdfs:label"></em>
-      <div property="rdfs:comment" class="view -edit -search"></div>
-      <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
-    </div>
     <div class="col-md-2 view -edit -search">
       <em about="v-s:lastRun" property="rdfs:label"></em>
       <div about="@" property="v-s:lastRun"></div>
@@ -151,9 +140,7 @@ v-s:UserScriptTemplate
       </div>
     </div>
   </div>
-
   <hr>
-
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:script" property="rdfs:label" class="view edit -search"></em>
@@ -172,8 +159,9 @@ v-s:UserScriptTemplate
     <button type="submit" class="action btn btn-success -view edit -search save" id="save" about="v-s:Save" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="action btn btn-danger view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
+    <button type="button" class="action btn btn-warning view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
     <button type="button" class="action btn btn-default -view edit -search pull-right" id="clear" about="v-s:Clear" property="rdfs:label"/>
+    <button type="button" class="action btn btn-danger view -edit -search pull-right" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
   </div>
 
 </div>
@@ -680,7 +668,7 @@ v-ui:AdministrationAspectTemplate1
   rdfs:label "Template for Administration aspect class"@en ;
   v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
-<div class="container-fluid sheet" style="position:relative;">
+<div class="container sheet" style="position:relative;">
   <div class="row">
     <div class="col-md-4">
       <div class="container-fluid">
@@ -782,6 +770,11 @@ v-s:RightsManagementBundle
   rdfs:label "Управление правами"@ru ;
   rdfs:label "Rights management"@en ;
 .
+v-s:ScriptsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Скрипты"@ru ;
+  rdfs:label "Scripts"@en ;
+.
 
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -798,6 +791,7 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Registries" aria-controls="Registries" role="tab" data-toggle="tab" about="v-s:RegistriesBundle" property="rdfs:label"></a></li-->
     <li role="presentation"><a href="#Nets" aria-controls="Nets" role="tab" data-toggle="tab" about="v-s:NetsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Scripts" aria-controls="Scripts" role="tab" data-toggle="tab" about="v-s:ScriptsBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -884,6 +878,13 @@ v-ui:AdministrationAspectTemplate
             <div class="panel-body" about="v-s:PermissionStatementRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Scripts">
+      <div class="panel panel-default">
+        <div class="panel-heading"><span about="v-s:UserScriptRegistry" property="rdfs:label"></span><a href="#/v-s:UserScriptBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+        <div class="panel-body" about="v-s:UserScriptRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
     </div>
 
