@@ -322,24 +322,29 @@ public struct Individual
 
     string get_CRC32()
     {
-        hash.start();
-
         string[] predicates = resources.keys;
 
         predicates.sort();
 
+        hash.start();
         foreach (pp; predicates)
         {
             if (pp != "v-s:hash" && pp != "v-s:counter")
             {
                 hash.put(cast(ubyte[])pp);
-                hash.put(cast(ubyte[])text(resources[ pp ]));
+
+                foreach (rr; resources[ pp ])
+                {
+                    hash.put(rr.type);
+                    hash.put(cast(ubyte[])rr.asString());
+                    hash.put(rr.lang);
+                }
             }
         }
 
-        string str_hash_in_file = crcHexString(hash.finish());
+        string str_hash = crcHexString(hash.finish());
 
-        return str_hash_in_file;
+        return str_hash;
     }
 }
 
