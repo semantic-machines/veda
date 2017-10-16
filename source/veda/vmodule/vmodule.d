@@ -75,7 +75,7 @@ class VedaModule
     bool[ string ]   subsrc;
 
     long   module_id;
-	long   subsystem_id;
+    long   subsystem_id;
 
     Logger log;
 
@@ -94,7 +94,7 @@ class VedaModule
         log            = _log;
         main_cs.length = 1;
         module_id      = _module_id;
-        subsystem_id = _subsystem_id;
+        subsystem_id   = _subsystem_id;
     }
 
     ~this()
@@ -384,11 +384,11 @@ class VedaModule
                 continue;
             }
 
-            string new_bin          = imm.getFirstLiteral("new_state");
-            string prev_bin         = imm.getFirstLiteral("prev_state");
-            string user_uri         = imm.getFirstLiteral("user_uri");
-            string event_id         = imm.getFirstLiteral("event_id");
-            long   transaction_id   = imm.getFirstInteger("tnx_id");
+            string new_bin             = imm.getFirstLiteral("new_state");
+            string prev_bin            = imm.getFirstLiteral("prev_state");
+            string user_uri            = imm.getFirstLiteral("user_uri");
+            string event_id            = imm.getFirstLiteral("event_id");
+            long   transaction_id      = imm.getFirstInteger("tnx_id");
             long   assigned_subsystems = imm.getFirstInteger("assigned_subsystems");
 
             if (assigned_subsystems > 0)
@@ -437,15 +437,19 @@ class VedaModule
             count_success_prepared++;
 
             //writeln ("%1 prev_bin=[", prev_bin, "], \nnew_bin=[", new_bin, "]");
-            if (onto is null)
-                onto = context.get_onto();
 
-            onto.update_onto_hierarchy(new_indv, true);
+            if (new_indv.uri !is null)
+            {
+                if (onto is null)
+                    onto = context.get_onto();
 
-            if (new_indv.uri is null)
-                log.trace("WARN! individual not contain uri: %s", new_indv);
+                onto.update_onto_hierarchy(new_indv, true);
 
-            cache_of_indv.put(new_indv.uri, new_bin);
+                //if (new_indv.uri is null)
+                //    log.trace("WARN! individual not contain uri: %s", new_indv);
+
+                cache_of_indv.put(new_indv.uri, new_bin);
+            }
 
             try
             {
