@@ -24,7 +24,8 @@ enum CheckResult
     OK,
     FOUND_ANOTHER_VERSION,
     FOUND_EQUAL_VERSION,
-    FAIL
+    FAIL,
+    NONE
 }
 
 class UserModuleInfo
@@ -46,7 +47,7 @@ class UserModuleInfo
 
     string      prev_module_name;
 
-    CheckResult check_res;
+    CheckResult check_res = CheckResult.NONE;
 
     Context     context;
     Ticket      sticket;
@@ -164,7 +165,7 @@ class UserModuleInfo
         if (module_id is null)
             return true;
 
-        if (check_res != CheckResult.FOUND_ANOTHER_VERSION)
+        if (check_res != CheckResult.FOUND_ANOTHER_VERSION && check_res != CheckResult.NONE)
             return true;
 
         log.trace("UNINSTALL MODULE [%s]", module_id);
@@ -230,7 +231,7 @@ class UserModuleInfo
 
         foreach (uid; module_individuals.keys)
         {
-            OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], null, -1, ALL_MODULES, OptFreeze.NONE,
+            OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], "user_module_tool", -1, ALL_MODULES, OptFreeze.NONE,
                                                   OptAuthorize.NO);
             log.trace("INSERT [%s][%s] %s", uri, ver, uid);
 
@@ -250,7 +251,7 @@ class UserModuleInfo
 
             foreach (uid; installed.keys)
             {
-                context.remove_individual(&sticket, uid, null, -1, ALL_MODULES, OptFreeze.NONE,
+                context.remove_individual(&sticket, uid, "user_module_tool", -1, ALL_MODULES, OptFreeze.NONE,
                                           OptAuthorize.NO);
             }
 
@@ -268,7 +269,7 @@ class UserModuleInfo
         foreach (dep; dependecies)
             module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
 
-        OpResult orc = context.put_individual(&sticket, uri, module_indv, null, -1, ALL_MODULES, OptFreeze.NONE,
+        OpResult orc = context.put_individual(&sticket, uri, module_indv, "user_module_tool", -1, ALL_MODULES, OptFreeze.NONE,
                                               OptAuthorize.NO);
 
 
@@ -569,6 +570,11 @@ class UserModulesTool : VedaModule
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id)
     {
+        log.trace("[%s]: prepare, event_id=%s", new_indv.uri, event_id);
+
+        if (event_id == "user_module_tool") // принимаем команды только от пользователей, "user_module_tool" игнорируется
+            return ResultCode.OK;
+
         try
         {
             ResultCode check_res = ResultCode.OK;
@@ -602,7 +608,7 @@ class UserModulesTool : VedaModule
             {
                 if (new_is_deleted == true)
                 {
-                    log.trace("module already deleted, nothing");
+                    log.trace("module [%s] already deleted, nothing", new_indv.uri);
                     return ResultCode.OK;
                 }
 
@@ -616,15 +622,13 @@ class UserModulesTool : VedaModule
 
                 if (new_is_deleted == true && prev_is_deleted == false)
                 {
-                    //log.trace("module marked as deleted, uninstall");
-                    //uninstall_user_module(new_indv);
+                    uninstall_user_module(new_indv.uri);
                     return ResultCode.OK;
                 }
                 else
                 if (new_is_deleted == false && prev_is_deleted == true)
                 {
-                    //log.trace("module unmarked as deleted, install");
-                    //uninstall_user_module(new_indv.uri);
+                    uninstall_user_module(new_indv.uri);
                     return ResultCode.OK;
                 }
                 else
@@ -718,8 +722,9 @@ class UserModulesTool : VedaModule
     private void uninstall_user_module(string module_id)
     {
         Ticket         sticket = context.sys_ticket();
-        UserModuleInfo im      = new UserModuleInfo(context, sticket);
+        UserModuleInfo im      = new UserModuleInfo(context, sticket, module_id);
 
+        im.prev_module_name = module_id;
         im.uninstall();
     }
 }
