@@ -116,7 +116,7 @@ class UserModuleInfo
         int[ string ] link_count_2_module_uid;
 
         SearchResult sr =
-            context.get_individuals_ids_via_query(&sticket, "'rdf:type' === 'v-s:Module'", "'rdf:type' asc", "base,system", 0, 100000,
+            context.get_individuals_ids_via_query(&sticket, "'rdf:type' === 'v-s:Module'", "'rdf:type' asc", "base,system,deleted", 0, 100000,
                                                   10000,
                                                   null,
                                                   false);
@@ -164,11 +164,17 @@ class UserModuleInfo
                 return false;
         }
 
-//        log.trace("@1 prev_module_name=%s", prev_module_name);
+        //log.trace("@1 prev_module_name=%s", prev_module_name);
+        //log.trace("@2 uri=%s", uri);
 
-        string module_id = prev_module_name;
+        string module_id;
 
-        if (module_id is null)
+        if (prev_module_name !is null && module_id != "")
+            module_id = prev_module_name;
+        else
+            module_id = uri;
+
+        if (module_id is null || module_id == "")
             return true;
 
         if (check_res != CheckResult.FOUND_ANOTHER_VERSION && check_res != CheckResult.NONE)
@@ -189,7 +195,7 @@ class UserModuleInfo
 
         foreach (uid; sr.result)
         {
-            log.trace("REMOVE [%s] %s", prev_module_name, uid);
+            log.trace("[%s] REMOVE %s", module_id, uid);
             OpResult check_res = context.remove_individual(&sticket, uid, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                            OptAuthorize.NO);
             if (check_res.result != ResultCode.OK)
@@ -239,7 +245,7 @@ class UserModuleInfo
         {
             OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                   OptAuthorize.NO);
-            log.trace("INSERT [%s][%s] %s", uri, ver, uid);
+            log.trace("[%s][%s] INSERT %s", uri, ver, uid);
 
             if (orc.result == ResultCode.OK)
                 installed[ uid ] = true;
@@ -264,18 +270,22 @@ class UserModuleInfo
             return false;
         }
         else
+        {
+            Individual module_indv;
+            module_indv.uri = uri;
+            module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
+            module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
+            module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
+            foreach (dep; dependecies)
+                module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
+
+            OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                  OptAuthorize.NO);
+
+            log.trace("@module_indv=%s", module_indv);
+            log.trace("@orc=%s", orc);
             log.trace("installation module [%s][%s] was success", url, ver);
-
-        Individual module_indv;
-        module_indv.uri = uri;
-        module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
-        module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.Uri, url) ]);
-        module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.Uri, ver) ]);
-        foreach (dep; dependecies)
-            module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
-
-        OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                              OptAuthorize.NO);
+        }
 
         return true;
     }
@@ -526,12 +536,33 @@ class UserModuleInfo
         }
 
         //log.trace("@root indv=%s", root_indv);
+        auto onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
+        foreach (file; onto_files)
+        {
+            log.trace("[%s] prepare %s", uri, file);
+
+            auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
+
+            foreach (uid; tmp_individuals.keys)
+            {
+                Individual *indv_0 = tmp_individuals[ uid ];
+                indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+
+                string hash_indv_file = indv_0.get_CRC32();
+                total_hash_indv_file ~= hash_indv_file;
+                module_individuals[ uid ] = indv_0;
+            }
+        }
+
+        log.trace("module [%s][%s] load individuals %d", uri, ver, module_individuals.length);
 
         // go tree
         Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
 
         foreach (dep; deps)
         {
+            log.trace("@dep=%s", dep);
+
             Individual *dep_indv = l_individuals.get(dep.uri, null);
 
             if (dep_indv is null)
@@ -549,28 +580,6 @@ class UserModuleInfo
             {
                 check_res = duim.check_res;
                 //return;
-            }
-            else
-            {
-                auto onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
-                foreach (file; onto_files)
-                {
-                    log.trace("[%s] prepare %s", uri, file);
-
-                    auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
-
-                    foreach (uid; tmp_individuals.keys)
-                    {
-                        Individual *indv_0 = tmp_individuals[ uid ];
-                        indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
-
-                        string hash_indv_file = indv_0.get_CRC32();
-                        total_hash_indv_file ~= hash_indv_file;
-                        module_individuals[ uid ] = indv_0;
-                    }
-                }
-
-                log.trace("module [%s][%s] load individuals %d", uri, ver, module_individuals.length);
             }
         }
 
@@ -741,11 +750,15 @@ class UserModulesTool : VedaModule
 
     private void uninstall_user_module(string module_id)
     {
-        Ticket         sticket = context.sys_ticket();
-        UserModuleInfo im      = new UserModuleInfo(context, sticket, module_id);
+        Ticket sticket = context.sys_ticket();
 
-        im.prev_module_name = module_id;
-        im.uninstall();
+        UserModuleInfo[ string ] installer_modules = UserModuleInfo.get_installed_modules_info(context, sticket);
+
+        auto target_module = installer_modules.get(module_id, null);
+        if (target_module !is null)
+        {
+            target_module.uninstall();
+        }
     }
 }
 
