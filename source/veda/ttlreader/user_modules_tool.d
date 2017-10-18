@@ -208,7 +208,11 @@ class UserModuleInfo
 
         if (is_success == true)
         {
-            OpResult check_res = context.remove_individual(&sticket, module_id, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+            Individual indv;
+            indv.uri = module_id;
+            indv.setResources("v-s:deleted", [ Resource(DataType.Boolean, true) ]);
+
+            OpResult check_res = context.set_in_individual(&sticket, module_id, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                            OptAuthorize.NO);
             if (check_res.result != ResultCode.OK)
             {
@@ -361,7 +365,7 @@ class UserModuleInfo
         }
         else
         {
-            log.trace("module [%s][%s] not equal installed", uri, ver);
+            log.trace("module [%s][%s] not equal installed in storage %d, in file %d", uri, ver, total_hash_indv_storage.length, total_hash_indv_file.length);
             check_res = CheckResult.FOUND_ANOTHER_VERSION;
         }
 
@@ -655,7 +659,7 @@ class UserModulesTool : VedaModule
                 else
                 if (new_is_deleted == false && prev_is_deleted == true)
                 {
-                    uninstall_user_module(new_indv.uri);
+                    install_user_module(new_indv);
                     return ResultCode.OK;
                 }
                 else
