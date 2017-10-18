@@ -329,7 +329,7 @@ public struct Individual
         hash.start();
         foreach (pp; predicates)
         {
-            if (pp != "v-s:hash" && pp != "v-s:counter")
+            if (pp != "v-s:hash" && pp != "v-s:updateCounter")
             {
                 hash.put(cast(ubyte[])pp);
 
