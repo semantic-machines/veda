@@ -19,9 +19,12 @@ void user_modules_tool_thread()
     p_module.run();
 }
 
+const umt_event_id = "user_module_tool";
+
 enum CheckResult
 {
     OK,
+    FOUND_INVALID_VERSION,
     FOUND_ANOTHER_VERSION,
     FOUND_EQUAL_VERSION,
     FAIL,
@@ -139,7 +142,7 @@ class UserModuleInfo
             result[ uid ] = umi;
         }
 
-        context.get_logger().trace("link_count_2_module_uid=[%s]", link_count_2_module_uid);
+        //context.get_logger().trace("link_count_2_module_uid=[%s]", link_count_2_module_uid);
 
         foreach (key; link_count_2_module_uid.keys)
         {
@@ -168,7 +171,7 @@ class UserModuleInfo
         if (check_res != CheckResult.FOUND_ANOTHER_VERSION && check_res != CheckResult.NONE)
             return true;
 
-        log.trace("UNINSTALL MODULE [%s]", module_id);
+        log.trace("UNINSTALL MODULE [%s], check result=%s", module_id, check_res);
 
         SearchResult sr =
             context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy' === '" ~ module_id ~ "'", "'rdfs:isDefinedBy' asc",
@@ -184,7 +187,7 @@ class UserModuleInfo
         foreach (uid; sr.result)
         {
             log.trace("REMOVE [%s] %s", prev_module_name, uid);
-            OpResult check_res = context.remove_individual(&sticket, uid, "", -1, ALL_MODULES, OptFreeze.NONE,
+            OpResult check_res = context.remove_individual(&sticket, uid, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                            OptAuthorize.NO);
             if (check_res.result != ResultCode.OK)
             {
@@ -196,7 +199,7 @@ class UserModuleInfo
 
         if (is_success == true)
         {
-            OpResult check_res = context.remove_individual(&sticket, module_id, "", -1, ALL_MODULES, OptFreeze.NONE,
+            OpResult check_res = context.remove_individual(&sticket, module_id, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                            OptAuthorize.NO);
             if (check_res.result != ResultCode.OK)
             {
@@ -231,7 +234,7 @@ class UserModuleInfo
 
         foreach (uid; module_individuals.keys)
         {
-            OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], "user_module_tool", -1, ALL_MODULES, OptFreeze.NONE,
+            OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                   OptAuthorize.NO);
             log.trace("INSERT [%s][%s] %s", uri, ver, uid);
 
@@ -251,15 +254,14 @@ class UserModuleInfo
 
             foreach (uid; installed.keys)
             {
-                context.remove_individual(&sticket, uid, "user_module_tool", -1, ALL_MODULES, OptFreeze.NONE,
+                context.remove_individual(&sticket, uid, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                           OptAuthorize.NO);
             }
 
             return false;
         }
         else
-            log.trace("installation module [%s][%s] is success", url, ver);
-
+            log.trace("installation module [%s][%s] was success", url, ver);
 
         Individual module_indv;
         module_indv.uri = uri;
@@ -269,32 +271,31 @@ class UserModuleInfo
         foreach (dep; dependecies)
             module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
 
-        OpResult orc = context.put_individual(&sticket, uri, module_indv, "user_module_tool", -1, ALL_MODULES, OptFreeze.NONE,
+        OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                               OptAuthorize.NO);
-
 
         return true;
     }
 
     void prepare_and_check()
     {
-        log.trace("CHECK MODULE [%s]", uri);
-
         foreach (dep; dependecies)
         {
             dep.prepare_and_check();
         }
         // check onto
 
-        auto onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
+        log.trace("CHECK MODULE [%s]", uri);
+
+        string[] total_hash_indv_file;
+        string[] total_hash_indv_storage;
+
+        auto     onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
         foreach (file; onto_files)
         {
-            log.trace("prepare file=%s", file);
+            log.trace("[%s] prepare %s", uri, file);
 
-            auto     tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
-
-            string[] total_hash_indv_file;
-            string[] total_hash_indv_storage;
+            auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
 
             foreach (uid; tmp_individuals.keys)
             {
@@ -322,7 +323,7 @@ class UserModuleInfo
                         {
                             if (indv_module.exists("rdf:type", "v-s:Module") == true)
                             {
-                                log.trace("[%s] already exist, and found module rdfs:isDefinedBy=%s, break check", uid, is_defined_by_in_storage);
+                                log.trace("[%s] already exist, and found another installation %s, break check", uid, is_defined_by_in_storage);
                                 prev_module_name = is_defined_by_in_storage;
                                 check_res        = CheckResult.FOUND_ANOTHER_VERSION;
                                 return;
@@ -345,22 +346,29 @@ class UserModuleInfo
                 else if (indv_in_storage.getStatus() != ResultCode.Not_Found && indv_in_storage.getStatus() != ResultCode.Unprocessable_Entity)
                 {
                     log.trace("ERR! [%s] already exist, but not read, errcode=%s", uid, indv_in_storage.getStatus());
+                    check_res = CheckResult.FOUND_INVALID_VERSION;
+                    return;
                 }
 
                 module_individuals[ uid ] = indv_0;
             }
+        }
 
-            total_hash_indv_file.sort();
-            total_hash_indv_storage.sort();
+        total_hash_indv_file.sort();
+        total_hash_indv_storage.sort();
 
-            if (text(total_hash_indv_file) == text(total_hash_indv_storage))
-            {
-                log.trace("[%s] already installed", uri);
-                check_res = CheckResult.FOUND_EQUAL_VERSION;
-                return;
-            }
+        if (text(total_hash_indv_file) == text(total_hash_indv_storage))
+        {
+            log.trace("module [%s][%s] already installed", uri, ver);
+            check_res = CheckResult.FOUND_EQUAL_VERSION;
+        }
+        else
+        {
+            log.trace("module [%s][%s] not equal installed", uri, ver);
+            check_res = CheckResult.FOUND_ANOTHER_VERSION;
         }
     }
+
 
     void get_and_unpack(ref Individual module_indv)
     {
@@ -385,7 +393,7 @@ class UserModuleInfo
             project_owner = pp[ 1 ];
             project_name  = pp[ 2 ];
 
-            log.trace("this project [%s][%s] on github.com", project_owner, project_name);
+            //log.trace("this project [%s][%s] on github.com", project_owner, project_name);
             modile_temp_dir  = tempDir() ~ "/" ~ install_id ~ "/" ~ project_owner ~ "-" ~ project_name;
             module_file_path = modile_temp_dir ~ "/module.zip";
 
@@ -572,7 +580,7 @@ class UserModulesTool : VedaModule
     {
         log.trace("[%s]: prepare, event_id=%s", new_indv.uri, event_id);
 
-        if (event_id == "user_module_tool") // принимаем команды только от пользователей, "user_module_tool" игнорируется
+        if (event_id == umt_event_id) // принимаем команды только от пользователей, umt_event_id игнорируется
             return ResultCode.OK;
 
         try
@@ -595,7 +603,6 @@ class UserModulesTool : VedaModule
                     break;
                 }
             }
-
 
             if (!need_prepare)
                 return ResultCode.OK;
@@ -693,8 +700,7 @@ class UserModulesTool : VedaModule
 
     private void install_user_module(ref Individual new_indv)
     {
-        log.trace("----------------------------");
-        log.trace("GET AND UNPACK MODULES");
+        log.trace("--- 1 GET INSTALLED MODULES ---");
 
         Ticket sticket = context.sys_ticket();
 
@@ -704,19 +710,22 @@ class UserModulesTool : VedaModule
 
         UserModuleInfo im = new UserModuleInfo(context, sticket, install_id);
 
+        log.trace("--- 2 GET AND UNPACK MODULES ---");
         im.get_and_unpack(new_indv);
 
         if (im.check_res == CheckResult.OK)
         {
-            log.trace("SUCCESS GET AND UNPACK MODULES");
+            log.trace("--- 3 CHECK MODULES ---");
             im.prepare_and_check();
 
+            log.trace("--- 4 UNINSTALL ---");
             im.uninstall();
 
+            log.trace("--- 5 INSTALL ---");
             im.install();
         }
         else if (im.check_res == CheckResult.FAIL)
-            log.trace("installation module [%s][%s] if fail", im.url, im.ver);
+            log.trace("installation of module [%s][%s] failed", im.url, im.ver);
     }
 
     private void uninstall_user_module(string module_id)
