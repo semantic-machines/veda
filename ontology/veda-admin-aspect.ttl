@@ -350,7 +350,6 @@ v-s:PersonRegistry
   v-fs:searchBlank v-s:PersonRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:PersonRegistryBlank
@@ -375,7 +374,6 @@ v-s:GroupRegistry
   v-fs:searchBlank v-s:GroupRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:GroupRegistryBlank
@@ -553,7 +551,6 @@ v-s:PermissionStatementRegistry
   v-fs:searchBlank v-s:PermissionStatementRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:PermissionStatementRegistryBlank
@@ -870,7 +867,7 @@ v-ui:AdministrationAspectTemplate
           </div>
         </div>
       </div>
-      <div class="row">
+      <!--div class="row">
         <div class="col-md-6">
           <h2 about="v-s:PermissionStatementsBundle" property="rdfs:label"></h2>
           <div class="panel panel-default">
@@ -878,7 +875,7 @@ v-ui:AdministrationAspectTemplate
             <div class="panel-body" about="v-s:PermissionStatementRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
-      </div>
+      </div-->
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Scripts">
