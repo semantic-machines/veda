@@ -50,6 +50,9 @@ class UserModuleInfo
 
     string      prev_module_name;
 
+    string[]    total_hash_indv_file;
+    string[]    total_hash_indv_storage;
+
     CheckResult check_res = CheckResult.NONE;
 
     Context     context;
@@ -227,7 +230,7 @@ class UserModuleInfo
             return true;
         }
         else
-            log.trace("INSTALL MODULE [%s][%s]", uri, ver);
+            log.trace("INSTALL MODULE [%s][%s] %d", uri, ver, module_individuals.keys.length);
 
         bool[ string ] installed;
         bool is_sucess = true;
@@ -277,85 +280,69 @@ class UserModuleInfo
         return true;
     }
 
-    void prepare_and_check()
+    void check()
     {
         foreach (dep; dependecies)
         {
-            dep.prepare_and_check();
+            dep.check();
         }
         // check onto
 
         log.trace("CHECK MODULE [%s]", uri);
 
-        string[] total_hash_indv_file;
-        string[] total_hash_indv_storage;
-
-        auto     onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
-        foreach (file; onto_files)
+        foreach (uid; module_individuals.keys)
         {
-            log.trace("[%s] prepare %s", uri, file);
+            Individual *indv_0        = module_individuals[ uid ];
+            string     hash_indv_file = indv_0.get_CRC32();
 
-            auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
+            //log.trace("check individual [%s]", uid);
+            Individual indv_in_storage = context.get_individual(&sticket, uid);
 
-            foreach (uid; tmp_individuals.keys)
+            if (indv_in_storage.getStatus() == ResultCode.OK)
             {
-                Individual *indv_0 = tmp_individuals[ uid ];
-                indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+                string hash_indv_storage = indv_in_storage.get_CRC32();
+                total_hash_indv_storage ~= hash_indv_storage;
 
-                string hash_indv_file = indv_0.get_CRC32();
-                total_hash_indv_file ~= hash_indv_file;
+                string is_defined_by_in_storage = indv_in_storage.getFirstLiteral("rdfs:isDefinedBy");
 
-                //log.trace("check individual [%s]", uid);
-                Individual indv_in_storage = context.get_individual(&sticket, uid);
-
-                if (indv_in_storage.getStatus() == ResultCode.OK)
+                if (is_defined_by_in_storage != uri)
                 {
-                    string hash_indv_storage = indv_in_storage.get_CRC32();
-                    total_hash_indv_storage ~= hash_indv_storage;
-
-                    string is_defined_by_in_storage = indv_in_storage.getFirstLiteral("rdfs:isDefinedBy");
-
-                    if (is_defined_by_in_storage != uri)
+                    // [rdfs:isDefinedBy] is not equal to the installed uid module, we check the possibility of replacement
+                    Individual indv_module = context.get_individual(&sticket, is_defined_by_in_storage);
+                    if (indv_module.getStatus() == ResultCode.OK)
                     {
-                        // [rdfs:isDefinedBy] is not equal to the installed uid module, we check the possibility of replacement
-                        Individual indv_module = context.get_individual(&sticket, is_defined_by_in_storage);
-                        if (indv_module.getStatus() == ResultCode.OK)
+                        if (indv_module.exists("rdf:type", "v-s:Module") == true)
                         {
-                            if (indv_module.exists("rdf:type", "v-s:Module") == true)
-                            {
-                                log.trace("[%s] already exist, and found another installation %s, break check", uid, is_defined_by_in_storage);
-                                prev_module_name = is_defined_by_in_storage;
-                                check_res        = CheckResult.FOUND_ANOTHER_VERSION;
-                                return;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (hash_indv_storage != hash_indv_file)
-                        {
-                            log.trace("hash in storage %s, hash in file %s", hash_indv_storage, hash_indv_file);
-
-                            log.trace("[%s] already exist, and rdfs:isDefinedBy=%s, break check", uid, is_defined_by_in_storage);
+                            log.trace("[%s] already exist, and found another installation %s, break check", uid, is_defined_by_in_storage);
                             prev_module_name = is_defined_by_in_storage;
                             check_res        = CheckResult.FOUND_ANOTHER_VERSION;
                             return;
                         }
                     }
                 }
-                else if (indv_in_storage.getStatus() != ResultCode.Not_Found && indv_in_storage.getStatus() != ResultCode.Unprocessable_Entity)
+                else
                 {
-                    log.trace("ERR! [%s] already exist, but not read, errcode=%s", uid, indv_in_storage.getStatus());
-                    check_res = CheckResult.FOUND_INVALID_VERSION;
-                    return;
-                }
+                    if (hash_indv_storage != hash_indv_file)
+                    {
+                        log.trace("hash in storage %s, hash in file %s", hash_indv_storage, hash_indv_file);
 
-                module_individuals[ uid ] = indv_0;
+                        log.trace("[%s] already exist, and rdfs:isDefinedBy=%s, break check", uid, is_defined_by_in_storage);
+                        prev_module_name = is_defined_by_in_storage;
+                        check_res        = CheckResult.FOUND_ANOTHER_VERSION;
+                        return;
+                    }
+                }
+            }
+            else if (indv_in_storage.getStatus() != ResultCode.Not_Found && indv_in_storage.getStatus() != ResultCode.Unprocessable_Entity)
+            {
+                log.trace("ERR! [%s] already exist, but not read, errcode=%s", uid, indv_in_storage.getStatus());
+                check_res = CheckResult.FOUND_INVALID_VERSION;
+                return;
             }
         }
 
-        total_hash_indv_file.sort();
         total_hash_indv_storage.sort();
+        total_hash_indv_file.sort();
 
         if (text(total_hash_indv_file) == text(total_hash_indv_storage))
         {
@@ -367,6 +354,8 @@ class UserModuleInfo
             log.trace("module [%s][%s] not equal installed", uri, ver);
             check_res = CheckResult.FOUND_ANOTHER_VERSION;
         }
+
+        log.trace("module [%s][%s] check individuals %d", uri, ver, module_individuals.length);
     }
 
 
@@ -561,6 +550,28 @@ class UserModuleInfo
                 check_res = duim.check_res;
                 //return;
             }
+            else
+            {
+                auto onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
+                foreach (file; onto_files)
+                {
+                    log.trace("[%s] prepare %s", uri, file);
+
+                    auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
+
+                    foreach (uid; tmp_individuals.keys)
+                    {
+                        Individual *indv_0 = tmp_individuals[ uid ];
+                        indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+
+                        string hash_indv_file = indv_0.get_CRC32();
+                        total_hash_indv_file ~= hash_indv_file;
+                        module_individuals[ uid ] = indv_0;
+                    }
+                }
+
+                log.trace("module [%s][%s] load individuals %d", uri, ver, module_individuals.length);
+            }
         }
 
         check_res = CheckResult.OK;
@@ -578,7 +589,7 @@ class UserModulesTool : VedaModule
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id)
     {
-        log.trace("[%s]: prepare, event_id=%s", new_indv.uri, event_id);
+        //log.trace("[%s]: prepare, event_id=%s", new_indv.uri, event_id);
 
         if (event_id == umt_event_id) // принимаем команды только от пользователей, umt_event_id игнорируется
             return ResultCode.OK;
@@ -716,7 +727,7 @@ class UserModulesTool : VedaModule
         if (im.check_res == CheckResult.OK)
         {
             log.trace("--- 3 CHECK MODULES ---");
-            im.prepare_and_check();
+            im.check();
 
             log.trace("--- 4 UNINSTALL ---");
             im.uninstall();
