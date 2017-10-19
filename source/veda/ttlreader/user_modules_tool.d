@@ -309,8 +309,6 @@ class UserModuleInfo
             foreach (dep; dependencies)
                 module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
 
-            module_indv.setResources("v-s:hasImage", [ Resource(DataType.String, ver) ]);
-
             string module_image_path = unpacked_module_folder_name ~ "/image.jpeg";
             string dest_image_name   = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
 
