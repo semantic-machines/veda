@@ -423,7 +423,8 @@ class UserModuleInfo
         }
         else
         {
-            log.trace("module [%s][%s] not equal installed in storage %d, in file %d", uri, ver, total_hash_indv_storage.length, total_hash_indv_file.length);
+            log.trace("module [%s][%s] not equal installed in storage %d, in file %d", uri, ver, total_hash_indv_storage.length,
+                      total_hash_indv_file.length);
             check_res = CheckResult.FOUND_ANOTHER_VERSION;
         }
 
@@ -513,7 +514,12 @@ class UserModuleInfo
             }
 
             if (ver is null && pos_2_ver.length > 0)
-                ver = pos_2_ver[ 0 ];
+            {
+                string[] found_tags_in_project = pos_2_ver.values;
+                found_tags_in_project.sort();
+
+                ver = found_tags_in_project[ $ - 1 ];
+            }
 
             if (ver is null)
                 log.trace("ERR! not found releases");
@@ -590,6 +596,18 @@ class UserModuleInfo
                 if (t_url.path == o_url.path)
                 {
                     root_indv = uid;
+
+                    if (uri != root_indv)
+                    {
+                        log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
+                        log.trace("WARN! remove prepared module [%s]", uri);
+
+                        context.remove_individual(&sticket, uri, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                  OptAuthorize.NO);
+
+                        uri = root_indv;
+                    }
+
                     break;
                 }
             }
