@@ -36,7 +36,7 @@ class UserModuleInfo
     string uri;
     string url;
     string ver;
-    UserModuleInfo[ string ] dependecies;
+    UserModuleInfo[ string ] dependencies;
 
     Individual *[ string ] module_individuals;
     string      project_name;
@@ -63,9 +63,9 @@ class UserModuleInfo
     {
         string check_res = uri ~ ":" ~ ver;
 
-        foreach (uid; dependecies.keys)
+        foreach (uid; dependencies.keys)
         {
-            UserModuleInfo umi = dependecies.get(uid, null);
+            UserModuleInfo umi = dependencies.get(uid, null);
             if (umi !is null)
                 check_res ~= " { " ~ umi.toString() ~ " }";
         }
@@ -110,7 +110,7 @@ class UserModuleInfo
             stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
     }
 
-    public static UserModuleInfo[ string ] get_installed_modules_info(Context context, Ticket sticket)
+    public UserModuleInfo[ string ] get_installed_modules()
     {
         UserModuleInfo[ string ] result;
         int[ string ] link_count_2_module_uid;
@@ -136,7 +136,7 @@ class UserModuleInfo
             {
                 UserModuleInfo dumi = result.get(dep.uri, null);
                 if (dumi !is null)
-                    umi.dependecies[ dep.uri ] = dumi;
+                    umi.dependencies[ dep.uri ] = dumi;
 
                 clnk                               = link_count_2_module_uid.get(dep.uri, 0);
                 link_count_2_module_uid[ dep.uri ] = clnk + 1;
@@ -147,21 +147,36 @@ class UserModuleInfo
 
         //context.get_logger().trace("link_count_2_module_uid=[%s]", link_count_2_module_uid);
 
-        foreach (key; link_count_2_module_uid.keys)
-        {
-            if (link_count_2_module_uid[ key ] == 0)
-                context.get_logger().trace("FOUND MODULE [%s]", result[ key ]);
-        }
+        //foreach (key; link_count_2_module_uid.keys)
+        //{
+        //    if (link_count_2_module_uid[ key ] == 0)
+        //        context.get_logger().trace("FOUND MODULE [%s]", result[ key ]);
+        //}
 
         return result;
     }
 
     bool uninstall()
     {
-        foreach (dep; dependecies)
+        foreach (dep; dependencies)
         {
             if (dep.uninstall() == false)
                 return false;
+        }
+
+        // проверить, используется ли модуль другими модулями
+        UserModuleInfo[ string ] ims = get_installed_modules();
+
+        foreach (im; ims)
+        {
+            foreach (dep; im.dependencies)
+            {
+                if (dep.uri == uri)
+                {
+                    log.trace("MODULE [%s][%s] USED IN [%s][%s], SKIP UNINSTALL", uri, ver, im.uri, im.ver);
+                    return true;
+                }
+            }
         }
 
         //log.trace("@1 prev_module_name=%s", prev_module_name);
@@ -228,7 +243,7 @@ class UserModuleInfo
 
     bool install()
     {
-        foreach (dep; dependecies)
+        foreach (dep; dependencies)
         {
             if (dep.install() == false)
                 return false;
@@ -280,14 +295,46 @@ class UserModuleInfo
             module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
             module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
             module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
-            foreach (dep; dependecies)
+            foreach (dep; dependencies)
                 module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
+
+            module_indv.setResources("v-s:hasImage", [ Resource(DataType.String, ver) ]);
+
+            string module_image_path = unpacked_module_folder_name ~ "/image.jpeg";
+            string dest_image_name   = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
+
+            try
+            {
+                copy(module_image_path, "./data/files/" ~ dest_image_name);
+
+                Individual image_indv;
+                image_indv.uri = uri ~ "-image";
+
+                image_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:File") ]);
+                image_indv.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+                image_indv.setResources("v-s:fileName", [ Resource(DataType.String, "image.jpeg") ]);
+                image_indv.setResources("v-s:filePath", [ Resource(DataType.String, "/") ]);
+                image_indv.setResources("v-s:fileUri", [ Resource(DataType.String, dest_image_name) ]);
+
+                OpResult orc = context.put_individual(&sticket, image_indv.uri, image_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                      OptAuthorize.NO);
+                if (orc.result != ResultCode.OK)
+                {
+                    log.trace("WARN! can not install %s, err=%s", image_indv.uri, orc.result);
+                }
+                else
+                    module_indv.addResource("v-s:hasImage", Resource(DataType.Uri, image_indv.uri));
+            }
+            catch (Throwable tr)
+            {
+                log.trace("WARN! can not install image.jpeg, err=%s", tr.msg);
+            }
 
             OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                   OptAuthorize.NO);
 
-            log.trace("@module_indv=%s", module_indv);
-            log.trace("@orc=%s", orc);
+            // log.trace("@module_indv=%s", module_indv);
+            // log.trace("@orc=%s", orc);
             log.trace("installation module [%s][%s] was success", url, ver);
         }
 
@@ -296,7 +343,7 @@ class UserModuleInfo
 
     void check()
     {
-        foreach (dep; dependecies)
+        foreach (dep; dependencies)
         {
             dep.check();
         }
@@ -588,7 +635,7 @@ class UserModuleInfo
 
                 UserModuleInfo duim = new UserModuleInfo(context, sticket, install_id);
                 duim.get_and_unpack(*dep_indv);
-                dependecies[ dep_indv.uri ] = duim;
+                dependencies[ dep_indv.uri ] = duim;
 
                 if (duim.check_res != CheckResult.OK)
                 {
@@ -735,29 +782,26 @@ class UserModulesTool : VedaModule
 
     private void install_user_module(ref Individual new_indv)
     {
-        log.trace("--- 1 GET INSTALLED MODULES ---");
-
-        Ticket sticket = context.sys_ticket();
-
-        UserModuleInfo.get_installed_modules_info(context, sticket);
+        Ticket         sticket = context.sys_ticket();
 
         string         install_id = "veda-install-" ~ randomUUID().toString();
 
         UserModuleInfo im = new UserModuleInfo(context, sticket, install_id);
 
-        log.trace("--- 2 GET AND UNPACK MODULES ---");
+        log.trace("--- 1 GET AND UNPACK MODULES ---");
         im.get_and_unpack(new_indv);
 
         if (im.check_res == CheckResult.OK)
         {
-            log.trace("--- 3 CHECK MODULES ---");
+            log.trace("--- 2 CHECK MODULES ---");
             im.check();
 
-            log.trace("--- 4 UNINSTALL ---");
+            log.trace("--- 3 UNINSTALL ---");
             im.uninstall();
 
-            log.trace("--- 5 INSTALL ---");
+            log.trace("--- 4 INSTALL ---");
             im.install();
+            log.trace("--- 5 FINISH ---");
         }
         else if (im.check_res == CheckResult.FAIL)
             log.trace("installation of module [%s][%s] failed", im.url, im.ver);
@@ -765,9 +809,11 @@ class UserModulesTool : VedaModule
 
     private void uninstall_user_module(string module_id)
     {
-        Ticket sticket = context.sys_ticket();
+        Ticket         sticket = context.sys_ticket();
 
-        UserModuleInfo[ string ] installer_modules = UserModuleInfo.get_installed_modules_info(context, sticket);
+        UserModuleInfo im = new UserModuleInfo(context, sticket, null);
+
+        UserModuleInfo[ string ] installer_modules = im.get_installed_modules();
 
         auto target_module = installer_modules.get(module_id, null);
         if (target_module !is null)
