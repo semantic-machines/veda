@@ -298,6 +298,38 @@ class UserModuleInfo
             foreach (dep; dependencies)
                 module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
 
+            module_indv.setResources("v-s:hasImage", [ Resource(DataType.String, ver) ]);
+
+            string module_image_path = unpacked_module_folder_name ~ "/image.jpeg";
+            string dest_image_name   = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
+
+            try
+            {
+                copy(module_image_path, "./data/files/" ~ dest_image_name);
+
+                Individual image_indv;
+                image_indv.uri = uri ~ "-image";
+
+                image_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:File") ]);
+                image_indv.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+                image_indv.setResources("v-s:fileName", [ Resource(DataType.String, "image.jpeg") ]);
+                image_indv.setResources("v-s:filePath", [ Resource(DataType.String, "/") ]);
+                image_indv.setResources("v-s:fileUri", [ Resource(DataType.String, dest_image_name) ]);
+
+                OpResult orc = context.put_individual(&sticket, image_indv.uri, image_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                      OptAuthorize.NO);
+                if (orc.result != ResultCode.OK)
+                {
+                    log.trace("WARN! can not install %s, err=%s", image_indv.uri, orc.result);
+                }
+                else
+                    module_indv.addResource("v-s:hasImage", Resource(DataType.Uri, image_indv.uri));
+            }
+            catch (Throwable tr)
+            {
+                log.trace("WARN! can not install image.jpeg, err=%s", tr.msg);
+            }
+
             OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
                                                   OptAuthorize.NO);
 
