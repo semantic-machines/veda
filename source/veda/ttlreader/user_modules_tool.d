@@ -225,6 +225,17 @@ class UserModuleInfo
         {
             Individual indv;
             indv.uri = module_id;
+
+            string dest_image_name = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
+
+            try
+            {
+                remove("./data/files/" ~ dest_image_name);
+            } catch (Throwable tr)
+            {
+                log.trace("WARN! can not remove %s, err=%s", dest_image_name, tr.msg);
+            }
+
             indv.setResources("v-s:deleted", [ Resource(DataType.Boolean, true) ]);
 
             OpResult check_res = context.set_in_individual(&sticket, module_id, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
@@ -327,7 +338,7 @@ class UserModuleInfo
             }
             catch (Throwable tr)
             {
-                log.trace("WARN! can not install image.jpeg, err=%s", tr.msg);
+                log.trace("WARN! can not install %s, err=%s", dest_image_name, tr.msg);
             }
 
             OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
