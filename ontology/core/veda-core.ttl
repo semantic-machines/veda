@@ -32,8 +32,8 @@ v-s:moduleUrl
 v-s:moduleVersion
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Module ;
-  rdfs:label "Module url"@ru ;
-  rdfs:label "Url модуля"@ru ;
+  rdfs:label "Module version"@ru ;
+  rdfs:label "Версия модуля"@ru ;
   rdfs:range xsd:string ;
 .
 
