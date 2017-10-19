@@ -197,30 +197,6 @@ v-s:AdministrationAspect1
   v-s:shortLabel "Administration"@en ;
   v-s:shortLabel "Администрирование"@ru ;
   v-s:hasImage v-s:AdministrationImage ;
-#  v-s:hasBlank v-s:OntologyBlank ;
-  v-s:hasBlank v-s:ClassBlank ;
-  v-s:hasBlank v-s:PropertyBlank ;
-  v-s:hasBlank v-s:ClassTemplateBlank ;
-  v-s:hasBlank v-s:PersonBlank ;
-  v-s:hasBlank v-s:GroupBlank ;
-  v-s:hasBlank v-s:NetBlank ;
-  v-s:hasBlank v-s:UserScriptBlank ;
-  v-s:hasBlank v-s:EventBlank ;
-#  v-s:hasBlank v-s:FunctionBlank ;
-  v-s:hasBlank v-s:BlankBlank ;
-  v-s:hasBlank v-s:RegistryBlank ;
-#  v-s:hasRegistry v-s:OntologyRegistry ;
-  v-s:hasRegistry v-s:ClassRegistry ;
-  v-s:hasRegistry v-s:PropertyRegistry ;
-  v-s:hasRegistry v-s:ClassTemplateRegistry ;
-  v-s:hasRegistry v-s:PersonRegistry ;
-  v-s:hasRegistry v-s:GroupRegistry ;
-  v-s:hasRegistry v-s:NetRegistry ;
-  v-s:hasRegistry v-s:UserScriptRegistry ;
-  v-s:hasRegistry v-s:EventRegistry ;
-#  v-s:hasRegistry v-s:FunctionRegistry ;
-  v-s:hasRegistry v-s:BlankRegistry ;
-  v-s:hasRegistry v-s:RegistryRegistry ;
 .
 
 v-s:AdministrationImage
@@ -656,61 +632,7 @@ v-ui:AdminResultTemplate
   """ ;
 .
 
-
-
 # -- ШАБЛОН АСПЕКТА АДМИНИСТРИРОВАНИЯ --
-v-ui:AdministrationAspectTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
-  rdfs:label "Template for Administration aspect class"@en ;
-  v-ui:forClass v-s:AdministrationAspect ;
-  v-ui:template """
-<div class="container sheet" style="position:relative;">
-  <div class="row">
-    <div class="col-md-4">
-      <div class="container-fluid">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o"></i> <span about="v-s:Blanks" property="rdfs:label"></span></h4>
-        <hr>
-        <div about="@" rel="v-s:hasBlank">
-          <div>
-            <a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
-            <br>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="container-fluid">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table"></i> <span about="v-s:Registries" property="rdfs:label"></span></h4>
-        <hr>
-        <div about="@" rel="v-s:hasRegistry">
-          <div>
-            <a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
-            <br>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="container-fluid">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart"></i> <span about="v-s:Reports" property="rdfs:label"></span></h4>
-        <hr>
-        <div about="@" rel="v-s:hasReport">
-          <div>
-            <a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
-            <br>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <hr>
-  <div about="@" data-template="v-ui:AdministrationAspectTemplate1"></div>
-
-</div>
-  """ ;
-.
 
 v-s:ClassesBundle
   rdf:type v-s:Bundle ;
