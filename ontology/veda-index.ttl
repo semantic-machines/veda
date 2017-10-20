@@ -40,6 +40,13 @@ vdi:inherited_index
   rdfs:label "Наследуемый индекс"@ru ;
   rdfs:range rdfs:Resource ;
 .
+vdi:domain
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain vdi:ClassIndex ;
+  rdfs:label "index domain"@en ;
+  rdfs:label "домен индекса"@ru ;
+  rdfs:range rdfs:Resource ;
+.
 vdi:indexed_field
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
