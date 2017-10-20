@@ -33,10 +33,11 @@ enum CheckResult
 
 class UserModuleInfo
 {
-    string uri;
-    string url;
-    string ver;
+    string         uri;
+    string         url;
+    string         ver;
     UserModuleInfo[ string ] dependencies;
+    UserModuleInfo parent;
 
     Individual *[ string ] module_individuals;
     string      project_name;
@@ -136,7 +137,10 @@ class UserModuleInfo
             {
                 UserModuleInfo dumi = result.get(dep.uri, null);
                 if (dumi !is null)
+                {
                     umi.dependencies[ dep.uri ] = dumi;
+                    dumi.parent                 = umi;
+                }
 
                 clnk                               = link_count_2_module_uid.get(dep.uri, 0);
                 link_count_2_module_uid[ dep.uri ] = clnk + 1;
@@ -165,16 +169,25 @@ class UserModuleInfo
         }
 
         // проверить, используется ли модуль другими модулями
-        UserModuleInfo[ string ] ims = get_installed_modules();
+        UserModuleInfo[ string ] installed_modules = get_installed_modules();
 
-        foreach (im; ims)
+        foreach (im; installed_modules)
         {
             foreach (dep; im.dependencies)
             {
                 if (dep.uri == uri)
                 {
-                    log.trace("MODULE [%s][%s] USED IN [%s][%s], SKIP UNINSTALL", uri, ver, im.uri, im.ver);
-                    return true;
+                    if (dep.ver == ver)
+                    {
+                        log.trace("MODULE [%s][%s] USED IN [%s][%s], SKIP UNINSTALL", dep.uri, dep.ver, im.uri, im.ver);
+                        return true;
+                    }
+                    else
+                    {
+                        log.trace("ERR! [%s][%s] requires [%s][%s], but already installed [%s][%s] used [%s][%s]",
+                                  parent.uri, parent.ver, uri, ver, im.uri, im.ver, dep.uri, dep.ver);
+                        return false;
+                    }
                 }
             }
         }
@@ -636,7 +649,7 @@ class UserModuleInfo
                 }
             }
 
-            log.trace("module [%s][%s] load individuals %d", uri, ver, module_individuals.length);
+            log.trace("module [%s][%s] found individuals %d", uri, ver, module_individuals.length);
 
             // go tree
             Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
@@ -663,6 +676,7 @@ class UserModuleInfo
                 UserModuleInfo duim = new UserModuleInfo(context, sticket, install_id);
                 duim.get_and_unpack(*dep_indv);
                 dependencies[ dep_indv.uri ] = duim;
+                duim.parent                  = this;
 
                 if (duim.check_res != CheckResult.OK)
                 {
@@ -824,10 +838,11 @@ class UserModulesTool : VedaModule
             im.check();
 
             log.trace("--- 3 UNINSTALL ---");
-            im.uninstall();
-
-            log.trace("--- 4 INSTALL ---");
-            im.install();
+            if (im.uninstall() == true)
+            {
+                log.trace("--- 4 INSTALL ---");
+                im.install();
+            }
             log.trace("--- 5 FINISH ---");
         }
         else if (im.check_res == CheckResult.FAIL)
