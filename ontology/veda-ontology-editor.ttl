@@ -1107,7 +1107,35 @@ v-ui:EventTemplate
   """ ;
 .
 
-
+v-ui:ModuleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для 'v-s:Module'"@ru ;
+  rdfs:label "Template for 'v-s:Module'"@en ;
+  v-ui:forClass v-s:Module ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="@" property="rdf:type"></span><br>
+    <small property="@"></small>
+  </h2>
+  <div class="panel panel-default">
+    <div class="panel-body bg-default">
+      <em about="v-s:moduleUrl" property="rdfs:label"></em>
+      <div property="v-s:moduleUrl" class="view -edit -search"></div>
+      <veda-control data-type="text" property="v-s:moduleUrl" class="-view edit search"></veda-control>
+      <em about="v-s:moduleVersion" property="rdfs:label"></em>
+      <div property="v-s:moduleVersion" class="view -edit -search"></div>
+      <veda-control data-type="text" property="v-s:moduleVersion" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <hr>
+  <div class="actions clearfix">
+    <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+  </div>
+</div>
+  """ ;
+.
 
 # -- ПРАВА --
 

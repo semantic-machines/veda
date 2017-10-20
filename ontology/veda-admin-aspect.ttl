@@ -411,6 +411,31 @@ v-s:UserScriptRegistryBlank
   v-fc:targetType v-s:UserScript ;
 .
 
+
+# -- МОДУЛИ --
+
+v-s:ModulesBlank
+  a v-fc:Blank ;
+  rdfs:label "Модуль"@ru ;
+  rdfs:label "Module"@en ;
+  v-fc:targetType v-s:Module ;
+.
+v-s:ModulesRegistry
+  a v-fs:AttributiveSearch ;
+  rdfs:label "Установленные модули"@ru ;
+  rdfs:label "Installed modules"@en ;
+  v-fs:searchBlank v-s:ModulesRegistryBlank ;
+  v-fs:searchBlankTemplate v-ui:ModulesBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:ModulesResultTemplate ;
+  v-fs:searchOnLoad true ;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+v-s:ModulesRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Установленные модули"@ru ;
+  rdfs:label "Installed modules"@en ;
+  v-fc:targetType v-s:Module ;
+.
 # -- СОБЫТИЯ --
 
 v-s:EventBlank
@@ -632,6 +657,59 @@ v-ui:AdminResultTemplate
   """ ;
 .
 
+# -- ШАБЛОНЫ ДЛЯ ПОИСКА МОДУЛЕЙ В АСПЕКТЕ АДМИНИСТРИРОВАНИЯ --
+
+v-ui:ModulesBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
+  v-ui:template """
+<script>
+  container.siblings(".search-button.pull-right").remove();
+</script>
+  """ ;
+.
+
+v-ui:ModulesResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска модулей для админов"@ru ;
+  rdfs:label "Admin search result template for modules"@en ;
+  v-ui:template """
+<table class="table table-condensed">
+  <thead class="result-header">
+    <tr class="active">
+      <th width="1%">#</th>
+      <th width="1%">
+        <span class="glyphicon glyphicon-search"></span>
+      </th>
+      <th class="orderby" width="28%" data-orderby="rdfs:label">
+        <span about="v-s:Module" property="rdfs:label">
+        </th>
+      <th>
+        <span about="v-s:moduleUrl" property="rdfs:label"></span>
+      </th>
+      <th width="12%">
+        <span about="v-s:moduleVersion" property="rdfs:label"></span>
+      </th>
+      <th width="5%"></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="@" style="word-wrap: break-word; max-width:100px;"></td>
+      <td property="v-s:moduleUrl"></td>
+      <td property="v-s:moduleVersion"></td>
+      <td>
+        <button type="button" class="action btn btn-link view" id="delete" about="v-s:Delete" property="rdfs:label"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
 # -- ШАБЛОН АСПЕКТА АДМИНИСТРИРОВАНИЯ --
 
 v-s:ClassesBundle
@@ -695,6 +773,12 @@ v-s:ScriptsBundle
   rdfs:label "Scripts"@en ;
 .
 
+v-s:ModulesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Модули"@ru ;
+  rdfs:label "Modules"@en ;
+.
+
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
@@ -711,6 +795,7 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Nets" aria-controls="Nets" role="tab" data-toggle="tab" about="v-s:NetsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Scripts" aria-controls="Scripts" role="tab" data-toggle="tab" about="v-s:ScriptsBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Modules" aria-controls="Modules" role="tab" data-toggle="tab" about="v-s:ModulesBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -766,10 +851,12 @@ v-ui:AdministrationAspectTemplate
     <div role="tabpanel" class="tab-pane" id="Nets">
       <h2 about="v-s:NetsBundle" property="rdfs:label"></h2>
       <div class="panel panel-default">
-        <div class="panel-heading"><span about="v-s:NetRegistry" property="rdfs:label"></span><a href="#/v-s:NetBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+        <div class="panel-heading">
+          <span about="v-s:NetRegistry" property="rdfs:label"></span>
+          <a href="#/v-s:NetBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
         <div class="panel-body" about="v-s:NetRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
-
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Rights">
@@ -802,14 +889,61 @@ v-ui:AdministrationAspectTemplate
 
     <div role="tabpanel" class="tab-pane" id="Scripts">
       <div class="panel panel-default">
-        <div class="panel-heading"><span about="v-s:UserScriptRegistry" property="rdfs:label"></span><a href="#/v-s:UserScriptBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+        <div class="panel-heading">
+          <span about="v-s:UserScriptRegistry" property="rdfs:label"></span>
+          <a href="#/v-s:UserScriptBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
         <div class="panel-body" about="v-s:UserScriptRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
     </div>
 
+    <div role="tabpanel" class="tab-pane" id="Modules">
+      <h2 about="v-s:ModulesBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-7">
+              <div class="input-group">
+                <span about="v-s:moduleUrl" property='rdfs:label' class="input-group-addon"></span>
+                <input id="moduleUrl" type="text" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span about="v-s:moduleVersion" property='rdfs:label' class="input-group-addon"></span>
+                <input id="moduleVersion" type="text" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="action btn btn-primary view pull-right" id="install-Module">Установить</button>
+              <!-- <a href="#/v-s:ModuleBlank" about="v-s:Create" property="rdfs:label" class="btn btn-primary pull-right"></a> -->
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div about="v-s:ModulesRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
+
+  $("#install-Module").click(function(){
+    let url=$("#moduleUrl",template).val();
+    if (url) {
+      var Module = new veda.IndividualModel();
+      Module["rdf:type"] = [new veda.IndividualModel("v-s:Module")];
+      Module["v-s:moduleUrl"]=[url];
+      Module["v-s:moduleVersion"]=[$("#moduleVersion", template).val()];
+      Module.save();  
+      $("#moduleUrl",template).val("");
+      $("#moduleVersion",template).val("");
+    };
+  });
+
+
+
   $("#admin-tabs", template).on("click", "a", function (e) {
     e.preventDefault();
     individual.activeTab = $(this).attr("href");
