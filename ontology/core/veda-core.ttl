@@ -24,7 +24,7 @@ v-s:Module
 v-s:moduleUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Module ;
-  rdfs:label "Module url"@ru ;
+  rdfs:label "Module url"@en ;
   rdfs:label "Url модуля"@ru ;
   rdfs:range xsd:string ;
 .
@@ -32,13 +32,21 @@ v-s:moduleUrl
 v-s:moduleVersion
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Module ;
-  rdfs:label "Module version"@ru ;
+  rdfs:label "Module version"@en ;
   rdfs:label "Версия модуля"@ru ;
   rdfs:range xsd:string ;
 .
 
+v-s:moduleJournal
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Module ;
+  rdfs:label "Журнал модуля"@ru ;
+  rdfs:label "Module journal"@en ;
+  rdfs:range v-s:Journal ;
+.
 
-# ------------------------------------------------------------ КЛАССЫ --
+
+# ---------------------------------- КЛАССЫ --
 
 v-s:ExecuteScript
   rdf:type owl:Class ;
