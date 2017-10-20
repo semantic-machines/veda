@@ -72,7 +72,7 @@ v-s:OrganizationUnitModel
     }
     return this["v-s:parentUnit"].reduce(function (state, item) {
       return state || self.getChief.apply(item);
-    }, false);
+    }, undefined);
   };
 
   // sourceURL=v-s:OrganizationUnitModel
