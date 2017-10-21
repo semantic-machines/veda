@@ -177,16 +177,20 @@ class UserModuleInfo
             {
                 if (dep.uri == uri)
                 {
-                    if (dep.ver == ver)
+                    //log.trace ("im.uri=%s uri=%s parent.uri=%s", im.uri, uri, parent.uri);
+                    if (im.uri != parent.uri)
                     {
-                        log.trace("MODULE [%s][%s] USED IN [%s][%s], SKIP UNINSTALL", dep.uri, dep.ver, im.uri, im.ver);
-                        return true;
-                    }
-                    else
-                    {
-                        log.trace("ERR! [%s][%s] requires [%s][%s], but already installed [%s][%s] used [%s][%s]",
-                                  parent.uri, parent.ver, uri, ver, im.uri, im.ver, dep.uri, dep.ver);
-                        return false;
+                        if (dep.ver == ver)
+                        {
+                            log.trace("MODULE [%s][%s] USED IN [%s][%s], SKIP UNINSTALL", dep.uri, dep.ver, im.uri, im.ver);
+                            return true;
+                        }
+                        else
+                        {
+                            log.trace("ERR! [%s][%s] requires [%s][%s], but already installed [%s][%s] used [%s][%s]",
+                                      parent.uri, parent.ver, uri, ver, im.uri, im.ver, dep.uri, dep.ver);
+                            return false;
+                        }
                     }
                 }
             }
@@ -249,20 +253,69 @@ class UserModuleInfo
                 log.trace("WARN! can not remove %s, err=%s", dest_image_name, tr.msg);
             }
 
-            indv.setResources("v-s:deleted", [ Resource(DataType.Boolean, true) ]);
-
-            OpResult check_res = context.set_in_individual(&sticket, module_id, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                           OptAuthorize.NO);
-            if (check_res.result != ResultCode.OK)
+            Individual mindv = context.get_individual(&sticket, module_id);
+            if (mindv.getStatus() == ResultCode.OK)
             {
-                log.trace("ERR! fail remove [%s], err=[%s]", module_id, check_res.result);
-                return false;
+                indv.setResources("v-s:deleted", [ Resource(DataType.Boolean, true) ]);
+
+                OpResult check_res = context.set_in_individual(&sticket, module_id, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                               OptAuthorize.NO);
+                if (check_res.result != ResultCode.OK)
+                {
+                    log.trace("ERR! fail deactivate [%s], err=[%s]", module_id, check_res.result);
+                    return false;
+                }
             }
 
             return true;
         }
         else
             return false;
+    }
+
+    void store_module_individ()
+    {
+        log.trace("STORE MODULE INFO [%s][%s]", uri, ver);
+        Individual module_indv;
+        module_indv.uri = uri;
+        module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
+        module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
+        module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
+        foreach (dep; dependencies)
+            module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
+
+        string module_image_path = unpacked_module_folder_name ~ "/image.jpeg";
+        string dest_image_name   = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
+
+        try
+        {
+            copy(module_image_path, "./data/files/" ~ dest_image_name);
+
+            Individual image_indv;
+            image_indv.uri = uri ~ "-image";
+
+            image_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:File") ]);
+            image_indv.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+            image_indv.setResources("v-s:fileName", [ Resource(DataType.String, "image.jpeg") ]);
+            image_indv.setResources("v-s:filePath", [ Resource(DataType.String, "/") ]);
+            image_indv.setResources("v-s:fileUri", [ Resource(DataType.String, dest_image_name) ]);
+
+            OpResult orc = context.put_individual(&sticket, image_indv.uri, image_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                  OptAuthorize.NO);
+            if (orc.result != ResultCode.OK)
+            {
+                log.trace("WARN! can not install %s, err=%s", image_indv.uri, orc.result);
+            }
+            else
+                module_indv.addResource("v-s:hasImage", Resource(DataType.Uri, image_indv.uri));
+        }
+        catch (Throwable tr)
+        {
+            log.trace("WARN! can not install %s, err=%s", dest_image_name, tr.msg);
+        }
+
+        OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                              OptAuthorize.NO);
     }
 
     bool install()
@@ -273,9 +326,17 @@ class UserModuleInfo
                 return false;
         }
 
+
         if (check_res == CheckResult.FOUND_EQUAL_VERSION)
         {
             log.trace("MODULE [%s][%s] ALREADY INSTALLED", uri, ver);
+
+            Individual mindv = context.get_individual(&sticket, uri);
+            if (mindv.getStatus() != ResultCode.OK)
+                this.store_module_individ();
+            else if (mindv.exists("v-s:deleted", true))
+                this.store_module_individ();
+
             return true;
         }
         else
@@ -314,47 +375,7 @@ class UserModuleInfo
         }
         else
         {
-            Individual module_indv;
-            module_indv.uri = uri;
-            module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
-            module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
-            module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
-            foreach (dep; dependencies)
-                module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
-
-            string module_image_path = unpacked_module_folder_name ~ "/image.jpeg";
-            string dest_image_name   = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
-
-            try
-            {
-                copy(module_image_path, "./data/files/" ~ dest_image_name);
-
-                Individual image_indv;
-                image_indv.uri = uri ~ "-image";
-
-                image_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:File") ]);
-                image_indv.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
-                image_indv.setResources("v-s:fileName", [ Resource(DataType.String, "image.jpeg") ]);
-                image_indv.setResources("v-s:filePath", [ Resource(DataType.String, "/") ]);
-                image_indv.setResources("v-s:fileUri", [ Resource(DataType.String, dest_image_name) ]);
-
-                OpResult orc = context.put_individual(&sticket, image_indv.uri, image_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                      OptAuthorize.NO);
-                if (orc.result != ResultCode.OK)
-                {
-                    log.trace("WARN! can not install %s, err=%s", image_indv.uri, orc.result);
-                }
-                else
-                    module_indv.addResource("v-s:hasImage", Resource(DataType.Uri, image_indv.uri));
-            }
-            catch (Throwable tr)
-            {
-                log.trace("WARN! can not install %s, err=%s", dest_image_name, tr.msg);
-            }
-
-            OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                  OptAuthorize.NO);
-
+            void store_module_individ();
             // log.trace("@module_indv=%s", module_indv);
             // log.trace("@orc=%s", orc);
             log.trace("installation module [%s][%s] was success", url, ver);
@@ -427,16 +448,19 @@ class UserModuleInfo
         total_hash_indv_storage.sort();
         total_hash_indv_file.sort();
 
-        if (text(total_hash_indv_file) == text(total_hash_indv_storage))
+        if (total_hash_indv_storage.length > 0 && total_hash_indv_file.length > 0)
         {
-            log.trace("module [%s][%s] already installed", uri, ver);
-            check_res = CheckResult.FOUND_EQUAL_VERSION;
-        }
-        else
-        {
-            log.trace("module [%s][%s] not equal installed in storage %d, in file %d", uri, ver, total_hash_indv_storage.length,
-                      total_hash_indv_file.length);
-            check_res = CheckResult.FOUND_ANOTHER_VERSION;
+            if (text(total_hash_indv_file) == text(total_hash_indv_storage))
+            {
+                log.trace("module [%s][%s] already installed", uri, ver);
+                check_res = CheckResult.FOUND_EQUAL_VERSION;
+            }
+            else
+            {
+                log.trace("module [%s][%s] not equal installed in storage %d, in file %d", uri, ver, total_hash_indv_storage.length,
+                          total_hash_indv_file.length);
+                check_res = CheckResult.FOUND_ANOTHER_VERSION;
+            }
         }
 
         log.trace("module [%s][%s] check individuals %d", uri, ver, module_individuals.length);
