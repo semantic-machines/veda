@@ -14,6 +14,40 @@
   v-s:loadPriority 6 ;
 .
 
+v-s:AppInfo
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Application info"@en ;
+  rdfs:label "Информация о приложении"@ru ;
+.
+
+v-s:appBuildVersion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Версия приложения"@ru ;
+  rdfs:label "Version of the application"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:appBuildDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Дата сборки приложения"@ru ;
+  rdfs:label "Build date of the application"@en ;
+  rdfs:range xsd:dateTime ;
+.
+
+v-s:appUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "App url"@ru ;
+  rdfs:range xsd:string ;
+.
+
 v-s:Module
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -24,7 +58,7 @@ v-s:Module
   
 v-s:moduleUrl
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Module ;
+  rdfs:domain v-s:Module, v-s:RequestToModulesManager ;
   rdfs:label "Module url"@en ;
   rdfs:label "Url модуля"@ru ;
   rdfs:range xsd:string ;
@@ -38,12 +72,43 @@ v-s:moduleVersion
   rdfs:range xsd:string ;
 .
 
-v-s:moduleJournal
+v-s:RequestToModulesManager
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Request to modules manager"@en ;
+  rdfs:label "Запрос к менеджеру модулей"@ru ;
+.
+
+v-s:command
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:RequestToModulesManager ;
+  rdfs:label "Command"@en ;
+  rdfs:label "Команда"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:journalOfRequest
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Module ;
-  rdfs:label "Журнал модуля"@ru ;
-  rdfs:label "Module journal"@en ;
+  rdfs:domain v-s:RequestToModulesManager ;
+  rdfs:label "Журнал запроса"@ru ;
+  rdfs:label "Request journal"@en ;
   rdfs:range v-s:Journal ;
+.
+
+v-s:requestList
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Module, AppInfo ;
+  rdfs:label "Список запросов"@ru ;
+  rdfs:label "Request List"@en ;
+  rdfs:range v-s:RequestToModulesManager ;
+.
+
+v-s:moduleList
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestToModulesManager ;
+  rdfs:label "Список модулей"@ru ;
+  rdfs:label "Modules List"@en ;
+  rdfs:range v-s:Module ;
 .
 
 
