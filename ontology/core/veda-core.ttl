@@ -97,7 +97,7 @@ v-s:journalOfRequest
 
 v-s:requestList
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Module, AppInfo ;
+  rdfs:domain v-s:Module, v-s:AppInfo ;
   rdfs:label "Список запросов"@ru ;
   rdfs:label "Request List"@en ;
   rdfs:range v-s:RequestToModulesManager ;
