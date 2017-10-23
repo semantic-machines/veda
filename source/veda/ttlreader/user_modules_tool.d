@@ -480,7 +480,7 @@ class UserModuleInfo
         {
             string[] pp = o_url.path.split('/');
 
-            if (pp.length != 3)
+            if (pp.length != 3 && pp.length != 6)
             {
                 log.trace("ERR! unknown url format [%s], get_and_unpack", url);
                 check_res = CheckResult.FAIL;
@@ -489,6 +489,15 @@ class UserModuleInfo
 
             project_owner = pp[ 1 ];
             project_name  = pp[ 2 ];
+
+            foreach (idx, pi; pp)
+            {
+                if (pp.length >= idx + 2 && pi == "releases" && pp[ idx + 1 ] == "tag")
+                {
+                    ver = pp[ idx + 2 ];
+                    break;
+                }
+            }
 
             //log.trace("this project [%s][%s] on github.com", project_owner, project_name);
             modile_temp_dir  = tempDir() ~ "/" ~ install_id ~ "/" ~ project_owner ~ "-" ~ project_name;
