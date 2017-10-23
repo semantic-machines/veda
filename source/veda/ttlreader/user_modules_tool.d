@@ -375,7 +375,7 @@ class UserModuleInfo
         }
         else
         {
-            void store_module_individ();
+            store_module_individ();
             // log.trace("@module_indv=%s", module_indv);
             // log.trace("@orc=%s", orc);
             log.trace("installation module [%s][%s] was success", url, ver);
@@ -724,6 +724,14 @@ class UserModuleInfo
     }
 }
 
+enum PreparedType
+{
+    MODULE,
+    REQUEST,
+    NONE
+}
+
+
 class UserModulesTool : VedaModule
 {
     this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
@@ -741,71 +749,89 @@ class UserModulesTool : VedaModule
 
         try
         {
-            ResultCode check_res = ResultCode.OK;
+            ResultCode   check_res = ResultCode.OK;
 
-            Resources  types        = new_indv.getResources("rdf:type");
-            bool       need_prepare = false;
+            Resources    types = new_indv.getResources("rdf:type");
+            PreparedType ptype = PreparedType.NONE;
 
             foreach (type; types)
             {
                 if (type.uri == "v-s:Module")
                 {
-                    need_prepare = true;
+                    ptype = PreparedType.MODULE;
                     break;
                 }
-                else if (context.get_onto().isSubClasses(type.uri, []))
+                if (type.uri == "v-s:RequestToModulesManager")
                 {
-                    need_prepare = true;
+                    ptype = PreparedType.REQUEST;
                     break;
                 }
+
+                //                else if (context.get_onto().isSubClasses(type.uri, ["v-s:Module", "v-s:RequestToModulesManager"]))
+//                {
+//                    need_prepare = true;
+//                    break;
+//                }
             }
 
-            if (!need_prepare)
+            if (ptype == PreparedType.NONE)
                 return ResultCode.OK;
 
-            log.trace("[%s]: v-s:Module individual changed", new_indv.uri);
+            if (ptype == PreparedType.MODULE)
+                log.trace("[%s]: v-s:Module individual changed", new_indv.uri);
+
+            if (ptype == PreparedType.REQUEST)
+                log.trace("[%s]: v-s:RequestToModulesManager individual changed", new_indv.uri);
 
             bool new_is_deleted = new_indv.exists("v-s:deleted", true);
 
             if (prev_indv is Individual.init)
             {
+                // New
+
                 if (new_is_deleted == true)
                 {
-                    log.trace("module [%s] already deleted, nothing", new_indv.uri);
+                    log.trace("individual [%s] already deleted, nothing", new_indv.uri);
                     return ResultCode.OK;
                 }
 
-                log.trace("is new module, install");
-                install_user_module(new_indv);
+                if (ptype == PreparedType.REQUEST)
+                    install_user_module(new_indv);
+
                 return ResultCode.OK;
             }
             else
             {
+                // Exist
                 bool prev_is_deleted = prev_indv.exists("v-s:deleted", true);
 
                 if (new_is_deleted == true && prev_is_deleted == false)
                 {
-                    uninstall_user_module(new_indv.uri);
+                    if (ptype == PreparedType.MODULE)
+                        uninstall_user_module(new_indv.uri);
+
                     return ResultCode.OK;
                 }
                 else
                 if (new_is_deleted == false && prev_is_deleted == true)
                 {
-                    install_user_module(new_indv);
+                    if (ptype == PreparedType.MODULE)
+                        install_user_module(new_indv);
+
                     return ResultCode.OK;
                 }
                 else
-
                 if (new_is_deleted == true && prev_is_deleted == true)
                 {
-                    log.trace("module already deleted, nothing");
+                    if (ptype == PreparedType.MODULE)
+                        log.trace("module already deleted, nothing");
                     return ResultCode.OK;
                 }
                 else
-
                 if (new_is_deleted == false && prev_is_deleted == false)
                 {
-                    log.trace("module changed");
+                    if (ptype == PreparedType.MODULE)
+                        log.trace("module changed, nothing");
                     return ResultCode.OK;
                 }
             }
