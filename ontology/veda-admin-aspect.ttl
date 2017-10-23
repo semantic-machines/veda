@@ -915,7 +915,7 @@ v-ui:AdministrationAspectTemplate
               </div>
             </div>
             <div class="col-md-2">
-              <button type="submit" class="action btn btn-primary view pull-right" id="install-Module">Установить</button>
+              <button type="submit" class="action btn btn-primary btn-block view pull-right" id="install-Module">Установить</button>
               <!-- <a href="#/v-s:ModuleBlank" about="v-s:Create" property="rdfs:label" class="btn btn-primary pull-right"></a> -->
             </div>
           </div>
@@ -936,7 +936,7 @@ v-ui:AdministrationAspectTemplate
       Module["rdf:type"] = [new veda.IndividualModel("v-s:Module")];
       Module["v-s:moduleUrl"]=[url];
       Module["v-s:moduleVersion"]=[$("#moduleVersion", template).val()];
-      Module.save();  
+      Module.save();
       $("#moduleUrl",template).val("");
       $("#moduleVersion",template).val("");
     };

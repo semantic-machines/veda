@@ -55,7 +55,7 @@ v-s:Module
   rdfs:label "Модуль"@ru ;
   v-ui:hasTemplate v-ui:ModuleTemplate ;
 .
-  
+
 v-s:moduleUrl
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Module, v-s:RequestToModulesManager ;
