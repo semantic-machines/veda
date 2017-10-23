@@ -622,9 +622,20 @@ v-s:StatusManualTemplate
         </div>
       </div>
       <br class="-view edit search">
-      <div rel="v-s:hasStatus" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+      <div rel="v-s:hasStatus" class="-view -edit search" data-template="v-ui:LabelTemplate"></div>
       <veda-control data-type="link" rel="v-s:hasStatus" class="-view edit search fulltext dropdown"></veda-control>
-
+		<span rel="v-s:hasStatus">
+		  <span class="label" property="rdfs:label"></span>
+		  <script>
+			switch(individual.id) {
+			  case "v-s:StatusAgreement": template.addClass("label-info"); break;
+			  case "v-s:StatusRejected": template.addClass("label-danger"); break;
+			  case "v-s:StatusExecution": template.addClass("label-warning"); break;
+			  case "v-s:StatusExecuted": template.addClass("label-success"); break;
+			  default: template.addClass("label-default"); break;
+			}
+		  </script>
+		</span>
       <br class="-view edit search">
       <em about="rdfs:comment" property="rdfs:label"></em>
       <div property="rdfs:comment" class="view -edit search"></div>
