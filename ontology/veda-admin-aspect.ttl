@@ -675,38 +675,33 @@ v-ui:ModulesResultTemplate
   rdfs:label "Шаблон отображения результатов поиска модулей для админов"@ru ;
   rdfs:label "Admin search result template for modules"@en ;
   v-ui:template """
-<table class="table table-condensed">
-  <thead class="result-header">
-    <tr class="active">
-      <th width="1%">#</th>
-      <th width="1%">
-        <span class="glyphicon glyphicon-search"></span>
-      </th>
-      <th class="orderby" width="28%" data-orderby="rdfs:label">
-        <span about="v-s:Module" property="rdfs:label">
-        </th>
-      <th>
-        <span about="v-s:moduleUrl" property="rdfs:label"></span>
-      </th>
-      <th width="12%">
-        <span about="v-s:moduleVersion" property="rdfs:label"></span>
-      </th>
-      <th width="5%"></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td>###</td>
-      <td about="@" data-template="v-ui:IconModalTemplate"></td>
-      <td property="@" style="word-wrap: break-word; max-width:100px;"></td>
-      <td property="v-s:moduleUrl"></td>
-      <td property="v-s:moduleVersion"></td>
-      <td>
-        <button type="button" class="action btn btn-link view" id="delete" about="v-s:Delete" property="rdfs:label"/>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<style>
+  .hasImage {
+    background-color: #f0f0f0;
+  }
+  .hasImage>img {
+    height: 100%;
+  }
+</style>
+<div class="result-container row">
+  <div class="col-md-4">
+    <div class="thumbnail">
+      <div class="hasImage" about="@" rel="v-s:hasImage" style="height:200px;" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+      <div>
+        <span id="test" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span style="font-weight: bold;" property="@"></span>
+      </div>
+      <div>
+        <span style="font-weight: bold;" about="v-s:moduleVersion" property="rdfs:label"></span>
+        <span>:</span>
+        <span property="v-s:moduleVersion"></span>
+      </div>
+      <div class="clearfix">
+        <button type="button" class="action btn btn-link view pull-right" id="delete" about="v-s:Delete" property="rdfs:label"/> 
+      </div>
+    </div>
+  </div>
+</div>
   """ ;
 .
 
@@ -902,21 +897,14 @@ v-ui:AdministrationAspectTemplate
       <div class="panel panel-default">
         <div class="panel-heading">
           <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-10">
               <div class="input-group">
                 <span about="v-s:moduleUrl" property='rdfs:label' class="input-group-addon"></span>
                 <input id="moduleUrl" type="text" class="form-control">
               </div>
             </div>
-            <div class="col-md-3">
-              <div class="input-group">
-                <span about="v-s:moduleVersion" property='rdfs:label' class="input-group-addon"></span>
-                <input id="moduleVersion" type="text" class="form-control">
-              </div>
-            </div>
             <div class="col-md-2">
               <button type="submit" class="action btn btn-primary btn-block view pull-right" id="install-Module">Установить</button>
-              <!-- <a href="#/v-s:ModuleBlank" about="v-s:Create" property="rdfs:label" class="btn btn-primary pull-right"></a> -->
             </div>
           </div>
         </div>
@@ -933,12 +921,10 @@ v-ui:AdministrationAspectTemplate
     let url=$("#moduleUrl",template).val();
     if (url) {
       var Module = new veda.IndividualModel();
-      Module["rdf:type"] = [new veda.IndividualModel("v-s:Module")];
+      Module["rdf:type"] = [new veda.IndividualModel("v-s:RequestToModulesManager")];
       Module["v-s:moduleUrl"]=[url];
-      Module["v-s:moduleVersion"]=[$("#moduleVersion", template).val()];
       Module.save();
       $("#moduleUrl",template).val("");
-      $("#moduleVersion",template).val("");
     };
   });
 

@@ -1118,6 +1118,7 @@ v-ui:ModuleTemplate
     <span about="@" property="rdf:type"></span><br>
     <small property="@"></small>
   </h2>
+  <div about="@" rel="v-s:hasImage" style="" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
   <div class="panel panel-default">
     <div class="panel-body bg-default">
       <em about="v-s:moduleUrl" property="rdfs:label"></em>
