@@ -125,7 +125,6 @@ veda.Module(function (veda) { "use strict";
         // If class is not a subclass of another then make it a subclass of rdfs:Resource
         if ( !_class.hasValue("rdfs:subClassOf") ) {
           _class["rdfs:subClassOf"] = [ classes["rdfs:Resource"] ];
-          classTree[_class.id].superClasses.push("rdfs:Resource");
         }
         _class["rdfs:subClassOf"].map( function ( superClass ) {
           classTree[_class.id].superClasses.push( superClass.id );
