@@ -1143,6 +1143,63 @@ cfg:Event_15
   """ ;
 .
 
+#cfg:Event_16
+#  rdf:type v-s:Event ;
+#  v-s:author cfg:VedaSystem ;
+#  rdfs:label "Скрипт обработки обратных ссылок" ;
+#  rdfs:comment "Скрипт обработки обратных ссылок" ;
+#  v-s:triggerByType v-s:BackwardLink ;
+#  v-s:script """
+#  var backwardLinkUri = document["@"],
+#      backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
+#      backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+#      omitGroup = getFirstValue(document["v-s:omitBackwardTargetGroup"]),
+#      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
+#      backwardTarget = get_individual(ticket, backwardTargetUri),
+#      backwardTarget_original = JSON.stringify(backwardTarget);
+#  if (!backwardTarget || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
+#    return;
+#  }
+#
+#  if (!omitGroup) {
+#    var membershipUri = 'd:backward_membership_' + backwardLinkUri.split(':').join('_') + '_' + backwardTargetUri.split(':').join('_'),
+#        membership = get_individual(ticket, membershipUri);
+#    if (!membership) {
+#      membership = {
+#        '@' : membershipUri,
+#        'rdf:type'     : newUri('v-s:Membership'),
+#        'v-s:memberOf' : newUri(backwardTargetUri),
+#        'v-s:resource' : newUri(backwardLinkUri),
+#        'rdfs:comment' : newStr('создано cfg:Event_16'),
+#        'v-s:canRead'  : newBool(true),
+#      };
+#    }
+#    if (isDeleted) {
+#      membership['v-s:deleted'] = newBool(true);
+#    }
+#    put_individual(ticket, membership, _event_id);
+#  }
+#
+#  if (isDeleted) {
+#    for (var property_uri in backwardTarget) {
+#      if (property_uri === "@") { continue; }
+#      backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (item) {
+#        return (item.data !== backwardLinkUri);
+#      });
+#    }
+#  } else if (backwardPropertyUri) {
+#    backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
+#    backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri].filter(function (item) {
+#      return (item.data !== backwardLinkUri);
+#    });
+#    backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+#  }
+#  if (JSON.stringify(backwardTarget).length !== backwardTarget_original.length) {
+#    put_individual(ticket, backwardTarget, _event_id);
+#  }
+#  """ ;
+#.
+
 cfg:Event_16
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
@@ -1153,49 +1210,68 @@ cfg:Event_16
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUri = getUri(document["v-s:backwardTarget"]),
-      omitGroup = getFirstValue(document["v-s:omitBackwardTargetGroup"]),
+      canRead =   document["v-s:canRead"],
+      canUpdate = document["v-s:canUpdate"],
+      canDelete = document["v-s:canDelete"],
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
       backwardTarget = get_individual(ticket, backwardTargetUri),
       backwardTarget_original = JSON.stringify(backwardTarget);
-  if (!backwardTarget || (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data !== backwardLinkUri) ) {
+  if (!backwardTarget || (document["v-s:actualVersion"] && document["v-s:actualVersion"][0].data !== backwardLinkUri) ) {
     return;
   }
 
-  if (!omitGroup) {
-    var membershipUri = 'd:backward_membership_' + backwardLinkUri.split(':').join('_') + '_' + backwardTargetUri.split(':').join('_'),
-        membership = get_individual(ticket, membershipUri);
+  print( "BL", JSON.stringify(document) );
+
+  if (canRead || canUpdate || canDelete) {
+    var membershipUri = "d:backward_membership_" + backwardLinkUri.split(":").join('_') + '_' + backwardTargetUri.split(':').join('_'),
+        membership = get_individual(ticket, membershipUri),
+        membership_original = JSON.stringify(membership);
+
     if (!membership) {
       membership = {
         '@' : membershipUri,
         'rdf:type'     : newUri('v-s:Membership'),
         'v-s:memberOf' : newUri(backwardTargetUri),
         'v-s:resource' : newUri(backwardLinkUri),
-        'rdfs:comment' : newStr('создано cfg:Event_16'),
-        'v-s:canRead'  : newBool(true),
+        'rdfs:comment' : newStr('создано cfg:Event_16')
       };
+    }
+    if (canRead) {
+      membership["v-s:canRead"] = canRead;
+    }
+    if (canUpdate) {
+      membership["v-s:canUpdate"] = canUpdate;
+    }
+    if (canDelete) {
+      membership["v-s:canDelete"] = canDelete;
     }
     if (isDeleted) {
       membership['v-s:deleted'] = newBool(true);
     }
-    put_individual(ticket, membership, _event_id);
+
+    if (JSON.stringify(membership) !== membership_original) {
+      put_individual(ticket, membership, _event_id);
+      print( "BL membership", JSON.stringify(membership) );
+    }
   }
 
   if (isDeleted) {
     for (var property_uri in backwardTarget) {
       if (property_uri === "@") { continue; }
-      backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (item) {
-        return (item.data !== backwardLinkUri);
+      backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (value) {
+        return (value.data !== backwardLinkUri);
       });
     }
   } else if (backwardPropertyUri) {
-    backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
-    backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri].filter(function (item) {
-      return (item.data !== backwardLinkUri);
-    });
-    backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+    var alreadyThere = hasValue(document, backwardPropertyUri, { data: backwardLinkUri, type: _Uri }),
+    if ( !alreadyThere ) {
+      backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
+      backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+    }
   }
-  if (JSON.stringify(backwardTarget).length !== backwardTarget_original.length) {
+  if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
     put_individual(ticket, backwardTarget, _event_id);
+    print( "BL target updated", JSON.stringify(backwardTarget) );
   }
   """ ;
 .
