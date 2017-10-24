@@ -1153,7 +1153,7 @@ cfg:Event_16
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUri = getUri(document["v-s:backwardTarget"]),
-      canRead =   document["v-s:canRead"],
+      canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
@@ -1164,7 +1164,8 @@ cfg:Event_16
     return;
   }
 
-  //print( "BL", JSON.stringify(document) );
+  //print( "BL =", JSON.stringify(document) );
+  //print( "BL target =", JSON.stringify(backwardTarget) );
 
   if (canRead || canUpdate || canDelete) {
     var membershipUri = "d:backward_membership_" + backwardLinkUri.split(":").join('_') + '_' + backwardTargetUri.split(':').join('_'),
@@ -1195,7 +1196,7 @@ cfg:Event_16
 
     if (JSON.stringify(membership) !== membership_original) {
       put_individual(ticket, membership, _event_id);
-      //print( "BL membership", JSON.stringify(membership) );
+      //print( "BL membership =", JSON.stringify(membership) );
     }
   }
 
@@ -1207,7 +1208,8 @@ cfg:Event_16
       });
     }
   } else if (backwardPropertyUri) {
-    var alreadyThere = hasValue(document, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
+    var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
+    //print( "BL already there =", alreadyThere );
     if ( !alreadyThere ) {
       backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
       backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
@@ -1215,7 +1217,7 @@ cfg:Event_16
   }
   if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
     put_individual(ticket, backwardTarget, _event_id);
-    //print( "BL target updated", JSON.stringify(backwardTarget) );
+    //print( "BL target updated =", JSON.stringify(backwardTarget) );
   }
   """ ;
 .
