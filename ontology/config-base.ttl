@@ -1263,7 +1263,7 @@ cfg:Event_16
       });
     }
   } else if (backwardPropertyUri) {
-    var alreadyThere = hasValue(document, backwardPropertyUri, { data: backwardLinkUri, type: _Uri }),
+    var alreadyThere = hasValue(document, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
     if ( !alreadyThere ) {
       backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
       backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
