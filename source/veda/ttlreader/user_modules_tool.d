@@ -60,7 +60,8 @@ class UserModuleInfo
 
     Context         context;
     Ticket          sticket;
-    Logger          log;
+    //Logger          log;
+    ArrayLogger     log;
 
     override string toString()
     {
@@ -80,10 +81,11 @@ class UserModuleInfo
         context = _context;
         sticket = _sticket;
 
-        if (context !is null)
-            log = context.get_logger();
-        else
-            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+//        if (context !is null)
+//            log = context.get_logger();
+//        else
+//            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+        log = new ArrayLogger();
 
         uri = module_indv.uri;
         url = module_indv.getFirstLiteral("v-s:moduleUrl");
@@ -95,10 +97,11 @@ class UserModuleInfo
         context = _context;
         sticket = _sticket;
 
-        if (context !is null)
-            log = context.get_logger();
-        else
-            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+//        if (context !is null)
+//            log = context.get_logger();
+//        else
+//            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+        log = new ArrayLogger();
     }
 
     this(Context _context, Ticket _sticket, string _install_id)
@@ -107,10 +110,26 @@ class UserModuleInfo
         context    = _context;
         sticket    = _sticket;
 
-        if (context !is null)
-            log = context.get_logger();
-        else
-            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+//        if (context !is null)
+//            log = context.get_logger();
+//        else
+//            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
+        log = new ArrayLogger();
+    }
+
+    public void store_log()
+    {
+        Individual indv;
+
+        indv.uri = uri;
+        indv.setResources("rdfs:comment", [ Resource(DataType.String, log.raw()) ]);
+
+        OpResult rs = context.set_in_individual(&sticket, uri, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                OptAuthorize.NO);
+        if (rs.result != ResultCode.OK)
+        {
+            log.trace("ERR! fail store log [%s], err=[%s]", uri, rs.result);
+        }
     }
 
     public UserModuleInfo[ string ] get_installed_modules()
@@ -160,24 +179,22 @@ class UserModuleInfo
             }
         }
 
+        // context.get_logger().trace("@result=[%s]", result);
+        // context.get_logger().trace("@link_count_2_module_uid=[%s]", link_count_2_module_uid);
 
-        context.get_logger().trace("result=[%s]", result);
-
-        context.get_logger().trace("link_count_2_module_uid=[%s]", link_count_2_module_uid);
-
-        foreach (key; link_count_2_module_uid.keys)
-        {
-            if (link_count_2_module_uid[ key ] == 0)
-                context.get_logger().trace("FOUND MODULE [%s]", result[ key ]);
-        }
+        //foreach (key; link_count_2_module_uid.keys)
+        //{
+        //    if (link_count_2_module_uid[ key ] == 0)
+        //        context.get_logger().trace("FOUND MODULE [%s]", result[ key ]);
+        //}
 
         return result;
     }
 
     void uninstall(UserModuleInfo root_uninstall_module)
     {
-        log.trace("*****");
-        log.trace("@root_uninstall_module=%s", root_uninstall_module);
+        //log.trace("*****");
+        //log.trace("@root_uninstall_module=%s", root_uninstall_module);
         try
         {
             string module_id;
@@ -207,15 +224,15 @@ class UserModuleInfo
             if (tmp_installed_modules.length == 0)
                 tmp_installed_modules = get_installed_modules();
 
-            log.trace("@this=%s", this);
+            //log.trace("@this=%s", this);
             foreach (im; tmp_installed_modules)
             {
                 if (im.uri != root_uninstall_module.uri)
                 {
-                    log.trace("@im=%s", im);
+                    //log.trace("@im=%s", im);
                     foreach (dep; im.dependencies)
                     {
-                        log.trace("@dep=%s", dep);
+                        //log.trace("@dep=%s", dep);
                         if (dep.uri == uri)
                         {
                             //log.trace ("im.uri=%s uri=%s parent.uri=%s", im.uri, uri, parent.uri);
@@ -271,9 +288,6 @@ class UserModuleInfo
 
             if (is_success == true)
             {
-                Individual indv;
-                indv.uri = module_id;
-
                 string dest_image_name = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
 
                 try
@@ -287,6 +301,8 @@ class UserModuleInfo
                 Individual mindv = context.get_individual(&sticket, module_id);
                 if (mindv.getStatus() == ResultCode.OK)
                 {
+                    Individual indv;
+                    indv.uri = module_id;
                     indv.setResources("v-s:deleted", [ Resource(DataType.Boolean, true) ]);
 
                     OpResult rs = context.set_in_individual(&sticket, module_id, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
@@ -692,7 +708,7 @@ class UserModuleInfo
             string[ string ] prefixes;
             string root_indv;
             string module_ttl_path = unpacked_module_folder_name ~ "/module.ttl";
-            auto   l_individuals   = ttl2individuals(module_ttl_path, prefixes, prefixes, log);
+            auto   l_individuals   = ttl2individuals(module_ttl_path, prefixes, prefixes, context.get_logger());
 
             // found root individual of file module.ttl
             foreach (uid; l_individuals.keys)
@@ -731,7 +747,7 @@ class UserModuleInfo
             {
                 log.trace("[%s] prepare %s", uri, file);
 
-                auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, log);
+                auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, context.get_logger());
 
                 foreach (uid; tmp_individuals.keys)
                 {
@@ -757,7 +773,7 @@ class UserModuleInfo
 
             foreach (dep; deps)
             {
-                log.trace("@dep=%s", dep);
+                //log.trace("@dep=%s", dep);
 
                 Individual *dep_indv = l_individuals.get(dep.uri, null);
 
@@ -981,6 +997,8 @@ class UserModulesTool : VedaModule
         }
         else if (im.operation_result == OperationResult.FAIL)
             log.trace("installation of module [%s][%s] failed", im.url, im.ver);
+
+        im.store_log();
     }
 
     private bool uninstall_user_module(string module_id)
