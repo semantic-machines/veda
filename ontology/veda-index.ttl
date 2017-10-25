@@ -74,8 +74,6 @@ vdi:index_01
   vdi:forClass v-s:File ;
   vdi:forClass v-wf:Process ;
 #  vdi:forClass v-wf:DecisionForm ;
-  vdi:forClass v-s:Membership ;
-  vdi:forClass v-s:PermissionStatement ;
   vdi:indexed_to "system" ;
 .
 vdi:index_02
@@ -85,6 +83,8 @@ vdi:index_02
   vdi:forClass v-wf:WorkOrder ;
   vdi:forClass v-wf:WorkItem ;
   vdi:forClass v-wf:Variable ;
+  vdi:forClass v-s:Membership ;
+  vdi:forClass v-s:PermissionStatement ;
   vdi:indexed_to "not-indexed" ;
 .
 vdi:index_1
