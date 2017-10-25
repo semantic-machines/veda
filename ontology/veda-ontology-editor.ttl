@@ -1138,6 +1138,7 @@ v-ui:ModuleTemplate
   <div class="panel panel-default">
     <div class="panel-heading">
       <span>Лог модуля</span>
+      <button type="button" class="btn btn-xs btn-default pull-right" id="copy-log">Скопировать</button>
     </div>
     <div class="panel-body">
         <pre property="rdfs:comment" style="border:none; background-color:#fff; font-size: 0.8em; max-height: 500px; overflow-y: auto;"></pre>
@@ -1159,6 +1160,15 @@ v-ui:ModuleTemplate
   </div>
 </div>
 <script>
+  $("#copy-log", template).click(e=>{
+    let temp = $("<textarea>");
+    $(".modal").append(temp);
+    temp.val(individual['rdfs:comment'][0]).select();
+    document.execCommand("copy");
+    temp.remove();
+    return false;
+  });
+
   $(".panel-heading", template).css("cursor", "pointer");
   $(".panel-heading", template).click(e => {
     $(e.target).siblings().slideToggle();
