@@ -878,8 +878,8 @@ class UserModulesTool : VedaModule
                     return ResultCode.OK;
                 }
 
-                if (ptype == PreparedType.REQUEST)
-                    install_user_module(new_indv);
+                //if (ptype == PreparedType.REQUEST)
+                install_user_module(new_indv);
 
                 return ResultCode.OK;
             }
