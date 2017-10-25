@@ -1118,23 +1118,57 @@ v-ui:ModuleTemplate
     <span about="@" property="rdf:type"></span><br>
     <small property="@"></small>
   </h2>
-  <div about="@" rel="v-s:hasImage" style="" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-body bg-default">
+          <em about="v-s:moduleUrl" property="rdfs:label"></em>
+          <div property="v-s:moduleUrl" class="view -edit -search"></div>
+          <veda-control data-type="text" property="v-s:moduleUrl" class="-view edit search"></veda-control>
+          <em about="v-s:moduleVersion" property="rdfs:label"></em>
+          <div property="v-s:moduleVersion" class="view -edit -search"></div>
+          <veda-control data-type="text" property="v-s:moduleVersion" class="-view edit search"></veda-control>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div about="@" rel="v-s:hasImage" style="" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+    </div>
+  </div>  
   <div class="panel panel-default">
-    <div class="panel-body bg-default">
-      <em about="v-s:moduleUrl" property="rdfs:label"></em>
-      <div property="v-s:moduleUrl" class="view -edit -search"></div>
-      <veda-control data-type="text" property="v-s:moduleUrl" class="-view edit search"></veda-control>
-      <em about="v-s:moduleVersion" property="rdfs:label"></em>
-      <div property="v-s:moduleVersion" class="view -edit -search"></div>
-      <veda-control data-type="text" property="v-s:moduleVersion" class="-view edit search"></veda-control>
+    <div class="panel-heading">
+      <span>Лог модуля</span>
+    </div>
+    <div class="panel-body">
+        <pre property="rdfs:comment" style="border:none; background-color:#fff; font-size: 0.8em; max-height: 500px; overflow-y: auto;"></pre>
     </div>
   </div>
+  <!-- заготовка для отображения созданных модулем классов -->
+  <!-- <div class="panel panel-default">
+    <div class="panel-heading">
+      <span>Связанные классы</span>
+    </div>
+    <div class="panel-body">
+        
+    </div>
+  </div> -->
   <hr>
   <div class="actions clearfix">
     <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   </div>
 </div>
+<script>
+  $(".panel-heading", template).css("cursor", "pointer");
+  $(".panel-heading", template).click(e => {
+    $(e.target).siblings().slideToggle();
+  })
+
+  var dd = individual['rdfs:comment'][0];
+  var pre = $("pre", template);
+  var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+  pre.html(anchored);
+</script>
   """ ;
 .
 
