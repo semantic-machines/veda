@@ -755,6 +755,14 @@ class UserModuleInfo
                 foreach (uid; tmp_individuals.keys)
                 {
                     Individual *indv_0 = tmp_individuals[ uid ];
+
+                    Resources  type = indv_0.getResources("rdf:type");
+                    if (type is Resources.init)
+                    {
+                        log.trace("Skip invalid individual (not content type), [%s]", *indv_0);
+                        continue;
+                    }
+
                     indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
 
                     string hash_indv_file = indv_0.get_CRC32();
