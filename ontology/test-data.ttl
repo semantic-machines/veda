@@ -683,22 +683,23 @@ v-wf:UserTaskForm1
   v-wf:from td:RomanKarpov-Analyst1 ;
 .
 
-d:khvostia_dismantlingProjectSpecialist
-  a v-s:Appointment;
-  v-s:occupation d:dismantlingProjectSpecialist;
-  v-s:employee td:AleksandraKhvostikova;
-  v-s:official "true"^^xsd:boolean;
-  v-s:valid "true"^^xsd:boolean;
-  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
-.
-d:khvostia_financialController
-  a v-s:Appointment;
-  v-s:occupation d:financialController;
-  v-s:employee td:AleksandraKhvostikova;
-  v-s:official "true"^^xsd:boolean;
-  v-s:valid "true"^^xsd:boolean;
-  rdfs:label "Хвостикова : Финансовый контролер"@ru
-.
+#d:khvostia_dismantlingProjectSpecialist
+#  a v-s:Appointment;
+#  v-s:occupation d:dismantlingProjectSpecialist;
+#  v-s:employee td:AleksandraKhvostikova;
+#  v-s:official "true"^^xsd:boolean;
+#  v-s:valid "true"^^xsd:boolean;
+#  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
+#.
+
+#d:khvostia_financialController
+#  a v-s:Appointment;
+#  v-s:occupation d:financialController;
+#  v-s:employee td:AleksandraKhvostikova;
+#  v-s:official "true"^^xsd:boolean;
+#  v-s:valid "true"^^xsd:boolean;
+#  rdfs:label "Хвостикова : Финансовый контролер"@ru
+#.
 
 d:Bychina_create_Person
   rdf:type v-s:PermissionStatement ;
