@@ -353,14 +353,17 @@ class UserModuleInfo
 
     void store_module_individ()
     {
-        log.trace("STORE MODULE INFO [%s][%s]", uri, ver);
+        //log.trace("STORE MODULE INFO [%s][%s]", uri, ver);
         Individual module_indv;
+
         module_indv.uri = uri;
         module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
         module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
         module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
         foreach (dep; dependencies)
             module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
+
+        module_indv.setResources("rdfs:comment", [ Resource(DataType.String, log.raw()) ]);
 
         string module_image_path = unpacked_module_folder_name ~ "/image.jpeg";
         string dest_image_name   = replace(uri, ":", "_") ~ "-" ~ "image.jpeg";
@@ -820,11 +823,10 @@ class UserModulesTool : VedaModule
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id)
     {
-        if (event_id == umt_event_id || user_uri == "cfg:VedaSystem") // принимаем команды только от пользователей, umt_event_id игнорируется
+        if (event_id == umt_event_id /*|| user_uri == "cfg:VedaSystem"*/) // принимаем команды только от пользователей, umt_event_id игнорируется
             return ResultCode.OK;
 
         tmp_installed_modules = (UserModuleInfo[ string ]).init;
-        //log.trace("[%s]: prepare, event_id=%s, user_id=%s", new_indv.uri, event_id, user_uri);
 
         try
         {
@@ -846,7 +848,7 @@ class UserModulesTool : VedaModule
                     break;
                 }
 
-                //                else if (context.get_onto().isSubClasses(type.uri, ["v-s:Module", "v-s:RequestToModulesManager"]))
+                // else if (context.get_onto().isSubClasses(type.uri, ["v-s:Module", "v-s:RequestToModulesManager"]))
 //                {
 //                    need_prepare = true;
 //                    break;
@@ -855,6 +857,8 @@ class UserModulesTool : VedaModule
 
             if (ptype == PreparedType.NONE)
                 return ResultCode.OK;
+
+            log.trace("[%s]: prepare, event_id=%s, user_id=%s", new_indv.uri, event_id, user_uri);
 
             if (ptype == PreparedType.MODULE)
                 log.trace("[%s]: v-s:Module individual changed", new_indv.uri);
@@ -997,8 +1001,6 @@ class UserModulesTool : VedaModule
         }
         else if (im.operation_result == OperationResult.FAIL)
             log.trace("installation of module [%s][%s] failed", im.url, im.ver);
-
-        im.store_log();
     }
 
     private bool uninstall_user_module(string module_id)
