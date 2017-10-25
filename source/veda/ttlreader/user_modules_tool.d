@@ -19,7 +19,16 @@ void user_modules_tool_thread()
     p_module.run();
 }
 
-const umt_event_id = "user_module_tool";
+const umt_event_id      = "user_module_tool";
+const request_predicate = "v-s:RequestToModulesManager";
+
+enum RequestCommand
+{
+    INSTALL,
+    UNINSTALL,
+    CHECK,
+    NONE
+}
 
 enum OperationResult
 {
@@ -33,8 +42,21 @@ enum OperationResult
 
 UserModuleInfo[ string ] tmp_installed_modules;
 
+Individual create_request(string url, RequestCommand cmd)
+{
+    Individual indv;
+
+    indv.uri = "d:" ~ randomUUID().toString();
+    indv.setResources("rdf:type", [ Resource(DataType.Uri, request_predicate) ]);
+    indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
+    indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+
+    return indv;
+}
+
 class UserModuleInfo
 {
+    string         request_uri;
     string         uri;
     string         url;
     string         ver;
@@ -90,18 +112,6 @@ class UserModuleInfo
         uri = module_indv.uri;
         url = module_indv.getFirstLiteral("v-s:moduleUrl");
         ver = module_indv.getFirstLiteral("v-s:moduleVersion");
-    }
-
-    this(Context _context, Ticket _sticket)
-    {
-        context = _context;
-        sticket = _sticket;
-
-//        if (context !is null)
-//            log = context.get_logger();
-//        else
-//            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
-        log = new ArrayLogger();
     }
 
     this(Context _context, Ticket _sticket, string _install_id)
@@ -724,11 +734,14 @@ class UserModuleInfo
 
                     if (uri != root_indv)
                     {
-                        log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
-                        log.trace("WARN! remove prepared module [%s]", uri);
+                        if (module_indv.exists("rdf:type", request_predicate) == false)
+                        {
+                            log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
+                            log.trace("WARN! remove prepared module [%s]", uri);
 
-                        context.remove_individual(&sticket, uri, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                  OptAuthorize.NO);
+                            context.remove_individual(&sticket, uri, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                      OptAuthorize.NO);
+                        }
 
                         uri = root_indv;
                     }
@@ -850,13 +863,13 @@ class UserModulesTool : VedaModule
                     ptype = PreparedType.MODULE;
                     break;
                 }
-                if (type.uri == "v-s:RequestToModulesManager")
+                if (type.uri == request_predicate)
                 {
                     ptype = PreparedType.REQUEST;
                     break;
                 }
 
-                // else if (context.get_onto().isSubClasses(type.uri, ["v-s:Module", "v-s:RequestToModulesManager"]))
+                // else if (context.get_onto().isSubClasses(type.uri, ["v-s:Module", request_predicate]))
 //                {
 //                    need_prepare = true;
 //                    break;
@@ -872,7 +885,7 @@ class UserModulesTool : VedaModule
                 log.trace("[%s]: v-s:Module individual changed", new_indv.uri);
 
             if (ptype == PreparedType.REQUEST)
-                log.trace("[%s]: v-s:RequestToModulesManager individual changed", new_indv.uri);
+                log.trace("[%s]: %s individual changed", request_predicate, new_indv.uri);
 
             bool new_is_deleted = new_indv.exists("v-s:deleted", true);
 
@@ -886,8 +899,22 @@ class UserModulesTool : VedaModule
                     return ResultCode.OK;
                 }
 
-                //if (ptype == PreparedType.REQUEST)
-                install_user_module(new_indv);
+                if (ptype == PreparedType.REQUEST)
+                {
+                    install_user_module(new_indv);
+                }
+                else
+                {
+                    Individual request = create_request(new_indv.getFirstLiteral("v-s:moduleUrl"), RequestCommand.INSTALL);
+
+                    OpResult   orc = context.put_individual(&sticket, request.uri, request, "", -1, ALL_MODULES, OptFreeze.NONE,
+                                                            OptAuthorize.NO);
+                    if (orc.result != ResultCode.OK)
+
+                        log.trace("ERR! can not store request %s, err=%s", request.uri, orc.result);
+                    else
+                        log.trace("store request %s", request.uri);
+                }
 
                 return ResultCode.OK;
             }
