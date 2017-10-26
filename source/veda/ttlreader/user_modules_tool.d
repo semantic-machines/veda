@@ -566,8 +566,16 @@ class UserModuleInfo
         url = module_indv.getFirstLiteral("v-s:moduleUrl");
         ver = module_indv.getFirstLiteral("v-s:moduleVersion");
 
+        string module_url;
+        string[ string ] ver_2_url;
+        string[ int ] pos_2_ver;
+
         auto o_url = url.parseURL;
-        if (o_url.host == "github.com")
+        if (o_url.host == "bitbucket.org")
+        {
+            // https://[your_user_name]:[app_password]@bitbucket.org/[your_user_name]/[repo_name].git
+        }
+        else if (o_url.host == "github.com")
         {
             string[] pp = o_url.path.split('/');
 
@@ -590,7 +598,7 @@ class UserModuleInfo
                 }
             }
 
-            //log.trace("this project [%s][%s] on github.com", project_owner, project_name);
+
             modile_temp_dir  = tempDir() ~ "/" ~ install_id ~ "/" ~ project_owner ~ "-" ~ project_name;
             module_file_path = modile_temp_dir ~ "/module.zip";
 
@@ -622,10 +630,6 @@ class UserModuleInfo
                 return;
             }
 
-            string module_url;
-            string[ string ] ver_2_url;
-            string[ int ] pos_2_ver;
-
             try
             {
                 JSONValue jva = parseJSON(js_releases);
@@ -655,174 +659,174 @@ class UserModuleInfo
 
                 ver = found_tags_in_project[ $ - 1 ];
             }
+        }
 
-            if (ver is null)
-                log.trace("ERR! not found releases");
-            else
+        if (ver is null)
+            log.trace("ERR! not found releases");
+        else
+        {
+            module_url = ver_2_url.get(ver, string.init);
+
+            //log.trace("@ ver_2_url=%s pos_2_ver=%s", ver_2_url, pos_2_ver);
+            //log.trace("@ module_url=[%s]", module_url);
+            //log.trace("@ ver=[%s]", ver);
+
+            if (module_url is null)
             {
-                module_url = ver_2_url.get(ver, string.init);
+                log.trace("ERR! fail read module url from json file [%s], get_and_unpack", releases_path);
+                operation_result = OperationResult.FAIL;
+                return;
+            }
 
-                //log.trace("@ ver_2_url=%s pos_2_ver=%s", ver_2_url, pos_2_ver);
-                //log.trace("@ module_url=[%s]", module_url);
-                //log.trace("@ ver=[%s]", ver);
+            log.trace("found version %s", ver);
+            log.trace("download module %s", module_url);
+            download(module_url, module_file_path);
 
-                if (module_url is null)
+            // unpack module
+            string unpack_cmd = "unzip -d " ~ modile_temp_dir ~ " " ~ module_file_path;
+            auto   ps         = executeShell(unpack_cmd);
+            if (ps.status != 0)
+            {
+                log.trace("ERR! fail unpack module [%s], get_and_unpack", unpack_cmd);
+                operation_result = OperationResult.FAIL;
+                return;
+            }
+
+            string[] unpacked_file_list = ps.output.splitLines;
+            foreach (line; unpacked_file_list)
+            {
+                if (line.indexOf(" creating: ") > 0)
                 {
-                    log.trace("ERR! fail read module url from json file [%s], get_and_unpack", releases_path);
-                    operation_result = OperationResult.FAIL;
-                    return;
-                }
-
-                log.trace("found version %s", ver);
-                log.trace("download module %s", module_url);
-                download(module_url, module_file_path);
-
-                // unpack module
-                string unpack_cmd = "unzip -d " ~ modile_temp_dir ~ " " ~ module_file_path;
-                auto   ps         = executeShell(unpack_cmd);
-                if (ps.status != 0)
-                {
-                    log.trace("ERR! fail unpack module [%s], get_and_unpack", unpack_cmd);
-                    operation_result = OperationResult.FAIL;
-                    return;
-                }
-
-                string[] unpacked_file_list = ps.output.splitLines;
-                foreach (line; unpacked_file_list)
-                {
-                    if (line.indexOf(" creating: ") > 0)
+                    auto ll = line.split(' ');
+                    foreach (li; ll)
                     {
-                        auto ll = line.split(' ');
-                        foreach (li; ll)
+                        if (li.indexOf(modile_temp_dir) >= 0)
                         {
-                            if (li.indexOf(modile_temp_dir) >= 0)
-                            {
-                                unpacked_module_folder_name = li.strip();
-                                break;
-                            }
-                        }
-                        if (unpacked_module_folder_name !is null)
+                            unpacked_module_folder_name = li.strip();
                             break;
-                    }
-                }
-            }
-
-            if (unpacked_module_folder_name is null)
-            {
-                log.trace("ERR! fail unpack module [%s], get_and_unpack", module_file_path);
-                operation_result = OperationResult.FAIL;
-                return;
-            }
-
-            if (unpacked_module_folder_name[ $ - 1 ] == '/')
-                unpacked_module_folder_name = unpacked_module_folder_name[ 0..$ - 1 ];
-
-            // found module.ttl
-            string[ string ] prefixes;
-            string root_indv;
-            string module_ttl_path = unpacked_module_folder_name ~ "/module.ttl";
-            auto   l_individuals   = ttl2individuals(module_ttl_path, prefixes, prefixes, context.get_logger());
-
-            // found root individual of file module.ttl
-            foreach (uid; l_individuals.keys)
-            {
-                Individual *indv = l_individuals[ uid ];
-                auto       t_url = indv.getFirstLiteral("v-s:moduleUrl").parseURL;
-                if (t_url.path == o_url.path)
-                {
-                    root_indv = uid;
-
-                    if (uri != root_indv)
-                    {
-                        if (module_indv.exists("rdf:type", request_predicate) == false)
-                        {
-                            log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
-                            log.trace("WARN! remove prepared module [%s]", uri);
-
-                            context.remove_individual(&sticket, uri, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                      OptAuthorize.NO);
                         }
-
-                        uri = root_indv;
                     }
-
-                    break;
+                    if (unpacked_module_folder_name !is null)
+                        break;
                 }
             }
+        }
 
-            if (root_indv is null)
-            {
-                log.trace("ERR! not found root element [v-s:moduleUrl=%s] in [%s], get_and_unpack", url, module_ttl_path);
-                operation_result = OperationResult.FAIL;
-                return;
-            }
-
-            //log.trace("@root indv=%s", root_indv);
-            auto onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
-            foreach (file; onto_files)
-            {
-                log.trace("[%s] prepare %s", uri, file);
-
-                auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, context.get_logger());
-
-                foreach (uid; tmp_individuals.keys)
-                {
-                    Individual *indv_0 = tmp_individuals[ uid ];
-
-                    Resources  type = indv_0.getResources("rdf:type");
-                    if (type is Resources.init)
-                    {
-                        log.trace("Skip invalid individual (not content type), [%s]", *indv_0);
-                        continue;
-                    }
-
-                    indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
-
-                    string hash_indv_file = indv_0.get_CRC32();
-                    total_hash_indv_file ~= hash_indv_file;
-                    module_individuals[ uid ] = indv_0;
-                }
-            }
-
-            log.trace("module [%s][%s] found individuals %d", uri, ver, module_individuals.length);
-
-            // go tree
-            Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
-
-            //log.trace("@l_individuals=%s", l_individuals);
-            //log.trace("@uri=%s", uri);
-            //log.trace("@url=%s", url);
-            //log.trace("@root_indv=%s", root_indv);
-            //log.trace("@deps=%s", deps);
-
-            foreach (dep; deps)
-            {
-                //log.trace("@dep=%s", dep);
-
-                Individual *dep_indv = l_individuals.get(dep.uri, null);
-
-                if (dep_indv is null)
-                {
-                    log.trace("ERR! not found dependency element [%s] in [%s], get_and_unpack", dep.uri, module_ttl_path);
-                    operation_result = OperationResult.FAIL;
-                    return;
-                }
-
-                UserModuleInfo duim = new UserModuleInfo(context, sticket, install_id);
-                duim.get_and_unpack(*dep_indv);
-                dependencies[ dep_indv.uri ] = duim;
-                duim.parent                  = this;
-
-                if (duim.operation_result != OperationResult.OK)
-                {
-                    operation_result = duim.operation_result;
-                    //return;
-                }
-            }
-
-            operation_result = OperationResult.OK;
+        if (unpacked_module_folder_name is null)
+        {
+            log.trace("ERR! fail unpack module [%s], get_and_unpack", module_file_path);
+            operation_result = OperationResult.FAIL;
             return;
         }
+
+        if (unpacked_module_folder_name[ $ - 1 ] == '/')
+            unpacked_module_folder_name = unpacked_module_folder_name[ 0..$ - 1 ];
+
+        // found module.ttl
+        string[ string ] prefixes;
+        string root_indv;
+        string module_ttl_path = unpacked_module_folder_name ~ "/module.ttl";
+        auto   l_individuals   = ttl2individuals(module_ttl_path, prefixes, prefixes, context.get_logger());
+
+        // found root individual of file module.ttl
+        foreach (uid; l_individuals.keys)
+        {
+            Individual *indv = l_individuals[ uid ];
+            auto       t_url = indv.getFirstLiteral("v-s:moduleUrl").parseURL;
+            if (t_url.path == o_url.path)
+            {
+                root_indv = uid;
+
+                if (uri != root_indv)
+                {
+                    if (module_indv.exists("rdf:type", request_predicate) == false)
+                    {
+                        log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
+                        log.trace("WARN! remove prepared module [%s]", uri);
+
+                        context.remove_individual(&sticket, uri, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
+                                                  OptAuthorize.NO);
+                    }
+
+                    uri = root_indv;
+                }
+
+                break;
+            }
+        }
+
+        if (root_indv is null)
+        {
+            log.trace("ERR! not found root element [v-s:moduleUrl=%s] in [%s], get_and_unpack", url, module_ttl_path);
+            operation_result = OperationResult.FAIL;
+            return;
+        }
+
+        //log.trace("@root indv=%s", root_indv);
+        auto onto_files = dirEntries(unpacked_module_folder_name ~ "/onto", SpanMode.depth);
+        foreach (file; onto_files)
+        {
+            log.trace("[%s] prepare %s", uri, file);
+
+            auto tmp_individuals = ttl2individuals(file, prefixes, prefixes, context.get_logger());
+
+            foreach (uid; tmp_individuals.keys)
+            {
+                Individual *indv_0 = tmp_individuals[ uid ];
+
+                Resources  type = indv_0.getResources("rdf:type");
+                if (type is Resources.init)
+                {
+                    log.trace("Skip invalid individual (not content type), [%s]", *indv_0);
+                    continue;
+                }
+
+                indv_0.setResources("rdfs:isDefinedBy", [ Resource(DataType.Uri, uri) ]);
+
+                string hash_indv_file = indv_0.get_CRC32();
+                total_hash_indv_file ~= hash_indv_file;
+                module_individuals[ uid ] = indv_0;
+            }
+        }
+
+        log.trace("module [%s][%s] found individuals %d", uri, ver, module_individuals.length);
+
+        // go tree
+        Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
+
+        //log.trace("@l_individuals=%s", l_individuals);
+        //log.trace("@uri=%s", uri);
+        //log.trace("@url=%s", url);
+        //log.trace("@root_indv=%s", root_indv);
+        //log.trace("@deps=%s", deps);
+
+        foreach (dep; deps)
+        {
+            //log.trace("@dep=%s", dep);
+
+            Individual *dep_indv = l_individuals.get(dep.uri, null);
+
+            if (dep_indv is null)
+            {
+                log.trace("ERR! not found dependency element [%s] in [%s], get_and_unpack", dep.uri, module_ttl_path);
+                operation_result = OperationResult.FAIL;
+                return;
+            }
+
+            UserModuleInfo duim = new UserModuleInfo(context, sticket, install_id);
+            duim.get_and_unpack(*dep_indv);
+            dependencies[ dep_indv.uri ] = duim;
+            duim.parent                  = this;
+
+            if (duim.operation_result != OperationResult.OK)
+            {
+                operation_result = duim.operation_result;
+                //return;
+            }
+        }
+
+        operation_result = OperationResult.OK;
+        return;
     }
 }
 
