@@ -561,6 +561,31 @@ v-s:PermissionStatementRegistryBlank
   v-fc:targetType v-s:PermissionStatement ;
 .
 
+# -- ОШИБКИ --
+
+v-s:PermissionStatementBlank
+  a v-fc:Blank ;
+  rdfs:label "Сообщение об ошибке"@ru ;
+  rdfs:label "Bug report"@en ;
+  v-fc:targetType v-s:BugReport ;
+.
+v-s:BugReportRegistry
+  a v-fs:AttributiveSearch ;
+  rdfs:label "Все сообщения об ошибках"@ru ;
+  rdfs:label "All bug reports"@en ;
+  v-fs:searchBlank v-s:BugReportBlank ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+  v-fs:sortOrder "'rdfs:label' asc" ;
+  v-fs:searchOnLoad true ;
+.
+v-s:BugReportBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Все сообщения об ошибках"@ru ;
+  rdfs:label "All bug reports"@en ;
+  v-fc:targetType v-s:BugReport ;
+.
+
 # -- НАПОЛНЕНИЕ АСПЕКТА АДМИНИСТРИРОВАНИЯ END --
 
 # -- ШАБЛОНЫ --
@@ -697,7 +722,7 @@ v-ui:ModulesResultTemplate
         <span property="v-s:moduleVersion"></span>
       </div>
       <div class="clearfix">
-        <button type="button" class="action btn btn-link view pull-right" id="delete" about="v-s:Delete" property="rdfs:label"/> 
+        <button type="button" class="action btn btn-link view pull-right" id="delete" about="v-s:Delete" property="rdfs:label"/>
       </div>
     </div>
   </div>
@@ -774,6 +799,12 @@ v-s:ModulesBundle
   rdfs:label "Modules"@en ;
 .
 
+v-s:BugReportsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Bug reports"@en ;
+  rdfs:label "Ошибки"@ru ;
+.
+
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
@@ -791,6 +822,7 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Scripts" aria-controls="Scripts" role="tab" data-toggle="tab" about="v-s:ScriptsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Modules" aria-controls="Modules" role="tab" data-toggle="tab" about="v-s:ModulesBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Issues" aria-controls="Issues" role="tab" data-toggle="tab" about="v-s:BugReportsBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -913,6 +945,18 @@ v-ui:AdministrationAspectTemplate
         </div>
       </div>
     </div>
+
+    <div role="tabpanel" class="tab-pane" id="Issues">
+      <h2 about="v-s:BugReportsBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span about="v-s:BugReportRegistry" property="rdfs:label"></span>
+          <a href="#/v-s:BugReportBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
+        <div class="panel-body" about="v-s:BugReportRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 <script>
