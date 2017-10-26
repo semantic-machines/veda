@@ -232,6 +232,11 @@ v-s:Account
   v-ui:hasTemplate td:AccountTemplate1 ;
 .
 
+v-s:GitAccount
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Account ;
+.
+
 v-s:Credential
   rdf:type owl:Class ;
   rdfs:label "Credential" ;

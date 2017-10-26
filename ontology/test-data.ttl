@@ -104,6 +104,13 @@ td:Programmer1
   rdfs:label "Программист"@ru ;
 .
 
+td:BB-semantic_machines
+  rdf:type v-s:Account ;
+  v-s:login "semantic_machines"^^xsd:string ;
+  v-s:password "f7apqs65FnWF7YGpj6cLFbc27ae3"^^xsd:string ;
+  rdfs:label "BB sm account" ;
+.
+
 td:BushenevVT
   rdf:type v-s:Account ;
   v-s:login "BushenevVT"^^xsd:string ;
