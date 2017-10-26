@@ -44,7 +44,7 @@ script:
   - travis_wait 20 grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
-#  - node ./qa/testLogin.js
+  - node ./qa/testLogin.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testComment.js
