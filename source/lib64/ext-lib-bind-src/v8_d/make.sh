@@ -3,7 +3,7 @@ echo "creating lib..."
 rm *.o
 rm libv8d.a
 rm d_test_v8d
-g++ -std=c++11 -c -Wl,--start-group cbor.cpp cbor2individual.cpp v8d.cc
+g++ -std=c++11 -c -Wl,--start-group cbor.cpp v8d.cc
 #g++ -Wall -shared -fPIC -o libxapiand.so -L-lxapian *.cpp
 ar rvs libv8d.a *.o
 #echo "creating dmd-test..."
