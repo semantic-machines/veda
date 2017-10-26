@@ -111,7 +111,6 @@ v-s:moduleList
   rdfs:range v-s:Module ;
 .
 
-
 # ---------------------------------- КЛАССЫ --
 
 v-s:ExecuteScript
