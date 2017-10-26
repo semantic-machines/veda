@@ -44,7 +44,7 @@ script:
   - travis_wait 20 grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
-  - node ./qa/testLogin.js
+  - travis_wait 20  node ./qa/testLogin.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testComment.js
@@ -58,12 +58,6 @@ script:
   - node ./qa/testSimpleNet.js
   - node ./qa/testSimpleNet2.js
   - node ./qa/testSimpleNet3.js
-#  - node ./qa/testSimpleWorkflow.js
-#  - travis_wait 20 node ./qa/testInbox.js
-#  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-#  - travis_wait 20 node ./qa/testNetComplexRoute.js
-#  - node ./qa/testDelegationDocument.js
-#  - node ./qa/testDelegationTask.js
 
 # Stop deamon and show log
 after_script:
