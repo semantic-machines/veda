@@ -197,18 +197,6 @@ v-s:Status
   rdfs:label "Статус"@ru ;
 .
 ### ------------------------------------------------------
-v-s:StatusManual
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Status manual"@en ;
-  rdfs:label "Статус ручной"@ru ;
-  v-ui:hasTemplate v-s:StatusManualTemplate ;
-.
-# v-s:hasStatus
-# v-s:hasComment
-
-### ------------------------------------------------------
 v-s:Sector
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -602,58 +590,3 @@ v-s:AppointmentSaveEvent
   }
 """
 .
-
-
-v-s:StatusManualTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Шаблон для класса Ручной статус"@ru ;
-  rdfs:label "Template for StatusManual"@en ;
-#  v-ui:forClass v-s:StatusManual ;
-  v-ui:template """
-  <div class="panel panel-default" >
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-md-6">
-          <strong about="v-s:hasStatus" property="rdfs:label"></strong>
-        </div>
-        <div class="col-md-6">
-          <button class="btn btn-link action view -edit -search" id="edit"></button>
-        </div>
-      </div>
-      <br class="-view edit search">
-      <div rel="v-s:hasStatus" class="-view -edit search" data-template="v-ui:LabelTemplate"></div>
-      <veda-control data-type="link" rel="v-s:hasStatus" class="-view edit search fulltext dropdown"></veda-control>
-		<span rel="v-s:hasStatus">
-		  <span class="label" property="rdfs:label"></span>
-		  <script>
-			switch(individual.id) {
-			  case "v-s:StatusAgreement": template.addClass("label-info"); break;
-			  case "v-s:StatusRejected": template.addClass("label-danger"); break;
-			  case "v-s:StatusExecution": template.addClass("label-warning"); break;
-			  case "v-s:StatusExecuted": template.addClass("label-success"); break;
-			  default: template.addClass("label-default"); break;
-			}
-		  </script>
-		</span>
-      <br class="-view edit search">
-      <em about="rdfs:comment" property="rdfs:label"></em>
-      <div property="rdfs:comment" class="view -edit search"></div>
-      <veda-control data-type="text" rows="3" property="rdfs:comment" class="-view edit search"></veda-control>
-      <br class="view edit -search">
-      <div class="view -edit -search" style="font-style:italic">
-        <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
-      </div>
-      <br>
-
-      <button class="btn btn-success action -view edit -search" id="save">Ok</button>
-      <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-      <button class="btn btn-link action -view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-    </div>
-  </div>
-""" ;
-.
-
-
-
-
