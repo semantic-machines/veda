@@ -1111,7 +1111,7 @@ cfg:Event_15
       membership = {
         '@' : membershipUri,
         'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : [ newUri(linkToUri), newUri(linkFromUri) ],
+        'v-s:memberOf' : [ newUri(linkToUri)[0], newUri(linkFromUri)[0] ],
         'v-s:resource' : newUri(linkUri),
         'rdfs:comment' : newStr('создано cfg:Event_15'),
         'v-s:canRead'  : newBool(true)
