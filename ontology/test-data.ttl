@@ -365,7 +365,7 @@ td:AndreyBychin-Analyst2
 td:RomanKarpov
   rdf:type v-s:Person ;
   v-s:actualVersion td:RomanKarpov ;
-  v-s:birthday "1981-01-09"^^xsd:dateTime ;
+  v-s:birthday "1981-01-09T00:00:00Z"^^xsd:dateTime ;
   v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
   v-s:hasAccount td:KarpovRT ;
