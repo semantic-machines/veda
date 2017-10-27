@@ -442,10 +442,94 @@ void double_to_mantissa_exponent(double inp, int64_t *mantissa, int64_t *exponen
     //std::cerr << "@c double_to_mantissa_exponent inp=" << inp << ", mantissa=" << *mantissa << ", exponent=" << *exponent << std::endl;
 }
 
+bool
+jsobject_log(Local<Value> value)
+{
+    cerr <<"!!START LOGGING!!" << endl;
+    cerr << "@IS OBJECT " << value->IsObject() << endl;
+    Local<Object>         obj = Local<Object>::Cast(value);
+
+    v8::Handle<v8::Array> individual_keys = obj->GetPropertyNames();
+
+    bool                  is_individual_value = false;
+    bool                  is_lang_set = false;
+
+    uint32_t length = individual_keys->Length();
+    for (uint32_t i = 0; i < length; i++)
+    {
+        v8::Local<v8::Value>  js_key = individual_keys->Get(i);
+        std::string           resource_name = std::string(*v8::String::Utf8Value(js_key));
+        cerr << "@RESOURCE KEY " << resource_name << endl;
+
+        Local<Value> js_value = obj->Get(js_key);
+
+        if (resource_name == "@") {
+            std::string uri = std::string(*v8::String::Utf8Value(js_value));
+            cerr << "\t@URI DATA " << uri << endl;
+            continue;
+        }
+
+        cerr << "\t@IS ARRAY " << js_value->IsArray() << endl;
+        Local<v8::Array> resources_arr = Local<v8::Array>::Cast(js_value);
+        uint32_t resources_length = resources_arr->Length();
+        cerr << "\t@LENGTH " << resources_length << endl;
+        for (uint32_t j = 0; j < resources_length; j++)
+        {
+            js_value = resources_arr->Get(j);
+            cerr << "\t\t@IS OBJECT " << js_value->IsObject() << endl;
+            Local<Object>         resource_obj = Local<Object>::Cast(js_value);
+
+            v8::Handle<v8::Array> resource_keys = resource_obj->GetPropertyNames();
+            uint32_t resource_length = individual_keys->Length();
+            // jsobject2individual(js_value, indv, resource, predicate);
+            for (uint32_t k = 0; k < resource_length; k++)
+            {
+                Local<Value>          v_data;
+                Local<Value>          v_lang;
+                Local<Value>          v_type;
+                js_key = resource_keys->Get(k);
+                std::string element_name = std::string(*v8::String::Utf8Value(js_key));
+                
+                if (element_name == "data")
+                {
+					cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
+                    // это поле для модели индивида в js
+                    v_data = resource_obj->Get(js_key);
+                    if (v_data->IsString()) {
+                        std::string str_data = std::string(*v8::String::Utf8Value(v_data));
+                        cerr << "\t\t\t\t@STR DATA " << str_data << endl;
+                    }
+                }
+                else if (element_name == "type")
+                {
+					cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
+                    // это поле для модели индивида в js
+                    v_type              = resource_obj->Get(js_key);
+                    cerr << "\t\t\t\t@TYPE " << v_type->ToInteger()->Value() << endl;
+                }
+                else if (element_name == "lang")
+                {
+					cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
+                    // это поле для модели индивида в js
+                    v_lang              = resource_obj->Get(js_key);
+                    cerr << "\t\t\t\t@TYPE " << v_lang->ToInteger()->Value() << endl;
+                }
+            }
+        }
+    }
+
+    cerr << "!!END LOGGING!!" << endl;
+    return true;
+}
+
+
 void
 jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 {
     //cerr <<"!!START LOGGING!!" << endl;
+
+    //jsobject_log(value);
+
     //cerr << "@IS OBJECT " << value->IsObject() << endl;
     Local<Object>         obj = Local<Object>::Cast(value);
 
@@ -462,25 +546,29 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
         v8::Local<v8::Value> js_key        = individual_keys->Get(i);
         std::string          resource_name = std::string(*v8::String::Utf8Value(js_key));
         //cerr << "@RESOURCE KEY " << resource_name << endl;
-        write_string(resource_name, ou);
-
-        Local<Value> js_value = obj->Get(js_key);
-
+		Local<Value> js_value = obj->Get(js_key);
         if (resource_name == "@")
         {
-            // std::string uri = std::string(*v8::String::Utf8Value(js_value));
+			write_string(resource_name, ou);
             std::string uri = std::string(*v8::String::Utf8Value(js_value));
             write_string(uri, ou);
             //cerr << "\t@URI DATA " << uri << endl;
             continue;
         }
-
+        
+        write_string(resource_name, ou);
+        
+        if (!js_value->IsArray()) {
+			write_type_value(ARRAY, 0, ou);
+			continue;
+		}
+		
         //cerr << "\t@IS ARRAY " << js_value->IsArray() << endl;
         Local<v8::Array> resources_arr    = Local<v8::Array>::Cast(js_value);
         uint32_t         resources_length = resources_arr->Length();
         //cerr << "\t@LENGTH " << resources_length << endl;
-        if (resources_length > 1)
-            write_type_value(ARRAY, resources_length, ou);
+        //if (resources_length > 1)
+         write_type_value(ARRAY, resources_length, ou);
 
         for (uint32_t j = 0; j < resources_length; j++)
         {
@@ -489,7 +577,6 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 
             v8::Handle<v8::Array> resource_keys   = resource_obj->GetPropertyNames();
             uint32_t              resource_length = individual_keys->Length();
-            // jsobject2individual(js_value, indv, resource, predicate);
             Local<Value>          v_data = resource_obj->Get(f_data);
             Local<Value>          v_type = resource_obj->Get(f_type);
 
