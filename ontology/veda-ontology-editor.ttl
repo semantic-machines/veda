@@ -1135,7 +1135,7 @@ v-ui:ModuleTemplate
       <div about="@" rel="v-s:hasImage" style="" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
     </div>
   </div>  
-  <div class="panel panel-default">
+  <div class="panel panel-default view -search -create">
     <div class="panel-heading">
       <span>Лог модуля</span>
       <button type="button" class="btn btn-xs btn-default pull-right" id="copy-log">Скопировать</button>
