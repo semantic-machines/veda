@@ -570,15 +570,38 @@ class UserModuleInfo
         string[ string ] ver_2_url;
         string[ int ] pos_2_ver;
 
-        auto o_url = url.parseURL;
+        auto     o_url = url.parseURL;
+        string[] pp    = o_url.path.split('/');
         if (o_url.host == "bitbucket.org")
         {
-            // https://[your_user_name]:[app_password]@bitbucket.org/[your_user_name]/[repo_name].git
+            // https://[your_user_name]:[app_password]@bitbucket.org/[your_user_name]/[repo_name]/get/[tag].zip
+            stderr.writefln("@pp=%s", pp);
+
+            if (pp.length != 5 || (pp.length == 5 && pp[ 3 ] != "get"))
+            {
+                log.trace("ERR! unknown url format [%s], get_and_unpack", url);
+                operation_result = OperationResult.FAIL;
+                return;
+            }
+
+            project_owner = pp[ 1 ];
+            project_name  = pp[ 2 ];
+
+            stderr.writefln("@project_owner=%s", project_owner);
+            stderr.writefln("@project_name=%s", project_name);
+
+            long pt = pp[ 4 ].indexOf(".zip");
+            if (pt > 0)
+            {
+                ver = pp[ 4 ][ 0 .. pt ];
+                stderr.writefln("@ver=%s", ver);
+
+                ver_2_url[ ver ] = url;
+                stderr.writefln("@ver_2_url=%s", ver_2_url);
+            }
         }
         else if (o_url.host == "github.com")
         {
-            string[] pp = o_url.path.split('/');
-
             if (pp.length != 3 && pp.length != 6)
             {
                 log.trace("ERR! unknown url format [%s], get_and_unpack", url);
