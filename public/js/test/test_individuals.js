@@ -39,8 +39,9 @@ function generate_test_document1(ticket)
     var new_test_doc1_uri = genUri();
     var new_test_doc1 = {
         '@': new_test_doc1_uri,
-        'rdf:type': newUri('rdfs:Resource'),
-        'v-s:test_integer': newInt(9223372036854775295),
+        'rdf:type': newUri('rdfs:Resource1'),
+        'v-s:test_integer_32': newInt(922337203),
+        'v-s:test_integer_64': newInt(9223372036854775295),
         'v-s:test_negative_integer': newInt(-144365435),
         'v-s:test_decimal': newDecimal(12.12345678912345),
         'v-s:test_negative_decimal': newDecimal(-54.89764),
@@ -66,25 +67,36 @@ function generate_test_document1(ticket)
     return new_test_doc1;
 }
 
-function generate_test_script(ticket)
+function generate_test_document2(ticket)
 {
-    var new_test_script_uri = genUri();
-    var new_test_script = {
-        '@': new_test_script_uri,
-        'rdf:type': newUri('v-s:Event'),
-        'v-s:triggerByType': newUri('rdfs:Resource'),
-        'v-s:script': newStr('var task_id = document["@"];' + 
-            'datetime = getUri(document["v-s:test_datetime0"]);' + 
-            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' + 
-            'datetime1 = getUri(document["v-s:test_datetime0"]);' +
-            'put_individual(ticket, document, _event_id);' +
-            'print("@SCRIPT", "caught", "task", task_id, "datetime", datetime, "datetime1", datetime1);' ),
+    var new_test_doc1_uri = genUri();
+    var new_test_doc1 = {
+        '@': new_test_doc1_uri,
+        'rdf:type': newUri('rdfs:Resource1'),
+        'v-s:test_integer_32': newInt(922337203),
+        'v-s:test_negative_integer': newInt(-144365435),
+        'v-s:test_decimal': newDecimal(12.12345678912345),
+        'v-s:test_negative_decimal': newDecimal(-54.89764),
+        'v-s:test_decimal2': newDecimal(0.7),
+        'v-s:test_decimal3': newDecimal(764.3),
+        'v-s:test_decimal4': newDecimal(90.8),
+        'v-s:test_decimal5': newDecimal(7.6),
+        'v-s:test_decimal6': newDecimal(0.07),
+        'v-s:test_decimal6_1': newDecimal(-0.07),
+        'v-s:test_decimal7': newDecimal(0.007),
+        'v-s:test_decimal8': newDecimal(1),
+        'v-s:test_decimal9': newDecimal(5.0),
         'v-s:created': newDate(new Date()),
+        'v-s:test_datetime0': newDate(new Date("2014-01-02")),
+        'v-s:test_datetime1': newDate(new Date("2014-01-02T20:00")),
+        'v-s:test_datetime2': newDate(new Date("2014-01-02T20:10:24")),
+        'v-s:test_datetime3': newDate(new Date("2014-01-02T20:10:24.768")),
+        'v-s:test_datetime4': newDate(new Date("1960-01-02")),
         'v-s:canUpdate': newBool(true),
         'v-s:permissionSubject': newUri('individual_' + guid()),
         'v-s:author': newUri(ticket.user_uri)
     };
-    return new_test_script;
+    return new_test_doc1;
 }
 
 function create_test_document1(ticket, prefix)
@@ -92,7 +104,7 @@ function create_test_document1(ticket, prefix)
     var new_test_doc1 = generate_test_document1(ticket)
 
     if (prefix)
-  new_test_doc1['@'] = prefix + new_test_doc1['@']
+	new_test_doc1['@'] = prefix + new_test_doc1['@']
 
     var res = put_individual(ticket.id, new_test_doc1);
     //wait_module(m_subject, res.op_id);
@@ -101,20 +113,19 @@ function create_test_document1(ticket, prefix)
     return new_test_doc1;
 }
 
-function create_test_script(ticket, prefix)
+function create_test_document2(ticket, prefix)
 {
-    var new_test_script = generate_test_script(ticket)
+    var new_test_doc1 = generate_test_document2(ticket)
 
     if (prefix)
-        new_test_script['@'] = prefix + new_test_script['@']
+	new_test_doc1['@'] = prefix + new_test_doc1['@']
 
-    var res = put_individual(ticket.id, new_test_script);
+    var res = put_individual(ticket.id, new_test_doc1);
     //wait_module(m_subject, res.op_id);
     wait_module(m_acl, res.op_id);
     wait_module(m_scripts, res.op_id);
-    return new_test_script;
+    return new_test_doc1;
 }
-
 
 function test_success_read(ticket, read_indv_uri, ethalon_indv, reopen)
 {
@@ -2119,39 +2130,37 @@ for (i = 0; i < 1; i++)
         check_rights_fail(ticket1.id, doc1, [can_delete]);
     });
 
-/*
+
     test("#031 test decimal", function()
     {
         var ticket_admin = get_admin_ticket();
 
-        var test_script = create_test_script(ticket_admin);        
-        // alert(test_script["@"]);
-        var doc = create_test_document1(ticket_admin);
-        // alert(doc["@"]);
-        var doc1 = get_individual(ticket_admin.id, doc["@"]);   
-        // alert(doc1["@"]);        
-               
-        remove_individual(ticket_admin.id, test_script['@']);
-        ok(doc["v-s:test_decimal"][0]["data"] == doc1["v-s:test_decimal"][0]["data"]);
-        ok(doc["v-s:test_negative_decimal"][0]["data"] == doc1["v-s:test_negative_decimal"][0]["data"]);
-        // alert(doc["v-s:test_decimal2"][0]["data"] + '==' + doc1["v-s:test_decimal2"][0]["data"]);
-        ok(doc["v-s:test_decimal2"][0]["data"] == doc1["v-s:test_decimal2"][0]["data"]);
-        // alert(doc["v-s:test_decimal3"][0]["data"] + '==' + doc1["v-s:test_decimal3"][0]["data"]);
-        ok(doc["v-s:test_decimal3"][0]["data"] == doc1["v-s:test_decimal3"][0]["data"]);
-        // alert(doc["v-s:test_decimal4"][0]["data"] + '==' + doc1["v-s:test_decimal4"][0]["data"]);
-        ok(doc["v-s:test_decimal4"][0]["data"] == doc1["v-s:test_decimal4"][0]["data"]);
-        // alert(doc["v-s:test_decimal5"][0]["data"] + '==' + doc1["v-s:test_decimal5"][0]["data"]);
-        ok(doc["v-s:test_decimal5"][0]["data"] == doc1["v-s:test_decimal5"][0]["data"]);
-        // alert(doc["v-s:test_decimal6"][0]["data"] + '==' + doc1["v-s:test_decimal6"][0]["data"]);
-        ok(doc["v-s:test_decimal6"][0]["data"] == doc1["v-s:test_decimal6"][0]["data"]);
-        // alert(doc["v-s:test_decimal6_1"][0]["data"] + '==' + doc1["v-s:test_decimal6_1"][0]["data"]);
-        ok(doc["v-s:test_decimal6_1"][0]["data"] == doc1["v-s:test_decimal6_1"][0]["data"]);
-        // alert(doc["v-s:test_decimal7"][0]["data"] + '==' + doc1["v-s:test_decimal7"][0]["data"]);
-        ok(doc["v-s:test_decimal7"][0]["data"] == doc1["v-s:test_decimal7"][0]["data"]);
-        // alert(doc["v-s:test_decimal8"][0]["data"] + '==' + doc1["v-s:test_decimal8"][0]["data"]);
-        ok(doc["v-s:test_decimal8"][0]["data"] == doc1["v-s:test_decimal8"][0]["data"]);
-        // alert(doc["v-s:test_decimal9"][0]["data"] + '==' + doc1["v-s:test_decimal9"][0]["data"]);
-        ok(doc["v-s:test_decimal9"][0]["data"] == doc1["v-s:test_decimal9"][0]["data"]);
+	var new_test_script_uri = genUri();
+	var new_test_script = {
+        '@': new_test_script_uri,
+        'rdf:type': newUri('v-s:Event'),
+        'v-s:triggerByType': newUri('rdfs:Resource1'),
+        'v-s:script': newStr('if (parent_script_id != "") return;' +
+            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
+            'put_individual(ticket, document, _event_id);'),
+        'v-s:created': newDate(new Date()),
+        'v-s:author': newUri(ticket_admin.user_uri)
+	};
+
+	var res = put_individual(ticket_admin.id, new_test_script);
+	//wait_module(m_subject, res.op_id);
+	wait_module(m_acl, res.op_id);
+	wait_module(m_scripts, res.op_id);
+
+        var doc = create_test_document2(ticket_admin);
+
+        remove_individual(ticket_admin.id, new_test_script['@']);
+
+        test_fail_read(ticket_admin, doc['@'], doc);
+
+	doc["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));
+
+        test_success_read(ticket_admin, doc['@'], doc);
     });
-*/    
+    
 }

@@ -60,27 +60,6 @@ void FatalErrorCallback_r(const char *location, const char *message)
 }
 }
 
-static std::string to_string(double d)
-{
-    std::ostringstream oss;
-
-    oss.precision(std::numeric_limits<double>::digits10);
-    oss << std::fixed << d;
-    std::string str = oss.str();
-
-    // Remove padding
-    // This must be done in two steps because of numbers like 700.00
-    std::size_t pos1 = str.find_last_not_of("0");
-    if (pos1 != std::string::npos)
-        str.erase(pos1 + 1);
-
-    std::size_t pos2 = str.find_last_not_of(".");
-    if (pos2 != std::string::npos)
-        str.erase(pos2 + 1);
-
-    return str;
-}
-
 /// Stringify V8 value to JSON
 /// return empty string for empty value
 std::string json_str(v8::Isolate *isolate, v8::Handle<v8::Value> value)
@@ -189,7 +168,7 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
         }
         else if (resource_header.type == NEGATIVE_INTEGER || resource_header.type == UNSIGNED_INTEGER)
         {
-            //cerr << "\t@NEG INT" << endl;
+            //cerr << "\t@0 INT=" << resource_header.v_long << endl;
             Handle<Object> rr_v8 = Object::New(isolate);
             if (resource_header.tag == EPOCH_DATE_TIME)
             {
@@ -201,6 +180,7 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                 rr_v8->Set(f_type, Integer::New(isolate, _Integer));
                 rr_v8->Set(f_data, v8::Integer::New(isolate, resource_header.v_long));
             }
+            //cerr << "\t@1 INT=" << resource_header.v_long << endl;
             resources_v8->Set(0, rr_v8);
         }
         else if (resource_header.type == FLOAT_SIMPLE)
@@ -225,11 +205,11 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
 
                 element.pos += read_type_value(src, element.pos, size, &resource_header);
                 long decimal_mantissa_data = resource_header.v_long;
-                //cerr << "\t\tmant=" << resource_header.v_long;
+                //cerr << "\t\tmant=" << decimal_mantissa_data;
 
                 element.pos += read_type_value(src, element.pos, size, &resource_header);
                 long decimal_exponent_data = resource_header.v_long;
-                ////cerr << " exp=" << resource_header.v_long << endl;
+                //cerr << " exp=" << decimal_exponent_data << endl;
 
                 string str_res;
                 string sign = "";
@@ -238,7 +218,7 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                 if (decimal_mantissa_data < 0)
                 {
                     sign         = "-";
-                    str_mantissa = to_string(decimal_mantissa_data);
+                    str_mantissa = to_string(decimal_mantissa_data * -1);
                 }
                 else
                     str_mantissa = to_string(decimal_mantissa_data);
@@ -267,7 +247,20 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                     slr = nullz.substr(0, (-lh)) + str_mantissa;
                 }
 
-                string         ss = sign + slh + "." + slr;
+                string ss;
+
+                if (slr.length() == 0)
+                {
+                    ss = sign + slh;
+                }
+                else
+                {
+                    if (slh.length() == 0)
+                        slh = "0";
+                    ss = sign + slh + "." + slr;
+                }
+
+                //cerr << " ss=" << ss << endl;
 
                 Handle<Object> rr_v8 = Object::New(isolate);
                 rr_v8->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
@@ -317,12 +310,10 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                             rr_v8->Set(f_type, Integer::New(isolate, _String));
                         }
 
-
                         resources_v8->Set(j, rr_v8);
                     }
                     else if (resource_header.type == NEGATIVE_INTEGER || resource_header.type == UNSIGNED_INTEGER)
                     {
-                        //cerr << "\t\t\t@NEG INT" << endl;
                         Handle<Object> rr_v8 = Object::New(isolate);
                         if (resource_header.tag == EPOCH_DATE_TIME)
                         {
@@ -334,6 +325,7 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                             rr_v8->Set(f_type, Integer::New(isolate, _Integer));
                             rr_v8->Set(f_data, v8::Integer::New(isolate, resource_header.v_long));
                         }
+                        //cerr << "\t\t\t@INT=" << resource_header.v_long << endl;
                         resources_v8->Set(j, rr_v8);
                     }
                     else if (resource_header.type == FLOAT_SIMPLE)
@@ -445,33 +437,34 @@ void double_to_mantissa_exponent(double inp, int64_t *mantissa, int64_t *exponen
 bool
 jsobject_log(Local<Value> value)
 {
-    cerr <<"!!START LOGGING!!" << endl;
+    cerr << "!!START LOGGING!!" << endl;
     cerr << "@IS OBJECT " << value->IsObject() << endl;
     Local<Object>         obj = Local<Object>::Cast(value);
 
     v8::Handle<v8::Array> individual_keys = obj->GetPropertyNames();
 
     bool                  is_individual_value = false;
-    bool                  is_lang_set = false;
+    bool                  is_lang_set         = false;
 
-    uint32_t length = individual_keys->Length();
+    uint32_t              length = individual_keys->Length();
     for (uint32_t i = 0; i < length; i++)
     {
-        v8::Local<v8::Value>  js_key = individual_keys->Get(i);
-        std::string           resource_name = std::string(*v8::String::Utf8Value(js_key));
+        v8::Local<v8::Value> js_key        = individual_keys->Get(i);
+        std::string          resource_name = std::string(*v8::String::Utf8Value(js_key));
         cerr << "@RESOURCE KEY " << resource_name << endl;
 
         Local<Value> js_value = obj->Get(js_key);
 
-        if (resource_name == "@") {
+        if (resource_name == "@")
+        {
             std::string uri = std::string(*v8::String::Utf8Value(js_value));
             cerr << "\t@URI DATA " << uri << endl;
             continue;
         }
 
         cerr << "\t@IS ARRAY " << js_value->IsArray() << endl;
-        Local<v8::Array> resources_arr = Local<v8::Array>::Cast(js_value);
-        uint32_t resources_length = resources_arr->Length();
+        Local<v8::Array> resources_arr    = Local<v8::Array>::Cast(js_value);
+        uint32_t         resources_length = resources_arr->Length();
         cerr << "\t@LENGTH " << resources_length << endl;
         for (uint32_t j = 0; j < resources_length; j++)
         {
@@ -479,39 +472,40 @@ jsobject_log(Local<Value> value)
             cerr << "\t\t@IS OBJECT " << js_value->IsObject() << endl;
             Local<Object>         resource_obj = Local<Object>::Cast(js_value);
 
-            v8::Handle<v8::Array> resource_keys = resource_obj->GetPropertyNames();
-            uint32_t resource_length = individual_keys->Length();
+            v8::Handle<v8::Array> resource_keys   = resource_obj->GetPropertyNames();
+            uint32_t              resource_length = individual_keys->Length();
             // jsobject2individual(js_value, indv, resource, predicate);
             for (uint32_t k = 0; k < resource_length; k++)
             {
-                Local<Value>          v_data;
-                Local<Value>          v_lang;
-                Local<Value>          v_type;
+                Local<Value> v_data;
+                Local<Value> v_lang;
+                Local<Value> v_type;
                 js_key = resource_keys->Get(k);
-                std::string element_name = std::string(*v8::String::Utf8Value(js_key));
-                
+                std::string  element_name = std::string(*v8::String::Utf8Value(js_key));
+
                 if (element_name == "data")
                 {
-					cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
+                    cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
                     // это поле для модели индивида в js
                     v_data = resource_obj->Get(js_key);
-                    if (v_data->IsString()) {
+                    if (v_data->IsString())
+                    {
                         std::string str_data = std::string(*v8::String::Utf8Value(v_data));
                         cerr << "\t\t\t\t@STR DATA " << str_data << endl;
                     }
                 }
                 else if (element_name == "type")
                 {
-					cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
+                    cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
                     // это поле для модели индивида в js
-                    v_type              = resource_obj->Get(js_key);
+                    v_type = resource_obj->Get(js_key);
                     cerr << "\t\t\t\t@TYPE " << v_type->ToInteger()->Value() << endl;
                 }
                 else if (element_name == "lang")
                 {
-					cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
+                    cerr << "\t\t\t@ELEMENT KEY " << element_name << endl;
                     // это поле для модели индивида в js
-                    v_lang              = resource_obj->Get(js_key);
+                    v_lang = resource_obj->Get(js_key);
                     cerr << "\t\t\t\t@TYPE " << v_lang->ToInteger()->Value() << endl;
                 }
             }
@@ -546,29 +540,30 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
         v8::Local<v8::Value> js_key        = individual_keys->Get(i);
         std::string          resource_name = std::string(*v8::String::Utf8Value(js_key));
         //cerr << "@RESOURCE KEY " << resource_name << endl;
-		Local<Value> js_value = obj->Get(js_key);
+        Local<Value>         js_value = obj->Get(js_key);
         if (resource_name == "@")
         {
-			write_string(resource_name, ou);
+            write_string(resource_name, ou);
             std::string uri = std::string(*v8::String::Utf8Value(js_value));
             write_string(uri, ou);
             //cerr << "\t@URI DATA " << uri << endl;
             continue;
         }
-        
+
         write_string(resource_name, ou);
-        
-        if (!js_value->IsArray()) {
-			write_type_value(ARRAY, 0, ou);
-			continue;
-		}
-		
+
+        if (!js_value->IsArray())
+        {
+            write_type_value(ARRAY, 0, ou);
+            continue;
+        }
+
         //cerr << "\t@IS ARRAY " << js_value->IsArray() << endl;
         Local<v8::Array> resources_arr    = Local<v8::Array>::Cast(js_value);
         uint32_t         resources_length = resources_arr->Length();
         //cerr << "\t@LENGTH " << resources_length << endl;
         //if (resources_length > 1)
-         write_type_value(ARRAY, resources_length, ou);
+        write_type_value(ARRAY, resources_length, ou);
 
         for (uint32_t j = 0; j < resources_length; j++)
         {
@@ -577,8 +572,8 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 
             v8::Handle<v8::Array> resource_keys   = resource_obj->GetPropertyNames();
             uint32_t              resource_length = individual_keys->Length();
-            Local<Value>          v_data = resource_obj->Get(f_data);
-            Local<Value>          v_type = resource_obj->Get(f_type);
+            Local<Value>          v_data          = resource_obj->Get(f_data);
+            Local<Value>          v_type          = resource_obj->Get(f_type);
 
             int                   type = v_type->ToInteger()->Value();
             //cerr << "\t\t@TYPE " << type << endl;
@@ -597,22 +592,54 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
             }
             else if (type == _Datetime)
             {
-                long long_data = v_data->ToInteger()->Value() / 1000; 
+                int64_t long_data = v_data->ToInteger()->Value() / 1000;
                 write_type_value(TAG, EPOCH_DATE_TIME, ou);
                 write_integer(long_data, ou);
                 //cerr << "\t\t\t@DATETIME DATA " << long_data << endl;
             }
             else if (type == _Integer)
             {
-                long long_data = v_data->ToInteger()->Value();
+                int64_t long_data = v_data->ToInteger()->Value();
                 write_integer(long_data, ou);
                 //cerr << "\t\t\t@LONG DATA " << long_data << endl;
             }
             else if (type == _Decimal)
             {
-                double  dd = v_data->ToNumber()->Value();
                 int64_t decimal_mantissa_data, decimal_exponent_data;
-                double_to_mantissa_exponent(dd, &decimal_mantissa_data, &decimal_exponent_data);
+                if (v_data->IsString())
+                {
+                    v8::String::Utf8Value s1_1(v_data);
+                    std::string           num = std::string(*s1_1);
+                    //std::cerr << "@jsobject2individual value=" << num << std::endl;
+
+                    int pos = num.find('.');
+                    if (pos < 0)
+                        pos = num.find(',');
+
+                    //std::cerr << "@pos=" << pos << std::endl;
+
+                    if (pos > 0)
+                    {
+                        string ll = num.substr(0, pos);
+                        string rr = num.substr(pos + 1, num.length());
+
+                        size_t sfp = rr.length();
+
+                        decimal_mantissa_data = stol(ll + rr);
+                        decimal_exponent_data = -sfp;
+                    }
+                    else
+                    {
+                        decimal_mantissa_data = stol(num);
+                        decimal_exponent_data = 0;
+                    }
+                }
+                else
+                {
+                    double dd = v_data->ToNumber()->Value();
+                    double_to_mantissa_exponent(dd, &decimal_mantissa_data, &decimal_exponent_data);
+                }
+
                 write_type_value(TAG, DECIMAL_FRACTION, ou);
                 write_type_value(ARRAY, 2, ou);
                 write_integer(decimal_mantissa_data, ou);
