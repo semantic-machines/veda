@@ -60,6 +60,62 @@ void FatalErrorCallback_r(const char *location, const char *message)
 }
 }
 
+string nullz = "00000000000000000000000000000000";
+
+string exponent_and_mantissa_to_string(long decimal_mantissa_data, long decimal_exponent_data)
+{
+    string str_res;
+    string sign = "";
+    string str_mantissa;
+
+    if (decimal_mantissa_data < 0)
+    {
+        sign         = "-";
+        str_mantissa = to_string(decimal_mantissa_data * -1);
+    }
+    else
+        str_mantissa = to_string(decimal_mantissa_data);
+
+    long lh = decimal_exponent_data * -1;
+
+    lh = str_mantissa.length() - lh;
+    string slh;
+
+    if (lh >= 0)
+    {
+        if (lh <= str_mantissa.length())
+            slh = str_mantissa.substr(0, lh);
+    }
+    else
+        slh = "";
+
+    string slr;
+
+    if (lh >= 0)
+    {
+        slr = str_mantissa.substr(lh, str_mantissa.length());
+    }
+    else
+    {
+        slr = nullz.substr(0, (-lh)) + str_mantissa;
+    }
+
+    string ss;
+
+    if (slr.length() == 0)
+    {
+        ss = sign + slh;
+    }
+    else
+    {
+        if (slh.length() == 0)
+            slh = "0";
+        ss = sign + slh + "." + slr;
+    }
+
+    return ss;
+}
+
 /// Stringify V8 value to JSON
 /// return empty string for empty value
 std::string json_str(v8::Isolate *isolate, v8::Handle<v8::Value> value)
@@ -80,8 +136,6 @@ std::string json_str(v8::Isolate *isolate, v8::Handle<v8::Value> value)
 
     return std::string(*str, str.length());
 }
-
-string nullz = "00000000000000000000000000000000";
 
 Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
 {
@@ -211,54 +265,7 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                 long decimal_exponent_data = resource_header.v_long;
                 //cerr << " exp=" << decimal_exponent_data << endl;
 
-                string str_res;
-                string sign = "";
-                string str_mantissa;
-
-                if (decimal_mantissa_data < 0)
-                {
-                    sign         = "-";
-                    str_mantissa = to_string(decimal_mantissa_data * -1);
-                }
-                else
-                    str_mantissa = to_string(decimal_mantissa_data);
-
-                long lh = decimal_exponent_data * -1;
-
-                lh = str_mantissa.length() - lh;
-                string slh;
-
-                if (lh >= 0)
-                {
-                    if (lh <= str_mantissa.length())
-                        slh = str_mantissa.substr(0, lh);
-                }
-                else
-                    slh = "";
-
-                string slr;
-
-                if (lh >= 0)
-                {
-                    slr = str_mantissa.substr(lh, str_mantissa.length());
-                }
-                else
-                {
-                    slr = nullz.substr(0, (-lh)) + str_mantissa;
-                }
-
-                string ss;
-
-                if (slr.length() == 0)
-                {
-                    ss = sign + slh;
-                }
-                else
-                {
-                    if (slh.length() == 0)
-                        slh = "0";
-                    ss = sign + slh + "." + slr;
-                }
+                string ss = exponent_and_mantissa_to_string(decimal_mantissa_data, decimal_exponent_data);
 
                 //cerr << " ss=" << ss << endl;
 
@@ -356,43 +363,7 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                             long decimal_exponent_data = resource_header.v_long;
                             ////cerr << " exp=" << resource_header.v_long << endl;
 
-                            string str_res;
-                            string sign = "";
-                            string str_mantissa;
-
-                            if (decimal_mantissa_data < 0)
-                            {
-                                sign         = "-";
-                                str_mantissa = to_string(decimal_mantissa_data);
-                            }
-                            else
-                                str_mantissa = to_string(decimal_mantissa_data);
-
-                            long lh = decimal_exponent_data * -1;
-
-                            lh = str_mantissa.length() - lh;
-                            string slh;
-
-                            if (lh >= 0)
-                            {
-                                if (lh <= str_mantissa.length())
-                                    slh = str_mantissa.substr(0, lh);
-                            }
-                            else
-                                slh = "";
-
-                            string slr;
-
-                            if (lh >= 0)
-                            {
-                                slr = str_mantissa.substr(lh, str_mantissa.length());
-                            }
-                            else
-                            {
-                                slr = nullz.substr(0, (-lh)) + str_mantissa;
-                            }
-
-                            string         ss = sign + slh + "." + slr;
+                            string         ss = exponent_and_mantissa_to_string(decimal_mantissa_data, decimal_exponent_data);
 
                             Handle<Object> rr_v8 = Object::New(isolate);
                             rr_v8->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));

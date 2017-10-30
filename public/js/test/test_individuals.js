@@ -73,11 +73,11 @@ function generate_test_document2(ticket)
     var new_test_doc1 = {
         '@': new_test_doc1_uri,
         'rdf:type': newUri('rdfs:Resource1'),
-        'v-s:test_integer_32': newInt(922337203),
+        'v-s:test_integer_32': [newInt(922337203)[0], newInt(456403)[0]],
         'v-s:test_negative_integer': newInt(-144365435),
         'v-s:test_decimal': newDecimal(12.12345678912345),
         'v-s:test_negative_decimal': newDecimal(-54.89764),
-        'v-s:test_decimal2': newDecimal(0.7),
+        'v-s:test_decimal2': [newDecimal(0.7)[0], newDecimal(0.4)[0]],
         'v-s:test_decimal3': newDecimal(764.3),
         'v-s:test_decimal4': newDecimal(90.8),
         'v-s:test_decimal5': newDecimal(7.6),
@@ -93,7 +93,7 @@ function generate_test_document2(ticket)
         'v-s:test_datetime3': newDate(new Date("2014-01-02T20:10:24.768")),
         'v-s:test_datetime4': newDate(new Date("1960-01-02")),
         'v-s:canUpdate': newBool(true),
-        'v-s:permissionSubject': newUri('individual_' + guid()),
+        'v-s:permissionSubject': [newUri('individual_' + guid())[0], newUri('individual_' + guid())[0]],
         'v-s:author': newUri(ticket.user_uri)
     };
     return new_test_doc1;
