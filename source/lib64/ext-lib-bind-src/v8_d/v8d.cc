@@ -597,7 +597,7 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
             }
             else if (type == _Datetime)
             {
-                long long_data = v_data->ToInteger()->Value();
+                long long_data = v_data->ToInteger()->Value() / 1000; 
                 write_type_value(TAG, EPOCH_DATE_TIME, ou);
                 write_integer(long_data, ou);
                 //cerr << "\t\t\t@DATETIME DATA " << long_data << endl;

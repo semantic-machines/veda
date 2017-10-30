@@ -66,6 +66,27 @@ function generate_test_document1(ticket)
     return new_test_doc1;
 }
 
+function generate_test_script(ticket)
+{
+    var new_test_script_uri = genUri();
+    var new_test_script = {
+        '@': new_test_script_uri,
+        'rdf:type': newUri('v-s:Event'),
+        'v-s:triggerByType': newUri('rdfs:Resource'),
+        'v-s:script': newStr('var task_id = document["@"];' + 
+            'datetime = getUri(document["v-s:test_datetime0"]);' + 
+            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' + 
+            'datetime1 = getUri(document["v-s:test_datetime0"]);' +
+            'put_individual(ticket, document, _event_id);' +
+            'print("@SCRIPT", "caught", "task", task_id, "datetime", datetime, "datetime1", datetime1);' ),
+        'v-s:created': newDate(new Date()),
+        'v-s:canUpdate': newBool(true),
+        'v-s:permissionSubject': newUri('individual_' + guid()),
+        'v-s:author': newUri(ticket.user_uri)
+    };
+    return new_test_script;
+}
+
 function create_test_document1(ticket, prefix)
 {
     var new_test_doc1 = generate_test_document1(ticket)
@@ -79,6 +100,21 @@ function create_test_document1(ticket, prefix)
     wait_module(m_scripts, res.op_id);
     return new_test_doc1;
 }
+
+function create_test_script(ticket, prefix)
+{
+    var new_test_script = generate_test_script(ticket)
+
+    if (prefix)
+        new_test_script['@'] = prefix + new_test_script['@']
+
+    var res = put_individual(ticket.id, new_test_script);
+    //wait_module(m_subject, res.op_id);
+    wait_module(m_acl, res.op_id);
+    wait_module(m_scripts, res.op_id);
+    return new_test_script;
+}
+
 
 function test_success_read(ticket, read_indv_uri, ethalon_indv, reopen)
 {
@@ -1921,7 +1957,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#027 test different group subtrees 1", function()
+    test("#028 test different group subtrees 1", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1978,7 +2014,7 @@ for (i = 0; i < 1; i++)
 
     });
 
-    test("#028 test different group subtrees 2", function()
+    test("#029 test different group subtrees 2", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -2034,7 +2070,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#029 test different group subtrees 3", function()
+    test("#030 test different group subtrees 3", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -2082,5 +2118,40 @@ for (i = 0; i < 1; i++)
         //#8
         check_rights_fail(ticket1.id, doc1, [can_delete]);
     });
-    
+
+/*
+    test("#031 test decimal", function()
+    {
+        var ticket_admin = get_admin_ticket();
+
+        var test_script = create_test_script(ticket_admin);        
+        // alert(test_script["@"]);
+        var doc = create_test_document1(ticket_admin);
+        // alert(doc["@"]);
+        var doc1 = get_individual(ticket_admin.id, doc["@"]);   
+        // alert(doc1["@"]);        
+               
+        remove_individual(ticket_admin.id, test_script['@']);
+        ok(doc["v-s:test_decimal"][0]["data"] == doc1["v-s:test_decimal"][0]["data"]);
+        ok(doc["v-s:test_negative_decimal"][0]["data"] == doc1["v-s:test_negative_decimal"][0]["data"]);
+        // alert(doc["v-s:test_decimal2"][0]["data"] + '==' + doc1["v-s:test_decimal2"][0]["data"]);
+        ok(doc["v-s:test_decimal2"][0]["data"] == doc1["v-s:test_decimal2"][0]["data"]);
+        // alert(doc["v-s:test_decimal3"][0]["data"] + '==' + doc1["v-s:test_decimal3"][0]["data"]);
+        ok(doc["v-s:test_decimal3"][0]["data"] == doc1["v-s:test_decimal3"][0]["data"]);
+        // alert(doc["v-s:test_decimal4"][0]["data"] + '==' + doc1["v-s:test_decimal4"][0]["data"]);
+        ok(doc["v-s:test_decimal4"][0]["data"] == doc1["v-s:test_decimal4"][0]["data"]);
+        // alert(doc["v-s:test_decimal5"][0]["data"] + '==' + doc1["v-s:test_decimal5"][0]["data"]);
+        ok(doc["v-s:test_decimal5"][0]["data"] == doc1["v-s:test_decimal5"][0]["data"]);
+        // alert(doc["v-s:test_decimal6"][0]["data"] + '==' + doc1["v-s:test_decimal6"][0]["data"]);
+        ok(doc["v-s:test_decimal6"][0]["data"] == doc1["v-s:test_decimal6"][0]["data"]);
+        // alert(doc["v-s:test_decimal6_1"][0]["data"] + '==' + doc1["v-s:test_decimal6_1"][0]["data"]);
+        ok(doc["v-s:test_decimal6_1"][0]["data"] == doc1["v-s:test_decimal6_1"][0]["data"]);
+        // alert(doc["v-s:test_decimal7"][0]["data"] + '==' + doc1["v-s:test_decimal7"][0]["data"]);
+        ok(doc["v-s:test_decimal7"][0]["data"] == doc1["v-s:test_decimal7"][0]["data"]);
+        // alert(doc["v-s:test_decimal8"][0]["data"] + '==' + doc1["v-s:test_decimal8"][0]["data"]);
+        ok(doc["v-s:test_decimal8"][0]["data"] == doc1["v-s:test_decimal8"][0]["data"]);
+        // alert(doc["v-s:test_decimal9"][0]["data"] + '==' + doc1["v-s:test_decimal9"][0]["data"]);
+        ok(doc["v-s:test_decimal9"][0]["data"] == doc1["v-s:test_decimal9"][0]["data"]);
+    });
+*/    
 }
