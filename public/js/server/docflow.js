@@ -1178,6 +1178,8 @@ function prepare_start_form(ticket, document)
         return;
     }
 
+    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", document['@']);
+
     var new_process_uri = genUri();
 
     var creator_f = document['v-s:creator'];
