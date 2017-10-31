@@ -169,7 +169,7 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       var previous = this.properties && this.properties["@"];
-      if (previous && this._.cache && this._.cache[previous]) {
+      if (previous && this._.cache && veda.cache[previous]) {
         delete veda.cache[previous];
         veda.cache[value] = this;
       }
