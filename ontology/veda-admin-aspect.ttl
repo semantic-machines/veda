@@ -18,6 +18,7 @@
 
 v-s:UserScript
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "User script"@en ;
   rdfs:label "Пользовательский скрипт"@ru ;
   v-ui:hasTemplate v-s:UserScriptTemplate ;
@@ -47,9 +48,22 @@ v-s:lastRun
   rdfs:range xsd:dateTime ;
 .
 
+v-s:PsRunAtUserScript
+  rdf:type v-ui:DatatypePropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:runAt для класса v-s:UserScript"@ru ;
+  rdfs:label "v-s:runAt property specification for v-s:UserScript class"@en ;
+  v-ui:forClass v-s:UserScript ;
+  v-ui:forProperty v-s:runAt ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:defaultValue "Browser" ;
+  v-ui:optionValue "Browser" ;
+  v-ui:optionValue "Server" ;
+.
+
 v-s:UserScriptEvent
   rdf:type v-s:Event ;
-  v-s:filter v-s:UserScript ;
+  v-s:triggerByType v-s:UserScript ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -62,14 +76,16 @@ v-s:UserScriptEvent
  * parent_document_id = id of the document that triggered this event.
  */
 var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
+var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
 
-if (!toBeRun) { return }
+if (!toBeRun || runAt !== "Server") { return; }
 
-// preserve global print()
-var console_print = this.print;
+// preserve global print & console
+var nativePrint = this.print;
+var nativeConsole = this.console;
 
-// override global print()
-this.print = function () {
+// override global print & console
+var print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
     if (i === 0) {
@@ -80,14 +96,28 @@ this.print = function () {
   }
   output += String.fromCharCode(13, 10);
 }
+this.print = print;
+
+var console = {
+  log: print,
+  time: function (timer) {
+    this[timer] = new Date();
+  },
+  timeEnd: function (timer) {
+    var delta = new Date() - this[timer];
+    this.log(timer, delta, "msec");
+  }
+};
+this.console = console;
+
 var output = "";
 var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
 if (script) {
   script = new Function (script);
   try {
     script();
-  } catch (ex) {
-    print(ex);
+  } catch (err) {
+    print(err);
   }
   document["v-s:scriptOutput"] = [{
     data: output,
@@ -102,9 +132,9 @@ if (script) {
   put_individual(ticket, document, _event_id);
 }
 
-// restore global print()
-this.print = console_print;
-
+// restore global print & console
+this.print = nativePrint;
+this.console = nativeConsole;
 """
 .
 
@@ -120,7 +150,7 @@ v-s:UserScriptTemplate
   rdfs:label "Template for v-s:UserScript class"@en ;
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   v-ui:template """
-<div class="container sheet">
+<div class="container-fluid sheet">
   <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
   <div class="row">
     <div class="col-md-2 view -edit -search">
@@ -138,6 +168,11 @@ v-s:UserScriptTemplate
           <em about="v-s:toBeRun" property="rdfs:label"></em>
         </label>
       </div>
+    </div>
+    <div class="col-md-2 view edit -search">
+      <em about="v-s:runAt" property="rdfs:label"></em>
+      <div property="v-s:runAt" class="view -edit -search"></div>
+      <veda-control property="v-s:runAt" data-type="radio" class="-view edit search"></veda-control>
     </div>
   </div>
   <hr>
@@ -166,13 +201,68 @@ v-s:UserScriptTemplate
 
 </div>
 <script>
+  // Clear output on save
+  individual.on("beforeSave", clearOutput);
+  template.one("remove", function () {
+    individual.off("beforeSave", clearOutput);
+  });
+  function clearOutput () {
+    this["v-s:scriptOutput"] = [];
+  }
+
+  var nativeConsole = window.console;
+  var nativePrint = window.print;
+  var print = function () {
+    var output = individual["v-s:scriptOutput"][0] || "";
+    for (var i = 0; i < arguments.length; i++) {
+      var arg = arguments[i] ;
+      if (i === 0) {
+        output += arg.toString();
+      } else {
+        output += " " + arg.toString();
+      }
+    }
+    output += String.fromCharCode(13, 10);
+    individual["v-s:scriptOutput"] = [output];
+  }
+  var console = {
+    log: print,
+    time: function (timer) {
+      this[timer] = new Date();
+    },
+    timeEnd: function (timer) {
+      var delta = new Date() - this[timer];
+      this.log(timer, delta, "msec");
+    }
+  };
+
+  window.console = console;
+  window.print = print;
+  template.one("remove", function () {
+    window.console = nativeConsole;
+    window.print = nativePrint;
+  });
+
   $(".action#run", template).click(function () {
-    individual["v-s:toBeRun"] = [ true ];
-    individual.save();
+    if ( individual.hasValue("v-s:runAt", "Server") ) {
+      individual["v-s:toBeRun"] = [ true ];
+      individual.save();
+    } else {
+      individual["v-s:lastRun"] = [ new Date() ];
+      individual["v-s:scriptOutput"] = [];
+      var script = new Function("veda", individual["v-s:script"][0] || "return;");
+      try {
+        script(veda);
+      } catch (err) {
+        print(err);
+      }
+    }
   });
   $(".action#clear", template).click(function () {
-    individual["v-s:scriptOutput"] = [ ];
+    individual["v-s:scriptOutput"] = [];
   });
+
+  //# sourceURL=v-s:UserScriptTemplate_post
 </script>
   """
 .
