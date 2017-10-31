@@ -235,7 +235,7 @@ v-ui:CommonOntologyTemplate
   <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
   <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
   <i property="rdfs:comment" class="view -edit -search"></i>
-  <veda-control property="rdfs:comment" data-type="multilingualString" class="-view edit search"></veda-control>
+  <veda-control property="rdfs:comment" data-type="multilingualText" rows="2" class="-view edit search"></veda-control>
   <hr>
 </div>
   """ ;
@@ -1134,7 +1134,7 @@ v-ui:ModuleTemplate
     <div class="col-md-6">
       <div about="@" rel="v-s:hasImage" style="" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
     </div>
-  </div>  
+  </div>
   <div class="panel panel-default view -search -create">
     <div class="panel-heading">
       <span>Лог модуля</span>
@@ -1150,7 +1150,7 @@ v-ui:ModuleTemplate
       <span>Связанные классы</span>
     </div>
     <div class="panel-body">
-        
+
     </div>
   </div> -->
   <hr>
