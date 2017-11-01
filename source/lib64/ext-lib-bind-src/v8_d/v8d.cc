@@ -640,8 +640,33 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
         for (uint32_t j = 0; j < resources_length; j++)
         {
             js_value = resources_arr->Get(j);
-            Local<Object> resource_obj = Local<Object>::Cast(js_value);
-            prepare_js_object(resource_obj, individual_keys, f_data, f_type, f_lang, ou);
+
+            if (js_value->IsArray())
+            {
+//             [ [ {} ] ]  
+			
+                Local<v8::Array> resources_in_arr    = Local<v8::Array>::Cast(js_value);
+                uint32_t         resources_in_length = resources_in_arr->Length();
+
+                if (resources_in_length == 1)
+                {
+                    js_value = resources_in_arr->Get(0);
+
+                    Local<Object> resource_obj = Local<Object>::Cast(js_value);
+                    prepare_js_object(resource_obj, individual_keys, f_data, f_type, f_lang, ou);
+                }
+                else
+                {
+//             		[ [ {} ], [ {} ] ]  
+                    cerr << "ERR! INVALID JS INDIVIDUAL FORMAT " << endl;
+                }
+            }
+            else
+            {
+//             [ {} ]  
+                Local<Object> resource_obj = Local<Object>::Cast(js_value);
+                prepare_js_object(resource_obj, individual_keys, f_data, f_type, f_lang, ou);
+            }
         }
     }
 
