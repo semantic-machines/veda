@@ -67,6 +67,51 @@ function generate_test_document1(ticket)
     return new_test_doc1;
 }
 
+function generate_test_appointment(ticket)
+{
+    var new_test_appointment_uri = genUri();
+    var new_test_appointment = {
+        '@': new_test_appointment_uri,
+        'rdf:type': newUri('v-s:Appointment'),
+        'v-s:created': newDate(new Date()),
+        'v-s:author': newUri(ticket.user_uri)
+    };
+    return new_test_appointment;
+}
+
+
+function generate_test_person(ticket)
+{
+    var new_test_person_uri = genUri();
+    var new_test_person = {
+        '@': new_test_person_uri,
+        'rdf:type': newUri('v-s:Person'),
+        'v-s:firstName': newStr('123123'),
+        'v-s:created': newDate(new Date()),
+        'v-s:author': newUri(ticket.user_uri)
+    };
+    return new_test_person;
+}
+
+function create_test_appointment_person(ticket) {
+    var person = generate_test_person(ticket);
+    var res = put_individual(ticket.id, person);
+    // wait_module(m_subject, res.op_id);
+    wait_module(m_acl, res.op_id);
+    wait_module(m_scripts, res.op_id);
+    wait_module(m_fulltext_indexer, res.op_id);
+
+    var appointment = generate_test_appointment(ticket);
+    appointment['v-s:employee'] = newUri(person['@']);
+    res = put_individual(ticket.id, appointment);
+    //wait_module(m_subject, res.op_id);
+    wait_module(m_acl, res.op_id);
+    wait_module(m_scripts, res.op_id);
+    wait_module(m_fulltext_indexer, res.op_id);
+
+    return [appointment, person];
+}
+
 function generate_test_document2(ticket)
 {
     var new_test_doc1_uri = genUri();
@@ -2161,6 +2206,24 @@ for (i = 0; i < 1; i++)
 	doc["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));
 
         test_success_read(ticket_admin, doc['@'], doc);
+    });
+
+    test("#032 test inheriting querues", function()
+    {
+        var ticket_admin = get_admin_ticket();
+        var appointment_person = create_test_appointment_person(ticket_admin);
+        var appointment = appointment_person[0];
+        var person = appointment_person[1];
+        
+        var query_str ="'v-s:employee.v-s:firstName'=='" + person['v-s:firstName'][0]["data"] + "'";
+        var data = query(ticket_admin.id, query_str).result;
+        ok(data[0] == appointment["@"])
+        remove_individual(ticket_admin.id, appointment['@']);
+        test_fail_read(ticket_admin,  appointment['@'], appointment['@']);
+
+        remove_individual(ticket_admin.id, person['@']);
+        test_fail_read(ticket_admin,  person['@'], person['@']);
+
     });
     
 }

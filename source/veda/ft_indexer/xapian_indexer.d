@@ -449,6 +449,8 @@ public class IndexerContext
 
                     void prepare_index(ref Individual idx, Resource rs, string ln, int level = 0)
                     {
+                        stderr.writefln("@LN %s", ln);
+                        
                         if (rs.type == DataType.String)
                         {
                             Resources indexed_field_as_fwildcardZ =
@@ -470,7 +472,7 @@ public class IndexerContext
                             {
                                 // 1. считать индивид по ссылке
                                 Individual inner_indv = context.get_individual(ticket, rs.uri);
-                                stderr.writefln("@IDX [%s] resource [%s]", idx.uri, rs.uri);
+                                // stderr.writefln("@IDX [%s] resource [%s]", idx.uri, rs.uri);
 
                                 //string tab; for (int i = 0; i < level; i++)
                                 //    tab ~= "	";
@@ -489,7 +491,7 @@ public class IndexerContext
                                             // ссылка на наследуемый индекс, переходим вниз
                                             Individual inhr_idx = iproperty.get_index(value.uri);
 
-                                            stderr.writefln("\t@INHERTIT TO [%s]", value.uri);
+                                            // stderr.writefln("\t@INHERTIT TO [%s]", value.uri);
                                             if (trace_msg[ 220 ] == 1)
                                                 log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value,
                                                           inhr_idx);
@@ -498,21 +500,21 @@ public class IndexerContext
                                             {
                                                 Resources forProperties =
                                                     inhr_idx.getResources("vdi:forProperty");
-                                                stderr.writefln("\t\t@FOR PROPERTIES [%s]", forProperties);
+                                                // stderr.writefln("\t\t@FOR PROPERTIES [%s]", forProperties);
                                                 if (forProperties != Resources.init)
                                                 {
                                                     foreach (forProperty; forProperties)
                                                     {
                                                         Resources links =
                                                             inner_indv.getResources(forProperty.uri);
-                                                        stderr.writefln("\t\t\t@INHERIT TO [%s] FOR PROPERTY [%s] LINKS [%s] INNER [%s] IDX[%s]",
-                                                            value.uri, forProperty, links, inner_indv.uri, idx.uri);
+                                                        // stderr.writefln("\t\t\t@INHERIT TO [%s] FOR PROPERTY [%s] LINKS [%s] INNER [%s] IDX[%s]",
+                                                            // value.uri, forProperty, links, inner_indv.uri, idx.uri);
                                                         if (trace_msg[ 220 ] == 1)
                                                             log.trace("forProperty=[%s], links=[%s]", forProperty, links);
 
                                                         foreach (link; links)
                                                         {
-                                                            stderr.writefln("\t@LINK %s", link);
+                                                            // stderr.writefln("\t@LINK %s", link);
                                                             prepare_index(inhr_idx, link,
                                                                           ln ~ "." ~ forProperty.uri,
                                                                           level + 1);
@@ -525,6 +527,7 @@ public class IndexerContext
                                                     // значит берем поля указанные vdi:indexed_field в текущем индивиде
                                                     Resources indexed_fields =
                                                         inhr_idx.getResources("vdi:indexed_field");
+                                                    
                                                     if (indexed_fields != Resources.init)
                                                     {
                                                         foreach (indexed_field; indexed_fields)
@@ -572,7 +575,7 @@ public class IndexerContext
                                     if (predicate == "vdi:domain")
                                     {
                                         foreach (value; values)
-                                        {
+                                        {   
                                             
                                             Resources forProperties =
                                                 idx.getResources("vdi:forProperty");
@@ -582,8 +585,8 @@ public class IndexerContext
                                                 {
                                                     Resources links =
                                                         inner_indv.getResources(forProperty.uri);
-                                                    stderr.writefln("@INHERIT FROM [%s] FOR PROPERTY [%s] LINKS [%s] INNER [%s] IDX[%s]",
-                                                        value.uri, forProperty, links, inner_indv.uri, idx.uri);
+                                                    // stderr.writefln("@INHERIT FROM [%s] FOR PROPERTY [%s] LINKS [%s] INNER [%s] IDX[%s]",
+                                                        // value.uri, forProperty, links, inner_indv.uri, idx.uri);
                                                     if (trace_msg[ 220 ] == 1)
                                                         log.trace("forProperty=[%s], links=[%s]", forProperty, links);
 
@@ -603,10 +606,12 @@ public class IndexerContext
                                                     idx.getResources("vdi:indexed_field");
                                                 if (indexed_fields != Resources.init)
                                                 {
+                                                    
                                                     foreach (indexed_field; indexed_fields)
                                                     {
                                                         Resources rrc =
                                                             inner_indv.getResources(indexed_field.uri);
+                                                        stderr.writefln("\t@LN2 %s", ln ~ "." ~ indexed_field.uri);
                                                         foreach (rc; rrc)
                                                         {
                                                             if (trace_msg[ 213 ] == 1)
