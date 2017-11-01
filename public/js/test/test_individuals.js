@@ -2165,25 +2165,39 @@ for (i = 0; i < 1; i++)
 
     test("#032 test create individual with rdf:type rdfs:Resource", function()
     {
-      var ticket1 = get_user1_ticket();
-      console.log( JSON.stringify(ticket1) );
-      var doc = {
+      var ticket_admin = get_admin_ticket();
+
+      var ticket_user = get_user1_ticket();
+
+      var doc_admin = {
         '@': genUri(),
         'rdf:type': [{
           data: "rdfs:Resource",
           type: "Uri"
-        }],
-        'rdfs:label': [{
-          data: "Тестовый ресурс",
-          type: "String"
         }]
       };
-      console.log( JSON.stringify(doc) );
+
+      var doc_user = {
+        '@': genUri(),
+        'rdf:type': [{
+          data: "rdfs:Resource",
+          type: "Uri"
+        }]
+      };
+
       try {
-        var res = put_individual(ticket1.id, doc);
+        var res = put_individual(ticket_admin.id, doc_admin);
+        ok(true);
+      } catch (err) {
+        ok(false, "put_individual with rdfs:Resource type by admin must success.");
+      }
+
+      try {
+        var res = put_individual(ticket_user.id, doc_user);
         ok(false, "put_individual with rdfs:Resource type by unprivileged user must fail with 472 error.");
       } catch (err) {
         ok(true);
       }
+
     });
 }
