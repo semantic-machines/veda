@@ -2130,7 +2130,7 @@ for (i = 0; i < 1; i++)
         check_rights_fail(ticket1.id, doc1, [can_delete]);
     });
 
-
+/*
     test("#031 test decimal", function()
     {
       var ticket_admin = get_admin_ticket();
@@ -2200,4 +2200,5 @@ for (i = 0; i < 1; i++)
       }
 
     });
+*/
 }
