@@ -543,7 +543,6 @@ v-ui:LinkTemplate
         <div class="panel-body">
           <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
           <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-          <br class="-view edit search">
           <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
           <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
           <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
@@ -553,6 +552,12 @@ v-ui:LinkTemplate
           <span rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
           <div class="view -edit -search" style="font-style:italic">
             <small property="v-s:creator"></small><small property="v-s:created"></small>
+          </div>
+          <div class="checkbox -view edit -search">
+            <label>
+              <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
+              <span about="v-s:mutualMembership" property="rdfs:label"></span>
+            </label>
           </div>
         </div>
       </div>

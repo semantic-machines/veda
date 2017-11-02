@@ -9,7 +9,6 @@
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
-
 @prefix cfgb: <http://semantic-machines.com/veda/config-base/> .
 <http://semantic-machines.com/veda/config-base>
   rdf:type owl:Ontology ;
@@ -313,16 +312,22 @@ cfg:Permission_6
   rdfs:label "Permission to read dictionaries for all users"@en ;
   rdfs:label "Разрешение на чтение справочников для всех пользователей"@ru ;
 .
-#cfg:Permission_7
-#  rdf:type v-s:PermissionStatement ;
-#  v-s:author cfg:VedaSystem ;
-#  v-s:permissionSubject cfg:AllUsersGroup ;
-#  v-s:permissionObject v-s:Group_group ;
-#  v-s:canRead "true"^^xsd:boolean ;
-#  rdfs:label "Permission to read groups for all users "@en ;
-#  rdfs:label "Разрешение на чтение групп для всех пользователей"@ru ;
-#  v-s:deleted "true"^^xsd:boolean ;
-#.
+cfg:LinkGroupPermissionStatement
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:Link_group ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canRead true ;
+  rdfs:label "Permission for all users to read individuals of v-s:Link class"@en ;
+  rdfs:label "Право для всех пользователей на просмотр индивидов класса v-s:Link"@ru ;
+.
+cfg:LinkCreatePermissionStatement
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:Link ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate true ;
+  rdfs:label "Permission for all users to create individuals of v-s:Link class"@en ;
+  rdfs:label "Право для всех пользователей на создание индивидов класса v-s:Link"@ru ;
+.
 
 cfg:Membership_AllUsersGroup_WorkFlowReadUser
   rdf:type v-s:Membership ;
