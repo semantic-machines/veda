@@ -69,9 +69,9 @@ function generate_test_document1(ticket)
 
 function generate_test_document2(ticket)
 {
-    var new_test_doc1_uri = genUri();
-    var new_test_doc1 = {
-        '@': new_test_doc1_uri,
+    var new_test_doc2_uri = genUri();
+    var new_test_doc2 = {
+        '@': new_test_doc2_uri,
         'rdf:type': newUri('rdfs:Resource1'),
         'v-s:test_integer_32': [newInt(922337203)[0], newInt(456403)[0]],
         'v-s:test_negative_integer': newInt(-144365435),
@@ -96,7 +96,8 @@ function generate_test_document2(ticket)
         'v-s:permissionSubject': [newUri('individual_' + guid())[0], newUri('individual_' + guid())[0]],
         'v-s:author': newUri(ticket.user_uri)
     };
-    return new_test_doc1;
+
+    return new_test_doc2;
 }
 
 function create_test_document1(ticket, prefix)
@@ -115,16 +116,16 @@ function create_test_document1(ticket, prefix)
 
 function create_test_document2(ticket, prefix)
 {
-    var new_test_doc1 = generate_test_document2(ticket)
+    var new_test_doc2 = generate_test_document2(ticket)
 
     if (prefix)
-  new_test_doc1['@'] = prefix + new_test_doc1['@']
+	new_test_doc2['@'] = prefix + new_test_doc2['@']
 
-    var res = put_individual(ticket.id, new_test_doc1);
+    var res = put_individual(ticket.id, new_test_doc2);
     //wait_module(m_subject, res.op_id);
     wait_module(m_acl, res.op_id);
     wait_module(m_scripts, res.op_id);
-    return new_test_doc1;
+    return new_test_doc2;
 }
 
 function test_success_read(ticket, read_indv_uri, ethalon_indv, reopen)
@@ -2131,7 +2132,7 @@ for (i = 0; i < 1; i++)
     });
 
 
-    test("#031 test decimal", function()
+    test("#031 test server side script: decimal, and various format [{}], {}, [[{}]]", function()
     {
       var ticket_admin = get_admin_ticket();
 
@@ -2142,6 +2143,8 @@ for (i = 0; i < 1; i++)
         'v-s:triggerByType': newUri('rdfs:Resource1'),
         'v-s:script': newStr('if (parent_script_id != "") return;' +
             'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
+            'document["v-s:test_ArArObj"]= [newDate(new Date("2017-02-03"))];' +
+            'document["v-s:test_Obj"]= newDate(new Date("2017-03-03"))[0];' +
             'put_individual(ticket, document, _event_id);'),
         'v-s:created': newDate(new Date()),
         'v-s:author': newUri(ticket_admin.user_uri)
@@ -2159,9 +2162,12 @@ for (i = 0; i < 1; i++)
       test_fail_read(ticket_admin, doc['@'], doc);
 
       doc["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));
+      doc["v-s:test_ArArObj"]= newDate(new Date("2017-02-03"));
+      doc["v-s:test_Obj"]= newDate(new Date("2017-03-03"));
 
       test_success_read(ticket_admin, doc['@'], doc);
     });
+
 /*
     test("#032 test create individual with rdf:type rdfs:Resource", function()
     {
