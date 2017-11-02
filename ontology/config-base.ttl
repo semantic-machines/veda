@@ -1107,12 +1107,22 @@ cfg:Event_15
       linkTo = get_individual(ticket, linkToUri),
       linkFrom = get_individual(ticket, linkFromUri),
       containsThisLink,
-      membershipUri = "d:link_membership_" + linkUri.split(":").join("_") + "_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
-      membership = {
-        '@' : membershipUri,
+      mutualMembership = hasValue( document, "v-s:mutualMembership", {data: true, type: _Boolean} ),
+      membershipToFromUri = "d:link_membership_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
+      membershipFromToUri = "d:link_membership_" + linkFromUri.split(":").join("_") + "_" + linkToUri.split(":").join("_"),
+      membershipToFrom = {
+        '@' : membershipToFromUri,
         'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : [ newUri(linkToUri)[0], newUri(linkFromUri)[0] ],
-        'v-s:resource' : newUri(linkUri),
+        'v-s:memberOf' : newUri(linkFromUri),
+        'v-s:resource' : newUri(linkToUri),
+        'rdfs:comment' : newStr('создано cfg:Event_15'),
+        'v-s:canRead'  : newBool(true)
+      },
+      membershipFromTo = {
+        '@' : membershipFromToUri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : newUri(linkToUri),
+        'v-s:resource' : newUri(linkFromUri),
         'rdfs:comment' : newStr('создано cfg:Event_15'),
         'v-s:canRead'  : newBool(true)
       };
@@ -1137,8 +1147,12 @@ cfg:Event_15
     }
   }
   if (linkTo && linkFrom) {
-    put_individual(ticket, membership, _event_id);
-    print("EVENT 15", JSON.stringify(membership, null, 2));
+    put_individual(ticket, membershipToFrom, _event_id);
+    print( "membershipToFrom", JSON.stringify(membershipToFrom) );
+    if (mutualMembership) {
+      put_individual(ticket, membershipFromTo, _event_id);
+      print( "membershipFromTo", JSON.stringify(membershipFromTo) );
+    }
   }
   """ ;
 .

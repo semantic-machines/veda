@@ -188,6 +188,29 @@ v-s:to
   rdfs:label "к"@ru ;
   rdfs:range v-s:Thing ;
 .
+v-s:mutualMembership
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Link ;
+  rdfs:label "Provide mutual rights?"@en ;
+  rdfs:label "Предоставить обоюдные права?"@ru ;
+  rdfs:range xsd:boolean ;
+.
+v-s:LinkGroupPermissionStatement
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:Link_group ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canRead true ;
+  rdfs:label "Permission for all users to read individuals of v-s:Link class"@en ;
+  rdfs:label "Право для всех пользователей на просмотр индивидов класса v-s:Link"@ru ;
+.
+v-s:LinkCreatePermissionStatement
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:Link ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate true ;
+  rdfs:label "Permission for all users to create individuals of v-s:Link class"@en ;
+  rdfs:label "Право для всех пользователей на создание индивидов класса v-s:Link"@ru ;
+.
 
 ### ------------------------------------------------------
 v-s:Status

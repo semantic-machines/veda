@@ -409,6 +409,7 @@ v-s:canCreate
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can create"@en ;
   rdfs:label "Можно создавать"@ru ;
   rdfs:range xsd:boolean ;
@@ -419,6 +420,7 @@ v-s:canDelete
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can delete"@en ;
   rdfs:label "Можно удалять"@ru ;
   rdfs:range xsd:boolean ;
@@ -429,6 +431,7 @@ v-s:canRead
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can read"@en ;
   rdfs:label "Можно читать"@ru ;
   rdfs:range xsd:boolean ;
@@ -439,6 +442,7 @@ v-s:canUpdate
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can update"@en ;
   rdfs:label "Можно изменять"@ru ;
   rdfs:range xsd:boolean ;
