@@ -229,7 +229,7 @@ v-ui:CommonOntologyTemplate
 </script>
 <div style="position:relative;">
   <a style="position:absolute;top:10px;right:10px;" href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-  <h2><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br><small><span about="@" property="rdfs:label"></span> (<span property="@"></span>)</small></h2>
+  <h3><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br><small><span about="@" property="rdfs:label"></span> (<span property="@"></span>)</small></h3>
   <input type="text" id="uri" class="form-control" />
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
   <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
