@@ -553,12 +553,12 @@ v-ui:LinkTemplate
           <div class="view -edit -search" style="font-style:italic">
             <small property="v-s:creator"></small><small property="v-s:created"></small>
           </div>
-          <div class="checkbox -view edit -search">
+          <i class="checkbox disabled">
             <label>
               <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
-              <span about="v-s:mutualMembership" property="rdfs:label"></span>
+              <small about="v-s:mutualMembership" property="rdfs:label"></small>
             </label>
-          </div>
+          </i>
         </div>
       </div>
     </div>
