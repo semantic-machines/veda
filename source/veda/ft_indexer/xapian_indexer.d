@@ -448,9 +448,7 @@ public class IndexerContext
                     }
 
                     void prepare_index(ref Individual idx, Resource rs, string ln, int level = 0)
-                    {
-                        stderr.writefln("@LN %s", ln);
-                        
+                    {                        
                         if (rs.type == DataType.String)
                         {
                             Resources indexed_field_as_fwildcardZ =
@@ -472,7 +470,6 @@ public class IndexerContext
                             {
                                 // 1. считать индивид по ссылке
                                 Individual inner_indv = context.get_individual(ticket, rs.uri);
-                                // stderr.writefln("@IDX [%s] resource [%s]", idx.uri, rs.uri);
 
                                 //string tab; for (int i = 0; i < level; i++)
                                 //    tab ~= "	";
@@ -480,6 +477,88 @@ public class IndexerContext
                                 //writeln (tab);
                                 //writeln (tab, "@inner_indv = ", inner_indv);
                                 //writeln (tab, "@idx = ", idx);
+
+                                string query = "'vdi:domain'=='" ~ idx.uri ~ "'";
+                                string[] uris = context.get_individuals_ids_via_query(ticket, query, null, 
+                                    null, 0, 1000, 1000, null, false).result;
+                                for (int i = 0; i < uris.length; i++) {
+                                    // ссылка на наследуемый индекс, переходим вниз
+                                    Individual inhr_idx = iproperty.get_index(uris[i]);
+
+                                    if (trace_msg[ 220 ] == 1)
+                                        log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", uris[i],
+                                                    inhr_idx);
+                                    
+                                    if (inhr_idx != Individual.init)
+                                    {
+                                        Resources forProperties =
+                                            inhr_idx.getResources("vdi:forProperty");
+                                        if (forProperties != Resources.init)
+                                        {
+                                            foreach (forProperty; forProperties)
+                                            {
+                                                Resources links =
+                                                    inner_indv.getResources(forProperty.uri);
+                                                if (trace_msg[ 220 ] == 1)
+                                                    log.trace("forProperty=[%s], links=[%s]", forProperty, links);
+
+                                                foreach (link; links)
+                                                {
+                                                    prepare_index(inhr_idx, link,
+                                                                    ln ~ "." ~ forProperty.uri,
+                                                                    level + 1);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // в этом индексе не указанно на какое свойство будет индексация,
+                                            // значит берем поля указанные vdi:indexed_field в текущем индивиде
+                                            Resources indexed_fields =
+                                                inhr_idx.getResources("vdi:indexed_field");
+                                            
+                                            if (indexed_fields != Resources.init)
+                                            {
+                                                foreach (indexed_field; indexed_fields)
+                                                {
+                                                    Resources rrc =
+                                                        inner_indv.getResources(indexed_field.uri);
+                                                    foreach (rc; rrc)
+                                                    {
+                                                        if (trace_msg[ 213 ] == 1)
+                                                            log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri,
+                                                                        rc);
+
+                                                        if (rc.type == DataType.Uri)
+                                                        {
+                                                            index_uri(ln ~ "." ~ indexed_field.uri, rc);
+                                                        }
+                                                        if (rc.type == DataType.String)
+                                                        {
+                                                            index_string(ln ~ "." ~ indexed_field.uri, rc);
+                                                        }
+                                                        else if (rc.type == DataType.Integer)
+                                                        {
+                                                            index_integer(ln ~ "." ~ indexed_field.uri, rc);
+                                                        }
+                                                        else if (rc.type == DataType.Datetime)
+                                                        {
+                                                            index_date(ln ~ "." ~ indexed_field.uri, rc);
+                                                        }
+                                                        else if (rc.type == DataType.Boolean)
+                                                        {
+                                                            index_boolean(ln ~ "." ~ indexed_field.uri, rc);
+                                                        }
+                                                        else if (rc.type == DataType.Decimal)
+                                                        {
+                                                            index_double(ln ~ "." ~ indexed_field.uri, rc);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 foreach (predicate, values; idx.resources)
                                 {
                                     //writeln (tab, "@@@5 predicate = ", predicate);
@@ -491,7 +570,6 @@ public class IndexerContext
                                             // ссылка на наследуемый индекс, переходим вниз
                                             Individual inhr_idx = iproperty.get_index(value.uri);
 
-                                            // stderr.writefln("\t@INHERTIT TO [%s]", value.uri);
                                             if (trace_msg[ 220 ] == 1)
                                                 log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value,
                                                           inhr_idx);
@@ -500,21 +578,17 @@ public class IndexerContext
                                             {
                                                 Resources forProperties =
                                                     inhr_idx.getResources("vdi:forProperty");
-                                                // stderr.writefln("\t\t@FOR PROPERTIES [%s]", forProperties);
                                                 if (forProperties != Resources.init)
                                                 {
                                                     foreach (forProperty; forProperties)
                                                     {
                                                         Resources links =
                                                             inner_indv.getResources(forProperty.uri);
-                                                        // stderr.writefln("\t\t\t@INHERIT TO [%s] FOR PROPERTY [%s] LINKS [%s] INNER [%s] IDX[%s]",
-                                                            // value.uri, forProperty, links, inner_indv.uri, idx.uri);
                                                         if (trace_msg[ 220 ] == 1)
                                                             log.trace("forProperty=[%s], links=[%s]", forProperty, links);
 
                                                         foreach (link; links)
                                                         {
-                                                            // stderr.writefln("\t@LINK %s", link);
                                                             prepare_index(inhr_idx, link,
                                                                           ln ~ "." ~ forProperty.uri,
                                                                           level + 1);
@@ -569,100 +643,6 @@ public class IndexerContext
                                                     }
                                                 }
                                             }
-                                        }
-                                    }
-                                    
-                                    if (predicate == "vdi:domain")
-                                    {
-                                        foreach (value; values)
-                                        {   
-                                            
-                                            Resources forProperties =
-                                                idx.getResources("vdi:forProperty");
-                                            if (forProperties != Resources.init)
-                                            {
-                                                foreach (forProperty; forProperties)
-                                                {
-                                                    Resources links =
-                                                        inner_indv.getResources(forProperty.uri);
-                                                    // stderr.writefln("@INHERIT FROM [%s] FOR PROPERTY [%s] LINKS [%s] INNER [%s] IDX[%s]",
-                                                        // value.uri, forProperty, links, inner_indv.uri, idx.uri);
-                                                    if (trace_msg[ 220 ] == 1)
-                                                        log.trace("forProperty=[%s], links=[%s]", forProperty, links);
-
-                                                    foreach (link; links)
-                                                    {
-                                                        prepare_index(idx, link,
-                                                                        ln ~ "." ~ forProperty.uri,
-                                                                        level + 1);
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                // в этом индексе не указанно на какое свойство будет индексация,
-                                                // значит берем поля указанные vdi:indexed_field в текущем индивиде
-                                                Resources indexed_fields =
-                                                    idx.getResources("vdi:indexed_field");
-                                                if (indexed_fields != Resources.init)
-                                                {
-                                                    
-                                                    foreach (indexed_field; indexed_fields)
-                                                    {
-                                                        Resources rrc =
-                                                            inner_indv.getResources(indexed_field.uri);
-                                                        stderr.writefln("\t@LN2 %s", ln ~ "." ~ indexed_field.uri);
-                                                        foreach (rc; rrc)
-                                                        {
-                                                            if (trace_msg[ 213 ] == 1)
-                                                                log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri,
-                                                                            rc);
-
-                                                            if (rc.type == DataType.Uri)
-                                                            {
-                                                                index_uri(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            if (rc.type == DataType.String)
-                                                            {
-                                                                index_string(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Integer)
-                                                            {
-                                                                index_integer(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Datetime)
-                                                            {
-                                                                index_date(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Boolean)
-                                                            {
-                                                                index_boolean(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                            else if (rc.type == DataType.Decimal)
-                                                            {
-                                                                index_double(ln ~ "." ~ indexed_field.uri, rc);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            // ссылка на родительский индекс, переходим вверх
-                                            Individual parent_idx = iproperty.get_index(value.uri);
-
-                                            if (trace_msg[ 220 ] == 1)
-                                                log.trace("[%s]ссылка на родительский индекс, переходим вниз по иерархии индекса [%s]", value,
-                                                          parent_idx);
-                                            
-                                            if (parent_idx != Individual.init)
-                                            {
-                                                foreach (predicate, values; idx.resources)
-                                                    foreach (value; values)
-                                                        prepare_index(parent_idx, value,
-                                                                        ln ~ "." ~ value.uri,
-                                                                        level - 1);
-                                            }
-                                                
                                         }
                                     }
                                 }
