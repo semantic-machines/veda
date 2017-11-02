@@ -170,7 +170,6 @@ v-s:Link
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Exportable ;
-  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Link"@en ;
   rdfs:label "Связь"@ru ;
 .
