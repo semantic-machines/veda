@@ -487,14 +487,13 @@ jsobject_log(Local<Value> value)
     return true;
 }
 
-void prepare_js_object(Local<Object> resource_obj, v8::Handle<v8::Array> individual_keys, Handle<Value>         f_data, Handle<Value>         f_type,
+void prepare_js_object(Local<Object> resource_obj, Handle<Value>         f_data, Handle<Value>         f_type,
                        Handle<Value>         f_lang,
                        std::vector<char> &ou)
 {
-    v8::Handle<v8::Array> resource_keys   = resource_obj->GetPropertyNames();
-    uint32_t              resource_length = individual_keys->Length();
-    Local<Value>          v_data          = resource_obj->Get(f_data);
-    Local<Value>          v_type          = resource_obj->Get(f_type);
+    v8::Handle<v8::Array> resource_keys = resource_obj->GetPropertyNames();
+    Local<Value>          v_data        = resource_obj->Get(f_data);
+    Local<Value>          v_type        = resource_obj->Get(f_type);
 
     int                   type = v_type->ToInteger()->Value();
     //cerr << "\t\t@TYPE " << type << endl;
@@ -619,9 +618,10 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
         {
             if (js_value->IsObject())
             {
+//              {}
                 write_type_value(ARRAY, 1, ou);
                 Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                prepare_js_object(resource_obj, individual_keys, f_data, f_type, f_lang, ou);
+                prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
             }
             else
             {
@@ -643,8 +643,8 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 
             if (js_value->IsArray())
             {
-//             [ [ {} ] ]  
-			
+//             [ [ {} ] ]
+
                 Local<v8::Array> resources_in_arr    = Local<v8::Array>::Cast(js_value);
                 uint32_t         resources_in_length = resources_in_arr->Length();
 
@@ -653,19 +653,19 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
                     js_value = resources_in_arr->Get(0);
 
                     Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                    prepare_js_object(resource_obj, individual_keys, f_data, f_type, f_lang, ou);
+                    prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
                 }
                 else
                 {
-//             		[ [ {} ], [ {} ] ]  
+//                  [ [ {} ], [ {} ] ]
                     cerr << "ERR! INVALID JS INDIVIDUAL FORMAT " << endl;
                 }
             }
             else
             {
-//             [ {} ]  
+//             [ {} ]
                 Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                prepare_js_object(resource_obj, individual_keys, f_data, f_type, f_lang, ou);
+                prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
             }
         }
     }
