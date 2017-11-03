@@ -440,7 +440,10 @@ jsobject_log(Local<Value> value)
         for (uint32_t j = 0; j < resources_length; j++)
         {
             js_value = resources_arr->Get(j);
-            cerr << "\t\t@IS OBJECT " << js_value->IsObject() << endl;
+
+
+            if (js_value->IsObject())
+            {
             Local<Object>         resource_obj = Local<Object>::Cast(js_value);
 
             v8::Handle<v8::Array> resource_keys   = resource_obj->GetPropertyNames();
@@ -479,6 +482,7 @@ jsobject_log(Local<Value> value)
                     v_lang = resource_obj->Get(js_key);
                     cerr << "\t\t\t\t@TYPE " << v_lang->ToInteger()->Value() << endl;
                 }
+		}
             }
         }
     }
@@ -661,6 +665,7 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
                     //cerr << "[ [ {} ], [ {} ] ]" << endl;
 //                  [ [ {} ], [ {} ] ]
                     cerr << "ERR! INVALID JS INDIVIDUAL FORMAT " << endl;
+		    jsobject_log(value);
                 }
             }
             else
@@ -674,9 +679,9 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
                 }
                 else
                 {
-                    cerr << "ERR! INVALID JS INDIVIDUAL FORMAT, NULL VALUE " << endl;
+                    cerr << "ERR! INVALID JS INDIVIDUAL FORMAT, NULL VALUE, "  << endl;
+		    jsobject_log(value);
 
-                    //jsobject_log(value);
                     write_type_value(ARRAY, 0, ou);
                 }
             }
