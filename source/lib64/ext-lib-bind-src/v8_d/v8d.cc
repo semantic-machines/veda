@@ -643,6 +643,7 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 
             if (js_value->IsArray())
             {
+                //cerr << "[ [ {} ] ]" << endl;
 //             [ [ {} ] ]
 
                 Local<v8::Array> resources_in_arr    = Local<v8::Array>::Cast(js_value);
@@ -657,15 +658,27 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
                 }
                 else
                 {
+                    //cerr << "[ [ {} ], [ {} ] ]" << endl;
 //                  [ [ {} ], [ {} ] ]
                     cerr << "ERR! INVALID JS INDIVIDUAL FORMAT " << endl;
                 }
             }
             else
             {
+                if (js_value->IsObject())
+                {
 //             [ {} ]
-                Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
+                    //cerr << "[ {} ]" << endl;
+                    Local<Object> resource_obj = Local<Object>::Cast(js_value);
+                    prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
+                }
+                else
+                {
+                    cerr << "ERR! INVALID JS INDIVIDUAL FORMAT, NULL VALUE " << endl;
+
+                    //jsobject_log(value);
+                    write_type_value(ARRAY, 0, ou);
+                }
             }
         }
     }
