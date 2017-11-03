@@ -396,6 +396,8 @@ class VedaModule
                 if ((assigned_subsystems & subsystem_id) != subsystem_id)
                 {
                     log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
+
+                    main_cs[ i ].commit_and_next(true);
                     continue;
                 }
             }
@@ -405,6 +407,8 @@ class VedaModule
                 if (((assigned_subsystems * -1) & subsystem_id) == subsystem_id)
                 {
                     log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
+
+                    main_cs[ i ].commit_and_next(true);
                     continue;
                 }
             }
