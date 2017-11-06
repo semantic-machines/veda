@@ -1,11 +1,13 @@
 // Individual Presenter Async
 
-veda.Module(function IndividualPresenterAsync(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   //var c = 0;
 
-  veda.on("individual_async:loaded", function (individual, container, template, mode) {
+  veda.IndividualPresenterAsync = function (container, template, mode) {
 
+    var individual = this;
+    
     //console.log(individual.id, "presenter count:", ++c);
 
     if (typeof container === "string") {
@@ -57,7 +59,7 @@ veda.Module(function IndividualPresenterAsync(veda) { "use strict";
     }
 
     if (container.prop("id") === "main") { container.show("fade", 250); }
-  });
+  }
 
   function renderTemplate(individual, container, template, mode, specs) {
     var pre_render_src,

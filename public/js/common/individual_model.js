@@ -538,10 +538,8 @@ veda.Module(function (veda) { "use strict";
    * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
    * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
    */
-  proto.present = function (container, template, mode) {
-    if (container) {
-      veda.trigger("individual:loaded", this, container, template, mode);
-    }
+  proto.present = function () {
+    veda.IndividualPresenter.apply(this, arguments);
     return this;
   };
 

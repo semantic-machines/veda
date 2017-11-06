@@ -1,12 +1,14 @@
 // Individual Presenter
 
-veda.Module(function IndividualPresenter(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   //var c = 0;
 
-  veda.on("individual:loaded", function (individual, container, template, mode) {
-
+  veda.IndividualPresenter = function (container, template, mode) {
+  
     try {
+
+      var individual = this;
 
       //console.log(individual.id, "presenter count:", ++c);
 
@@ -25,7 +27,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       console.log(err);
     }
 
-  });
+  }
 
   function present(individual, container, template, mode) {
 
