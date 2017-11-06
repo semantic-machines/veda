@@ -42,10 +42,8 @@
           break;
         default:
           if (!params[0]) { params[0] = "#main"; }
-          var individual = new veda.IndividualModelAsync(page);
-          individual.load().then(function (individual) {
-            individual.present.apply(individual, params);
-          });
+          var individual = new veda.IndividualModel(page);
+          individual.present.apply(individual, params);
       }
     };
 
