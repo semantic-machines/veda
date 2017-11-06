@@ -11,15 +11,12 @@ veda.Module(function (veda) { "use strict";
    * @param {boolean} cache Use cache true / false. If true or not set, then object will be return from application cache (veda.cache). If false or individual not found in application cache - than individual will be loaded from database
    * @param {boolean} init individual with class model at load. If true or not set, then individual will be initialized with class specific model upon load.
    */
-  veda.IndividualModelAsync = function (uri, container, template, mode, cache, init) {
+  veda.IndividualModelAsync = function (uri, cache, init) {
 
     var self = riot.observable(this);
 
     // veda.IndividualModelAsync({...})
     if (typeof uri === "object" && !uri["@"]) {
-      container = uri.container;
-      template  = uri.template;
-      mode      = uri.mode;
       cache     = uri.cache;
       init      = uri.init;
       uri       = uri.uri;
@@ -284,27 +281,30 @@ veda.Module(function (veda) { "use strict";
             self.isSync(false);
             self.properties = {
               "@": uri,
-              "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
-              "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+              "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
+              "rdfs:label": [
+                {type: "String", data: "Объект не существует", lang: "RU"},
+                {type: "String", data: "Object does not exist", lang: "EN"}
+              ]
             };
           } else if (error.code === 472) {
             self.isNew(false);
             self.isSync(false);
             self.properties = {
               "@": uri,
+              "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
               "rdfs:label": [
-                {type: "String", data: "No rights", lang: "EN"},
-                {type: "String", data: "Нет прав", lang: "RU"}
-              ],
-              "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+                {type: "String", data: "Нет прав на объект", lang: "RU"},
+                {type: "String", data: "Insufficient rights", lang: "EN"}
+              ]
             };
           } else {
             self.isNew(false);
             self.isSync(false);
             self.properties = {
               "@": uri,
-              "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
-              "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+              "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
+              "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
             };
           }
           return self;
@@ -591,13 +591,10 @@ veda.Module(function (veda) { "use strict";
    * @param {String/jQuery/veda.IndividualModelAsync} template Template to render individual with.
    * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
    */
-  proto.present = function (container, template, mode) {
-    if (container) {
-      veda.trigger("individual_async:loaded", this, container, template, mode);
-    }
-    return this;
+  proto.present = function () {
+    return veda.IndividualPresenterAsync.apply(this, arguments);
   };
-
+  
   /**
    * @method
    * Serialize to JSON
