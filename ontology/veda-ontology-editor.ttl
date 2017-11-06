@@ -229,13 +229,13 @@ v-ui:CommonOntologyTemplate
 </script>
 <div style="position:relative;">
   <a style="position:absolute;top:10px;right:10px;" href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-  <h2><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br><small><span about="@" property="rdfs:label"></span> (<span property="@"></span>)</small></h2>
+  <h3><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><br><small><span about="@" property="rdfs:label"></span> (<span property="@"></span>)</small></h3>
   <input type="text" id="uri" class="form-control" />
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
   <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit search"></veda-control>
   <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
   <i property="rdfs:comment" class="view -edit -search"></i>
-  <veda-control property="rdfs:comment" data-type="multilingualString" class="-view edit search"></veda-control>
+  <veda-control property="rdfs:comment" data-type="multilingualText" rows="2" class="-view edit search"></veda-control>
   <hr>
 </div>
   """ ;
@@ -1107,7 +1107,80 @@ v-ui:EventTemplate
   """ ;
 .
 
+v-ui:ModuleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для 'v-s:Module'"@ru ;
+  rdfs:label "Template for 'v-s:Module'"@en ;
+  v-ui:forClass v-s:Module ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="@" property="rdf:type"></span><br>
+    <small property="@"></small>
+  </h2>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-body bg-default">
+          <em about="v-s:moduleUrl" property="rdfs:label"></em>
+          <div property="v-s:moduleUrl" class="view -edit -search"></div>
+          <veda-control data-type="text" property="v-s:moduleUrl" class="-view edit search"></veda-control>
+          <em about="v-s:moduleVersion" property="rdfs:label"></em>
+          <div property="v-s:moduleVersion" class="view -edit -search"></div>
+          <veda-control data-type="text" property="v-s:moduleVersion" class="-view edit search"></veda-control>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div about="@" rel="v-s:hasImage" style="" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+    </div>
+  </div>
+  <div class="panel panel-default view -search -create">
+    <div class="panel-heading">
+      <span>Лог модуля</span>
+      <button type="button" class="btn btn-xs btn-default pull-right" id="copy-log">Скопировать</button>
+    </div>
+    <div class="panel-body">
+        <pre property="rdfs:comment" style="border:none; background-color:#fff; font-size: 0.8em; max-height: 500px; overflow-y: auto;"></pre>
+    </div>
+  </div>
+  <!-- заготовка для отображения созданных модулем классов -->
+  <!-- <div class="panel panel-default">
+    <div class="panel-heading">
+      <span>Связанные классы</span>
+    </div>
+    <div class="panel-body">
 
+    </div>
+  </div> -->
+  <hr>
+  <div class="actions clearfix">
+    <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+  </div>
+</div>
+<script>
+  $("#copy-log", template).click(e=>{
+    let temp = $("<textarea>");
+    $(".modal").append(temp);
+    temp.val(individual['rdfs:comment'][0]).select();
+    document.execCommand("copy");
+    temp.remove();
+    return false;
+  });
+
+  $(".panel-heading", template).css("cursor", "pointer");
+  $(".panel-heading", template).click(e => {
+    $(e.target).siblings().slideToggle();
+  })
+
+  var dd = individual['rdfs:comment'][0];
+  var pre = $("pre", template);
+  var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+  pre.html(anchored);
+</script>
+  """ ;
+.
 
 # -- ПРАВА --
 

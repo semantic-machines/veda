@@ -104,6 +104,13 @@ td:Programmer1
   rdfs:label "Программист"@ru ;
 .
 
+td:BB-semantic_machines
+  rdf:type v-s:Account ;
+  v-s:login "semantic_machines"^^xsd:string ;
+  v-s:password "f7apqs65FnWF7YGpj6cLFbc27ae3"^^xsd:string ;
+  rdfs:label "BB sm account" ;
+.
+
 td:BushenevVT
   rdf:type v-s:Account ;
   v-s:login "BushenevVT"^^xsd:string ;
@@ -358,7 +365,7 @@ td:AndreyBychin-Analyst2
 td:RomanKarpov
   rdf:type v-s:Person ;
   v-s:actualVersion td:RomanKarpov ;
-  v-s:birthday "1981-01-09"^^xsd:dateTime ;
+  v-s:birthday "1981-01-09T00:00:00Z"^^xsd:dateTime ;
   v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
   v-s:hasAccount td:KarpovRT ;
@@ -683,22 +690,23 @@ v-wf:UserTaskForm1
   v-wf:from td:RomanKarpov-Analyst1 ;
 .
 
-d:khvostia_dismantlingProjectSpecialist
-  a v-s:Appointment;
-  v-s:occupation d:dismantlingProjectSpecialist;
-  v-s:employee td:AleksandraKhvostikova;
-  v-s:official "true"^^xsd:boolean;
-  v-s:valid "true"^^xsd:boolean;
-  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
-.
-d:khvostia_financialController
-  a v-s:Appointment;
-  v-s:occupation d:financialController;
-  v-s:employee td:AleksandraKhvostikova;
-  v-s:official "true"^^xsd:boolean;
-  v-s:valid "true"^^xsd:boolean;
-  rdfs:label "Хвостикова : Финансовый контролер"@ru
-.
+#d:khvostia_dismantlingProjectSpecialist
+#  a v-s:Appointment;
+#  v-s:occupation d:dismantlingProjectSpecialist;
+#  v-s:employee td:AleksandraKhvostikova;
+#  v-s:official "true"^^xsd:boolean;
+#  v-s:valid "true"^^xsd:boolean;
+#  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
+#.
+
+#d:khvostia_financialController
+#  a v-s:Appointment;
+#  v-s:occupation d:financialController;
+#  v-s:employee td:AleksandraKhvostikova;
+#  v-s:official "true"^^xsd:boolean;
+#  v-s:valid "true"^^xsd:boolean;
+#  rdfs:label "Хвостикова : Финансовый контролер"@ru
+#.
 
 d:Bychina_create_Person
   rdf:type v-s:PermissionStatement ;

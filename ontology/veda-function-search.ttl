@@ -1823,32 +1823,6 @@ v-fs:AttributiveSearchTemplate
   """ ;
 .
 
-v-fs:MinimalSearchResultTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон отображения результатов минимального поиска"@ru ;
-  rdfs:label "Minimal search result template"@en ;
-  v-ui:template """
-<table class="table table-condensed table-striped">
-  <thead class="result-header">
-    <tr>
-      <th width="1%">#</th>
-      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th>@</th>
-      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td>###</td>
-      <td about="@" data-template="v-ui:IconModalTemplate"></td>
-      <td property="@"></td>
-      <td about="@" property="rdfs:label"></td>
-    </tr>
-  </tbody>
-</table>
-  """ ;
-.
-
 v-fs:TestSearch
   rdf:type v-fs:AttributiveSearch ;
   rdfs:label "Тестовый поиск"@ru ;
@@ -2015,6 +1989,33 @@ v-fs:MinimalSearchBlank
   v-fc:targetType rdf:Property ;
 .
 
+v-fs:MinimalSearchResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Шаблон отображения результатов минимального поиска"@ru ;
+  rdfs:label "Minimal search result template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-striped">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th>@</th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="@"></td>
+      <td about="@" property="rdfs:label"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
 v-fs:AttributiveSearchInlineTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -2022,6 +2023,7 @@ v-fs:AttributiveSearchInlineTemplate
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   v-ui:template """
 <script>
+
   var self = individual,
       searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined,
       searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() : undefined,
@@ -2041,6 +2043,7 @@ v-fs:AttributiveSearchInlineTemplate
     individual.resultTemplate = resultTemplate;
     resultContainer.empty();
   }
+
   if ( !searchBlankTemplate ) {
     $("#params", template).remove();
   }

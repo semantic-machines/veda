@@ -169,7 +169,7 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       var previous = this.properties && this.properties["@"];
-      if (previous && this._.cache && this._.cache[previous]) {
+      if (previous && this._.cache && veda.cache[previous]) {
         delete veda.cache[previous];
         veda.cache[value] = this;
       }
@@ -269,19 +269,22 @@ veda.Module(function (veda) { "use strict";
           this.isSync(false);
           this.properties = {
             "@": uri,
-            "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
-            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
+            "rdfs:label": [
+              {type: "String", data: "Объект не существует", lang: "RU"},
+              {type: "String", data: "Object does not exist", lang: "EN"}
+            ]
           };
         } else if (e.code === 472) {
           this.isNew(false);
           this.isSync(false);
           this.properties = {
             "@": uri,
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
             "rdfs:label": [
-              {type: "String", data: "No rights", lang: "EN"},
-              {type: "String", data: "Нет прав", lang: "RU"}
-            ],
-            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+              {type: "String", data: "Нет прав на объект", lang: "RU"},
+              {type: "String", data: "Insufficient rights", lang: "EN"}
+            ]
           };
         } else if (e.code === 470 || e.code === 471) {
           this.trigger("afterLoad", this);
@@ -291,8 +294,8 @@ veda.Module(function (veda) { "use strict";
           this.isSync(false);
           this.properties = {
             "@": uri,
-            "rdfs:label": [{type: "String", data: uri, lang: "NONE"}],
-            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}]
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
+            "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
           };
         }
       }

@@ -131,7 +131,7 @@ v-cal:FunctionCalendarTemplate
         events: function(start, end, timezone, callback) {
           var events = individual.getEvents(start, end);
           // Update counter if counter & events count do not match
-          if ( !counter.isNew() && !counter.hasValue("v-ft:inboxWeekCount", events.length) ) {
+          if ( !counter.isNew() && !counter.hasValue("v-ft:inboxWeekCount", events.length) && start.toDate() <= new Date() && new Date() <= end.toDate() ) {
             counter["v-ft:inboxWeekCount"] = [events.length];
             counter.save();
           }

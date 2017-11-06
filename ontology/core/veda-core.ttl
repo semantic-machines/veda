@@ -11,12 +11,107 @@
   rdf:type owl:Ontology ;
   rdfs:label "Veda system ontology"@en ;
   rdfs:label "Онтология системы Veda"@ru ;
-#  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
 
+v-s:AppInfo
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Application info"@en ;
+  rdfs:label "Информация о приложении"@ru ;
+.
 
-# ------------------------------------------------------------ КЛАССЫ --
+v-s:appBuildVersion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Версия приложения"@ru ;
+  rdfs:label "Version of the application"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:appBuildDate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Дата сборки приложения"@ru ;
+  rdfs:label "Build date of the application"@en ;
+  rdfs:range xsd:dateTime ;
+.
+
+v-s:appUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AppInfo ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "App url"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:Module
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Module"@en ;
+  rdfs:label "Модуль"@ru ;
+  v-ui:hasTemplate v-ui:ModuleTemplate ;
+.
+
+v-s:moduleUrl
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Module, v-s:RequestToModulesManager ;
+  rdfs:label "Module url"@en ;
+  rdfs:label "Url модуля"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:moduleVersion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Module ;
+  rdfs:label "Module version"@en ;
+  rdfs:label "Версия модуля"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:RequestToModulesManager
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Request to modules manager"@en ;
+  rdfs:label "Запрос к менеджеру модулей"@ru ;
+.
+
+v-s:command
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:RequestToModulesManager ;
+  rdfs:label "Command"@en ;
+  rdfs:label "Команда"@ru ;
+  rdfs:range xsd:string ;
+.
+
+v-s:journalOfRequest
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestToModulesManager ;
+  rdfs:label "Журнал запроса"@ru ;
+  rdfs:label "Request journal"@en ;
+  rdfs:range v-s:Journal ;
+.
+
+v-s:requestList
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Module, v-s:AppInfo ;
+  rdfs:label "Список запросов"@ru ;
+  rdfs:label "Request List"@en ;
+  rdfs:range v-s:RequestToModulesManager ;
+.
+
+v-s:moduleList
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:RequestToModulesManager ;
+  rdfs:label "Список модулей"@ru ;
+  rdfs:label "Modules List"@en ;
+  rdfs:range v-s:Module ;
+.
+
+# ---------------------------------- КЛАССЫ --
 
 v-s:ExecuteScript
   rdf:type owl:Class ;
@@ -136,6 +231,11 @@ v-s:Account
   v-ui:hasTemplate td:AccountTemplate1 ;
 .
 
+v-s:GitAccount
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Account ;
+.
+
 v-s:Credential
   rdf:type owl:Class ;
   rdfs:label "Credential" ;
@@ -232,7 +332,7 @@ v-s:triggerByUid
 .
 v-s:dependency
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Event ;
+  rdfs:domain v-s:Event, v-s:Module ;
   rdfs:label "Dependency"@en ;
   rdfs:label "Зависимость"@ru ;
   rdfs:range rdfs:Resource ;
@@ -246,7 +346,7 @@ v-s:disabled
 .
 v-s:runAt
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Event ;
+  rdfs:domain v-s:Event, v-s:UserScript ;
   rdfs:label "Исполнять в"@ru ;
   rdfs:label "Run at"@en ;
   rdfs:range xsd:string ;
@@ -309,6 +409,7 @@ v-s:canCreate
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can create"@en ;
   rdfs:label "Можно создавать"@ru ;
   rdfs:range xsd:boolean ;
@@ -319,6 +420,7 @@ v-s:canDelete
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can delete"@en ;
   rdfs:label "Можно удалять"@ru ;
   rdfs:range xsd:boolean ;
@@ -329,6 +431,7 @@ v-s:canRead
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can read"@en ;
   rdfs:label "Можно читать"@ru ;
   rdfs:range xsd:boolean ;
@@ -339,6 +442,7 @@ v-s:canUpdate
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
+  rdfs:domain v-s:Link ;
   rdfs:label "Can update"@en ;
   rdfs:label "Можно изменять"@ru ;
   rdfs:range xsd:boolean ;

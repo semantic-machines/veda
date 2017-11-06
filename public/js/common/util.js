@@ -50,8 +50,17 @@ function guid()
 
 function compare(a, b)
 {
-  if (typeof a === "function") return a.toString() === b.toString();
-  else if (typeof a != "object" || typeof b != "object") return a === b;
+  if (typeof a === "function") 
+    return a.toString() === b.toString();
+  else if (typeof a != "object" || typeof b != "object") 
+    return a === b;
+
+  if (a instanceof Date)    
+  {
+    return a.toString () == b.toString ();    
+    //return a.valueOf() == b.valueOf();    
+  }
+
   var dl = Object.keys(a).length - Object.keys(b).length;
   if (dl > 1 || dl < -1) return false;
   var result = true;
@@ -113,7 +122,8 @@ function compare(a, b)
       }
     }
     result &= compare(aa, bb);
-    if (!result) return false;
+    if (!result) 
+	return false;
   }
   return result;
 }
@@ -1003,6 +1013,14 @@ function getUris(field)
 }
 
 function getUri(field)
+{
+  if (field && field.length > 0)
+  {
+    return field[0].data;
+  }
+}
+
+function getData(field)
 {
   if (field && field.length > 0)
   {

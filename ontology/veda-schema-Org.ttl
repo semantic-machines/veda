@@ -72,7 +72,7 @@ v-s:OrganizationUnitModel
     }
     return this["v-s:parentUnit"].reduce(function (state, item) {
       return state || self.getChief.apply(item);
-    }, false);
+    }, undefined);
   };
 
   // sourceURL=v-s:OrganizationUnitModel
@@ -716,7 +716,6 @@ v-s:OrganizationTemplate
     profile["v-s:backwardTarget"] = [individual];
     profile["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
     profile["rdfs:label"] = individual["v-s:shortLabel"] ;
-    profile["v-s:omitBackwardTargetGroup"] = [true];
     profile.present(cntr, tmpl, "edit");
     profile.one("beforeReset", function () {
       modal.modal("hide").remove();
@@ -754,6 +753,7 @@ v-s:OrganizationTemplate
     subsidiary["rdf:type"] = [_class];
     subsidiary["v-s:backwardTarget"] = [individual];
     subsidiary["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasSubsidiary")];
+    subsidiary["v-s:canRead"] = [ true ];
     subsidiary.present(cntr, tmpl, "edit");
     subsidiary.one("beforeReset", function () {
       modal.modal("hide").remove();
@@ -778,9 +778,10 @@ v-s:OrganizationTemplate
         tmpl = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequestTemplate");
     request["rdf:type"] = [_class];
     request.present(cntr, tmpl, "edit");
+    request["rdfs:label"] = individual["rdfs:label"];
     request["v-s:backwardTarget"] = [individual];
-    request["rdfs:label"] =  individual["rdfs:label"];
     request["v-s:backwardProperty"] = [new veda.IndividualModel("mnd-s:hasContractorCreateChangeRequest")];
+    request["v-s:canRead"] = [ true ];
     request["mnd-s:additionalContractorProfile"] = [ individual["rdfs:label"].join(" ") + " " + veda.Util.formatDate(new Date()) ];
     request["v-s:hasContractor"]= individual["v-s:hasContractor"];
     request.one("beforeReset", function () {

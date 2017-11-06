@@ -177,7 +177,7 @@ class XapianReader : SearchReader
             int idx = 0;
             foreach (el; db_names)
             {
-                if (el[ 0 ] == ' ' || el[ $ ] == ' ')
+                if (el[ 0 ] == ' ' || el[ $-1 ] == ' ')
                     db_names[ idx ] = strip(el);
                 idx++;
             }

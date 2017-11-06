@@ -1,0 +1,84 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+
+<http://semantic-machines.com/veda/veda-bug-report>
+  rdf:type owl:Ontology ;
+  rdfs:label "Veda system bug report ontology"@en ;
+  rdfs:label "Онтология сообщений об ошибках системы Веда"@ru ;
+#  owl:versionInfo "1.1" ;
+  v-s:loadPriority 9 ;
+.
+
+v-s:BugReport
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Bug report"@en ;
+  rdfs:label "Сообщение об ошибке"@ru ;
+  v-ui:hasTemplate v-s:BugReportTemplate ;
+.
+v-s:errorCode
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BugReport ;
+  rdfs:range xsd:string ;
+  rdfs:label "Error code"@en ;
+  rdfs:label "Код ошибки"@ru ;
+.
+v-s:errorName
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BugReport ;
+  rdfs:range xsd:string ;
+  rdfs:label "Error name"@en ;
+  rdfs:label "Имя ошибки"@ru ;
+.
+v-s:errorMessage
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BugReport ;
+  rdfs:range xsd:string ;
+  rdfs:label "Error message"@en ;
+  rdfs:label "Описание ошибки"@ru ;
+.
+v-s:errorStack
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BugReport ;
+  rdfs:range xsd:string ;
+  rdfs:label "Error stack"@en ;
+  rdfs:label "Стек ошибки"@ru ;
+.
+v-s:resolved
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BugReport ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "Resolved"@en ;
+  rdfs:label "Решена"@ru ;
+.
+v-s:BugReportTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон графа"@ru ;
+  rdfs:label "Template graph"@en ;
+  v-ui:forClass v-s:BugReport ;
+  v-ui:template """
+<div class="container sheet">
+  <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:resolved" data-type="boolean"></veda-control>
+      <em about="v-s:resolved" property="rdfs:label"></em>
+    </label>
+  </div>
+  <strong about="@" property="v-s:errorCode"></strong>: <strong about="@" property="v-s:errorName"></strong>
+  <br>
+  <i about="@" property="v-s:errorMessage"></i>
+  <em about="v-s:errorStack" property="rdfs:label"></em>
+  <pre about="@" property="v-s:errorStack" style="border:none; background-color:transparent;"></pre>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+</div>
+  """ ;
+.

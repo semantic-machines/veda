@@ -1799,6 +1799,7 @@ v-wf:Transform
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Трансформация"@ru ;
   rdfs:label "Transformation"@en ;
+  v-ui:hasTemplate v-wf:TransformationTemplate ;
 .
 
 v-wf:transformRule
@@ -1813,6 +1814,7 @@ v-wf:Rule
   rdf:type rdfs:Class ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Правило"@ru ;
+  v-ui:hasTemplate v-wf:RuleTemplate ;
 .
 
 v-wf:segregateObject
@@ -2896,6 +2898,128 @@ v-wf:transformPropertySpecification1
   v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
 .
 
+v-wf:TransformationTemplate
+rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Трансформация"@ru ;
+  rdfs:label "Template for Transofrmaion class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="@" property="rdf:type"></span>
+  </h2>
+  <!-- <div class="row">
+    <div class="col-md-5 col-xs-5 text-right name">
+      <strong class="text-muted" about="v-wf:aggregate" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7 col-xs-7" rel="transformRule">
+      <span class="view search -create" property="@"></span>
+      <veda-control property="@" class="-view edit create"></veda-control>
+    </div>
+  </div> -->
+  <div class="row">
+    <div class="col-md-5">
+      <em about="v-wf:transformRule" property="rdfs:label"></em>
+    </div>
+  </div>
+  <div rel="v-wf:transformRule" data-template="v-wf:RuleTemplate" data-embedded="true"></div>
+    <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="actions view edit pull-left">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  </div>
+</div>
+"""
+.
+
+v-wf:RuleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Правило"@ru ;
+  rdfs:label "Template for Rule class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="@" property="rdf:type"></span>
+  </h2>
+  <div class="row">
+    <div class="col-md-5 text-right">
+      <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-7">
+      <div property="rdfs:label" class="view search -create"></div>
+      <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:segregateObject" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:segregateObject"></span>
+      <veda-control property="v-wf:segregateObject" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:segregateElement" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:segregateElement"></span>
+      <veda-control property="v-wf:segregateElement" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:conversion" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:conversion"></span>
+      <veda-control property="v-wf:conversion" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:grouping" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:grouping"></span>
+      <veda-control property="v-wf:grouping" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:aggregate" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:aggregate"></span>
+      <veda-control property="v-wf:aggregate" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="actions view edit pull-left">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  </div>
+</div>
+<script>
+  if ($(template).parent().attr('data-embedded')){
+    $(".actions", template).remove();
+  };
+</script>
+""".
+
 v-wf:RuleTemplateEmbedded
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -2904,44 +3028,48 @@ v-wf:RuleTemplateEmbedded
   v-ui:template """
 <div>
   <div class="row">
-    <div class="col-md-1">
-      <strong>Segregate Object</strong>
+    <div class="col-md-4">
+      <strong class="text-muted">Выделение подмножества обьектов</strong>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-8">
     <div property="v-wf:segregateObject"></div>
-      <veda-control data-type="string" property="v-wf:segregateObject" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:segregateObject" class="view edit search -create"></veda-control>
     </div>
-    <div class="col-md-1">
-      <strong>Segregate Element</strong>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <strong class="text-muted">Выделение подмножества элементов</strong>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-8">
     <div property="v-wf:segregateElement"></div>
-      <veda-control data-type="string" property="v-wf:segregateElement" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:segregateElement" class="view edit search -create"></veda-control>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-1">
-      <strong>Create</strong>
+    <div class="col-md-4">
+      <strong class="text-muted">Преобразование элемента</strong>
     </div>
-    <div class="col-md-5">
-    <div property="v-wf:create"></div>
-      <veda-control data-type="string" property="v-wf:create" class="view edit search -create"></veda-control>
-    </div>
-    <div class="col-md-1">
-      <strong>Conversion</strong>
-    </div>
-    <div class="col-md-5">
+    <div class="col-md-8">
     <div property="v-wf:conversion"></div>
-      <veda-control data-type="string" property="v-wf:conversion" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:conversion" class="view edit search -create"></veda-control>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-1">
-      <strong>Aggregate</strong>
+    <div class="col-md-4">
+      <strong class="text-muted">Группировка объектов</strong>
     </div>
-    <div class="col-md-11">
+    <div class="col-md-8">
+    <div property="v-wf:grouping"></div>
+      <veda-control property="v-wf:grouping" class="view edit search -create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <strong class="text-muted">Размещение элемента в обьекте</strong>
+    </div>
+    <div class="col-md-8">
     <div property="v-wf:aggregate"></div>
-      <veda-control data-type="string" property="v-wf:aggregate" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:aggregate" class="view edit search -create"></veda-control>
     </div>
   </div>
 </div>

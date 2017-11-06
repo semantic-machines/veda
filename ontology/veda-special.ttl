@@ -33,13 +33,6 @@ v-s:backwardProperty
   rdfs:label "целевое свойство"@ru ;
   rdfs:range owl:ObjectProperty ;
 .
-v-s:omitBackwardTargetGroup
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:BackwardLink ;
-  rdfs:label "omit backward target group?"@en ;
-  rdfs:label "не включать в группу целевого объекта?"@ru ;
-  rdfs:range xsd:boolean ;
-.
 # ------------------------------------------------------------
 v-s:Exportable
   rdf:type owl:Class ;
@@ -149,8 +142,8 @@ v-s:ManuallyVersioned
 v-s:triggerVersionCreation
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:ManuallyVersioned ;
-  rdfs:label "Initiate version creation"@en ;
-  rdfs:label "Инициировать создание версии"@ru ;
+  rdfs:label "Create version"@en ;
+  rdfs:label "Создать версию"@ru ;
   rdfs:range xsd:boolean ;
 .
 ### ------------------------------------------------------

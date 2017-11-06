@@ -361,6 +361,7 @@ veda.Module(function Backend(veda) { "use strict";
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
+        "prepare_events": true,
         "event_id": (isObj ? arg.event_id : event_id) || "",
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }),
@@ -381,6 +382,7 @@ veda.Module(function Backend(veda) { "use strict";
           "ticket": isObj ? arg.ticket : ticket,
           "individual": isObj ? arg.individual : individual,
           "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
+          "prepare_events": true,
           "event_id" : (isObj ? arg.event_id : event_id) || "",
           "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
         },
@@ -404,6 +406,7 @@ veda.Module(function Backend(veda) { "use strict";
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
+        "prepare_events": true,
         "event_id": (isObj ? arg.event_id : event_id) || "",
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }),
@@ -423,6 +426,7 @@ veda.Module(function Backend(veda) { "use strict";
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
+        "prepare_events": true,
         "event_id" : (isObj ? arg.event_id : event_id) || "",
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }),
@@ -442,6 +446,7 @@ veda.Module(function Backend(veda) { "use strict";
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
+        "prepare_events": true,
         "event_id" : (isObj ? arg.event_id : event_id) || "",
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }),
@@ -462,6 +467,7 @@ veda.Module(function Backend(veda) { "use strict";
           "ticket": isObj ? arg.ticket : ticket,
           "individuals": isObj ? arg.individuals : individuals,
           "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
+          "prepare_events": true,
           "event_id" : (isObj ? arg.event_id : event_id) || "",
           "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
         },

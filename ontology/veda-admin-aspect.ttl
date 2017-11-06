@@ -18,6 +18,7 @@
 
 v-s:UserScript
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "User script"@en ;
   rdfs:label "Пользовательский скрипт"@ru ;
   v-ui:hasTemplate v-s:UserScriptTemplate ;
@@ -47,9 +48,22 @@ v-s:lastRun
   rdfs:range xsd:dateTime ;
 .
 
+v-s:PsRunAtUserScript
+  rdf:type v-ui:DatatypePropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:runAt для класса v-s:UserScript"@ru ;
+  rdfs:label "v-s:runAt property specification for v-s:UserScript class"@en ;
+  v-ui:forClass v-s:UserScript ;
+  v-ui:forProperty v-s:runAt ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:defaultValue "Browser" ;
+  v-ui:optionValue "Browser" ;
+  v-ui:optionValue "Server" ;
+.
+
 v-s:UserScriptEvent
   rdf:type v-s:Event ;
-  v-s:filter v-s:UserScript ;
+  v-s:triggerByType v-s:UserScript ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -62,14 +76,16 @@ v-s:UserScriptEvent
  * parent_document_id = id of the document that triggered this event.
  */
 var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
+var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
 
-if (!toBeRun) { return }
+if (!toBeRun || runAt !== "Server") { return; }
 
-// preserve global print()
-var console_print = this.print;
+// preserve global print & console
+var nativePrint = this.print;
+var nativeConsole = this.console;
 
-// override global print()
-this.print = function () {
+// override global print & console
+var print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
     if (i === 0) {
@@ -80,14 +96,28 @@ this.print = function () {
   }
   output += String.fromCharCode(13, 10);
 }
+this.print = print;
+
+var console = {
+  log: print,
+  time: function (timer) {
+    this[timer] = new Date();
+  },
+  timeEnd: function (timer) {
+    var delta = new Date() - this[timer];
+    this.log(timer, delta, "msec");
+  }
+};
+this.console = console;
+
 var output = "";
 var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
 if (script) {
   script = new Function (script);
   try {
     script();
-  } catch (ex) {
-    print(ex);
+  } catch (err) {
+    print(err);
   }
   document["v-s:scriptOutput"] = [{
     data: output,
@@ -102,9 +132,9 @@ if (script) {
   put_individual(ticket, document, _event_id);
 }
 
-// restore global print()
-this.print = console_print;
-
+// restore global print & console
+this.print = nativePrint;
+this.console = nativeConsole;
 """
 .
 
@@ -120,7 +150,7 @@ v-s:UserScriptTemplate
   rdfs:label "Template for v-s:UserScript class"@en ;
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   v-ui:template """
-<div class="container sheet">
+<div class="container-fluid sheet">
   <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
   <div class="row">
     <div class="col-md-2 view -edit -search">
@@ -138,6 +168,11 @@ v-s:UserScriptTemplate
           <em about="v-s:toBeRun" property="rdfs:label"></em>
         </label>
       </div>
+    </div>
+    <div class="col-md-2 view edit -search">
+      <em about="v-s:runAt" property="rdfs:label"></em>
+      <div property="v-s:runAt" class="view -edit -search"></div>
+      <veda-control property="v-s:runAt" data-type="radio" class="-view edit search"></veda-control>
     </div>
   </div>
   <hr>
@@ -166,13 +201,68 @@ v-s:UserScriptTemplate
 
 </div>
 <script>
+  // Clear output on save
+  individual.on("beforeSave", clearOutput);
+  template.one("remove", function () {
+    individual.off("beforeSave", clearOutput);
+  });
+  function clearOutput () {
+    this["v-s:scriptOutput"] = [];
+  }
+
+  var nativeConsole = window.console;
+  var nativePrint = window.print;
+  var print = function () {
+    var output = individual["v-s:scriptOutput"][0] || "";
+    for (var i = 0; i < arguments.length; i++) {
+      var arg = arguments[i] ;
+      if (i === 0) {
+        output += arg.toString();
+      } else {
+        output += " " + arg.toString();
+      }
+    }
+    output += String.fromCharCode(13, 10);
+    individual["v-s:scriptOutput"] = [output];
+  }
+  var console = {
+    log: print,
+    time: function (timer) {
+      this[timer] = new Date();
+    },
+    timeEnd: function (timer) {
+      var delta = new Date() - this[timer];
+      this.log(timer, delta, "msec");
+    }
+  };
+
+  window.console = console;
+  window.print = print;
+  template.one("remove", function () {
+    window.console = nativeConsole;
+    window.print = nativePrint;
+  });
+
   $(".action#run", template).click(function () {
-    individual["v-s:toBeRun"] = [ true ];
-    individual.save();
+    if ( individual.hasValue("v-s:runAt", "Server") ) {
+      individual["v-s:toBeRun"] = [ true ];
+      individual.save();
+    } else {
+      individual["v-s:lastRun"] = [ new Date() ];
+      individual["v-s:scriptOutput"] = [];
+      var script = new Function("veda", individual["v-s:script"][0] || "return;");
+      try {
+        script(veda);
+      } catch (err) {
+        print(err);
+      }
+    }
   });
   $(".action#clear", template).click(function () {
-    individual["v-s:scriptOutput"] = [ ];
+    individual["v-s:scriptOutput"] = [];
   });
+
+  //# sourceURL=v-s:UserScriptTemplate_post
 </script>
   """
 .
@@ -197,30 +287,6 @@ v-s:AdministrationAspect1
   v-s:shortLabel "Administration"@en ;
   v-s:shortLabel "Администрирование"@ru ;
   v-s:hasImage v-s:AdministrationImage ;
-#  v-s:hasBlank v-s:OntologyBlank ;
-  v-s:hasBlank v-s:ClassBlank ;
-  v-s:hasBlank v-s:PropertyBlank ;
-  v-s:hasBlank v-s:ClassTemplateBlank ;
-  v-s:hasBlank v-s:PersonBlank ;
-  v-s:hasBlank v-s:GroupBlank ;
-  v-s:hasBlank v-s:NetBlank ;
-  v-s:hasBlank v-s:UserScriptBlank ;
-  v-s:hasBlank v-s:EventBlank ;
-#  v-s:hasBlank v-s:FunctionBlank ;
-  v-s:hasBlank v-s:BlankBlank ;
-  v-s:hasBlank v-s:RegistryBlank ;
-#  v-s:hasRegistry v-s:OntologyRegistry ;
-  v-s:hasRegistry v-s:ClassRegistry ;
-  v-s:hasRegistry v-s:PropertyRegistry ;
-  v-s:hasRegistry v-s:ClassTemplateRegistry ;
-  v-s:hasRegistry v-s:PersonRegistry ;
-  v-s:hasRegistry v-s:GroupRegistry ;
-  v-s:hasRegistry v-s:NetRegistry ;
-  v-s:hasRegistry v-s:UserScriptRegistry ;
-  v-s:hasRegistry v-s:EventRegistry ;
-#  v-s:hasRegistry v-s:FunctionRegistry ;
-  v-s:hasRegistry v-s:BlankRegistry ;
-  v-s:hasRegistry v-s:RegistryRegistry ;
 .
 
 v-s:AdministrationImage
@@ -350,7 +416,6 @@ v-s:PersonRegistry
   v-fs:searchBlank v-s:PersonRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:PersonRegistryBlank
@@ -375,7 +440,6 @@ v-s:GroupRegistry
   v-fs:searchBlank v-s:GroupRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:GroupRegistryBlank
@@ -437,6 +501,31 @@ v-s:UserScriptRegistryBlank
   v-fc:targetType v-s:UserScript ;
 .
 
+
+# -- МОДУЛИ --
+
+v-s:ModulesBlank
+  a v-fc:Blank ;
+  rdfs:label "Модуль"@ru ;
+  rdfs:label "Module"@en ;
+  v-fc:targetType v-s:Module ;
+.
+v-s:ModulesRegistry
+  a v-fs:AttributiveSearch ;
+  rdfs:label "Установленные модули"@ru ;
+  rdfs:label "Installed modules"@en ;
+  v-fs:searchBlank v-s:ModulesRegistryBlank ;
+  v-fs:searchBlankTemplate v-ui:ModulesBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:ModulesResultTemplate ;
+  v-fs:searchOnLoad true ;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+v-s:ModulesRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Установленные модули"@ru ;
+  rdfs:label "Installed modules"@en ;
+  v-fc:targetType v-s:Module ;
+.
 # -- СОБЫТИЯ --
 
 v-s:EventBlank
@@ -553,7 +642,6 @@ v-s:PermissionStatementRegistry
   v-fs:searchBlank v-s:PermissionStatementRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
-  v-fs:searchOnLoad true;
   v-fs:sortOrder "'rdfs:label' asc";
 .
 v-s:PermissionStatementRegistryBlank
@@ -561,6 +649,31 @@ v-s:PermissionStatementRegistryBlank
   rdfs:label "Все реестры"@ru ;
   rdfs:label "All registries"@en ;
   v-fc:targetType v-s:PermissionStatement ;
+.
+
+# -- ОШИБКИ --
+
+v-s:PermissionStatementBlank
+  a v-fc:Blank ;
+  rdfs:label "Сообщение об ошибке"@ru ;
+  rdfs:label "Bug report"@en ;
+  v-fc:targetType v-s:BugReport ;
+.
+v-s:BugReportRegistry
+  a v-fs:AttributiveSearch ;
+  rdfs:label "Все сообщения об ошибках"@ru ;
+  rdfs:label "All bug reports"@en ;
+  v-fs:searchBlank v-s:BugReportBlank ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+  v-fs:sortOrder "'rdfs:label' asc" ;
+  v-fs:searchOnLoad true ;
+.
+v-s:BugReportBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Все сообщения об ошибках"@ru ;
+  rdfs:label "All bug reports"@en ;
+  v-fc:targetType v-s:BugReport ;
 .
 
 # -- НАПОЛНЕНИЕ АСПЕКТА АДМИНИСТРИРОВАНИЯ END --
@@ -659,61 +772,55 @@ v-ui:AdminResultTemplate
   """ ;
 .
 
+# -- ШАБЛОНЫ ДЛЯ ПОИСКА МОДУЛЕЙ В АСПЕКТЕ АДМИНИСТРИРОВАНИЯ --
 
-
-# -- ШАБЛОН АСПЕКТА АДМИНИСТРИРОВАНИЯ --
-v-ui:AdministrationAspectTemplate1
+v-ui:ModulesBlankTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
-  rdfs:label "Template for Administration aspect class"@en ;
-  v-ui:forClass v-s:AdministrationAspect ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
   v-ui:template """
-<div class="container sheet" style="position:relative;">
-  <div class="row">
-    <div class="col-md-4">
-      <div class="container-fluid">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o"></i> <span about="v-s:Blanks" property="rdfs:label"></span></h4>
-        <hr>
-        <div about="@" rel="v-s:hasBlank">
-          <div>
-            <a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
-            <br>
-          </div>
-        </div>
+<script>
+  container.siblings(".search-button.pull-right").remove();
+</script>
+  """ ;
+.
+
+v-ui:ModulesResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска модулей для админов"@ru ;
+  rdfs:label "Admin search result template for modules"@en ;
+  v-ui:template """
+<style>
+  .hasImage {
+    background-color: #f0f0f0;
+  }
+  .hasImage>img {
+    height: 100%;
+  }
+</style>
+<div class="result-container row">
+  <div class="col-md-4">
+    <div class="thumbnail">
+      <div class="hasImage" about="@" rel="v-s:hasImage" style="height:200px;" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+      <div>
+        <span id="test" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span style="font-weight: bold;" property="@"></span>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="container-fluid">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table"></i> <span about="v-s:Registries" property="rdfs:label"></span></h4>
-        <hr>
-        <div about="@" rel="v-s:hasRegistry">
-          <div>
-            <a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
-            <br>
-          </div>
-        </div>
+      <div>
+        <span style="font-weight: bold;" about="v-s:moduleVersion" property="rdfs:label"></span>
+        <span>:</span>
+        <span property="v-s:moduleVersion"></span>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="container-fluid">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart"></i> <span about="v-s:Reports" property="rdfs:label"></span></h4>
-        <hr>
-        <div about="@" rel="v-s:hasReport">
-          <div>
-            <a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
-            <br>
-          </div>
-        </div>
+      <div class="clearfix">
+        <button type="button" class="action btn btn-link view pull-right" id="delete" about="v-s:Delete" property="rdfs:label"/>
       </div>
     </div>
   </div>
-
-  <hr>
-  <div about="@" data-template="v-ui:AdministrationAspectTemplate1"></div>
-
 </div>
   """ ;
 .
+
+# -- ШАБЛОН АСПЕКТА АДМИНИСТРИРОВАНИЯ --
 
 v-s:ClassesBundle
   rdf:type v-s:Bundle ;
@@ -776,6 +883,18 @@ v-s:ScriptsBundle
   rdfs:label "Scripts"@en ;
 .
 
+v-s:ModulesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Модули"@ru ;
+  rdfs:label "Modules"@en ;
+.
+
+v-s:BugReportsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Bug reports"@en ;
+  rdfs:label "Ошибки"@ru ;
+.
+
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
@@ -792,6 +911,8 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Nets" aria-controls="Nets" role="tab" data-toggle="tab" about="v-s:NetsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Scripts" aria-controls="Scripts" role="tab" data-toggle="tab" about="v-s:ScriptsBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Modules" aria-controls="Modules" role="tab" data-toggle="tab" about="v-s:ModulesBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#Issues" aria-controls="Issues" role="tab" data-toggle="tab" about="v-s:BugReportsBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -847,10 +968,12 @@ v-ui:AdministrationAspectTemplate
     <div role="tabpanel" class="tab-pane" id="Nets">
       <h2 about="v-s:NetsBundle" property="rdfs:label"></h2>
       <div class="panel panel-default">
-        <div class="panel-heading"><span about="v-s:NetRegistry" property="rdfs:label"></span><a href="#/v-s:NetBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+        <div class="panel-heading">
+          <span about="v-s:NetRegistry" property="rdfs:label"></span>
+          <a href="#/v-s:NetBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
         <div class="panel-body" about="v-s:NetRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
-
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Rights">
@@ -870,7 +993,7 @@ v-ui:AdministrationAspectTemplate
           </div>
         </div>
       </div>
-      <div class="row">
+      <!--div class="row">
         <div class="col-md-6">
           <h2 about="v-s:PermissionStatementsBundle" property="rdfs:label"></h2>
           <div class="panel panel-default">
@@ -878,19 +1001,69 @@ v-ui:AdministrationAspectTemplate
             <div class="panel-body" about="v-s:PermissionStatementRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
-      </div>
+      </div-->
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Scripts">
       <div class="panel panel-default">
-        <div class="panel-heading"><span about="v-s:UserScriptRegistry" property="rdfs:label"></span><a href="#/v-s:UserScriptBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+        <div class="panel-heading">
+          <span about="v-s:UserScriptRegistry" property="rdfs:label"></span>
+          <a href="#/v-s:UserScriptBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
         <div class="panel-body" about="v-s:UserScriptRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Modules">
+      <h2 about="v-s:ModulesBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="row">
+            <div class="col-md-10">
+              <div class="input-group">
+                <span about="v-s:moduleUrl" property='rdfs:label' class="input-group-addon"></span>
+                <input id="moduleUrl" type="text" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="action btn btn-primary btn-block view pull-right" id="install-Module">Установить</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div about="v-s:ModulesRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+        </div>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="Issues">
+      <h2 about="v-s:BugReportsBundle" property="rdfs:label"></h2>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span about="v-s:BugReportRegistry" property="rdfs:label"></span>
+          <a href="#/v-s:BugReportBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
+        <div class="panel-body" about="v-s:BugReportRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
     </div>
 
   </div>
 </div>
 <script>
+
+  $("#install-Module").click(function(){
+    let url=$("#moduleUrl",template).val();
+    if (url) {
+      var Module = new veda.IndividualModel();
+      Module["rdf:type"] = [new veda.IndividualModel("v-s:RequestToModulesManager")];
+      Module["v-s:moduleUrl"]=[url];
+      Module.save();
+      $("#moduleUrl",template).val("");
+    };
+  });
+
+
+
   $("#admin-tabs", template).on("click", "a", function (e) {
     e.preventDefault();
     individual.activeTab = $(this).attr("href");

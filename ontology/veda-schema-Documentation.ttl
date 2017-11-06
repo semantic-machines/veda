@@ -465,6 +465,8 @@ v-s:InternalDocument
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Enumerated ;
   rdfs:label "Internal document"@en ;
   rdfs:label "Внутренний документ"@ru ;
 .

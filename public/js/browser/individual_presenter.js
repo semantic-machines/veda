@@ -897,7 +897,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var control = $(this),
           rel_uri = control.attr("rel"),
           spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
-          rel = new veda.IndividualModel(rel_uri),
           type = control.attr("data-type") || "link",
           controlType = $.fn["veda_" + type];
 

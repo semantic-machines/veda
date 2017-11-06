@@ -557,7 +557,7 @@ v-s:ProjectPhaseKind
 v-s:Currency
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;  
+  rdfs:subClassOf v-s:Registered ;
   rdfs:label "Currency"@en ;
   rdfs:label "Валюта"@ru ;
 .
@@ -955,6 +955,15 @@ v-s:PsOutOfScope
   v-ui:tooltip "Не входит в рамки проекта"@ru ;
   rdfs:label "OutOfScope description property specification for Project class"@en ;
   rdfs:label "Спецификация описания не входит в рамки проекта класса Проект"@ru ;
+.
+v-s:PsRiskAttachmentProjectPhase
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ProjectPhase ;
+  v-ui:forProperty v-s:riskAttachment ;
+  v-ui:maxCardinality 100 ;
+  v-ui:minCardinality 0 ;
+  rdfs:label "v-s:riskAttachment property specification for ProjectPhase class"@en ;
+  rdfs:label "Спецификация cвойства v-s:riskAttachment для класса ProjectPhase "@ru ;
 .
 v-s:PsDatesInProjectPhase
   rdf:type v-ui:DatatypePropertySpecification ;

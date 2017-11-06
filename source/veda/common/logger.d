@@ -7,7 +7,7 @@ module veda.common.logger;
 
 private
 {
-    import core.stdc.time, core.stdc.stdio, core.stdc.string;
+    import core.stdc.time, core.stdc.stdio, core.stdc.string, std.outbuffer;
     import std.format, std.datetime, std.array : appender;
     import std.stdio, std.datetime, std.concurrency;
 }
@@ -55,6 +55,41 @@ private void logger_process()
             writeln("ERR! logging, ex=", tr.msg);
             break;
         }
+    }
+}
+
+public class ArrayLogger
+{
+    OutBuffer obuff;
+
+    this()
+    {
+        obuff = new OutBuffer();
+    }
+
+    public void trace(Char, A ...) (in Char[] fmt, A args)
+    {
+        auto writer = appender!string();
+
+        formattedWrite(writer, fmt, args);
+
+        string     src = writer.data;
+
+        SysTime    time = Clock.currTime();
+        const auto dt   = cast(DateTime)time;
+        const auto fsec = time.fracSecs.total !"usecs";
+
+        if (src.length > 0)
+            obuff.writefln("%04d-%02d-%02d %02d:%02d:%02d.%06d %s", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                           fsec, src);
+        else
+            obuff.writefln("%04d-%02d-%02d %02d:%02d:%02d.%06d", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
+                           fsec);
+    }
+
+    string raw()
+    {
+        return obuff.toString();
     }
 }
 

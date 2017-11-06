@@ -116,8 +116,11 @@ JSONValue[] individuals_to_json(Individual[] individuals)
 
 Individual json_to_individual(ref JSONValue individual_json)
 {
-    //log.trace ("\nJSON->:%s", individual_json);
     Individual individual = Individual.init;
+
+    try
+    {
+    //log.trace ("\nJSON->:%s", individual_json);
 
     foreach (string property_name, property_values; individual_json)
     {
@@ -135,6 +138,12 @@ Individual json_to_individual(ref JSONValue individual_json)
             individual.resources[ property_name ] = resources;
     }
     //log.trace ("->INDIVIDUAL:%s", individual);
+    }
+    catch (Throwable tr)
+    {
+        stderr.writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", tr.msg, "], in ", individual_json);
+    }
+
     return individual;
 }
 
@@ -270,7 +279,8 @@ Resource json_to_resource(JSONValue resource_json)
     }
     catch (Exception ex)
     {
-        writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
+        stderr.writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
+        throw ex;
     }
 
     return resource;
