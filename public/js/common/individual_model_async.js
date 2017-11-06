@@ -61,7 +61,7 @@ veda.Module(function (veda) { "use strict";
       this["v-s:edited"] = [ now ];
       this["v-s:lastEditor"] = [ user ];
     }
-    if ( !this.hasValue("v-s:creator") ) {
+    if ( !this.hasValue("v-s:creator") && !this.hasValue("v-s:created") ) {
       this["v-s:creator"] = [ user ];
       this["v-s:created"] = [ now ];
     }
@@ -72,23 +72,13 @@ veda.Module(function (veda) { "use strict";
   proto.get = function (property_uri) {
     var self = this;
     if (!self.properties[property_uri]) return [];
-    var values = self.properties[property_uri]
+    self.filtered[property_uri] = [];
+    return self.properties[property_uri]
       .filter(function (value) {
-        var condition = value.type !== "String" || value.lang === "NONE" || (veda.user && veda.user.language && value.lang in veda.user.language);
-        if (condition === false) {
-          var filtered = self.filtered[property_uri] || [],
-              found = filtered.filter(function (filteredVal) {
-                return filteredVal.data === value.data && filteredVal.lang === value.lang;
-              });
-          if ( !found.length ) {
-            filtered.push( value );
-          }
-          self.filtered[property_uri] = filtered;
-        }
-        return condition;
+        var condition = !value.lang || value.lang === "NONE" || ( veda.user && veda.user.language && value.lang in veda.user.language ) ;
+        return condition ? condition : ( self.filtered[property_uri].push(value), condition );
       })
       .map( parser );
-    return values;
   };
 
   proto.set = function (property_uri, values) {
@@ -99,8 +89,8 @@ veda.Module(function (veda) { "use strict";
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
       uniq = serialized.concat( this.filtered[property_uri] );
     }
-    if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(serialized) ) {
-      this.properties[property_uri] = serialized;
+    if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
+      this.properties[property_uri] = uniq;
       this.trigger("propertyModified", property_uri, values);
       this.trigger(property_uri, values);
     }
@@ -170,7 +160,7 @@ veda.Module(function (veda) { "use strict";
         type: "Datetime",
         data: value.toISOString()
       }
-    } else if (value instanceof veda.IndividualModel || value instanceof veda.IndividualModelAsync) {
+    } else if (value instanceof veda.IndividualModelAsync) {
       return {
         type: "Uri",
         data: value.id
@@ -378,7 +368,7 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Save current individual without validation and without adding new version
    */
-  proto.draft = function () {
+  proto.draft = function() {
     this.trigger("beforeDraft");
     veda.drafts.set(this.id, this);
     this.trigger("afterDraft");
@@ -390,62 +380,35 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
-    var self = this;
     this.trigger("beforeReset");
-    return this.update()
-      .then(function (self) {
-        self.trigger("afterReset");
-        return self;
-      });
-  };
-
-  /**
-   * @method
-   * Update current individual with values from database & merge with local changes
-   */
-  proto.update = function () {
-    this.trigger("beforeUpdate");
     var self = this;
-    if (!this.isNew()) {
-      this.filtered = {};
-      return get_individual({ticket: veda.ticket, uri: this.id, async: true})
-        .then(function (original) {
-          merge.call(self, original);
-          veda.drafts.remove(self.id);
-          self.trigger("afterUpdate");
-          return self;
-        })
-        .catch(function (error) {
-          var notify = veda.Notify ? new veda.Notify() : function () {};
-          notify("danger", error);
-          return self;
-        });
+    self.filtered = {};
+    if ( self.hasValue("v-s:isDraft") ) {
+      var drafts = new veda.DraftsModel();
+      drafts.remove(self.id);
     }
-    veda.drafts.remove(this.id);
-    this.trigger("afterUpdate");
-    return Promise.resolve(this);
+    return get_individual({
+      ticket: veda.ticket,
+      uri: self.id,
+      async: true
+    }).then(function (original) {
+      var self_property_uris = Object.keys(self.properties);
+      var original_property_uris = Object.keys(original);
+      var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
+      self.properties = original;
+      self.isNew(false);
+      self.isSync(true);
+      union.forEach( function (property_uri) {
+        if (property_uri === "@") { return; }
+        self.trigger("propertyModified", property_uri, self.get(property_uri));
+        self.trigger(property_uri, self.get(property_uri));
+      });
+      self.trigger("afterReset");
+    }).catch(function (error) {
+      self.isSync(false);
+      self.trigger("afterReset");
+    });
   };
-
-  function merge (original) {
-    var self = this;
-    Object.keys(self.properties).map(function (property_uri) {
-      if (property_uri === "@") {
-        delete original[property_uri];
-        return;
-      }
-      if (original[property_uri] && original[property_uri].length) {
-        self[property_uri] = original[property_uri].map( parser );
-      } else {
-        self[property_uri] = [];
-      }
-      delete original[property_uri];
-    });
-    Object.keys(original).map(function (property_uri) {
-      self[property_uri] = original[property_uri].map( parser );
-    });
-    self.isNew(false);
-    self.isSync(true);
-  }
 
   /**
    * @method
@@ -466,6 +429,33 @@ veda.Module(function (veda) { "use strict";
     }
     this.trigger("afterDelete");
     return Promise.resolve(this);
+  };
+
+  /**
+   * @method
+   * Remove individual from database
+   */
+  proto.remove = function () {
+    var self = this;
+    this.trigger("beforeRemove");
+    if ( this.hasValue("v-s:isDraft", true) ) {
+      veda.drafts.remove(this.id);
+    }
+    if ( !this.isNew() ) {
+      return remove_individual({
+        ticket: veda.ticket, 
+        uri: this.id,
+        async: true
+      }).then(function () {
+        self.trigger("afterRemove");
+        return self;
+      });
+    }
+    if ( this._.cache && veda.cache && veda.cache[this.id] ) {
+      delete veda.cache[this.id];
+    }
+    this.trigger("afterRemove");
+    return this;
   };
 
   /**
@@ -499,7 +489,7 @@ veda.Module(function (veda) { "use strict";
     if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);
       result = result && !!this.properties[property_uri].filter( function (item) {
-        return ( item.data === serialized.data && item.type === serialized.type && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+        return ( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       }).length;
     }
     return result;
@@ -531,26 +521,35 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    var types_promises = this["rdf:type"].map( function (type_promise) {
-      return type_promise.load();
-    });
-    return Promise.all( types_promises )
-      .then( function (types) {
-        var models_promises = [];
-        types.map( function (type) {
-          if ( type.hasValue("v-ui:hasModel") ) {
-            models_promises.push( type["v-ui:hasModel"][0] );
-          }
+    if ( this.hasValue("v-ui:hasCustomModel") ) {
+      return this["v-ui:hasCustomModel"][0].load()
+        .then(function (model) {
+          model = new Function(model["v-s:script"][0]);
+          model.call(self);
+          return self;
         });
-        return Promise.all( models_promises );
-      })
-      .then( function (models) {
-        models.map(function (model) {
-          var model_fn = new Function( model["v-s:script"][0] );
-          model_fn.call(self);
-        });
-        return self;
+    } else {
+      var types_promises = this["rdf:type"].map( function (type_promise) {
+        return type_promise.load();
       });
+      return Promise.all( types_promises )
+        .then( function (types) {
+          var models_promises = [];
+          types.map( function (type) {
+            if ( type.hasValue("v-ui:hasModel") ) {
+              models_promises.push( type["v-ui:hasModel"][0] );
+            }
+          });
+          return Promise.all( models_promises );
+        })
+        .then( function (models) {
+          models.map(function (model) {
+            var model_fn = new Function( model["v-s:script"][0] );
+            model_fn.call(self);
+          });
+          return self;
+        });
+    }
   };
 
   /**
@@ -648,7 +647,7 @@ veda.Module(function (veda) { "use strict";
         }
       });
     });
-    uris = unique( veda.Util.flatten(uris, false) );
+    uris = veda.Util.unique( veda.Util.flatten(uris, false) );
     for (var i = 0; i < depth && uris.length; i++) {
       var result = get_individuals(veda.ticket, uris),
         res_map = result.map(function (value) {
@@ -660,20 +659,9 @@ veda.Module(function (veda) { "use strict";
           }
           return prefetch.apply( obj, [0].concat(allowed_props) );
         });
-      uris = unique( veda.Util.flatten(res_map, false) );
+      uris = veda.Util.unique( veda.Util.flatten(res_map, false) );
     }
     return uris;
   };
-
-  function unique(arr) {
-    var n = {}, r = [];
-    for(var i = 0; i < arr.length; i++) {
-      if (!n[arr[i]]) {
-        n[arr[i]] = true;
-        r.push(arr[i]);
-      }
-    }
-    return r;
-  }
 
 });
