@@ -27,7 +27,8 @@ veda.Module(function (veda) { "use strict";
       cache: typeof cache !== "undefined" ? cache : true,
       init: typeof init !== "undefined" ? init : true,
       isNew: false,
-      isSync: false
+      isSync: false,
+      uri: uri
     };
     this.properties = {};
     this.filtered = {};
@@ -35,7 +36,7 @@ veda.Module(function (veda) { "use strict";
     this.on("rdf:type", this.init);
     this.on("beforeSave", beforeSaveHandler);
 
-    return self.load(uri);
+    return self.load();
   };
 
   function beforeSaveHandler() {
@@ -244,19 +245,15 @@ veda.Module(function (veda) { "use strict";
    * Load individual specified by uri from database. If cache parameter (from constructor) is true, than try to load individual from browser cache first.
    * @param {String} uri individual uri
    */
-  proto.load = function (uri) {
+  proto.load = function () {
+    var uri = this._.uri;
     this.trigger("beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
 
       if (this._.cache && veda.cache[uri]) {
-        if ( veda.cache[uri] instanceof veda.IndividualModel ) {
-          this.trigger("afterLoad", veda.cache[uri]);
-          return veda.cache[uri];
-        } else if ( veda.cache[uri] instanceof veda.IndividualModelAsync ) {
-          var syncModel = new veda.IndividualModel( veda.cache[uri].properties );
-          return syncModel;
-        }
+        this.trigger("afterLoad", veda.cache[uri]);
+        return veda.cache[uri];
       }
 
       try {
