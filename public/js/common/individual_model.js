@@ -17,9 +17,9 @@ veda.Module(function (veda) { "use strict";
 
     // veda.IndividualModel({...})
     if (typeof uri === "object" && !uri["@"]) {
-      cache     = uri.cache;
-      init      = uri.init;
-      uri       = uri.uri;
+      cache = uri.cache;
+      init  = uri.init;
+      uri   = uri.uri;
     }
 
     // Define Model functions
