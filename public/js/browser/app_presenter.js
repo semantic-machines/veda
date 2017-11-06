@@ -59,14 +59,14 @@ veda.Module(function AppPresenter(veda) { "use strict";
   });
 
   // Triggered in veda.start()
-  veda.one("started", function () {
-    var welcome;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
-      welcome = (new veda.IndividualModel("cfg:WelcomeExternal"))["rdf:value"][0];
-    } else {
-      welcome = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
-    }
-    // Router function
+  veda.on("started", function () {
+    var layout_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:LayoutExternal" : "cfg:Layout" ;
+    var layout_param = new veda.IndividualModel( layout_param_uri );
+    var layout = layout_param["rdf:value"][0];
+    var welcome_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
+    var welcome_param = new veda.IndividualModel( welcome_param_uri );
+    var welcome = welcome_param["rdf:value"][0];
+    layout.present("#app");
     riot.route( function (hash) {
       if ( !hash ) { return welcome.present("#main"); }
       if ( hash.indexOf("#/") < 0 ) { return; }
@@ -74,17 +74,62 @@ veda.Module(function AppPresenter(veda) { "use strict";
       var page = hash_tokens[0];
       var params = hash_tokens.slice(1);
       page ? veda.load(page, params) : welcome.present("#main");
-    });
-  });
-  veda.on("started", function () {
-    var layout;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
-      layout = (new veda.IndividualModel("cfg:LayoutExternal"))["rdf:value"][0];
-    } else {
-      layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
-    }
-    layout.present("#app");
+      });
     riot.route(location.hash);
+    /*
+    var layout_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:LayoutExternal" : "cfg:Layout" ;
+    var layout_param = new veda.IndividualModelAsync( layout_param_uri );
+    var welcome_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
+    var welcome_param = new veda.IndividualModelAsync( welcome_param_uri );
+
+    Promise.all([ layout_param.load(), welcome_param.load() ])
+      .then(function (params) {
+        return Promise.all([ params[0]["rdf:value"][0].load(), params[1]["rdf:value"][0].load() ]);
+      })
+      .then(function (params) {
+        var layout = params[0];
+        var welcome = params[1];
+        layout.present("#app");
+        riot.route( function (hash) {
+          if ( !hash ) { return welcome.present("#main"); }
+          if ( hash.indexOf("#/") < 0 ) { return; }
+          var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
+          var page = hash_tokens[0];
+          var params = hash_tokens.slice(1);
+          page ? veda.load(page, params) : welcome.present("#main");
+          });
+        riot.route(location.hash);
+      })
+      .catch( function (err) {
+        var notify = new veda.Notify();
+        notify("danger", err);
+        console.log(err);
+      });*/
+    
+    /*
+    layout_param.load().then(function (layout_param) {
+      return layout_param["rdf:value"][0].load();
+    }).then(function (layout) {
+      layout.present("#app");
+    }).then(function () {
+      return welcome_param.load();
+    }).then(function (welcome_param) {
+      return welcome_param["rdf:value"][0].load();
+    }).then(function (welcome) {
+      riot.route( function (hash) {
+        if ( !hash ) { return welcome.present("#main"); }
+        if ( hash.indexOf("#/") < 0 ) { return; }
+        var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
+        var page = hash_tokens[0];
+        var params = hash_tokens.slice(1);
+        page ? veda.load(page, params) : welcome.present("#main");
+      });
+      riot.route(location.hash);
+    }).catch( function (err) {
+      var notify = new veda.Notify();
+      notify("danger", err);
+    });
+    */
   });
 
   // Login invitation
@@ -218,7 +263,6 @@ veda.Module(function AppPresenter(veda) { "use strict";
     var ticket = storage.ticket,
         user_uri = storage.user_uri,
         end_time = storage.end_time && ( new Date() < new Date(parseInt(storage.end_time)) ) ? storage.end_time : undefined ;
-
     if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
       veda.trigger("login:success", {
         ticket: ticket,
@@ -232,5 +276,4 @@ veda.Module(function AppPresenter(veda) { "use strict";
     console.log(ex);
     veda.trigger("login:failed");
   }
-
 });
