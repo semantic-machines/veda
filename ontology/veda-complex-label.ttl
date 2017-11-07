@@ -32,6 +32,7 @@ v-s:Labeled
 v-s:LabelEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Labeled ;
+  v-s:preventByType v-s:Version ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
