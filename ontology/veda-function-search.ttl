@@ -1355,7 +1355,7 @@ v-fs:AttributiveSearchTemplate
 
   self.cursor = self.cursor || 0;
   self.top = veda.user.displayedElements || 10;
-  self.limit = self.limit || 1000;
+  self.limit = self.limit || 10000;
   self.estimated = self.estimated || 0;
   self.result = self.result || [];
   self.scroll = self.scroll || 0;
@@ -2165,7 +2165,7 @@ v-fs:AttributiveSearchInlineTemplate
 
   self.cursor = self.cursor || 0;
   self.top = veda.user.displayedElements || 10;
-  self.limit = self.limit || 1000;
+  self.limit = self.limit || 10000;
   self.estimated = self.estimated || 0;
   self.result = self.result || [];
   self.scroll = self.scroll || 0;
