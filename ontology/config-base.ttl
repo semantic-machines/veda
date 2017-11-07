@@ -389,6 +389,7 @@ cfg:Event_2
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
   rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
+  v-s:preventByType v-s:Version;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -762,6 +763,7 @@ cfg:Event_7
   rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
   rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
   v-s:triggerByType v-s:ClassAuthorized ;
+  v-s:preventByType v-s:Version;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -884,6 +886,7 @@ cfg:Event_9
   rdfs:label "Скрипт включает вложенные индивиды в группу своего родителя." ;
   rdfs:comment "Скрипт включает вложенные индивиды в группу своего родителя." ;
   v-s:triggerByType v-s:Embedded ;
+  v-s:preventByType v-s:Version;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket

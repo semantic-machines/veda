@@ -44,6 +44,24 @@ bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_type
 {
     bool is_pass = false;
 
+    if (script.prevent_by_type.length != 0)
+    {
+        foreach (indv_type; indv_types)
+        {
+            if ((indv_type in script.prevent_by_type) !is null)
+            {
+                is_pass = false;
+                break;
+            }
+
+            if (onto.isSubClasses(cast(string)indv_type, script.prevent_by_type.keys) == true)
+            {
+                is_pass = false;
+                break;
+            }
+        }
+    }
+
     if (script.trigger_by_uid.length == 0 && script.trigger_by_type.length == 0)
         return true;
 
