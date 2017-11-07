@@ -1049,6 +1049,12 @@ function getFirstValueUseLang(field, lang)
   {
     if (field[i].lang == lang)
       return field[i].data;
+
+    if (field[i].lang == 1 && lang == 'ru')
+      return field[i].data;
+
+    if (field[i].lang == 2 && lang == 'en')
+      return field[i].data;
   }
   return null;
 }

@@ -841,8 +841,24 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                     var subject = getFirstValue(template['v-s:templateSubject']);
                     var body = getFirstValue(template['v-s:templateBody']);
 
-                    if (!lang)
+                    if (lang)
+		    {
+                        var lang_indv = get_individual(ticket, lang);
+
+			if (lang_indv && lang_indv['rdf:value'])
+			{
+			    lang = getFirstValue(lang_indv['rdf:value']).toLowerCase ();	    
+			}    
+			else
+			{
+                    	    lang = 'ru';
+			}
+		
+		    }
+		    else
+		    {
                         lang = 'ru';
+		    }
 
                     var view = {};
 
@@ -865,8 +881,20 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                             if (value.type == _Uri)
                             {
                                 var inner_indv = get_individual(ticket, value.data);
+				
+				if (inner_indv == undefined)
+				{
+                            	    araa.push('ERR! individual [' + value.data + '] not found, var.name=' + name);		
+				    continue;
+				}
 
-                                //print("@@@43 inner_indv=", toJson (inner_indv));
+				if (inner_indv['rdfs:label'] == undefined)
+				{
+                            	    araa.push('ERR! individual [' + value.data + '] not contains rdfs:label, var.name=' + name);		
+				    continue;
+				}
+
+                                //print("@@@43 inner_indv=", toJson (inner_indv), ", lang=", lang);
                                 value = getFirstValueUseLang(inner_indv['rdfs:label'], lang);
 
                                 if (!value)
