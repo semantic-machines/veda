@@ -117,6 +117,11 @@ v-s:RegistrationNumberYearNumeration8
   v-s:enumeratedProperty v-s:registrationNumber ;
   v-s:hasNumerationRule v-s:YearNumeration8 ;
 .
+v-s:RegistrationNumberYearNumeration2_6
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:YearNumeration2_6 ;
+.
 
 # --- Rules ---
 
