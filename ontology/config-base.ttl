@@ -354,6 +354,7 @@ log_trace("res=", res);
 cfg:Event_1
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
+  v-s:preventByType v-s:Version;
   rdfs:label "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup" ;
   rdfs:comment "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup" ;
   v-s:script """
@@ -437,6 +438,7 @@ cfg:Event_3
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт создает журнал документа" ;
   rdfs:comment "Скрипт создает журнал документа" ;
+  v-s:preventByType v-s:Version;
   v-s:triggerByType v-s:Journaling, v-s:AutomaticallyVersioned ;
   v-s:script """
 /* Available variables:
@@ -566,6 +568,7 @@ cfg:Event_4
   v-s:triggerByType v-s:Department ;
   v-s:triggerByType v-s:Position ;
   v-s:triggerByType v-s:Appointment ;
+  v-s:preventByType v-s:Version;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -636,6 +639,7 @@ cfg:Event_5
   rdfs:label "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
   rdfs:comment "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
   v-s:triggerByType v-s:Person ;
+  v-s:preventByType v-s:Version;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -1079,11 +1083,16 @@ cfg:Event_13
   rdfs:label "Manually create version" ;
   rdfs:comment "Manually create version" ;
   v-s:triggerByType v-s:ManuallyVersioned ;
+  v-s:preventByType v-s:Version;
   v-s:script """
-  if ((document['v-s:triggerVersionCreation'] && document['v-s:triggerVersionCreation'][0]
-    && document['v-s:triggerVersionCreation'][0].data == true) || !prev_state) {
+  if (
+    ( document['v-s:triggerVersionCreation']
+      && document['v-s:triggerVersionCreation'][0]
+      && document['v-s:triggerVersionCreation'][0].data == true
+    ) || !prev_state
+  ) {
     delete document['v-s:triggerVersionCreation'];
-  create_version(ticket, document, prev_state, user_uri, _event_id);
+    create_version(ticket, document, prev_state, user_uri, _event_id);
   }
 
   """ ;
@@ -1094,7 +1103,6 @@ cfg:Event_14
   v-s:author cfg:VedaSystem ;
   rdfs:label "Пусто." ;
   rdfs:comment "Пусто." ;
-  v-s:triggerByType v-s:Versioned ;
   v-s:disabled true ;
   v-s:script """
   """ ;
@@ -1169,6 +1177,7 @@ cfg:Event_16
   rdfs:label "Скрипт обработки обратных ссылок" ;
   rdfs:comment "Скрипт обработки обратных ссылок" ;
   v-s:triggerByType v-s:BackwardLink ;
+  v-s:preventByType v-s:Version;
   v-s:script """
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
@@ -1297,6 +1306,7 @@ cfg:Event_Notify_Task
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт уведомления о новой задаче" ;
   v-s:triggerByType v-wf:UserTaskForm ;
+  v-s:disabled true ;
   v-s:script """
 var task_id = document["@"],
     to = getUri(document["v-wf:to"]);
@@ -1308,7 +1318,7 @@ cfg:Event_Notify_Comment
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт уведомления о новом комментарии" ;
   v-s:triggerByType v-s:Comment ;
-  v-s:deleted true ;
+  v-s:disabled true ;
   v-s:script """
 var comment_id = document["@"],
     comment_target = getUri(document["v-s:backwardTarget"]),
