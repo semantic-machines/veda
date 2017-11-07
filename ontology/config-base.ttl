@@ -413,18 +413,18 @@ owner_properties.map(function (property_uri) {
     if (owner) {
       var owner_type = getUri(owner["rdf:type"]);
       if (owner_type === "v-s:Person" || owner_type === "v-s:Position") {
-        var new_right_uri = doc_uri + "_" + owner_uri;
-        addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, new_right_uri);
+        var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + owner_uri.split(':').join('_') + "_event2";
+        addRightWithUri(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, right_uri);
       } else if (owner_type === "v-s:Appointment") {
         var position_uri = getUri(owner["v-s:occupation"]);
         if (position_uri) {
-          var new_right_uri = doc_uri + "_" + position_uri;
-          addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, new_right_uri);
+          var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + position_uri.split(':').join('_') + "_event2";
+          addRightWithUri(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, right_uri);
         }
         var person_uri = getUri(owner["v-s:employee"]);
         if (person_uri) {
-          var new_right_uri = doc_uri + "_" + person_uri;
-          addRight(ticket, [can_read, can_update, can_delete], person_uri, doc_uri, new_right_uri);
+          var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + person_uri.split(':').join('_') + "_event2";
+          addRightWithUri(ticket, [can_read, can_update, can_delete], person_uri, doc_uri, right_uri);
         }
       }
     }

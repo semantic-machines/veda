@@ -1242,6 +1242,103 @@ function addRight(ticket, rights, subj_uri, obj_uri) {
   return [new_permission, res];
 }
 
+function addRightWithUri(ticket, rights, subj_uri, obj_uri, right_uri) {
+
+  if (subj_uri == undefined || obj_uri == undefined) {
+    var error = new Error();
+
+    if (typeof window === "undefined")
+    {
+      print("ERR! addRight: INVALID ARGS IN");
+      print("subj_uri=", subj_uri);
+      print("obj_uri=", obj_uri);
+      print("Error stack:", error.stack);
+    }
+    else
+    {
+      console.log("ERR! addRight: INVALID ARGS IN");
+      console.log("subj_uri=", subj_uri);
+      console.log("obj_uri=", obj_uri);
+      console.log("Error stack:", error.stack);
+    }
+    return;
+  }
+
+  var new_uri = right_uri;
+
+  if (new_uri) {
+    try
+    {
+      var prev = get_individual(ticket, new_uri);
+      if (prev)
+      {
+        if ( getUri(prev["rdf:type"]) !== "v-s:PermissionStatement" )
+        {
+          var error = new Error();
+
+          if (typeof window === "undefined")
+          {
+            print ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
+            print("subj_uri=", subj_uri);
+            print("obj_uri=", obj_uri);
+            print("Error stack:", error.stack);
+          }
+          else
+          {
+            console.log ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
+            console.log("Error stack:", error.stack);
+            console.log("subj_uri=", subj_uri);
+            console.log("obj_uri=", obj_uri);
+          }
+          return;
+        }
+      }
+    }
+    catch (ex)
+    {
+      if (typeof window === "undefined")
+      {
+        print("addRight:Error stack:", ex.stack);
+      }
+      else
+      {
+        console.log("addRight:Error stack:", ex.stack);
+      }
+    }
+  }
+
+  var new_permission = {
+    '@': new_uri,
+    'rdf:type': newUri('v-s:PermissionStatement'),
+    'v-s:permissionObject': newUri(obj_uri),
+    'v-s:permissionSubject': newUri(subj_uri)
+  };
+
+  for (var i = 0; i < rights.length; i++) {
+    if (rights[i] == can_read)
+      new_permission['v-s:canRead'] = newBool(true);
+    else if (rights[i] == can_update)
+      new_permission['v-s:canUpdate'] = newBool(true);
+    else if (rights[i] == can_delete)
+      new_permission['v-s:canDelete'] = newBool(true);
+    else if (rights[i] == can_create)
+      new_permission['v-s:canCreate'] = newBool(true);
+    else if (rights[i] == cant_read)
+      new_permission['v-s:canRead'] = newBool(false);
+    else if (rights[i] == cant_update)
+      new_permission['v-s:canUpdate'] = newBool(false);
+    else if (rights[i] == cant_delete)
+      new_permission['v-s:canDelete'] = newBool(false);
+    else if (rights[i] == cant_create)
+      new_permission['v-s:canCreate'] = newBool(false);
+  }
+
+  var res = put_individual(ticket, new_permission, _event_id);
+
+  //print("ADD RIGHT:", toJson(new_permission));
+  return [new_permission, res];
+}
+
 function clone(obj)
 {
   var copy;
