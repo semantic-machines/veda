@@ -9,6 +9,7 @@ struct ScriptInfo
     string id;
     string str_script;
     bool[ string ] trigger_by_type;
+    bool[ string ] prevent_by_type;
     bool[ string ] trigger_by_uid;
     bool[ string ] dependency;
     Script compiled_script;
@@ -84,13 +85,15 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
 
             //writeln("scripts_text:", scripts_text);
 
-            Resources trigger_by_type = ss.getResources("v-s:triggerByType");
+            Resources prevent_by_type = ss.getResources("v-s:preventByType");
+            foreach (filter; prevent_by_type)
+                script.prevent_by_type[ filter.uri ] = true;
 
+            Resources trigger_by_type = ss.getResources("v-s:triggerByType");
             foreach (filter; trigger_by_type)
                 script.trigger_by_type[ filter.uri ] = true;
 
             Resources trigger_by_uid = ss.getResources("v-s:triggerByUid");
-
             foreach (filter; trigger_by_uid)
                 script.trigger_by_uid[ filter.uri ] = true;
 
