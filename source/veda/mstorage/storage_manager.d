@@ -362,7 +362,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 else if (ti.cmd == INDV_OP.PUT)
                                 {
                                     string new_hash;
-                                    //log.trace ("storage_manager:PUT %s", indv_uri);
+                                    //log.trace ("storage_manager:PUT %s", ti.uri);
                                     if (storage.update_or_create(ti.uri, ti.new_binobj, op_id, new_hash) == 0)
                                     {
                                         rc = ResultCode.OK;

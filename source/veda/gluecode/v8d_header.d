@@ -49,16 +49,10 @@ bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_type
         foreach (indv_type; indv_types)
         {
             if ((indv_type in script.prevent_by_type) !is null)
-            {
-                is_pass = false;
-                break;
-            }
+                return false;
 
             if (onto.isSubClasses(cast(string)indv_type, script.prevent_by_type.keys) == true)
-            {
-                is_pass = false;
-                break;
-            }
+                return false;
         }
     }
 
