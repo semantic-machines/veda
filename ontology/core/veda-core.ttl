@@ -323,6 +323,13 @@ v-s:triggerByType
   rdfs:label "Срабатывать по типу"@ru ;
   rdfs:range rdfs:Resource ;
 .
+v-s:preventByType
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Event ;
+  rdfs:label "Prevent by type"@en ;
+  rdfs:label "Не обрабатывать объекты типа"@ru ;
+  rdfs:range rdfs:Resource ;
+.
 v-s:triggerByUid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Event ;
