@@ -515,6 +515,9 @@ v-ft:ActorFilterTemplate
       var actor_uri = individual[actor_property][0].id;
       var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
       var counter = new veda.IndividualModel(counter_uri);
+      if ( counter.isNew() ) {
+        counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
+      }
       var counter_val = counter[counter_prop][0];
       if ( counter_val !== results.estimated ) {
         counter[counter_prop] = [ results.estimated ];
