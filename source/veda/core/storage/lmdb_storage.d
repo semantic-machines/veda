@@ -722,14 +722,13 @@ public class LmdbStorage : Storage
                 else
                     str = "?";
             }
-            else
-            {
-                swA.stop();
-                long tA = cast(long)swA.peek().usecs;
+            
+            swA.stop();
+            long tA = cast(long)swA.peek().usecs;
 
-                if (tA > 1000)
-                    log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
-            }
+            if (tA > 1000)
+	            log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
+                    
         }catch (Exception ex)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
