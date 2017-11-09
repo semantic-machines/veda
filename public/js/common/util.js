@@ -1339,7 +1339,7 @@ function addRightWithUri(ticket, rights, subj_uri, obj_uri, right_uri) {
       new_permission['v-s:canCreate'] = newBool(false);
   }
 
-  var res = put_individual(ticket, new_permission, _event_id);
+  var res = put_individual(ticket, new_permission, typeof _event_id !== "undefined" ? _event_id : undefined);
 
   //print("ADD RIGHT:", toJson(new_permission));
   return [new_permission, res];
