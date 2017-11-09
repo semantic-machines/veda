@@ -728,14 +728,5 @@ d:Membership_71014133_71025564
   rdfs:label "Начальник управления - в группу Начальник службы"@en ;
   rdfs:label "Начальник управления - в группу Начальник службы"@ru ;
 .
-#------------просмотр всех объектов аудиторами
-td:Permission_2_vb
-  rdf:type v-s:PermissionStatement ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:permissionObject v-s:AllResourcesGroup ;
-  v-s:permissionSubject d:RU7705051102_employee_2 ;
-  v-s:permissionSubject d:RU7705051102_employee_3 ;
-  v-s:permissionSubject d:RU7705051102_employee_4 ;
-  v-s:permissionSubject d:RU7705051102_employee_5 ;
-.
+
 
