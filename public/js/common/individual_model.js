@@ -334,7 +334,7 @@ veda.Module(function (veda) { "use strict";
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
       notify("danger", error);
-      if ( this.is("v-s:UserThing") ) { this.draft() }
+      if ( this.is("v-s:UserThing") && error.code !== 472 ) { this.draft(); }
     }
     this.trigger("afterSave");
     return this;
@@ -381,7 +381,7 @@ veda.Module(function (veda) { "use strict";
       });
       self.trigger("afterReset");
     }).catch(function (error) {
-      self.isSync(false);
+      console.log("reset individual error", error);
       self.trigger("afterReset");
     });
   };
