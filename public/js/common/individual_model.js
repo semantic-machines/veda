@@ -309,7 +309,7 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Save current individual to database (with validation and adding new version)
+   * Save current individual to database
    */
   proto.save = function() {
     var self = this;
