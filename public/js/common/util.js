@@ -851,7 +851,11 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     try
     {
-      scope = new veda.IndividualModel(scope, false);
+      if (typeof window === 'undefined') {
+        scope = get_individual(ticket, scope);
+      } else {
+        scope = new veda.IndividualModel(scope, false);
+      }
     }
     catch (e)
     {
@@ -868,7 +872,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     scope['v-s:numerationCommitedInterval'].forEach(function(interval)
     {
-      interval = new veda.IndividualModel(interval.id, false);
+      interval = get_individual(ticket, interval.data);
       if (interval['v-s:numerationCommitedIntervalEnd'][0].data > max)
       {
         max = interval['v-s:numerationCommitedIntervalEnd'][0].data;
