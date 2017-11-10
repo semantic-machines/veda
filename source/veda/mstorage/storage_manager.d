@@ -251,21 +251,24 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         {
                             if (cmd == CMD_COMMIT)
                             {
-                                storage.flush(1);
-
-                                if (last_reopen_rw_op_id == 0)
-                                    last_reopen_rw_op_id = op_id;
-
-                                if (op_id - last_reopen_rw_op_id > max_count_updates)
+                                if (committed_op_id != op_id)
                                 {
-                                    log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
-                                    storage.close_db();
-                                    storage.open_db();
-                                    last_reopen_rw_op_id = op_id;
-                                }
+                                    storage.flush(1);
 
-                                committed_op_id = op_id;
-                                module_info.put_info(op_id, committed_op_id);
+                                    if (last_reopen_rw_op_id == 0)
+                                        last_reopen_rw_op_id = op_id;
+
+                                    if (op_id - last_reopen_rw_op_id > max_count_updates)
+                                    {
+                                        log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
+                                        storage.close_db();
+                                        storage.open_db();
+                                        last_reopen_rw_op_id = op_id;
+                                    }
+
+                                    committed_op_id = op_id;
+                                    module_info.put_info(op_id, committed_op_id);
+                                }
                                 //log.trace ("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
                             else if (cmd == CMD_UNFREEZE)

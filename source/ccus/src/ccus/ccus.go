@@ -1,3 +1,5 @@
+// System Event Notification SErvice
+
 package main
 
 import (
@@ -131,7 +133,7 @@ func module_info_reader(ch_collector_update chan updateInfo) {
 			if prev_mod_time[idx] != new_stat_of_info.ModTime()	{		
 				prev_mod_time[idx] = new_stat_of_info.ModTime()
 				
-				log.Printf("@module info changed %s %s", module_name, new_stat_of_info.ModTime())
+				//log.Printf("@module info changed %s %s", module_name, new_stat_of_info.ModTime())
 			}
 		}
 		}
