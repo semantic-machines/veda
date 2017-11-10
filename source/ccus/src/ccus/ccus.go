@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 	//"strconv"
+	"os"
 	"expvar"
 	"runtime"
 )
@@ -34,6 +35,7 @@ type updateInfo struct {
 	uid            string
 	opid           int
 	update_counter int
+	is_op		   bool
 	cc_out         chan updateInfo
 }
 
@@ -112,6 +114,25 @@ func collector_stat(ch1 chan infoConn) {
 
 var ch_update_info_in = make(chan updateInfo, 1000)
 
+var MODULES = [...]string {"acl_preparer_info", "fanout_email_info", "fanout_sql_lp_info", "fanout_sql_np_info", "fulltext_indexer_info", "ltr_scripts_info", "scripts_lp_info", "scripts_main_info", "subject_manager_info", "ticket_manager_info", "user_modules_tool_info"}
+
+func module_info_reader(ch_collector_update chan updateInfo) {
+	time.Sleep(1000 * time.Millisecond)
+
+	for {
+		time.Sleep(10 * time.Millisecond)
+		
+		for _, module_name := range MODULES {
+			
+        new_stat_of_info, err := os.Stat("./data/module-info/" + module_name)
+        
+        if err == nil {
+			new_stat_of_info.ModTime()
+		}
+		}
+	}
+}
+
 //  queue_reader - routine that read queue, and transmits information about the update to collector_updateInfo routine
 func queue_reader(ch_collector_update chan updateInfo) {
 
@@ -179,7 +200,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 			if ok1 == true && ok2 == true {
 				//log.Printf("@3 uri=[%s], u_count=[%d], op_id=[%d]", uri.data.(string), u_count, op_id)
 
-				new_info := updateInfo{uri.data.(string), op_id, u_count, nil}
+				new_info := updateInfo{uri.data.(string), op_id, u_count, false, nil}
 				ch_collector_update <- new_info
 			}
 
@@ -213,7 +234,7 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 
 		if arg.opid == -1 {
 			// это команда на запрос last_opid
-			gg1 := updateInfo{"", _last_opid, 0, nil}
+			gg1 := updateInfo{"", _last_opid, 0, false, nil}
 			arg.cc_out <- gg1
 			//log.Printf("collector:ret: last_op_id=%d", gg1.opid)
 		} else if arg.update_counter == -1 {
@@ -252,6 +273,7 @@ func main() {
 	go collector_updateInfo(ch_update_info_in)
 	go collector_stat(ch_ws_counter)
 	go queue_reader(ch_update_info_in)
+	go module_info_reader(ch_update_info_in)
 
 	http.HandleFunc("/ccus", wsHandler)
 
