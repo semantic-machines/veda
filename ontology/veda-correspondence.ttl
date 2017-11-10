@@ -525,8 +525,9 @@ v-s:LetterRegistrationRecordTemplate
   function register() {
     if ( this.is("v-s:Enumerated") && !this.hasValue("v-s:registrationNumber") ) {
       var numerator = new veda.IndividualModel("v-s:SimpleNumeration", false);
-      var scope = eval(numerator["v-s:numerationScope"].toString())(null, this);
-      this["v-s:registrationNumber"] = [ eval(numerator["v-s:numerationGetNextValue"].toString())(null, scope) ];
+      var scope = eval(numerator['v-s:numerationScope'][0].toString())(veda.ticket, this);
+      var number = eval(numerator['v-s:numerationGetNextValue'][0].toString())(veda.ticket, scope);
+      this["v-s:registrationNumber"] = [ number ];
       var today = new Date();
       today.setHours(0);
       today.setMinutes(0);
