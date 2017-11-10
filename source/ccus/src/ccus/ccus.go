@@ -114,20 +114,25 @@ func collector_stat(ch1 chan infoConn) {
 
 var ch_update_info_in = make(chan updateInfo, 1000)
 
-var MODULES = [...]string {"acl_preparer_info", "fanout_email_info", "fanout_sql_lp_info", "fanout_sql_np_info", "fulltext_indexer_info", "ltr_scripts_info", "scripts_lp_info", "scripts_main_info", "subject_manager_info", "ticket_manager_info", "user_modules_tool_info"}
-
 func module_info_reader(ch_collector_update chan updateInfo) {
 	time.Sleep(1000 * time.Millisecond)
+
+	var MODULES = [...]string {"acl_preparer_info", "fanout_email_info", "fanout_sql_lp_info", "fanout_sql_np_info", "fulltext_indexer_info", "ltr_scripts_info", "scripts_lp_info", "scripts_main_info", "subject_manager_info", "ticket_manager_info", "user_modules_tool_info"}
+	var prev_mod_time [22]time.Time
 
 	for {
 		time.Sleep(10 * time.Millisecond)
 		
-		for _, module_name := range MODULES {
+		for idx, module_name := range MODULES {
 			
         new_stat_of_info, err := os.Stat("./data/module-info/" + module_name)
         
         if err == nil {
-			new_stat_of_info.ModTime()
+			if prev_mod_time[idx] != new_stat_of_info.ModTime()	{		
+				prev_mod_time[idx] = new_stat_of_info.ModTime()
+				
+				log.Printf("@module info changed %s %s", module_name, new_stat_of_info.ModTime())
+			}
 		}
 		}
 	}
