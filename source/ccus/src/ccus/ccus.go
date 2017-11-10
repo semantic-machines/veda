@@ -136,7 +136,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	dt_count_0 := count
 
 	for {
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond)
 
 		main_queue.reopen_reader()
 
