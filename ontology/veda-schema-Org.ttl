@@ -257,11 +257,13 @@ v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ManuallyVersioned ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:comment "A person." ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Person"@en ;
   rdfs:label "Персона"@ru ;
   v-ui:hasTemplate td:PersonTemplate1 ;
+  v-s:labelPattern "{rdf:type.rdfs:label}: {v-s:firstName} {v-s:lastName}" ;
 .
 v-s:birthday
   rdf:type owl:DatatypeProperty ;

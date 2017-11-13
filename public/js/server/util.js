@@ -1,21 +1,6 @@
 // Server-side utility functions
 "use strict";
 
-function toJson(x)
-{
-    return JSON.stringify(x, null, 2);
-}
-
-function hasValue(doc, prop, val)
-{
-    var any = !!(doc && doc[prop] && doc[prop].length);
-    if (!val) return any;
-    return !!(any && doc[prop].filter(function(i)
-    {
-        return (i.type === val.type && i.data === val.data);
-    }).length);
-}
-
 /////////////////////////////////////// JOURNAL
 
 function getJournalUri(object_uri)
@@ -379,12 +364,12 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
   }
 }
 
-function recursiveCall(elem, path, ticket, _event_id) {  
+function recursiveCall(elem, path, ticket, _event_id) {
     if (path[elem['@']]) {
-        print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);     
+        print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);
         return;
     }
-    
+
     path[elem['@']] = Object.keys(path).length;
     if (elem['v-wf:decisionFormList']) {
       elem['v-wf:decisionFormList'].forEach(function(dfae) {
