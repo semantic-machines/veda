@@ -108,7 +108,7 @@ function compare(a, b)
           aa = 'Boolean';
       }
     }
-    else(key == "lang")
+    else if(key == "lang")
     {
       if (tbb == 'number' && taa == 'string')
       {
