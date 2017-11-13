@@ -11,8 +11,9 @@ import (
 	"strings"
 	"time"
 	//"strconv"
-	"os"
+	"bufio"
 	"expvar"
+	"os"
 	"runtime"
 )
 
@@ -37,7 +38,7 @@ type updateInfo struct {
 	uid            string
 	opid           int
 	update_counter int
-	is_op		   bool
+	is_op          bool
 	cc_out         chan updateInfo
 }
 
@@ -119,23 +120,40 @@ var ch_update_info_in = make(chan updateInfo, 1000)
 func module_info_reader(ch_collector_update chan updateInfo) {
 	time.Sleep(1000 * time.Millisecond)
 
-	var MODULES = [...]string {"acl_preparer_info", "fanout_email_info", "fanout_sql_lp_info", "fanout_sql_np_info", "fulltext_indexer_info", "ltr_scripts_info", "scripts_lp_info", "scripts_main_info", "subject_manager_info", "ticket_manager_info", "user_modules_tool_info"}
+	var MODULES = [...]string{"acl_preparer_info", "fanout_email_info", "fanout_sql_lp_info", "fanout_sql_np_info", "fulltext_indexer_info", "ltr_scripts_info", "scripts_lp_info", "scripts_main_info", "subject_manager_info", "ticket_manager_info", "user_modules_tool_info"}
 	var prev_mod_time [22]time.Time
 
 	for {
 		time.Sleep(10 * time.Millisecond)
-		
+
 		for idx, module_name := range MODULES {
-			
-        new_stat_of_info, err := os.Stat("./data/module-info/" + module_name)
-        
-        if err == nil {
-			if prev_mod_time[idx] != new_stat_of_info.ModTime()	{		
-				prev_mod_time[idx] = new_stat_of_info.ModTime()
-				
-				//log.Printf("@module info changed %s %s", module_name, new_stat_of_info.ModTime())
+
+			file_name := "./data/module-info/" + module_name
+
+			new_stat_of_info, err := os.Stat(file_name)
+
+			if err == nil {
+				if prev_mod_time[idx] != new_stat_of_info.ModTime() {
+					prev_mod_time[idx] = new_stat_of_info.ModTime()
+
+					ff_fileinfo_r, err := os.OpenFile(file_name, os.O_RDONLY, 0644)
+					if err == nil {
+						rr := bufio.NewReader(ff_fileinfo_r)
+						str, err := Readln(rr)
+						if str != "" && err == nil {
+							ch := strings.Split(str[0:len(str)-1], ";")
+							if len(ch) == 4 {
+								new_info := updateInfo{module_name + "." + ch[2], 0, 0, true, nil}
+								ch_collector_update <- new_info
+							}
+						}
+						//log.Printf("@module info changed %s %s", module_name, new_stat_of_info.ModTime())
+						ff_fileinfo_r.Close()
+					} else {
+						log.Printf("ERR! module_info_reader: fail open FileInfo %s", file_name)
+					}
+				}
 			}
-		}
 		}
 	}
 }
@@ -238,6 +256,10 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 
 	for {
 		arg := <-ch_collector_update
+
+		if arg.is_op == true {
+			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
+		}
 
 		if arg.opid == -1 {
 			// это команда на запрос last_opid
