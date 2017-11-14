@@ -603,11 +603,11 @@ void prepare_js_object(Local<Object> resource_obj, Handle<Value>         f_data,
             std::transform(s_lang.begin(), s_lang.end(), s_lang.begin(), ::tolower);
 
             if (s_lang.compare("ru") == 0)
-                lang = 1;
+                lang = LANG_RU;
             else if (s_lang.compare("en") == 0)
-                lang = 2;
+                lang = LANG_EN;
             else
-                lang = 0;
+                lang = LANG_NONE;
         }
         else
         {
