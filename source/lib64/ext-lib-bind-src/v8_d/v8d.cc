@@ -200,13 +200,13 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
             {
                 //cerr << "\t\t@STR RU" << endl;
                 rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
-                rr_v8->Set(f_lang, Integer::New(isolate, 1));
+                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "ru"));
             }
             else if (resource_header.tag == TEXT_EN)
             {
                 //cerr << "\t\t@STR EN" << endl;
                 rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
-                rr_v8->Set(f_lang, Integer::New(isolate, 2));
+                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "en"));
             }
             else if (resource_header.tag == URI)
             {
