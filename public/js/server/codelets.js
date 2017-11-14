@@ -20,7 +20,7 @@ function change_rights_actor(process, task, rightset, actor)
 {
     try
     {
-        //print ("@JS down_right_and_store");
+        //print ("@JS change_rights_actor");
         var doc_id = process.getInputVariable('docId');
         //print ("@JS doc_id=", toJson (doc_id));
         //print ("@JS rightset=", toJson (rightset));
@@ -36,15 +36,22 @@ function change_rights_actor(process, task, rightset, actor)
 
         if (doc_id)
         {
-            //print ("@JS1 executor=", toJson(process.getLocalVariable ('actor')));
-            //print ("@JS2 executor=", toJson(process.getExecutor()));
+            //print ("@JS0 actor=", actor);
+            //print ("@JS1 process.getLocalVariable (" + actor + ")=", toJson(process.getLocalVariable (actor)));
+            //print ("@JS2 process.getExecutor()=", toJson(process.getExecutor()));
             var executor = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
+	    
+	    if (!executor)
+		executor = task.getInputVariable(actor);
+
+            //print ("@JS3 executor=", toJson(executor));
 
             var employee = get_properties_chain(executor, [
             {
                 $get: 'v-s:employee'
             }], undefined);
 
+            //print ("@JS4 employee=", toJson(employee));
             if (employee)
             {
                 var employee_uri = getUri(employee);
