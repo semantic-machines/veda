@@ -8,13 +8,13 @@ var m_fanout_email = 8;
 var m_scripts = 16;
 var m_fanout_sql = 128;
 
-var _Uri = 1;
-var _String = 2;
-var _Integer = 4;
-var _Datetime = 8;
-var _Decimal = 32;
-var _Bool = 64;
-var _Boolean = 64;
+var _Uri = 'Uri';
+var _String = 'String';
+var _Integer = 'Integer';
+var _Datetime = 'Datetime';
+var _Decimal = 'Decimal';
+var _Bool = 'Boolean';
+var _Boolean = 'Boolean';
 
 function toJson(x)
 {
