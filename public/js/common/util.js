@@ -1433,13 +1433,13 @@ function complexLabel(individual) {
         return {
           data: replaced,
           lang: language,
-          type: _String
+          type: "String"
         }
       });
       return acc.concat(result);
     }, []);
   } catch (err) {
-    typeof print !== "undefined" ? print(err, err.stack) : typeof console.log !== "undefined" ? console.log(err) : null;
+    print(err, err.stack);
     return [];
   }
 
