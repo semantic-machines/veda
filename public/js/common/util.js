@@ -16,6 +16,21 @@ var _Decimal = 32;
 var _Bool = 64;
 var _Boolean = 64;
 
+function toJson(x)
+{
+  return JSON.stringify(x, null, 2);
+}
+
+function hasValue(doc, prop, val)
+{
+  var any = !!(doc && doc[prop] && doc[prop].length);
+  if (!val) return any;
+  return !!(any && doc[prop].filter(function(i)
+  {
+      return (i.type === val.type && i.data === val.data);
+  }).length);
+}
+
 function removeV(arr, what) {
   var res = [];
   print ("@b in=", toJson (arr));
@@ -1382,4 +1397,67 @@ function clone(obj)
   }
 
   throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+
+function complexLabel(individual) {
+
+  var cache = {};
+  cache[individual["@"]] = individual;
+  function get (uri) {
+    return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
+  }
+
+  //print("INDIVIDUAL =", JSON.stringify(individual));
+
+  try {
+
+    var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
+
+    var availableLanguages = get("v-ui:AvailableLanguage");
+    var languages = availableLanguages["rdf:value"].map(function (languageValue) {
+      var languageUri = languageValue.data;
+      var language = get(languageUri);
+      return language["rdf:value"][0].data;
+    });
+
+    return individual["rdf:type"].reduce(function (acc, typeValue) {
+      var typeUri = typeValue.data;
+      var type = get(typeUri);
+      if ( !type || !hasValue(type, "v-s:labelPattern") ) return;
+      var pattern = type["v-s:labelPattern"][0].data;
+      var result = languages.map(function (language) {
+        var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
+          var chain = group.split(".");
+          return get_localized_chain.apply({}, [language, individual["@"]].concat(chain));
+        });
+        return {
+          data: replaced,
+          lang: language,
+          type: "String"
+        }
+      });
+      return acc.concat(result);
+    }, []);
+  } catch (err) {
+    //print(err, err.stack);
+    return [];
+  }
+
+  function get_localized_chain(language, uri) {
+    var properties = [].slice.call(arguments, 2);
+    var intermediate = get(uri);
+    for (var i = 0, property; property = properties[i]; i++) {
+      var length = properties.length;
+      if (i === length - 1) {
+        if (!intermediate[property] || !intermediate[property].length) return "";
+        return intermediate[property].reduce(function (acc, value) {
+          //print("VALUE =", JSON.stringify(value));
+          return ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ? acc += value.data : acc );
+        }, "");
+      }
+      var intermediateUri = intermediate[property][0].data;
+      var intermediate = get(intermediateUri);
+    }
+    return "";
+  }
 }
