@@ -258,7 +258,7 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 		arg := <-ch_collector_update
 
 		if arg.is_op == true {
-			log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
+			//log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
 		}
 
 		if arg.opid == -1 {
