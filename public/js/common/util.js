@@ -1407,7 +1407,7 @@ function complexLabel(individual) {
     return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
   }
 
-  print("INDIVIDUAL =", JSON.stringify(individual));
+  //print("INDIVIDUAL =", JSON.stringify(individual));
 
   try {
 
@@ -1439,7 +1439,7 @@ function complexLabel(individual) {
       return acc.concat(result);
     }, []);
   } catch (err) {
-    print(err, err.stack);
+    //print(err, err.stack);
     return [];
   }
 
@@ -1451,7 +1451,7 @@ function complexLabel(individual) {
       if (i === length - 1) {
         if (!intermediate[property] || !intermediate[property].length) return "";
         return intermediate[property].reduce(function (acc, value) {
-          print("VALUE =", JSON.stringify(value));
+          //print("VALUE =", JSON.stringify(value));
           return ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ? acc += value.data : acc );
         }, "");
       }
