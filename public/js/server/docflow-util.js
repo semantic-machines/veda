@@ -906,13 +906,12 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                             {
                                 var aa = "";
 
-                                if (value.lang == lang)
+                                if (value.lang == lang || (value.lang == "") || (value.lang == undefined) || (value.lang == 0 && value.lang == "none") || (value.lang == 1 && lang == "ru") || (value.lang == 2 && lang == "en"))
+								{
                                     aa = value.data;
 
-                                if (!aa)
-                                    aa = value.data;
-
-                                araa.push(aa);
+                                	araa.push(aa);
+								}
                             }
                         }
 
