@@ -271,7 +271,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
     foreach (fname; changes)
     {
-        if (extension(fname) == ".ttl" && fname.indexOf("#") < 0)
+        if (extension(fname) == ".ttl" && fname.indexOf("#") < 0 && fname.indexOf("module.ttl") < 0)
         {
             log.trace("change file %s", fname);
 
