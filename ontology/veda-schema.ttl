@@ -406,9 +406,9 @@ v-s:JournalCoordination_printBlank_xlsx
 v-s:JournalCoordination_printBlank_docx
   rdf:type v-s:Report ;
   v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "docx";
-  rdfs:label "Лист согласования (docx)"@ru ;
-  rdfs:label "Coordination list (docx)"@en ;
+  v-s:fileFormat "rtf";
+  rdfs:label "Лист согласования (rtf)"@ru ;
+  rdfs:label "Coordination list (rtf)"@en ;
 .
 ####################################################################################
 
