@@ -946,14 +946,13 @@ function newUri(uri)
 
 function newStr(_data, _lang)
 {
-  if (!_lang || _lang == 'NONE')
-    _lang = 0;
-
-  return [{
+  var value = {
     data: _data,
-    type: _String,
-    lang: _lang
-  }];
+    type: _String
+  };
+  if (_lang && _lang !== 'NONE')
+    value.lang = _lang;
+  return [ value ];
 }
 
 function newBool(_data)
@@ -1067,12 +1066,6 @@ function getFirstValueUseLang(field, lang)
   for (var i in field)
   {
     if (field[i].lang == lang)
-      return field[i].data;
-
-    if (field[i].lang == 1 && lang == 'ru')
-      return field[i].data;
-
-    if (field[i].lang == 2 && lang == 'en')
       return field[i].data;
   }
   return null;
