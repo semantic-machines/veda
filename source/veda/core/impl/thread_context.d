@@ -208,6 +208,9 @@ class PThreadContext : Context
                     OpResult res;
                     res.op_id  = -1;
                     res.result = ResultCode.Internal_Server_Error;
+                    log.trace("ERR! reqrep_json_2_main_module: fail convert result or empty result:");
+                    log.trace("\t\tN_CHANNEL send (%s)", req);
+                    log.trace("\t\tN_CHANNEL recv (%s)", rep);
                     return [ res ];
                 }
 
@@ -899,7 +902,7 @@ class PThreadContext : Context
         finally
         {
             if (res.result != ResultCode.OK)
-                log.trace("ERR! update: no store individual: errcode=[%s], ticket=[%s] indv=[%s]", text(res.result),
+                log.trace("ERR! update: no store individual: errcode=[%s], indv=[%s] ticket=[%s]", text(res.result),
                           indv !is null ? text(*indv) : "null",
                           ticket !is null ? text(*ticket) : "null");
 

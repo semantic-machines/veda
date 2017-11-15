@@ -436,6 +436,13 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
+								for (int ic = 0 ; ic < 10 && res == ResultCode.Internal_Server_Error; ic++)
+								{
+                                    log.trace("sleep and repeat store, uri=%s", indv.uri);
+									Thread.sleep(dur!("seconds")(1));
+	                                res = context.put_individual(&sticket, indv.uri, indv, null, -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;									
+								}
+
                                 if (res != ResultCode.OK)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
 
