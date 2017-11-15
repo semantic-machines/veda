@@ -200,13 +200,13 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
             {
                 //cerr << "\t\t@STR RU" << endl;
                 rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
-                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "ru"));
+                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "RU"));
             }
             else if (resource_header.tag == TEXT_EN)
             {
                 //cerr << "\t\t@STR EN" << endl;
                 rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
-                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "en"));
+                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "EN"));
             }
             else if (resource_header.tag == URI)
             {
@@ -299,13 +299,13 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
                         {
                             //cerr << "\t\t@STR RU" << endl;
                             rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
-                            rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "ru"));
+                            rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "RU"));
                         }
                         else if (resource_header.tag == TEXT_EN)
                         {
                             //cerr << "\t\t@STR EN" << endl;
                             rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
-                            rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "en"));
+                            rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "EN"));
                         }
                         else if (resource_header.tag == URI)
                         {
@@ -602,9 +602,9 @@ void prepare_js_object(Local<Object> resource_obj, Handle<Value>         f_data,
             string s_lang = std::string(*v8::String::Utf8Value(v_lang));
             std::transform(s_lang.begin(), s_lang.end(), s_lang.begin(), ::tolower);
 
-            if (s_lang.compare("ru") == 0)
+            if (s_lang.compare("RU") == 0)
                 lang = LANG_RU;
-            else if (s_lang.compare("en") == 0)
+            else if (s_lang.compare("EN") == 0)
                 lang = LANG_EN;
             else
                 lang = LANG_NONE;
