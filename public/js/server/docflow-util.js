@@ -906,7 +906,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                             {
                                 var aa = "";
 
-                                if (value.lang == lang || (value.lang == "") || (value.lang == undefined) || (value.lang == 0 && value.lang == "none") || (value.lang == 1 && lang == "ru") || (value.lang == 2 && lang == "en"))
+                                if (value.lang == lang || (value.lang == "") || (value.lang == undefined) || (value.lang == 0 && value.lang == "NONE") || (value.lang == 1 && lang == "RU") || (value.lang == 2 && lang == "EN"))
 								{
                                     aa = value.data;
 
