@@ -94,6 +94,7 @@ function generate_test_document2(ticket)
         'v-s:test_datetime4': newDate(new Date("1960-01-02")),
         'v-s:canUpdate': newBool(true),
         'v-s:permissionSubject': [newUri('individual_' + guid())[0], newUri('individual_' + guid())[0]],
+	'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
         'v-s:author': newUri(ticket.user_uri)
     };
 

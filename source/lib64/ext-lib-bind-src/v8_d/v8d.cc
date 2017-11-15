@@ -600,7 +600,7 @@ void prepare_js_object(Local<Object> resource_obj, Handle<Value>         f_data,
         if (v_lang->IsString())
         {
             string s_lang = std::string(*v8::String::Utf8Value(v_lang));
-            std::transform(s_lang.begin(), s_lang.end(), s_lang.begin(), ::tolower);
+            std::transform(s_lang.begin(), s_lang.end(), s_lang.begin(), ::toupper);
 
             if (s_lang.compare("RU") == 0)
                 lang = LANG_RU;
