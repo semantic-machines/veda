@@ -4,7 +4,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
 {
     try
     {
-        var new_uri = genUri();
+        var new_uri = genUri() + "-wit";
         var new_work_item = {
             '@': new_uri,
             'rdf:type': [
@@ -372,7 +372,7 @@ function get_new_variable(variable_name, value)
 {
     try
     {
-        var new_uri = genUri();
+        var new_uri = genUri() + "-var";
         var new_variable = {
             '@': new_uri,
             'rdf:type': [
@@ -812,7 +812,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
             messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
             if (messageVars)
             {
-                var new_message_uri = genUri();
+                var new_message_uri = genUri() + "-msg";
                 var new_message = {
                     '@': new_message_uri,
     		    'v-s:created': [
@@ -851,13 +851,13 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 			}    
 			else
 			{
-                    	    lang = 'ru';
+                    	    lang = 'RU';
 			}
 		
 		    }
 		    else
 		    {
-                        lang = 'ru';
+                        lang = 'RU';
 		    }
 
                     var view = {};
@@ -1066,7 +1066,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         var _started_net = get_individual(ticket, getUri(use_net));
         if (_started_net)
         {
-            var new_process_uri = genUri();
+            var new_process_uri = genUri() + "-prs";
 
             var new_process = {
                 '@': new_process_uri,
