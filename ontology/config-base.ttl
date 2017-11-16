@@ -499,8 +499,8 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     {
       journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
     }
-    if ((!prev_state['v-s:deleted'] || prev_state['v-s:deleted'].data == 'false') &&
-        (document['v-s:deleted'] && document['v-s:deleted'].data == 'true'))
+    if ((!prev_state['v-s:deleted'] || prev_state['v-s:deleted'].data === false) &&
+        (document['v-s:deleted'] && document['v-s:deleted'].data === true))
     {
       journal_record['rdf:type'] = [
       {
@@ -1115,7 +1115,8 @@ cfg:Event_15
   rdfs:comment "Скрипт обработки связей документов" ;
   v-s:triggerByType v-s:Link ;
   v-s:script """
-  var linkUri = document["@"],
+  var linkDeleted = hasValue( document, "v-s:deleted", {data: true, type: _Boolean} ),
+      linkUri = document["@"],
       linkToUri = getUri(document["v-s:to"]),
       linkFromUri = getUri(document["v-s:from"]),
       linkTo = get_individual(ticket, linkToUri),
@@ -1124,48 +1125,70 @@ cfg:Event_15
       mutualMembership = hasValue( document, "v-s:mutualMembership", {data: true, type: _Boolean} ),
       membershipToFromUri = "d:link_membership_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
       membershipFromToUri = "d:link_membership_" + linkFromUri.split(":").join("_") + "_" + linkToUri.split(":").join("_"),
-      membershipToFrom = {
-        '@' : membershipToFromUri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(linkFromUri),
-        'v-s:resource' : newUri(linkToUri),
-        'rdfs:comment' : newStr('создано cfg:Event_15'),
-        'v-s:canRead'  : newBool(true)
-      },
-      membershipFromTo = {
-        '@' : membershipFromToUri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(linkToUri),
-        'v-s:resource' : newUri(linkFromUri),
-        'rdfs:comment' : newStr('создано cfg:Event_15'),
-        'v-s:canRead'  : newBool(true)
-      };
+      membershipToFrom = get_individual(ticket, membershipToFromUri),
+      membershipFromTo = get_individual(ticket, membershipFromToUri);
+
+  if (!membershipToFrom) {
+    membershipToFrom = {
+      '@' : membershipToFromUri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(linkFromUri),
+      'v-s:resource' : newUri(linkToUri),
+      'rdfs:comment' : newStr('создано cfg:Event_15'),
+      'v-s:canRead'  : newBool(true)
+    };
+  }
+  if (!membershipFromTo) {
+    membershipFromTo = {
+      '@' : membershipFromToUri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(linkToUri),
+      'v-s:resource' : newUri(linkFromUri),
+      'rdfs:comment' : newStr('создано cfg:Event_15'),
+      'v-s:canRead'  : newBool(true)
+    };
+  }
+
   if (linkTo) {
-    linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"] || [];
-    containsThisLink = !!linkTo["v-s:hasLink"].filter(function (item) {
-      return (item.data === linkUri);
-    }).length;
-    if (!containsThisLink) {
-      linkTo["v-s:hasLink"].push({type: _Uri, data: linkUri});
+    containsThisLink = hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: _Uri });
+    if (!containsThisLink && !linkDeleted) {
+      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).push({type: _Uri, data: linkUri});
+      put_individual(ticket, linkTo, _event_id);
+    } else if (containsThisLink && linkDeleted) {
+      linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"].filter(function (link) {
+        return link.data !== linkUri;
+      });
       put_individual(ticket, linkTo, _event_id);
     }
   }
   if (linkFrom) {
-    linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"] || [];
-    containsThisLink = !!linkFrom["v-s:hasLink"].filter(function (item) {
-      return (item.data === linkUri);
-    }).length;
-    if (!containsThisLink) {
-      linkFrom["v-s:hasLink"].push({type: _Uri, data: linkUri});
+    containsThisLink = hasValue(linkFrom, "v-s:hasLink", { data: linkUri, type: _Uri });
+    if (!containsThisLink && !linkDeleted) {
+      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).push({type: _Uri, data: linkUri});
+      put_individual(ticket, linkFrom, _event_id);
+    } else if (containsThisLink && linkDeleted) {
+      linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"].filter(function (link) {
+        return link.data !== linkUri;
+      });
       put_individual(ticket, linkFrom, _event_id);
     }
   }
   if (linkTo && linkFrom) {
-    put_individual(ticket, membershipToFrom, _event_id);
-    print( "membershipToFrom", JSON.stringify(membershipToFrom) );
+    if (linkDeleted) {
+      remove_individual(ticket, membershipToFromUri, _event_id);
+      print( "membershipToFrom removed", membershipToFrom["@"] );
+    } else {
+      put_individual(ticket, membershipToFrom, _event_id);
+      print( "membershipToFrom added", JSON.stringify(membershipToFrom) );
+    }
     if (mutualMembership) {
-      put_individual(ticket, membershipFromTo, _event_id);
-      print( "membershipFromTo", JSON.stringify(membershipFromTo) );
+      if (linkDeleted) {
+        remove_individual(ticket, membershipFromToUri, _event_id);
+        print( "membershipFromTo removed", membershipFromTo["@"] );
+      } else {
+        put_individual(ticket, membershipFromTo, _event_id);
+        print( "membershipFromTo added", JSON.stringify(membershipFromTo) );
+      }
     }
   }
   """ ;
