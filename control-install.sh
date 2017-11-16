@@ -106,7 +106,7 @@ if ! ldconfig -p | grep libwebsockets; then
 
 fi
 
-#if ! ldconfig -p | grep libnanomsg; then
+if ! ldconfig -p | grep libnanomsg; then
 
     # make nanomsg dependency
     mkdir tmp
@@ -128,7 +128,7 @@ fi
     cd ..
     cd ..
 
-#fi
+fi
 
 if ! ldconfig -p | grep libtraildb; then
 
