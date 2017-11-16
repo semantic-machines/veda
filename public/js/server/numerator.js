@@ -181,7 +181,7 @@ function commitValue(ticket, scope, value, _event_id) {
 
       } else {
         // new interval
-        var intervalId = genUri();
+        var intervalId = genUri() + "-intv";
         var interval = {
           '@': intervalId,
           'rdfs:label': [{ data: value + ' - ' + value, type: _String }],
@@ -196,7 +196,7 @@ function commitValue(ticket, scope, value, _event_id) {
       }
     } else {
       // Scope is empty - create new interval
-      var intervalId = genUri();
+      var intervalId = genUri() + "-intv";
       var interval = {
         '@': intervalId,
         'rdfs:label': [{ data: value + ' - ' + value, type: _String }],
@@ -285,7 +285,7 @@ function revokeValue(ticket, scope, value, _event_id) {
         intervals.push(intervalUri);
 
         // add new interval from value
-        var newIntervalUri = { data: genUri(), type: _Uri };
+        var newIntervalUri = { data: genUri() + "-intv", type: _Uri };
 
         put_individual(
           ticket,

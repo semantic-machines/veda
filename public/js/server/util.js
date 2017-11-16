@@ -15,7 +15,7 @@ function getTraceJournalUri(object_uri)
 
 function newJournalRecord(journal_uri)
 {
-    var new_journal_record_uri = genUri();
+    var new_journal_record_uri = genUri() + "-jr";
 
     var new_journal_record = {
         '@': new_journal_record_uri,
@@ -289,7 +289,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
      ) {
       if (!prev_state) prev_state = document;
       var actualId = document['@'];
-    var versionId = genUri();
+    var versionId = genUri() + "-vr";
 
     // Create new version
     var version = get_individual(ticket, document['@']);

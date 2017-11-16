@@ -787,7 +787,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           if (!grouping)
           {
             out_data0_el = {};
-            out_data0_el['@'] = genUri();
+            out_data0_el['@'] = genUri() + "-tr";
           }
           else
           {
@@ -808,7 +808,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               if (useExistsUid)
                 out_data0_el['@'] = individual['@'];
               else
-                out_data0_el['@'] = genUri();
+                out_data0_el['@'] = genUri() + "-tr";
             }
           }
 
@@ -1111,9 +1111,9 @@ function addToGroup(ticket, group, resource, rights, new_uri)
   }
 
   if (!new_uri)
-  new_uri = genUri();
+  new_uri = genUri() + "-gr";
 
-  var new_membership_uri = genUri();
+  var new_membership_uri = genUri() + "-mbh";
   var new_membership = {
     '@': new_membership_uri,
     'rdf:type': newUri('v-s:Membership'),
@@ -1150,7 +1150,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 
 function removeFromGroup(ticket, group, resource)
 {
-  var new_membership_uri = genUri();
+  var new_membership_uri = genUri() + "-mbh";
   var new_membership = {
     '@': new_membership_uri,
     'rdf:type': newUri('v-s:Membership'),
@@ -1185,7 +1185,7 @@ function addRight(ticket, rights, subj_uri, obj_uri) {
     return;
   }
 
-  var new_uri = genUri() + "_r";
+  var new_uri = genUri() + "-r";
 
   if (new_uri) {
     try

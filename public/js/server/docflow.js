@@ -869,7 +869,7 @@ function prepare_work_item(ticket, document)
             //* сформировать задания для исполнителей
             for (var i = 0; i < executor_list.length; i++)
             {
-                var new_work_order_uri = genUri();
+                var new_work_order_uri = genUri() + "-wo";
 
                 var new_work_order = {
                     '@': new_work_order_uri,
@@ -1180,7 +1180,7 @@ function prepare_start_form(ticket, document)
 
     addRight(ticket, [can_read], "v-wf:WorkflowReadUser", document['@']);
 
-    var new_process_uri = genUri();
+    var new_process_uri = genUri() + "-prs";
 
     var creator_f = document['v-s:creator'];
 
@@ -1260,7 +1260,7 @@ function prepare_start_form(ticket, document)
 
     create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
 
-    var jrId = genUri();
+    var jrId = genUri() + "-psr";
     var journalRecord = {
         '@': jrId,
         'rdf:type': newUri('v-s:ProcessStarted'),
@@ -1284,7 +1284,7 @@ function prepare_start_form(ticket, document)
     put_individual(ticket, journalRecord, _event_id);
 
     var membership = {
-        '@': genUri(),
+        '@': genUri() + "-mbh",
         'rdf:type': newUri('v-s:Membership'),
         'v-s:resource': newUri(new_process_uri),
         'v-s:memberOf': processedDocument,
