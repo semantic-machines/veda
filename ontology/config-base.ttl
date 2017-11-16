@@ -1152,7 +1152,7 @@ cfg:Event_15
   if (linkTo) {
     containsThisLink = hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: _Uri });
     if (!containsThisLink && !linkDeleted) {
-      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).push({type: _Uri, data: linkUri});
+      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).concat({type: _Uri, data: linkUri});
       put_individual(ticket, linkTo, _event_id);
     } else if (containsThisLink && linkDeleted) {
       linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"].filter(function (link) {
@@ -1164,7 +1164,7 @@ cfg:Event_15
   if (linkFrom) {
     containsThisLink = hasValue(linkFrom, "v-s:hasLink", { data: linkUri, type: _Uri });
     if (!containsThisLink && !linkDeleted) {
-      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).push({type: _Uri, data: linkUri});
+      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).concat({type: _Uri, data: linkUri});
       put_individual(ticket, linkFrom, _event_id);
     } else if (containsThisLink && linkDeleted) {
       linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"].filter(function (link) {
