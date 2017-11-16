@@ -70,5 +70,9 @@ if [ -z $1 ] || [ $1 == "ttlreader" ] || [ $1 == "veda-ttlreader" ] ; then
     ./build-component.sh veda-ttlreader ttlreader
 fi
 
+if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
+    ./build-component.sh veda-ft-query ft-query
+fi
+
 #sudo ifup -a
 

@@ -106,14 +106,14 @@ if ! ldconfig -p | grep libwebsockets; then
 
 fi
 
-if ! ldconfig -p | grep libnanomsg; then
+#if ! ldconfig -p | grep libnanomsg; then
 
     # make nanomsg dependency
     mkdir tmp
-    wget https://github.com/nanomsg/nanomsg/archive/1.0.0.tar.gz -P tmp
+    wget https://github.com/nanomsg/nanomsg/archive/1.1.2.tar.gz -P tmp
     cd tmp
-    tar -xvzf 1.0.0.tar.gz
-    cd nanomsg-1.0.0
+    tar -xvzf 1.1.2.tar.gz
+    cd nanomsg-1.1.2
     mkdir build
     cd build
     cmake ..
@@ -128,7 +128,7 @@ if ! ldconfig -p | grep libnanomsg; then
     cd ..
     cd ..
 
-fi
+#fi
 
 if ! ldconfig -p | grep libtraildb; then
 
