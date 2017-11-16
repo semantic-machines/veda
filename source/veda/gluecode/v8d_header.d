@@ -144,7 +144,7 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
         if (code < 0)
         {
             ti.rc = ResultCode.Unprocessable_Entity;
-            log.trace("ERR! v8d:transaction:deserialize [%s]", ti.new_binobj);
+            log.trace("ERR! v8d:transaction:deserialize cmd:[%s] ticket:[%s] event:[%s] binobj[%s]", text (_cmd), _ticket_id, _event_id, _binobj);
             return;
         }
         else
@@ -394,6 +394,7 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
         }
         else if (var_name == "$ticket")
         {
+            //log.trace("$ticket=%s %s", g_ticket, g_ticket.data[ 0..g_ticket.length ]);
             return &g_ticket;
         }
         else if (var_name == "$super_classes")
@@ -437,7 +438,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         Ticket   *ticket = g_context.get_ticket(ticket_id);
 
         string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit, null, false).result;
+        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false).result;
         res = text(icb);
 
         if (icb !is null)

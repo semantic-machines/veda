@@ -11,7 +11,7 @@ private
     import std.stdio, std.datetime, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                            : SwapStrategy;
     import veda.onto.resource, veda.onto.individual;
-    import veda.core.util.utils, veda.util.container, veda.common.logger;
+    import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.type;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
 }
 
@@ -169,7 +169,7 @@ class Onto
         Individual[] l_individuals = context.get_individuals_via_query(
                                                                        &sticket,
                                                                        "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
-                                                                       true, 10000, 10000);
+                                                                       OptAuthorize.NO, 10000, 10000);
 
         sw1.stop();
 

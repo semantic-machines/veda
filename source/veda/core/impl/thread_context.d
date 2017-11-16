@@ -208,9 +208,6 @@ class PThreadContext : Context
                     OpResult res;
                     res.op_id  = -1;
                     res.result = ResultCode.Internal_Server_Error;
-                    log.trace("ERR! reqrep_json_2_main_module: fail convert result or empty result:");
-                    log.trace("\t\tN_CHANNEL send (%s)", req);
-                    log.trace("\t\tN_CHANNEL recv (%s)", rep);
                     return [ res ];
                 }
 
@@ -599,7 +596,7 @@ class PThreadContext : Context
 
 
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
-    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000)
+    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000)
     {
 //        StopWatch sw; sw.start;
 
@@ -623,7 +620,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get, false);
+            _vql.get(ticket, query_str, null, null, top, limit, res, op_auth, false);
             return res;
         }
         finally
@@ -685,15 +682,15 @@ class PThreadContext : Context
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event, bool trace)
+                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth, bool trace)
     {
         SearchResult sr;
-
+        
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
-
-        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, false, trace);
-
+    
+        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+    
         return sr;
     }
 
@@ -902,7 +899,7 @@ class PThreadContext : Context
         finally
         {
             if (res.result != ResultCode.OK)
-                log.trace("ERR! update: no store individual: errcode=[%s], indv=[%s] ticket=[%s]", text(res.result),
+                log.trace("ERR! update: no store individual: errcode=[%s], ticket=[%s] indv=[%s]", text(res.result),
                           indv !is null ? text(*indv) : "null",
                           ticket !is null ? text(*ticket) : "null");
 

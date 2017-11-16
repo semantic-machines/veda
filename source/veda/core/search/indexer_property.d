@@ -6,7 +6,7 @@ module veda.core.search.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.common.log_msg;
-private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define;
+private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type;
 private import veda.common.logger;
 
 class IndexerProperty
@@ -88,13 +88,14 @@ class IndexerProperty
     {
         if (class_property__2__indiviual.length == 0 || force)
         {
+        	log.trace("load indexes:start");
             context.reopen_ro_individuals_storage_db();
             context.reopen_ro_fulltext_indexer_db();
 
 //            context.vql().reopen_db();
             Ticket       sticket = context.sys_ticket();
 
-            Individual[] l_individuals = context.get_individuals_via_query(&sticket, "'rdf:type' === 'vdi:ClassIndex'", true, 10000, 10000);
+            Individual[] l_individuals = context.get_individuals_via_query(&sticket, "'rdf:type' === 'vdi:ClassIndex'", OptAuthorize.NO, 10000, 10000);
 
             foreach (indv; l_individuals)
             {

@@ -124,7 +124,7 @@ interface Context
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
-    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
+    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);
 
 
     public Individual[ string ] get_onto_as_map_individuals();
@@ -151,6 +151,7 @@ interface Context
     public bool is_ticket_valid(string ticket_id);
 
     // ////////////////////////////////////////////// INDIVIDUALS IO ////////////////////////////////////////////
+
     /**
        Вернуть индивидуалов согласно заданному запросу
        Params:
@@ -162,12 +163,12 @@ interface Context
                 top = сколько вернуть положительно авторизованных элементов
                 limit = максимальное количество найденных элементов
                 prepare_element_event = делегат для дополнительных действий извне
-
+    
        Returns:
                 список авторизованных uri
      */
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event,
+                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth,
                                                       bool trace);
 
     public void reopen_ro_fulltext_indexer_db();

@@ -152,7 +152,7 @@ class UserModuleInfo
         SearchResult sr =
             context.get_individuals_ids_via_query(&sticket, "'rdf:type' === 'v-s:Module'", "'rdf:type' asc", "base,system", 0, 100000,
                                                   10000,
-                                                  null,
+                                                  null, OptAuthorize.NO, 
                                                   false);
 
         Individual[ string ] mmsrc;
@@ -276,7 +276,7 @@ class UserModuleInfo
                 context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy' === '" ~ module_id ~ "'", "'rdfs:isDefinedBy' asc",
                                                       "base,system,deleted", 0, 100000,
                                                       10000,
-                                                      null,
+                                                      null, OptAuthorize.NO,
                                                       false);
 
             //log.trace("found %s ", sr.result);

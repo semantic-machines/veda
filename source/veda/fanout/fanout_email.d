@@ -155,7 +155,7 @@ class FanoutProcess : VedaModule
             Individual[] l_individuals = context.get_individuals_via_query(
                                                                            &sticket,
                                                                            "'rdf:type' == 'v-s:Appointment' && 'v-s:occupation' == '" ~ indv.uri ~
-                                                                           "'", true, 10000, 10000);
+                                                                           "'", OptAuthorize.NO, 10000, 10000);
 
             foreach (individual; l_individuals)
             {

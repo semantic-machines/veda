@@ -272,7 +272,7 @@ class ScriptProcess : VedaModule
 
         vql.get(&sticket,
                 "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                res, false, false);
+                res, OptAuthorize.NO, false);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);

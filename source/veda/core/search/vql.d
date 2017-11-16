@@ -7,10 +7,10 @@ module veda.core.search.vql;
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.common.type;
-    import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates;
+    import veda.util.container, veda.common.logger, veda.core.util.utils;
+    import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates, veda.common.type;
     import veda.core.search.vel, veda.core.search.xapian_reader;
-    import veda.onto.individual, veda.core.az.acl;
+    import veda.onto.individual;
 }
 
 static const int RETURN    = 0;
@@ -55,7 +55,7 @@ class VQL
     }
 
     public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
-                   ref Individual[] individuals, bool inner_get, bool trace)
+                   ref Individual[] individuals, OptAuthorize op_auth, bool trace)
     {
         int                       res_count;
 
@@ -90,7 +90,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, inner_get, null, trace);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, op_auth, null, trace);
         res_count = sr.count;
 
         return res_count;
@@ -98,7 +98,7 @@ class VQL
 
     public SearchResult get(Ticket *ticket, string filter, string freturn, string sort, int from, int top, int limit,
                             void delegate(string uri) prepare_element_event,
-                            bool inner_get, bool trace)
+                            OptAuthorize op_auth, bool trace)
     {
         string[]                  res;
 
@@ -114,7 +114,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, inner_get, prepare_element_event, trace);
+        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, op_auth, prepare_element_event, trace);
 
         if (sr.result_code == ResultCode.OK)
             sr.result = res;
@@ -122,7 +122,7 @@ class VQL
         return sr;
     }
 
-    public int get(Ticket *ticket, string query_str, ref Individual[] res, bool inner_get, bool trace)
+    public int get(Ticket *ticket, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace)
     {
         split_on_section(query_str);
         int top = 10000;
@@ -194,7 +194,7 @@ class VQL
             }
             dg = &collect_subject;
 
-            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, inner_get, null, trace);
+            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, op_auth, null, trace);
             res_count = sr.count;
         }
 

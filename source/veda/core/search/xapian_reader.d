@@ -16,7 +16,7 @@ protected byte err;
 interface SearchReader
 {
     public SearchResult get(Ticket *ticket, string str_query, string str_sort, string db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event, bool trace);
+                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event, bool trace);
 
     public void reopen_db();
 }
@@ -131,7 +131,7 @@ class XapianReader : SearchReader
     }
 
     public SearchResult get(Ticket *ticket, string str_query, string str_sort, string _db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, bool inner_get, void delegate(string uri) prepare_element_event, bool trace)
+                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event, bool trace)
     {
         SearchResult sr;
 
@@ -158,7 +158,7 @@ class XapianReader : SearchReader
         if (_db_names is null || _db_names.length == 0)
         {
             // если не указанны базы данных, то попробуем определить их из текста запроса
-            if (inner_get == false)
+            if (op_auth == OptAuthorize.YES)
                 iproperty.load();
 
             bool[ string ] databasenames = iproperty.get_dbnames();
@@ -278,7 +278,7 @@ class XapianReader : SearchReader
             while (sr.result_code != ResultCode.OK)
             {
                 sr = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, from, top, limit, add_out_element,
-                                                                  context, prepare_element_event, trace);
+                                                                  context, prepare_element_event, trace, op_auth);
                 if (sr.result_code != ResultCode.OK)
                 {
                     add_out_element(null); // reset previous collected data
