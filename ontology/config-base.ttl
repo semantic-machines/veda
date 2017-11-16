@@ -1125,29 +1125,43 @@ cfg:Event_15
       mutualMembership = hasValue( document, "v-s:mutualMembership", {data: true, type: _Boolean} ),
       membershipToFromUri = "d:link_membership_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
       membershipFromToUri = "d:link_membership_" + linkFromUri.split(":").join("_") + "_" + linkToUri.split(":").join("_"),
-      membershipToFrom = get_individual(ticket, membershipToFromUri),
-      membershipFromTo = get_individual(ticket, membershipFromToUri);
+      membershipLinkUri = "d:link_membership_" + linkFromUri.split(":").join("_") + "_" + linkToUri.split(":").join("_") + "_link",
+      membershipToFrom,
+      membershipFromTo,
+      membershipLink;
 
-  if (!membershipToFrom) {
-    membershipToFrom = {
-      '@' : membershipToFromUri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:memberOf' : newUri(linkFromUri),
-      'v-s:resource' : newUri(linkToUri),
-      'rdfs:comment' : newStr('создано cfg:Event_15'),
-      'v-s:canRead'  : newBool(true)
-    };
+  membershipLink = {
+    '@' : membershipLinkUri,
+    'rdf:type'     : newUri('v-s:Membership'),
+    'v-s:memberOf' : [ newUri(linkFromUri)[0], newUri(linkToUri)[0] ],
+    'v-s:resource' : newUri(linkUri),
+    'rdfs:comment' : newStr('создано cfg:Event_15')
+  };
+  if (linkDeleted) {
+    remove_individual(ticket, membershipLinkUri, _event_id);
+    print( "membershipLink removed", membershipLinkUri );
+  } else {
+    put_individual(ticket, membershipLink, _event_id);
+    print( "membershipLink added", JSON.stringify(membershipLink) );
   }
-  if (!membershipFromTo) {
-    membershipFromTo = {
-      '@' : membershipFromToUri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:memberOf' : newUri(linkToUri),
-      'v-s:resource' : newUri(linkFromUri),
-      'rdfs:comment' : newStr('создано cfg:Event_15'),
-      'v-s:canRead'  : newBool(true)
-    };
-  }
+
+  membershipToFrom = {
+    '@' : membershipToFromUri,
+    'rdf:type'     : newUri('v-s:Membership'),
+    'v-s:memberOf' : newUri(linkFromUri),
+    'v-s:resource' : newUri(linkToUri),
+    'rdfs:comment' : newStr('создано cfg:Event_15'),
+    'v-s:canRead'  : newBool(true)
+  };
+
+  membershipFromTo = {
+    '@' : membershipFromToUri,
+    'rdf:type'     : newUri('v-s:Membership'),
+    'v-s:memberOf' : newUri(linkToUri),
+    'v-s:resource' : newUri(linkFromUri),
+    'rdfs:comment' : newStr('создано cfg:Event_15'),
+    'v-s:canRead'  : newBool(true)
+  };
 
   if (linkTo) {
     containsThisLink = hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: _Uri });
