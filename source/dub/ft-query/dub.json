@@ -23,6 +23,8 @@
         "sourceFiles":[
 	"../../lib64/libxapiand.a", 
         "../../lib64/liblmdb.a",
+        "../../veda/connector/connector.d",
+        "../../veda/connector/requestresponse.d",
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",
