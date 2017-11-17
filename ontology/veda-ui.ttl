@@ -589,7 +589,7 @@ v-ui:LinkTemplateGreenButtonWithTrue
   v-ui:template """
 <div>
   <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton"></div>
+  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton" data-embedded="true"></div>
   <br>
   <button class="btn btn-success view -edit -search" id="add-hasLink" about="v-s:hasLink" property="rdfs:label"></button>
 </div>
