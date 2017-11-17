@@ -292,6 +292,12 @@ public enum INDV_OP : byte
     /// Сохранить
     GET         = 2,
 
+    /// Получить тикет
+    GET_TICKET = 3,
+
+    /// Авторизовать
+    AUTHORIZE = 8,
+
     /// Установить в
     SET_IN      = 45,
 
