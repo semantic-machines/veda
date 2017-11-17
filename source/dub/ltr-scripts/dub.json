@@ -21,6 +21,7 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
+        "../../veda/util/properd.d",
         "../../veda/connector/connector.d",
         "../../veda/connector/requestresponse.d",
 	"../../veda/bind/xapian_d_header.d",

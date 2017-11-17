@@ -3,7 +3,7 @@ module veda.frontend.core_rest;
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
 import core.vararg, core.stdc.stdarg, core.atomic, std.uri;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
-import properd, TrailDB;
+import veda.util.properd, TrailDB;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 import veda.frontend.cbor8vjson, veda.util.queue;

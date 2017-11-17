@@ -21,13 +21,14 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
+        "../../lib64/liblmdb.a",
+        "../../lib64/libv8d.a", 
+	"../../lib64/libxapiand.a",
+        "../../veda/util/properd.d",
 	"../../veda/gluecode/script.d",
 	"../../veda/gluecode/scripts.d", 
 	"../../veda/gluecode/scripts_lp.d", 
 	"../../veda/gluecode/v8d_header.d",
-        "../../lib64/liblmdb.a",
-        "../../lib64/libv8d.a", 
-	"../../lib64/libxapiand.a",
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",
