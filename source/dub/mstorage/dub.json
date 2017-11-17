@@ -3,7 +3,8 @@
 	"description": "veda-mstorage",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.2"
+		"backtrace-d": "0.1.2",
+                "msgpack-d": "1.0.0-beta.6"
 	},
 	"versions": ["isMStorage"],	
         "libs": [

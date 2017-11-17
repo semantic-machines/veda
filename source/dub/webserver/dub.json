@@ -5,7 +5,8 @@
 		"vibe-d": "0.7.30",
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2",
-		"traildb": "0.0.2"
+		"traildb": "0.0.2",
+                "msgpack-d": "1.0.0-beta.6"
 	},
 	"versions": ["VibeDefaultMain", "WebServer"],	
         "libs": [
