@@ -445,7 +445,7 @@ class VedaStorageRest : VedaStorageRest_API
                 {
                     log.trace("authenticate:check external user (%s)", ticket.user_uri);
                     Individual user = context.get_individual(&ticket, ticket.user_uri);
-                    if (user.exists("v-s:origin", Resource("External User")) == false)
+                    if (user.isExists("v-s:origin", Resource("External User")) == false)
                     {
                         log.trace("ERR! authenticate:user (%s) is not external", ticket.user_uri);
                         ticket = Ticket.init;
@@ -1257,7 +1257,7 @@ private Ticket *get_ticket(Context context, string ticket_id)
         if (external_users_ticket_id.get(ticket_id, false) == false)
         {
             Individual user = context.get_individual(ticket, ticket.user_uri);
-            if (user.exists("v-s:origin", Resource("External User")) == false)
+            if (user.isExists("v-s:origin", Resource("External User")) == false)
             {
                 log.trace("ERR! user (%s) is not external", ticket.user_uri);
                 ticket.id     = "?";

@@ -194,10 +194,10 @@ public class IndexerContext
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
 
-        if (is_deleted == false && indv.exists(veda_schema__deleted, true) == true)
+        if (is_deleted == false && indv.isExists(veda_schema__deleted, true) == true)
             is_deleted = true;
 
-        if (prev_indv.exists(veda_schema__deleted, true) == true)
+        if (prev_indv.isExists(veda_schema__deleted, true) == true)
             prev_is_deleted = true;
 
         if (prev_is_deleted == true && is_deleted == false)

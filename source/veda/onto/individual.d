@@ -193,7 +193,7 @@ public struct Individual
         return rss;
     }
 
-    bool exists(T) (string predicate, T object)
+    bool isExists(T) (string predicate, T object)
     {
         Resources rss;
 

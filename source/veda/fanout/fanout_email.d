@@ -146,11 +146,11 @@ class FanoutProcess : VedaModule
 
         label = indv.getFirstLiteral("rdfs:label");
 
-        if (indv.exists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
+        if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
         {
             res = get_email_from_appointment(sticket, indv);
         }
-        else if (indv.exists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
+        else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
         {
             Individual[] l_individuals = context.get_individuals_via_query(
                                                                            &sticket,
@@ -220,7 +220,7 @@ class FanoutProcess : VedaModule
         {
             Ticket sticket = context.sys_ticket();
 
-            bool   is_deleted = new_indv.exists("v-s:deleted", true);
+            bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
             string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
             string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");

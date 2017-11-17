@@ -99,7 +99,7 @@ public class FanoutProcess : VedaModule
             existsTable = existsTable.init;
             //log.trace("push_to_mysql: prev_indv=%s", prev_indv);
             //log.trace("push_to_mysql: new_indv=%s", new_indv);
-            bool   is_deleted = new_indv.exists("v-s:deleted", true);
+            bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
             string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
             string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");

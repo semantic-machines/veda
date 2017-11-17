@@ -32,7 +32,7 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
 
     try
     {
-        if (ss.exists(veda_schema__deleted, true) || ss.exists("v-s:disabled", true))
+        if (ss.isExists(veda_schema__deleted, true) || ss.isExists("v-s:disabled", true))
         {
             log.trace("disable script %s", ss.uri);
             ScriptInfo script = wpl.scripts.get(ss.uri, ScriptInfo.init);

@@ -425,7 +425,7 @@ class UserModuleInfo
             Individual mindv = context.get_individual(&sticket, uri);
             if (mindv.getStatus() != ResultCode.OK)
                 this.store_module_individ();
-            else if (mindv.exists("v-s:deleted", true))
+            else if (mindv.isExists("v-s:deleted", true))
                 this.store_module_individ();
 
             return true;
@@ -506,7 +506,7 @@ class UserModuleInfo
                     Individual indv_module = context.get_individual(&sticket, is_defined_by_in_storage);
                     if (indv_module.getStatus() == ResultCode.OK)
                     {
-                        if (indv_module.exists("rdf:type", "v-s:Module") == true)
+                        if (indv_module.isExists("rdf:type", "v-s:Module") == true)
                         {
                             log.trace("[%s] already exist, and found another installation %s, break check", uid, is_defined_by_in_storage);
                             prev_module_name = is_defined_by_in_storage;
@@ -762,7 +762,7 @@ class UserModuleInfo
 
                 if (uri != root_indv)
                 {
-                    if (module_indv.exists("rdf:type", request_predicate) == false)
+                    if (module_indv.isExists("rdf:type", request_predicate) == false)
                     {
                         log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
                         log.trace("WARN! remove prepared module [%s]", uri);
@@ -914,7 +914,7 @@ class UserModulesTool : VedaModule
             if (ptype == PreparedType.REQUEST)
                 log.trace("[%s]: %s individual changed", request_predicate, new_indv.uri);
 
-            bool new_is_deleted = new_indv.exists("v-s:deleted", true);
+            bool new_is_deleted = new_indv.isExists("v-s:deleted", true);
 
             if (prev_indv is Individual.init)
             {
@@ -948,7 +948,7 @@ class UserModulesTool : VedaModule
             else
             {
                 // Exist
-                bool prev_is_deleted = prev_indv.exists("v-s:deleted", true);
+                bool prev_is_deleted = prev_indv.isExists("v-s:deleted", true);
 
                 if (new_is_deleted == true && prev_is_deleted == false)
                 {
