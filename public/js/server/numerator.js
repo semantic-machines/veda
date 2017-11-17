@@ -52,7 +52,7 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
         var scope = get_individual(ticket, scopeId) || createScope(ticket, scopeId);
         print("@2 | number", number, "| deleted", deleted, "| prev_state", !!prev_state, "| prevNumber", prevNumber, "| scopeId", scopeId);
 
-        if (!number && !prev_state) {
+        if (!number && !prevNumber) {
           // update doc, commit number
           number = getNewValue(ticket, individual, rule, scope);
           commitValue(ticket, scope, number, _event_id);
@@ -60,6 +60,9 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
           put_individual(ticket, individual, _event_id);
           print("@3 update doc, commit number");
 
+        } else if (!number && prevNumber) {
+          individual[enumeratedProperty] = newStr( prevNumber.toString() ); // Restore number
+          put_individual(ticket, individual, _event_id);
         } else if (number && !prev_state) {
           // commit number
           commitValue(ticket, scope, number, _event_id);
