@@ -277,18 +277,28 @@ function replace_word(src, from, to)
  */
 function create_version(ticket, document, prev_state, user_uri, _event_id) {
   // Only if we save actual version of document (or it is first save of versioned document)
-  if (!document['v-s:actualVersion']
-    || (document['v-s:actualVersion'][0].data == document['@']
-      && ( ( !document['v-s:previousVersion'] && (!prev_state || !prev_state['v-s:previousVersion']) )
-          || (prev_state
-            && document['v-s:previousVersion']
-            && prev_state['v-s:previousVersion']
-            && document['v-s:previousVersion'][0].data == prev_state['v-s:previousVersion'][0].data)
-         )
-       )
-     ) {
-      if (!prev_state) prev_state = document;
-      var actualId = document['@'];
+  if (
+    !document['v-s:actualVersion']
+    ||
+    (
+      document['v-s:actualVersion'][0].data === document['@']
+      &&
+      (
+        (
+          !document['v-s:previousVersion'] && (!prev_state || !prev_state['v-s:previousVersion'])
+        )
+        ||
+        (
+          prev_state
+          && document['v-s:previousVersion']
+          && prev_state['v-s:previousVersion']
+          && document['v-s:previousVersion'][0].data === prev_state['v-s:previousVersion'][0].data
+        )
+      )
+    )
+  ) {
+    if (!prev_state) prev_state = document;
+    var actualId = document['@'];
     var versionId = genUri() + "-vr";
 
     // Create new version
@@ -300,8 +310,8 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
       version['v-s:previousVersion'] = [];
     }
     version['v-s:actualVersion'] = [{
-          data: document['@'],
-          type: _Uri
+      data: document['@'],
+      type: _Uri
     }];
     version['v-s:nextVersion'] = [{
       data: actualId,
@@ -321,41 +331,35 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     put_individual(ticket, version, _event_id);
 
     // Add rights to version
-    var uri = 'd:membership_' + versionId.split(':').join('_') + '_' + actualId.split(':').join('_');
-
-    var membership = get_individual(ticket, uri);
-
-    if (!membership) {
-      //print('+M '+uri);
-      membership = {
-        '@' : uri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(actualId),
-        'v-s:resource' : newUri(versionId),
-        'rdfs:comment' : newStr('создано cfg:Event_3'),
-        'v-s:canRead'  : newBool(true)
-      };
-      put_individual (ticket, membership, _event_id);
-    }
+    var membership_uri = 'd:membership_' + versionId.split(':').join('_') + '_' + actualId.split(':').join('_');
+    var membership = {
+      '@' : membership_uri,
+      'rdf:type'     : newUri('v-s:Membership'),
+      'v-s:memberOf' : newUri(actualId),
+      'v-s:resource' : newUri(versionId),
+      'rdfs:comment' : newStr('создано cfg:Event_3'),
+      'v-s:canRead'  : newBool(true)
+    };
+    put_individual (ticket, membership, _event_id);
 
     // Update previous version
     if (document['v-s:previousVersion']) {
       var previous = get_individual(ticket, getUri(document['v-s:previousVersion']));
       previous['v-s:nextVersion'] = [{
-            data: versionId,
-            type: _Uri
+        data: versionId,
+        type: _Uri
       }];
       put_individual(ticket, previous, _event_id);
     }
 
     // Update actual version
     document['v-s:previousVersion'] = [{
-          data: versionId,
-          type: _Uri
+      data: versionId,
+      type: _Uri
     }];
     document['v-s:actualVersion'] = [{
-          data: document['@'],
-          type: _Uri
+      data: document['@'],
+      type: _Uri
     }];
     document['v-s:nextVersion'] = [];
     document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
@@ -365,40 +369,38 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
 }
 
 function recursiveCall(elem, path, ticket, _event_id) {
-    if (path[elem['@']]) {
-        print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);
-        return;
-    }
+  if (path[elem['@']]) {
+    print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);
+    return;
+  }
 
-    path[elem['@']] = Object.keys(path).length;
-    if (elem['v-wf:decisionFormList']) {
-      elem['v-wf:decisionFormList'].forEach(function(dfae) {
-        var df = get_individual(ticket, dfae.data)
-        if (!df['v-wf:isCompleted'] ||
-            df['v-wf:isCompleted'][0].data == false)
-          {
-          df['v-s:deleted'] = newBool(true);
-          df['v-wf:isStopped'] = newBool(true);
-          put_individual(ticket, df, _event_id);
-        }
-      });
-    }
+  path[elem['@']] = Object.keys(path).length;
+  if (elem['v-wf:decisionFormList']) {
+    elem['v-wf:decisionFormList'].forEach(function(dfae) {
+      var df = get_individual(ticket, dfae.data)
+      if (!df['v-wf:isCompleted'] || df['v-wf:isCompleted'][0].data == false) {
+        df['v-s:deleted'] = newBool(true);
+        df['v-wf:isStopped'] = newBool(true);
+        put_individual(ticket, df, _event_id);
+      }
+    });
+  }
 
-    if (elem['v-wf:workItemList']) {
-      elem['v-wf:workItemList'].forEach(function(wi) {
-        recursiveCall(get_individual(ticket, wi.data), path, ticket, _event_id);
-      });
-    }
+  if (elem['v-wf:workItemList']) {
+    elem['v-wf:workItemList'].forEach(function(wi) {
+      recursiveCall(get_individual(ticket, wi.data), path, ticket, _event_id);
+    });
+  }
 
-    if (elem['v-wf:workOrderList']) {
-      elem['v-wf:workOrderList'].forEach(function(wo) {
-        recursiveCall(get_individual(ticket, wo.data), path, ticket, _event_id);
-      });
-    }
+  if (elem['v-wf:workOrderList']) {
+    elem['v-wf:workOrderList'].forEach(function(wo) {
+      recursiveCall(get_individual(ticket, wo.data), path, ticket, _event_id);
+    });
+  }
 
-    if (elem['v-wf:isProcess']) {
-      elem['v-wf:isProcess'].forEach(function(p) {
-        recursiveCall(get_individual(ticket, p.data), path, ticket, _event_id);
-      });
-    }
+  if (elem['v-wf:isProcess']) {
+    elem['v-wf:isProcess'].forEach(function(p) {
+      recursiveCall(get_individual(ticket, p.data), path, ticket, _event_id);
+    });
+  }
 }
