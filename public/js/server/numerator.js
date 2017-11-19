@@ -158,7 +158,7 @@ function commitValue(ticket, scope, value, _event_id) {
         // remove next
         add_to_individual(ticket, {
           '@': nextInterval['@'],
-          'v-s:deleted': [{ data: 'true', type: _Bool }]
+          'v-s:deleted': [{ data: true, type: _Boolean }]
         }, false);
         var intervals = [];
         for ( var i in scope['v-s:numerationCommitedInterval']) {
@@ -244,7 +244,7 @@ function revokeValue(ticket, scope, value, _event_id) {
           // remove empty interval
           add_to_individual(ticket, {
             '@': interval['@'],
-            'v-s:deleted': [{ data: 'true', type: _Bool }]
+            'v-s:deleted': [{ data: true, type: _Boolean }]
           }, false);
         }
       } else if (interval['v-s:numerationCommitedIntervalEnd'][0].data == value) {
@@ -267,7 +267,7 @@ function revokeValue(ticket, scope, value, _event_id) {
           // remove empty interval
           add_to_individual(ticket, {
             '@': interval['@'],
-            'v-s:deleted': [{ data: 'true', type: _Bool }]
+            'v-s:deleted': [{ data: true, type: _Boolean }]
           }, false);
         }
       } else if ( (interval['v-s:numerationCommitedIntervalBegin'][0].data < value) && (value < interval['v-s:numerationCommitedIntervalEnd'][0].data) ) {
