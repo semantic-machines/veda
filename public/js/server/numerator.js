@@ -44,13 +44,13 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
       // Already processed
       if (number && prevNumber && number === prevNumber && deleted === prevDeleted) {
         // Nothing changed return
-        print("@1 nothing changed exit");
+        //print("@1 nothing changed exit");
         return;
       } else {
         var rule = get_individual(ticket, numeration['v-s:hasNumerationRule'][0].data);
         var scopeId = getScope(ticket, individual, rule);
         var scope = get_individual(ticket, scopeId) || createScope(ticket, scopeId);
-        print("@2 | number", number, "| deleted", deleted, "| prev_state", !!prev_state, "| prevNumber", prevNumber, "| scopeId", scopeId);
+        //print("@2 | number", number, "| deleted", deleted, "| prev_state", !!prev_state, "| prevNumber", prevNumber, "| scopeId", scopeId);
 
         if (!number && !prevNumber) {
           // update doc, commit number
@@ -58,7 +58,7 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
           commitValue(ticket, scope, number, _event_id);
           individual[enumeratedProperty] = newStr( number.toString() );
           put_individual(ticket, individual, _event_id);
-          print("@3 update doc, commit number");
+          //print("@3 update doc, commit number");
 
         } else if (!number && prevNumber) {
           individual[enumeratedProperty] = newStr( prevNumber.toString() ); // Restore number
@@ -66,12 +66,12 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
         } else if (number && !prev_state) {
           // commit number
           commitValue(ticket, scope, number, _event_id);
-          print("@4 commit number");
+          //print("@4 commit number");
 
         } else if (number && deleted) {
           // revoke number
           revokeValue(ticket, scope, number, _event_id);
-          print("@5 revoke number");
+          //print("@5 revoke number");
 
         } else if (number && prevNumber && number !== prevNumber) {
           // commit number, revoke prevNumber
@@ -79,10 +79,10 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
           var prevScopeId = getScope(ticket, prev_state, rule);
           var prevScope = get_individual(ticket, prevScopeId);
           revokeValue(ticket, prevScope, prevNumber, _event_id);
-          print("@6 commit number, revoke prevNumber");
+          //print("@6 commit number, revoke prevNumber");
 
         } else {
-          print("@7 no condition fullfilled");
+          //print("@7 no condition fullfilled");
         }
       }
     });
@@ -219,7 +219,7 @@ function commitValue(ticket, scope, value, _event_id) {
 }
 
 function revokeValue(ticket, scope, value, _event_id) {
-  print("revokeValue: ticket", ticket, "value", value);
+  //print("revokeValue: ticket", ticket, "value", value);
   try {
     var intervals = [];
     for ( var i in scope['v-s:numerationCommitedInterval']) {
