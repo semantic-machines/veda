@@ -17,27 +17,20 @@ veda.Module(function (veda) { "use strict";
 
     // veda.IndividualModelAsync({...})
     if (typeof uri === "object" && !uri["@"]) {
-      cache     = uri.cache;
-      init      = uri.init;
-      uri       = uri.uri;
+      cache = uri.cache;
+      init  = uri.init;
+      uri   = uri.uri;
     }
 
     // Define Model functions
     this._ = {
       cache: typeof cache !== "undefined" ? cache : true,
       init: typeof init !== "undefined" ? init : true,
-      isNew: typeof uri === "undefined",
+      isNew: false,
       isSync: false,
       uri: uri
     };
-
-    if ( typeof uri === "string" ) {
-      this.properties = {"@": uri};
-    } else if ( typeof uri === "object" && uri["@"] ) {
-      this.properties = uri;
-    } else {
-      this.properties = {};
-    }
+    this.properties = {};
     this.filtered = {};
 
     this.on("rdf:type", this.init);
@@ -119,7 +112,6 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-
   function parser (value) {
     if (value.type === "String" || value.type === 2) {
       var string = new String(value.data);
@@ -130,6 +122,8 @@ veda.Module(function (veda) { "use strict";
       return new veda.IndividualModelAsync({uri: value.data});
     } else if (value.type === "Datetime" || value.type === 8) {
       return new Date(Date.parse(value.data));
+    } else if (value.type === "Decimal" || value.type === 32) {
+      return parseFloat(value.data);
     } else {
       return value.data;
     }
@@ -175,6 +169,11 @@ veda.Module(function (veda) { "use strict";
       return this.properties["@"];
     },
     set: function (value) {
+      var previous = this.properties && this.properties["@"];
+      if (previous && this._.cache && veda.cache[previous]) {
+        delete veda.cache[previous];
+        veda.cache[value] = this;
+      }
       this.properties["@"] = value;
       this.trigger("idChanged", value);
     }
@@ -202,6 +201,7 @@ veda.Module(function (veda) { "use strict";
 
   Object.defineProperty(proto, "rights", {
     get: function () {
+      var self = this;
       if (this._.rights) return this._.rights;
       if (this.isNew() || this.hasValue("v-s:isDraft", true)) {
         this._.rights = new veda.IndividualModelAsync({ cache: false });
@@ -210,14 +210,16 @@ veda.Module(function (veda) { "use strict";
         this._.rights["v-s:canDelete"] = [ true ];
         return this._.rights;
       }
-      try {
-        var rightsJSON = get_rights(veda.ticket, this.id);
-        this._.rights = new veda.IndividualModelAsync({ uri: rightsJSON, cache: false });
-      } catch (e) {
-        this._.rights = new veda.IndividualModelAsync();
-      } finally {
-        return this._.rights;
-      }
+      get_rights({
+        ticket: veda.ticket,  
+        uri: this.id,
+        async: true
+      }).then(function (rightsJSON) {
+        return new veda.IndividualModelAsync({ uri: rightsJSON, cache: false }).load();
+      }).catch(function () {
+        self._.rights = new veda.IndividualModelAsync();
+        return self._.rights;
+      });
     },
     configurable: false,
     enumerable: false
@@ -405,7 +407,7 @@ veda.Module(function (veda) { "use strict";
       });
       self.trigger("afterReset");
     }).catch(function (error) {
-      self.isSync(false);
+      console.log("reset individual error", error);
       self.trigger("afterReset");
     });
   };
@@ -467,14 +469,12 @@ veda.Module(function (veda) { "use strict";
     if ( this.hasValue("v-s:isDraft", true) ) {
       veda.drafts.remove(this.id);
     }
-    if ( !this.isNew() ) {
-      this["v-s:deleted"] = [];
-      return this.save()
-        .then( function (self) {
-          self.trigger("afterRecover");
-          return self;
-        });
-      }
+    this["v-s:deleted"] = [];
+    return this.save()
+      .then( function (self) {
+        self.trigger("afterRecover");
+        return self;
+      });
     this.trigger("afterRecover");
     return Promise.resolve(this);
   };
@@ -493,6 +493,68 @@ veda.Module(function (veda) { "use strict";
       }).length;
     }
     return result;
+  };
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @param {Any allowed type} value
+   * @return {this}
+   */
+  proto.addValue = function (property_uri, value) {
+    if (typeof value !== "undefined" && value !== null) {
+      var serialized = serializer(value);
+      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
+        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+      });
+      this.properties[property_uri].push(serialized);
+      var values = this.get(property_uri);
+      this.isSync(false);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
+    return this;
+  };
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @param {Any allowed type} value
+   * @return {this}
+   */
+  proto.removeValue = function (property_uri, value) {
+    if (!this.properties[property_uri] || !this.properties[property_uri].length) {
+      return this;
+    }
+    if (typeof value !== "undefined" && value !== null) {
+      var serialized = serializer(value);
+      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
+        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+      });
+      var values = this.get(property_uri);
+      this.isSync(false);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
+    return this;
+  };
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @return {this}
+   */
+  proto.clearValue = function (property_uri) {
+    if (!this.properties[property_uri] || !this.properties[property_uri].length) {
+      return this;
+    } else {
+      var empty = [];
+      this.properties[property_uri] = empty;
+      this.isSync(false);
+      this.trigger("propertyModified", empty);
+      this.trigger(property_uri, empty);
+    }
+    return this;
   };
 
   /**
@@ -558,11 +620,10 @@ veda.Module(function (veda) { "use strict";
    * @return {veda.IndividualModelAsync} clone of this individual with different id.
    */
   proto.clone = function () {
-    var clone_properties = JSON.parse( JSON.stringify(this.properties) );
-    clone_properties["@"] = veda.Util.genUri();
-    var clone = new veda.IndividualModelAsync(clone_properties);
+    var individual = JSON.parse( JSON.stringify(this.properties) );
+    individual["@"] = veda.Util.genUri();
+    var clone = new veda.IndividualModelAsync(individual);
     clone.isNew(true);
-    clone.isSync(false);
     return clone;
   };
 
@@ -594,7 +655,7 @@ veda.Module(function (veda) { "use strict";
   proto.present = function () {
     return veda.IndividualPresenterAsync.apply(this, arguments);
   };
-  
+
   /**
    * @method
    * Serialize to JSON
