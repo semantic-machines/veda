@@ -99,9 +99,6 @@ interface VedaStorageRest_API {
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
-    @path("backup") @method(HTTPMethod.GET)
-    void backup(bool to_binlog);
-
     @path("count_individuals") @method(HTTPMethod.GET)
     long count_individuals();
 
@@ -598,33 +595,6 @@ class VedaStorageRest : VedaStorageRest_API
         context.set_trace(idx, state);
     }
 
-    void backup(bool to_binlog)
-    {
-        ulong    timestamp = Clock.currTime().stdTime() / 10;
-
-        long     res  = -1;
-        Json     jreq = Json.emptyObject;
-        OpResult op_res;
-
-        try
-        {
-            jreq[ "function" ]  = "backup";
-            jreq[ "to_binlog" ] = to_binlog;
-
-            vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
-            vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
-
-            //log.trace("send:flush #e");
-            if (op_res.result != ResultCode.OK)
-                throw new HTTPStatusException(op_res.result, text(op_res.result));
-
-            return;
-        }
-        finally
-        {
-            trail(null, null, "backup", jreq, "", op_res.result, timestamp);
-        }
-    }
 
     long count_individuals()
     {

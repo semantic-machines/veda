@@ -69,53 +69,6 @@ public class LmdbStorage : Storage
         return this._path;
     }
 
-    public Result backup(string backup_id)
-    {
-        if (db_is_opened == false)
-            open_db();
-
-        string backup_path    = dbs_backup ~ "/" ~ backup_id;
-        string backup_db_name = dbs_backup ~ "/" ~ backup_id ~ "/" ~ db_name;
-
-        try
-        {
-            mkdir(backup_path);
-        }
-        catch (Exception ex)
-        {
-        }
-
-        try
-        {
-            mkdir(backup_db_name);
-        }
-        catch (Exception ex)
-        {
-        }
-
-        try
-        {
-            std.file.remove(backup_db_name ~ "/" ~ "data.mdb");
-        }
-        catch (Exception ex)
-        {
-        }
-
-        flush(1);
-
-        int rc = mdb_env_copy(env, cast(char *)backup_db_name);
-
-        if (rc != 0)
-        {
-            log.trace_log_and_console("%s(%s) ERR:%s CODE:%d", __FUNCTION__ ~ ":" ~ text(__LINE__), backup_db_name,
-                                      fromStringz(mdb_strerror(rc)), rc);
-            return Result.Err;
-        }
-
-        return Result.Ok;
-    }
-
-
     public void close_db()
     {
         if (mode == DBMode.RW)

@@ -743,18 +743,6 @@ public string execute_json(string in_msg, Context ctx)
             res[ "result" ] = ResultCode.OK;
             res[ "op_id" ]  = -1;
         }
-        else if (sfn == "backup")
-        {
-            bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-            bool rc        = backup(ctx, to_binlog, 0);
-
-            res[ "type" ] = "OpResult";
-            if (rc == true)
-                res[ "result" ] = ResultCode.OK;
-            else
-                res[ "result" ] = ResultCode.Internal_Server_Error;
-            res[ "op_id" ] = -1;
-        }
         else if (sfn == "freeze")
         {
             ctx.freeze();
@@ -849,80 +837,6 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     }
 
     return ticket;
-}
-
-public bool backup(Context ctx, bool to_binlog, int level = 0)
-{
-    bool result = false;
-
-    if (level == 0)
-        freeze();
-
-    Ticket sticket = sys_ticket(ctx);
-
-    try
-    {
-        string backup_id = "to_binlog";
-
-        if (to_binlog)
-        {
-            long count = ctx.get_inividuals_storage_r.dump_to_binlog();
-            if (count > 0)
-                result = true;
-        }
-        else
-        {
-            backup_id = indv_storage_thread.backup(P_MODULE.subject_manager);
-
-            if (backup_id != "")
-            {
-                result = true;
-
-                string res;         // = veda.core.threads.acl_manager.backup(backup_id);
-
-                if (res == "")
-                    result = false;
-                else
-                {
-                    Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                    send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
-                    receive((string _res) { res = _res; });
-                    if (res == "")
-                        result = false;
-                    else
-                    {
-                        //res = veda.core.threads.xapian_indexer.backup(backup_id);
-
-                        if (res == "")
-                            result = false;
-                    }
-                }
-            }
-
-            if (result == false)
-            {
-                if (level < 10)
-                {
-                    log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
-
-                    core.thread.Thread.sleep(dur!("msecs")(500));
-                    return backup(ctx, to_binlog, level + 1);
-                }
-                else
-                    log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
-            }
-        }
-
-        if (result == true)
-            log.trace_log_and_console("BACKUP Ok, %s", backup_id);
-    }
-    finally
-    {
-        if (level == 0)
-            unfreeze();
-    }
-
-    return result;
 }
 
 public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)

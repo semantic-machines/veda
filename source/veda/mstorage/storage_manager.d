@@ -68,18 +68,6 @@ public string find(P_MODULE storage_id, string uri)
     return res;
 }
 
-public string backup(P_MODULE storage_id)
-{
-    string backup_id;
-
-    Tid    tid_subject_manager = getTid(storage_id);
-
-    send(tid_subject_manager, CMD_BACKUP, "", thisTid);
-    receive((string res) { backup_id = res; });
-
-    return backup_id;
-}
-
 public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
 {
     ResultCode rc;
@@ -198,8 +186,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                 }
             }
         }
-
-        string last_backup_id = "---";
 
         bool   is_freeze = false;
         bool   is_exit   = false;
@@ -438,47 +424,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 return;
                             }
 
-/*
-                        if (cmd == CMD_BACKUP)
-                        {
-                            try
-                            {
-                                string backup_id;
-                                if (msg.length > 0)
-                                    backup_id = msg;
-                                else
-                                    backup_id = storage.find(storage.summ_hash_this_db_id);
-
-                                if (backup_id is null)
-                                    backup_id = "0";
-
-                                if (last_backup_id != backup_id)
-                                {
-                                    Result res = storage.backup(backup_id);
-                                    if (res == Result.Ok)
-                                    {
-                                        size_bin_log = 0;
-                                        bin_log_name = get_new_binlog_name(db_path);
-                                        last_backup_id = backup_id;
-                                    }
-                                    else if (res == Result.Err)
-                                    {
-                                        backup_id = "";
-                                    }
-                                }
-                                send(tid_response_reciever, backup_id);
-                            }
-                            catch (Exception ex)
-                            {
-                                send(tid_response_reciever, "");
-                            }
-                        }
-
-                        else
-                        {
-                            send(tid_response_reciever, msg, "err in individuals_manager", thisTid);
-                        }
- */
                         },
                         (byte cmd, int arg, bool arg2)
                         {

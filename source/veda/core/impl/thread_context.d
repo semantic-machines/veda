@@ -280,9 +280,6 @@ class PThreadContext : Context
 
         ctx.name = context_name;
 
-        //ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
-        //ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
-
         ctx.get_configuration();
 
         ctx._vql = new VQL(ctx);
