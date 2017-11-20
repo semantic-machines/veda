@@ -582,7 +582,114 @@ v-ui:LinkTemplate
 """ ;
 .
 
+v-ui:LinkTemplateGreenButtonWithTrue
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон со связью для зелёной кнопки с ободными правами"@ru ;
+  rdfs:label "Template with link for green buton with mutual membership"@en ;
+  v-ui:template """
+<div>
+  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
+  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton" data-embedded="true"></div>
+  <br>
+  <button class="btn btn-success view -edit -search" id="add-hasLink" about="v-s:hasLink" property="rdfs:label"></button>
+</div>
+<script>
+  $("#add-hasLink", template).click(function () {
+    var LinkBtn = $(this).hide();
+    var cntr = $("[rel='v-s:hasLink']", template),
+        _class = new veda.IndividualModel("v-s:Link"),
+        Link = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-ui:LinkTemplateForGreenButton");
+    tmpl = $( tmpl["v-ui:template"][0].toString() );
+    Link["rdf:type"] = [_class];
+    Link.present(cntr, tmpl, "edit");
+    Link["v-s:from"] = [individual];
+    Link["v-s:mutualMembership"] = [ true ] ;
+    Link.one("beforeReset", function () {
+      LinkBtn.show();
+      tmpl.remove();
+    });
+    Link.one("afterSave", function () {
+      LinkBtn.show();
+      tmpl.remove();
+    });
+  });
+  //# sourceURL=v-ui:LinkTemplateGreenButton
+</script>
+""" ;
+.
 
+v-ui:LinkTemplateGreenButtonWithoutTrue
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон со связью для зелёной кнопки без ободных прав"@ru ;
+  rdfs:label "Template with link for green buton without mutual membership"@en ;
+  v-ui:template """
+<div>
+  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
+  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton"></div>
+  <br>
+  <button class="btn btn-success view -edit -search" id="add-hasLink" about="v-s:hasLink" property="rdfs:label"></button>
+</div>
+<script>
+  $("#add-hasLink", template).click(function () {
+    var LinkBtn = $(this).hide();
+    var cntr = $("[rel='v-s:hasLink']", template),
+        _class = new veda.IndividualModel("v-s:Link"),
+        Link = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-ui:LinkTemplateForGreenButton");
+    tmpl = $( tmpl["v-ui:template"][0].toString() );
+    Link["rdf:type"] = [_class];
+    Link.present(cntr, tmpl, "edit");
+    Link["v-s:from"] = [individual];
+    Link.one("beforeReset", function () {
+      LinkBtn.show();
+      tmpl.remove();
+    });
+    Link.one("afterSave", function () {
+      LinkBtn.show();
+      tmpl.remove();
+    });
+  });
+</script>
+""" ;
+.
+
+v-ui:LinkTemplateForGreenButton
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для зелёной кнопки"@ru ;
+  rdfs:label "Template For Green Button"@en ;
+  v-ui:template """
+<div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
+      <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+      <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
+      <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
+      <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
+      <div class="view -edit -search">
+        <span class="fa fa-long-arrow-down"></span> <strong property="rdfs:comment" class="view -edit -search"></strong>
+      </div>
+      <span rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
+      <div class="view -edit -search" style="font-style:italic">
+        <small property="v-s:creator"></small><small property="v-s:created"></small>
+      </div>
+      <i class="checkbox disabled">
+        <label>
+          <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
+          <small about="v-s:mutualMembership" property="rdfs:label"></small>
+        </label>
+      </i>
+      <div class="actions clearfix">
+        <button type="submit" class="action btn btn-success -view edit -search" id="save">Ok</button>
+        <button type="button" class="action btn btn-default -view edit -search" id="cancel" property="rdfs:label" about="v-s:Cancel"></button>
+        <button type="button" class="action btn btn-link view edit search pull-right" id="delete" property="rdfs:label" about="v-s:Delete"></button>
+      </div>
+    </div>
+  </div>
+</div>
+""" ;
+.
 
 v-ui:IconPersonTemplate
   rdf:type v-ui:ClassTemplate ;

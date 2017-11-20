@@ -69,53 +69,6 @@ public class LmdbStorage : Storage
         return this._path;
     }
 
-    public Result backup(string backup_id)
-    {
-        if (db_is_opened == false)
-            open_db();
-
-        string backup_path    = dbs_backup ~ "/" ~ backup_id;
-        string backup_db_name = dbs_backup ~ "/" ~ backup_id ~ "/" ~ db_name;
-
-        try
-        {
-            mkdir(backup_path);
-        }
-        catch (Exception ex)
-        {
-        }
-
-        try
-        {
-            mkdir(backup_db_name);
-        }
-        catch (Exception ex)
-        {
-        }
-
-        try
-        {
-            std.file.remove(backup_db_name ~ "/" ~ "data.mdb");
-        }
-        catch (Exception ex)
-        {
-        }
-
-        flush(1);
-
-        int rc = mdb_env_copy(env, cast(char *)backup_db_name);
-
-        if (rc != 0)
-        {
-            log.trace_log_and_console("%s(%s) ERR:%s CODE:%d", __FUNCTION__ ~ ":" ~ text(__LINE__), backup_db_name,
-                                      fromStringz(mdb_strerror(rc)), rc);
-            return Result.Err;
-        }
-
-        return Result.Ok;
-    }
-
-
     public void close_db()
     {
         if (mode == DBMode.RW)
@@ -708,6 +661,12 @@ public class LmdbStorage : Storage
             key.mv_data = cast(char *)uri;
 
             MDB_val data;
+
+            auto    swA = StopWatch();
+            swA.start();
+            //      log.trace ("lmdb.find.mdb_get START uri=%s", _uri);
+
+
             rc = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
             {
@@ -716,6 +675,13 @@ public class LmdbStorage : Storage
                 else
                     str = "?";
             }
+            
+            swA.stop();
+            long tA = cast(long)swA.peek().usecs;
+
+            if (tA > 1000)
+	            log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
+                    
         }catch (Exception ex)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
@@ -947,12 +913,12 @@ public class LmdbStorage : Storage
 
                     if (rc == 0)
                     {
-                        string str_key  = cast(string)(key.mv_data[ 0..key.mv_size ]).dup;                        
+                        string str_key = cast(string)(key.mv_data[ 0..key.mv_size ]).dup;
                         string str_data;
-                        
+
                         if (only_id == false)
-	                        str_data = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-	                        
+                            str_data = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+
                         if (prepare(str_key, str_data) == false)
                             break;
                     }
@@ -1000,7 +966,7 @@ public class LmdbStorage : Storage
                 get_of_cursor(&add_id_to_queue, only_ids);
             else
                 get_of_cursor(&add_to_queue, only_ids);
-			
+
             queue.close();
         }
         else

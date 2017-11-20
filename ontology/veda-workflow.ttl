@@ -2031,14 +2031,22 @@ v-wf:event_df1
   v-s:triggerByType v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
   v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
 
-  if (!parent_script_id
-      && document['v-wf:hasStatusWorkflow']
-      && document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent'
-  ) {
-    prepare_start_form (ticket, document);
-  }
+var toBeSent = hasValue(document, 'v-wf:hasStatusWorkflow', {data: 'v-wf:ToBeSent', type: _Uri});
 
+if ( !parent_script_id && toBeSent) {
+  prepare_start_form (ticket, document);
+}
 """ ;
   rdfs:label "Триггер запуска маршрута из пользовательской формы"@ru ;
 .
@@ -2049,18 +2057,26 @@ v-wf:event_df2
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:Process ;
   v-s:script """
-  //print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (
-    (
-      (!document['v-wf:isStopped'] || document['v-wf:isStopped'][0].data == false)
-      && parent_script_id
-      && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')
-    )
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
-  ) {
-    prepare_process (ticket, document);
-  }
-""" ;
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+//print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean}),
+    stopped = hasValue(document, 'v-wf:isStopped', {data: true, type: _Boolean}),
+    triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
+
+if ( !deleted && !stopped && triggeredByWf ) {
+  prepare_process (ticket, document);
+}
+  """ ;
   rdfs:label "Триггер выполнения маршрута"@ru ;
 .
 
@@ -2070,16 +2086,24 @@ v-wf:event_df3
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkItem ;
   v-s:script """
-  //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (
-    (
-      parent_script_id
-      && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4')
-    )
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
-  ) {
-    prepare_work_item (ticket, document);
-  }
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+//print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean}),
+    triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' ;
+
+if ( !deleted && triggeredByWf ) {
+  prepare_work_item (ticket, document);
+}
 
 """ ;
   rdfs:label "Триггер выполнения элемента сети"@ru ;
@@ -2091,21 +2115,26 @@ v-wf:event_df4
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkOrder ;
   v-s:script """
-  var enforce_processing = document['v-wf:enforceProcessing'];
-  if (enforce_processing && getFirstValue(enforce_processing) == true) {
-    enforce_processing = true;
-  } else {
-    enforce_processing = false;
-  }
-  //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (
-    enforce_processing == true
-    || (parent_script_id && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
-  ) {
-    prepare_work_order (ticket, document);
-  }
-""" ;
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean}),
+    enforce_processing = hasValue(document, 'v-wf:enforceProcessing', {data: true, type: _Boolean}),
+    triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
+
+//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+if ( enforce_processing || triggeredByWf && !deleted ) {
+  prepare_work_order (ticket, document);
+}
+  """ ;
   rdfs:label "Триггер выполнения рабочего задания"@ru ;
 .
 
@@ -2115,22 +2144,71 @@ v-wf:event_df5
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
-  if (
-    ( !document['v-s:deleted']
-      || document['v-s:deleted'][0].data == 'false'
-    ) /*&& (
-      !parent_script_id
-      || parent_script_id == 'v-wf:event_df1'
-      || parent_script_id == 'v-wf:event_df2'
-      || parent_script_id == 'v-wf:event_df3'
-      || parent_script_id == 'v-wf:event_df4'
-      || parent_script_id == 'v-wf:event_df5'
-    )*/
-  ) {
-    prepare_decision_form (ticket, document);
-  }
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean});
+
+if ( !deleted ) {
+  prepare_decision_form (ticket, document);
+}
 """ ;
   rdfs:label "Триггер обработки решения пользователя"@ru ;
+.
+
+v-wf:ProcessStopEvent
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает процесс в группу журнала документа." ;
+  rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
+  v-s:triggerByType v-wf:Process ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+  if (document['v-wf:isStopped'] &&
+      document['v-wf:isStopped'][0].data == true &&
+      !prev_state['v-wf:isStopped']) {
+    // Disable all active tasks
+    recursiveCall(document, {}, ticket, _event_id);
+    // Add journal record to process
+
+    var pb = get_individual(ticket, 'v-wf:ProcessStopped');
+
+    var journal_record = newJournalRecord(document['@']+'j');
+
+      journal_record['rdf:type'] = [
+      {
+          data: 'v-wf:ProcessStopped',
+          type: _Uri
+      }];
+        journal_record['v-s:actor'] = [
+        {
+            data: user_uri,
+            type: _Uri
+        }];
+      journal_record['rdfs:label'] = pb['rdfs:label'];
+      journal_record['rdfs:comment'] = pb['rdfs:label'];
+
+      logToJournal(ticket, document['@']+'j', journal_record, true);
+      interrupt_process(ticket, document, _event_id);
+  }
+""" ;
 .
 
 v-wf:Decision

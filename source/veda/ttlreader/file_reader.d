@@ -106,8 +106,15 @@ void main(char[][] args)
     Context context = PThreadContext.create_new(process_name, "file_reader", individuals_db_path, log, parent_url, null, null, null);
     sticket = context.sys_ticket();
 
+    while (sticket.result != ResultCode.OK)
+    {
+        Thread.sleep(dur!("seconds")(1));
+        log.trace("fail read systicket: wait 1s, and repeate");
+        sticket = context.sys_ticket();
+    }
+
     string[] uris =
-        context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, false).result;
+        context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, OptAuthorize.NO, false).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -124,7 +131,7 @@ void main(char[][] args)
             context.remove_individual(&sticket, uri, "ttl-reader", -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         }
 
-        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, false).result;
+        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, OptAuthorize.NO, false).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
@@ -271,7 +278,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
     foreach (fname; changes)
     {
-        if (extension(fname) == ".ttl" && fname.indexOf("#") < 0)
+        if (extension(fname) == ".ttl" && fname.indexOf("#") < 0 && fname.indexOf("module.ttl") < 0)
         {
             log.trace("change file %s", fname);
 
@@ -325,7 +332,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
             foreach (uri, indv; l_individuals)
             {
-                if (indv.exists(rdf__type, owl__Ontology))
+                if (indv.isExists(rdf__type, owl__Ontology))
                 {
                     string o_file = filename_2_prefix.get(indv.uri, null);
                     if (o_file !is null && o_file != filename)
@@ -501,7 +508,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
         {
             //log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
 
-            if (ss.exists(rdf__type, owl__Ontology) && context !is null)
+            if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
@@ -566,6 +573,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
     }
     catch (Exception ex)
     {
+        log.trace("file_reader:Exception! %s", ex);
         writeln("file_reader:Exception!", ex);
     }
 }

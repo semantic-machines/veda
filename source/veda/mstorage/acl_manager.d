@@ -36,25 +36,10 @@ enum CMD : byte
     /// Включить/выключить отладочные сообщения
     SET_TRACE = 33,
 
-    /// Backup
-    BACKUP    = 41,
-
     /// Пустая комманда
     NOP       = 64,
 
     EXIT      = 49
-}
-
-public string backup(string backup_id)
-{
-    string res;
-
-    Tid    tid_acl_manager = getTid(P_MODULE.acl_preparer);
-
-    send(tid_acl_manager, CMD_BACKUP, backup_id, thisTid);
-    receive((string _res) { res = _res; });
-
-    return res;
 }
 
 public ResultCode flush(bool is_wait)
@@ -179,41 +164,6 @@ void acl_manager(string thread_name, string db_path)
                             send(tid_response_reciever, true);
                         else
                             send(tid_response_reciever, false);
-                    },
-                    (byte cmd, string msg, Tid tid_response_reciever)
-                    {
-                        if (cmd == CMD_BACKUP)
-                        {
-                            try
-                            {
-                                string backup_id;
-                                if (msg.length > 0)
-                                    backup_id = msg;
-
-                                if (backup_id is null)
-                                    backup_id = "0";
-
-                                Result res = storage.backup(backup_id);
-                                if (res == Result.Ok)
-                                {
-                                    size_bin_log = 0;
-                                    bin_log_name = get_new_binlog_name(db_path);
-                                }
-                                else if (res == Result.Err)
-                                {
-                                    backup_id = "";
-                                }
-                                send(tid_response_reciever, backup_id);
-                            }
-                            catch (Exception ex)
-                            {
-                                send(tid_response_reciever, "");
-                            }
-                        }
-                        else
-                        {
-                            send(tid_response_reciever, "?");
-                        }
                     },
                     (byte cmd, int arg, bool arg2)
                     {

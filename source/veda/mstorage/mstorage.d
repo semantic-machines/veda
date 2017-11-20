@@ -8,7 +8,7 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid;
-    import backtrace.backtrace, Backtrace = backtrace.backtrace;
+    import backtrace.backtrace, Backtrace = backtrace.backtrace, veda.util.properd;
     import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
@@ -60,9 +60,14 @@ private Context l_context;
 private Storage inividuals_storage_r;
 private VQL     vql_r;
 private Ticket  sticket;
+private string  lmdb_mode;
 
 void main(char[][] args)
 {
+    string[ string ] properties;
+    properties = readProperties("./veda.properties");
+    lmdb_mode  = properties.as!(string)("lmdb_mode") ~ "\0";
+
     Tid[ P_MODULE ] tids;
     process_name = "mstorage";
     string node_id = null;
@@ -278,7 +283,15 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+        if (lmdb_mode == "as_server")
+        {
+            // send commit to server
+        }
+        else
+        {
+            veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+        }
+
         veda.mstorage.acl_manager.flush(false);
         veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
@@ -393,7 +406,7 @@ public Ticket authenticate(string login, string password)
         login = replaceAll(login, regex(r"[-]", "g"), " +");
 
         Individual[] candidate_users;
-        vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, false, false);
+        vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
         foreach (user; candidate_users)
         {
             string user_id = user.getFirstResource(veda_schema__owner).uri;
@@ -670,7 +683,9 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems,
+                                                       event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -742,18 +757,6 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.OK;
             res[ "op_id" ]  = -1;
-        }
-        else if (sfn == "backup")
-        {
-            bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-            bool rc        = backup(ctx, to_binlog, 0);
-
-            res[ "type" ] = "OpResult";
-            if (rc == true)
-                res[ "result" ] = ResultCode.OK;
-            else
-                res[ "result" ] = ResultCode.Internal_Server_Error;
-            res[ "op_id" ] = -1;
         }
         else if (sfn == "freeze")
         {
@@ -851,80 +854,6 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     return ticket;
 }
 
-public bool backup(Context ctx, bool to_binlog, int level = 0)
-{
-    bool result = false;
-
-    if (level == 0)
-        freeze();
-
-    Ticket sticket = sys_ticket(ctx);
-
-    try
-    {
-        string backup_id = "to_binlog";
-
-        if (to_binlog)
-        {
-            long count = ctx.get_inividuals_storage_r.dump_to_binlog();
-            if (count > 0)
-                result = true;
-        }
-        else
-        {
-            backup_id = indv_storage_thread.backup(P_MODULE.subject_manager);
-
-            if (backup_id != "")
-            {
-                result = true;
-
-                string res;         // = veda.core.threads.acl_manager.backup(backup_id);
-
-                if (res == "")
-                    result = false;
-                else
-                {
-                    Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                    send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
-                    receive((string _res) { res = _res; });
-                    if (res == "")
-                        result = false;
-                    else
-                    {
-                        //res = veda.core.threads.xapian_indexer.backup(backup_id);
-
-                        if (res == "")
-                            result = false;
-                    }
-                }
-            }
-
-            if (result == false)
-            {
-                if (level < 10)
-                {
-                    log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
-
-                    core.thread.Thread.sleep(dur!("msecs")(500));
-                    return backup(ctx, to_binlog, level + 1);
-                }
-                else
-                    log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
-            }
-        }
-
-        if (result == true)
-            log.trace_log_and_console("BACKUP Ok, %s", backup_id);
-    }
-    finally
-    {
-        if (level == 0)
-            unfreeze();
-    }
-
-    return result;
-}
-
 public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
@@ -938,7 +867,14 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         log.trace("commit: items=%s", items);
 
-        rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+        if (lmdb_mode == "as_server")
+        {
+            // send commit to server
+        }
+        else
+        {
+            rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+        }
 
         log.trace("commit: rc=%s", rc);
 
@@ -963,10 +899,12 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
-public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_subsystems,
+public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
+                                   long assigned_subsystems,
                                    string event_id,
                                    OptFreeze opt_freeze,
-                                   OptAuthorize opt_request, OptTrace opt_trace)
+                                   OptAuthorize opt_request,
+                                   OptTrace opt_trace)
 {
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
@@ -1091,15 +1029,22 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if (tnx.is_autocommit)
             {
-                res.result =
-                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                               res.op_id);
-
-                if (res.result == ResultCode.OK)
+                if (lmdb_mode == "as_server")
+                {
+                    // send commit to server
+                }
+                else
                 {
                     res.result =
-                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
                                                    res.op_id);
+
+                    if (res.result == ResultCode.OK)
+                    {
+                        res.result =
+                            indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                                                       res.op_id);
+                    }
                 }
             }
             else
@@ -1133,9 +1078,16 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if (tnx.is_autocommit)
             {
-                res.result =
-                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                               res.op_id);
+                if (lmdb_mode == "as_server")
+                {
+                    // send commit to server
+                }
+                else
+                {
+                    res.result =
+                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                                   res.op_id);
+                }
             }
             else
             {
@@ -1289,7 +1241,7 @@ Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket(ctx);
-            Individual[] candidate_users = ctx.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            Individual[] candidate_users = ctx.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", OptAuthorize.NO);
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;
@@ -1315,5 +1267,3 @@ Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
     ticket.result = ResultCode.Authentication_Failed;
     return ticket;
 }
-
-

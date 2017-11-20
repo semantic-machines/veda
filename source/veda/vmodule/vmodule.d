@@ -4,9 +4,9 @@ private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
-    import kaleidic.nanomsg.nano;
+    import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
-    import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
@@ -181,6 +181,19 @@ class VedaModule
         // attempt open [prepareall] queue
         open_perapare_batch_queue(true);
         load_systicket();
+
+        try
+        {
+    	    string[ string ] properties;
+            properties         = readProperties("./veda.properties");
+            notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
+            main_module_url = properties.as!(string)("main_module_url") ~ "\0";
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! unable read ./veda.properties");
+        }
+
 
         sock = nn_socket(AF_SP, NN_SUB);
         if (sock >= 0)

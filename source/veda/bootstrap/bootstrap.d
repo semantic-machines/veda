@@ -179,7 +179,7 @@ void main(string[] args)
 
     string[] modules =
     [
-        "veda", "veda-ccus", "veda-mstorage", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql-np", "veda-fanout-sql-lp", "veda-scripts-main",
+        "veda", "veda-ccus", "veda-ft-query", "veda-mstorage", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql-np", "veda-fanout-sql-lp", "veda-scripts-main",
         "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts"
     ];
 

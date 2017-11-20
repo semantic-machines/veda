@@ -5,9 +5,10 @@
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2", 
 		"mysql-d": "0.3.3",
-		"d-nanomsg": "0.2.0"
-	},
-        "versions": ["isModule"],
+		"d-nanomsg": "0.2.0",
+                "msgpack-d": "1.0.0-beta.6"
+        },
+        "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
 	"sourcePaths":[
 	    "../../veda/common", 
@@ -23,6 +24,9 @@
         "sourceFiles":[
         "../../lib64/liblmdb.a",
 	"../../lib64/libxapiand.a", 
+        "../../veda/util/properd.d",
+        "../../veda/connector/connector.d",
+        "../../veda/connector/requestresponse.d",
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",

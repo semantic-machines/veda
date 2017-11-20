@@ -73,9 +73,11 @@ vdi:index_01
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:File ;
   vdi:forClass v-wf:Process ;
-#  vdi:forClass v-wf:DecisionForm ;
+  vdi:forClass v-wf:DecisionForm ;
+  rdfs:label "system indexed" ;
   vdi:indexed_to "system" ;
 .
+
 vdi:index_02
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Journal ;
@@ -85,6 +87,7 @@ vdi:index_02
   vdi:forClass v-wf:Variable ;
   vdi:forClass v-s:Membership ;
   vdi:forClass v-s:PermissionStatement ;
+  rdfs:label "not indexed" ;
   vdi:indexed_to "not-indexed" ;
 .
 vdi:index_1

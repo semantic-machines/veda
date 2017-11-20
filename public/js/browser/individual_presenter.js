@@ -52,6 +52,7 @@ veda.Module(function (veda) { "use strict";
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0];
+        template = $( template["v-ui:template"][0].toString() );
         renderTemplate(individual, container, template, mode, specs);
       } else {
         individual["rdf:type"].map(function (type) {

@@ -1,6 +1,6 @@
 // Copyright © 2013, Peter Wood.
 
-module properd;
+module veda.util.properd;
 
 import std.conv, std.file, std.string;
 import std.stdio     : File;

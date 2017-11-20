@@ -280,9 +280,6 @@ class PThreadContext : Context
 
         ctx.name = context_name;
 
-        //ctx.is_traced_module[ P_MODULE.ticket_manager ]  = true;
-        //ctx.is_traced_module[ P_MODULE.subject_manager ] = true;
-
         ctx.get_configuration();
 
         ctx._vql = new VQL(ctx);
@@ -596,7 +593,7 @@ class PThreadContext : Context
 
 
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
-    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000)
+    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000)
     {
 //        StopWatch sw; sw.start;
 
@@ -620,7 +617,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(ticket, query_str, null, null, top, limit, res, inner_get, false);
+            _vql.get(ticket, query_str, null, null, top, limit, res, op_auth, false);
             return res;
         }
         finally
@@ -682,15 +679,15 @@ class PThreadContext : Context
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event, bool trace)
+                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth, bool trace)
     {
         SearchResult sr;
-
+        
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
-
-        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, false, trace);
-
+    
+        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+    
         return sr;
     }
 

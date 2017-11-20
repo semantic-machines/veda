@@ -13,11 +13,11 @@
   v-s:loadPriority 7 ;
 .
 
-v-s:labelExpression
-  rdf:type owl:ObjectProperty ;
+v-s:labelPattern
+  rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "label expression"@en ;
+  rdfs:label "label pattern"@en ;
   rdfs:label "выражение наименования"@ru ;
   rdfs:range xsd:string ;
 .
@@ -32,6 +32,7 @@ v-s:Labeled
 v-s:LabelEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Labeled ;
+  v-s:preventByType v-s:Version ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -41,15 +42,17 @@ v-s:LabelEvent
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
  */
-/*print("parent_script_id", parent_script_id);
-var _class = get_individual( getUri(document["rdf:type"]) );
-if (!_class) { return }
-var label_expression = _class["v-s:labelExpression"][0];
-if (!labelExpression) { return }
-var label = eval(label_expression);
-document["rdfs:label"] = [ label ];
-put_individual(ticket, document, _event_id);
-print("v-s:LabelEvent", JSON.stringify(document));*/
+var prev_label = document["rdfs:label"] || [];
+var new_label = complexLabel(document);
+var prev_label_json = JSON.stringify( prev_label );
+var new_label_json = JSON.stringify( new_label );
+print("prev_label_json", prev_label_json);
+print("new_label_json", new_label_json);
+if (prev_label_json !== new_label_json) {
+  document["rdfs:label"] = new_label;
+  put_individual(ticket, document, _event_id);
+}
 """
 .

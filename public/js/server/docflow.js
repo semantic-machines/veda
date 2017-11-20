@@ -68,7 +68,7 @@ function prepare_decision_form(ticket, document)
             _work_order['v-wf:outVars'] = new_vars;
             put_individual(ticket, _work_order, _event_id);
 
-            document['v-wf:isCompleted'] = [newBool(true)];
+            document['v-wf:isCompleted'] = newBool(true);
             put_individual(ticket, document, _event_id);
 
             //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
@@ -869,7 +869,7 @@ function prepare_work_item(ticket, document)
             //* сформировать задания для исполнителей
             for (var i = 0; i < executor_list.length; i++)
             {
-                var new_work_order_uri = genUri();
+                var new_work_order_uri = genUri() + "-wo";
 
                 var new_work_order = {
                     '@': new_work_order_uri,
@@ -1041,107 +1041,104 @@ function prepare_work_item(ticket, document)
  */
 function prepare_process(ticket, document)
 {
-    var deleted = document['v-s:deleted'];
-    if (deleted)
-        return;
+  var deleted = hasValue(document, 'v-s:deleted');
+  var completed = hasValue(document, 'v-wf:isCompleted');
+  if (completed || deleted) { return; }
 
-    var isCompleted = document['v-wf:isCompleted'];
-    if (isCompleted)
-        return;
+  var _process = document;
+  var trace_journal_uri = get_trace_journal(document, _process);
 
-    var _process = document;
-    var trace_journal_uri = get_trace_journal(document, _process);
+  if (trace_journal_uri) {
+    traceToJournal(ticket, trace_journal_uri, "prepare_process", document['@']);
+  }
 
-    if (trace_journal_uri)
-        traceToJournal(ticket, trace_journal_uri, "prepare_process", document['@']);
+  var inVars = _process['v-wf:inVars'] || [];
 
-    var inVars = _process['v-wf:inVars'];
-    if (!inVars)
-        inVars = [];
+  var instanceOf = getUri( document['v-wf:instanceOf'] );
+  var net = get_individual(ticket, instanceOf);
+  if (!net) { return; }
 
-    var instanceOf = document['v-wf:instanceOf'];
-    var net = get_individual(ticket, getUri(instanceOf));
-    if (!net) return;
-
-    // создадим переменные с областью видимости данного процесса (v-wf:varDefineScope = v-wf:Net)
-    var variables = net['v-wf:localVariable'];
-    if (variables)
+  // создадим переменные с областью видимости данного процесса (v-wf:varDefineScope = v-wf:Net)
+  var variables = net['v-wf:localVariable'];
+  if (variables)
+  {
+    for (var i = 0; i < variables.length; i++)
     {
-        for (var i = 0; i < variables.length; i++)
+      var def_variable = get_individual(ticket, variables[i].data);
+      if (!def_variable) { continue; }
+
+      var variable_scope = getUri(def_variable['v-wf:varDefineScope']);
+      if (!variable_scope) { continue; }
+
+      if (variable_scope === 'v-wf:Net')
+      {
+        var new_variable = generate_variable(ticket, def_variable, null, document, null, null);
+        if (new_variable)
         {
-            var def_variable = get_individual(ticket, variables[i].data);
-            if (!def_variable) continue;
-
-            var variable_scope = getUri(def_variable['v-wf:varDefineScope']);
-            if (!variable_scope) continue;
-
-            if (variable_scope == 'v-wf:Net')
-            {
-                var new_variable = generate_variable(ticket, def_variable, null, document, null, null);
-                if (new_variable)
-                {
-                    put_individual(ticket, new_variable, _event_id);
-                    inVars.push(
-                    {
-                        data: new_variable['@'],
-                        type: _Uri
-                    });
-                    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
-                }
-            }
-
+          put_individual(ticket, new_variable, _event_id);
+          inVars.push(
+          {
+            data: new_variable['@'],
+            type: _Uri
+          });
+          addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
         }
+      }
     }
+  }
 
-    var workItemList = [];
+  var workItemList = [];
 
-    var f_consistsOf = net['v-wf:consistsOf'];
-    if (f_consistsOf)
+  var f_consistsOf = net['v-wf:consistsOf'];
+  if (f_consistsOf)
+  {
+    ////print("[PP05.0]");
+    for (var i = 0; i < f_consistsOf.length; i++)
     {
-        ////print("[PP05.0]");
-        for (var i = 0; i < f_consistsOf.length; i++)
-        {
-            var net_consistsOf = get_individual(ticket, f_consistsOf[i].data);
-            if (!net_consistsOf) continue;
+      var element_uri = f_consistsOf[i].data;
+      var element = get_individual(ticket, element_uri);
+      if (!element) {
+        print("NET ELEMENT UNDFINED:", element_uri);
+        continue;
+      }
 
-            ////print("[PP05.1] net_consistsOf=", toJson(net_consistsOf));
+      ////print("[PP05.1] net_consistsOf=", toJson(net_consistsOf));
 
-            if (is_exist(net_consistsOf, 'rdf:type', 'v-wf:InputCondition'))
-            {
-                var work_item_uri = create_work_item(ticket, document['@'], net_consistsOf['@'], null, _event_id, trace_journal_uri);
+      if (is_exist(element, 'rdf:type', 'v-wf:InputCondition'))
+      {
+        var work_item_uri = create_work_item(ticket, document['@'], element_uri, null, _event_id, trace_journal_uri);
 
-                ////print("[PP05.2]");
+        ////print("[PP05.2]");
 
-                workItemList.push(
-                {
-                    data: work_item_uri,
-                    type: _Uri
-                });
+        workItemList.push({
+          data: work_item_uri,
+          type: _Uri
+        });
 
-                break;
-            }
-        }
-
+        break;
+      }
     }
+  }
 
-    if (inVars.length > 0)
-        document['v-wf:inVars'] = inVars;
+  if (inVars.length > 0) {
+    document['v-wf:inVars'] = inVars;
+  }
 
-    //var process = new Context(_process, ticket);
-    //process.print_variables('v-wf:inVars');
+  //var process = new Context(_process, ticket);
+  //process.print_variables('v-wf:inVars');
 
-    if (workItemList.length > 0)
-        document['v-wf:workItemList'] = workItemList;
+  if (workItemList.length > 0) {
+    document['v-wf:workItemList'] = workItemList;
+  }
 
-    document['v-wf:isCompleted'] = newBool(false);
+  document['v-wf:isCompleted'] = newBool(false);
 
-    if (inVars.length > 0 || workItemList.length > 0)
-        put_individual(ticket, document, _event_id);
+  if (inVars.length > 0 || workItemList.length > 0) {
+    put_individual(ticket, document, _event_id);
+  }
 
-    ////print("[PP0E]");
+  ////print("[PP0E]");
 }
-
-
 
 /*
  *  Обработка стартовой формы и создание экземпляра процесса.
@@ -1180,7 +1177,7 @@ function prepare_start_form(ticket, document)
 
     addRight(ticket, [can_read], "v-wf:WorkflowReadUser", document['@']);
 
-    var new_process_uri = genUri();
+    var new_process_uri = genUri() + "-prs";
 
     var creator_f = document['v-s:creator'];
 
@@ -1260,7 +1257,7 @@ function prepare_start_form(ticket, document)
 
     create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
 
-    var jrId = genUri();
+    var jrId = genUri() + "-psr";
     var journalRecord = {
         '@': jrId,
         'rdf:type': newUri('v-s:ProcessStarted'),
@@ -1284,7 +1281,7 @@ function prepare_start_form(ticket, document)
     put_individual(ticket, journalRecord, _event_id);
 
     var membership = {
-        '@': genUri(),
+        '@': genUri() + "-mbh",
         'rdf:type': newUri('v-s:Membership'),
         'v-s:resource': newUri(new_process_uri),
         'v-s:memberOf': processedDocument,

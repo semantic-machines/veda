@@ -169,10 +169,10 @@ class ScriptProcess : VedaModule
                     tnx.id            = transaction_id;
                     ResultCode res = g_context.commit(&tnx);
 
-		            foreach (item; tnx.get_queue())
-		            {
-		                log.trace ("tnx item: cmd=%s, uri=%s ", item.cmd, item.new_indv.uri);
-		            }
+                    foreach (item; tnx.get_queue())
+                    {
+                        log.trace("tnx item: cmd=%s, uri=%s ", item.cmd, item.new_indv.uri);
+                    }
 
                     if (res != ResultCode.OK)
                     {
@@ -272,7 +272,7 @@ class ScriptProcess : VedaModule
 
         vql.get(&sticket,
                 "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                res, false, false);
+                res, OptAuthorize.NO, false);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);

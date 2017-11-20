@@ -313,7 +313,7 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Save current individual to database (with validation and adding new version)
+   * Save current individual to database
    */
   proto.save = function() {
     var self = this;
@@ -338,7 +338,7 @@ veda.Module(function (veda) { "use strict";
     } catch (error) {
       var notify = veda.Notify ? new veda.Notify() : function () {};
       notify("danger", error);
-      if ( this.is("v-s:UserThing") ) { this.draft() }
+      if ( this.is("v-s:UserThing") && error.code !== 472 ) { this.draft(); }
     }
     this.trigger("afterSave");
     return this;
@@ -385,7 +385,7 @@ veda.Module(function (veda) { "use strict";
       });
       self.trigger("afterReset");
     }).catch(function (error) {
-      self.isSync(false);
+      console.log("reset individual error", error);
       self.trigger("afterReset");
     });
   };
@@ -455,6 +455,68 @@ veda.Module(function (veda) { "use strict";
       }).length;
     }
     return result;
+  };
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @param {Any allowed type} value
+   * @return {this}
+   */
+  proto.addValue = function (property_uri, value) {
+    if (typeof value !== "undefined" && value !== null) {
+      var serialized = serializer(value);
+      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
+        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+      });
+      this.properties[property_uri].push(serialized);
+      var values = this.get(property_uri);
+      this.isSync(false);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
+    return this;
+  };
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @param {Any allowed type} value
+   * @return {this}
+   */
+  proto.removeValue = function (property_uri, value) {
+    if (!this.properties[property_uri] || !this.properties[property_uri].length) {
+      return this;
+    }
+    if (typeof value !== "undefined" && value !== null) {
+      var serialized = serializer(value);
+      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
+        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+      });
+      var values = this.get(property_uri);
+      this.isSync(false);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
+    return this;
+  };
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @return {this}
+   */
+  proto.clearValue = function (property_uri) {
+    if (!this.properties[property_uri] || !this.properties[property_uri].length) {
+      return this;
+    } else {
+      var empty = [];
+      this.properties[property_uri] = empty;
+      this.isSync(false);
+      this.trigger("propertyModified", empty);
+      this.trigger(property_uri, empty);
+    }
+    return this;
   };
 
   /**
