@@ -1,6 +1,6 @@
 use lmdb_rs::{DbHandle, Environment, MdbError};
 use std;
-use std::io::{ Write, stderr, Cursor };
+use std::io::{ Write, stderr, stdout, Cursor };
 use rmp_bind::{ encode, decode };
 
 mod put_routine;
@@ -26,6 +26,7 @@ pub fn get(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         Ok(_) => user_id = std::str::from_utf8(&user_id_buf).unwrap()
     }
 
+    writeln!(stdout(), "Get request from user [{}]", user_id).unwrap();
     encode::encode_array(resp_msg, ((arr_size - 3) * 2 + 1) as u32);
     encode::encode_uint(resp_msg, Codes::Ok as u64);
     
@@ -38,6 +39,7 @@ pub fn get(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             Ok(_) => res_uri = std::str::from_utf8(&res_uri_buf).unwrap()
         }
 
+        writeln!(stdout(), "Try to get individual [{}]", res_uri).unwrap();
         match env.new_transaction() {
             Ok(txn) => {
                 let db = txn.bind(db_handle);
@@ -45,12 +47,14 @@ pub fn get(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
                     Ok(val) => {
                         encode::encode_uint(resp_msg, Codes::Ok as u64);
                         encode::encode_string_bytes(resp_msg, &val);
+                        writeln!(stdout(), "Get OK").unwrap();
                     },
                     Err(e) => {
                         match e {
                             MdbError::NotFound => {
                                 encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
                                 encode::encode_nil(resp_msg);
+                                writeln!(stdout(), "Get NOT FOUND").unwrap();
                             },
 
                             _ => {
@@ -80,10 +84,11 @@ pub fn remove(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_ms
         Err(err) => return super::fail(resp_msg, Codes::InternalServerError, err),
         Ok(_) => {user_id = std::str::from_utf8(&user_id_buf).unwrap()}
     }
+    writeln!(stdout(), "Remove request from user [{}]", user_id).unwrap();
+
 
     encode::encode_array(resp_msg, (arr_size - 3 + 1) as u32);
     encode::encode_uint(resp_msg, Codes::Ok as u64);
-
     for _ in 3 .. arr_size {
         let mut res_uri_buf = Vec::default();    
         let res_uri: &str;
@@ -94,17 +99,20 @@ pub fn remove(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_ms
             Ok(_) => res_uri = std::str::from_utf8(&res_uri_buf).unwrap()
         }
 
+        writeln!(stdout(), "Try to remove individual [{}]", res_uri).unwrap();
         match env.new_transaction() {
             Ok(txn) => {
                 let db = txn.bind(db_handle);
                 match db.del(&res_uri.to_string()) {
-                    Ok(val) => {
+                    Ok(_) => {
                         encode::encode_uint(resp_msg, Codes::Ok as u64);
+                        writeln!(stdout(), "Remove OK").unwrap();
                     },
                     Err(e) => {
                         match e {
                             MdbError::NotFound => {
                                 encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
+                                writeln!(stdout(), "Remove NOT FOUND").unwrap();
                             },
 
                             _ => {
@@ -134,6 +142,8 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         Err(err) => return super::fail(resp_msg, Codes::InternalServerError, err),
         Ok(_) => {user_id = std::str::from_utf8(&user_id_buf).unwrap()}
     }
+
+    writeln!(stdout(), "Put request from user [{}]", user_id).unwrap();
     
     encode::encode_array(resp_msg, (arr_size - 3 + 1) as u32);
     ///For all responses firs is common operation result
@@ -151,7 +161,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             }
             Ok(_) => {}
         }
-
+        
         let mut individual = put_routine::Individual::new();
         ///Decoding msgpack to individual structure
         match put_routine::msgpack_to_individual(&mut Cursor::new(&individual_msgpack_buf[1..]), &mut individual) {
@@ -162,7 +172,8 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
                 return;
             }
         }
-        
+        writeln!(stdout(), "Decoded wrapper individual").unwrap();
+
         let new_state_res: &Vec<put_routine::Resource>;
         ///Decoding the state of individual to store in base
         match individual.resources.get(&"new_state".to_string()) {
@@ -175,7 +186,6 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
                 return;
             }
         }
-        
 
         let mut new_state = put_routine::Individual::new();
         ///Decoding individuals fron new state
@@ -189,22 +199,20 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
                 return;
             }
         }
-        
-         match env.new_transaction() {
+        writeln!(stdout(), "Decoded new state [{}]", std::str::from_utf8(&new_state.uri[..]).unwrap()).unwrap();
+                
+        match env.new_transaction() {
             Ok(txn) => {
                 let db = txn.bind(db_handle);
                 unsafe {
                     let new_sate_data = std::str::from_utf8_unchecked(&new_state_res[0].str_data[..]).to_string();
                     match db.set(&std::str::from_utf8(&new_state.uri[..]).unwrap().to_string(), &new_sate_data) {
-                        Ok(val) => {
+                        Ok(_) => {
                             encode::encode_uint(resp_msg, Codes::Ok as u64);
+                            writeln!(stdout(), "Put OK").unwrap();
                         },
                         Err(e) => {
                             match e {
-                                MdbError::NotFound => {
-                                    encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
-                                },
-
                                 _ => {
                                     writeln!(stderr(), "@ERR ON PUT TRANSACTION {:?}", e).unwrap();
                                     encode::encode_uint(resp_msg, Codes::InternalServerError as u64);

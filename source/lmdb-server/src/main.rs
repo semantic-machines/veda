@@ -45,17 +45,26 @@ fn unmarshal_request(cursor: &mut Cursor<&[u8]>, arr_size: u64, resp_msg: &mut V
         Ok(v) => (need_auth = v)
     }
     match op_code {
-        // PUT => rest::put(cursor, arr_size, need_auth, resp_msg),
-        GET => rest::get(cursor, arr_size, need_auth, resp_msg, env, db_handle),
+        PUT => {
+            writeln!(stdout(), "Put request").unwrap();
+            rest::put(cursor, arr_size, need_auth, resp_msg, env, db_handle);
+        }
+        GET => { 
+            writeln!(stdout(), "Get request").unwrap();
+            rest::get(cursor, arr_size, need_auth, resp_msg, env, db_handle);
+        },
         /// Auth request don't need need_auth flag
         /// But for the sake of generality request contains it always.AUTHORIZE
         /// Three rest requests need auth function with different params.
         /// AUTHORIZE: auth without data aggreagation.
         /// GET_RIGHTS_ORIGIN: auth with rights aggregation.
         /// GET_MEMBERSHIP: auth with membership aggregation.
- /*       AUTHORIZE => rest::auth(cursor, arr_size, resp_msg, false, false),
-        REMOVE => rest::remove(cursor, arr_size, need_auth, resp_msg),
-        GET_RIGHTS_ORIGIN => rest::auth(cursor, arr_size, resp_msg, true, false),
+        // AUTHORIZE => rest::auth(cursor, arr_size, resp_msg, false, false),
+        REMOVE => {
+            writeln!(stdout(), "Remove request").unwrap();
+            rest::remove(cursor, arr_size, need_auth, resp_msg, env, db_handle);
+        }
+ /*       GET_RIGHTS_ORIGIN => rest::auth(cursor, arr_size, resp_msg, true, false),
         GET_MEMBERSHIP => rest::auth(cursor, arr_size, resp_msg, false, true),
         GET_TICKET => rest::get_ticket(cursor, arr_size, resp_msg),*/
         _ => fail(resp_msg, rest::Codes::BadRequest, format!("@ERR UNKNOWN REQUEST {0}", op_code))
@@ -128,6 +137,8 @@ fn main() {
         }
     }
 
+    writeln!(stdout(), "Opened environment ./data/lmdb-individuals").unwrap();
+
     let db_handle;
     loop {
         match env.get_default_db(DbFlags::empty()) {
@@ -142,10 +153,15 @@ fn main() {
             }
         }
     }
+
+    writeln!(stdout(), "Opened default database").unwrap();
     loop {
         writeln!(stdout(), "Accepting").unwrap();
         match listener.accept() {
-            Ok((mut stream, _)) => handle_client(&mut stream, &env, &db_handle),
+            Ok((mut stream, addr)) => {
+                writeln!(stdout(), "Accepted connection {:?}", addr).unwrap();
+                handle_client(&mut stream, &env, &db_handle);
+            },
             Err(e) => writeln!(stderr(), "Err accepting connection: {:?}", e).unwrap(),
         }
     }
