@@ -1,5 +1,7 @@
 #sudo ifdown -a
 
+BUILD_PATH=$PWD
+
 #!/bin/sh
 rm *.log
 rm ./logs/*.log
@@ -74,5 +76,11 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
     ./build-component.sh veda-ft-query ft-query
 fi
 
-#sudo ifup -a
+if [ -z $1 ] || [ $1 == "lmdb-server" ] ; then
+  cd source/lmdb-server
+  cargo build --release
+  cp ./target/release/veda-lmdb-server $BUILD_PATH/veda-lmdb-server      
+  cd $BUILD_PATH
+fi
 
+#sudo ifup -a
