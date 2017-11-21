@@ -62,12 +62,22 @@ private VQL     vql_r;
 private Ticket  sticket;
 private string  lmdb_mode;
 
+string get_lmdb_mode()
+{
+    if (lmdb_mode is null)
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        lmdb_mode  = properties.as!(string)("lmdb_mode");
+
+        writefln("lmdb_mode=%s", lmdb_mode);
+    }
+
+    return lmdb_mode;
+}
+
 void main(char[][] args)
 {
-    string[ string ] properties;
-    properties = readProperties("./veda.properties");
-    lmdb_mode  = properties.as!(string)("lmdb_mode");
-
     Tid[ P_MODULE ] tids;
     process_name = "mstorage";
     string node_id = null;
@@ -283,9 +293,9 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        if (lmdb_mode == "as_server")
+        if (get_lmdb_mode() == "as_server")
         {
-            // send commit to server
+            log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
         }
         else
         {
@@ -867,9 +877,9 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         log.trace("commit: items=%s", items);
 
-        if (lmdb_mode == "as_server")
+        if (get_lmdb_mode() == "as_server")
         {
-            // send commit to server
+            log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
         }
         else
         {
@@ -1029,9 +1039,9 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if (tnx.is_autocommit)
             {
-                if (lmdb_mode == "as_server")
+                if (get_lmdb_mode() == "as_server")
                 {
-                    // send commit to server
+                    log.trace("LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
                 }
                 else
                 {
@@ -1078,9 +1088,9 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
             if (tnx.is_autocommit)
             {
-                if (lmdb_mode == "as_server")
+                if (get_lmdb_mode() == "as_server")
                 {
-                    // send commit to server
+                    log.trace("LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
                 }
                 else
                 {
