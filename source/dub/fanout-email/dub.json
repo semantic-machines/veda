@@ -24,7 +24,7 @@
         "sourceFiles":[
 	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a", 
-	    "../../veda/connector/connector.d",
+	    "../../veda/connector/storage_connector.d",
 	    "../../veda/connector/requestresponse.d",
 	    "../../veda/util/properd.d",
 	    "../../veda/bind/lmdb_header.d",
