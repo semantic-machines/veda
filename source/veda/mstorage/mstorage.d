@@ -14,6 +14,7 @@ private
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.connector.storage_connector;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
@@ -57,10 +58,23 @@ extern (C) void handleTermination2(int _signal)
 }
 
 private Context l_context;
+
 private Storage inividuals_storage_r;
+private StorageConnector l_storage_connector;
+
 private VQL     vql_r;
 private Ticket  sticket;
 private string  lmdb_mode;
+
+StorageConnector get_storage_connector ()
+{
+	if (l_storage_connector is null)
+	{
+		l_storage_connector = new StorageConnector (log ());
+	}	
+	
+	return l_storage_connector;
+}
 
 string get_lmdb_mode()
 {
@@ -296,6 +310,7 @@ void commiter(string thread_name)
         if (get_lmdb_mode() == "as_server")
         {
             log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
+            StorageConnector storage_connector = get_storage_connector ();
         }
         else
         {

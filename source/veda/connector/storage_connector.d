@@ -1,4 +1,4 @@
-module veda.connector.connector;
+module veda.connector.storage_connector;
 
 private
 {
@@ -7,26 +7,19 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import msgpack;
     import veda.common.type, veda.connector.requestresponse, veda.common.logger;
-}
-
-version (std_socket)
-{
     import std.socket;
 }
 
 const MAX_SIZE_OF_PACKET = 1024 * 1024 * 10;
 
-class Connector
+class StorageConnector
 {
-    Logger         log;
-    public ubyte[] buf;
-    public string  addr;
-    public ushort  port;
+    Logger           log;
+    public ubyte[]   buf;
+    public string    addr;
+    public ushort    port;
 
-    version (std_socket)
-    {
-        public TcpSocket s;
-    }
+    public TcpSocket s;
 
     this(Logger _log)
     {
@@ -38,25 +31,22 @@ class Connector
         this.addr = addr;
         this.port = port;
 
-        version (std_socket)
+        s = new TcpSocket();
+        for (;; )
         {
-            s = new TcpSocket();
-            for (;; )
+            try
             {
-                try
-                {
-                    log.trace("CONNECT STD %s %d", addr, port);
-                    s.connect(new InternetAddress(addr, port));
-                }
-                catch (Exception e)
-                {
-                    Thread.sleep(dur!("seconds")(3));
-                    continue;
-                }
-                break;
+                log.trace("CONNECT STD %s %d", addr, port);
+                s.connect(new InternetAddress(addr, port));
             }
-            log.trace("CONNECTED STD");
+            catch (Exception e)
+            {
+                Thread.sleep(dur!("seconds")(3));
+                continue;
+            }
+            break;
         }
+        log.trace("CONNECTED STD");
     }
 
 
@@ -106,16 +96,9 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
-
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            s.send(buf);
+            buf.length = 4;
+            long receive_size = s.receive(buf);
             //stderr.writeln("RECEIVE SIZE BUF ", receive_size);
 
 
@@ -134,10 +117,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             //stderr.writeln("RECEIVE RESPONSE ", receive_size);
 
             if (receive_size == 0 || receive_size < response.length)
@@ -228,19 +208,13 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.get SEND %s", buf);
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.get RECEIVE SIZE BUF %d", receive_size);
@@ -266,10 +240,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             if (trace)
                 log.trace("connector.get RECEIVE RESPONSE %s", receive_size);
 
@@ -363,20 +334,14 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.authorize SEND %s", buf);
 
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.authorize RECEIVE SIZE BUF %d", receive_size);
@@ -400,10 +365,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             if (trace)
                 log.trace("connector.authorize RECEIVE RESPONSE %s", receive_size);
 
@@ -498,20 +460,14 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.remove SEND %s", buf);
 
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.remove RECEIVE SIZE BUF %d", receive_size);
@@ -535,10 +491,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             if (trace)
                 log.trace("connector.remove RECEIVE RESPONSE %s", receive_size);
 
@@ -627,19 +580,13 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.get_ticket SEND %s", buf);
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.get_ticket RECEIVE SIZE BUF %d", receive_size);
@@ -665,10 +612,8 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
+
             if (trace)
                 log.trace("connector.get_ticket RECEIVE RESPONSE %s", receive_size);
 
