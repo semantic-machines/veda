@@ -1,7 +1,7 @@
 module veda.bootstrap;
 
 import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal, std.file, core.thread;
-import commando;
+import commando, veda.util.properd;
 
 struct ProcessInfo
 {
@@ -174,22 +174,54 @@ void main(string[] args)
         writefln("use options http_ports=%s", webserver_ports);
     }
 
+    string[ string ] properties;
+    properties = readProperties("./veda.properties");
+    string lmdb_mode = properties.as!(string)("lmdb_mode") ~ "\0";
+
     string[ string ] env;
     int      exit_code;
 
-    string[] modules =
-    [
-        "veda", "veda-ccus", "veda-ft-query", "veda-mstorage", "veda-ttlreader", "veda-fanout-email", "veda-fanout-sql-np", "veda-fanout-sql-lp", "veda-scripts-main",
-        "veda-scripts-lp", "veda-ft-indexer", "veda-ltr-scripts"
-    ];
+    string[] modules;
+
+    if (lmdb_mode == "as_server")
+    {
+        modules ~= "veda";
+        modules ~= "veda-ccus";
+        modules ~= "veda-ft-query";
+        modules ~= "veda-lmdb-server";
+        modules ~= "veda-mstorage";
+        modules ~= "veda-ttlreader";
+        modules ~= "veda-fanout-email";
+        modules ~= "veda-fanout-sql-np";
+        modules ~= "veda-fanout-sql-lp";
+        modules ~= "veda-scripts-main";
+        modules ~= "veda-scripts-lp";
+        modules ~= "veda-ft-indexer";
+        modules ~= "veda-ltr-scripts";
+    }
+    else
+    {
+        modules ~= "veda";
+        modules ~= "veda-ccus";
+        modules ~= "veda-ft-query";
+        modules ~= "veda-mstorage";
+        modules ~= "veda-ttlreader";
+        modules ~= "veda-fanout-email";
+        modules ~= "veda-fanout-sql-np";
+        modules ~= "veda-fanout-sql-lp";
+        modules ~= "veda-scripts-main";
+        modules ~= "veda-scripts-lp";
+        modules ~= "veda-ft-indexer";
+        modules ~= "veda-ltr-scripts";
+    }
+
 
     bool     is_found_modules = false;
 
     string[] wr_components =
     [
         "acl_preparer", "fanout_email", "fanout_sql_np", "fanout_sql_lp", "fulltext_indexer", "ltr_scripts", "scripts-main", "scripts-lp",
-        "subject_manager",
-        "ticket_manager", "acl_preparer"
+        "subject_manager", "ticket_manager", "acl_preparer"
     ];
 
     bool is_main_loop = true;
