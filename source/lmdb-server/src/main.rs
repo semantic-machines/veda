@@ -5,8 +5,11 @@ use std::io::{Write, Read, stdout, stderr, Cursor};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 use std::time;
+use std::fs::File;
 use lmdb_rs::{EnvBuilder, Environment, DbFlags, DbHandle};
 use rmp_bind::{ decode, encode };
+use std::io::BufReader;
+use std::io::BufRead;
 
 const PUT: u64 = 1;
 const GET: u64 = 2;
@@ -117,7 +120,22 @@ fn handle_client(stream: &mut TcpStream, env: &Environment, db_handle: &DbHandle
 }
 
 fn main() {
-    let listener = TcpListener::bind("0.0.0.0:9999").unwrap();
+    // tarantool_url = 127.0.0.1:9999
+    let f = File::open("veda.properties").unwrap();
+    let mut file = BufReader::new(&f);
+    let mut addr = "0.0.0.0:9999".to_string();
+    for line in file.lines() {
+        let mut l = line.unwrap();
+        l = l.replace(" ", "");
+        let parts: Vec<&str> = l.split("=").collect();
+        if parts.len() == 2 {
+            if parts[0] == "tarantool_url" {
+                // addr = parts[1]
+                addr = parts[1].to_string();         
+            }
+        }
+    }        
+    let listener = TcpListener::bind(addr).unwrap();
 
     // accept connections and process them serially
     let env_builder = EnvBuilder::new();
