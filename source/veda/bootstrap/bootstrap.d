@@ -176,15 +176,16 @@ void main(string[] args)
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
-    string lmdb_mode = properties.as!(string)("lmdb_mode") ~ "\0";
+    string lmdb_mode = properties.as!(string)("lmdb_mode");
 
     string[ string ] env;
     int      exit_code;
 
     string[] modules;
-
+					  
     if (lmdb_mode == "as_server")
     {
+    	writefln("THIS CONFIGURATION USE LMDB_SERVER, lmdb_mode=%s", lmdb_mode);
         modules ~= "veda";
         modules ~= "veda-ccus";
         modules ~= "veda-ft-query";
@@ -201,6 +202,7 @@ void main(string[] args)
     }
     else
     {
+    	writefln("THIS CONFIGURATION USE LMDB_LIBRARY, lmdb_mode=%s", lmdb_mode);
         modules ~= "veda";
         modules ~= "veda-ccus";
         modules ~= "veda-ft-query";

@@ -17,6 +17,7 @@ killall -9 veda-ttlreader
 killall -9 veda-webserver
 killall -9 veda-gowebserver
 killall -9 veda-ft-query
+killall -9 veda-lmdb-server
 
 rm data/module-info/*.lock
 rm data/queue/*.lock

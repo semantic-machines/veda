@@ -66,7 +66,7 @@ void main(char[][] args)
 {
     string[ string ] properties;
     properties = readProperties("./veda.properties");
-    lmdb_mode  = properties.as!(string)("lmdb_mode") ~ "\0";
+    lmdb_mode  = properties.as!(string)("lmdb_mode");
 
     Tid[ P_MODULE ] tids;
     process_name = "mstorage";
