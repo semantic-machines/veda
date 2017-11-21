@@ -44,6 +44,8 @@ v-s:LabelEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+// Get actual state
+document = get_individual(ticket, document["@"]);
 var prev_label = document["rdfs:label"] || [];
 var new_label = complexLabel(document);
 var prev_label_json = JSON.stringify( prev_label );
