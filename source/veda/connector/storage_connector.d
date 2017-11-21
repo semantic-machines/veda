@@ -50,7 +50,7 @@ class StorageConnector
     }
 
 
-    public RequestResponse put(OptAuthorize op_auth, string user_uri, string[] individuals)
+    public RequestResponse put(OptAuthorize op_auth, string user_uri, string[] binobj_individuals)
     {
         bool need_auth;
 
@@ -67,7 +67,7 @@ class StorageConnector
             printPrettyTrace(stderr);
             return request_response;
         }
-        if (individuals.length == 0)
+        if (binobj_individuals.length == 0)
         {
             request_response.common_rc = ResultCode.No_Content;
             log.trace("ERR! connector.put, code=%s", request_response.common_rc);
@@ -78,10 +78,10 @@ class StorageConnector
         Packer packer = Packer(false);
 
         //stderr.writeln("PACK PUT REQUEST");
-        packer.beginArray(individuals.length + 3);
+        packer.beginArray(binobj_individuals.length + 3);
         packer.pack(INDV_OP.PUT, need_auth, user_uri);
-        for (int i = 0; i < individuals.length; i++)
-            packer.pack(individuals[ i ]);
+        for (int i = 0; i < binobj_individuals.length; i++)
+            packer.pack(binobj_individuals[ i ]);
 
         long request_size = packer.stream.data.length;
         //stderr.writeln("DATA SIZE ", request_size);
@@ -137,9 +137,9 @@ class StorageConnector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = 0;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = 0;
 
             //stderr.writeln("OP RESULT = ", obj.via.uinteger);
             for (int i = 1; i < unpacker.unpacked.length; i++)
@@ -261,9 +261,9 @@ class StorageConnector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = uris.length;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = uris.length;
 
             if (trace)
                 log.trace("connector.get OP RESULT = %d", obj.via.uinteger);
@@ -273,7 +273,7 @@ class StorageConnector
                 obj                         = unpacker.unpacked[ i ];
                 request_response.op_rc[ j ] = cast(ResultCode)obj.via.uinteger;
                 if (request_response.op_rc[ j ] == ResultCode.OK)
-                    request_response.msgpacks[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
+                    request_response.binobjs[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
                 if (trace)
                     log.trace("connector.get GET RESULT = %d", obj.via.uinteger);
             }
@@ -513,9 +513,9 @@ class StorageConnector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = uris.length;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = uris.length;
 
             if (trace)
                 log.trace("connector.remove OP RESULT = %d", obj.via.uinteger);
@@ -634,9 +634,9 @@ class StorageConnector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = ticket_ids.length;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = ticket_ids.length;
 
             if (trace)
                 log.trace("connector.get_ticket OP RESULT = %d", obj.via.uinteger);
@@ -647,7 +647,7 @@ class StorageConnector
                 request_response.op_rc[ j ] = cast(ResultCode)obj.via.uinteger;
                 // stderr.writeln("@J ", j, request_response.op_rc[ j ]);
                 if (request_response.op_rc[ j ] == ResultCode.OK)
-                    request_response.msgpacks[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
+                    request_response.binobjs[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
                 if (trace)
                     log.trace("connector.get_ticket GET RESULT = %d", obj.via.uinteger);
             }

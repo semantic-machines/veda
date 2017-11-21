@@ -7,7 +7,7 @@ private
 {
     import std.stdio, std.typecons, std.conv, std.algorithm, std.digest.crc, std.exception : assumeUnique;
     import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils;
-    import veda.util.container, veda.common.type, veda.onto.bj8individual.cbor8individual;
+    import veda.util.container, veda.common.type, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
@@ -49,6 +49,11 @@ public struct Individual
     string serialize()
     {
         return individual2cbor(&this);
+    }
+
+    string serialize_to_msgpack()
+    {
+        return individual2msgpack(this);
     }
 
     Individual dup()

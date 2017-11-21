@@ -14,7 +14,7 @@ private
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
-    import veda.connector.storage_connector;
+    import veda.connector.storage_connector, veda.connector.requestresponse;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
@@ -57,23 +57,24 @@ extern (C) void handleTermination2(int _signal)
     Runtime.terminate();
 }
 
-private Context l_context;
+private Context          l_context;
 
-private Storage inividuals_storage_r;
+private Storage          inividuals_storage_r;
 private StorageConnector l_storage_connector;
 
-private VQL     vql_r;
-private Ticket  sticket;
-private string  lmdb_mode;
+private VQL              vql_r;
+private Ticket           sticket;
+private string           lmdb_mode;
 
-StorageConnector get_storage_connector ()
+StorageConnector get_storage_connector()
 {
-	if (l_storage_connector is null)
-	{
-		l_storage_connector = new StorageConnector (log ());
-	}	
-	
-	return l_storage_connector;
+    if (l_storage_connector is null)
+    {
+        l_storage_connector = new StorageConnector(log());
+        l_storage_connector.connect("127.0.0.1", 9999);
+    }
+
+    return l_storage_connector;
 }
 
 string get_lmdb_mode()
@@ -310,7 +311,6 @@ void commiter(string thread_name)
         if (get_lmdb_mode() == "as_server")
         {
             log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
-            StorageConnector storage_connector = get_storage_connector ();
         }
         else
         {
@@ -1057,6 +1057,24 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                 if (get_lmdb_mode() == "as_server")
                 {
                     log.trace("LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
+
+                    StorageConnector storage_connector = get_storage_connector();
+
+                    Individual       imm;
+                    imm.uri = text(ti.op_id);
+
+                    imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
+
+                    if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+                        imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
+
+
+                    RequestResponse lres = storage_connector.put(OptAuthorize.NO, ticket.user_uri, [ imm.serialize_to_msgpack () ]);
+                    
+                    if (lres.common_rc == ResultCode.OK)
+                    {
+                    	
+                    }                    
                 }
                 else
                 {
