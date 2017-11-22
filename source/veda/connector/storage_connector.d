@@ -50,7 +50,7 @@ class StorageConnector
     }
 
 
-    public RequestResponse put(OptAuthorize op_auth, string user_uri, string[] binobj_individuals)
+    public RequestResponse put(OptAuthorize op_auth, string user_uri, string[] binobj_individuals, bool trace = true)
     {
         bool need_auth;
 
@@ -63,28 +63,32 @@ class StorageConnector
         if (user_uri is null || user_uri.length < 3)
         {
             request_response.common_rc = ResultCode.Not_Authorized;
-            log.trace("ERR! connector.put, code=%s", request_response.common_rc);
+            log.trace("ERR! StorageConnector:put, code=%s", request_response.common_rc);
             printPrettyTrace(stderr);
             return request_response;
         }
         if (binobj_individuals.length == 0)
         {
             request_response.common_rc = ResultCode.No_Content;
-            log.trace("ERR! connector.put, code=%s", request_response.common_rc);
+            log.trace("ERR! StorageConnector:put, code=%s", request_response.common_rc);
             printPrettyTrace(stderr);
             return request_response;
         }
 
         Packer packer = Packer(false);
 
-        //stderr.writeln("PACK PUT REQUEST");
+
+        if (trace)
+            log.trace("@ StorageConnector:put PACK PUT REQUEST");
+
         packer.beginArray(binobj_individuals.length + 3);
         packer.pack(INDV_OP.PUT, need_auth, user_uri);
         for (int i = 0; i < binobj_individuals.length; i++)
             packer.pack(binobj_individuals[ i ]);
 
         long request_size = packer.stream.data.length;
-        //stderr.writeln("DATA SIZE ", request_size);
+        if (trace)
+            log.trace("@ StorageConnector:put DATA SIZE %d", request_size);
 
         buf = new ubyte[ 4 + request_size ];
 
@@ -94,36 +98,43 @@ class StorageConnector
         buf[ 3 ]               = cast(byte)(request_size & 0xFF);
         buf[ 4 .. buf.length ] = packer.stream.data;
 
-        for (;; )
+        for (;;)
         {
+            if (trace)
+                log.trace("@ StorageConnector:put send buf");
+
             s.send(buf);
             buf.length = 4;
             long receive_size = s.receive(buf);
-            //stderr.writeln("RECEIVE SIZE BUF ", receive_size);
+            if (trace)
+                log.trace("@ StorageConnector:put RECEIVE SIZE BUF %d", receive_size);
 
 
-            //stderr.writeln("RESPONSE SIZE BUF ", buf);
+            if (trace)
+                log.trace("@ StorageConnector:put RESPONSE SIZE BUF %s", buf);
             long response_size = 0;
             for (int i = 0; i < 4; i++)
                 response_size = (response_size << 8) + buf[ i ];
-            //stderr.writeln("RESPONSE SIZE ", response_size);
+            if (trace)
+                log.trace("@ StorageConnector:put RESPONSE SIZE %d", response_size);
 
             if (response_size > MAX_SIZE_OF_PACKET)
             {
                 request_response.common_rc = ResultCode.Size_too_large;
-                log.trace("ERR! connector.put, code=%s", request_response.common_rc);
+                log.trace("ERR! StorageConnector:put, code=%s", request_response.common_rc);
                 return request_response;
             }
 
             response = new ubyte[ response_size ];
 
             receive_size = s.receive(response);
-            //stderr.writeln("RECEIVE RESPONSE ", receive_size);
+            if (trace)
+                log.trace("@ StorageConnector:put RECEIVE RESPONSE %d", receive_size);
 
             if (receive_size == 0 || receive_size < response.length)
             {
                 Thread.sleep(dur!("seconds")(1));
-                log.trace("@RECONNECT PUT REQUEST");
+                log.trace("WARN! StorageConnector:put, receive_size(%d) < response.length(%d), RECONNECT PUT REQUEST", receive_size, response.length);
                 close();
                 connect(addr, port);
                 continue;
@@ -141,17 +152,20 @@ class StorageConnector
             request_response.op_rc.length   = unpacker.unpacked.length - 1;
             request_response.binobjs.length = 0;
 
-            //stderr.writeln("OP RESULT = ", obj.via.uinteger);
+            if (trace)
+                log.trace("@ StorageConnector:put OP RESULT = %d", obj.via.uinteger);
             for (int i = 1; i < unpacker.unpacked.length; i++)
             {
                 obj                             = unpacker.unpacked[ i ];
                 request_response.op_rc[ i - 1 ] = cast(ResultCode)obj.via.uinteger;
-                //stderr.writeln("PUT RESULT = ", obj.via.uinteger);
+                if (trace)
+                    log.trace("@ StorageConnector:put PUT RESULT = %d", obj.via.uinteger);
             }
-            //stderr.writeln("OP_RC ", request_response.op_rc);
+            if (trace)
+                log.trace("@ StorageConnector:put OP_RC %s", request_response.op_rc);
         }
         else
-            log.trace("@ERR ON UNPACKING RESPONSE");
+            log.trace("ERR! StorageConnector:put, ON UNPACKING RESPONSE");
 
         return request_response;
     }

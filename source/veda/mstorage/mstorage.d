@@ -310,7 +310,7 @@ void commiter(string thread_name)
 
         if (get_lmdb_mode() == "as_server")
         {
-            log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
+            // log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
         }
         else
         {
@@ -879,6 +879,25 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     return ticket;
 }
 
+string[] ti2binobj(immutable (TransactionItem)[] items)
+{
+    string[] ipack;
+
+    foreach (ti; items)
+    {
+        Individual imm;
+        imm.uri = text(ti.op_id);
+
+        if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+            imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
+        imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
+
+        ipack ~= imm.serialize_to_msgpack();
+    }
+
+    return ipack;
+}
+
 public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
@@ -892,28 +911,58 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         log.trace("commit: items=%s", items);
 
-        if (get_lmdb_mode() == "as_server")
+        if (items.length > 0)
         {
-            log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
-        }
-        else
-        {
-            rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
-        }
-
-        log.trace("commit: rc=%s", rc);
-
-        if (rc == ResultCode.OK)
-        {
-            MapResource rdfType;
-
-            foreach (item; items)
+            if (get_lmdb_mode() == "as_server")
             {
-                log.trace("commit: item.rc=%s", item.rc);
-                if (item.rc == ResultCode.OK)
-                    rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
+
+                bool is_packet = true;
+                foreach (ti; items)
+                {
+                    if (ti.user_uri != items[ 0 ].user_uri)
+                    {
+                        is_packet = false;
+                        break;
+                    }
+                }
+
+                if (is_packet)
+                {
+                    RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, items[ 0 ].user_uri, ti2binobj(items));
+
+                    foreach (idx, rr; lres.op_rc)
+                        rcs ~= OpResult(lres.op_rc[ idx ], items[ idx ].op_id);
+                }
+
+                else
+                {
+                    foreach (ti; items)
+                    {
+                        RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ti.user_uri, ti2binobj([ ti ]));
+                        rcs ~= OpResult(lres.op_rc[ 0 ], items[ 0 ].op_id);
+                    }
+                }
             }
-            rcs ~= OpResult(rc, op_id);
+            else
+            {
+                rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+            }
+
+            log.trace("commit: rc=%s", rc);
+
+            if (rc == ResultCode.OK)
+            {
+                MapResource rdfType;
+
+                foreach (item; items)
+                {
+                    log.trace("commit: item.rc=%s", item.rc);
+                    if (item.rc == ResultCode.OK)
+                        rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                }
+                rcs ~= OpResult(rc, op_id);
+            }
         }
     }
 
@@ -1060,21 +1109,13 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
                     StorageConnector storage_connector = get_storage_connector();
 
-                    Individual       imm;
-                    imm.uri = text(ti.op_id);
+                    RequestResponse  lres = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
 
-                    imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
-
-                    if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
-                        imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
-
-
-                    RequestResponse lres = storage_connector.put(OptAuthorize.NO, ticket.user_uri, [ imm.serialize_to_msgpack () ]);
-                    
-                    if (lres.common_rc == ResultCode.OK)
+                    if (lres.op_rc[ 0 ] == ResultCode.OK)
                     {
-                    	
-                    }                    
+                        lres       = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti1 ]));
+                        res.result = lres.op_rc[ 0 ];
+                    }
                 }
                 else
                 {
@@ -1124,6 +1165,8 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                 if (get_lmdb_mode() == "as_server")
                 {
                     log.trace("LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
+
+                    RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
                 }
                 else
                 {
