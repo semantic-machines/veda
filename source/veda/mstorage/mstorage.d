@@ -980,6 +980,12 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                                    OptAuthorize opt_request,
                                    OptTrace opt_trace)
 {
+	if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
+	{
+	    log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
+		opt_request = OptAuthorize.NO;
+	}
+	
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
     OpResult res = OpResult(ResultCode.Fail_Store, -1);
@@ -1016,8 +1022,8 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
         bool       is_new = false;
 
-        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
-            is_new = true;
+        //if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
+        //    is_new = true;
 
         if (is_new == false)
         {
