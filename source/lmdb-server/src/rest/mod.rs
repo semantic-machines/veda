@@ -163,8 +163,12 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         }
 
         if individual_msgpack_buf[0] != 0xFF {
-            encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
+            encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
             writeln!(stderr(), "@ERR WRAPPER IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
+            unsafe {
+                writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
+                    std::str::from_utf8_unchecked(&individual_msgpack_buf[..])).unwrap();
+            }
             return
         }
         
@@ -175,6 +179,10 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             Err(err) => {
                 writeln!(stderr(), "@ERR DECODING WRAPPER INDIVIDUAL {:?}", err).unwrap();
                 encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
+                unsafe {
+                    writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
+                        std::str::from_utf8_unchecked(&individual_msgpack_buf[..])).unwrap();
+                }
                 return;
             }
         }
@@ -196,6 +204,10 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         if new_state_res[0].str_data[0] != 0xFF {
             encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
             writeln!(stderr(), "@ERR NEW_STATE IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
+            unsafe {
+                writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
+                    std::str::from_utf8_unchecked(&new_state_res[0].str_data[..])).unwrap();
+            }
             return
         }
 
@@ -207,6 +219,10 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             Err(err) => {
                 ///If new state individual can not be decoded InternalServerError code is returned to cleint
                 writeln!(stderr(), "@ERR DECODING NEW STATE {:?}", err).unwrap();
+                unsafe {
+                    writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
+                        std::str::from_utf8_unchecked(&new_state_res[0].str_data[..])).unwrap();
+                }
                 encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
                 return;
             }
