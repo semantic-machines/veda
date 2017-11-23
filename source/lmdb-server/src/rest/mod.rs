@@ -1,7 +1,11 @@
+extern crate time;
+
 use lmdb_rs::{DbHandle, Environment, MdbError};
 use std;
 use std::io::{ Write, stderr, stdout, Cursor };
 use rmp_bind::{ encode, decode };
+use std::fs::File;
+use std::fs::DirBuilder;
 
 mod put_routine;
 
@@ -133,6 +137,19 @@ pub fn remove(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_ms
     }
 }
 
+pub fn dump_failure(buf: &[u8]) {
+    let path = "data/fail/";
+    DirBuilder::new().recursive(true).create(path).unwrap();
+    
+     let current_time = time::get_time();
+     let milliseconds = (current_time.sec as i64 * 1000) + 
+                       (current_time.nsec as i64 / 1000 / 1000); 
+    let file_path = format!("data/fail/{}", milliseconds);
+    writeln!(stderr(), "\tdumped to file {0}", file_path);
+    let mut f = File::create(file_path).unwrap();
+    f.write_all(buf);
+}
+
 pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: &mut Vec<u8>, 
     env: &Environment ,db_handle: &DbHandle) {
     let mut user_id_buf = Vec::default();
@@ -168,6 +185,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             unsafe {
                 writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
                     std::str::from_utf8_unchecked(&individual_msgpack_buf[..])).unwrap();
+                dump_failure(&individual_msgpack_buf[..]);
             }
             return
         }
@@ -182,6 +200,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
                 unsafe {
                     writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
                         std::str::from_utf8_unchecked(&individual_msgpack_buf[..])).unwrap();
+                    dump_failure(&individual_msgpack_buf[..]);
                 }
                 return;
             }
@@ -205,8 +224,9 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
             writeln!(stderr(), "@ERR NEW_STATE IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
             unsafe {
-                writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
+                writeln!(stderr(), "@NEW STATE INVALID BUF [{0}]",
                     std::str::from_utf8_unchecked(&new_state_res[0].str_data[..])).unwrap();
+                dump_failure(&new_state_res[0].str_data[..]);
             }
             return
         }
@@ -220,8 +240,9 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
                 ///If new state individual can not be decoded InternalServerError code is returned to cleint
                 writeln!(stderr(), "@ERR DECODING NEW STATE {:?}", err).unwrap();
                 unsafe {
-                    writeln!(stderr(), "@INDIVIDUAL WRAPPER INVALID BUF [{0}]",
+                    writeln!(stderr(), "@NEW STATE INVALID BUF [{0}]",
                         std::str::from_utf8_unchecked(&new_state_res[0].str_data[..])).unwrap();
+                    dump_failure(&new_state_res[0].str_data[..]);
                 }
                 encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
                 return;
