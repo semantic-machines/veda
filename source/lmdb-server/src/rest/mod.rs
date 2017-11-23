@@ -155,11 +155,16 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         
         match decode::decode_string(cursor, &mut individual_msgpack_buf) {
             Err(err) => {
-                writeln!(stderr(), "@ERR DECODING INDIVIDUAL MSGPACK {:?}", err).unwrap();
+                writeln!(stderr(), "@ERR DECODING WRAPPER INDIVIDUAL MSGPACK {:?}", err).unwrap();
                 encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
                 return;
             }
             Ok(_) => {}
+        }
+
+        if individual_msgpack_buf[0] != 0xFF {
+            encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
+            writeln!(stderr(), "@ERR WRAPPER IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
         }
         
         let mut individual = put_routine::Individual::new();
@@ -167,7 +172,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         match put_routine::msgpack_to_individual(&mut Cursor::new(&individual_msgpack_buf[1..]), &mut individual) {
             Ok(_) => {}
             Err(err) => {
-                writeln!(stderr(), "@ERR DECODING INDIVIDUAL {:?}", err).unwrap();
+                writeln!(stderr(), "@ERR DECODING WRAPPER INDIVIDUAL {:?}", err).unwrap();
                 encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
                 return;
             }
@@ -187,6 +192,11 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             }
         }
 
+        if new_state_res[0].str_data[0] != 0xFF {
+            encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
+            writeln!(stderr(), "@ERR NEW_STATE IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
+        }
+
         let mut new_state = put_routine::Individual::new();
         ///Decoding individuals fron new state
         match put_routine::msgpack_to_individual(&mut Cursor::new(&new_state_res[0].str_data[1..]), 
@@ -195,7 +205,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
             Err(err) => {
                 ///If new state individual can not be decoded InternalServerError code is returned to cleint
                 writeln!(stderr(), "@ERR DECODING NEW STATE {:?}", err).unwrap();
-                encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
+                encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
                 return;
             }
         }
