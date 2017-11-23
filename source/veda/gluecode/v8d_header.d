@@ -165,7 +165,7 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
             }
             else
             {
-                prev_indv = g_context.get_individual(ticket, ti.new_indv.uri);
+                prev_indv = g_context.get_individual(ticket, ti.new_indv.uri, OptAuthorize.NO);
             }
 
             if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)

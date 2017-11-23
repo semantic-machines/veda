@@ -167,7 +167,7 @@ class ScriptProcess : VedaModule
                     script.compiled_script.run();
                     tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
-                    ResultCode res = g_context.commit(&tnx);
+                    ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
                     foreach (item; tnx.get_queue())
                     {

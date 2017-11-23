@@ -336,7 +336,7 @@ class PThreadContext : Context
             this.reopen_ro_individuals_storage_db();
             Ticket sticket = sys_ticket();
 
-            node = get_individual(&sticket, node_id);
+            node = get_individual(&sticket, node_id, OptAuthorize.NO);
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
         }
@@ -691,7 +691,7 @@ class PThreadContext : Context
         return sr;
     }
 
-    public Individual get_individual(Ticket *ticket, string uri)
+    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         Individual individual = Individual.init;
 
@@ -710,7 +710,7 @@ class PThreadContext : Context
         try
         {
             string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
-            if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+            if (opt_authorize == OptAuthorize.YES && individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
                 if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
                 {
@@ -1066,7 +1066,7 @@ class PThreadContext : Context
         return true;
     }
 
-    public ResultCode commit(Transaction *in_tnx)
+    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         ResultCode rc;
         long       op_id;
@@ -1089,7 +1089,7 @@ class PThreadContext : Context
                 Ticket *ticket = this.get_ticket(item.ticket_id);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, OptAuthorize.YES).result;
+                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
 
                 if (rc == ResultCode.No_Content)
                 {

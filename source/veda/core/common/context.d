@@ -116,7 +116,7 @@ interface Context
 
     public Logger get_logger();
 
-    public ResultCode commit(Transaction *in_tnx);
+    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     public VQL get_vql();
     public Authorization acl_indexes();
@@ -187,7 +187,7 @@ interface Context
        Returns:
                 авторизованный экземпляр onto.Individual
      */
-    public Individual               get_individual(Ticket *ticket, Uri uri);
+    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     /**
        Вернуть список индивидуалов по списку uri
