@@ -710,9 +710,9 @@ class PThreadContext : Context
         try
         {
             string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
-            if (opt_authorize == OptAuthorize.YES && individual_as_binobj !is null && individual_as_binobj.length > 1)
+            if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
+                if (opt_authorize == OptAuthorize.NO || acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
                 {
                     if (individual.deserialize(individual_as_binobj) > 0)
                         individual.setStatus(ResultCode.OK);
