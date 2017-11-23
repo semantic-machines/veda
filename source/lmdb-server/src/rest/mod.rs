@@ -165,6 +165,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         if individual_msgpack_buf[0] != 0xFF {
             encode::encode_uint(resp_msg, Codes::InternalServerError as u64);
             writeln!(stderr(), "@ERR WRAPPER IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
+            return
         }
         
         let mut individual = put_routine::Individual::new();
@@ -195,6 +196,7 @@ pub fn put(cursor: &mut Cursor<&[u8]>, arr_size: u64, need_auth:bool, resp_msg: 
         if new_state_res[0].str_data[0] != 0xFF {
             encode::encode_uint(resp_msg, Codes::UnprocessableEntity as u64);
             writeln!(stderr(), "@ERR NEW_STATE IS NOT MSGPACK, NO SIGNATURE FOUND").unwrap();
+            return
         }
 
         let mut new_state = put_routine::Individual::new();
