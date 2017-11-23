@@ -1078,6 +1078,8 @@ class PThreadContext : Context
 
         if (in_tnx.is_autocommit == true)
         {
+        	bool[string] uri2exists;
+        	
             foreach (item; in_tnx.get_queue())
             {
                 if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
@@ -1089,7 +1091,15 @@ class PThreadContext : Context
                 Ticket *ticket = this.get_ticket(item.ticket_id);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
+                
+                if (uri2exists.get (item.uri, false) == true && item.new_indv.getResources("v-s:updateCounter").length == 0)
+                {
+	                	item.new_indv.setResources("v-s:updateCounter", [ Resource(-1) ]);
+                }                
+                
                 rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
+                
+                uri2exists[item.uri] = true;
 
                 if (rc == ResultCode.No_Content)
                 {

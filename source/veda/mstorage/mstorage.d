@@ -1022,8 +1022,11 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
 
         bool       is_new = false;
 
-        //if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
-        //    is_new = true;
+        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
+        {
+            is_new = true;
+            log.trace("INFO! %s is new, use UPSERT", indv.uri);            
+        }    
 
         if (is_new == false)
         {
