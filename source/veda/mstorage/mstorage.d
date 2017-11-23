@@ -1014,57 +1014,49 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         string     prev_state;
         Individual prev_indv;
 
-        bool       is_new = false;
-
-        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
-            is_new = true;
-
-        if (is_new == false)
+        try
         {
-            try
-            {
-                prev_state = indv_storage_thread.find(P_MODULE.subject_manager, indv.uri);
+            prev_state = indv_storage_thread.find(P_MODULE.subject_manager, indv.uri);
 
-                if ((prev_state is null ||
-                     prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                    log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
-            }
-            catch (Exception ex)
+            if ((prev_state is null ||
+                 prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
+                log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+        }
+        catch (Exception ex)
+        {
+            res.result = ResultCode.Unprocessable_Entity;
+            log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
+            return res;
+        }
+
+        if (prev_state !is null)
+        {
+            int code = prev_indv.deserialize(prev_state);
+            if (code < 0)
             {
+                log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
                 res.result = ResultCode.Unprocessable_Entity;
-                log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                 return res;
             }
 
-            if (prev_state !is null)
+            if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
             {
-                int code = prev_indv.deserialize(prev_state);
-                if (code < 0)
+                // для обновляемого индивида проверим доступность бита Update
+                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
                 {
-                    log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
-                    res.result = ResultCode.Unprocessable_Entity;
+                    res.result = ResultCode.Not_Authorized;
                     return res;
                 }
 
-                if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
+                // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                foreach (rs; _types)
                 {
-                    // для обновляемого индивида проверим доступность бита Update
-                    if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
-                    {
-                        res.result = ResultCode.Not_Authorized;
-                        return res;
-                    }
+                    string   itype = rs.get!string;
 
-                    // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                    foreach (rs; _types)
-                    {
-                        string   itype = rs.get!string;
+                    Resource *rr = rdfType.get(itype, null);
 
-                        Resource *rr = rdfType.get(itype, null);
-
-                        if (rr !is null)
-                            rr.info = EXISTS_TYPE;
-                    }
+                    if (rr !is null)
+                        rr.info = EXISTS_TYPE;
                 }
             }
         }
@@ -1113,8 +1105,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             {
                 if (get_lmdb_mode() == "as_server")
                 {
-                    log.trace(
-                              "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
+                    log.trace("LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
 
                     StorageConnector storage_connector = get_storage_connector();
 
@@ -1173,8 +1164,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
             {
                 if (get_lmdb_mode() == "as_server")
                 {
-                    log.trace(
-                              "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
+                    log.trace("LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
 
                     RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
                 }
