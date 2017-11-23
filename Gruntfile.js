@@ -80,7 +80,7 @@ module.exports = function(grunt) {
 		qunit : {
 			all : {
 				options : {
-					urls : [ 'http://localhost:8080/tests?coverage=true&lcovReport' ],
+					urls : [ 'http://localhost:8080/tests?testNumber=1&coverage=true&lcovReport', 'http://localhost:8080/tests?testNumber=2&coverage=true&lcovReport' ],
 					noGlobals : true,
 					stack : true,
 					timeout: 990000
