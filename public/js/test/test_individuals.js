@@ -1455,7 +1455,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    test("#020 Nested groups with restrictions & cycles",
+    test0("#020 Nested groups with restrictions & cycles",
         function()
         {
             var ticket1 = get_user1_ticket();
@@ -1536,7 +1536,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket1, doc3['@'], doc3);
         });
 
-    test("#021 Search with cursor",
+    test0("#021 Search with cursor",
         function()
         {
           var user = authenticate("bushenevvt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
@@ -1620,7 +1620,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    test("#022 Individual A, B, C store and read use get_individuals", function()
+    test0("#022 Individual A, B, C store and read use get_individuals", function()
     {
         var ticket = get_user1_ticket();
 
@@ -1666,7 +1666,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket, C['@'], C);
     });
 
-    test("#023 test search on invalid query", function()
+    test0("#023 test search on invalid query", function()
     {
         var ticket = get_user1_ticket();
 
@@ -1739,7 +1739,7 @@ for (i = 0; i < 1; i++)
             compare(new_test_doc3, read_individual3));
     });
 */
-    test("#025 test get_rights_origin", function()
+    test0("#025 test get_rights_origin", function()
     {
         var ticket_admin = get_admin_ticket();
 
@@ -1776,7 +1776,7 @@ for (i = 0; i < 1; i++)
         ok(result_rights == expected_rights);
     });
 
-    test("#026 test get_membership", function()
+    test0("#026 test get_membership", function()
     {
     //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
 
@@ -1802,7 +1802,7 @@ for (i = 0; i < 1; i++)
         ok(check && (found == 3));
     });
 
-    test("#027 test cycle of group", function()
+    test0("#027 test cycle of group", function()
     {
         var ticket_admin = get_admin_ticket();
 
@@ -1851,7 +1851,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#028 test different group subtrees 1", function()
+    test0("#028 test different group subtrees 1", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1908,7 +1908,7 @@ for (i = 0; i < 1; i++)
 
     });
 
-    test("#029 test different group subtrees 2", function()
+    test0("#029 test different group subtrees 2", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1964,7 +1964,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#030 test different group subtrees 3", function()
+    test0("#030 test different group subtrees 3", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -2014,7 +2014,7 @@ for (i = 0; i < 1; i++)
     });
 
 
-    test("#031 test server side script: decimal, and various format [{}], {}, [[{}]]", function()
+    test0("#031 test server side script: decimal, and various format [{}], {}, [[{}]]", function()
     {
       var ticket_admin = get_admin_ticket();
 
@@ -2050,7 +2050,7 @@ for (i = 0; i < 1; i++)
       test_success_read(ticket_admin, doc['@'], doc);
     });
 
-    test(
+    test0(
         "#013 user1 store 5 individuals, ft search use range ",
         function()
         {
