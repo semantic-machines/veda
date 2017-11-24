@@ -258,7 +258,7 @@ for (i = 0; i < 1; i++)
             ok(ee.data == "Словарь OWL 2 Schema (OWL 2)");
         });
 
-    test(
+    test0(
         "#003 Query '@' == 'owl:' ++ Get individual 'owl:'",
         function()
         {
@@ -269,7 +269,7 @@ for (i = 0; i < 1; i++)
             ok(data.indexOf("owl:") >= 0);
         });
 
-    test(
+    test0(
         "#030 search form test",
         function()
         {
@@ -506,7 +506,7 @@ for (i = 0; i < 1; i++)
         }
     );
 
-    test(
+    test0(
         "#004 Individual store user1 and no read user2, +lang",
         function()
         {
@@ -546,7 +546,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
 
-    test(
+    test0(
         "#005 Individual store user1 and add right, user2 successfully read it, next user1 add denied right and no user2 fail read it",
         function()
         {
@@ -634,7 +634,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
 
-    test(
+    test0(
         "#006 Individual store user1 and read admin",
         function()
         {
@@ -676,7 +676,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    test("#007 Individual store and read, test datatype", function()
+    test0("#007 Individual store and read, test datatype", function()
     {
         var ticket = get_user1_ticket();
 
@@ -694,7 +694,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#008 test [v-s:PermissionStatement]: user1 store file, user2 not read file, add right for user2, add cant read right for user2",
+    test0("#008 test [v-s:PermissionStatement]: user1 store file, user2 not read file, add right for user2, add cant read right for user2",
         function()
         {
             var ticket1 = get_user1_ticket();
@@ -730,7 +730,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket1, new_test_doc1['@'], new_test_doc1);
         });
 
-    test(
+    test0(
         "#009 Individual of [v-s:NoPermissionStatement] store 3 and read 3",
         function()
         {
@@ -806,7 +806,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
         });
 
-    test("#010 Individual of [v-s:Membership]",
+    test0("#010 Individual of [v-s:Membership]",
         function()
         {
             var ticket1 = get_user1_ticket();
