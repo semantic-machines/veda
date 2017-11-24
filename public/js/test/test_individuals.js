@@ -1454,4 +1454,240 @@ for (i = 0; i < 1; i++)
 
         });
 
+    test("#020 Nested groups with restrictions & cycles",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            //#5
+            res = test_success_read(ticket1, doc3['@'], doc3);
+
+            //#6
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+
+
+            res = addToGroup(ticket1, doc2['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc3['@'], doc1['@'], [can_read]);
+
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc2['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc3['@']);
+
+            res = addToGroup(ticket1, doc_group2_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            //#7
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+
+            //#8
+            check_rights_success(ticket2.id, doc3['@'], [can_read, can_update, can_delete]);
+
+            res = remove_individual (ticket1.id, doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#9
+            test_fail_read(ticket1, doc1['@'], doc1);
+
+            res = remove_individual (ticket1.id, doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#10
+            test_fail_read(ticket1, doc2['@'], doc2);
+
+            res = remove_individual (ticket1.id, doc3['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#11
+            test_fail_read(ticket1, doc3['@'], doc3);
+        });
+
+    test("#021 Search with cursor",
+        function()
+        {
+          var user = authenticate("bushenevvt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+          var admin = authenticate("karpovrt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+
+          var meeting_template = '{\
+            "@": "d:QueryTestResource_$i", \
+            "rdf:type": [{ "type": "Uri", "data": "rdfs:Resource" }], \
+            "v-s:creator": [{ "type": "Uri", "data": "$creator" }], \
+            "rdfs:label": [{ "type": "String", "data": "$i", "lang": "NONE" }] \
+          }';
+
+          createMeetings(user, 1, 5);
+          createMeetings(admin, 6, 3);
+          createMeetings(user, 9, 3);
+          createMeetings(admin, 12, 9);
+
+          var q = "'rdf:type'==='rdfs:Resource' && '@'=='d:QueryTestResource*'";
+          var s = "'rdfs:label' asc";
+
+          var params_admin1 = {
+            ticket: admin.id,
+            query: q,
+            sort: s,
+            top: 3,
+            from: 0
+          };
+          var results_admin1 = query(params_admin1);
+          //console.log("params_admin1", params_admin1, "results_admin1", results_admin1);
+
+          //#1
+          ok(results_admin1.count === 3 && results_admin1.cursor === 3 && results_admin1.processed === 3);
+
+          var params_admin2 = {
+            ticket: admin.id,
+            query: q,
+            sort: s,
+            top: 10,
+            from: 10
+          };
+          var results_admin2 = query(params_admin2);
+          //console.log("params_admin2", params_admin2, "results_admin2", results_admin2);
+
+          //#2
+          ok(results_admin2.count === 10 && results_admin2.cursor === 20 && results_admin2.processed === 10);
+
+          var params_user1 = {
+            ticket: user.id,
+            query: q,
+            sort: s,
+            top: 6,
+            from: 0
+          };
+          var results_user1 = query(params_user1);
+          //console.log("params_user1", params_user1, "results_user1", results_user1);
+
+          //#3
+          ok(results_user1.count === 6 && results_user1.cursor === 9 && results_user1.processed === 9);
+
+          var params_user2 = {
+            ticket: user.id,
+            query: q,
+            sort: s,
+            top: 10,
+            limit: 10,
+            from: 3
+          };
+          var results_user2 = query(params_user2);
+          //console.log("params_user2", params_user2, "results_user2", results_user2);
+
+          //#4
+          ok(results_user2.count === 5 && results_user2.cursor === 13 && results_user2.processed === 10);
+
+          function createMeetings(creator, start, count) {
+            for (var i = start; i < start + count; i++) {
+              var meeting = JSON.parse( meeting_template.replace(/\$i/g, i.toString().length === 2 ? i : "0" + i ).replace(/\$creator/g, creator.user_uri) );
+              var res = put_individual(creator.id, meeting);
+              wait_module(m_fulltext_indexer, res.op_id);
+            }
+          }
+
+        });
+
+    test("#022 Individual A, B, C store and read use get_individuals", function()
+    {
+        var ticket = get_user1_ticket();
+
+        var A = create_test_document1(ticket);
+        var B = create_test_document1(ticket);
+        var C = create_test_document1(ticket);
+
+        var new_idividuals = [A, B, C];
+
+        var res = get_individuals(ticket.id, [A['@'], B['@'], C['@']]);
+
+        //#1
+        ok(res.length == 3);
+
+        //#2#3#4
+        for (var idx = 0; idx < 3; idx++)
+        {
+            for (var idx2 = 0; idx2 < 3; idx2++)
+            {
+                if (res[idx]['@'] == new_idividuals[idx2]['@'])
+                {
+                    ok(compare(res[idx], new_idividuals[idx2]));
+                }
+            }
+        }
+
+        res = remove_individual (ticket.id, A['@']);
+        //wait_module(m_scripts, res.op_id);
+
+        //#5
+        test_fail_read(ticket, A['@'], A);
+
+        res = remove_individual (ticket.id, B['@']);
+        //wait_module(m_scripts, res.op_id);
+
+        //#6
+        test_fail_read(ticket, B['@'], B);
+
+        res = remove_individual (ticket.id, C['@']);
+        //wait_module(m_scripts, res.op_id);
+
+        //#7
+        test_fail_read(ticket, C['@'], C);
+    });
+
+    test("#023 test search on invalid query", function()
+    {
+        var ticket = get_user1_ticket();
+
+        var A = create_test_document1(ticket);
+
+          var params_q1 = {
+            ticket: ticket.id,
+            query: "(('rdf:type' == 'v-s:Department')) && ('*' == '.;u*')",
+            sort: "",
+            top: 3,
+            from: 0
+          };
+
+        var res = query(params_q1);
+
+        //#1
+        ok(res.result.length == 0);
+
+        res = remove_individual (ticket.id, A['@']);
+        //wait_module(m_scripts, res.op_id);
+
+        //#2
+        test_fail_read(ticket, A['@'], A);
+    });
 }
