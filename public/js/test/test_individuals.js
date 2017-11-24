@@ -849,7 +849,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket1, new_test_doc1['@'], new_test_doc1);
         });
 
-    test("#011 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",
+    test0("#011 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",
         function()
         {
             var ticket = get_user1_ticket();
@@ -923,7 +923,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
         });
 
-    test(
+    test0(
         "#012 user1 store 3 individuals (one of the individuals contains an invalid field [author]), the user1 finds 2 individuals, and the user2 does not find anything.",
         function()
         {
@@ -1051,7 +1051,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
 
-    test(
+    test0(
         "#014 Individual store, add_to_individual, set_in_individual test, remove_from",
         function()
         {
@@ -1181,7 +1181,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
 
-    test("#015 Document as a group",
+    test0("#015 Document as a group",
         function()
         {
             var ticket1 = get_user1_ticket();
@@ -1237,7 +1237,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket1, doc2['@'], doc2);
         });
 
-    test("#016 Nested groups",
+    test0("#016 Nested groups",
         function()
         {
             var ticket1 = get_user1_ticket();
@@ -1287,7 +1287,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket1, doc2['@'], doc2);
         });
 
-    test("#018 Nested groups with restrictions 1",
+    test0("#018 Nested groups with restrictions 1",
         function()
         {
             var ticket1 = get_user1_ticket();
@@ -1370,7 +1370,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    test("#019 Nested groups with restrictions 2",
+    test0("#019 Nested groups with restrictions 2",
         function()
         {
             var ticket1 = get_user1_ticket();
