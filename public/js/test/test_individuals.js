@@ -922,4 +922,536 @@ for (i = 0; i < 1; i++)
             test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
         });
 
+    test(
+        "#012 user1 store 3 individuals (one of the individuals contains an invalid field [author]), the user1 finds 2 individuals, and the user2 does not find anything.",
+        function()
+        {
+            var ticket_user1 = get_user1_ticket();
+
+            //#1
+            ok(ticket_user1.id.length > 0);
+
+            var ticket_user2 = get_user2_ticket();
+
+            //#2
+            ok(ticket_user2.id.length > 0);
+
+            var test_data_uid = "test12_" + guid();
+            var test_data = 'testdata ' + test_data_uid;
+
+            var new_test_doc1_uri_1 = "test12:" + guid();
+            var new_test_doc1 = {
+                '@': new_test_doc1_uri_1,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr(test_data, 'NONE'),
+                'v-s:test_fieldA': newUri('BBB' + test_data_uid),
+                'v-s:test_fieldB': newUri('CCC' + test_data_uid)
+            };
+
+            // document content author != user1
+            var new_test_doc1_uri_2 = "test12:" + guid();
+            var new_test_doc2 = {
+                '@': new_test_doc1_uri_2,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer2'),
+                'v-s:test_field': newUri(test_data)
+            };
+
+            var new_test_doc1_uri_3 = "test12:" + guid();
+            var new_test_doc3 = {
+                '@': new_test_doc1_uri_3,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newUri(test_data),
+                'v-s:test_fieldA': newUri('BBB' + test_data_uid)
+            };
+
+            var new_test_doc1_uri_4 = "test12:" + guid();
+            var new_test_doc4 = {
+                '@': new_test_doc1_uri_4,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newUri('AAA' + test_data_uid),
+                'v-s:test_fieldA': newUri('BBB' + test_data_uid),
+                'v-s:test_fieldB': newUri('CCC' + test_data_uid)
+            };
+
+            var res = put_individual(ticket_user1.id, new_test_doc1, false);
+            var res = put_individual(ticket_user1.id, new_test_doc2, false);
+            var res = put_individual(ticket_user1.id, new_test_doc3, false);
+            var res = put_individual(ticket_user1.id, new_test_doc4, false);
+
+            flush (m_fulltext_indexer, res.op_id);
+
+            wait_module(m_fulltext_indexer, res.op_id);
+            wait_module(m_subject, res.op_id);
+            //wait_module(m_acl, res.op_id);
+            //wait_module(m_scripts, res.op_id);
+
+            var data = query(ticket_user1.id, test_data_uid, undefined, undefined, true).result;
+
+            //#3
+            ok(compare(data.length, 2));
+
+            data = query(ticket_user2.id, test_data_uid, undefined, undefined, true).result;
+
+            //#4
+            ok(compare(data.length, 0));
+
+            data = query(ticket_user1.id, "'v-s:test_field' === '" + test_data_uid + "'", undefined, undefined, true).result;
+
+            //#5
+            ok(compare(data.length, 2));
+
+            data = query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + "'", undefined, undefined, true).result;
+
+            //#6
+            ok(compare(data.length, 0));
+
+            data = query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + " t1'", undefined, undefined, true).result;
+
+            //#7
+            ok(compare(data.length, 0));
+
+            data = query(ticket_user1.id, "'v-s:test_field' === '" + test_data_uid + "' || 'v-s:test_field' === 'AAA" + test_data_uid + "'", undefined, undefined, true).result;
+
+            //#8
+            ok(compare(data.length, 3));
+
+            data = query(ticket_user1.id, "'v-s:test_fieldB' === 'CCC" + test_data_uid + "' && 'v-s:test_fieldA' === 'BBB" + test_data_uid + "'", undefined, undefined, true).result;
+
+            //#9
+            ok(compare(data.length, 2));
+
+
+            res = remove_individual(ticket_user1.id, new_test_doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#10
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+
+            res = remove_individual(ticket_user1.id, new_test_doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#11
+            test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
+
+            res = remove_individual(ticket_user1.id, new_test_doc3['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#12
+            test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
+
+            res = remove_individual(ticket_user1.id, new_test_doc4['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#13
+            test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
+        });
+
+    test(
+        "#014 Individual store, add_to_individual, set_in_individual test, remove_from",
+        function()
+        {
+            var ticket_user1 = get_user1_ticket();
+
+            //#1
+            ok(ticket_user1.id.length > 0);
+
+            var new_test_doc1_uri = "test14:" + guid();
+            var new_test_doc1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            var res = put_individual(ticket_user1.id, new_test_doc1);
+            wait_module(m_scripts, res.op_id);
+            wait_module(m_acl, res.op_id);
+
+            var read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#2
+            ok(compare(new_test_doc1, read_individual));
+
+      /////////////////////////// ADD TO
+
+            var new_test_add1 = {
+                '@': new_test_doc1_uri,
+                'v-s:author': [
+                {
+                    data: 'td:ValeriyBushenev-Programmer2',
+                    type: _Uri
+                },
+                {
+                    data: 'td:test-q',
+                    type: _Uri
+                }]
+            };
+
+            add_to_individual(ticket_user1.id, new_test_add1);
+            wait_module(m_scripts, res.op_id);
+            wait_module(m_acl, res.op_id);
+
+            var new_test_doc1_add1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': [
+                {
+                    data: 'td:ValeriyBushenev-Programmer1',
+                    type: _Uri
+                },
+                {
+                    data: 'td:ValeriyBushenev-Programmer2',
+                    type: _Uri
+                },
+                {
+                    data: 'td:test-q',
+                    type: _Uri
+                }],
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#3
+            ok(compare(new_test_doc1_add1, read_individual));
+
+      ////////////////////////// SET IN
+
+            var new_test_set1 = {
+                '@': new_test_doc1_uri,
+                'v-s:author': newUri('td:test-e')
+            };
+
+            set_in_individual(ticket_user1.id, new_test_set1);
+            wait_module(m_scripts, res.op_id);
+            wait_module(m_acl, res.op_id);
+
+            var new_test_doc1_set1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:test-e'),
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#4
+            ok(compare(new_test_doc1_set1, read_individual));
+
+      /////////////////////// REMOVE FROM
+
+            var new_test_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'v-s:author': newUri('td:test-e')
+            };
+
+            remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            wait_module(m_scripts, res.op_id);
+            wait_module(m_acl, res.op_id);
+
+            var new_test_doc1_remove_from1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#5
+            ok(compare(new_test_doc1_remove_from1, read_individual));
+
+            remove_from_individual(ticket_user1.id, new_test_remove_from1);
+            wait_module(m_scripts, res.op_id);
+            wait_module(m_acl, res.op_id);
+
+            read_individual = get_individual(ticket_user1.id, new_test_doc1_uri);
+
+            //#6
+            ok(compare(new_test_doc1_remove_from1, read_individual));
+
+            res = remove_individual(ticket_user1.id, new_test_doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#7
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+        });
+
+    test("#015 Document as a group",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1);
+            var doc2 = create_test_document1(ticket1);
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc1['@']);
+
+            wait_module(m_acl, res[1].op_id);
+
+            //#5
+            res = test_success_read(ticket2, doc1['@'], doc1, true);
+
+            //#6
+            res = test_success_read(ticket2, doc2['@'], doc2, true);
+
+            res = removeFromGroup(ticket1, doc1['@'], doc2['@']);
+
+            wait_module(m_acl, res[1].op_id);
+
+            //#7
+            res = test_success_read(ticket2, doc1['@'], doc1, true);
+
+            //#8
+            res = test_fail_read(ticket2, doc2['@'], doc2, true);
+
+            res = remove_individual (ticket1.id, doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#9
+            test_fail_read(ticket1, doc1['@'], doc1);
+
+            res = remove_individual (ticket1.id, doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#10
+            test_fail_read(ticket1, doc2['@'], doc2);
+        });
+
+    test("#016 Nested groups",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1);
+            var doc2 = create_test_document1(ticket1);
+            var doc_group1_uri = 'g:doc_group_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group1_uri);
+
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            //#5
+            res = test_success_read(ticket2, doc1['@'], doc1, true);
+
+            //#6
+            res = test_success_read(ticket2, doc2['@'], doc2, true);
+
+            res = remove_individual (ticket1.id, doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#7
+            test_fail_read(ticket1, doc1['@'], doc1);
+
+            res = remove_individual (ticket1.id, doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#8
+            test_fail_read(ticket1, doc2['@'], doc2);
+        });
+
+    test("#018 Nested groups with restrictions 1",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            //#5
+            res = test_success_read(ticket1, doc3['@'], doc3);
+
+            //#6
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc1['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            //#7
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+
+            //#8
+            check_rights_success(ticket2.id, doc3['@'], [can_read]);
+
+            //#9
+            check_rights_fail(ticket2.id, doc3['@'], [can_update]);
+
+            //#10
+            check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
+
+            res = remove_individual (ticket1.id, doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#11
+            test_fail_read(ticket1, doc1['@'], doc1);
+
+            res = remove_individual (ticket1.id, doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#12
+            test_fail_read(ticket1, doc2['@'], doc2);
+
+            res = remove_individual (ticket1.id, doc3['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#13
+            test_fail_read(ticket1, doc3['@'], doc3);
+
+        });
+
+    test("#019 Nested groups with restrictions 2",
+        function()
+        {
+            var ticket1 = get_user1_ticket();
+            var ticket2 = get_user2_ticket();
+
+            var res;
+            var doc1 = create_test_document1(ticket1, 'doc1_');
+            var doc2 = create_test_document1(ticket1, 'doc2_');
+            var doc3 = create_test_document1(ticket1, 'doc3_');
+            var doc_group1_uri = 'g:doc_group1_' + guid();
+            var doc_group2_uri = 'g:doc_group2_' + guid();
+            var doc_group3_uri = 'g:doc_group3_' + guid();
+
+            //#1
+            res = test_success_read(ticket1, doc1['@'], doc1);
+
+            //#2
+            res = test_fail_read(ticket2, doc1['@'], doc1);
+
+            //#3
+            res = test_success_read(ticket1, doc2['@'], doc2);
+
+            //#4
+            res = test_fail_read(ticket2, doc2['@'], doc2);
+
+            //#5
+            res = test_success_read(ticket1, doc3['@'], doc3);
+
+            //#6
+            res = test_fail_read(ticket2, doc3['@'], doc3);
+
+            res = addToGroup(ticket1, doc_group1_uri, doc3['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc3['@']);
+            res = addToGroup(ticket1, doc_group1_uri, doc1['@']);
+            res = addToGroup(ticket1, doc_group2_uri, doc1['@']);
+            res = addToGroup(ticket1, doc1['@'], doc2['@']);
+            res = addToGroup(ticket1, doc1['@'], doc3['@'], [can_read]);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group1_uri);
+            res = addToGroup(ticket1, doc_group3_uri, doc_group2_uri);
+
+            res = addRight(ticket1.id, [can_read], ticket2.user_uri, doc_group3_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_update], ticket2.user_uri, doc_group2_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            res = addRight(ticket1.id, [can_delete], ticket2.user_uri, doc_group1_uri);
+            var op_id = res[1].op_id;
+            wait_module(m_acl, res[1].op_id);
+
+            //#7
+            check_rights_success(ticket2.id, doc1['@'], [can_read, can_update, can_delete]);
+
+            //#8
+            check_rights_success(ticket2.id, doc3['@'], [can_read]);
+
+            //#9
+            check_rights_success(ticket2.id, doc3['@'], [can_update]);
+
+            //#10
+            check_rights_success(ticket2.id, doc3['@'], [can_delete]);
+
+            res = remove_individual (ticket1.id, doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#11
+            test_fail_read(ticket1, doc1['@'], doc1);
+
+            res = remove_individual (ticket1.id, doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#12
+            test_fail_read(ticket1, doc2['@'], doc2);
+
+            res = remove_individual (ticket1.id, doc3['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#13
+            test_fail_read(ticket1, doc3['@'], doc3);
+
+        });
+
 }
