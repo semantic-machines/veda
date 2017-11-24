@@ -10,19 +10,19 @@ module veda.common.type;
 import std.math, std.stdio, std.conv, std.string;
 
 /// id подсистем
-public enum SUBSYSTEM : long
+public enum SUBSYSTEM : ubyte
 {
     STORAGE           = 1,
     ACL               = 2,
     FULL_TEXT_INDEXER = 4,
-    SCRIPTS           = 16,
     FANOUT_EMAIL      = 8,
-    FANOUT_SQL        = 128,
-    USER_MODULES_TOOL = 256
+    SCRIPTS           = 16,
+    FANOUT_SQL        = 32,
+    USER_MODULES_TOOL = 64
 }
 
 /// id компонентов
-public enum COMPONENT : long
+public enum COMPONENT : ubyte
 {
     /// сохранение индивидуалов
     subject_manager            = 1,
@@ -40,42 +40,44 @@ public enum COMPONENT : long
     scripts_main               = 16,
 
     /// Выдача и проверка тикетов
-    ticket_manager             = 32,
-
-    /// Загрузка из файлов
-    file_reader                = 64,
-
-    /// Выгрузка в sql, высокоприоритетное исполнение
-    fanout_sql_np              = 128,
-
-    /// исполнение скриптов, low priority
-    scripts_lp                 = 256,
-
-    //// long time run scripts
-    ltr_scripts                = 512,
+    ticket_manager             = 29,
 
     /// Выгрузка в sql, низкоприоритетное исполнение
-    fanout_sql_lp              = 1024,
+    fanout_sql_lp              = 30,
+
+    /// Выгрузка в sql, высокоприоритетное исполнение
+    fanout_sql_np              = 32,
+
+    /// исполнение скриптов, low priority
+    scripts_lp                 = 33,
+
+    //// long time run scripts
+    ltr_scripts                = 34,
+
+	///////////////////////////////////////
 
     /// Сбор статистики
-    statistic_data_accumulator = 2048,
+    statistic_data_accumulator = 35,
 
     /// Сохранение накопленных в памяти данных
-    commiter                   = 4096,
+    commiter                   = 36,
 
     /// Вывод статистики
-    print_statistic            = 8192,
+    print_statistic            = 37,
 
-    n_channel                  = 16384,
+    n_channel                  = 38,
 
-    webserver                  = 32768,
+    webserver                  = 39,
+
+    /// Загрузка из файлов
+    file_reader                = 40,
     
-    user_modules_tool		   = 65536
+    user_modules_tool		   = 64
 }
 
 
 /// id процессов
-public enum P_MODULE : COMPONENT
+public enum P_MODULE : ubyte
 {
     ticket_manager             = COMPONENT.ticket_manager,
     subject_manager            = COMPONENT.subject_manager,
@@ -89,7 +91,7 @@ public enum P_MODULE : COMPONENT
 }
 
 /// id модулей обрабатывающих очередь
-public enum MODULE : COMPONENT
+public enum MODULE : ubyte
 {
     ticket_manager   = COMPONENT.ticket_manager,
     subject_manager  = COMPONENT.subject_manager,
