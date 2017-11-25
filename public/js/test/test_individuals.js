@@ -2012,4 +2012,41 @@ for (i = 0; i < 1; i++)
         check_rights_fail(ticket1.id, doc1, [can_delete]);
     });
 
+
+    test("#031 test server side script: decimal, and various format [{}], {}, [[{}]]", function()
+    {
+      var ticket_admin = get_admin_ticket();
+
+      var new_test_script_uri = genUri();
+      var new_test_script = {
+        '@': new_test_script_uri,
+        'rdf:type': newUri('v-s:Event'),
+        'v-s:triggerByType': newUri('rdfs:Resource1'),
+        'v-s:script': newStr('if (parent_script_id != "") return;' +
+            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
+            'document["v-s:test_ArArObj"]= [newDate(new Date("2017-02-03"))];' +
+            'document["v-s:test_Obj"]= newDate(new Date("2017-03-03"))[0];' +
+            'put_individual(ticket, document, _event_id);'),
+        'v-s:created': newDate(new Date()),
+        'v-s:author': newUri(ticket_admin.user_uri)
+      };
+
+      var res = put_individual(ticket_admin.id, new_test_script);
+      //wait_module(m_subject, res.op_id);
+      wait_module(m_acl, res.op_id);
+      wait_module(m_scripts, res.op_id);
+
+      var doc = create_test_document2(ticket_admin);
+
+      remove_individual(ticket_admin.id, new_test_script['@']);
+
+      test_fail_read(ticket_admin, doc['@'], doc);
+
+      doc["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));
+      doc["v-s:test_ArArObj"]= newDate(new Date("2017-02-03"));
+      doc["v-s:test_Obj"]= newDate(new Date("2017-03-03"));
+
+      test_success_read(ticket_admin, doc['@'], doc);
+    });
+
 }
