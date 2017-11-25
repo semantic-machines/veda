@@ -1963,4 +1963,53 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
+    test("#030 test different group subtrees 3", function()
+    {
+        var ticket_admin = get_admin_ticket();
+        var ticket1 = get_user1_ticket();
+
+        var doc1 = create_test_document1(ticket_admin)["@"];
+        var doc2 = create_test_document1(ticket_admin)["@"];
+        var group_A = 'g:group_A' + guid();
+        var group_B = 'g:group_B' + guid();
+
+        var res;
+
+        res = addToGroup(ticket_admin, doc2, doc1, [can_read]);
+
+        //#1
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_A, doc2, [can_read]);
+
+        //#2
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_B, group_A, [can_read]);
+
+        //#3
+        ok (res[1].result == 200);
+
+        res = addToGroup(ticket_admin, group_B, doc2);
+
+        //#4
+        ok (res[1].result == 200);
+
+        res = addRight(ticket_admin.id, [can_read, can_update, can_delete], ticket1.user_uri, group_B);
+
+        //5
+        ok (res[1].result == 200);
+
+        wait_module(m_acl, res[1].op_id);
+
+        //#6
+        check_rights_success(ticket1.id, doc1, [can_read]);
+
+        //#7
+        check_rights_fail(ticket1.id, doc1, [can_update]);
+
+        //#8
+        check_rights_fail(ticket1.id, doc1, [can_delete]);
+    });
+
 }
