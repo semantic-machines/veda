@@ -2049,4 +2049,165 @@ for (i = 0; i < 1; i++)
       test_success_read(ticket_admin, doc['@'], doc);
     });
 
+    test(
+        "#013 user1 store 5 individuals, ft search use range ",
+        function()
+        {
+            var ticket_user1 = get_user1_ticket();
+
+            //#1
+            ok(ticket_user1.id.length > 0);
+
+            var test_group_uid = "test13:" + guid();
+
+            var new_test_doc1_uri = "test13:" + guid();
+            var new_test_doc1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-01")),
+                'v-s:test_datetime1': newDate(new Date("2014-05-01"))
+            };
+
+            var new_test_doc2_uri = "test13:" + guid();
+            var new_test_doc2 = {
+                '@': new_test_doc2_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-02")),
+                'v-s:test_datetime1': newDate(new Date("2014-05-01"))
+            };
+
+            var new_test_doc3_uri = "test13:" + guid();
+            var new_test_doc3 = {
+                '@': new_test_doc3_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-02")),
+                'v-s:test_datetime1': newDate(new Date("2014-06-11"))
+            };
+
+            var new_test_doc4_uri = "test13:" + guid();
+            var new_test_doc4 = {
+                '@': new_test_doc4_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-04")),
+                'v-s:test_datetime1': newDate(new Date("2014-06-12"))
+            };
+
+            var res = put_individual(ticket_user1.id, new_test_doc1, false);
+            var res = put_individual(ticket_user1.id, new_test_doc2, false);
+            var res = put_individual(ticket_user1.id, new_test_doc3, false);
+            var res = put_individual(ticket_user1.id, new_test_doc4, false);
+
+            wait_module(m_fulltext_indexer, res.op_id);
+            wait_module(m_subject, res.op_id);
+            //wait_module(m_acl, res.op_id);
+            //wait_module(m_scripts, res.op_id);
+
+            var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
+
+            //#2
+            ok(compare(data.length, 4));
+
+            data = query(ticket_user1.id, "'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
+
+            //#3
+            ok(compare(data.length, 4));
+
+            data = query(ticket_user1.id,
+                "'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
+
+            //#4
+            ok(compare(data.length, 3));
+
+            //#5
+            ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri || data[2] == new_test_doc1_uri) &&
+                (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri || data[2] == new_test_doc2_uri) &&
+                (data[0] == new_test_doc3_uri || data[1] == new_test_doc3_uri || data[2] == new_test_doc3_uri));
+
+            data = query(ticket_user1.id,
+                "'v-s:test_datetime1' === [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
+
+            //#6
+            ok(compare(data.length, 2));
+
+            //#7
+            ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
+
+            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#8
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+
+            res = remove_individual (ticket_user1.id, new_test_doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#9
+            test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
+
+            res = remove_individual (ticket_user1.id, new_test_doc3['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#10
+            test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
+
+            res = remove_individual (ticket_user1.id, new_test_doc4['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#11
+            test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
+        });
+
+
+
+/*
+    test("#032 test create individual with rdf:type rdfs:Resource", function()
+    {
+      var ticket_admin = get_admin_ticket();
+
+      var ticket_user = get_user1_ticket();
+
+      var doc_admin = {
+        '@': genUri(),
+        'rdf:type': [{
+          data: "rdfs:Resource",
+          type: "Uri"
+        }]
+      };
+
+      var doc_user = {
+        '@': genUri(),
+        'rdf:type': [{
+          data: "rdfs:Resource",
+          type: "Uri"
+        }]
+      };
+
+      try {
+        var res = put_individual(ticket_admin.id, doc_admin);
+        ok(true);
+      } catch (err) {
+        ok(false, "put_individual with rdfs:Resource type by admin must success.");
+      }
+
+      try {
+        var res = put_individual(ticket_user.id, doc_user);
+        ok(false, "put_individual with rdfs:Resource type by unprivileged user must fail with 472 error.");
+      } catch (err) {
+        ok(true);
+      }
+
+    });
+*/
 }
