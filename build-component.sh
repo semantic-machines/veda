@@ -1,5 +1,5 @@
 #!/bin/sh
-echo ********* build $1 **********
+echo "********* build $1 **********"
 rm $1
 cd source/dub/$2
 rm dub.selections.json

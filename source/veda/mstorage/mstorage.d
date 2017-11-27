@@ -57,39 +57,12 @@ extern (C) void handleTermination2(int _signal)
     Runtime.terminate();
 }
 
-private Context          l_context;
+private Context l_context;
 
-private Storage          inividuals_storage_r;
-private StorageConnector l_storage_connector;
+private Storage inividuals_storage_r;
 
-private VQL              vql_r;
-private Ticket           sticket;
-private string           lmdb_mode;
-
-StorageConnector get_storage_connector()
-{
-    if (l_storage_connector is null)
-    {
-        l_storage_connector = new StorageConnector(log());
-        l_storage_connector.connect("127.0.0.1", 9999);
-    }
-
-    return l_storage_connector;
-}
-
-string get_lmdb_mode()
-{
-    if (lmdb_mode is null)
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        lmdb_mode  = properties.as!(string)("lmdb_mode");
-
-        writefln("lmdb_mode=%s", lmdb_mode);
-    }
-
-    return lmdb_mode;
-}
+private VQL     vql_r;
+private Ticket  sticket;
 
 void main(char[][] args)
 {
@@ -980,12 +953,12 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                                    OptAuthorize opt_request,
                                    OptTrace opt_trace)
 {
-	if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
-	{
-	    log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
-		opt_request = OptAuthorize.NO;
-	}
-	
+    if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
+    {
+        log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
+        opt_request = OptAuthorize.NO;
+    }
+
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
     OpResult res = OpResult(ResultCode.Fail_Store, -1);
@@ -1025,8 +998,8 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
         {
             is_new = true;
-            log.trace("INFO! %s is new, use UPSERT", indv.uri);            
-        }    
+            log.trace("INFO! %s is new, use UPSERT", indv.uri);
+        }
 
         if (is_new == false)
         {

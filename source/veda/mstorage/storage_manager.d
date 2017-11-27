@@ -12,8 +12,37 @@ private
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
-    import veda.bind.libwebsocketd;
+    import veda.bind.libwebsocketd, veda.util.properd;
     import veda.mstorage.wslink, veda.core.common.transaction;
+    import veda.connector.storage_connector, veda.connector.requestresponse;
+}
+
+private string           lmdb_mode;
+private StorageConnector l_storage_connector;
+
+public StorageConnector get_storage_connector()
+{
+    if (l_storage_connector is null)
+    {
+        l_storage_connector = new StorageConnector(log());
+        l_storage_connector.connect("127.0.0.1", 9999);
+    }
+
+    return l_storage_connector;
+}
+
+public string get_lmdb_mode()
+{
+    if (lmdb_mode is null)
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        lmdb_mode  = properties.as!(string)("lmdb_mode");
+
+        writefln("lmdb_mode=%s", lmdb_mode);
+    }
+
+    return lmdb_mode;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -147,11 +176,21 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbStorage                  storage = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+    LmdbStorage                  storage = null;
 
-    long                         count = storage.count_entries();
+    if (get_lmdb_mode() == "as_server")
+    {
+        log.trace(
+                  "LMDB_MODE=AS_SERVER, individuals_manager %s %s", _storage_id, db_path);	
+    }
+    else
+    {
+        storage = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
 
-    log.trace("COUNT INDIVIDUALS=%d", count);
+        long count = storage.count_entries();
+
+        log.trace("COUNT INDIVIDUALS=%d", count);
+    }
 
     int            size_bin_log         = 0;
     int            max_size_bin_log     = 10_000_000;
@@ -187,8 +226,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             }
         }
 
-        bool   is_freeze = false;
-        bool   is_exit   = false;
+        bool is_freeze = false;
+        bool is_exit   = false;
         module_info = new ModuleInfoFile(text(storage_id), _log, OPEN_MODE.WRITER);
 
         if (!module_info.is_ready)
@@ -423,7 +462,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 send(tid_response_reciever, ResultCode.Fail_Commit, thisTid);
                                 return;
                             }
-
                         },
                         (byte cmd, int arg, bool arg2)
                         {

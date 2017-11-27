@@ -98,7 +98,7 @@ class StorageConnector
         buf[ 3 ]               = cast(byte)(request_size & 0xFF);
         buf[ 4 .. buf.length ] = packer.stream.data;
 
-        for (;;)
+        for (;; )
         {
             if (trace)
                 log.trace("@ StorageConnector:put send buf");
