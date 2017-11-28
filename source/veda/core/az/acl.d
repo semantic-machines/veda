@@ -60,6 +60,8 @@ class Authorization : LmdbStorage
                     void delegate(string resource_group) trace_group, void delegate(string log) trace_info
                     )
     {
+    	ubyte res = 0;
+    	
         //if (cache_right_result !is null && trace_group is null && trace_info is null)
         //{
         //	res = cache_right_result.get (_uri ~ ticket.user_uri ~ request_access);
@@ -462,10 +464,10 @@ class Authorization : LmdbStorage
         return res;
     }
 
-    finally {
+    //finally {
         //cache_right_result.put(_uri ~ ticket.user_uri ~ request_access, res);
-    }
-}
+    //}
+//}
 }
 
 private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
