@@ -12,7 +12,7 @@ private
 
 string lstr = "                                                                           ";
 
-int    max_count_in_cache = 200;
+//int    max_count_in_cache = 2000;
 
 /// Хранение, чтение PermissionStatement, Membership
 class Authorization : LmdbStorage
@@ -21,12 +21,16 @@ class Authorization : LmdbStorage
     Cache!(Right *[], string) cache_of_group;
     Cache!(RightSet, string) cache_of_permission;
 
+//    Cache!(ubyte, string) cache_right_result;
+
     this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
     {
         log = _log;
         super(_path, mode, _parent_thread_name, log);
         //cache_of_group      = new Cache!(Right *[], string)(max_count_in_cache, "group");
         //cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
+
+//        cache_right_result = new Cache!(ubyte, string)(max_count_in_cache, "cache_right_result");
     }
 
     int count_permissions = 0;
@@ -35,11 +39,11 @@ class Authorization : LmdbStorage
     {
         super.reopen_db();
 
-        if (cache_of_group !is null)
-            cache_of_group = new Cache!(Right *[], string)(max_count_in_cache, "group");
+        //if (cache_of_group !is null)
+        //    cache_of_group = new Cache!(Right *[], string)(max_count_in_cache, "group");
 
-        if (cache_of_permission !is null)
-            cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
+        //if (cache_of_permission !is null)
+        //    cache_of_permission = new Cache!(RightSet, string)(max_count_in_cache, "permission");
 
         //writeln("ACL:CACHE:RESET");
     }
@@ -56,6 +60,14 @@ class Authorization : LmdbStorage
                     void delegate(string resource_group) trace_group, void delegate(string log) trace_info
                     )
     {
+        //if (cache_right_result !is null && trace_group is null && trace_info is null)
+        //{
+        //	res = cache_right_result.get (_uri ~ ticket.user_uri ~ request_access);
+
+        //	if (res != 0)
+        //		return res;
+        //}
+
         int    str_num = 0;
         string uri     = _uri.idup;
 
@@ -67,8 +79,6 @@ class Authorization : LmdbStorage
             log.trace("reopen acl.R");
             this.reopen_db();
         }
-
-        ubyte res = 0;
 
         if (ticket is null)
         {
@@ -155,12 +165,12 @@ class Authorization : LmdbStorage
             {
                 if (level > 16)
                 {
-                    log.trace("WARN! level down > 16, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                    //log.trace("WARN! level down > 16, uri=%s", uri);
                 }
 
                 if (level > 32)
                 {
-                    log.trace("ERR! level down > 32, uri=%s, prepared_uris=%s", uri, prepared_uris);
+                    log.trace("ERR! level down > 32, uri=%s", uri);
                     return (Right *[]).init;
                 }
 
@@ -403,6 +413,14 @@ class Authorization : LmdbStorage
 
                                         res = cast(ubyte)(res | set_bit);
 
+                                        if ((res & request_access) == request_access && trace_info is null)
+                                        {
+                                            //log.trace(format("%d request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
+                                            //                  access_to_pretty_string(res)));
+                                            return res;
+                                        }
+
+
                                         if (trace_info !is null)
                                             trace_info(format("%d set_bit=%s, res=%s", str_num++, access_to_pretty_string(set_bit),
                                                               access_to_pretty_string(res)));
@@ -443,6 +461,11 @@ class Authorization : LmdbStorage
 
         return res;
     }
+
+    finally {
+        //cache_right_result.put(_uri ~ ticket.user_uri ~ request_access, res);
+    }
+}
 }
 
 private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
@@ -459,7 +482,7 @@ private MInfo get_info(MODULE module_id)
     return info;
 }
 
-int  _timeout                         = 10;
+int _timeout                          = 10;
 long last_committed_op_id_acl_manager = 0;
 public bool acl_check_for_reload(void delegate() load)
 {
@@ -500,10 +523,10 @@ unittest
 
     Individual new_ind;
     Individual prev_ind;
-    long       op_id = 0;
+    long op_id = 0;
 
-    string     user_uri = "d:user1";
-    string     indv_uri = "d:indv1";
+    string user_uri = "d:user1";
+    string indv_uri = "d:indv1";
 
     new_ind.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
     new_ind.addResource("v-s:canRead", Resource(true));
