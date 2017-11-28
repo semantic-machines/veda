@@ -145,7 +145,7 @@ class Authorization : LmdbStorage
             MDB_val   data;
             string    skey;
 
-            Right *[] _get_resource_groups(string uri, ubyte access, ref ubyte[ string ] prepared_uris, int level = 0)
+            Right *[] _get_resource_groups(string uri, ubyte access, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
             {
                 if (level > 16)
                 {
@@ -233,10 +233,14 @@ class Authorization : LmdbStorage
                             continue;
                         }
 
-                        Right *[] up_restrictions = _get_resource_groups(group_key, new_access, prepared_uris, level + 1);
+                        Right *[] up_restrictions = _get_resource_groups(group_key, new_access, subject_groups, prepared_uris, level + 1);
                         foreach (restriction; up_restrictions)
                         {
                             res ~= restriction;
+
+                            if (subject_groups !is null)
+                            {
+                            }
                         }
                     }
                 }
@@ -248,10 +252,10 @@ class Authorization : LmdbStorage
                 return res;
             }
 
-            RightSet get_resource_groups(string uri, ubyte access)
+            RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
             {
                 ubyte[ string ] prepared_uris;
-                auto groups = _get_resource_groups(uri, access, prepared_uris, 0);
+                auto groups = _get_resource_groups(uri, access, subject_groups, prepared_uris, 0);
 
                 if (trace_info !is null)
                 {
@@ -277,7 +281,7 @@ class Authorization : LmdbStorage
             // читаем группы subject (ticket.user_uri)
             if (trace_info !is null)
                 trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
-            RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15);
+            RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15, null);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
             if (trace_info !is null)
                 trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
@@ -285,13 +289,13 @@ class Authorization : LmdbStorage
             // читаем группы object (uri)
             if (trace_info !is null)
                 trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
-            RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15);
+            RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15, null);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
             if (trace_info !is null)
                 trace_info(format("%d object_groups=%s", str_num++, object_groups));
 
-            foreach (object_group; object_groups.data)
+            bool prepare_group(Right *object_group)
             {
                 if (trace_group !is null)
                     trace_group(object_group.id);
@@ -351,18 +355,18 @@ class Authorization : LmdbStorage
 
                                         if (set_bit > 0)
                                         {
-//                            				if (trace !is null)
-//                                				trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
+//                                          if (trace !is null)
+//                                              trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
                                             res = cast(ubyte)(res | set_bit);
 
                                             if ((res & request_access) == request_access)
                                             {
-                                            	 if (trace_info !is null)
-	                                                trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
-                                                                  access_to_pretty_string(res)));
-                                            	 else if (trace_group is null) 
-	                                            	 return res;
+                                                if (trace_info !is null)
+                                                    trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
+                                                                      access_to_pretty_string(res)));
+                                                else if (trace_group is null)
+                                                    return true;
                                             }
 
                                             if (trace_info !is null)
@@ -383,6 +387,23 @@ class Authorization : LmdbStorage
                     if (trace_info !is null)
                         trace_info(format("%d for [%s] found %s", str_num++, acl_key, permissions));
                 }
+
+                if ((res & request_access) == request_access)
+                {
+                    if (trace_info !is null)
+                        trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
+                                          access_to_pretty_string(res)));
+                    else if (trace_group is null)
+                        return true;
+                }
+
+                return false;
+            }
+
+            foreach (object_group; object_groups.data)
+            {
+                if (prepare_group(object_group) == true)
+                    return res;
             }
         }catch (Exception ex)
         {
