@@ -17,6 +17,30 @@ class Authorization : LmdbStorage
 {
     Logger log;
 
+    // short life time vars
+
+    MDB_val                              key;
+    MDB_val                              data;
+    MDB_txn                              *txn_r;
+    MDB_dbi                              dbi;
+    string                               str;
+    int                                  rc;
+    string                               filter_value;
+    ubyte                                res;
+
+    int                                  str_num;
+    RightSet                             subject_groups;
+    RightSet                             object_groups;
+    void delegate(string resource_group) trace_group;
+    void delegate(string log)            trace_info;
+    void delegate(string resource_group,
+                  string subject_group,
+                  string right)
+          trace_acl;
+    ubyte request_access;
+
+
+
     this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
     {
         log = _log;
@@ -35,25 +59,21 @@ class Authorization : LmdbStorage
         super.unload_to_queue(path, queue_id, only_ids);
     }
 
-    ubyte authorize(string _uri, Ticket *ticket, ubyte request_access, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                               string subject_group,
-                                                                                                               string right)
-                    trace_acl,
-                    void delegate(string resource_group) trace_group, void delegate(string log) trace_info
+    ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                string subject_group,
+                                                                                                                string right)
+                    _trace_acl,
+                    void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
                     )
     {
-        ubyte res = 0;
+        trace_group    = _trace_group;
+        trace_info     = _trace_info;
+        trace_acl      = _trace_acl;
+        request_access = _request_access;
+        res            = 0;
+        str_num        = 0;
 
-        //if (cache_right_result !is null && trace_group is null && trace_info is null)
-        //{
-        //	res = cache_right_result.get (_uri ~ ticket.user_uri ~ request_access);
-
-        //	if (res != 0)
-        //		return res;
-        //}
-
-        int    str_num = 0;
-        string uri     = _uri.idup;
+        string uri = _uri.idup;
 
         if (db_is_opened == false)
             open_db();
@@ -76,11 +96,6 @@ class Authorization : LmdbStorage
         if (trace_info !is null)
             trace_info(format("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
                               access_to_pretty_string(request_access)));
-
-        MDB_txn *txn_r;
-        MDB_dbi dbi;
-        string  str;
-        int     rc;
 
         if (is_check_for_reload)
             acl_check_for_reload(&reopen_db);
@@ -141,134 +156,11 @@ class Authorization : LmdbStorage
 
             //RightSet[ string ] permission_2_group;
 
-            MDB_val   key;
-            MDB_val   data;
-            string    skey;
+            string skey;
 
-            Right *[] _get_resource_groups(string uri, ubyte access, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
-            {
-                if (level > 16)
-                {
-                    //log.trace("WARN! level down > 16, uri=%s", uri);
-                }
-
-                if (level > 32)
-                {
-                    log.trace("ERR! level down > 32, uri=%s", uri);
-                    return (Right *[]).init;
-                }
-
-
-                Right *[] res;
-
-                string    ll;
-
-                if (trace_info !is null)
-                {
-                    if (level * 2 < lstr.length)
-                        ll = lstr[ 0..level * 2 ];
-                    else
-                        ll = text(level);
-                }
-
-                try
-                {
-                    string groups_str;
-                    key.mv_size = uri.length;
-                    key.mv_data = cast(char *)uri;
-                    rc          = mdb_get(txn_r, dbi, &key, &data);
-                    if (rc == 0)
-                    {
-                        groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                        rights_from_string(groups_str, res);
-                    }
-
-                    //if (trace_info !is null)
-                    //{
-                    //    foreach (el; res)
-                    //        trace_info(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
-                    //}
-
-                    long res_lenght = res.length;
-
-                    for (int idx = 0; idx < res_lenght; idx++)
-                    {
-                        Right *group = res[ idx ];
-
-                        if (group is null)
-                        {
-                            log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);
-                            continue;
-                        }
-
-                        ubyte orig_access = group.access;
-                        ubyte new_access  = group.access & access;
-                        group.access = new_access;
-
-                        if (group.id in prepared_uris)
-                        {
-                            ubyte preur_access = prepared_uris[ group.id ];
-                            if (preur_access == new_access)
-                            {
-                                if (trace_info !is null)
-                                    trace_info(format("%d %s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", str_num++, ll, level, group.id,
-                                                      access_to_pretty_string(preur_access)));
-
-                                continue;
-                            }
-                        }
-
-                        prepared_uris[ group.id ] = new_access;
-
-                        if (trace_info !is null)
-                            trace_info(format("%d %s (%d)GROUP [%s] %s-> %s", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
-                                              access_to_pretty_string(new_access)));
-
-                        string group_key = membership_prefix ~ group.id;
-                        if (uri == group_key)
-                        {
-                            if (trace_info !is null)
-                                trace_info(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key", str_num++, ll, level, group.id,
-                                                  access_to_pretty_string(orig_access)));
-                            continue;
-                        }
-
-                        Right *[] up_restrictions = _get_resource_groups(group_key, new_access, subject_groups, prepared_uris, level + 1);
-                        foreach (restriction; up_restrictions)
-                        {
-                            res ~= restriction;
-
-                            if (subject_groups !is null)
-                            {
-                            }
-                        }
-                    }
-                }
-                catch (Throwable ex)
-                {
-                    log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
-                }
-
-                return res;
-            }
-
-            RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
-            {
-                ubyte[ string ] prepared_uris;
-                auto groups = _get_resource_groups(uri, access, subject_groups, prepared_uris, 0);
-
-                if (trace_info !is null)
-                {
-                    //foreach (el; groups)
-                    //    trace_info(format("%d FOUND GROUP [%s]", str_num++, *el));
-                }
-
-                return new RightSet(groups, log);
-            }
 
             // 0. читаем фильтр прав у object (uri)
             string filter = filter_prefix ~ uri;
-            string filter_value;
             key.mv_size = filter.length;
             key.mv_data = cast(char *)filter;
             rc          = mdb_get(txn_r, dbi, &key, &data);
@@ -281,7 +173,7 @@ class Authorization : LmdbStorage
             // читаем группы subject (ticket.user_uri)
             if (trace_info !is null)
                 trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
-            RightSet subject_groups = get_resource_groups(membership_prefix ~ ticket.user_uri, 15, null);
+            subject_groups                         = get_resource_groups(membership_prefix ~ ticket.user_uri, 15, null);
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
             if (trace_info !is null)
                 trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
@@ -289,116 +181,11 @@ class Authorization : LmdbStorage
             // читаем группы object (uri)
             if (trace_info !is null)
                 trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
-            RightSet object_groups = get_resource_groups(membership_prefix ~ uri, 15, null);
+            object_groups                                        = get_resource_groups(membership_prefix ~ uri, 15, null);
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
             if (trace_info !is null)
                 trace_info(format("%d object_groups=%s", str_num++, object_groups));
-
-            bool prepare_group(Right *object_group)
-            {
-                if (trace_group !is null)
-                    trace_group(object_group.id);
-
-                string acl_key;
-                if (filter_value !is null)
-                    acl_key = permission_prefix ~ filter_value ~ object_group.id;
-                else
-                    acl_key = permission_prefix ~ object_group.id;
-
-                if (trace_info !is null)
-                    trace_info(format("%d look acl_key: [%s]", str_num++, acl_key));
-
-                key.mv_size = acl_key.length;
-                key.mv_data = cast(char *)acl_key;
-
-                rc = mdb_get(txn_r, dbi, &key, &data);
-                if (rc == 0)
-                {
-                    str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                    RightSet permissions = new RightSet(log);
-                    rights_from_string(str, permissions);
-
-                    string obj_key = object_group.id;
-
-                    if (permissions !is null)
-                    {
-                        foreach (perm_key; permissions.data.keys)
-                        {
-                            if (perm_key in subject_groups.data)
-                            {
-                                Right *restriction = object_groups.data.get(obj_key, null);
-                                Right *permission  = permissions.data.get(perm_key, null);
-
-                                if (trace_info !is null)
-                                    trace_info(format("%d restriction=%s, permission=%s, request=%s", str_num++, *restriction, *permission,
-                                                      access_to_pretty_string(request_access)));
-
-                                ubyte restriction_access, permission_access;
-
-                                if (restriction !is null)
-                                    restriction_access = restriction.access;
-
-                                if (permission !is null)
-                                {
-                                    if (permission.access > 15)
-                                        permission_access = (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access;
-                                    else
-                                        permission_access = permission.access;
-                                }
-
-                                foreach (int idx, access; access_list)
-                                {
-                                    if ((request_access & access & restriction_access) != 0)
-                                    {
-                                        ubyte set_bit = cast(ubyte)(access & permission_access);
-
-                                        if (set_bit > 0)
-                                        {
-//                                          if (trace !is null)
-//                                              trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
-
-                                            res = cast(ubyte)(res | set_bit);
-
-                                            if ((res & request_access) == request_access)
-                                            {
-                                                if (trace_info !is null)
-                                                    trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
-                                                                      access_to_pretty_string(res)));
-                                                else if (trace_group is null)
-                                                    return true;
-                                            }
-
-                                            if (trace_info !is null)
-                                                trace_info(format("%d set_bit=%s, res=%s", str_num++, access_to_pretty_string(set_bit),
-                                                                  access_to_pretty_string(res)));
-
-                                            if (trace_acl !is null)
-                                            {
-                                                trace_acl(obj_key, perm_key, access_list_predicates[ idx ]);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (trace_info !is null)
-                        trace_info(format("%d for [%s] found %s", str_num++, acl_key, permissions));
-                }
-
-                if ((res & request_access) == request_access)
-                {
-                    if (trace_info !is null)
-                        trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
-                                          access_to_pretty_string(res)));
-                    else if (trace_group is null)
-                        return true;
-                }
-
-                return false;
-            }
 
             foreach (object_group; object_groups.data)
             {
@@ -433,10 +220,233 @@ class Authorization : LmdbStorage
         return res;
     }
 
-    //finally {
-    //cache_right_result.put(_uri ~ ticket.user_uri ~ request_access, res);
-    //}
-//}
+    bool prepare_group(Right *object_group)
+    {
+        if (trace_group !is null)
+            trace_group(object_group.id);
+
+        string acl_key;
+        if (filter_value !is null)
+            acl_key = permission_prefix ~ filter_value ~ object_group.id;
+        else
+            acl_key = permission_prefix ~ object_group.id;
+
+        if (trace_info !is null)
+            trace_info(format("%d look acl_key: [%s]", str_num++, acl_key));
+
+        key.mv_size = acl_key.length;
+        key.mv_data = cast(char *)acl_key;
+
+        rc = mdb_get(txn_r, dbi, &key, &data);
+        if (rc == 0)
+        {
+            str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+            RightSet permissions = new RightSet(log);
+            rights_from_string(str, permissions);
+
+            string obj_key = object_group.id;
+
+            if (permissions !is null)
+            {
+                foreach (perm_key; permissions.data.keys)
+                {
+                    if (perm_key in subject_groups.data)
+                    {
+                        Right *restriction = object_groups.data.get(obj_key, null);
+                        Right *permission  = permissions.data.get(perm_key, null);
+
+                        if (trace_info !is null)
+                            trace_info(format("%d restriction=%s, permission=%s, request=%s", str_num++, *restriction, *permission,
+                                              access_to_pretty_string(request_access)));
+
+                        ubyte restriction_access, permission_access;
+
+                        if (restriction !is null)
+                            restriction_access = restriction.access;
+
+                        if (permission !is null)
+                        {
+                            if (permission.access > 15)
+                                permission_access = (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access;
+                            else
+                                permission_access = permission.access;
+                        }
+
+                        foreach (int idx, access; access_list)
+                        {
+                            if ((request_access & access & restriction_access) != 0)
+                            {
+                                ubyte set_bit = cast(ubyte)(access & permission_access);
+
+                                if (set_bit > 0)
+                                {
+//                                          if (trace !is null)
+//                                              trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
+
+                                    res = cast(ubyte)(res | set_bit);
+
+                                    if ((res & request_access) == request_access)
+                                    {
+                                        if (trace_info !is null)
+                                            trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++,
+                                                              access_to_pretty_string(request_access),
+                                                              access_to_pretty_string(res)));
+                                        else if (trace_group is null)
+                                            return true;
+                                    }
+
+                                    if (trace_info !is null)
+                                        trace_info(format("%d set_bit=%s, res=%s", str_num++, access_to_pretty_string(set_bit),
+                                                          access_to_pretty_string(res)));
+
+                                    if (trace_acl !is null)
+                                    {
+                                        trace_acl(obj_key, perm_key, access_list_predicates[ idx ]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (trace_info !is null)
+                trace_info(format("%d for [%s] found %s", str_num++, acl_key, permissions));
+        }
+
+        if ((res & request_access) == request_access)
+        {
+            if (trace_info !is null)
+                trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
+                                  access_to_pretty_string(res)));
+            else if (trace_group is null)
+                return true;
+        }
+
+        return false;
+    }
+
+
+    Right *[] _get_resource_groups(string uri, ubyte access, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
+    {
+        if (level > 16)
+        {
+            //log.trace("WARN! level down > 16, uri=%s", uri);
+        }
+
+        if (level > 32)
+        {
+            log.trace("ERR! level down > 32, uri=%s", uri);
+            return (Right *[]).init;
+        }
+
+
+        Right *[] res;
+
+        string    ll;
+
+        if (trace_info !is null)
+        {
+            if (level * 2 < lstr.length)
+                ll = lstr[ 0..level * 2 ];
+            else
+                ll = text(level);
+        }
+
+        try
+        {
+            string groups_str;
+            key.mv_size = uri.length;
+            key.mv_data = cast(char *)uri;
+            rc          = mdb_get(txn_r, dbi, &key, &data);
+            if (rc == 0)
+            {
+                groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
+                rights_from_string(groups_str, res);
+            }
+
+            //if (trace_info !is null)
+            //{
+            //    foreach (el; res)
+            //        trace_info(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
+            //}
+
+            long res_lenght = res.length;
+
+            for (int idx = 0; idx < res_lenght; idx++)
+            {
+                Right *group = res[ idx ];
+
+                if (group is null)
+                {
+                    log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);
+                    continue;
+                }
+
+                ubyte orig_access = group.access;
+                ubyte new_access  = group.access & access;
+                group.access = new_access;
+
+                if (group.id in prepared_uris)
+                {
+                    ubyte preur_access = prepared_uris[ group.id ];
+                    if (preur_access == new_access)
+                    {
+                        if (trace_info !is null)
+                            trace_info(format("%d %s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", str_num++, ll, level, group.id,
+                                              access_to_pretty_string(preur_access)));
+
+                        continue;
+                    }
+                }
+
+                prepared_uris[ group.id ] = new_access;
+
+                if (trace_info !is null)
+                    trace_info(format("%d %s (%d)GROUP [%s] %s-> %s", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
+                                      access_to_pretty_string(new_access)));
+
+                string group_key = membership_prefix ~ group.id;
+                if (uri == group_key)
+                {
+                    if (trace_info !is null)
+                        trace_info(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key", str_num++, ll, level, group.id,
+                                          access_to_pretty_string(orig_access)));
+                    continue;
+                }
+
+                Right *[] up_restrictions = _get_resource_groups(group_key, new_access, subject_groups, prepared_uris, level + 1);
+                foreach (restriction; up_restrictions)
+                {
+                    res ~= restriction;
+
+                    if (subject_groups !is null)
+                    {
+                    }
+                }
+            }
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
+        }
+
+        return res;
+    }
+
+    RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
+    {
+        ubyte[ string ] prepared_uris;
+        auto groups = _get_resource_groups(uri, access, subject_groups, prepared_uris, 0);
+
+        if (trace_info !is null)
+        {
+            //foreach (el; groups)
+            //    trace_info(format("%d FOUND GROUP [%s]", str_num++, *el));
+        }
+
+        return new RightSet(groups, log);
+    }
 }
 
 private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
