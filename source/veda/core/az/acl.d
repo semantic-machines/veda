@@ -26,7 +26,7 @@ class Authorization : LmdbStorage
     string                               str;
     int                                  rc;
     string                               filter_value;
-    ubyte                                res;
+    ubyte                                calc_right_res;
 
     int                                  str_num;
     RightSet                             subject_groups;
@@ -70,7 +70,7 @@ class Authorization : LmdbStorage
         trace_info     = _trace_info;
         trace_acl      = _trace_acl;
         request_access = _request_access;
-        res            = 0;
+        calc_right_res = 0;
         str_num        = 0;
 
         string uri = _uri.idup;
@@ -91,7 +91,7 @@ class Authorization : LmdbStorage
         }
 
         if (db_is_opened == false)
-            return res;
+            return calc_right_res;
 
         if (trace_info !is null)
             trace_info(format("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
@@ -104,7 +104,7 @@ class Authorization : LmdbStorage
         //    return res;
 
         if (begin_transaction() == false)
-            return res;
+            return calc_right_res;
 
         try
         {
@@ -123,7 +123,7 @@ class Authorization : LmdbStorage
 
             ubyte[ string ] prepared_uris;
             Right *[] groups;
-            _get_resource_groups(membership_prefix ~ ticket.user_uri, 15, groups, null, prepared_uris, 0);
+            get_resource_groups(false, membership_prefix ~ ticket.user_uri, 15, groups, prepared_uris, 0);
             subject_groups = new RightSet(groups, log);
 
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
@@ -136,7 +136,7 @@ class Authorization : LmdbStorage
 
             ubyte[ string ] prepared_uris1;
             Right *[] groups1;
-            _get_resource_groups(membership_prefix ~ uri, 15, groups1, null, prepared_uris1, 0);
+            get_resource_groups(false, membership_prefix ~ uri, 15, groups1, prepared_uris1, 0);
             object_groups = new RightSet(groups1, log);
 
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
@@ -147,7 +147,7 @@ class Authorization : LmdbStorage
             foreach (object_group; object_groups.data)
             {
                 if (prepare_group(object_group) == true)
-                    return res;
+                    return calc_right_res;
             }
         }catch (Exception ex)
         {
@@ -160,7 +160,7 @@ class Authorization : LmdbStorage
         {
             if (trace_info !is null)
                 trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
-                                  access_to_pretty_string(res)));
+                                  access_to_pretty_string(calc_right_res)));
         }
 
         if (mode == DBMode.R)
@@ -174,7 +174,7 @@ class Authorization : LmdbStorage
             }
         }
 
-        return res;
+        return calc_right_res;
     }
 
     private string get_from_storage(string in_key)
@@ -309,21 +309,21 @@ class Authorization : LmdbStorage
 //                                          if (trace !is null)
 //                                              trace(buff_object_group[ pos ], buff_subject_group[ pos ], access_list_predicates[ idx ]);
 
-                                    res = cast(ubyte)(res | set_bit);
+                                    calc_right_res = cast(ubyte)(calc_right_res | set_bit);
 
-                                    if ((res & request_access) == request_access)
+                                    if ((calc_right_res & request_access) == request_access)
                                     {
                                         if (trace_info !is null)
                                             trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++,
                                                               access_to_pretty_string(request_access),
-                                                              access_to_pretty_string(res)));
+                                                              access_to_pretty_string(calc_right_res)));
                                         else if (trace_group is null)
                                             return true;
                                     }
 
                                     if (trace_info !is null)
                                         trace_info(format("%d set_bit=%s, res=%s", str_num++, access_to_pretty_string(set_bit),
-                                                          access_to_pretty_string(res)));
+                                                          access_to_pretty_string(calc_right_res)));
 
                                     if (trace_acl !is null)
                                     {
@@ -340,11 +340,11 @@ class Authorization : LmdbStorage
                 trace_info(format("%d for [%s] found %s", str_num++, acl_key, permissions));
         }
 
-        if ((res & request_access) == request_access)
+        if ((calc_right_res & request_access) == request_access)
         {
             if (trace_info !is null)
                 trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
-                                  access_to_pretty_string(res)));
+                                  access_to_pretty_string(calc_right_res)));
             else if (trace_group is null)
                 return true;
         }
@@ -353,7 +353,7 @@ class Authorization : LmdbStorage
     }
 
 
-    private bool _get_resource_groups(string uri, ubyte access, ref Right *[] result_set, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
+    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] prepared_uris, int level = 0)
     {
         //if (level > 16)
         //{
@@ -433,14 +433,16 @@ class Authorization : LmdbStorage
                 }
 
                 Right *[] up_restrictions;
-                _get_resource_groups(group_key, new_access, up_restrictions, subject_groups, prepared_uris, level + 1);
+                get_resource_groups(is_check_right, group_key, new_access, up_restrictions, prepared_uris, level + 1);
                 foreach (restriction; up_restrictions)
                 {
-                    result_set ~= restriction;
-
-                    if (subject_groups !is null)
+                    if (is_check_right == true)
                     {
+                        if (prepare_group(restriction) == true)
+                            return true;
                     }
+                    else
+                        result_set ~= restriction;
                 }
             }
         }
