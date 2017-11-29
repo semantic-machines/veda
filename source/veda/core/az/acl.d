@@ -136,7 +136,13 @@ class Authorization : LmdbStorage
 
             ubyte[ string ] prepared_uris1;
             Right *[] groups1;
-            get_resource_groups(false, membership_prefix ~ uri, 15, groups1, prepared_uris1, 0);
+
+
+            if (get_resource_groups(false, membership_prefix ~ uri, 15, groups1, prepared_uris1, 0) == true)
+            {
+                //log.trace ("@ exit 1");
+                return calc_right_res;
+            }
             object_groups = new RightSet(groups1, log);
 
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
@@ -147,7 +153,10 @@ class Authorization : LmdbStorage
             foreach (object_group; object_groups.data)
             {
                 if (prepare_group(object_group) == true)
+                {
+                    //log.trace ("@ exit 2");
                     return calc_right_res;
+                }
             }
         }catch (Exception ex)
         {
@@ -452,7 +461,7 @@ class Authorization : LmdbStorage
             return false;
         }
 
-        return true;
+        return false;
     }
 }
 
