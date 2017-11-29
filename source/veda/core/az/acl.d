@@ -343,23 +343,20 @@ class Authorization : LmdbStorage
     }
 
 
-    private Right *[] _get_resource_groups(string uri, ubyte access, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
+    private bool _get_resource_groups(string uri, ubyte access, ref Right *[] result_set, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
     {
-        if (level > 16)
-        {
-            //log.trace("WARN! level down > 16, uri=%s", uri);
-        }
+        //if (level > 16)
+        //{
+        //    log.trace("WARN! level down > 16, uri=%s", uri);
+        //}
 
         if (level > 32)
         {
             log.trace("ERR! level down > 32, uri=%s", uri);
-            return (Right *[]).init;
+            return false;
         }
 
-
-        Right *[] res;
-
-        string    ll;
+        string ll;
 
         if (trace_info !is null)
         {
@@ -371,14 +368,9 @@ class Authorization : LmdbStorage
 
         try
         {
-            string groups_str;
-
-            str = get_from_storage(uri);
-            if (str != null)
-            {
-                groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                rights_from_string(groups_str, res);
-            }
+            string groups_str = get_from_storage(uri);
+            if (groups_str != null)
+                rights_from_string(groups_str, result_set);
 
             //if (trace_info !is null)
             //{
@@ -386,11 +378,11 @@ class Authorization : LmdbStorage
             //        trace_info(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
             //}
 
-            long res_lenght = res.length;
+            long res_lenght = result_set.length;
 
             for (int idx = 0; idx < res_lenght; idx++)
             {
-                Right *group = res[ idx ];
+                Right *group = result_set[ idx ];
 
                 if (group is null)
                 {
@@ -430,10 +422,11 @@ class Authorization : LmdbStorage
                     continue;
                 }
 
-                Right *[] up_restrictions = _get_resource_groups(group_key, new_access, subject_groups, prepared_uris, level + 1);
+                Right *[] up_restrictions;
+                _get_resource_groups(group_key, new_access, up_restrictions, subject_groups, prepared_uris, level + 1);
                 foreach (restriction; up_restrictions)
                 {
-                    res ~= restriction;
+                    result_set ~= restriction;
 
                     if (subject_groups !is null)
                     {
@@ -444,15 +437,17 @@ class Authorization : LmdbStorage
         catch (Throwable ex)
         {
             log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
+            return false;
         }
 
-        return res;
+        return true;
     }
 
     private RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
     {
         ubyte[ string ] prepared_uris;
-        auto groups = _get_resource_groups(uri, access, subject_groups, prepared_uris, 0);
+        Right *[] groups;
+        _get_resource_groups(uri, access, groups, subject_groups, prepared_uris, 0);
 
         if (trace_info !is null)
         {
