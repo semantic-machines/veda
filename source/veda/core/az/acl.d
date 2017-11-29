@@ -261,6 +261,12 @@ class Authorization : LmdbStorage
 
     private bool prepare_group(Right *object_group)
     {
+        if (((calc_right_res & object_group.access) == object_group.access) && ((object_group.access & request_access) == request_access) &&
+            trace_group is null && trace_info is null && trace_acl is null)
+        {
+            return false;
+        }
+
         if (trace_group !is null)
             trace_group(object_group.id);
 
@@ -362,7 +368,8 @@ class Authorization : LmdbStorage
     }
 
 
-    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] prepared_uris, int level = 0)
+    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] prepared_uris,
+                                     int level = 0)
     {
         //if (level > 16)
         //{
