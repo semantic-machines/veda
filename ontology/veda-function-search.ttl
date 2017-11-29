@@ -1265,6 +1265,11 @@ v-fs:AttributiveSearchTemplate
     .swipe {
       cursor: move;
     }
+    .td-wrapper {
+      max-height: 100px;
+      overflow: hidden;
+      display: inline-block;
+    }
   </style>
   <div id="params" class="clearfix">
     <br>
@@ -1624,8 +1629,11 @@ v-fs:AttributiveSearchTemplate
         setTimeout(function () {
           $("td:not([data-template='v-ui:FileMinTemplate'])", tmpl).each( function () {
             var text = getText(this);
-            if (text && text.length > 200) {
-              this.textContent = text.substring(0, 200) + "...";
+            if (text && text.length > 150) {
+              var $this = $(this);
+              var contents = $this.contents();
+              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+              $this.empty().append(wrapper);
             }
           });
           tmpl.show();
@@ -2107,6 +2115,11 @@ v-fs:AttributiveSearchInlineTemplate
     .swipe {
       cursor: move;
     }
+    .td-wrapper {
+      max-height: 100px;
+      overflow: hidden;
+      display: inline-block;
+    }
   </style>
   <div id="params">
     <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
@@ -2386,8 +2399,11 @@ v-fs:AttributiveSearchInlineTemplate
         setTimeout(function () {
           $("td", tmpl).each( function () {
             var text = getText(this);
-            if (text && text.length > 200) {
-              this.textContent = text.substring(0, 200) + "...";
+            if (text && text.length > 150) {
+              var $this = $(this);
+              var contents = $this.contents();
+              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+              $this.empty().append(wrapper);
             }
           });
           tmpl.show();
