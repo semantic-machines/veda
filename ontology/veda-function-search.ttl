@@ -1634,6 +1634,16 @@ v-fs:AttributiveSearchTemplate
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
+              if (text.length>300) {
+                $("div.td-wrapper",this).tooltip({
+                    title: text,
+                    placement: "left",
+                    template: 
+                      "<div class='tooltip' role='tooltip'>" +
+                        "<div class='tooltip-inner' style='max-width:400px; height:auto; word-wrap:break-word; text-align:left;'></div>" +
+                      "</div>'"
+                  }); 
+              };
             }
           });
           tmpl.show();
