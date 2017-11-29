@@ -103,6 +103,91 @@ class Authorization : LmdbStorage
         //if (db_is_open.get(path, false) == false)
         //    return res;
 
+        if (begin_transaction() == false)
+            return res;
+
+        try
+        {
+            string skey;
+
+            // 0. читаем фильтр прав у object (uri)
+            string filter = filter_prefix ~ uri;
+            filter_value = get_from_storage(filter);
+
+            if (trace_info !is null)
+                trace_info(format("%d user_uri=%s", str_num++, ticket.user_uri));
+
+            // читаем группы subject (ticket.user_uri)
+            if (trace_info !is null)
+                trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
+            subject_groups                         = get_resource_groups(membership_prefix ~ ticket.user_uri, 15, null);
+            subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
+            if (trace_info !is null)
+                trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
+
+            // читаем группы object (uri)
+            if (trace_info !is null)
+                trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
+            object_groups                                        = get_resource_groups(membership_prefix ~ uri, 15, null);
+            object_groups.data[ uri ]                            = new Right(uri, 15, false);
+            object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+            if (trace_info !is null)
+                trace_info(format("%d object_groups=%s", str_num++, object_groups));
+
+            foreach (object_group; object_groups.data)
+            {
+                if (prepare_group(object_group) == true)
+                    return res;
+            }
+        }catch (Exception ex)
+        {
+            writeln("EX!,", ex.msg);
+        }
+
+        abort_transaction();
+
+        scope (exit)
+        {
+            if (trace_info !is null)
+                trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
+                                  access_to_pretty_string(res)));
+        }
+
+        if (mode == DBMode.R)
+        {
+            records_in_memory[ uri ] = 1;
+
+            if (records_in_memory.length > max_count_record_in_memory)
+            {
+                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
+                reopen_db();
+            }
+        }
+
+        return res;
+    }
+
+    private string get_from_storage(string in_key)
+    {
+        string sres;
+
+        key.mv_size = in_key.length;
+        key.mv_data = cast(char *)in_key;
+        rc          = mdb_get(txn_r, dbi, &key, &data);
+        if (rc == 0)
+            sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+
+        return sres;
+    }
+
+    private void abort_transaction()
+    {
+        if (txn_r != null)
+            mdb_txn_abort(txn_r);
+    }
+
+    private bool begin_transaction()
+    {
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
         {
@@ -145,82 +230,17 @@ class Authorization : LmdbStorage
         if (rc != 0)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) ERR! %s", path, fromStringz(mdb_strerror(rc)));
-            return res;
+            return false;
         }
 
-        try
-        {
-            rc = mdb_dbi_open(txn_r, null, MDB_CREATE, &dbi);
-            if (rc != 0)
-                throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
+        rc = mdb_dbi_open(txn_r, null, MDB_CREATE, &dbi);
+        if (rc != 0)
+            throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
 
-            //RightSet[ string ] permission_2_group;
-
-            string skey;
-
-
-            // 0. читаем фильтр прав у object (uri)
-            string filter = filter_prefix ~ uri;
-            key.mv_size = filter.length;
-            key.mv_data = cast(char *)filter;
-            rc          = mdb_get(txn_r, dbi, &key, &data);
-            if (rc == 0)
-                filter_value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-
-            if (trace_info !is null)
-                trace_info(format("%d user_uri=%s", str_num++, ticket.user_uri));
-
-            // читаем группы subject (ticket.user_uri)
-            if (trace_info !is null)
-                trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
-            subject_groups                         = get_resource_groups(membership_prefix ~ ticket.user_uri, 15, null);
-            subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
-            if (trace_info !is null)
-                trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
-
-            // читаем группы object (uri)
-            if (trace_info !is null)
-                trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
-            object_groups                                        = get_resource_groups(membership_prefix ~ uri, 15, null);
-            object_groups.data[ uri ]                            = new Right(uri, 15, false);
-            object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
-            if (trace_info !is null)
-                trace_info(format("%d object_groups=%s", str_num++, object_groups));
-
-            foreach (object_group; object_groups.data)
-            {
-                if (prepare_group(object_group) == true)
-                    return res;
-            }
-        }catch (Exception ex)
-        {
-            writeln("EX!,", ex.msg);
-        }
-
-        mdb_txn_abort(txn_r);
-
-        scope (exit)
-        {
-            if (trace_info !is null)
-                trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
-                                  access_to_pretty_string(res)));
-        }
-
-        if (mode == DBMode.R)
-        {
-            records_in_memory[ uri ] = 1;
-
-            if (records_in_memory.length > max_count_record_in_memory)
-            {
-                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                reopen_db();
-            }
-        }
-
-        return res;
+        return true;
     }
 
-    bool prepare_group(Right *object_group)
+    private bool prepare_group(Right *object_group)
     {
         if (trace_group !is null)
             trace_group(object_group.id);
@@ -234,13 +254,9 @@ class Authorization : LmdbStorage
         if (trace_info !is null)
             trace_info(format("%d look acl_key: [%s]", str_num++, acl_key));
 
-        key.mv_size = acl_key.length;
-        key.mv_data = cast(char *)acl_key;
-
-        rc = mdb_get(txn_r, dbi, &key, &data);
-        if (rc == 0)
+        str = get_from_storage(acl_key);
+        if (str != null)
         {
-            str = cast(string)(data.mv_data[ 0..data.mv_size ]);
             RightSet permissions = new RightSet(log);
             rights_from_string(str, permissions);
 
@@ -327,7 +343,7 @@ class Authorization : LmdbStorage
     }
 
 
-    Right *[] _get_resource_groups(string uri, ubyte access, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
+    private Right *[] _get_resource_groups(string uri, ubyte access, RightSet subject_groups, ref ubyte[ string ] prepared_uris, int level = 0)
     {
         if (level > 16)
         {
@@ -356,10 +372,9 @@ class Authorization : LmdbStorage
         try
         {
             string groups_str;
-            key.mv_size = uri.length;
-            key.mv_data = cast(char *)uri;
-            rc          = mdb_get(txn_r, dbi, &key, &data);
-            if (rc == 0)
+
+            str = get_from_storage(uri);
+            if (str != null)
             {
                 groups_str = cast(string)(data.mv_data[ 0..data.mv_size ]);
                 rights_from_string(groups_str, res);
@@ -434,7 +449,7 @@ class Authorization : LmdbStorage
         return res;
     }
 
-    RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
+    private RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
     {
         ubyte[ string ] prepared_uris;
         auto groups = _get_resource_groups(uri, access, subject_groups, prepared_uris, 0);
