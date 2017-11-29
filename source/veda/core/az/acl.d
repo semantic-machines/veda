@@ -120,7 +120,12 @@ class Authorization : LmdbStorage
             // читаем группы subject (ticket.user_uri)
             if (trace_info !is null)
                 trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
-            subject_groups                         = get_resource_groups(membership_prefix ~ ticket.user_uri, 15, null);
+
+            ubyte[ string ] prepared_uris;
+            Right *[] groups;
+            _get_resource_groups(membership_prefix ~ ticket.user_uri, 15, groups, null, prepared_uris, 0);
+            subject_groups = new RightSet(groups, log);
+
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
             if (trace_info !is null)
                 trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
@@ -128,7 +133,12 @@ class Authorization : LmdbStorage
             // читаем группы object (uri)
             if (trace_info !is null)
                 trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
-            object_groups                                        = get_resource_groups(membership_prefix ~ uri, 15, null);
+
+            ubyte[ string ] prepared_uris1;
+            Right *[] groups1;
+            _get_resource_groups(membership_prefix ~ uri, 15, groups1, null, prepared_uris1, 0);
+            object_groups = new RightSet(groups1, log);
+
             object_groups.data[ uri ]                            = new Right(uri, 15, false);
             object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
             if (trace_info !is null)
@@ -441,21 +451,6 @@ class Authorization : LmdbStorage
         }
 
         return true;
-    }
-
-    private RightSet get_resource_groups(string uri, ubyte access, RightSet subject_groups)
-    {
-        ubyte[ string ] prepared_uris;
-        Right *[] groups;
-        _get_resource_groups(uri, access, groups, subject_groups, prepared_uris, 0);
-
-        if (trace_info !is null)
-        {
-            //foreach (el; groups)
-            //    trace_info(format("%d FOUND GROUP [%s]", str_num++, *el));
-        }
-
-        return new RightSet(groups, log);
     }
 }
 
