@@ -266,7 +266,7 @@ class Authorization : LmdbStorage
 
     private bool prepare_group(Right *object_group)
     {
-        if (((calc_right_res & object_group.access) == object_group.access) && ((object_group.access & request_access) == request_access) &&
+        if (((calc_right_res & object_group.access) == object_group.access) && ((object_group.access & request_access) == object_group.access) &&
             trace_group is null && trace_info is null && trace_acl is null)
         {
             return false;
