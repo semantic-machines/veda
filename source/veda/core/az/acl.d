@@ -75,6 +75,10 @@ class Authorization : LmdbStorage
 
         string uri = _uri.idup;
 
+        //log.trace("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
+        //          access_to_pretty_string(request_access));
+
+
         if (db_is_opened == false)
             open_db();
 
@@ -121,9 +125,9 @@ class Authorization : LmdbStorage
             if (trace_info !is null)
                 trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
 
-            ubyte[ string ] prepared_uris;
+            ubyte[ string ] walked_groups;
             Right *[] groups;
-            get_resource_groups(false, membership_prefix ~ ticket.user_uri, 15, groups, prepared_uris, 0);
+            get_resource_groups(false, membership_prefix ~ ticket.user_uri, 15, groups, walked_groups, 0);
             subject_groups = new RightSet(groups, log);
 
             subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
@@ -134,13 +138,13 @@ class Authorization : LmdbStorage
             if (trace_info !is null)
                 trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
 
-            ubyte[ string ] prepared_uris1;
+            ubyte[ string ] walked_groups1;
             Right *[] groups1;
 
 
-            if (get_resource_groups(false, membership_prefix ~ uri, 15, groups1, prepared_uris1, 0) == true)
+            if (get_resource_groups(false, membership_prefix ~ uri, 15, groups1, walked_groups1, 0) == true)
             {
-                //log.trace ("@ exit 1");
+                //log.trace("@ EXIT 1");
                 return calc_right_res;
             }
             object_groups = new RightSet(groups1, log);
@@ -152,9 +156,10 @@ class Authorization : LmdbStorage
 
             foreach (object_group; object_groups.data)
             {
-                if (prepare_group(object_group) == true)
+                //log.trace("@ look, %s", object_group.id);
+                if (prepare_group(object_group) == true && trace_info is null && trace_group is null && trace_acl is null)
                 {
-                    //log.trace ("@ exit 2");
+                    //log.trace("@ EXIT 2");
                     return calc_right_res;
                 }
             }
@@ -267,6 +272,8 @@ class Authorization : LmdbStorage
             return false;
         }
 
+        //log.trace("@ prepare_group %s %s", *object_group, access_to_pretty_string(calc_right_res));
+
         if (trace_group !is null)
             trace_group(object_group.id);
 
@@ -293,7 +300,7 @@ class Authorization : LmdbStorage
                 {
                     if (perm_key in subject_groups.data)
                     {
-                        Right *restriction = object_groups.data.get(obj_key, null);
+                        Right *restriction = object_group; //object_groups.data.get(obj_key, null);
                         Right *permission  = permissions.data.get(perm_key, null);
 
                         if (trace_info !is null)
@@ -360,7 +367,8 @@ class Authorization : LmdbStorage
             if (trace_info !is null)
                 trace_info(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
                                   access_to_pretty_string(calc_right_res)));
-            else if (trace_group is null)
+
+            if (trace_info is null && trace_group is null && trace_acl is null)
                 return true;
         }
 
@@ -368,8 +376,7 @@ class Authorization : LmdbStorage
     }
 
 
-    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] prepared_uris,
-                                     int level = 0)
+    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] walked_groups, int level = 0)
     {
         //if (level > 16)
         //{
@@ -420,9 +427,9 @@ class Authorization : LmdbStorage
                 ubyte new_access  = group.access & access;
                 group.access = new_access;
 
-                if (group.id in prepared_uris)
+                if (group.id in walked_groups)
                 {
-                    ubyte preur_access = prepared_uris[ group.id ];
+                    ubyte preur_access = walked_groups[ group.id ];
                     if (preur_access == new_access)
                     {
                         if (trace_info !is null)
@@ -433,7 +440,7 @@ class Authorization : LmdbStorage
                     }
                 }
 
-                prepared_uris[ group.id ] = new_access;
+                walked_groups[ group.id ] = new_access;
 
                 if (trace_info !is null)
                     trace_info(format("%d %s (%d)GROUP [%s] %s-> %s", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
@@ -449,7 +456,7 @@ class Authorization : LmdbStorage
                 }
 
                 Right *[] up_restrictions;
-                get_resource_groups(is_check_right, group_key, new_access, up_restrictions, prepared_uris, level + 1);
+                get_resource_groups(is_check_right, group_key, new_access, up_restrictions, walked_groups, level + 1);
                 foreach (restriction; up_restrictions)
                 {
                     if (is_check_right == true)
