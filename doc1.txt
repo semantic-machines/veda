@@ -1,0 +1,162 @@
+{
+  "@": "d:zcrdeqn33gr86xkrxukvme72",
+  "mnd-s:auditInternalCoordinationDate": [
+    {
+      "type": "Datetime",
+      "data": "2017-10-11T00:00:00Z"
+    }
+  ],
+  "mnd-s:auditInternalPlanned": [
+    {
+      "type": "Boolean",
+      "data": true
+    }
+  ],
+  "mnd-s:auditInternalRiskQuality": [
+    {
+      "type": "Decimal",
+      "data": "2.0"
+    }
+  ],
+  "mnd-s:auditInternalRiskSize": [
+    {
+      "type": "Decimal",
+      "data": "5.0"
+    }
+  ],
+  "mnd-s:hasAuditInternalObject": [
+    {
+      "type": "Uri",
+      "data": "d:46cb09a8c9bf4c5d89dfdcc79d10122c"
+    }
+  ],
+  "mnd-s:hasDecreeKind": [
+    {
+      "type": "Uri",
+      "data": "d:e5753b58168843e28ad73855c07b8cff"
+    }
+  ],
+  "rdf:type": [
+    {
+      "type": "Uri",
+      "data": "mnd-s:AuditInternal"
+    }
+  ],
+  "rdfs:label": [
+    {
+      "type": "String",
+      "data": "ASY17010 - Forest road construction",
+      "lang": "NONE"
+    }
+  ],
+  "v-s:auditor": [
+    {
+      "type": "Uri",
+      "data": "d:mondi_appointment_00063761_71013117"
+    }
+  ],
+  "v-s:created": [
+    {
+      "type": "Datetime",
+      "data": "2017-11-13T06:24:22Z"
+    }
+  ],
+  "v-s:creator": [
+    {
+      "type": "Uri",
+      "data": "d:mondi_appointment_00063761_71013117"
+    }
+  ],
+  "v-s:dateFromFact": [
+    {
+      "type": "Datetime",
+      "data": "2017-08-07T00:00:00Z"
+    }
+  ],
+  "v-s:dateToFact": [
+    {
+      "type": "Datetime",
+      "data": "2017-08-25T00:00:00Z"
+    }
+  ],
+  "v-s:edited": [
+    {
+      "type": "Datetime",
+      "data": "2017-11-30T13:29:58Z"
+    }
+  ],
+  "v-s:hasAction": [
+    {
+      "type": "Uri",
+      "data": "d:6473df9bdfcf480cb0472fbe3bbfa7cd"
+    },
+    {
+      "type": "Uri",
+      "data": "d:cd6b81a3abcd430a8616ee877baca51d"
+    },
+    {
+      "type": "Uri",
+      "data": "d:366885befc494702bd92c097b656f64c"
+    },
+    {
+      "type": "Uri",
+      "data": "d:46865b74082843769a76b671687c35ae"
+    },
+    {
+      "type": "Uri",
+      "data": "d:3d1d5df7c4dc475bac60118820a6ab5f"
+    },
+    {
+      "type": "Uri",
+      "data": "d:0701876a14074029b633fb7534b1637c"
+    },
+    {
+      "type": "Uri",
+      "data": "d:78803066a1bc4ef6901c00e7c6e77864"
+    }
+  ],
+  "v-s:hasStatus": [
+    {
+      "type": "Uri",
+      "data": "v-s:StatusImplemented"
+    }
+  ],
+  "v-s:lastEditor": [
+    {
+      "type": "Uri",
+      "data": "d:mondi_appointment_00063761_71013117"
+    }
+  ],
+  "v-s:published": [
+    {
+      "type": "Datetime",
+      "data": "2017-11-03T00:00:00Z"
+    }
+  ],
+  "v-s:registrationNumber": [
+    {
+      "lang": "NONE",
+      "type": "String",
+      "data": "ASY17010"
+    }
+  ],
+  "v-s:theme": [
+    {
+      "lang": "NONE",
+      "type": "String",
+      "data": "Forest road construction"
+    }
+  ],
+  "v-s:updateCounter": [
+    {
+      "type": "Integer",
+      "data": 23
+    }
+  ],
+  "v-wf:hasStatusWorkflow": [
+    {
+      "type": "Uri",
+      "data": "v-wf:ToBeSent"
+    }
+  ]
+}
