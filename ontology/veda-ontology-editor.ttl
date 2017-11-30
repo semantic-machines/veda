@@ -1327,16 +1327,6 @@ v-ui:PermissionStatementTemplate
       </div>
     </div>
   </div>
-  <hr class="margin-md">
-  <div class="row">
-    <div class="col-md-4 col-xs-5 text-right name">
-      <strong about="v-s:hasStatus" property="rdfs:label" class="text-muted"></strong>
-    </div>
-    <div class="col-md-8 col-xs-7 value">
-      <div rel="v-s:hasStatus" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-      <veda-control rel="v-s:hasStatus" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-    </div>
-  </div>
   <br>
   <br>
   <div class="actions clearfix">
