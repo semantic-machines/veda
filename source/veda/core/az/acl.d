@@ -38,8 +38,7 @@ class Authorization : LmdbStorage
                   string right)
           trace_acl;
     ubyte request_access;
-
-
+    ubyte[ string ] checked_groups;
 
     this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
     {
@@ -66,6 +65,7 @@ class Authorization : LmdbStorage
                     void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
                     )
     {
+        checked_groups = (ubyte[ string ]).init;
         trace_group    = _trace_group;
         trace_info     = _trace_info;
         trace_acl      = _trace_acl;
@@ -141,26 +141,52 @@ class Authorization : LmdbStorage
             ubyte[ string ] walked_groups1;
             Right *[] groups1;
 
-
-            if (get_resource_groups(false, membership_prefix ~ uri, 15, groups1, walked_groups1, 0) == true)
+            if (prepare_group(veda_schema__AllResourcesGroup, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
             {
-                //log.trace("@ EXIT 1");
+                if (trace_info !is null)
+                    trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+
                 return calc_right_res;
             }
-            object_groups = new RightSet(groups1, log);
 
-            object_groups.data[ uri ]                            = new Right(uri, 15, false);
-            object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
-            if (trace_info !is null)
-                trace_info(format("%d object_groups=%s", str_num++, object_groups));
-
-            foreach (object_group; object_groups.data)
+            if (prepare_group(uri, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
             {
-                //log.trace("@ look, %s", object_group.id);
-                if (prepare_group(object_group) == true && trace_info is null && trace_group is null && trace_acl is null)
+                if (trace_info !is null)
+                    trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+
+                return calc_right_res;
+            }
+
+            if (get_resource_groups(true, membership_prefix ~ uri, 15, groups1, walked_groups1,
+                                    0) == true && trace_info is null && trace_group is null && trace_acl is null)
+            {
+                if (trace_info !is null)
+                    trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+
+                return calc_right_res;
+            }
+
+            if (trace_info is null && trace_group is null && trace_acl is null)
+            {
+                //object_groups = new RightSet(log);
+            }
+            else
+            {
+                object_groups = new RightSet(groups1, log);
+
+                //object_groups.data[ uri ]                            = new Right(uri, 15, false);
+                //object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+                if (trace_info !is null)
+                    trace_info(format("%d object_groups=%s", str_num++, object_groups));
+
+                foreach (object_group; object_groups.data)
                 {
-                    //log.trace("@ EXIT 2");
-                    return calc_right_res;
+                    if (prepare_group(object_group.id, object_group.access) == true && trace_info is null && trace_group is null && trace_acl is null)
+                    {
+                        if (trace_info !is null)
+                            trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+                        return calc_right_res;
+                    }
                 }
             }
         }catch (Exception ex)
@@ -264,24 +290,38 @@ class Authorization : LmdbStorage
         return true;
     }
 
-    private bool prepare_group(Right *object_group)
+    private bool prepare_group(string object_group_id, ubyte object_group_access)
     {
-        if (((calc_right_res & object_group.access) == object_group.access) && ((object_group.access & request_access) == object_group.access) &&
-            trace_group is null && trace_info is null && trace_acl is null)
+        if (trace_group is null && trace_info is null && trace_acl is null)
         {
-            return false;
+            ubyte left_to_check = (calc_right_res ^ request_access) & request_access;
+
+            if ((left_to_check & object_group_access) == 0)
+                return false;
+
+            //if (((calc_right_res & object_group_access) == object_group_access) && ((object_group_access & request_access) == object_group_access))
+            //{
+            //    return false;
+            //}
+
+            ubyte cgrr = checked_groups.get(object_group_id, 0);
+
+            if (cgrr == object_group_access)
+                return false;
+
+            checked_groups[ object_group_id ] = object_group_access;
         }
 
-        //log.trace("@ prepare_group %s %s", *object_group, access_to_pretty_string(calc_right_res));
+        //log.trace("@ prepare_group %s %s %s", object_group_id, access_to_pretty_string(object_group_access), access_to_pretty_string(calc_right_res));
 
         if (trace_group !is null)
-            trace_group(object_group.id);
+            trace_group(object_group_id);
 
         string acl_key;
         if (filter_value !is null)
-            acl_key = permission_prefix ~ filter_value ~ object_group.id;
+            acl_key = permission_prefix ~ filter_value ~ object_group_id;
         else
-            acl_key = permission_prefix ~ object_group.id;
+            acl_key = permission_prefix ~ object_group_id;
 
         if (trace_info !is null)
             trace_info(format("%d look acl_key: [%s]", str_num++, acl_key));
@@ -292,7 +332,7 @@ class Authorization : LmdbStorage
             RightSet permissions = new RightSet(log);
             rights_from_string(str, permissions);
 
-            string obj_key = object_group.id;
+            string obj_key = object_group_id;
 
             if (permissions !is null)
             {
@@ -300,17 +340,17 @@ class Authorization : LmdbStorage
                 {
                     if (perm_key in subject_groups.data)
                     {
-                        Right *restriction = object_group; //object_groups.data.get(obj_key, null);
-                        Right *permission  = permissions.data.get(perm_key, null);
+                        //Right *restriction = object_group;
+                        Right *permission = permissions.data.get(perm_key, null);
 
                         if (trace_info !is null)
-                            trace_info(format("%d restriction=%s, permission=%s, request=%s", str_num++, *restriction, *permission,
+                            trace_info(format("%d restriction=%s %s, permission=%s, request=%s", str_num++, object_group_id, access_to_pretty_string(object_group_access),
+                                              *permission,
                                               access_to_pretty_string(request_access)));
 
                         ubyte restriction_access, permission_access;
 
-                        if (restriction !is null)
-                            restriction_access = restriction.access;
+                        restriction_access = object_group_access;
 
                         if (permission !is null)
                         {
@@ -455,17 +495,38 @@ class Authorization : LmdbStorage
                     continue;
                 }
 
+                if (is_check_right == true && trace_info is null && trace_group is null && trace_acl is null)
+                {
+                    if (prepare_group(group.id, group.access) == true)
+                        return true;
+                }
+
+                //if (is_check_right == true && level == 0 && trace_info is null && trace_group is null && trace_acl is null)
+                //{
+                //    foreach (gr; result_set)
+                //    {
+                //        if (prepare_group(gr.id, gr.access) == true)
+                //            return true;
+                //    }
+                //}
+
                 Right *[] up_restrictions;
                 get_resource_groups(is_check_right, group_key, new_access, up_restrictions, walked_groups, level + 1);
-                foreach (restriction; up_restrictions)
+
+                RightSet trs = new RightSet(up_restrictions, log);
+
+                //if (is_check_right == true && level == 0 && trace_info is null && trace_group is null && trace_acl is null)
+                //{
+                //    foreach (gr; trs.data)
+                //    {
+                //        if (prepare_group(gr.id, gr.access) == true)
+                //            return true;
+                //    }
+                //}
+
+                foreach (restriction; trs.data)
                 {
-                    if (is_check_right == true)
-                    {
-                        if (prepare_group(restriction) == true)
-                            return true;
-                    }
-                    else
-                        result_set ~= restriction;
+                    result_set ~= restriction;
                 }
             }
         }
