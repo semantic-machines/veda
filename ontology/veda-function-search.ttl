@@ -1652,17 +1652,15 @@ v-fs:AttributiveSearchTemplate
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
-              if (text.length > 100) {
-                wrapper.popover({
-                  content: wrapper.html(),
-                  html: true,
-                  placement: "top"
-                }).tooltip({
-                  title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
-                  placement: "bottom",
-                  delay: { show: 750, hide: 0 }
-                });
-              };
+              wrapper.popover({
+                content: wrapper.html(),
+                html: true,
+                placement: "top"
+              }).tooltip({
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                placement: "bottom",
+                delay: { show: 750, hide: 0 }
+              });
             }
           });
           tmpl.show();
@@ -2445,17 +2443,15 @@ v-fs:AttributiveSearchInlineTemplate
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
-              if (text.length > 100) {
-                wrapper.popover({
-                  content: wrapper.html(),
-                  html: true,
-                  placement: "top"
-                }).tooltip({
-                  title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
-                  placement: "bottom",
-                  delay: { show: 750, hide: 0 }
-                });
-              };
+              wrapper.popover({
+                content: wrapper.html(),
+                html: true,
+                placement: "top"
+              }).tooltip({
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                placement: "bottom",
+                delay: { show: 750, hide: 0 }
+              });
             }
           });
           tmpl.show();
