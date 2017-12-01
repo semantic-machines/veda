@@ -1178,6 +1178,12 @@ v-fs:CtrlEnterBundle
   rdfs:label "Press 'Ctrl + Enter' to begin search"@en ;
 .
 
+v-fs:ClickToViewContent
+  rdf:type v-s:Bundle ;
+  rdfs:label "Кликните, чтобы увидеть всё содержимое"@ru ;
+  rdfs:label "Click to view all contents"@en ;
+.
+
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -1639,22 +1645,23 @@ v-fs:AttributiveSearchTemplate
           tmpl.addClass("warning");
         }
         setTimeout(function () {
-          $("td:not([data-template='v-ui:FileMinTemplate'])", tmpl).each( function () {
+          $("td", tmpl).each( function () {
             var text = getText(this);
             if (text && text.length > 100) {
               var $this = $(this);
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
-              if (text.length>100) {
-                $("div.td-wrapper",this).tooltip({
-                    title: text,
-                    placement: "auto",
-                    template:
-                      "<div class='tooltip' role='tooltip'>" +
-                        "<div class='tooltip-inner' style='max-width:400px; height:auto; word-wrap:break-word; text-align:left;'></div>" +
-                      "</div>'"
-                  });
+              if (text.length > 100) {
+                wrapper.popover({
+                  content: wrapper.html(),
+                  html: true,
+                  placement: "top"
+                }).tooltip({
+                  title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                  placement: "bottom",
+                  delay: { show: 750, hide: 0 }
+                });
               };
             }
           });
@@ -2431,22 +2438,23 @@ v-fs:AttributiveSearchInlineTemplate
           tmpl.addClass("warning");
         }
         setTimeout(function () {
-          $("td:not([data-template='v-ui:FileMinTemplate'])", tmpl).each( function () {
+          $("td", tmpl).each( function () {
             var text = getText(this);
             if (text && text.length > 100) {
               var $this = $(this);
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
-              if (text.length>100) {
-                $("div.td-wrapper",this).tooltip({
-                    title: text,
-                    placement: "auto",
-                    template:
-                      "<div class='tooltip' role='tooltip'>" +
-                        "<div class='tooltip-inner' style='max-width:400px; height:auto; word-wrap:break-word; text-align:left;'></div>" +
-                      "</div>'"
-                  });
+              if (text.length > 100) {
+                wrapper.popover({
+                  content: wrapper.html(),
+                  html: true,
+                  placement: "top"
+                }).tooltip({
+                  title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                  placement: "bottom",
+                  delay: { show: 750, hide: 0 }
+                });
               };
             }
           });
