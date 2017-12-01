@@ -852,25 +852,6 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     return ticket;
 }
 
-string[] ti2binobj(immutable (TransactionItem)[] items)
-{
-    string[] ipack;
-
-    foreach (ti; items)
-    {
-        Individual imm;
-        imm.uri = text(ti.op_id);
-
-        if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
-            imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
-        imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
-
-        ipack ~= imm.serialize_to_msgpack();
-    }
-
-    return ipack;
-}
-
 public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
@@ -902,18 +883,14 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
                 if (is_packet)
                 {
-                    //RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, items[ 0 ].user_uri, ti2binobj(items));
-
-                    //foreach (idx, rr; lres.op_rc)
-                    //    rcs ~= OpResult(lres.op_rc[ idx ], items[ idx ].op_id);
+                    rcs = get_storage_connector().put(OptAuthorize.NO, items);
                 }
 
                 else
                 {
                     foreach (ti; items)
                     {
-                        //RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ti.user_uri, ti2binobj([ ti ]));
-                        //rcs ~= OpResult(lres.op_rc[ 0 ], items[ 0 ].op_id);
+                        rcs ~= get_storage_connector().put(OptAuthorize.NO, ti);
                     }
                 }
             }
@@ -1098,15 +1075,13 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                     log.trace(
                               "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
 
-                    //StorageConnector storage_connector = get_storage_connector();
+                    TarantoolStorage tt_storage = get_storage_connector();
+                    res = tt_storage.put(OptAuthorize.NO, ti);
 
-                    //RequestResponse  lres = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
-
-                    //if (lres.op_rc[ 0 ] == ResultCode.OK)
-                    //{
-                    //    lres       = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti1 ]));
-                    //    res.result = lres.op_rc[ 0 ];
-                    //}
+                    if (res.result == ResultCode.OK)
+                    {
+                        res = tt_storage.put(OptAuthorize.NO, ti1);
+                    }
                 }
                 else
                 {
@@ -1158,7 +1133,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                     log.trace(
                               "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
 
-                    //RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
+                    res = get_storage_connector().put(OptAuthorize.NO, ti);
                 }
                 else
                 {
