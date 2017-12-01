@@ -2291,6 +2291,10 @@ v-ui:ttl
   v-ui:template """
 <div class="container sheet">
   <pre style="border:none;background-color:#fff;"></pre>
+  <div class="pull-left">
+    <button type="button" class="action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-danger view -edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  </div>
   <div class="pull-right">
     <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
     <a id="generic" class="btn btn-default" href="#/@//v-ui:generic">generic</a>
@@ -2327,6 +2331,8 @@ v-ui:json
     <button id="edit" class="btn btn-primary" about="v-s:Edit" property="rdfs:label"></button>
     <button id="save" class="hidden btn btn-success" about="v-s:Save" property="rdfs:label"></button>
     <button id="cancel" class="hidden btn btn-default" about="v-s:Cancel" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-danger view -edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
   </div>
 </div>
 <script>
@@ -2545,8 +2551,8 @@ v-ui:generic
     <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
     <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
     <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-primary view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-primary view -edit -search" id="journal" about="v-s:Journal" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:Journal" property="rdfs:label"></button>
     <div class="btn-group dropup">
       <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span about="v-s:Send" property="rdfs:label"></span>
@@ -2554,6 +2560,7 @@ v-ui:generic
       </button>
       <ul class="dropdown-menu" id="standard-tasks"></ul>
     </div>
+    <button type="button" class="action btn btn-danger view -edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
   </div>
   <div class="pull-right">
     <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
