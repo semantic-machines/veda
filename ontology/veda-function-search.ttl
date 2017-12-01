@@ -1646,7 +1646,7 @@ v-fs:AttributiveSearchTemplate
         }
         setTimeout(function () {
           $("td", tmpl).each( function () {
-            var text = getText(this);
+            var text = this.innerText || this.textContent;
             if (text && text.length > 100) {
               var $this = $(this);
               var contents = $this.contents();
@@ -1667,15 +1667,6 @@ v-fs:AttributiveSearchTemplate
         }, 300);
       });
     });
-
-  }
-
-  function getText(node) {
-    if (node.childNodes && node.childNodes.length) {
-      return [].map.call(node.childNodes, getText).join(" ");
-    } else {
-      return node.nodeValue;
-    }
   }
 
   // Spinner
@@ -2437,7 +2428,7 @@ v-fs:AttributiveSearchInlineTemplate
         }
         setTimeout(function () {
           $("td", tmpl).each( function () {
-            var text = getText(this);
+            var text = this.innerText || this.textContent;
             if (text && text.length > 100) {
               var $this = $(this);
               var contents = $this.contents();
@@ -2458,15 +2449,6 @@ v-fs:AttributiveSearchInlineTemplate
         }, 300);
       });
     });
-
-  }
-
-  function getText(node) {
-    if (node.childNodes && node.childNodes.length) {
-      return [].map.call(node.childNodes, getText).join(" ");
-    } else {
-      return node.nodeValue;
-    }
   }
 
   // Spinner
