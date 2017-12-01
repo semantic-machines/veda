@@ -6,12 +6,13 @@ module veda.core.storage.tarantool_storage;
 import std.conv, std.stdio;
 import veda.core.common.context, veda.common.logger, veda.common.type;
 import veda.connector.storage_connector, veda.connector.requestresponse;
+import veda.core.common.transaction, veda.onto.individual, veda.onto.resource;
 
 public class TarantoolStorage
 {
-    string                  host;
-    ushort                  port;
-    Logger                  log;
+    string                    host;
+    ushort                    port;
+    Logger                    log;
     public TTStorageConnector connector;
 
     this(string _host, ushort _port, Logger _log)
@@ -24,14 +25,42 @@ public class TarantoolStorage
         log.trace("create TarantoolStorage connector");
     }
 
-    public ResultCode put(OptAuthorize op_auth, string user_uri, string in_key, string in_value, long op_id)
+    public OpResult put(OptAuthorize op_auth, TransactionItem ti)
     {
-        RequestResponse rr = connector.put(op_auth, user_uri, [ in_value ]);
+        RequestResponse rr = connector.put(op_auth, ti.user_uri, ti2binobj([ ti ]));
 
-        if (rr !is null)
-            return rr.common_rc;
+        return OpResult(rr.common_rc, ti.op_id);
+    }
 
-        return ResultCode.Fail_Store;
+    public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti)
+    {
+        RequestResponse rr = connector.put(op_auth, ti.user_uri, ti2binobj([ ti ]));
+
+        return OpResult(rr.common_rc, ti.op_id);
+    }
+
+    public OpResult[] put(OptAuthorize op_auth, TransactionItem[] items)
+    {
+        OpResult[]      rcs;
+
+        RequestResponse lres = connector.put(op_auth, items[ 0 ].user_uri, ti2binobj(items));
+
+        foreach (idx, rr; lres.op_rc)
+            rcs ~= OpResult(lres.op_rc[ idx ], items[ idx ].op_id);
+
+        return rcs;
+    }
+
+    public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items)
+    {
+        OpResult[]      rcs;
+
+        RequestResponse lres = connector.put(op_auth, items[ 0 ].user_uri, ti2binobj(items));
+
+        foreach (idx, rr; lres.op_rc)
+            rcs ~= OpResult(lres.op_rc[ idx ], items[ idx ].op_id);
+
+        return rcs;
     }
 
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
@@ -144,3 +173,40 @@ string access_to_pretty_string(const ubyte src)
     return res;
 }
 
+string[] ti2binobj(immutable (TransactionItem)[] items)
+{
+    string[] ipack;
+
+    foreach (ti; items)
+    {
+        Individual imm;
+        imm.uri = text(ti.op_id);
+
+        if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+            imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
+        imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
+
+        ipack ~= imm.serialize_to_msgpack();
+    }
+
+    return ipack;
+}
+
+string[] ti2binobj(TransactionItem[] items)
+{
+    string[] ipack;
+
+    foreach (ti; items)
+    {
+        Individual imm;
+        imm.uri = text(ti.op_id);
+
+        if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
+            imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
+        imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
+
+        ipack ~= imm.serialize_to_msgpack();
+    }
+
+    return ipack;
+}
