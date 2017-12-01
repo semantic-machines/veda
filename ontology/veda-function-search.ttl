@@ -1269,6 +1269,18 @@ v-fs:AttributiveSearchTemplate
       max-height: 100px;
       overflow: hidden;
       display: inline-block;
+      position: relative;
+    }
+    .td-wrapper::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 2;
+      border-top: 0 solid transparent;
+      border-right: 0 solid transparent;
+      border-bottom: 7px solid gray;
+      border-left: 7px solid transparent;
     }
   </style>
   <div id="params" class="clearfix">
@@ -1629,20 +1641,20 @@ v-fs:AttributiveSearchTemplate
         setTimeout(function () {
           $("td:not([data-template='v-ui:FileMinTemplate'])", tmpl).each( function () {
             var text = getText(this);
-            if (text && text.length > 150) {
+            if (text && text.length > 100) {
               var $this = $(this);
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
-              if (text.length>300) {
+              if (text.length>100) {
                 $("div.td-wrapper",this).tooltip({
                     title: text,
-                    placement: "left",
-                    template: 
+                    placement: "auto",
+                    template:
                       "<div class='tooltip' role='tooltip'>" +
                         "<div class='tooltip-inner' style='max-width:400px; height:auto; word-wrap:break-word; text-align:left;'></div>" +
                       "</div>'"
-                  }); 
+                  });
               };
             }
           });
@@ -2129,6 +2141,18 @@ v-fs:AttributiveSearchInlineTemplate
       max-height: 100px;
       overflow: hidden;
       display: inline-block;
+      position: relative;
+    }
+    .td-wrapper::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 2;
+      border-top: 0 solid transparent;
+      border-right: 0 solid transparent;
+      border-bottom: 7px solid gray;
+      border-left: 7px solid transparent;
     }
   </style>
   <div id="params">
@@ -2407,13 +2431,23 @@ v-fs:AttributiveSearchInlineTemplate
           tmpl.addClass("warning");
         }
         setTimeout(function () {
-          $("td", tmpl).each( function () {
+          $("td:not([data-template='v-ui:FileMinTemplate'])", tmpl).each( function () {
             var text = getText(this);
-            if (text && text.length > 150) {
+            if (text && text.length > 100) {
               var $this = $(this);
               var contents = $this.contents();
               var wrapper = $("<div class='td-wrapper'></div>").append(contents);
               $this.empty().append(wrapper);
+              if (text.length>100) {
+                $("div.td-wrapper",this).tooltip({
+                    title: text,
+                    placement: "auto",
+                    template:
+                      "<div class='tooltip' role='tooltip'>" +
+                        "<div class='tooltip-inner' style='max-width:400px; height:auto; word-wrap:break-word; text-align:left;'></div>" +
+                      "</div>'"
+                  });
+              };
             }
           });
           tmpl.show();
