@@ -14,21 +14,20 @@ private
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
     import veda.mstorage.wslink, veda.core.common.transaction;
-    import veda.connector.storage_connector, veda.connector.requestresponse;
+    import veda.core.storage.tarantool_storage;
 }
 
 private string           lmdb_mode;
-private StorageConnector l_storage_connector;
+private TarantoolStorage l_tt_storage;
 
-public StorageConnector get_storage_connector()
+public TarantoolStorage get_storage_connector()
 {
-    if (l_storage_connector is null)
+    if (l_tt_storage is null)
     {
-        l_storage_connector = new StorageConnector(log());
-        l_storage_connector.connect("127.0.0.1", 9999);
+        l_tt_storage = new TarantoolStorage("127.0.0.1", 9999, log());
     }
 
-    return l_storage_connector;
+    return l_tt_storage;
 }
 
 public string get_lmdb_mode()
@@ -181,7 +180,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     if (get_lmdb_mode() == "as_server")
     {
         log.trace(
-                  "LMDB_MODE=AS_SERVER, individuals_manager %s %s", _storage_id, db_path);	
+                  "LMDB_MODE=AS_SERVER, individuals_manager %s %s", _storage_id, db_path);
     }
     else
     {

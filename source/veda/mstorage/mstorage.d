@@ -14,7 +14,7 @@ private
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
-    import veda.connector.storage_connector, veda.connector.requestresponse;
+    import veda.core.storage.tarantool_storage;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
@@ -902,18 +902,18 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
                 if (is_packet)
                 {
-                    RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, items[ 0 ].user_uri, ti2binobj(items));
+                    //RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, items[ 0 ].user_uri, ti2binobj(items));
 
-                    foreach (idx, rr; lres.op_rc)
-                        rcs ~= OpResult(lres.op_rc[ idx ], items[ idx ].op_id);
+                    //foreach (idx, rr; lres.op_rc)
+                    //    rcs ~= OpResult(lres.op_rc[ idx ], items[ idx ].op_id);
                 }
 
                 else
                 {
                     foreach (ti; items)
                     {
-                        RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ti.user_uri, ti2binobj([ ti ]));
-                        rcs ~= OpResult(lres.op_rc[ 0 ], items[ 0 ].op_id);
+                        //RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ti.user_uri, ti2binobj([ ti ]));
+                        //rcs ~= OpResult(lres.op_rc[ 0 ], items[ 0 ].op_id);
                     }
                 }
             }
@@ -1098,15 +1098,15 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                     log.trace(
                               "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
 
-                    StorageConnector storage_connector = get_storage_connector();
+                    //StorageConnector storage_connector = get_storage_connector();
 
-                    RequestResponse  lres = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
+                    //RequestResponse  lres = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
 
-                    if (lres.op_rc[ 0 ] == ResultCode.OK)
-                    {
-                        lres       = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti1 ]));
-                        res.result = lres.op_rc[ 0 ];
-                    }
+                    //if (lres.op_rc[ 0 ] == ResultCode.OK)
+                    //{
+                    //    lres       = storage_connector.put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti1 ]));
+                    //    res.result = lres.op_rc[ 0 ];
+                    //}
                 }
                 else
                 {
@@ -1158,7 +1158,7 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
                     log.trace(
                               "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
 
-                    RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
+                    //RequestResponse lres = get_storage_connector().put(OptAuthorize.NO, ticket.user_uri, ti2binobj([ ti ]));
                 }
                 else
                 {

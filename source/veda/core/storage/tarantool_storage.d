@@ -12,14 +12,14 @@ public class TarantoolStorage
     string                  host;
     ushort                  port;
     Logger                  log;
-    public StorageConnector connector;
+    public TTStorageConnector connector;
 
     this(string _host, ushort _port, Logger _log)
     {
         host      = _host;
         port      = _port;
         log       = _log;
-        connector = new StorageConnector(log);
+        connector = new TTStorageConnector(log);
         connector.connect(this.host, this.port);
         log.trace("create TarantoolStorage connector");
     }
