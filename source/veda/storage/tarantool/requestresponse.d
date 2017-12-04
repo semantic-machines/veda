@@ -1,4 +1,4 @@
-module veda.connector.requestresponse;
+module veda.storage.tarantool.requestresponse;
 
 private
 {

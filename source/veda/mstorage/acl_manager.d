@@ -10,7 +10,7 @@ private
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg;
     import veda.core.util.utils, veda.common.logger, veda.util.module_info;
-    import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
+    import veda.storage.lmdb.lmdb_storage, veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
 }
 
 // ////////////// ACLManager
@@ -68,7 +68,7 @@ void acl_manager(string thread_name, string db_path)
 {
     core.thread.Thread.getThis().name         = thread_name;
     Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
-    string                       bin_log_name = get_new_binlog_name(db_path);
+    //string                       bin_log_name = get_new_binlog_name(db_path);
 
     long                         l_op_id;
     long                         committed_op_id;

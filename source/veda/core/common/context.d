@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info, veda.storage.common;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;
@@ -59,21 +59,6 @@ public struct SearchResult
     int        processed;
     long       cursor;
     ResultCode result_code = ResultCode.Not_Ready;
-}
-
-interface ReadStorage
-{
-    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
-    public void open();
-    public void reopen();
-    public void close();
-    public long count_entries();
-}
-
-interface Storage : ReadStorage
-{
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
-    public ResultCode remove(OptAuthorize op_auth, string user_id, string in_key);
 }
 
 interface ScriptVM

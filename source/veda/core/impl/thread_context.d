@@ -12,13 +12,13 @@ private
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.storage.lmdb_storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_storage, veda.storage.common;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
 
     version (isMStorage)
     {
-        alias veda.mstorage.storage_manager ticket_storage_module;
-        alias veda.mstorage.storage_manager subject_storage_module;
+        alias veda.storage.lmdb.storage_manager ticket_storage_module;
+        alias veda.storage.lmdb.storage_manager subject_storage_module;
     }
 }
 

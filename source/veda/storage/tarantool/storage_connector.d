@@ -1,4 +1,4 @@
-module veda.connector.storage_connector;
+module veda.storage.tarantool.storage_connector;
 
 private
 {
@@ -6,7 +6,7 @@ private
     import std.stdio;
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import msgpack;
-    import veda.common.type, veda.connector.requestresponse, veda.common.logger;
+    import veda.common.type, veda.storage.tarantool.requestresponse, veda.common.logger;
     import std.socket;
 }
 
