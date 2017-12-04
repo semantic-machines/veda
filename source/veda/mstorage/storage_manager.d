@@ -18,14 +18,12 @@ private
 }
 
 private string           lmdb_mode;
-private TarantoolStorage l_tt_storage;
 
+private TarantoolStorage l_tt_storage;
 public TarantoolStorage get_storage_connector()
 {
     if (l_tt_storage is null)
-    {
-        l_tt_storage = new TarantoolStorage("127.0.0.1", 9999, log());
-    }
+        l_tt_storage = new TarantoolStorage(log());
 
     return l_tt_storage;
 }

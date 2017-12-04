@@ -3,10 +3,11 @@
  */
 module veda.connector.tarantool_storage;
 
-import std.conv, std.stdio;
+import std.conv, std.stdio, std.string;
 import veda.core.common.context, veda.common.logger, veda.common.type;
 import veda.connector.storage_connector, veda.connector.requestresponse;
 import veda.core.common.transaction, veda.onto.individual, veda.onto.resource;
+import veda.util.properd;
 
 public class TarantoolStorage : ReadStorage
 {
@@ -17,12 +18,42 @@ public class TarantoolStorage : ReadStorage
 
     this(string _host, ushort _port, Logger _log)
     {
-        host      = _host;
-        port      = _port;
-        log       = _log;
-        connector = new TTStorageConnector(log);
-        connector.connect(this.host, this.port);
-        log.trace("create TarantoolStorage connector");
+        try
+        {
+            host      = _host;
+            port      = _port;
+            log       = _log;
+            connector = new TTStorageConnector(log);
+            connector.connect(this.host, this.port);
+            log.trace("sucess create TarantoolStorage connector %s:%d", host, port);
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR! fail create TarantoolStorage connector, infp=%s", tr.msg);
+        }
+    }
+
+    this(Logger _log)
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        string   tt_url = properties.as!(string)("tarantool_url");
+
+        string[] tt_pp = tt_url.split(":");
+
+        try
+        {
+            host      = tt_pp[ 0 ];
+            port      = std.conv.to!ushort (tt_pp[ 1 ]);
+            log       = _log;
+            connector = new TTStorageConnector(log);
+            connector.connect(this.host, this.port);
+            log.trace("sucess create TarantoolStorage connector %s:%d", host, port);
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR! fail create TarantoolStorage connector, infp=%s", tr.msg);
+        }
     }
 
     public OpResult put(OptAuthorize op_auth, TransactionItem ti)

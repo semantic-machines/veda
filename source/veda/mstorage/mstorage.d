@@ -296,7 +296,7 @@ void commiter(string thread_name)
 
 private ReadStorage inividuals_storage_r;
 
-public Individual get_individual(Ticket *ticket, string uri)
+private Individual get_individual(Ticket *ticket, string uri)
 {
     if (inividuals_storage_r is null)
     {
@@ -347,7 +347,7 @@ public Individual get_individual(Ticket *ticket, string uri)
     return individual;
 }
 
-public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
+private Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
 {
     if (trace_msg[ T_API_50 ] == 1)
         log.trace("create_new_ticket, ticket__accessor=%s", user_id);
@@ -396,7 +396,7 @@ public Ticket create_new_ticket(string user_id, string duration = "40000", strin
     return ticket;
 }
 
-public Ticket authenticate(string login, string password)
+private Ticket authenticate(string login, string password)
 {
     StopWatch sw; sw.start;
 
@@ -801,19 +801,19 @@ public string execute_json(string in_msg, Context ctx)
     }
 }
 
-public void freeze()
+private void freeze()
 {
     indv_storage_thread.freeze(P_MODULE.subject_manager);
 }
 
-public void unfreeze()
+private void unfreeze()
 {
     indv_storage_thread.unfreeze(P_MODULE.subject_manager);
 }
 
 private Ticket *[ string ] user_of_ticket;
 
-public Ticket sys_ticket(Context ctx, bool is_new = false)
+private Ticket sys_ticket(Context ctx, bool is_new = false)
 {
     Ticket ticket = get_global_systicket();
 
@@ -863,7 +863,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     return ticket;
 }
 
-public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
+private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
 
@@ -934,7 +934,7 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
-public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
+private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
                                    long assigned_subsystems,
                                    string event_id,
                                    OptFreeze opt_freeze,
@@ -1228,7 +1228,7 @@ public ResultCode flush_storage()
     return rc;
 }
 
-public void flush_ext_module(P_MODULE f_module, long wait_op_id)
+private void flush_ext_module(P_MODULE f_module, long wait_op_id)
 {
     Tid tid = getTid(P_MODULE.subject_manager);
 
@@ -1238,7 +1238,7 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
+private ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
 {
     ResultCode rc;
 
@@ -1271,7 +1271,7 @@ string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
    Returns:
             экземпляр структуры Ticket
  */
-Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
+private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
 {
     Ticket ticket;
 
