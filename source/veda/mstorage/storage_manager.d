@@ -339,13 +339,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             else
                                 send(tid_response_reciever, false);
                         },
-                        (byte cmd, string key, string msg)
-                        {
-                            if (cmd == CMD_PUT_KEY2SLOT)
-                            {
-                                storage.put(false, null, key, msg, -1);
-                            }
-                        },
                         (byte cmd, string arg, Tid tid_response_reciever)
                         {
                             if (cmd == CMD_FIND)
@@ -375,7 +368,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             {
                                 if (ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(false, null, ti.uri) == ResultCode.OK)
+                                    if (storage.remove(OptAuthorize.NO, null, ti.uri) == ResultCode.OK)
                                         rc = ResultCode.OK;
                                     else
                                         rc = ResultCode.Fail_Store;
@@ -496,81 +489,4 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             uris_queue = null;
         }
     }
-}
-
-unittest
-{
-    bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
-    {
-        bool res;
-        Tid  tid = tids[ tid_idx ];
-
-        if (tid == Tid.init)
-            throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
-
-        log.trace("START THREAD... : %s", text(tid_idx));
-        send(tid, thisTid);
-        receive((bool isReady)
-                {
-                    res = isReady;
-                    //if (trace_msg[ 50 ] == 1)
-                    log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
-                    if (res == false)
-                        log.trace("FAIL START THREAD: %s", text(tid_idx));
-                });
-        return res;
-    }
-
-    import veda.core.impl.thread_context;
-    import std.datetime;
-    import veda.onto.lang;
-    import veda.util.tests_tools;
-
-    string test_path = get_test_path();
-    string db_path   = test_path ~ "/lmdb-individuals";
-
-    Tid[ P_MODULE ] tids;
-
-    try
-    {
-        mkdir(db_path);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, db_path, "?");
-
-    assert(wait_starting_thread(P_MODULE.subject_manager, tids));
-
-    foreach (key, value; tids)
-        register(text(key), value);
-
-    Logger     log = new Logger("test", "log", "storage-manager");
-
-    Context    ctx = new PThreadContext("", "test", db_path, log, "");
-
-    Individual new_indv_A = generate_new_test_individual();
-
-    Ticket     ticket;
-
-    OpResult   oprs = ctx.put_individual(&ticket, new_indv_A.uri, new_indv_A, false, "", true, false);
-
-    assert(oprs.result == ResultCode.OK, "OpResult=" ~ text(oprs));
-
-    string binobj = ctx.get_from_individual_storage(new_indv_A.uri);
-
-    assert(binobj !is null);
-    assert(binobj.length > 3);
-
-    Individual indv_B;
-    indv_B.deserialize(binobj);
-
-    bool compare_res = new_indv_A.compare(indv_B);
-    if (compare_res == false)
-        writefln("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
-
-    assert(compare_res);
-
-    writeln("unittest [Storage module] Ok");
 }

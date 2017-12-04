@@ -271,7 +271,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
         else
             key = prefix ~ rs.uri;
 
-        ResultCode res = storage.put(false, null, key, new_record, op_id);
+        ResultCode res = storage.put(OptAuthorize.NO, null, key, new_record, op_id);
 
         if (trace_msg[ 101 ] == 1)
             log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
@@ -294,7 +294,7 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
 
     Resource   permissionObject = new_ind.getFirstResource(veda_schema__permissionObject);
 
-    ResultCode res = storage.put(false, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
+    ResultCode res = storage.put(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
 
     if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);

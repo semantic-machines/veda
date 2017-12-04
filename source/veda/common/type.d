@@ -356,9 +356,6 @@ byte CMD_FREEZE       = 42;
 /// Возобновить прием команд на изменение
 byte CMD_UNFREEZE     = 43;
 
-/// Сохранить соответствие ключ - слот (xapian)
-byte CMD_PUT_KEY2SLOT = 44;
-
 /// Установить в
 byte CMD_SET_IN       = 45;
 

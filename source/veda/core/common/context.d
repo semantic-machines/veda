@@ -68,8 +68,8 @@ interface ReadStorage
 
 interface Storage : ReadStorage 
 {
-    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
-    public ResultCode remove(bool need_auth, string user_id, string in_key);
+    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
+    public ResultCode remove(OptAuthorize op_auth, string user_id, string in_key);
 
     public long count_entries();
 
