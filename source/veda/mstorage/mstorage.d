@@ -13,14 +13,13 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
-    import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
     import veda.connector.tarantool_storage;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
 alias veda.mstorage.storage_manager indv_storage_thread;
 alias veda.mstorage.acl_manager     acl_module;
-alias veda.mstorage.load_info       load_info;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -82,15 +81,8 @@ void main(char[][] args)
         spawn(&commiter, text(P_MODULE.commiter));
     wait_starting_thread(P_MODULE.commiter, tids);
 
-    tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
-    wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
-
     tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
     wait_starting_thread(P_MODULE.n_channel, tids);
-
-    tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
-                                             tids[ P_MODULE.statistic_data_accumulator ]);
-    wait_starting_thread(P_MODULE.print_statistic, tids);
 
     foreach (key, value; tids)
         register(text(key), value);
@@ -405,79 +397,72 @@ private Ticket authenticate(string login, string password)
     if (trace_msg[ T_API_70 ] == 1)
         log.trace("authenticate, login=[%s] password=[%s]", login, password);
 
-    try
+    ticket.result = ResultCode.Authentication_Failed;
+
+    if (login == null || login.length < 1 || password == null || password.length < 6)
+        return ticket;
+
+    login = replaceAll(login, regex(r"[-]", "g"), " +");
+
+    Individual[] candidate_users;
+    vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    foreach (user; candidate_users)
     {
-        ticket.result = ResultCode.Authentication_Failed;
+        string user_id = user.getFirstResource(veda_schema__owner).uri;
+        if (user_id is null)
+            continue;
 
-        if (login == null || login.length < 1 || password == null || password.length < 6)
-            return ticket;
-
-        login = replaceAll(login, regex(r"[-]", "g"), " +");
-
-        Individual[] candidate_users;
-        vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
-        foreach (user; candidate_users)
+        string pass;
+        string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+        if (usesCredential_uri !is null)
         {
-            string user_id = user.getFirstResource(veda_schema__owner).uri;
-            if (user_id is null)
-                continue;
+            log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
+            Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
+            pass = i_usesCredential.getFirstLiteral("v-s:password");
+        }
+        else
+        {
+            pass = user.getFirstLiteral("v-s:password");
 
-            string pass;
-            string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
-            if (usesCredential_uri !is null)
-            {
-                log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-                Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
-                pass = i_usesCredential.getFirstLiteral("v-s:password");
-            }
-            else
-            {
-                pass = user.getFirstLiteral("v-s:password");
+            Individual i_usesCredential;
+            i_usesCredential.uri = user.uri ~ "-crdt";
+            i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
+            i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
 
-                Individual i_usesCredential;
-                i_usesCredential.uri = user.uri ~ "-crdt";
-                i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
-                i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
+            Transaction tnx;
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            OpResult op_res = add_to_transaction(
+                                                 l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 OptFreeze.NONE, OptAuthorize.YES,
+                                                 OptTrace.NONE);
 
-                Transaction tnx;
-                tnx.id            = -1;
-                tnx.is_autocommit = true;
-                OpResult op_res = add_to_transaction(
-                                                     l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
-                                                     OptFreeze.NONE, OptAuthorize.YES,
-                                                     OptTrace.NONE);
+            log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
+            user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
+            user.removeResource("v-s:password");
 
-                log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
-                user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
-                user.removeResource("v-s:password");
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            op_res            = add_to_transaction(
+                                                   l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
+                                                   OptAuthorize.YES,
+                                                   OptTrace.NONE);
 
-                tnx.id            = -1;
-                tnx.is_autocommit = true;
-                op_res            = add_to_transaction(
-                                                       l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
-                                                       OptAuthorize.YES,
-                                                       OptTrace.NONE);
-
-                log.trace("authenticate: update user[%s], res=%s", user, op_res);
-            }
-
-            if (pass !is null && pass == password)
-            {
-                ticket = create_new_ticket(user_id);
-                return ticket;
-            }
+            log.trace("authenticate: update user[%s], res=%s", user, op_res);
         }
 
-        log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-
-        ticket.result = ResultCode.Authentication_Failed;
-
-        return ticket;
+        if (pass !is null && pass == password)
+        {
+            ticket = create_new_ticket(user_id);
+            return ticket;
+        }
     }
-    finally
-    {
-        stat(CMD_PUT, sw);
-    }
+
+    log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
+
+    ticket.result = ResultCode.Authentication_Failed;
+
+    return ticket;
 }
 
 
@@ -935,11 +920,11 @@ static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
 private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
-                                   long assigned_subsystems,
-                                   string event_id,
-                                   OptFreeze opt_freeze,
-                                   OptAuthorize opt_request,
-                                   OptTrace opt_trace)
+                                    long assigned_subsystems,
+                                    string event_id,
+                                    OptFreeze opt_freeze,
+                                    OptAuthorize opt_request,
+                                    OptTrace opt_trace)
 {
     if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
     {
