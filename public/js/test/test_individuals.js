@@ -617,6 +617,7 @@ for (i = 0; i < 1; i++)
             try
             {
                 // test UPDATE rights
+                new_test_doc1['v-s:updateCounter'] = newInteger (0);
                 res = put_individual(ticket_user2.id, new_test_doc1);
                 ok (false);
             }

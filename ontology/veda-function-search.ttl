@@ -1176,6 +1176,12 @@ v-fs:CtrlEnterBundle
   rdfs:label "Press 'Ctrl + Enter' to begin search"@en ;
 .
 
+v-fs:ClickToViewContent
+  rdf:type v-s:Bundle ;
+  rdfs:label "Кликните, чтобы увидеть всё содержимое"@ru ;
+  rdfs:label "Click to view all contents"@en ;
+.
+
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -1262,6 +1268,23 @@ v-fs:AttributiveSearchTemplate
   <style>
     .swipe {
       cursor: move;
+    }
+    .td-wrapper {
+      max-height: 100px;
+      overflow: hidden;
+      display: inline-block;
+      position: relative;
+    }
+    .td-wrapper::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 2;
+      border-top: 0 solid transparent;
+      border-right: 0 solid transparent;
+      border-bottom: 7px solid gray;
+      border-left: 7px solid transparent;
     }
   </style>
   <div id="params" class="clearfix">
@@ -1620,25 +1643,28 @@ v-fs:AttributiveSearchTemplate
           tmpl.addClass("warning");
         }
         setTimeout(function () {
-          $("td:not([data-template='v-ui:FileMinTemplate'])", tmpl).each( function () {
-            var text = getText(this);
-            if (text && text.length > 200) {
-              this.textContent = text.substring(0, 200) + "...";
+          $("td", tmpl).each( function () {
+            var text = this.innerText || this.textContent;
+            if (text && text.length > 100) {
+              var $this = $(this);
+              var contents = $this.contents();
+              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+              $this.empty().append(wrapper);
+              wrapper.popover({
+                content: wrapper.html(),
+                html: true,
+                placement: "top"
+              }).tooltip({
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                placement: "bottom",
+                delay: { show: 750, hide: 0 }
+              });
             }
           });
           tmpl.show();
         }, 300);
       });
     });
-
-  }
-
-  function getText(node) {
-    if (node.childNodes && node.childNodes.length) {
-      return [].map.call(node.childNodes, getText).join(" ");
-    } else {
-      return node.nodeValue;
-    }
   }
 
   // Spinner
@@ -2105,6 +2131,23 @@ v-fs:AttributiveSearchInlineTemplate
     .swipe {
       cursor: move;
     }
+    .td-wrapper {
+      max-height: 100px;
+      overflow: hidden;
+      display: inline-block;
+      position: relative;
+    }
+    .td-wrapper::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 2;
+      border-top: 0 solid transparent;
+      border-right: 0 solid transparent;
+      border-bottom: 7px solid gray;
+      border-left: 7px solid transparent;
+    }
   </style>
   <div id="params">
     <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
@@ -2383,24 +2426,27 @@ v-fs:AttributiveSearchInlineTemplate
         }
         setTimeout(function () {
           $("td", tmpl).each( function () {
-            var text = getText(this);
-            if (text && text.length > 200) {
-              this.textContent = text.substring(0, 200) + "...";
+            var text = this.innerText || this.textContent;
+            if (text && text.length > 100) {
+              var $this = $(this);
+              var contents = $this.contents();
+              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+              $this.empty().append(wrapper);
+              wrapper.popover({
+                content: wrapper.html(),
+                html: true,
+                placement: "top"
+              }).tooltip({
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                placement: "bottom",
+                delay: { show: 750, hide: 0 }
+              });
             }
           });
           tmpl.show();
         }, 300);
       });
     });
-
-  }
-
-  function getText(node) {
-    if (node.childNodes && node.childNodes.length) {
-      return [].map.call(node.childNodes, getText).join(" ");
-    } else {
-      return node.nodeValue;
-    }
   }
 
   // Spinner

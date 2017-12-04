@@ -38,7 +38,7 @@ before_script:
   #- "sh -e /etc/init.d/xvfb start"
   #- sleep 3 # give xvfb some time to start
   - ./control-start.sh
-  - sleep 160  # give Web server some time to bind to sockets, load startup data, etc
+  - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
   - date
 
 # Run API & integration test
@@ -46,7 +46,7 @@ script:
   - travis_wait 20 grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
-  - travis_wait 20  node ./qa/testLogin.js
+  - node ./qa/testLogin.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testComment.js

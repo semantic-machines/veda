@@ -175,9 +175,9 @@ shared static this()
 
     Individual *[ string ] onto_config;
 
-    Individual delegate(Ticket * ticket, string uri) get_individual;
+    Individual delegate(Ticket * ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES) get_individual;
 
-    Individual get_individual_from_local(Ticket *ticket, string uri)
+    Individual get_individual_from_local(Ticket *ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         Individual *ii = onto_config.get(uri, null);
 

@@ -12,8 +12,34 @@ private
     import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
-    import veda.bind.libwebsocketd;
+    import veda.bind.libwebsocketd, veda.util.properd;
     import veda.mstorage.wslink, veda.core.common.transaction;
+    import veda.connector.tarantool_storage;
+}
+
+private string           lmdb_mode;
+
+private TarantoolStorage l_tt_storage;
+public TarantoolStorage get_storage_connector()
+{
+    if (l_tt_storage is null)
+        l_tt_storage = new TarantoolStorage(log());
+
+    return l_tt_storage;
+}
+
+public string get_lmdb_mode()
+{
+    if (lmdb_mode is null)
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        lmdb_mode  = properties.as!(string)("lmdb_mode");
+
+        writefln("lmdb_mode=%s", lmdb_mode);
+    }
+
+    return lmdb_mode;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -147,11 +173,21 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbStorage                  storage = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+    LmdbStorage                  storage = null;
 
-    long                         count = storage.count_entries();
+    if (get_lmdb_mode() == "as_server")
+    {
+        log.trace(
+                  "LMDB_MODE=AS_SERVER, individuals_manager %s %s", _storage_id, db_path);
+    }
+    else
+    {
+        storage = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
 
-    log.trace("COUNT INDIVIDUALS=%d", count);
+        long count = storage.count_entries();
+
+        log.trace("COUNT INDIVIDUALS=%d", count);
+    }
 
     int            size_bin_log         = 0;
     int            max_size_bin_log     = 10_000_000;
@@ -187,8 +223,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             }
         }
 
-        bool   is_freeze = false;
-        bool   is_exit   = false;
+        bool is_freeze = false;
+        bool is_exit   = false;
         module_info = new ModuleInfoFile(text(storage_id), _log, OPEN_MODE.WRITER);
 
         if (!module_info.is_ready)
@@ -247,8 +283,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                     if (op_id - last_reopen_rw_op_id > max_count_updates)
                                     {
                                         log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
-                                        storage.close_db();
-                                        storage.open_db();
+                                        storage.close();
+                                        storage.open();
                                         last_reopen_rw_op_id = op_id;
                                     }
 
@@ -276,8 +312,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 if (op_id - last_reopen_rw_op_id > max_count_updates)
                                 {
                                     log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
-                                    storage.close_db();
-                                    storage.open_db();
+                                    storage.close();
+                                    storage.open();
                                     last_reopen_rw_op_id = op_id;
                                 }
 
@@ -303,18 +339,11 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             else
                                 send(tid_response_reciever, false);
                         },
-                        (byte cmd, string key, string msg)
-                        {
-                            if (cmd == CMD_PUT_KEY2SLOT)
-                            {
-                                storage.put(false, null, key, msg, -1);
-                            }
-                        },
                         (byte cmd, string arg, Tid tid_response_reciever)
                         {
                             if (cmd == CMD_FIND)
                             {
-                                string res = storage.find(false, null, arg);
+                                string res = storage.find(OptAuthorize.NO, null, arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
@@ -339,7 +368,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                             {
                                 if (ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(false, null, ti.uri) == ResultCode.OK)
+                                    if (storage.remove(OptAuthorize.NO, null, ti.uri) == ResultCode.OK)
                                         rc = ResultCode.OK;
                                     else
                                         rc = ResultCode.Fail_Store;
@@ -423,7 +452,6 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 send(tid_response_reciever, ResultCode.Fail_Commit, thisTid);
                                 return;
                             }
-
                         },
                         (byte cmd, int arg, bool arg2)
                         {
@@ -461,81 +489,4 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
             uris_queue = null;
         }
     }
-}
-
-unittest
-{
-    bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
-    {
-        bool res;
-        Tid  tid = tids[ tid_idx ];
-
-        if (tid == Tid.init)
-            throw new Exception("wait_starting_thread: Tid=" ~ text(tid_idx) ~ " not found", __FILE__, __LINE__);
-
-        log.trace("START THREAD... : %s", text(tid_idx));
-        send(tid, thisTid);
-        receive((bool isReady)
-                {
-                    res = isReady;
-                    //if (trace_msg[ 50 ] == 1)
-                    log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
-                    if (res == false)
-                        log.trace("FAIL START THREAD: %s", text(tid_idx));
-                });
-        return res;
-    }
-
-    import veda.core.impl.thread_context;
-    import std.datetime;
-    import veda.onto.lang;
-    import veda.util.tests_tools;
-
-    string test_path = get_test_path();
-    string db_path   = test_path ~ "/lmdb-individuals";
-
-    Tid[ P_MODULE ] tids;
-
-    try
-    {
-        mkdir(db_path);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, db_path, "?");
-
-    assert(wait_starting_thread(P_MODULE.subject_manager, tids));
-
-    foreach (key, value; tids)
-        register(text(key), value);
-
-    Logger     log = new Logger("test", "log", "storage-manager");
-
-    Context    ctx = new PThreadContext("", "test", db_path, log, "");
-
-    Individual new_indv_A = generate_new_test_individual();
-
-    Ticket     ticket;
-
-    OpResult   oprs = ctx.put_individual(&ticket, new_indv_A.uri, new_indv_A, false, "", true, false);
-
-    assert(oprs.result == ResultCode.OK, "OpResult=" ~ text(oprs));
-
-    string binobj = ctx.get_from_individual_storage(new_indv_A.uri);
-
-    assert(binobj !is null);
-    assert(binobj.length > 3);
-
-    Individual indv_B;
-    indv_B.deserialize(binobj);
-
-    bool compare_res = new_indv_A.compare(indv_B);
-    if (compare_res == false)
-        writefln("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
-
-    assert(compare_res);
-
-    writeln("unittest [Storage module] Ok");
 }

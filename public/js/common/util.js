@@ -1285,8 +1285,8 @@ function complexLabel(individual) {
         });
         return {
           data: replaced,
-          lang: language,
-          type: "String"
+          type: "String",
+          lang: language
         }
       });
       return acc.concat(result);
@@ -1299,6 +1299,7 @@ function complexLabel(individual) {
   function get_localized_chain(language, uri) {
     var properties = [].slice.call(arguments, 2);
     var intermediate = get(uri);
+    if (!intermediate) { return ""; }
     for (var i = 0, property; property = properties[i]; i++) {
       var length = properties.length;
       if (i === length - 1) {
@@ -1308,8 +1309,13 @@ function complexLabel(individual) {
           return ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ? acc += value.data : acc );
         }, "");
       }
-      var intermediateUri = intermediate[property][0].data;
-      var intermediate = get(intermediateUri);
+      if ( hasValue(intermediate, property) ) {
+        var intermediateUri = intermediate[property][0].data;
+        intermediate = get(intermediateUri);
+        if (!intermediate) { return ""; }
+      } else {
+        return "";
+      }
     }
     return "";
   }

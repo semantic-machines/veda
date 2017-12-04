@@ -38,8 +38,8 @@ class PThreadContext : Context
 
     private               string[ string ] prefix_map;
 
-    private Storage       inividuals_storage_r;
-    private Storage       tickets_storage_r;
+    private ReadStorage       inividuals_storage_r;
+    private ReadStorage       tickets_storage_r;
     private VQL           _vql;
 
     private long          local_last_update_time;
@@ -295,8 +295,8 @@ class PThreadContext : Context
     ~this()
     {
         log.trace_log_and_console("DELETE CONTEXT [%s]", name);
-        inividuals_storage_r.close_db();
-        tickets_storage_r.close_db();
+        inividuals_storage_r.close();
+        tickets_storage_r.close();
     }
 
     bool isReadyAPI()
@@ -304,7 +304,7 @@ class PThreadContext : Context
         return API_ready;
     }
 
-    public Storage get_inividuals_storage_r()
+    public ReadStorage get_inividuals_storage_r()
     {
         return inividuals_storage_r;
     }
@@ -336,7 +336,7 @@ class PThreadContext : Context
             this.reopen_ro_individuals_storage_db();
             Ticket sticket = sys_ticket();
 
-            node = get_individual(&sticket, node_id);
+            node = get_individual(&sticket, node_id, OptAuthorize.NO);
             if (node.getStatus() != ResultCode.OK)
                 node = Individual.init;
         }
@@ -404,7 +404,7 @@ class PThreadContext : Context
         string res;
 
         if (inividuals_storage_r !is null)
-            res = inividuals_storage_r.find(true, user_id, uri);
+            res = inividuals_storage_r.find(OptAuthorize.YES, user_id, uri);
 
         if (res !is null && res.length < 10)
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
@@ -481,12 +481,12 @@ class PThreadContext : Context
 
     public string get_ticket_from_storage(string ticket_id)
     {
-        return tickets_storage_r.find(false, null, ticket_id);
+        return tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
     }
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = tickets_storage_r.find(false, null, "systicket");
+        string systicket_id = tickets_storage_r.find(OptAuthorize.NO, null, "systicket");
 
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
@@ -520,7 +520,7 @@ class PThreadContext : Context
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = tickets_storage_r.find(false, null, ticket_id);
+                string ticket_str = tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
@@ -632,7 +632,7 @@ class PThreadContext : Context
     public void reopen_ro_ticket_manager_db()
     {
         if (tickets_storage_r !is null)
-            tickets_storage_r.reopen_db();
+            tickets_storage_r.reopen();
     }
 
     public VQL get_vql()
@@ -649,13 +649,13 @@ class PThreadContext : Context
     public void reopen_ro_individuals_storage_db()
     {
         if (inividuals_storage_r !is null)
-            inividuals_storage_r.reopen_db();
+            inividuals_storage_r.reopen();
     }
 
     public void reopen_ro_acl_storage_db()
     {
         if (acl_indexes !is null)
-            acl_indexes.reopen_db();
+            acl_indexes.reopen();
         //log.trace ("reopen_ro_acl_storage_db");
     }
 
@@ -691,7 +691,7 @@ class PThreadContext : Context
         return sr;
     }
 
-    public Individual get_individual(Ticket *ticket, string uri)
+    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         Individual individual = Individual.init;
 
@@ -712,7 +712,7 @@ class PThreadContext : Context
             string individual_as_binobj = get_from_individual_storage(ticket.user_uri, uri);
             if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
-                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
+                if (opt_authorize == OptAuthorize.NO || acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null, null) == Access.can_read)
                 {
                     if (individual.deserialize(individual_as_binobj) > 0)
                         individual.setStatus(ResultCode.OK);
@@ -1066,7 +1066,7 @@ class PThreadContext : Context
         return true;
     }
 
-    public ResultCode commit(Transaction *in_tnx)
+    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         ResultCode rc;
         long       op_id;
@@ -1078,6 +1078,8 @@ class PThreadContext : Context
 
         if (in_tnx.is_autocommit == true)
         {
+        	bool[string] uri2exists;
+        	
             foreach (item; in_tnx.get_queue())
             {
                 if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
@@ -1089,7 +1091,15 @@ class PThreadContext : Context
                 Ticket *ticket = this.get_ticket(item.ticket_id);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, OptAuthorize.YES).result;
+                
+                if (uri2exists.get (item.uri, false) == true && item.new_indv.getResources("v-s:updateCounter").length == 0)
+                {
+	                	item.new_indv.setResources("v-s:updateCounter", [ Resource(-1) ]);
+                }                
+                
+                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
+                
+                uri2exists[item.uri] = true;
 
                 if (rc == ResultCode.No_Content)
                 {

@@ -1067,6 +1067,8 @@ cfg:Event_13
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+// Get actual state
+document = get_individual(ticket, document["@"]);
 if ( hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: _Boolean} ) || !prev_state ) {
   delete document['v-s:triggerVersionCreation'];
   create_version(ticket, document, prev_state, user_uri, _event_id);

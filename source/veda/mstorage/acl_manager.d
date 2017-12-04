@@ -66,9 +66,6 @@ public ResultCode flush(bool is_wait)
 
 void acl_manager(string thread_name, string db_path)
 {
-    int                          size_bin_log     = 0;
-    int                          max_size_bin_log = 10_000_000;
-
     core.thread.Thread.getThis().name         = thread_name;
     Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
     string                       bin_log_name = get_new_binlog_name(db_path);

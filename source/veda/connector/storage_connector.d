@@ -1,4 +1,4 @@
-module veda.connector.connector;
+module veda.connector.storage_connector;
 
 private
 {
@@ -7,26 +7,19 @@ private
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     import msgpack;
     import veda.common.type, veda.connector.requestresponse, veda.common.logger;
-}
-
-version (std_socket)
-{
     import std.socket;
 }
 
 const MAX_SIZE_OF_PACKET = 1024 * 1024 * 10;
 
-class Connector
+class TTStorageConnector
 {
-    Logger         log;
-    public ubyte[] buf;
-    public string  addr;
-    public ushort  port;
+    Logger           log;
+    public ubyte[]   buf;
+    public string    addr;
+    public ushort    port;
 
-    version (std_socket)
-    {
-        public TcpSocket s;
-    }
+    public TcpSocket s;
 
     this(Logger _log)
     {
@@ -38,29 +31,26 @@ class Connector
         this.addr = addr;
         this.port = port;
 
-        version (std_socket)
+        s = new TcpSocket();
+        for (;; )
         {
-            s = new TcpSocket();
-            for (;; )
+            try
             {
-                try
-                {
-                    log.trace("CONNECT STD %s %d", addr, port);
-                    s.connect(new InternetAddress(addr, port));
-                }
-                catch (Exception e)
-                {
-                    Thread.sleep(dur!("seconds")(3));
-                    continue;
-                }
-                break;
+                log.trace("CONNECT STD %s %d", addr, port);
+                s.connect(new InternetAddress(addr, port));
             }
-            log.trace("CONNECTED STD");
+            catch (Exception e)
+            {
+                Thread.sleep(dur!("seconds")(3));
+                continue;
+            }
+            break;
         }
+        log.trace("CONNECTED STD");
     }
 
 
-    public RequestResponse put(OptAuthorize op_auth, string user_uri, string[] individuals)
+    public RequestResponse put(OptAuthorize op_auth, string user_uri, string[] binobj_individuals, bool trace = true)
     {
         bool need_auth;
 
@@ -73,28 +63,32 @@ class Connector
         if (user_uri is null || user_uri.length < 3)
         {
             request_response.common_rc = ResultCode.Not_Authorized;
-            log.trace("ERR! connector.put, code=%s", request_response.common_rc);
+            log.trace("ERR! StorageConnector:put, code=%s", request_response.common_rc);
             printPrettyTrace(stderr);
             return request_response;
         }
-        if (individuals.length == 0)
+        if (binobj_individuals.length == 0)
         {
             request_response.common_rc = ResultCode.No_Content;
-            log.trace("ERR! connector.put, code=%s", request_response.common_rc);
+            log.trace("ERR! StorageConnector:put, code=%s", request_response.common_rc);
             printPrettyTrace(stderr);
             return request_response;
         }
 
         Packer packer = Packer(false);
 
-        //stderr.writeln("PACK PUT REQUEST");
-        packer.beginArray(individuals.length + 3);
+
+        if (trace)
+            log.trace("@ StorageConnector:put PACK PUT REQUEST");
+
+        packer.beginArray(binobj_individuals.length + 3);
         packer.pack(INDV_OP.PUT, need_auth, user_uri);
-        for (int i = 0; i < individuals.length; i++)
-            packer.pack(individuals[ i ]);
+        for (int i = 0; i < binobj_individuals.length; i++)
+            packer.pack(binobj_individuals[ i ]);
 
         long request_size = packer.stream.data.length;
-        //stderr.writeln("DATA SIZE ", request_size);
+        if (trace)
+            log.trace("@ StorageConnector:put DATA SIZE %d", request_size);
 
         buf = new ubyte[ 4 + request_size ];
 
@@ -106,44 +100,41 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            if (trace)
+                log.trace("@ StorageConnector:put send buf");
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
-            //stderr.writeln("RECEIVE SIZE BUF ", receive_size);
+            s.send(buf);
+            buf.length = 4;
+            long receive_size = s.receive(buf);
+            if (trace)
+                log.trace("@ StorageConnector:put RECEIVE SIZE BUF %d", receive_size);
 
 
-            //stderr.writeln("RESPONSE SIZE BUF ", buf);
+            if (trace)
+                log.trace("@ StorageConnector:put RESPONSE SIZE BUF %s", buf);
             long response_size = 0;
             for (int i = 0; i < 4; i++)
                 response_size = (response_size << 8) + buf[ i ];
-            //stderr.writeln("RESPONSE SIZE ", response_size);
+            if (trace)
+                log.trace("@ StorageConnector:put RESPONSE SIZE %d", response_size);
 
             if (response_size > MAX_SIZE_OF_PACKET)
             {
                 request_response.common_rc = ResultCode.Size_too_large;
-                log.trace("ERR! connector.put, code=%s", request_response.common_rc);
+                log.trace("ERR! StorageConnector:put, code=%s", request_response.common_rc);
                 return request_response;
             }
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
-            //stderr.writeln("RECEIVE RESPONSE ", receive_size);
+            receive_size = s.receive(response);
+            if (trace)
+                log.trace("@ StorageConnector:put RECEIVE RESPONSE %d", receive_size);
 
             if (receive_size == 0 || receive_size < response.length)
             {
                 Thread.sleep(dur!("seconds")(1));
-                log.trace("@RECONNECT PUT REQUEST");
+                log.trace("WARN! StorageConnector:put, receive_size(%d) < response.length(%d), RECONNECT PUT REQUEST", receive_size, response.length);
                 close();
                 connect(addr, port);
                 continue;
@@ -157,21 +148,24 @@ class Connector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = 0;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = 0;
 
-            //stderr.writeln("OP RESULT = ", obj.via.uinteger);
+            if (trace)
+                log.trace("@ StorageConnector:put OP RESULT = %d", obj.via.uinteger);
             for (int i = 1; i < unpacker.unpacked.length; i++)
             {
                 obj                             = unpacker.unpacked[ i ];
                 request_response.op_rc[ i - 1 ] = cast(ResultCode)obj.via.uinteger;
-                //stderr.writeln("PUT RESULT = ", obj.via.uinteger);
+                if (trace)
+                    log.trace("@ StorageConnector:put PUT RESULT = %d", obj.via.uinteger);
             }
-            //stderr.writeln("OP_RC ", request_response.op_rc);
+            if (trace)
+                log.trace("@ StorageConnector:put OP_RC %s", request_response.op_rc);
         }
         else
-            log.trace("@ERR ON UNPACKING RESPONSE");
+            log.trace("ERR! StorageConnector:put, ON UNPACKING RESPONSE");
 
         return request_response;
     }
@@ -228,19 +222,13 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.get SEND %s", buf);
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.get RECEIVE SIZE BUF %d", receive_size);
@@ -266,10 +254,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             if (trace)
                 log.trace("connector.get RECEIVE RESPONSE %s", receive_size);
 
@@ -290,9 +275,9 @@ class Connector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = uris.length;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = uris.length;
 
             if (trace)
                 log.trace("connector.get OP RESULT = %d", obj.via.uinteger);
@@ -302,7 +287,7 @@ class Connector
                 obj                         = unpacker.unpacked[ i ];
                 request_response.op_rc[ j ] = cast(ResultCode)obj.via.uinteger;
                 if (request_response.op_rc[ j ] == ResultCode.OK)
-                    request_response.msgpacks[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
+                    request_response.binobjs[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
                 if (trace)
                     log.trace("connector.get GET RESULT = %d", obj.via.uinteger);
             }
@@ -363,20 +348,14 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.authorize SEND %s", buf);
 
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.authorize RECEIVE SIZE BUF %d", receive_size);
@@ -400,10 +379,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             if (trace)
                 log.trace("connector.authorize RECEIVE RESPONSE %s", receive_size);
 
@@ -498,20 +474,14 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.remove SEND %s", buf);
 
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.remove RECEIVE SIZE BUF %d", receive_size);
@@ -535,10 +505,7 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
             if (trace)
                 log.trace("connector.remove RECEIVE RESPONSE %s", receive_size);
 
@@ -560,9 +527,9 @@ class Connector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = uris.length;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = uris.length;
 
             if (trace)
                 log.trace("connector.remove OP RESULT = %d", obj.via.uinteger);
@@ -627,19 +594,13 @@ class Connector
 
         for (;; )
         {
-            version (std_socket)
-            {
-                s.send(buf);
-            }
+            s.send(buf);
 
             if (trace)
                 log.trace("connector.get_ticket SEND %s", buf);
 
-            version (std_socket)
-            {
-                buf.length = 4;
-                long receive_size = s.receive(buf);
-            }
+            buf.length = 4;
+            long receive_size = s.receive(buf);
 
             if (trace)
                 log.trace("connector.get_ticket RECEIVE SIZE BUF %d", receive_size);
@@ -665,10 +626,8 @@ class Connector
 
             response = new ubyte[ response_size ];
 
-            version (std_socket)
-            {
-                receive_size = s.receive(response);
-            }
+            receive_size = s.receive(response);
+
             if (trace)
                 log.trace("connector.get_ticket RECEIVE RESPONSE %s", receive_size);
 
@@ -689,9 +648,9 @@ class Connector
         if (unpacker.execute())
         {
             auto obj = unpacker.unpacked[ 0 ];
-            request_response.common_rc       = cast(ResultCode)(obj.via.uinteger);
-            request_response.op_rc.length    = unpacker.unpacked.length - 1;
-            request_response.msgpacks.length = ticket_ids.length;
+            request_response.common_rc      = cast(ResultCode)(obj.via.uinteger);
+            request_response.op_rc.length   = unpacker.unpacked.length - 1;
+            request_response.binobjs.length = ticket_ids.length;
 
             if (trace)
                 log.trace("connector.get_ticket OP RESULT = %d", obj.via.uinteger);
@@ -702,7 +661,7 @@ class Connector
                 request_response.op_rc[ j ] = cast(ResultCode)obj.via.uinteger;
                 // stderr.writeln("@J ", j, request_response.op_rc[ j ]);
                 if (request_response.op_rc[ j ] == ResultCode.OK)
-                    request_response.msgpacks[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
+                    request_response.binobjs[ j ] = cast(string)unpacker.unpacked[ i + 1 ].via.raw;
                 if (trace)
                     log.trace("connector.get_ticket GET RESULT = %d", obj.via.uinteger);
             }

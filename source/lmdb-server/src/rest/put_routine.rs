@@ -94,7 +94,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
     let arr_size: u64;
     /// Decodes main array
     match decode::decode_array(cursor) {
-        Err(err) => return Err(format!("@ERR DECODING INDIVIDUAL MSGPACK ARRAY {0}", err)),
+        Err(err) => return Err(format!("@ERR DECODING INDIVIDUAL MSGPACK ARRAY {:?}", err)),
         Ok(size) => arr_size = size
     }
 
@@ -105,14 +105,14 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
 
     /// Decodes individual uri
     match decode::decode_string(cursor, &mut individual.uri) {
-        Err(err) => return Err(format!("@ERR DECODING INDIVIDUAL URI {0}", err)),
+        Err(err) => return Err(format!("@ERR DECODING INDIVIDUAL URI {:?}", err)),
         Ok(_) => {}
     }
 
     let map_size: u64;
     /// Decodes map with resources
     match decode::decode_map(cursor) {
-        Err(err) => return Err(format!("@ERR DECODING INDIVIDUAL MAP {0}", err)),
+        Err(err) => return Err(format!("@ERR DECODING INDIVIDUAL MAP {:?}", err)),
         Ok(size) => map_size = size
     }
 
@@ -123,7 +123,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
 
         /// Map key is resource
         match decode::decode_string(cursor, &mut key) {
-            Err(err) => return Err(format!("@ERR DECODING RESOURCE URI {0}", err)),
+            Err(err) => return Err(format!("@ERR DECODING RESOURCE URI {:?}", err)),
             Ok(_) => {}
         }
         
@@ -131,7 +131,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
         /// Decodes resource's array
         match decode::decode_array(cursor) {
             Ok(rs) => res_size = rs,
-            Err(err) => return Err(format!("@ERR DECODING RESOURCES ARRAY {0}", err))
+            Err(err) => return Err(format!("@ERR DECODING RESOURCES ARRAY {:?}", err))
         }
 
         /// For each element in resource array checks it type
@@ -139,7 +139,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
             let objtype: decode::Type;
             match decode::decode_type(cursor) {
                 Ok(t) => objtype = t,
-                Err(err) => return Err(format!("@ERR DECODING RESOURCE TYPE {0}", err))
+                Err(err) => return Err(format!("@ERR DECODING RESOURCE TYPE {:?}", err))
             }
 
             match objtype {
@@ -151,7 +151,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
                     /// Frist element of oall array is resource tyoe
                     match decode::decode_uint(cursor) {
                         Ok(rt) => res_type = rt,
-                        Err(err) => return Err(format!("@ERR DECODING RESOURCE TYPE {0}", err))
+                        Err(err) => return Err(format!("@ERR DECODING RESOURCE TYPE {:?}", err))
                     }
                     if res_arr_size == 2 {
                         if res_type == ResourceType::Datetime as u64 {
@@ -160,21 +160,21 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
                             let decode_type: decode::Type;                   
                             match decode::decode_type(cursor) {
                                 Ok(dt) => decode_type = dt,
-                                Err(err) => return Err(format!("@ERR DECODING STRING RES TYPE {0}", err))
+                                Err(err) => return Err(format!("@ERR DECODING STRING RES TYPE {:?}", err))
                             }
 
                             match decode_type {
                                 decode::Type::UintObj => {
                                     match decode::decode_uint(cursor) {
                                         Ok(dt) => datetime = dt as i64,
-                                        Err(err) => return Err(format!("@ERR DECODING DATETIME {0}", err))
+                                        Err(err) => return Err(format!("@ERR DECODING DATETIME {:?}", err))
                                     }
                                 }
 
                                 decode::Type::IntObj => {
                                     match decode::decode_int(cursor) {
                                         Ok(dt) => datetime = dt,
-                                        Err(err) => return Err(format!("@ERR DECODING DATETIME {0}", err))
+                                        Err(err) => return Err(format!("@ERR DECODING DATETIME {:?}", err))
                                     }
                                 }
 
@@ -191,7 +191,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
                             let decode_type: decode::Type;
                             match decode::decode_type(cursor) {
                                 Ok(dt) => decode_type = dt,
-                                Err(err) => return Err(format!("@ERR DECODING STRING RES TYPE {0}", err))
+                                Err(err) => return Err(format!("@ERR DECODING STRING RES TYPE {:?}", err))
                             }
 
                             match decode_type {
@@ -215,7 +215,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
                             let mut decode_type: decode::Type;  
                             match decode::decode_type(cursor) {
                                 Ok(dt) => decode_type = dt,
-                                Err(err) => return Err(format!("@ERR DECODEING MANTISSA TYPE {0}", err))
+                                Err(err) => return Err(format!("@ERR DECODEING MANTISSA TYPE {:?}", err))
                             }
 
                             match decode_type {
@@ -230,7 +230,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
   
                             match decode::decode_type(cursor) {
                                 Ok(dt) => decode_type = dt,
-                                Err(err) => return Err(format!("@ERR DECODEING MANTISSA TYPE {0}", err))
+                                Err(err) => return Err(format!("@ERR DECODEING MANTISSA TYPE {:?}", err))
                             }
 
                             match decode_type {
@@ -252,7 +252,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
                             let decode_type: decode::Type;
                             match decode::decode_type(cursor) {
                                 Ok(dt) => decode_type = dt,
-                                Err(err) => return Err(format!("@ERR DECODING STRING RES TYPE {0}", err))
+                                Err(err) => return Err(format!("@ERR DECODING STRING RES TYPE {:?}", err))
                             }
 
                             match decode_type {
@@ -264,7 +264,7 @@ pub fn msgpack_to_individual(cursor: &mut Cursor<&[u8]>, individual: &mut Indivi
 
                             match decode::decode_uint(cursor) {
                                 Ok(l) => resource.lang = Lang::from_u64(l),
-                                Err(err) => return Err(format!("@ERR DECODING LEN {0}", err))
+                                Err(err) => return Err(format!("@ERR DECODING LEN {:?}", err))
                             }
                             resource.res_type = ResourceType::Str;
                             resources.push(resource);

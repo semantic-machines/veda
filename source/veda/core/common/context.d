@@ -1,7 +1,7 @@
 /**
  * core API
 
-   Copyright: © 2014-2015 Semantic Machines
+   Copyright: © 2014-2017 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
 
@@ -13,7 +13,7 @@ private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto
                veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
 
 alias MODULES_MASK = long;
-const ALL_MODULES = 0;
+const ALL_MODULES  = 0;
 
 /**
  * Обьект - сессионный тикет
@@ -61,17 +61,19 @@ public struct SearchResult
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
-interface Storage
+interface ReadStorage
 {
-    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
-    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
-    public ResultCode remove(bool need_auth, string user_id, string in_key);
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
-    public void unload_to_queue(string path, string queue_id, bool only_ids);
+    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+    public void open();
+    public void reopen();
+    public void close();
     public long count_entries();
-    public void reopen_db();
-    public void close_db();
-    public long dump_to_binlog();
+}
+
+interface Storage : ReadStorage
+{
+    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
+    public ResultCode remove(OptAuthorize op_auth, string user_id, string in_key);
 }
 
 interface ScriptVM
@@ -116,7 +118,7 @@ interface Context
 
     public Logger get_logger();
 
-    public ResultCode commit(Transaction *in_tnx);
+    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     public VQL get_vql();
     public Authorization acl_indexes();
@@ -163,7 +165,7 @@ interface Context
                 top = сколько вернуть положительно авторизованных элементов
                 limit = максимальное количество найденных элементов
                 prepare_element_event = делегат для дополнительных действий извне
-    
+
        Returns:
                 список авторизованных uri
      */
@@ -176,7 +178,7 @@ interface Context
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
 
-    public Storage get_inividuals_storage_r();
+    public ReadStorage get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
@@ -187,7 +189,7 @@ interface Context
        Returns:
                 авторизованный экземпляр onto.Individual
      */
-    public Individual               get_individual(Ticket *ticket, Uri uri);
+    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     /**
        Вернуть список индивидуалов по списку uri
@@ -225,8 +227,8 @@ interface Context
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                    OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems, 
-							    	OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
+    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);

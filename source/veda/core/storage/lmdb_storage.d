@@ -59,7 +59,7 @@ public class LmdbStorage : Storage
         }
 
         create_folder_struct();
-        open_db();
+        open();
 //        reopen_db();
     }
 
@@ -69,7 +69,7 @@ public class LmdbStorage : Storage
         return this._path;
     }
 
-    public void close_db()
+    public void close()
     {
         if (mode == DBMode.RW)
             flush(1);
@@ -81,17 +81,17 @@ public class LmdbStorage : Storage
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
     }
 
-    public void reopen_db()
+    public void reopen()
     {
         if (mode == DBMode.R)
         {
-            close_db();
-            open_db();
+            close();
+            open();
             log.trace("reopen_db %s, mode=%s, thread:%s, last_op_id=%d", _path, text(mode), core_thread.getThis().name, last_op_id);
         }
     }
 
-    public void open_db()
+    public void open()
     {
         //log.trace ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
@@ -124,7 +124,7 @@ public class LmdbStorage : Storage
 
             if (rc == 0)
             {
-                string   data_str = find(false, null, summ_hash_this_db_id);
+                string   data_str = find(OptAuthorize.NO, null, summ_hash_this_db_id);
 
                 string[] dataff = data_str.split(',');
                 string   hash_str;
@@ -179,10 +179,10 @@ public class LmdbStorage : Storage
         return rc;
     }
 
-    public ResultCode put(bool need_auth, string user_uri, string in_key, string in_value, long op_id)
+    public ResultCode put(OptAuthorize op_auth, string user_uri, string in_key, string in_value, long op_id)
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         if (op_id > 0)
             last_op_id = op_id;
@@ -235,7 +235,7 @@ public class LmdbStorage : Storage
                 growth_db(env, txn);
 
                 // retry
-                return put(need_auth, user_uri, _key, value, op_id);
+                return put(op_auth, user_uri, _key, value, op_id);
             }
             if (rc != 0)
             {
@@ -251,7 +251,7 @@ public class LmdbStorage : Storage
                 growth_db(env, null);
 
                 // retry
-                return put(need_auth, user_uri, _key, value, op_id);
+                return put(op_auth, user_uri, _key, value, op_id);
             }
 
             if (rc != 0)
@@ -273,10 +273,10 @@ public class LmdbStorage : Storage
         }
     }
 
-    public ResultCode remove(bool need_auth, string user_uri, string in_key)
+    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         try
         {
@@ -322,7 +322,7 @@ public class LmdbStorage : Storage
                 growth_db(env, txn);
 
                 // retry
-                return remove(need_auth, user_uri, _key);
+                return remove(op_auth, user_uri, _key);
             }
             if (rc != 0)
             {
@@ -339,7 +339,7 @@ public class LmdbStorage : Storage
                 growth_db(env, null);
 
                 // retry
-                return remove(need_auth, user_uri, _key);
+                return remove(op_auth, user_uri, _key);
             }
 
             if (rc != 0)
@@ -368,7 +368,7 @@ public class LmdbStorage : Storage
             //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
             if (mode == DBMode.RW && last_op_id > committed_last_op_id)
             {
-                put(false, null, summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
+                put(OptAuthorize.NO, null, summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
                 committed_last_op_id = last_op_id;
             }
 
@@ -399,7 +399,7 @@ public class LmdbStorage : Storage
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         last_op_id = op_id;
 
@@ -515,7 +515,7 @@ public class LmdbStorage : Storage
     public long count_entries()
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         long count = -1;
         int  rc;
@@ -543,7 +543,7 @@ public class LmdbStorage : Storage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
+                reopen();
                 return count_entries();
             }
 
@@ -580,18 +580,18 @@ public class LmdbStorage : Storage
 
     public bool is_exists(string uri)
     {
-        if (find(false, null, uri, false) !is null)
+        if (find(OptAuthorize.NO, null, uri, false) !is null)
             return true;
         else
             return false;
     }
 
-    public string find(bool need_auth, string user_uri, string _uri, bool return_value = true)
+    public string find(OptAuthorize op_auth, string user_uri, string _uri, bool return_value = true)
     {
         string uri = _uri.idup;
 
         if (db_is_opened == false)
-            open_db();
+            open();
 
         if (uri is null || uri.length < 2)
             return null;
@@ -625,8 +625,8 @@ public class LmdbStorage : Storage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
-                return find(need_auth, user_uri, uri);
+                reopen();
+                return find(op_auth, user_uri, uri);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
@@ -636,7 +636,7 @@ public class LmdbStorage : Storage
                 // TODO: sleep ?
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                reopen_db();
+                reopen();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
         }
@@ -675,13 +675,12 @@ public class LmdbStorage : Storage
                 else
                     str = "?";
             }
-            
+
             swA.stop();
             long tA = cast(long)swA.peek().usecs;
 
             if (tA > 1000)
-	            log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
-                    
+                log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
         }catch (Exception ex)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
@@ -704,7 +703,7 @@ public class LmdbStorage : Storage
                 if (records_in_memory.length > max_count_record_in_memory)
                 {
                     log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                    reopen_db();
+                    reopen();
                 }
             }
             return res;
@@ -713,267 +712,6 @@ public class LmdbStorage : Storage
             return str;
     }
 
-    public long dump_to_binlog()
-    {
-        if (db_is_opened == false)
-            open_db();
-
-        int    size_bin_log     = 0;
-        int    max_size_bin_log = 10_000_000;
-
-        string bin_log_name = get_new_binlog_name(dbs_backup);
-        long   count;
-
-        if (db_is_open.get(_path, false) == false)
-            return -1;
-
-        int     rc;
-        MDB_txn *txn_r;
-        MDB_dbi dbi;
-
-        rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-        if (rc == MDB_BAD_RSLOT)
-        {
-            for (int i = 0; i < 10 && rc != 0; i++)
-            {
-                //log.trace_log_and_console("[%s] warn: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
-                mdb_txn_abort(txn_r);
-
-                // TODO: sleep ?
-                if (i > 3)
-                    core_thread.sleep(dur!("msecs")(10));
-
-                rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-            }
-        }
-
-        if (rc != 0)
-        {
-            if (rc == MDB_MAP_RESIZED)
-            {
-                log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
-                return -1;
-            }
-            else if (rc == MDB_BAD_RSLOT)
-            {
-                log.trace_log_and_console("WARN! [%s] #2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
-                mdb_txn_abort(txn_r);
-
-                // TODO: sleep ?
-                //core.thread.Thread.sleep(dur!("msecs")(1));
-                //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                reopen_db();
-                rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-            }
-        }
-
-        if (rc != 0)
-        {
-            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-            return -1;
-        }
-
-        try
-        {
-            rc = mdb_dbi_open(txn_r, null, 0, &dbi);
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                return -1;
-            }
-
-            MDB_cursor *cursor;
-
-            rc = mdb_cursor_open(txn_r, dbi, &cursor);
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                return -1;
-            }
-
-            MDB_val key;
-            MDB_val data;
-
-            while (rc == 0)
-            {
-                rc = mdb_cursor_get(cursor, &key, &data, MDB_cursor_op.MDB_NEXT);
-
-                if (rc == 0)
-                {
-                    string new_hash;
-                    string str_key = cast(string)(key.mv_data[ 0..key.mv_size ]).dup;
-                    if (str_key == xapian_metadata_doc_id || str_key == summ_hash_this_db_id || str_key.length == 0)
-                        continue;
-
-                    string str_data = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-
-                    if (str_data.length == 0)
-                        continue;
-
-                    bin_log_name = write_in_binlog(str_data, new_hash, bin_log_name, size_bin_log, max_size_bin_log, dbs_backup);
-
-                    writeln("#DUMP:", str_key);
-                    count++;
-                }
-            }
-        }catch (Exception ex)
-        {
-            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
-            return -1;
-        }
-
-        scope (exit)
-        {
-            mdb_txn_abort(txn_r);
-        }
-
-        return count;
-    }
-
-
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_id)
-    {
-        MDB_cursor *cursor;
-        MDB_txn    *txn_r;
-
-        try
-        {
-            if (db_is_open.get(_path, false) == false)
-                return -1;
-
-            int     rc;
-            MDB_dbi dbi;
-
-            rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-            if (rc == MDB_BAD_RSLOT)
-            {
-                for (int i = 0; i < 10 && rc != 0; i++)
-                {
-                    //log.trace_log_and_console("[%s] warn: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
-                    mdb_txn_abort(txn_r);
-
-                    // TODO: sleep ?
-                    if (i > 3)
-                        core_thread.sleep(dur!("msecs")(10));
-
-                    rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                }
-            }
-
-            if (rc != 0)
-            {
-                if (rc == MDB_MAP_RESIZED)
-                {
-                    log.trace_log_and_console("WARN" ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                    reopen_db();
-                    return -1;
-                }
-                else if (rc == MDB_BAD_RSLOT)
-                {
-                    log.trace_log_and_console("WARN [%s] #2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
-                    mdb_txn_abort(txn_r);
-
-                    // TODO: sleep ?
-                    //core.thread.Thread.sleep(dur!("msecs")(1));
-                    //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                    reopen_db();
-                    rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                }
-            }
-
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                return -1;
-            }
-
-            try
-            {
-                rc = mdb_dbi_open(txn_r, null, 0, &dbi);
-                if (rc != 0)
-                {
-                    log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                    return -1;
-                }
-
-                rc = mdb_cursor_open(txn_r, dbi, &cursor);
-                if (rc != 0)
-                {
-                    log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                    return -1;
-                }
-
-                MDB_val key;
-                MDB_val data;
-
-                while (rc == 0)
-                {
-                    rc = mdb_cursor_get(cursor, &key, &data, MDB_cursor_op.MDB_NEXT);
-
-                    if (rc == 0)
-                    {
-                        string str_key = cast(string)(key.mv_data[ 0..key.mv_size ]).dup;
-                        string str_data;
-
-                        if (only_id == false)
-                            str_data = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-
-                        if (prepare(str_key, str_data) == false)
-                            break;
-                    }
-                }
-            }catch (Throwable ex)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
-                return -1;
-            }
-
-            return 0;
-        }
-        finally
-        {
-            if (cursor !is null)
-                mdb_cursor_close(cursor);
-            if (txn_r !is null)
-                mdb_txn_abort(txn_r);
-        }
-    }
-
-    public void unload_to_queue(string path, string queue_id, bool only_ids)
-    {
-        log.trace("START UNLOAD DATA TO QUEUE %s", queue_id);
-        long  count;
-        Queue queue = new Queue(path, queue_id, Mode.RW, log);
-
-        if (queue.open(Mode.RW))
-        {
-            bool add_to_queue(string key, string value)
-            {
-                queue.push(value, false);
-                count++;
-                return true;
-            }
-
-            bool add_id_to_queue(string key, string value)
-            {
-                queue.push(key, false);
-                count++;
-                return true;
-            }
-
-            if (only_ids)
-                get_of_cursor(&add_id_to_queue, only_ids);
-            else
-                get_of_cursor(&add_to_queue, only_ids);
-
-            queue.close();
-        }
-        else
-            log.trace("store_thread:CMD_UNLOAD: not open queue");
-
-        log.trace("END UNLOAD DATA TO QUEUE %s", queue_id);
-    }
 }
 
 string get_new_binlog_name(string db_path)

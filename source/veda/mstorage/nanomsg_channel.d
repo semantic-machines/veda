@@ -66,11 +66,6 @@ void nanomsg_channel(string thread_name)
                         //log.trace ("is json");
                         rep = execute_json(req, context);
                     }
-                    else
-                    {
-                        //log.trace ("is binobj");
-                        rep = execute_binobj(req, context);
-                    }
 
                     nn_freemsg(buf);
 
