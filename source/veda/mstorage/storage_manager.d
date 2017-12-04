@@ -283,8 +283,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                     if (op_id - last_reopen_rw_op_id > max_count_updates)
                                     {
                                         log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
-                                        storage.close_db();
-                                        storage.open_db();
+                                        storage.close();
+                                        storage.open();
                                         last_reopen_rw_op_id = op_id;
                                     }
 
@@ -312,8 +312,8 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                                 if (op_id - last_reopen_rw_op_id > max_count_updates)
                                 {
                                     log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
-                                    storage.close_db();
-                                    storage.open_db();
+                                    storage.close();
+                                    storage.open();
                                     last_reopen_rw_op_id = op_id;
                                 }
 

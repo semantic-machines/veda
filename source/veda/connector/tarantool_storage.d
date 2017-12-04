@@ -145,6 +145,23 @@ public class TarantoolStorage : ReadStorage
 
         return 0;
     }
+
+    public void reopen()
+    {
+    }
+
+    public void open()
+    {
+    }
+
+    public void close()
+    {
+    }
+
+    long count_entries()
+    {
+        return -1;
+    }
 }
 
 string access_to_pretty_string(const ubyte src)

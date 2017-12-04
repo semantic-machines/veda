@@ -59,7 +59,7 @@ public class LmdbStorage : Storage
         }
 
         create_folder_struct();
-        open_db();
+        open();
 //        reopen_db();
     }
 
@@ -69,7 +69,7 @@ public class LmdbStorage : Storage
         return this._path;
     }
 
-    public void close_db()
+    public void close()
     {
         if (mode == DBMode.RW)
             flush(1);
@@ -81,17 +81,17 @@ public class LmdbStorage : Storage
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
     }
 
-    public void reopen_db()
+    public void reopen()
     {
         if (mode == DBMode.R)
         {
-            close_db();
-            open_db();
+            close();
+            open();
             log.trace("reopen_db %s, mode=%s, thread:%s, last_op_id=%d", _path, text(mode), core_thread.getThis().name, last_op_id);
         }
     }
 
-    public void open_db()
+    public void open()
     {
         //log.trace ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
@@ -182,7 +182,7 @@ public class LmdbStorage : Storage
     public ResultCode put(OptAuthorize op_auth, string user_uri, string in_key, string in_value, long op_id)
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         if (op_id > 0)
             last_op_id = op_id;
@@ -276,7 +276,7 @@ public class LmdbStorage : Storage
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         try
         {
@@ -399,7 +399,7 @@ public class LmdbStorage : Storage
     public int update_or_create(string uri, string content, long op_id, out string new_hash)
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         last_op_id = op_id;
 
@@ -515,7 +515,7 @@ public class LmdbStorage : Storage
     public long count_entries()
     {
         if (db_is_opened == false)
-            open_db();
+            open();
 
         long count = -1;
         int  rc;
@@ -543,7 +543,7 @@ public class LmdbStorage : Storage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
+                reopen();
                 return count_entries();
             }
 
@@ -591,7 +591,7 @@ public class LmdbStorage : Storage
         string uri = _uri.idup;
 
         if (db_is_opened == false)
-            open_db();
+            open();
 
         if (uri is null || uri.length < 2)
             return null;
@@ -625,7 +625,7 @@ public class LmdbStorage : Storage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
+                reopen();
                 return find(op_auth, user_uri, uri);
             }
             else if (rc == MDB_BAD_RSLOT)
@@ -636,7 +636,7 @@ public class LmdbStorage : Storage
                 // TODO: sleep ?
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                reopen_db();
+                reopen();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
         }
@@ -703,7 +703,7 @@ public class LmdbStorage : Storage
                 if (records_in_memory.length > max_count_record_in_memory)
                 {
                     log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                    reopen_db();
+                    reopen();
                 }
             }
             return res;

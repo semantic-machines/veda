@@ -48,9 +48,9 @@ class Authorization : LmdbStorage
 
     int count_permissions = 0;
 
-    override void reopen_db()
+    override void reopen()
     {
-        super.reopen_db();
+        super.reopen();
     }
 
     ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
@@ -75,12 +75,12 @@ class Authorization : LmdbStorage
 
 
         if (db_is_opened == false)
-            open_db();
+            open();
 
-        void reopen_db()
+        void reopen()
         {
             log.trace("reopen acl.R");
-            this.reopen_db();
+            this.reopen();
         }
 
         if (ticket is null)
@@ -97,7 +97,7 @@ class Authorization : LmdbStorage
                               access_to_pretty_string(request_access)));
 
         if (is_check_for_reload)
-            acl_check_for_reload(&reopen_db);
+            acl_check_for_reload(&reopen);
 
         //if (db_is_open.get(path, false) == false)
         //    return res;
@@ -205,7 +205,7 @@ class Authorization : LmdbStorage
             if (records_in_memory.length > max_count_record_in_memory)
             {
                 log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                reopen_db();
+                reopen();
             }
         }
 
@@ -256,7 +256,7 @@ class Authorization : LmdbStorage
             if (rc == MDB_MAP_RESIZED)
             {
                 log.trace("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) %s", path, fromStringz(mdb_strerror(rc)));
-                reopen_db();
+                reopen();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
             else if (rc == MDB_BAD_RSLOT)
@@ -267,7 +267,7 @@ class Authorization : LmdbStorage
                 // TODO: sleep ?
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-                reopen_db();
+                reopen();
                 rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
             }
         }

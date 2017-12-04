@@ -13,7 +13,7 @@ private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto
                veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
 
 alias MODULES_MASK = long;
-const ALL_MODULES = 0;
+const ALL_MODULES  = 0;
 
 /**
  * Обьект - сессионный тикет
@@ -64,17 +64,16 @@ public struct SearchResult
 interface ReadStorage
 {
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+    public void open();
+    public void reopen();
+    public void close();
+    public long count_entries();
 }
 
-interface Storage : ReadStorage 
+interface Storage : ReadStorage
 {
     public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(OptAuthorize op_auth, string user_id, string in_key);
-
-    public long count_entries();
-
-    public void reopen_db();
-    public void close_db();
 }
 
 interface ScriptVM
@@ -166,7 +165,7 @@ interface Context
                 top = сколько вернуть положительно авторизованных элементов
                 limit = максимальное количество найденных элементов
                 prepare_element_event = делегат для дополнительных действий извне
-    
+
        Returns:
                 список авторизованных uri
      */
@@ -179,7 +178,7 @@ interface Context
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
 
-    public Storage get_inividuals_storage_r();
+    public ReadStorage get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
@@ -228,8 +227,8 @@ interface Context
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                    OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems, 
-							    	OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
+    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);

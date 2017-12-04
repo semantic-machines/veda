@@ -38,8 +38,8 @@ class PThreadContext : Context
 
     private               string[ string ] prefix_map;
 
-    private Storage       inividuals_storage_r;
-    private Storage       tickets_storage_r;
+    private ReadStorage       inividuals_storage_r;
+    private ReadStorage       tickets_storage_r;
     private VQL           _vql;
 
     private long          local_last_update_time;
@@ -295,8 +295,8 @@ class PThreadContext : Context
     ~this()
     {
         log.trace_log_and_console("DELETE CONTEXT [%s]", name);
-        inividuals_storage_r.close_db();
-        tickets_storage_r.close_db();
+        inividuals_storage_r.close();
+        tickets_storage_r.close();
     }
 
     bool isReadyAPI()
@@ -304,7 +304,7 @@ class PThreadContext : Context
         return API_ready;
     }
 
-    public Storage get_inividuals_storage_r()
+    public ReadStorage get_inividuals_storage_r()
     {
         return inividuals_storage_r;
     }
@@ -632,7 +632,7 @@ class PThreadContext : Context
     public void reopen_ro_ticket_manager_db()
     {
         if (tickets_storage_r !is null)
-            tickets_storage_r.reopen_db();
+            tickets_storage_r.reopen();
     }
 
     public VQL get_vql()
@@ -649,13 +649,13 @@ class PThreadContext : Context
     public void reopen_ro_individuals_storage_db()
     {
         if (inividuals_storage_r !is null)
-            inividuals_storage_r.reopen_db();
+            inividuals_storage_r.reopen();
     }
 
     public void reopen_ro_acl_storage_db()
     {
         if (acl_indexes !is null)
-            acl_indexes.reopen_db();
+            acl_indexes.reopen();
         //log.trace ("reopen_ro_acl_storage_db");
     }
 
