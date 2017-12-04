@@ -59,8 +59,6 @@ extern (C) void handleTermination2(int _signal)
 
 private Context l_context;
 
-private ReadStorage inividuals_storage_r;
-
 private VQL     vql_r;
 private Ticket  sticket;
 
@@ -182,12 +180,10 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
-        l_context            = core_context;
-        
-        inividuals_storage_r = l_context.get_inividuals_storage_r();
-        
-        vql_r                = l_context.get_vql();
+        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
+        l_context    = core_context;
+
+        vql_r = l_context.get_vql();
 
         sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
@@ -298,8 +294,22 @@ void commiter(string thread_name)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+private ReadStorage inividuals_storage_r;
+
 public Individual get_individual(Ticket *ticket, string uri)
 {
+    if (inividuals_storage_r is null)
+    {
+        if (get_lmdb_mode() == "as_server")
+        {
+            inividuals_storage_r = get_storage_connector();
+        }
+        else
+        {
+            inividuals_storage_r = l_context.get_inividuals_storage_r();
+        }
+    }
+
     Individual individual = Individual.init;
 
     if (ticket is null)

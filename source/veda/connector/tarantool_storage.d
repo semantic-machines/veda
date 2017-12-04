@@ -8,7 +8,7 @@ import veda.core.common.context, veda.common.logger, veda.common.type;
 import veda.connector.storage_connector, veda.connector.requestresponse;
 import veda.core.common.transaction, veda.onto.individual, veda.onto.resource;
 
-public class TarantoolStorage
+public class TarantoolStorage : ReadStorage
 {
     string                    host;
     ushort                    port;
@@ -114,7 +114,6 @@ public class TarantoolStorage
 
         return 0;
     }
-
 }
 
 string access_to_pretty_string(const ubyte src)
