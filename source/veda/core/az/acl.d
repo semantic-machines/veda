@@ -53,11 +53,6 @@ class Authorization : LmdbStorage
         super.reopen_db();
     }
 
-    override public void unload_to_queue(string path, string queue_id, bool only_ids)
-    {
-        super.unload_to_queue(path, queue_id, only_ids);
-    }
-
     ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
                                                                                                                 string subject_group,
                                                                                                                 string right)

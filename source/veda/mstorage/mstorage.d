@@ -14,7 +14,7 @@ private
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
     import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
-    import veda.core.storage.tarantool_storage;
+    import veda.connector.tarantool_storage;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;

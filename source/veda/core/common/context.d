@@ -1,7 +1,7 @@
 /**
  * core API
 
-   Copyright: © 2014-2015 Semantic Machines
+   Copyright: © 2014-2017 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
 
@@ -12,7 +12,7 @@ private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
                veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
 
-alias MODULES_MASK = long;
+alias MODULES_MASK = ubyte;
 const ALL_MODULES = 0;
 
 /**
@@ -64,14 +64,13 @@ public struct SearchResult
 interface Storage
 {
     public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
-    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
     public ResultCode remove(bool need_auth, string user_id, string in_key);
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
-    public void unload_to_queue(string path, string queue_id, bool only_ids);
+
+    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
     public long count_entries();
+
     public void reopen_db();
     public void close_db();
-    public long dump_to_binlog();
 }
 
 interface ScriptVM

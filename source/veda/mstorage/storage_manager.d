@@ -14,7 +14,7 @@ private
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
     import veda.mstorage.wslink, veda.core.common.transaction;
-    import veda.core.storage.tarantool_storage;
+    import veda.connector.tarantool_storage;
 }
 
 private string           lmdb_mode;

@@ -1,7 +1,7 @@
 /**
  * реализация хранилища, используя tarantool
  */
-module veda.core.storage.tarantool_storage;
+module veda.connector.tarantool_storage;
 
 import std.conv, std.stdio;
 import veda.core.common.context, veda.common.logger, veda.common.type;
@@ -115,38 +115,6 @@ public class TarantoolStorage
         return 0;
     }
 
-    public void unload_to_queue(string path, string queue_id, bool only_ids)
-    {
-    }
-
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids)
-    {
-        log.trace("ERR! get_of_cursor not implemented");
-        throw new Exception("not implemented");
-    }
-
-    public long count_entries()
-    {
-        log.trace("ERR! count_entries not implemented");
-        throw new Exception("not implemented");
-    }
-
-    public void reopen_db()
-    {
-        //throw new Exception ("not implemented");
-    }
-
-    public void close_db()
-    {
-        connector.close();
-        //throw new Exception ("not implemented");
-    }
-
-    public long dump_to_binlog()
-    {
-        log.trace("ERR! dump_to_binlog not implemented");
-        throw new Exception("not implemented");
-    }
 }
 
 string access_to_pretty_string(const ubyte src)
