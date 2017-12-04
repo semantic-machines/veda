@@ -22,8 +22,8 @@
 	],
         "sourceFiles":[
         "../../veda/util/properd.d",
-        "../../veda/connector/storage_connector.d",
-        "../../veda/connector/requestresponse.d",
+        "../../veda/storage/common.d",
+        "../../veda/storage/lmdb/lmdb_storage.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/lmdb_header.d",
         "../../veda/bind/nano.d",

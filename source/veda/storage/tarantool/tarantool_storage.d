@@ -1,11 +1,11 @@
 /**
  * реализация хранилища, используя tarantool
  */
-module veda.connector.tarantool_storage;
+module veda.storage.tarantool.tarantool_storage;
 
 import std.conv, std.stdio, std.string;
 import veda.core.common.context, veda.common.logger, veda.common.type;
-import veda.connector.storage_connector, veda.connector.requestresponse;
+import veda.storage.tarantool.storage_connector, veda.storage.tarantool.requestresponse, veda.storage.common;
 import veda.core.common.transaction, veda.onto.individual, veda.onto.resource;
 import veda.util.properd;
 

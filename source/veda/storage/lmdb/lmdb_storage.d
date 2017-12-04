@@ -1,14 +1,13 @@
 /**
  * lmdb реализация хранилища
  */
-module veda.core.storage.lmdb_storage;
+module veda.storage.lmdb.lmdb_storage;
 
 private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.bind.lmdb_header, veda.onto.individual, veda.common.type;
-    import veda.common.logger, veda.core.util.utils, veda.core.common.context, veda.core.common.define;
-    import veda.core.storage.binlog_tools, veda.util.queue;
+    import veda.common.logger, veda.core.util.utils, veda.storage.common, veda.core.common.define;
 
     alias core.thread.Thread core_thread;
 }
@@ -714,13 +713,5 @@ public class LmdbStorage : Storage
 
 }
 
-string get_new_binlog_name(string db_path)
-{
-    string now = Clock.currTime().toISOExtString();
-
-    now = now[ 0..indexOf(now, '.') + 4 ];
-
-    return db_path ~ "." ~ now;
-}
 
 

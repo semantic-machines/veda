@@ -9,16 +9,16 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid;
     import backtrace.backtrace, Backtrace = backtrace.backtrace, veda.util.properd;
-    import veda.bind.libwebsocketd, veda.mstorage.wslink;
+    import veda.bind.libwebsocketd, veda.storage.lmdb.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
-    import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
-    import veda.connector.tarantool_storage;
+    import veda.mstorage.acl_manager, veda.storage.lmdb.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }
 
-alias veda.mstorage.storage_manager ticket_storage_module;
-alias veda.mstorage.storage_manager indv_storage_thread;
+alias veda.storage.lmdb.storage_manager ticket_storage_module;
+alias veda.storage.lmdb.storage_manager indv_storage_thread;
 alias veda.mstorage.acl_manager     acl_module;
 
 // ////// Logger ///////////////////////////////////////////
@@ -276,11 +276,11 @@ void commiter(string thread_name)
         }
         else
         {
-            veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+            veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
         }
 
         veda.mstorage.acl_manager.flush(false);
-        veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
+        veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }
 

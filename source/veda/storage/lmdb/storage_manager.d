@@ -1,7 +1,7 @@
 /**
  * хранение индивидов
  */
-module veda.mstorage.storage_manager;
+module veda.storage.lmdb.storage_manager;
 
 private
 {
@@ -9,12 +9,12 @@ private
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
            veda.onto.resource;
-    import veda.core.storage.lmdb_storage, veda.core.storage.binlog_tools, veda.util.module_info;
+    import veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
-    import veda.mstorage.wslink, veda.core.common.transaction;
-    import veda.connector.tarantool_storage;
+    import veda.storage.lmdb.wslink, veda.core.common.transaction;
+    import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }
 
 private string           lmdb_mode;

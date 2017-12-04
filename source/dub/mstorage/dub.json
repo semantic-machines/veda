@@ -32,7 +32,10 @@
 	    "../../veda/core",  
 	    "../../veda/onto", 
             "../../veda/onto/bj8individual",
-            "../../veda/vmodule"
+            "../../veda/vmodule",
+	    "../../veda/storage",
+	    "../../veda/storage/lmdb",
+	    "../../veda/storage/tarantool"
 	],
 	"configurations": [
 	{
