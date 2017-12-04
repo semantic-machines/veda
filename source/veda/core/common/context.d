@@ -12,7 +12,7 @@ private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
                veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
 
-alias MODULES_MASK = ubyte;
+alias MODULES_MASK = long;
 const ALL_MODULES = 0;
 
 /**
