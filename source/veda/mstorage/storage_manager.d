@@ -352,7 +352,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
                         {
                             if (cmd == CMD_FIND)
                             {
-                                string res = storage.find(false, null, arg);
+                                string res = storage.find(OptAuthorize.NO, null, arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;

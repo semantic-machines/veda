@@ -124,7 +124,7 @@ public class LmdbStorage : Storage
 
             if (rc == 0)
             {
-                string   data_str = find(false, null, summ_hash_this_db_id);
+                string   data_str = find(OptAuthorize.NO, null, summ_hash_this_db_id);
 
                 string[] dataff = data_str.split(',');
                 string   hash_str;
@@ -580,13 +580,13 @@ public class LmdbStorage : Storage
 
     public bool is_exists(string uri)
     {
-        if (find(false, null, uri, false) !is null)
+        if (find(OptAuthorize.NO, null, uri, false) !is null)
             return true;
         else
             return false;
     }
 
-    public string find(bool need_auth, string user_uri, string _uri, bool return_value = true)
+    public string find(OptAuthorize op_auth, string user_uri, string _uri, bool return_value = true)
     {
         string uri = _uri.idup;
 
@@ -626,7 +626,7 @@ public class LmdbStorage : Storage
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen_db();
-                return find(need_auth, user_uri, uri);
+                return find(op_auth, user_uri, uri);
             }
             else if (rc == MDB_BAD_RSLOT)
             {

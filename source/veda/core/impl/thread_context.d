@@ -404,7 +404,7 @@ class PThreadContext : Context
         string res;
 
         if (inividuals_storage_r !is null)
-            res = inividuals_storage_r.find(true, user_id, uri);
+            res = inividuals_storage_r.find(OptAuthorize.YES, user_id, uri);
 
         if (res !is null && res.length < 10)
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
@@ -481,12 +481,12 @@ class PThreadContext : Context
 
     public string get_ticket_from_storage(string ticket_id)
     {
-        return tickets_storage_r.find(false, null, ticket_id);
+        return tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
     }
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = tickets_storage_r.find(false, null, "systicket");
+        string systicket_id = tickets_storage_r.find(OptAuthorize.NO, null, "systicket");
 
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
@@ -520,7 +520,7 @@ class PThreadContext : Context
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = tickets_storage_r.find(false, null, ticket_id);
+                string ticket_str = tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;

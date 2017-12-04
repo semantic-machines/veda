@@ -61,12 +61,16 @@ public struct SearchResult
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
-interface Storage
+interface ReadStorage
+{
+    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+}
+
+interface Storage : ReadStorage 
 {
     public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(bool need_auth, string user_id, string in_key);
 
-    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
     public long count_entries();
 
     public void reopen_db();

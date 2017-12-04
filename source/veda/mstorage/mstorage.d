@@ -59,7 +59,7 @@ extern (C) void handleTermination2(int _signal)
 
 private Context l_context;
 
-private Storage inividuals_storage_r;
+private ReadStorage inividuals_storage_r;
 
 private VQL     vql_r;
 private Ticket  sticket;
@@ -182,10 +182,11 @@ void init(string node_id)
     {
         Individual node;
 
-        Storage    storage = null;                               //new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
-        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, storage, null);
+        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
         l_context            = core_context;
+        
         inividuals_storage_r = l_context.get_inividuals_storage_r();
+        
         vql_r                = l_context.get_vql();
 
         sticket = sys_ticket(core_context);
@@ -307,7 +308,7 @@ public Individual get_individual(Ticket *ticket, string uri)
         return individual;
     }
 
-    string individual_as_binobj = inividuals_storage_r.find(true, ticket.user_uri, uri);
+    string individual_as_binobj = inividuals_storage_r.find(OptAuthorize.YES, ticket.user_uri, uri);
     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
     {
 //                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)

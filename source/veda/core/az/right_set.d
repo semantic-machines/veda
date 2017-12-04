@@ -237,7 +237,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
     {
         RightSet new_right_set = new RightSet(log);
 
-        string   prev_data_str = storage.find(false, null, prefix ~ rs.uri);
+        string   prev_data_str = storage.find(OptAuthorize.NO, null, prefix ~ rs.uri);
         if (prev_data_str !is null)
             rights_from_string(prev_data_str, new_right_set);
 
