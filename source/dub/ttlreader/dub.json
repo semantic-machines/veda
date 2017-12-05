@@ -22,7 +22,6 @@
             "../../veda/core/impl",
             "../../veda/core/az",
             "../../veda/core/search",
-            "../../veda/core/storage",
             "../../veda/core/common",
             "../../veda/vmodule",
             "../../veda/ttlreader"

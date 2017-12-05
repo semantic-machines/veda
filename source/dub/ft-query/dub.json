@@ -17,7 +17,6 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/search", 
-	    "../../veda/core/storage",
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
