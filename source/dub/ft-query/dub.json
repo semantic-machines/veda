@@ -17,14 +17,13 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/search", 
-	    "../../veda/core/storage",
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
 	"../../lib64/libxapiand.a", 
         "../../lib64/liblmdb.a",
         "../../veda/storage/common.d",
-        "../../veda/storage/lmdb/lmdb_storage.d",
+        "../../veda/storage/lmdb/lmdb_driver.d",
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",

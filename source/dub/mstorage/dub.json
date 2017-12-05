@@ -8,7 +8,7 @@
 	},
 	"versions": ["isMStorage"],	
         "libs": [
-                    "websockets", "nanomsg"
+                    "websockets", "nanomsg", "tarantool"
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
@@ -28,14 +28,14 @@
 	"sourcePaths":[
 	    "../../veda/mstorage", 
 	    "../../veda/common", 
-	    "../../veda/connector", 
 	    "../../veda/core",  
 	    "../../veda/onto", 
             "../../veda/onto/bj8individual",
             "../../veda/vmodule",
 	    "../../veda/storage",
 	    "../../veda/storage/lmdb",
-	    "../../veda/storage/tarantool"
+	    "../../veda/storage/tarantool",
+	    "../../veda/bind/tarantool"
 	],
 	"configurations": [
 	{

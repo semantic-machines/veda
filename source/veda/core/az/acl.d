@@ -6,14 +6,14 @@ private
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
     import veda.core.util.utils, veda.common.logger;
-    import veda.storage.lmdb.lmdb_storage, veda.core.az.right_set;
+    import veda.storage.lmdb.lmdb_driver, veda.core.az.right_set, veda.storage.common;
     import veda.util.container, veda.util.module_info;
 }
 
 string lstr = "                                                                           ";
 
 /// Хранение, чтение PermissionStatement, Membership
-class Authorization : LmdbStorage
+class Authorization : LmdbDriver
 {
     Logger log;
 
@@ -196,17 +196,6 @@ class Authorization : LmdbStorage
             if (trace_info !is null)
                 trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
                                   access_to_pretty_string(calc_right_res)));
-        }
-
-        if (mode == DBMode.R)
-        {
-            records_in_memory[ uri ] = 1;
-
-            if (records_in_memory.length > max_count_record_in_memory)
-            {
-                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                reopen();
-            }
         }
 
         return calc_right_res;
@@ -565,74 +554,3 @@ public bool acl_check_for_reload(void delegate() load)
     return false;
     //return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
 }
-
-unittest
-{
-    import veda.core.az.right_set;
-    import veda.util.tests_tools;
-
-    Logger log = new Logger("test", "log", "ACL");
-
-    string test_path = get_test_path();
-    string az_path   = test_path ~ "/az";
-
-    try
-    {
-        mkdir(az_path);
-    }
-    catch (Exception ex)
-    {
-    }
-
-    Authorization storage = new Authorization(az_path, DBMode.RW, "test", log);
-
-    assert(storage !is null);
-
-    Individual new_ind;
-    Individual prev_ind;
-    long       op_id = 0;
-
-    string     user_uri = "d:user1";
-    string     indv_uri = "d:indv1";
-
-    new_ind.addResource("rdf:type", Resource(DataType.Uri, "v-s:PermissionStatement"));
-    new_ind.addResource("v-s:canRead", Resource(true));
-    new_ind.addResource("v-s:permissionObject", Resource(DataType.Uri, indv_uri));
-    new_ind.addResource("v-s:permissionSubject", Resource(DataType.Uri, user_uri));
-
-    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
-
-    storage.flush(1);
-
-    Ticket ticket;
-
-    ticket.user_uri = user_uri;
-
-    ubyte res = storage.authorize(indv_uri, &ticket, Access.can_read, false, null, null);
-    assert(res == Access.can_read);
-
-    ubyte res1 = storage.authorize(indv_uri, &ticket, Access.can_update, false, null, null);
-    assert(res1 != Access.can_update);
-
-    ubyte res2 = storage.authorize(indv_uri ~ "_1", &ticket, Access.can_update, false, null, null);
-    assert(res2 != Access.can_update);
-
-    try
-    {
-        rmdir("./tmp/az");
-    }
-    catch (Exception ex)
-    {
-    }
-
-    try
-    {
-        rmdir("./tmp");
-    }
-    catch (Exception ex)
-    {
-    }
-
-    writeln("unittest [Authorization: store permission] Ok");
-}
-

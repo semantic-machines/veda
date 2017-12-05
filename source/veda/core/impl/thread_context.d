@@ -12,7 +12,7 @@ private
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_storage, veda.storage.common;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
 
     version (isMStorage)
@@ -38,8 +38,8 @@ class PThreadContext : Context
 
     private               string[ string ] prefix_map;
 
-    private ReadStorage       inividuals_storage_r;
-    private ReadStorage       tickets_storage_r;
+    private KeyValueDB       inividuals_storage_r;
+    private KeyValueDB       tickets_storage_r;
     private VQL           _vql;
 
     private long          local_last_update_time;
@@ -246,7 +246,7 @@ class PThreadContext : Context
     }
 
     public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url,
-                                     Authorization in_acl_indexes, Storage in_inividuals_storage_r, Storage in_tickets_storage_r)
+                                     Authorization in_acl_indexes, KeyValueDB in_inividuals_storage_r, KeyValueDB in_tickets_storage_r)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -269,12 +269,12 @@ class PThreadContext : Context
         ctx.node_id = _node_id;
 
         if (in_inividuals_storage_r is null)
-            ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
+            ctx.inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
         else
             ctx.inividuals_storage_r = in_inividuals_storage_r;
 
         if (in_tickets_storage_r is null)
-            ctx.tickets_storage_r = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
+            ctx.tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
         else
             ctx.tickets_storage_r = in_tickets_storage_r;
 
@@ -304,7 +304,7 @@ class PThreadContext : Context
         return API_ready;
     }
 
-    public ReadStorage get_inividuals_storage_r()
+    public KeyValueDB get_inividuals_storage_r()
     {
         return inividuals_storage_r;
     }

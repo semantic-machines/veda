@@ -25,30 +25,6 @@ struct Right
     }
 }
 
-string access_to_pretty_string(const ubyte src)
-{
-    string res = "";
-
-    if (src & Access.can_create)
-        res ~= "C ";
-    if (src & Access.can_read)
-        res ~= "R ";
-    if (src & Access.can_update)
-        res ~= "U ";
-    if (src & Access.can_delete)
-        res ~= "D ";
-    if (src & Access.cant_create)
-        res ~= "!C ";
-    if (src & Access.cant_read)
-        res ~= "!R ";
-    if (src & Access.cant_update)
-        res ~= "!U ";
-    if (src & Access.cant_delete)
-        res ~= "!D ";
-
-    return res;
-}
-
 class RightSet
 {
     Right *[ string ] data;
@@ -146,7 +122,7 @@ public string rights_as_string(RightSet new_rights)
 
 void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p_resource, string p_in_set, string prefix, ubyte default_access,
                        long op_id,
-                       Storage storage)
+                       KeyValueDB storage)
 {
     bool     is_deleted = new_ind.isExists("v-s:deleted", true);
 
@@ -230,7 +206,7 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
 
 private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
                               long op_id,
-                              Storage storage)
+                              KeyValueDB storage)
 {
     // для каждого из ресурсов выполним операцию добавления/удаления
     foreach (rs; resource)
@@ -278,7 +254,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
     }
 }
 
-void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
+void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op_id, KeyValueDB storage)
 {
     if (trace_msg[ 114 ] == 1)
         log.trace("store Membership: [%s] op_id=%d", new_ind.uri, op_id);
@@ -287,7 +263,7 @@ void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op
                       Access.can_create | Access.can_read | Access.can_update | Access.can_delete, op_id, storage);
 }
 
-void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
+void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, long op_id, KeyValueDB storage)
 {
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionFilter: [%s] op_id=%d", new_ind, op_id);
@@ -300,7 +276,7 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);
 }
 
-void prepare_permission_statement(ref Individual prev_ind, ref Individual new_ind, long op_id, Storage storage)
+void prepare_permission_statement(ref Individual prev_ind, ref Individual new_ind, long op_id, KeyValueDB storage)
 {
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionStatement: [%s] op_id=%d", new_ind, op_id);
