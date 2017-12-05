@@ -157,6 +157,8 @@ class VedaServer : WSClient
 
 void init(string node_id)
 {
+	writeln ("#1");
+	
     Context core_context;
 
     if (node_id is null || node_id.length < 2)
@@ -286,7 +288,7 @@ void commiter(string thread_name)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-private ReadStorage inividuals_storage_r;
+private KeyValueDB inividuals_storage_r;
 
 private Individual get_individual(Ticket *ticket, string uri)
 {
@@ -294,7 +296,7 @@ private Individual get_individual(Ticket *ticket, string uri)
     {
         if (get_lmdb_mode() == "as_server")
         {
-            inividuals_storage_r = get_storage_connector();
+            //inividuals_storage_r = get_storage_connector();
         }
         else
         {

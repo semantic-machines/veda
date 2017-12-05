@@ -25,7 +25,7 @@ enum DBMode
 public bool[ string ] db_is_open;
 
 /// key-value хранилище на lmdb
-public class LmdbStorage : Storage
+public class LmdbStorage : KeyValueDB
 {
     MDB_env             *env;
     public const string summ_hash_this_db_id;

@@ -38,8 +38,8 @@ class PThreadContext : Context
 
     private               string[ string ] prefix_map;
 
-    private ReadStorage       inividuals_storage_r;
-    private ReadStorage       tickets_storage_r;
+    private KeyValueDB       inividuals_storage_r;
+    private KeyValueDB       tickets_storage_r;
     private VQL           _vql;
 
     private long          local_last_update_time;
@@ -246,7 +246,7 @@ class PThreadContext : Context
     }
 
     public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url,
-                                     Authorization in_acl_indexes, Storage in_inividuals_storage_r, Storage in_tickets_storage_r)
+                                     Authorization in_acl_indexes, KeyValueDB in_inividuals_storage_r, KeyValueDB in_tickets_storage_r)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -304,7 +304,7 @@ class PThreadContext : Context
         return API_ready;
     }
 
-    public ReadStorage get_inividuals_storage_r()
+    public KeyValueDB get_inividuals_storage_r()
     {
         return inividuals_storage_r;
     }

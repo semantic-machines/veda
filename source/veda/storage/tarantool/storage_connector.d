@@ -12,7 +12,7 @@ private
 
 const MAX_SIZE_OF_PACKET = 1024 * 1024 * 10;
 
-class TTStorageConnector
+class ExtTarantoolConnector
 {
     Logger           log;
     public ubyte[]   buf;

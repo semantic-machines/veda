@@ -163,7 +163,7 @@ interface Context
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
 
-    public ReadStorage get_inividuals_storage_r();
+    public KeyValueDB get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
