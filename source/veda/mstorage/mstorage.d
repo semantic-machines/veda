@@ -19,7 +19,7 @@ private
 
 alias veda.storage.lmdb.storage_manager ticket_storage_module;
 alias veda.storage.lmdb.storage_manager indv_storage_thread;
-alias veda.mstorage.acl_manager     acl_module;
+alias veda.mstorage.acl_manager         acl_module;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -157,8 +157,6 @@ class VedaServer : WSClient
 
 void init(string node_id)
 {
-	writeln ("#1");
-	
     Context core_context;
 
     if (node_id is null || node_id.length < 2)
@@ -272,14 +270,7 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        if (get_lmdb_mode() == "as_server")
-        {
-            // log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
-        }
-        else
-        {
-            veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-        }
+        veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
 
         veda.mstorage.acl_manager.flush(false);
         veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
@@ -294,14 +285,7 @@ private Individual get_individual(Ticket *ticket, string uri)
 {
     if (inividuals_storage_r is null)
     {
-        if (get_lmdb_mode() == "as_server")
-        {
-            //inividuals_storage_r = get_storage_connector();
-        }
-        else
-        {
-            inividuals_storage_r = l_context.get_inividuals_storage_r();
-        }
+        inividuals_storage_r = l_context.get_inividuals_storage_r();
     }
 
     Individual individual = Individual.init;
@@ -794,37 +778,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         if (items.length > 0)
         {
-            if (get_lmdb_mode() == "as_server")
-            {
-                log.trace("LMDB_MODE=AS_SERVER, veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);");
-
-                bool is_packet = true;
-                foreach (ti; items)
-                {
-                    if (ti.user_uri != items[ 0 ].user_uri)
-                    {
-                        is_packet = false;
-                        break;
-                    }
-                }
-
-                if (is_packet)
-                {
-                    rcs = get_storage_connector().put(OptAuthorize.NO, items);
-                }
-
-                else
-                {
-                    foreach (ti; items)
-                    {
-                        rcs ~= get_storage_connector().put(OptAuthorize.NO, ti);
-                    }
-                }
-            }
-            else
-            {
-                rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
-            }
+            rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
 
             log.trace("commit: rc=%s", rc);
 
@@ -997,31 +951,15 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
 
             if (tnx.is_autocommit)
             {
-                if (get_lmdb_mode() == "as_server")
-                {
-                    log.trace(
-                              "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
+                res.result =
+                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                               res.op_id);
 
-                    TarantoolStorage tt_storage = get_storage_connector();
-                    res = tt_storage.put(OptAuthorize.NO, ti);
-
-                    if (res.result == ResultCode.OK)
-                    {
-                        res = tt_storage.put(OptAuthorize.NO, ti1);
-                    }
-                }
-                else
+                if (res.result == ResultCode.OK)
                 {
                     res.result =
-                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
                                                    res.op_id);
-
-                    if (res.result == ResultCode.OK)
-                    {
-                        res.result =
-                            indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
-                                                       res.op_id);
-                    }
                 }
             }
             else
@@ -1055,19 +993,9 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
 
             if (tnx.is_autocommit)
             {
-                if (get_lmdb_mode() == "as_server")
-                {
-                    log.trace(
-                              "LMDB_MODE=AS_SERVER, indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze, res.op_id);");
-
-                    res = get_storage_connector().put(OptAuthorize.NO, ti);
-                }
-                else
-                {
-                    res.result =
-                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                                   res.op_id);
-                }
+                res.result =
+                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                               res.op_id);
             }
             else
             {

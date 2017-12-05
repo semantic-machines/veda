@@ -66,12 +66,12 @@ public ResultCode flush(bool is_wait)
 
 void acl_manager(string thread_name, string db_path)
 {
-    core.thread.Thread.getThis().name         = thread_name;
-    Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+    core.thread.Thread.getThis().name    = thread_name;
+    Authorization                storage = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
     //string                       bin_log_name = get_new_binlog_name(db_path);
 
-    long                         l_op_id;
-    long                         committed_op_id;
+    long l_op_id;
+    long committed_op_id;
 
     // SEND ready
     receive((Tid tid_response_reciever)

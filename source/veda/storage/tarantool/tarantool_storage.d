@@ -10,7 +10,7 @@ import veda.core.common.transaction, veda.onto.individual, veda.onto.resource;
 import veda.util.properd;
 import veda.bind.tarantool.tnt_stream, veda.bind.tarantool.tnt_net, veda.bind.tarantool.tnt_opt, veda.bind.tarantool.tnt_ping, veda.bind.tarantool.tnt_reply;
 
-public class TarantoolStorage
+public class TarantoolStorage : KeyValueDB
 {
     Logger                    log;
     string                    uri;
@@ -32,60 +32,44 @@ public class TarantoolStorage
 	    tnt_reply_free(reply);        
     }
 
-    public OpResult put(OptAuthorize op_auth, TransactionItem ti)
-    {
-        return OpResult(ResultCode.Not_Implemented, -1);
-    }
-
-    public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti)
-    {
-        return OpResult(ResultCode.Not_Implemented, -1);
-    }
-
-    public OpResult[] put(OptAuthorize op_auth, TransactionItem[] items)
-    {
-        return [OpResult(ResultCode.Not_Implemented, -1)];
-    }
-
-    public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items)
-    {
-        return [OpResult(ResultCode.Not_Implemented, -1)];
-    }
-
-    public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key)
-    {
-        return OpResult(ResultCode.Not_Implemented, -1);
-    }
-
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {
-        return null;
+	    return null;	
     }
-
-    public string find_ticket(string ticket_id)
-    {
-        return null;
-    }
-
-    public ubyte authorize(string user_uri, string uri, bool trace)
-    {
-        return 0;
-    }
-
-    public void reopen()
-    {
-    }
-
+    
     public void open()
     {
+    	
     }
-
+    
+    public void reopen()
+    {
+    	
+    }
+    
     public void close()
     {
+    	
+    }
+    
+    public long count_entries()
+    {
+    	return -1;
     }
 
-    long count_entries()
+    public void flush (int force)
     {
-        return -1;
+    	
     }
+    
+    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id)
+    {
+    	return ResultCode.Not_Implemented;
+    }  
+
+    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
+    {
+    	return ResultCode.Not_Implemented;    	
+    }
+
 }
