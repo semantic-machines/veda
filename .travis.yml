@@ -17,7 +17,8 @@ env:
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
-  - ./control-install.sh&>install.log    
+  - ./control-install.sh
+#&>install.log    
   - dub -v fetch vibe-d --version=0.7.30
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
