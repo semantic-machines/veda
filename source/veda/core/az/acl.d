@@ -6,14 +6,14 @@ private
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
     import veda.core.util.utils, veda.common.logger;
-    import veda.storage.lmdb.lmdb_storage, veda.core.az.right_set;
+    import veda.storage.lmdb.lmdb_driver, veda.core.az.right_set, veda.storage.common;
     import veda.util.container, veda.util.module_info;
 }
 
 string lstr = "                                                                           ";
 
 /// Хранение, чтение PermissionStatement, Membership
-class Authorization : LmdbStorage
+class Authorization : LmdbDriver
 {
     Logger log;
 
@@ -196,17 +196,6 @@ class Authorization : LmdbStorage
             if (trace_info !is null)
                 trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
                                   access_to_pretty_string(calc_right_res)));
-        }
-
-        if (mode == DBMode.R)
-        {
-            records_in_memory[ uri ] = 1;
-
-            if (records_in_memory.length > max_count_record_in_memory)
-            {
-                log.trace("acl: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                reopen();
-            }
         }
 
         return calc_right_res;

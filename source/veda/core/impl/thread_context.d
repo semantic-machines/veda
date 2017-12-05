@@ -12,7 +12,7 @@ private
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_storage, veda.storage.common;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common;
     import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
 
     version (isMStorage)
@@ -269,12 +269,12 @@ class PThreadContext : Context
         ctx.node_id = _node_id;
 
         if (in_inividuals_storage_r is null)
-            ctx.inividuals_storage_r = new LmdbStorage(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
+            ctx.inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
         else
             ctx.inividuals_storage_r = in_inividuals_storage_r;
 
         if (in_tickets_storage_r is null)
-            ctx.tickets_storage_r = new LmdbStorage(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
+            ctx.tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
         else
             ctx.tickets_storage_r = in_tickets_storage_r;
 

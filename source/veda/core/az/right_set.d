@@ -25,30 +25,6 @@ struct Right
     }
 }
 
-string access_to_pretty_string(const ubyte src)
-{
-    string res = "";
-
-    if (src & Access.can_create)
-        res ~= "C ";
-    if (src & Access.can_read)
-        res ~= "R ";
-    if (src & Access.can_update)
-        res ~= "U ";
-    if (src & Access.can_delete)
-        res ~= "D ";
-    if (src & Access.cant_create)
-        res ~= "!C ";
-    if (src & Access.cant_read)
-        res ~= "!R ";
-    if (src & Access.cant_update)
-        res ~= "!U ";
-    if (src & Access.cant_delete)
-        res ~= "!D ";
-
-    return res;
-}
-
 class RightSet
 {
     Right *[ string ] data;

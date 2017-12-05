@@ -30,7 +30,7 @@
         "../../lib64/liblmdb.a",
 	"../../lib64/libxapiand.a",
         "../../veda/storage/common.d",
-        "../../veda/storage/lmdb/lmdb_storage.d",
+        "../../veda/storage/lmdb/lmdb_driver.d",
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",

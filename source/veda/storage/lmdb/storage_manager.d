@@ -9,7 +9,7 @@ private
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
            veda.onto.resource;
-    import veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
+    import veda.storage.lmdb.lmdb_driver, veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
@@ -173,7 +173,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbStorage                  storage = null;
+    LmdbDriver                  storage = null;
 
     if (get_lmdb_mode() == "as_server")
     {
@@ -182,7 +182,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     }
     else
     {
-        storage = new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
+        storage = new LmdbDriver(db_path, DBMode.RW, "individuals_manager", log);
 
         long count = storage.count_entries();
 

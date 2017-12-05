@@ -2,6 +2,16 @@ module veda.storage.common;
 
 import veda.common.type, veda.core.common.transaction;
 
+/// Режим работы хранилища
+enum DBMode
+{
+    /// чтение
+    R  = true,
+
+    /// чтение/запись
+    RW = false
+}
+
 interface KeyValueDB
 {
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
@@ -17,13 +27,13 @@ interface KeyValueDB
 
 interface Storage
 {
-	public long last_op_id ();
+    public long last_op_id ();
     public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
     public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
-    //public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
+    public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
-    //public string find_ticket(string ticket_id);
-    //public ubyte authorize(string user_uri, string uri, bool trace);
+    public string find_ticket(string ticket_id);
+    public ubyte authorize(string user_uri, string uri, bool trace);
     public void flush (int force);
     public void reopen();
     public void open();
