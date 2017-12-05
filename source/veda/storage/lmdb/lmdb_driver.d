@@ -1,5 +1,5 @@
 /**
- * lmdb реализация хранилища
+ * lmdb драйвер
  */
 module veda.storage.lmdb.lmdb_driver;
 
