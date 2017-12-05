@@ -1,6 +1,6 @@
 module veda.storage.common;
 
-import veda.common.type;
+import veda.common.type, veda.core.common.transaction;
 
 interface KeyValueDB
 {
@@ -10,20 +10,25 @@ interface KeyValueDB
     public void close();
     public long count_entries();
 
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
-    
     public void flush (int force);
-//    public ResultCode remove(OptAuthorize op_auth, string user_id, string in_key);
-    
-//    public OpResult put(OptAuthorize op_auth, TransactionItem ti);
+    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);    
+    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
+}
 
-//    public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
-
-//    public OpResult[] put(OptAuthorize op_auth, TransactionItem[] items);
-
-//    public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
-
-//    public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
+interface Storage
+{
+	public long last_op_id ();
+    public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
+    public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
+    //public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
+    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+    //public string find_ticket(string ticket_id);
+    //public ubyte authorize(string user_uri, string uri, bool trace);
+    public void flush (int force);
+    public void reopen();
+    public void open();
+    public void close();
+    long count_entries();	
 }
 
 string access_to_pretty_string(const ubyte src)

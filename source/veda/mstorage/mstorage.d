@@ -1100,12 +1100,6 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
 
     Tid        tid_acl;
 
-    if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
-    {
-        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-        //inc_count_onto_update();
-    }
-
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
     {
         tid_acl = getTid(P_MODULE.acl_preparer);
