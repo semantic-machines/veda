@@ -7,34 +7,6 @@ GO_VER=go1.9
 TARANTOOL_VER=1.7.5
 MSGPUCK_VER=2.0
 
-if ! ldconfig -p | grep libtarantool; then
-
-    TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
-
-    mkdir tmp
-    cd tmp
-
-    wget https://github.com/tarantool/tarantool-c/archive/$TTC.tar.gz -P .
-    tar -xvzf $TTC.tar.gz
-
-    wget https://github.com/tarantool/msgpuck/archive/$MSGPUCK_VER.tar.gz -P third_party/msgpuck -P .
-    tar -xvzf $MSGPUCK_VER.tar.gz
-
-    cp msgpuck-$MSGPUCK_VER/* tarantool-c-$TTC/third_party/msgpuck 
-    cd tarantool-c-$TTC
-
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-    sudo ldconfig
-
-    cd ..
-    cd ..
-
-fi
-
 # Get other dependencies
 LIB_NAME[1]="libevent-pthreads-2.0-5"
 LIB_NAME[3]="libevent-dev"
@@ -57,6 +29,7 @@ if ! rustc -V; then
 else
     rustup update stable
 fi
+
 
 rustc -V
 cargo -V
@@ -265,3 +238,32 @@ if ! ldconfig -p | grep libraptor2; then
     cd ..
 
 fi
+
+if ! ldconfig -p | grep libtarantool; then
+
+    TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
+
+    mkdir tmp
+    cd tmp
+
+    wget https://github.com/tarantool/tarantool-c/archive/$TTC.tar.gz -P .
+    tar -xvzf $TTC.tar.gz
+
+    wget https://github.com/tarantool/msgpuck/archive/$MSGPUCK_VER.tar.gz -P third_party/msgpuck -P .
+    tar -xvzf $MSGPUCK_VER.tar.gz
+
+    cp msgpuck-$MSGPUCK_VER/* tarantool-c-$TTC/third_party/msgpuck 
+    cd tarantool-c-$TTC
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+    sudo ldconfig
+
+    cd ..
+    cd ..
+
+fi
+
