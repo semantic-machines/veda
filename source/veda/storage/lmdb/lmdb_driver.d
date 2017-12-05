@@ -1,7 +1,7 @@
 /**
  * lmdb реализация хранилища
  */
-module veda.storage.lmdb.lmdb_storage;
+module veda.storage.lmdb.lmdb_driver;
 
 private
 {
@@ -12,20 +12,10 @@ private
     alias core.thread.Thread core_thread;
 }
 
-/// Режим работы хранилища
-enum DBMode
-{
-    /// чтение
-    R  = true,
-
-    /// чтение/запись
-    RW = false
-}
-
 public bool[ string ] db_is_open;
 
 /// key-value хранилище на lmdb
-public class LmdbStorage : KeyValueDB
+public class LmdbDriver : KeyValueDB
 {
     MDB_env             *env;
     public const string summ_hash_this_db_id;
@@ -39,7 +29,6 @@ public class LmdbStorage : KeyValueDB
     Logger              log;
     bool                db_is_opened;
     int                 max_count_record_in_memory = 10_000;
-    byte[ string ]      records_in_memory;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
@@ -74,7 +63,6 @@ public class LmdbStorage : KeyValueDB
             flush(1);
         mdb_env_close(env);
         db_is_open[ _path ] = false;
-        records_in_memory.clear;
         GC.collect();
 
 //      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
@@ -693,19 +681,7 @@ public class LmdbStorage : KeyValueDB
 
         if (str !is null)
         {
-            string res = str.dup;
-
-            if (mode == DBMode.R)
-            {
-                records_in_memory[ uri ] = 1;
-
-                if (records_in_memory.length > max_count_record_in_memory)
-                {
-                    log.trace("lmdb_storage: records_in_memory > max_count_record_in_memory (%d)", max_count_record_in_memory);
-                    reopen();
-                }
-            }
-            return res;
+            return str.dup;
         }
         else
             return str;
