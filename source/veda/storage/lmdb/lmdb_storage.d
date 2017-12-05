@@ -1,9 +1,9 @@
 /**
  * lmdb реализация хранилища
  */
-module veda.storage.lmdb.lmdb_driver;
+module veda.storage.lmdb.lmdb_storage;
 
-import veda.common.type;
+import veda.common.type, veda.storage.common, veda.core.common.transaction;
 
 public class LmdbStorage : Storage
 {
