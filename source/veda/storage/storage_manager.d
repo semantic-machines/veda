@@ -1,7 +1,7 @@
 /**
  * хранение индивидов
  */
-module veda.storage.lmdb.storage_manager;
+module veda.storage.storage_manager;
 
 private
 {
@@ -13,7 +13,7 @@ private
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
-    import veda.storage.lmdb.wslink, veda.core.common.transaction;
+    import veda.core.common.transaction;
     import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }
 
@@ -173,7 +173,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbDriver                  storage = null;
+    LmdbDriver                   storage = null;
 
     if (get_lmdb_mode() == "as_server")
     {

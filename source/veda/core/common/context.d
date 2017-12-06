@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info, veda.storage.common;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.util.module_info, veda.storage.common, veda.storage.storage;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;
@@ -40,20 +40,13 @@ interface Script
  */
 interface Context
 {
+	Storage get_storage ();
+
     string get_name();
 
-    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
-    string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();
 
-    public string get_ticket_from_storage(string ticket_id);
-
-    public Ticket *get_systicket_from_storage();
-
-    public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
-
     public long get_operation_state(MODULE module_id, long wait_op_id);
-    public MInfo get_info(MODULE module_id);
 
     @property
     public Ticket sys_ticket(bool is_new = false);
@@ -70,7 +63,6 @@ interface Context
     public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     public VQL get_vql();
-    public Authorization acl_indexes();
 
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
@@ -79,22 +71,6 @@ interface Context
 
 
     public Individual[ string ] get_onto_as_map_individuals();
-
-    /**
-       Aутентификация
-       Params:
-                login = имя пользователя
-                password = хэш пароля
-
-       Returns:
-                экземпляр структуры Ticket
-     */
-    //public Ticket authenticate(string login, string password);
-
-    /**
-       Вернуть обьект Ticket по Id
-     */
-    public Ticket *get_ticket(string ticket_id, bool is_systicket = false);
 
     /**
        Проверить сессионный билет
@@ -125,9 +101,6 @@ interface Context
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_individuals_storage_db();
     public void reopen_ro_acl_storage_db();
-    public void reopen_ro_ticket_manager_db();
-
-    public KeyValueDB get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
@@ -150,17 +123,6 @@ interface Context
                 авторизованные экземпляры Individual
      */
     public Individual[] get_individuals(Ticket *ticket, string[] uris);
-
-    /**
-       Вернуть индивидуала(BINARY OBJECT) по его uri
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri
-
-       Returns:
-                авторизованный индивид в виде строки CBOR
-     */
-    public string get_individual_as_binobj(Ticket *ticket, string uri, out ResultCode rs);
 
     /**
        Сохранить индивидуал, по указанному uri
@@ -230,11 +192,6 @@ interface Context
                  state = true/false
      */
     public void set_trace(int idx, bool state);
-
-    /**
-       Количество индивидуалов в базе данных
-     */
-    public long count_individuals();
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются

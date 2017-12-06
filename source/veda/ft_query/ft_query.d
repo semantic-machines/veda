@@ -73,7 +73,7 @@ private:
                     _from = to!int (els[ 7 ]);
 
                 Ticket *ticket;
-                ticket = context.get_ticket(_ticket);
+                ticket = context.get_storage().get_ticket(_ticket, false);
 
                 if (ticket !is null)
                 {
@@ -185,7 +185,7 @@ class ContextPool
             }
         }
         Ticket  systicket;
-        Context new_ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", individuals_db_path, log, main_module_url, null, null, null);
+        Context new_ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", individuals_db_path, log, main_module_url);
         
         stderr.writefln("create new context %X", &new_ctx);
         pool[ new_ctx ] = true;

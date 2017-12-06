@@ -98,7 +98,7 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", individuals_db_path, log, parent_url, null, null, null);
+    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", individuals_db_path, log, parent_url);
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
@@ -211,7 +211,7 @@ private void ltrs_thread(string parent_url)
                         {
                             //log.trace("uri=%s", uri);
                             ResultCode rs;
-                            string     data = uri; //context.get_individual_as_binobj(&sticket, uri, rs);
+                            string     data = uri; 
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);

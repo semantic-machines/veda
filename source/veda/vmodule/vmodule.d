@@ -143,7 +143,7 @@ class VedaModule
         context = create_context();
 
         if (context is null)
-            context = PThreadContext.create_new("cfg:standart_node", process_name, individuals_db_path, log, main_module_url, null, null, null);
+            context = PThreadContext.create_new("cfg:standart_node", process_name, individuals_db_path, log, main_module_url);
 
         if (node == Individual.init)
             node = context.get_configuration();
@@ -497,14 +497,6 @@ class VedaModule
                 log.trace("ERR! ex=%s %s", ex.msg, ex.info);
             }
 
-            //if (count_success_prepared % 1000 == 0)
-            //{
-            //    log.trace("reopen db's and gc collect");
-            //    context.reopen_ro_subject_storage_db();
-            //    context.reopen_ro_acl_storage_db();
-            //    context.reopen_ro_ticket_manager_db();
-            //    GC.collect();
-            //}
         }
         //if (count_readed != count_success_prepared)
         //    log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
@@ -512,7 +504,7 @@ class VedaModule
 
     void load_systicket()
     {
-        sticket = *context.get_systicket_from_storage();
+        sticket = *context.get_storage().get_systicket_from_storage();
 
         if (sticket is Ticket.init || sticket.result != ResultCode.OK)
         {

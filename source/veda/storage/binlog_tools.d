@@ -45,8 +45,8 @@ public string write_in_binlog(string msg, string new_hash, string bin_log_name, 
 public string get_new_binlog_name(string db_path)
 {
     string now = Clock.currTime().toISOExtString();
-        
+
     now = now[ 0..indexOf(now, '.') + 4 ];
-        
+
     return db_path ~ "." ~ now;
 }

@@ -1,4 +1,4 @@
-module veda.core.az.acl;
+module veda.storage.lmdb.lmdb_acl;
 
 private
 {
@@ -6,14 +6,14 @@ private
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
     import veda.core.util.utils, veda.common.logger;
-    import veda.storage.lmdb.lmdb_driver, veda.core.az.right_set, veda.storage.common;
+    import veda.storage.lmdb.lmdb_driver, veda.storage.right_set, veda.storage.common;
     import veda.util.container, veda.util.module_info;
 }
 
 string lstr = "                                                                           ";
 
 /// Хранение, чтение PermissionStatement, Membership
-class Authorization : LmdbDriver
+class LmdbAuthorization : LmdbDriver, Authorization
 {
     Logger log;
 
@@ -51,6 +51,21 @@ class Authorization : LmdbDriver
     override void reopen()
     {
         super.reopen();
+    }
+
+    override void open()
+    {
+        super.open();
+    }
+
+    override void close()
+    {
+        super.close();
+    }
+
+    override void flush(int force)
+    {
+        super.flush(force);
     }
 
     ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,

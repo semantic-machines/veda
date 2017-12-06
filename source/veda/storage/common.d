@@ -1,6 +1,9 @@
 module veda.storage.common;
 
+import std.conv, std.datetime, std.uuid;
+import veda.common.logger;
 import veda.common.type, veda.core.common.transaction;
+import veda.onto.individual, veda.onto.resource, veda.core.common.know_predicates, veda.util.module_info, veda.core.util.utils;
 
 /// Режим работы хранилища
 enum DBMode
@@ -12,33 +15,34 @@ enum DBMode
     RW = false
 }
 
-interface KeyValueDB
+interface Authorization
 {
-    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+    ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                string subject_group,
+                                                                                                                string right)
+                    _trace_acl,
+                    void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
+                    );
+
     public void open();
     public void reopen();
     public void close();
+    public void flush(int force);
+}    
+
+public interface KeyValueDB
+{
+    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+
+    public void open();
+    public void reopen();
+    public void close();
+    public void flush(int force);
+
     public long count_entries();
 
-    public void flush (int force);
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);    
+    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
-}
-
-interface Storage
-{
-    public long last_op_id ();
-    public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
-    public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
-    public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
-    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
-    public string find_ticket(string ticket_id);
-    public ubyte authorize(string user_uri, string uri, bool trace);
-    public void flush (int force);
-    public void reopen();
-    public void open();
-    public void close();
-    long count_entries();	
 }
 
 string access_to_pretty_string(const ubyte src)

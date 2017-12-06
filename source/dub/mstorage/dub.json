@@ -23,7 +23,11 @@
 	"../../veda/util/queue.d",
 	"../../veda/util/container.d",
         "../../veda/util/module_info.d",
-	"../../veda/util/tests_tools.d"
+	"../../veda/util/tests_tools.d",
+        "../../veda/storage/common.d",
+        "../../veda/storage/storage.d",
+        "../../veda/storage/binlog_tools.d",
+        "../../veda/storage/lmdb/lmdb_storage.d"
  	],
 	"sourcePaths":[
 	    "../../veda/mstorage", 
