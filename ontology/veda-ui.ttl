@@ -519,10 +519,18 @@ v-ui:StandardButtonsTemplate
   isDraftHandler("v-s:isDraft");
   //# sourceURL=v-ui:StandardButtonsTemplate_pre
 </script>
-<div class="actions" style="margin-right:20px;">
-  <button type="button" class="rm action btn btn-warning view -edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
+<div class="actions standard-actions">
+  <style>
+    .standard-actions {
+      margin: 0 3px;
+    }
+    .standard-actions:first-child {
+      margin-left: 0px;
+    }
+  </style>
+  <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
   <button type="button" class="rm action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
