@@ -567,5 +567,4 @@ public bool acl_check_for_reload(void delegate() load)
         return true;
     }
     return false;
-    //return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
 }

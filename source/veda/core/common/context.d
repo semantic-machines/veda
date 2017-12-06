@@ -237,48 +237,6 @@ public long get_subject_manager_op_id()
     return atomicLoad(subject_manager_op_id);
 }
 
-///
-/*
-   private shared long indexer_op_id = 0;
-
-   public void set_indexer_op_id(long data)
-   {
-    atomicStore(indexer_op_id, data);
-   }
-
-   public long get_indexer_op_id()
-   {
-    return atomicLoad(indexer_op_id);
-   }
- */
-////
-
-private shared long acl_manager_op_id = 0;
-
-public void set_acl_manager_op_id(long data)
-{
-    atomicStore(acl_manager_op_id, data);
-}
-
-public long get_acl_manager_op_id()
-{
-    return atomicLoad(acl_manager_op_id);
-}
-
-////
-
-//private shared long count_indexed = 0;
-
-//public void set_count_indexed(long data)
-//{
-//    atomicStore(count_indexed, data);
-//}
-
-//public long get_count_indexed()
-//{
-//    return atomicLoad(count_indexed);
-//}
-
 /////////////////////////////// global_systicket //////////////////////////
 
 private shared string systicket_id;

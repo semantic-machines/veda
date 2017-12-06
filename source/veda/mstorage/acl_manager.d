@@ -143,7 +143,6 @@ void acl_manager(string thread_name, string db_path)
                             }
                             finally
                             {
-                                set_acl_manager_op_id(op_id);
                                 l_op_id = op_id;
                                 module_info.put_info(l_op_id, committed_op_id);
                             }
