@@ -573,10 +573,11 @@ veda.Module(function (veda) { "use strict";
 
     function isSub(type) {
       return type.load().then(function (type) {
+        if (is) { return is; }
         if (!type.hasValue("rdfs:subClassOf")) { 
-          return false; 
+          return (is = is || false);
         } else if (type.hasValue("rdfs:subClassOf", _class.id)) { 
-          return true; 
+          return (is = is || true);
         } else {
           var types = type.get("rdfs:subClassOf");
           return Promise.all(types.map(isSub)).then(function (results) {
@@ -585,7 +586,6 @@ veda.Module(function (veda) { "use strict";
         }
       });
     }
-
   };
 
   /**
