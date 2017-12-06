@@ -233,7 +233,7 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url)
+    public static Context create_new(string _node_id, string context_name, Logger _log, string _main_module_url)
     {
         PThreadContext ctx = new PThreadContext();
 

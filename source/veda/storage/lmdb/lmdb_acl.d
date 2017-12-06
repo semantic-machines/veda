@@ -10,6 +10,13 @@ private
     import veda.util.container, veda.util.module_info;
 }
 
+const string   acl_indexes_db_path   = "./data/acl-indexes";
+
+static this ()
+{
+	paths_list ~= acl_indexes_db_path;
+}
+
 string lstr = "                                                                           ";
 
 /// Хранение, чтение PermissionStatement, Membership
@@ -40,10 +47,10 @@ class LmdbAuthorization : LmdbDriver, Authorization
     ubyte request_access;
     ubyte[ string ] checked_groups;
 
-    this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
+    this(DBMode mode, string _parent_thread_name, Logger _log)
     {
         log = _log;
-        super(_path, mode, _parent_thread_name, log);
+        super(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 
     int count_permissions = 0;
