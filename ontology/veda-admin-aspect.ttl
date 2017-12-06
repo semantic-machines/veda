@@ -190,14 +190,12 @@ v-s:UserScriptTemplate
 
   <div class="-view -edit search" about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
 
-  <div class="actions view edit -search">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search save" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="action btn btn-warning view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search pull-right" id="clear" about="v-s:Clear" property="rdfs:label"/>
-    <button type="button" class="action btn btn-danger view -edit -search pull-right" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions view edit -search clearfix">
+    <div about="@" class="pull-left" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <div class="pull-right">
+      <button type="button" class="action btn btn-warning view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="clear" about="v-s:Clear" property="rdfs:label"/>
+    </div>
   </div>
 
 </div>
@@ -812,8 +810,8 @@ v-ui:ModulesResultTemplate
         <span>:</span>
         <span property="v-s:moduleVersion"></span>
       </div>
-      <div class="actions clearfix">
-        <button type="button" class="action btn btn-link view pull-right" id="delete" about="v-s:Delete" property="rdfs:label"/>
+      <div class="actions">
+        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete"></div>
       </div>
     </div>
   </div>
