@@ -6,7 +6,7 @@ import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetype
 import veda.util.properd, TrailDB;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
-import veda.frontend.cbor8vjson, veda.util.queue;
+import veda.frontend.cbor8vjson, veda.util.queue, veda.storage.storage;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -710,7 +710,7 @@ class VedaStorageRest : VedaStorageRest_API
             {
                 try
                 {
-                    string cb = context.get_individual_as_binobj(ticket, uri, rc);
+                    string cb = get_individual_as_binobj(context.get_storage(), ticket, uri, rc, false);
                     if (rc == ResultCode.OK)
                     {
                         Json res_i = Json.emptyObject;
@@ -829,7 +829,7 @@ class VedaStorageRest : VedaStorageRest_API
                         context.reopen_ro_individuals_storage_db();
                     }
 
-                    string cb = context.get_individual_as_binobj(ticket, uri, rc);
+                    string cb = get_individual_as_binobj(context.get_storage(), ticket, uri, rc, false);
                     if (rc == ResultCode.OK)
                     {
                         res = Json.emptyObject;
@@ -1026,6 +1026,64 @@ class VedaStorageRest : VedaStorageRest_API
     }
 }
 //////////////////////////////
+
+/**
+   Вернуть индивидуала(BINARY OBJECT) по его uri
+   Params:
+             ticket = указатель на обьект Ticket
+             uri
+
+   Returns:
+            авторизованный индивид в виде строки CBOR
+ */
+string get_individual_as_binobj(Storage storage, Ticket *ticket, string uri, out ResultCode rs, bool is_trace)
+{
+    string res;
+
+    rs = ResultCode.Unprocessable_Entity;
+
+    if (ticket is null)
+    {
+        rs = ResultCode.Ticket_not_found;
+        log.trace("get_individual as binobj, uri=%s, ticket is null", uri);
+        return null;
+    }
+
+    if (is_trace)
+    {
+        if (ticket !is null)
+            log.trace("get_individual as binobj, uri=[%s], ticket=[%s]", uri, ticket.id);
+    }
+
+    try
+    {
+        string individual_as_binobj = storage.get_from_individual_storage(ticket.user_uri, uri);
+        if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+        {
+            res = individual_as_binobj;
+            rs  = ResultCode.OK;
+        }
+        else
+        {
+            return res;
+        }
+
+        if (storage.get_acl_indexes().authorize(uri, ticket, Access.can_read, true, null, null, null) != Access.can_read)
+        {
+            if (is_trace)
+                log.trace("get_individual as binobj, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
+            rs  = ResultCode.Not_Authorized;
+            res = null;
+        }
+
+        return res;
+    }
+    finally
+    {
+        if (is_trace)
+            log.trace("get_individual as binobj: end, uri=%s", uri);
+    }
+}
 
 private TrailDBConstructor tdb_cons;
 private bool               is_trail     = true;

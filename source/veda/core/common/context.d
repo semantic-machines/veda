@@ -125,17 +125,6 @@ interface Context
     public Individual[] get_individuals(Ticket *ticket, string[] uris);
 
     /**
-       Вернуть индивидуала(BINARY OBJECT) по его uri
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri
-
-       Returns:
-                авторизованный индивид в виде строки CBOR
-     */
-    public string get_individual_as_binobj(Ticket *ticket, string uri, out ResultCode rs);
-
-    /**
        Сохранить индивидуал, по указанному uri
        Params:
                  ticket = указатель на обьект Ticket

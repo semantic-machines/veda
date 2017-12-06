@@ -552,57 +552,6 @@ class PThreadContext : Context
         }
     }
 
-    public string get_individual_as_binobj(Ticket *ticket, string uri, out ResultCode rs)
-    {
-        string    res;
-        StopWatch sw; sw.start;
-
-        rs = ResultCode.Unprocessable_Entity;
-
-        if (ticket is null)
-        {
-            rs = ResultCode.Ticket_not_found;
-            log.trace("get_individual as binobj, uri=%s, ticket is null", uri);
-            return null;
-        }
-
-        if (trace_msg[ T_API_180 ] == 1)
-        {
-            if (ticket !is null)
-                log.trace("get_individual as binobj, uri=[%s], ticket=[%s]", uri, ticket.id);
-        }
-
-        try
-        {
-            string individual_as_binobj = storage.get_from_individual_storage(ticket.user_uri, uri);
-            if (individual_as_binobj !is null && individual_as_binobj.length > 1)
-            {
-                res = individual_as_binobj;
-                rs  = ResultCode.OK;
-            }
-            else
-            {
-                return res;
-            }
-
-            if (storage.get_acl_indexes().authorize(uri, ticket, Access.can_read, true, null, null, null) != Access.can_read)
-            {
-                if (trace_msg[ T_API_190 ] == 1)
-                    log.trace("get_individual as binobj, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
-                rs  = ResultCode.Not_Authorized;
-                res = null;
-            }
-
-            return res;
-        }
-        finally
-        {
-            //stat(CMD_GET, sw);
-            if (trace_msg[ T_API_200 ] == 1)
-                log.trace("get_individual as binobj: end, uri=%s", uri);
-        }
-    }
-
     static const byte NEW_TYPE    = 0;
     static const byte EXISTS_TYPE = 1;
 

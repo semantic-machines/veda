@@ -211,7 +211,7 @@ private void ltrs_thread(string parent_url)
                         {
                             //log.trace("uri=%s", uri);
                             ResultCode rs;
-                            string     data = uri; //context.get_individual_as_binobj(&sticket, uri, rs);
+                            string     data = uri; 
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);
