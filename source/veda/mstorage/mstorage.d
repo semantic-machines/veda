@@ -13,12 +13,12 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
-    import veda.mstorage.acl_manager, veda.storage.lmdb.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel;
     import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }
 
-alias veda.storage.lmdb.storage_manager ticket_storage_module;
-alias veda.storage.lmdb.storage_manager indv_storage_thread;
+alias veda.storage.storage_manager ticket_storage_module;
+alias veda.storage.storage_manager indv_storage_thread;
 alias veda.mstorage.acl_manager         acl_module;
 
 // ////// Logger ///////////////////////////////////////////
@@ -172,7 +172,7 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
+        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null);
         l_context    = core_context;
 
         vql_r = l_context.get_vql();
@@ -185,7 +185,7 @@ void init(string node_id)
         log.trace("init core");
 
         sticket = sys_ticket(core_context, true);
-        Ticket* guest_ticket = core_context.get_ticket("guest");
+        Ticket* guest_ticket = core_context.get_storage.get_ticket("guest", false);
 
         if (guest_ticket is null || guest_ticket.result == ResultCode.Ticket_not_found)
         {
@@ -272,10 +272,10 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+        veda.storage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
 
         veda.mstorage.acl_manager.flush(false);
-        veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
+        veda.storage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }
 
@@ -515,7 +515,7 @@ public string execute_json(string in_msg, Context ctx)
             JSONValue  event_id       = jsn[ "event_id" ];
             long       transaction_id = 0;
 
-            Ticket     *ticket = ctx.get_ticket(_ticket.str);
+            Ticket     *ticket = ctx.get_storage().get_ticket(_ticket.str, false);
 
             if (sfn == "put")
             {
@@ -812,7 +812,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
 {
     if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
     {
-        log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
+        //log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
         opt_request = OptAuthorize.NO;
     }
 
@@ -855,7 +855,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
         if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
         {
             is_new = true;
-            log.trace("INFO! %s is new, use UPSERT", indv.uri);
+            //log.trace("INFO! %s is new, use UPSERT", indv.uri);
         }
 
         if (is_new == false)
@@ -1123,7 +1123,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
         return ticket;
     }
 
-    Ticket *tr_ticket = ctx.get_ticket(tr_ticket_id);
+    Ticket *tr_ticket = ctx.get_storage().get_ticket(tr_ticket_id, false);
     if (tr_ticket.result == ResultCode.OK)
     {
         bool is_allow_trusted = false;

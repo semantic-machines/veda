@@ -1218,7 +1218,7 @@ private bool[ string ] external_users_ticket_id;
 
 private Ticket *get_ticket(Context context, string ticket_id)
 {
-    Ticket *ticket = context.get_ticket(ticket_id);
+    Ticket *ticket = context.get_storage().get_ticket(ticket_id, false);
 
     if (ticket.result == ResultCode.OK && is_external_users)
     {

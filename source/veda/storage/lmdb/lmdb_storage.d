@@ -1,65 +1,82 @@
 /**
- * lmdb реализация хранилища
+ * LMDB реализация хранилища
  */
 module veda.storage.lmdb.lmdb_storage;
 
+import veda.core.common.define, veda.common.logger;
 import veda.common.type, veda.storage.common, veda.core.common.transaction;
+import veda.storage.lmdb.lmdb_driver;
 
 public class LmdbStorage : Storage
 {
-    public long last_op_id()
+    //private Authorization 	 _acl_indexes;
+    //private KeyValueDB       inividuals_storage_r;
+
+	this (string _name, Logger _log)
+	{
+		log = _log;
+		name = _name;
+        tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);		
+	}
+	
+    ~this()
+    {
+        log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
+        tickets_storage_r.close();
+    }
+	
+    override public long last_op_id()
     {
         return -1;
     }
 
-    public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti)
+    override public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti)
     {
         return OpResult(ResultCode.Not_Implemented, -1);
     }
 
-
-    public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items)
+    override public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items)
     {
         return [ OpResult(ResultCode.Not_Implemented, -1) ];
     }
 
-    public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key)
+    override public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key)
     {
         return OpResult(ResultCode.Not_Implemented, -1);
     }
 
-    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
+    override public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {
         return null;
     }
 
-    public string find_ticket(string ticket_id)
-    {
-        return null;
-    }
+//    public string find_ticket(string ticket_id)
+//    {
+//        return null;
+//    }
 
-    public ubyte authorize(string user_uri, string uri, bool trace)
+    override public ubyte authorize(string user_uri, string uri, bool trace)
     {
         return 0;
     }
 
-    public void flush(int force)
+    override public void flush(int force)
     {
     }
 
-    public void reopen()
+    override public void reopen()
     {
     }
 
-    public void open()
+    override public void open()
     {
     }
 
-    public void close()
+    override public void close()
     {
     }
 
-    long count_entries()
+    override long count_entries()
     {
         return -1;
     }

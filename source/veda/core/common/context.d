@@ -40,18 +40,15 @@ interface Script
  */
 interface Context
 {
+	Storage get_storage ();
+
     string get_name();
 
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();
 
-    public Ticket *get_systicket_from_storage();
-
-    public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
-
     public long get_operation_state(MODULE module_id, long wait_op_id);
-    public MInfo get_info(MODULE module_id);
 
     @property
     public Ticket sys_ticket(bool is_new = false);
@@ -90,11 +87,6 @@ interface Context
     //public Ticket authenticate(string login, string password);
 
     /**
-       Вернуть обьект Ticket по Id
-     */
-    public Ticket *get_ticket(string ticket_id, bool is_systicket = false);
-
-    /**
        Проверить сессионный билет
      */
     public bool is_ticket_valid(string ticket_id);
@@ -123,7 +115,6 @@ interface Context
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_individuals_storage_db();
     public void reopen_ro_acl_storage_db();
-    public void reopen_ro_ticket_manager_db();
 
     public KeyValueDB get_inividuals_storage_r();
 

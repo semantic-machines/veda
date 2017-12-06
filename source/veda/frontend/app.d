@@ -169,7 +169,7 @@ shared static this()
 
     veda.core.common.context.Context context;
 
-    context = PThreadContext.create_new(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws", null, null, null);
+    context = PThreadContext.create_new(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 
@@ -203,7 +203,7 @@ shared static this()
         get_individual = &context.get_individual;
     }
 
-    Ticket sticket = *context.get_systicket_from_storage();
+    Ticket sticket = *context.get_storage().get_systicket_from_storage();
 
 //    if (sys_ticket_id !is null)
 //    {

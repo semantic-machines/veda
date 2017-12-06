@@ -13,12 +13,12 @@ private
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common;
-    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
+    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger, veda.storage.lmdb.lmdb_storage;
 
     version (isMStorage)
     {
-        alias veda.storage.lmdb.storage_manager ticket_storage_module;
-        alias veda.storage.lmdb.storage_manager subject_storage_module;
+        alias veda.storage.storage_manager ticket_storage_module;
+        alias veda.storage.storage_manager subject_storage_module;
     }
 }
 
@@ -26,8 +26,6 @@ private
 class PThreadContext : Context
 {
     //bool[ P_MODULE ] is_traced_module;
-
-    private Ticket *[ string ] user_of_ticket;
 
     // // // authorization
     private Authorization _acl_indexes;
@@ -39,8 +37,9 @@ class PThreadContext : Context
     private               string[ string ] prefix_map;
 
     private KeyValueDB       inividuals_storage_r;
-    private KeyValueDB       tickets_storage_r;
     private VQL           _vql;
+
+	private LmdbStorage	  storage;
 
     private long          local_last_update_time;
     private Individual    node = Individual.init;
@@ -50,7 +49,10 @@ class PThreadContext : Context
     private string        main_module_url;
     private Logger        log;
 
-    private long          last_ticket_manager_op_id = 0;
+	Storage get_storage ()
+	{
+		return storage;
+	}
 
     public Logger get_logger()
     {
@@ -245,8 +247,7 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url,
-                                     Authorization in_acl_indexes, KeyValueDB in_inividuals_storage_r, KeyValueDB in_tickets_storage_r)
+    public static Context create_new(string _node_id, string context_name, string individuals_db_path, Logger _log, string _main_module_url)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -255,28 +256,13 @@ class PThreadContext : Context
         if (ctx.log is null)
             writefln("context_name [%s] log is null", context_name);
 
-        ctx._acl_indexes = in_acl_indexes;
-
         ctx.main_module_url = _main_module_url;
-/*
-        {
-            import std.experimental.Logger;
-            import std.experimental.Logger.core;
 
-            std.experimental.Logger.core.globalLogLevel(LogLevel.info);
-        }
- */
         ctx.node_id = _node_id;
 
-        if (in_inividuals_storage_r is null)
-            ctx.inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
-        else
-            ctx.inividuals_storage_r = in_inividuals_storage_r;
+		ctx.storage = new LmdbStorage (context_name, ctx.log);
 
-        if (in_tickets_storage_r is null)
-            ctx.tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, context_name ~ ":tickets", ctx.log);
-        else
-            ctx.tickets_storage_r = in_tickets_storage_r;
+        ctx.inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, context_name ~ ":inividuals", ctx.log);
 
         ctx.name = context_name;
 
@@ -296,7 +282,6 @@ class PThreadContext : Context
     {
         log.trace_log_and_console("DELETE CONTEXT [%s]", name);
         inividuals_storage_r.close();
-        tickets_storage_r.close();
     }
 
     bool isReadyAPI()
@@ -316,13 +301,13 @@ class PThreadContext : Context
 
         version (isModule)
         {
-            ticket = *get_systicket_from_storage();
+            ticket = *(storage.get_systicket_from_storage());
             set_global_systicket(ticket);
         }
 
         version (WebServer)
         {
-            ticket = *get_systicket_from_storage();
+            ticket = *(storage.get_systicket_from_storage());
             set_global_systicket(ticket);
         }
 
@@ -431,7 +416,7 @@ class PThreadContext : Context
 
     public bool is_ticket_valid(string ticket_id)
     {
-        Ticket *ticket = get_ticket(ticket_id);
+        Ticket *ticket = storage.get_ticket(ticket_id, false);
 
         if (ticket is null)
             return false;
@@ -442,149 +427,6 @@ class PThreadContext : Context
 
         return false;
     }
-
-    public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
-    {
-        if (trace_msg[ T_API_50 ] == 1)
-            log.trace("create_new_ticket, ticket__accessor=%s", user_id);
-
-        Ticket     ticket;
-        Individual new_ticket;
-
-        ticket.result = ResultCode.Fail_Store;
-
-        Resources type = [ Resource(ticket__Ticket) ];
-
-        new_ticket.resources[ rdf__type ] = type;
-
-        if (ticket_id !is null && ticket_id.length > 0)
-            new_ticket.uri = ticket_id;
-        else
-        {
-            UUID new_id = randomUUID();
-            new_ticket.uri = new_id.toString();
-        }
-
-        new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
-        new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-        new_ticket.resources[ ticket__duration ] ~= Resource(duration);
-
-        version (WebServer)
-        {
-            subject2Ticket(new_ticket, &ticket);
-            user_of_ticket[ ticket.id ] = new Ticket(ticket);
-        }
-
-        return ticket;
-    }
-
-    public Ticket *get_systicket_from_storage()
-    {
-        string systicket_id = tickets_storage_r.find(OptAuthorize.NO, null, "systicket");
-
-        if (systicket_id is null)
-            log.trace("SYSTICKET NOT FOUND");
-
-        return get_ticket(systicket_id, true);
-    }
-
-    public Ticket *get_ticket(string ticket_id, bool is_systicket = false)
-    {
-        //StopWatch sw; sw.start;
-
-        try
-        {
-            Ticket *tt;
-            if (ticket_id is null || ticket_id == "" || ticket_id == "systicket")
-                ticket_id = "guest";
-
-            tt = user_of_ticket.get(ticket_id, null);
-
-            if (tt is null)
-            {
-                string when     = null;
-                int    duration = 0;
-
-                MInfo  mi = get_info(MODULE.ticket_manager);
-
-                //log.trace ("last_ticket_manager_op_id=%d, mi.op_id=%d,  mi.committed_op_id=%d", last_ticket_manager_op_id, mi.op_id, mi.committed_op_id);
-                if (last_ticket_manager_op_id < mi.op_id)
-                {
-                    last_ticket_manager_op_id = mi.op_id;
-                    this.reopen_ro_ticket_manager_db();
-                }
-
-                string ticket_str = tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
-                if (ticket_str !is null && ticket_str.length > 120)
-                {
-                    tt = new Ticket;
-                    Individual ticket;
-
-                    if (ticket.deserialize(ticket_str) > 0)
-                    {
-                        subject2Ticket(ticket, tt);
-                        tt.result               = ResultCode.OK;
-                        user_of_ticket[ tt.id ] = tt;
-
-                        if (trace_msg[ T_API_80 ] == 1)
-                            log.trace("тикет найден в базе, id=%s", ticket_id);
-                    }
-                    else
-                    {
-                        tt.result = ResultCode.Unprocessable_Entity;
-                        log.trace("ERR! invalid individual=%s", ticket_str);
-                    }
-                }
-                else
-                {
-                    tt        = new Ticket;
-                    tt.result = ResultCode.Ticket_not_found;
-
-                    if (trace_msg[ T_API_90 ] == 1)
-                        log.trace("тикет не найден в базе, id=%s", ticket_id);
-                }
-            }
-            else
-            {
-                if (trace_msg[ T_API_100 ] == 1)
-                    log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
-
-                SysTime now = Clock.currTime();
-                if (now.stdTime >= tt.end_time && !is_systicket)
-                {
-                    log.trace("ticket %s expired, user=%s, start=%s, end=%s, now=%s", tt.id, tt.user_uri, SysTime(tt.start_time,
-                                                                                                                  UTC()).toISOExtString(),
-                              SysTime(tt.end_time, UTC()).toISOExtString(), now.toISOExtString());
-
-                    if (ticket_id == "guest")
-                    {
-                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "900000000", "guest");
-                        tt = &guest_ticket;
-                    }
-                    else
-                    {
-                        tt        = new Ticket;
-                        tt.id     = "?";
-                        tt.result = ResultCode.Ticket_expired;
-                    }
-                    return tt;
-                }
-                else
-                {
-                    tt.result = ResultCode.OK;
-                }
-
-                if (trace_msg[ T_API_120 ] == 1)
-                    log.trace("ticket: %s", *tt);
-            }
-            return tt;
-        }
-        finally
-        {
-            //stat(CMD_GET, sw);
-        }
-    }
-
 
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
     public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000)
@@ -621,12 +463,6 @@ class PThreadContext : Context
             if (trace_msg[ T_API_140 ] == 1)
                 log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
         }
-    }
-
-    public void reopen_ro_ticket_manager_db()
-    {
-        if (tickets_storage_r !is null)
-            tickets_storage_r.reopen();
     }
 
     public VQL get_vql()
@@ -984,26 +820,11 @@ class PThreadContext : Context
 
     //////////////////////////////////////////////// MODULES INTERACTION
 
-    private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
-    public MInfo get_info(MODULE module_id)
-    {
-        ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
-
-        if (mdif is null)
-        {
-            mdif                            = new ModuleInfoFile(text(module_id), log, OPEN_MODE.READER);
-            info_r__2__pmodule[ module_id ] = mdif;
-        }
-        MInfo info = mdif.get_info();
-        return info;
-    }
-
-
     public long get_operation_state(MODULE module_id, long wait_op_id)
     {
         long  res = -1;
 
-        MInfo info = get_info(module_id);
+        MInfo info = storage.get_info(module_id);
 
         if (info.is_Ok)
         {
@@ -1038,7 +859,7 @@ class PThreadContext : Context
         //writefln ("wait_module pm=%s op_id=%d", text (pm), op_id);
         while (wait_op_id > op_id_from_module)
         {
-            MInfo info = get_info(pm);
+            MInfo info = storage.get_info(pm);
 
             if (info.is_Ok)
                 op_id_from_module = info.committed_op_id;
@@ -1082,7 +903,7 @@ class PThreadContext : Context
                 if (item.rc != ResultCode.OK)
                     return item.rc;
 
-                Ticket *ticket = this.get_ticket(item.ticket_id);
+                Ticket *ticket = storage.get_ticket(item.ticket_id, false);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
                 
