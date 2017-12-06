@@ -511,7 +511,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
                 }
 
                 if (icb is null)
-                    icb = g_context.get_from_individual_storage(null, uri);
+                    icb = g_context.get_storage().get_from_individual_storage(null, uri);
 
                 if (icb !is null)
                 {

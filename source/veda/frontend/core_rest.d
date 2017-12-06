@@ -603,7 +603,7 @@ class VedaStorageRest : VedaStorageRest_API
 
         OpResult op_res;
 
-        res           = context.count_individuals();
+        res           = context.get_storage().count_individuals();
         op_res.result = ResultCode.OK;
 
         trail(null, null, "count_individuals", Json.emptyObject, text(res), op_res.result, timestamp);

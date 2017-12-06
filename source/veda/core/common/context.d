@@ -44,7 +44,6 @@ interface Context
 
     string get_name();
 
-    string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();
 
     public long get_operation_state(MODULE module_id, long wait_op_id);
@@ -102,8 +101,6 @@ interface Context
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_individuals_storage_db();
     public void reopen_ro_acl_storage_db();
-
-    public KeyValueDB get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
@@ -206,11 +203,6 @@ interface Context
                  state = true/false
      */
     public void set_trace(int idx, bool state);
-
-    /**
-       Количество индивидуалов в базе данных
-     */
-    public long count_individuals();
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются

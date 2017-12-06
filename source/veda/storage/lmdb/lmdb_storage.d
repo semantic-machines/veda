@@ -11,35 +11,46 @@ import veda.core.az.acl;
 public class LmdbStorage : Storage
 {
     private Authorization acl_indexes;
-    private KeyValueDB tickets_storage_r;
+    private KeyValueDB    tickets_storage_r;
+    private KeyValueDB    inividuals_storage_r;
 
     this(string _name, Logger _log)
     {
-        log               = _log;
-        name              = _name;
+        log  = _log;
+        name = _name;
     }
 
     ~this()
     {
         log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
         tickets_storage_r.close();
+        inividuals_storage_r.close();
+        acl_indexes.close();
     }
 
-	override Authorization get_acl_indexes ()
-	{
-		if (acl_indexes is null)
-	        acl_indexes = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl", this.log);        
-			
-		return acl_indexes;	
-	} 
+    override Authorization get_acl_indexes()
+    {
+        if (acl_indexes is null)
+            acl_indexes = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl", this.log);
 
-override KeyValueDB get_tickets_storage_r ()
-{
-	if (tickets_storage_r is null)
-        tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);
-        
+        return acl_indexes;
+    }
+
+    override KeyValueDB get_tickets_storage_r()
+    {
+        if (tickets_storage_r is null)
+            tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);
+
         return tickets_storage_r;
-}
+    }
+
+    override KeyValueDB get_inividuals_storage_r()
+    {
+        if (inividuals_storage_r is null)
+            inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, name ~ ":inividuals", log);
+
+        return inividuals_storage_r;
+    }
 
     override public long last_op_id()
     {
@@ -82,9 +93,9 @@ override KeyValueDB get_tickets_storage_r ()
     {
     }
 
-    override long count_entries()
+    override long count_individuals()
     {
-        return -1;
+        return get_inividuals_storage_r().count_entries();
     }
 }
 

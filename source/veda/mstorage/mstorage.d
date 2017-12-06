@@ -287,7 +287,7 @@ private Individual get_individual(Ticket *ticket, string uri)
 {
     if (inividuals_storage_r is null)
     {
-        inividuals_storage_r = l_context.get_inividuals_storage_r();
+        inividuals_storage_r = l_context.get_storage().get_inividuals_storage_r();
     }
 
     Individual individual = Individual.init;

@@ -7,11 +7,11 @@ import veda.core.az.acl;
 
 public abstract class Storage
 {
-    string     name;
+    string name;
     Ticket *[ string ] user_of_ticket;
-    long       last_ticket_manager_op_id = 0;
+    long   last_ticket_manager_op_id = 0;
 
-    Logger     log;
+    Logger log;
 
     abstract public long last_op_id();
     abstract public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
@@ -23,10 +23,16 @@ public abstract class Storage
     abstract public void reopen();
     abstract public void open();
     abstract public void close();
-    abstract long count_entries();
 
-	abstract Authorization get_acl_indexes ();
-	abstract KeyValueDB get_tickets_storage_r (); 
+
+    /**
+       Количество индивидуалов в базе данных
+     */
+    abstract long count_individuals();
+
+    abstract Authorization get_acl_indexes();
+    abstract KeyValueDB get_tickets_storage_r();
+    abstract KeyValueDB get_inividuals_storage_r();
 
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
     bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload)
@@ -36,16 +42,24 @@ public abstract class Storage
             printPrettyTrace(stderr);
         }
 
-        //writeln ("@p ### uri=", uri, " ", request_acess);
         ubyte res = get_acl_indexes().authorize(uri, ticket, request_acess, is_check_for_reload, null, null, null);
 
-        //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
         return request_acess == res;
+    }
+
+    public string get_from_individual_storage(string user_id, string uri)
+    {
+        string res = get_inividuals_storage_r.find(OptAuthorize.YES, user_id, uri);
+
+        if (res !is null && res.length < 10)
+            log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
+
+        return res;
     }
 
     private void reopen_ro_ticket_manager_db()
     {
-			get_tickets_storage_r().reopen();
+        get_tickets_storage_r().reopen();
     }
 
     public Ticket create_new_ticket(string user_id, string duration, string ticket_id, bool is_trace = false)
