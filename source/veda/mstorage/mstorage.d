@@ -19,7 +19,7 @@ private
 
 alias veda.storage.storage_manager ticket_storage_module;
 alias veda.storage.storage_manager indv_storage_thread;
-alias veda.mstorage.acl_manager         acl_module;
+alias veda.mstorage.acl_manager    acl_module;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -185,12 +185,12 @@ void init(string node_id)
         log.trace("init core");
 
         sticket = sys_ticket(core_context, true);
-        Ticket* guest_ticket = core_context.get_storage.get_ticket("guest", false);
+        Ticket *guest_ticket = core_context.get_storage.get_ticket("guest", false);
 
         if (guest_ticket is null || guest_ticket.result == ResultCode.Ticket_not_found)
         {
             create_new_ticket("cfg:Guest", "900000000", "guest");
-        }    
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (node.getStatus() != ResultCode.OK)

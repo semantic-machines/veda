@@ -23,39 +23,39 @@ public interface KeyValueDB
     public void close();
     public long count_entries();
 
-    public void flush (int force);
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);    
+    public void flush(int force);
+    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
 }
 
 public class Storage
 {
-	string name;
-    Ticket *[ string ] user_of_ticket;    
-    long          last_ticket_manager_op_id = 0;    
-    KeyValueDB       tickets_storage_r;
-    Logger log;
-	
-    abstract public long last_op_id ();
+    string     name;
+    Ticket *[ string ] user_of_ticket;
+    long       last_ticket_manager_op_id = 0;
+    KeyValueDB tickets_storage_r;
+    Logger     log;
+
+    abstract public long last_op_id();
     abstract public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
     abstract public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
     abstract public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
     abstract public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
     //public string find_ticket(string ticket_id);
-    
+
     abstract public ubyte authorize(string user_uri, string uri, bool trace);
-    abstract public void flush (int force);
+    abstract public void flush(int force);
     abstract public void reopen();
     abstract public void open();
     abstract public void close();
-    abstract long count_entries();	
-      
+    abstract long count_entries();
+
     private void reopen_ro_ticket_manager_db()
     {
         if (tickets_storage_r !is null)
             tickets_storage_r.reopen();
     }
-    
+
     public Ticket create_new_ticket(string user_id, string duration, string ticket_id, bool is_trace = false)
     {
         if (is_trace)
@@ -90,7 +90,7 @@ public class Storage
 
         return ticket;
     }
-        
+
     public Ticket *get_systicket_from_storage()
     {
         string systicket_id = tickets_storage_r.find(OptAuthorize.NO, null, "systicket");
@@ -100,7 +100,7 @@ public class Storage
 
         return get_ticket(systicket_id, false);
     }
-    
+
     public Ticket *get_ticket(string ticket_id, bool is_trace, bool is_systicket = false)
     {
         //StopWatch sw; sw.start;
@@ -140,7 +140,7 @@ public class Storage
                         user_of_ticket[ tt.id ] = tt;
 
                         if (is_trace)
-	                        log.trace("тикет найден в базе, id=%s", ticket_id);
+                            log.trace("тикет найден в базе, id=%s", ticket_id);
                     }
                     else
                     {
@@ -159,7 +159,7 @@ public class Storage
             }
             else
             {
-                    if (is_trace)
+                if (is_trace)
                     log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
 
                 SysTime now = Clock.currTime();
@@ -187,7 +187,7 @@ public class Storage
                     tt.result = ResultCode.OK;
                 }
 
-                    if (is_trace)
+                if (is_trace)
                     log.trace("ticket: %s", *tt);
             }
             return tt;
@@ -197,7 +197,7 @@ public class Storage
             //stat(CMD_GET, sw);
         }
     }
-    
+
     private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
     public MInfo get_info(MODULE module_id)
     {
@@ -211,7 +211,6 @@ public class Storage
         MInfo info = mdif.get_info();
         return info;
     }
-    
 }
 
 string access_to_pretty_string(const ubyte src)

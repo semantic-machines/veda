@@ -9,22 +9,22 @@ import veda.storage.lmdb.lmdb_driver;
 
 public class LmdbStorage : Storage
 {
-    //private Authorization 	 _acl_indexes;
+    //private Authorization      _acl_indexes;
     //private KeyValueDB       inividuals_storage_r;
 
-	this (string _name, Logger _log)
-	{
-		log = _log;
-		name = _name;
-        tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);		
-	}
-	
+    this(string _name, Logger _log)
+    {
+        log               = _log;
+        name              = _name;
+        tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);
+    }
+
     ~this()
     {
         log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
         tickets_storage_r.close();
     }
-	
+
     override public long last_op_id()
     {
         return -1;

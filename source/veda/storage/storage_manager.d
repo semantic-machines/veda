@@ -173,7 +173,7 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbDriver                  storage = null;
+    LmdbDriver                   storage = null;
 
     if (get_lmdb_mode() == "as_server")
     {
