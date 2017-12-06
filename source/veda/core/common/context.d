@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info, veda.storage.common;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info, veda.storage.common, veda.storage.storage;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;
@@ -74,17 +74,6 @@ interface Context
 
 
     public Individual[ string ] get_onto_as_map_individuals();
-
-    /**
-       Aутентификация
-       Params:
-                login = имя пользователя
-                password = хэш пароля
-
-       Returns:
-                экземпляр структуры Ticket
-     */
-    //public Ticket authenticate(string login, string password);
 
     /**
        Проверить сессионный билет

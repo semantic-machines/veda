@@ -4,7 +4,7 @@
 module veda.storage.lmdb.lmdb_storage;
 
 import veda.core.common.define, veda.common.logger;
-import veda.common.type, veda.storage.common, veda.core.common.transaction;
+import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver;
 
 public class LmdbStorage : Storage
