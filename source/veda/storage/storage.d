@@ -1,15 +1,16 @@
 module veda.storage.storage;
 
-import std.conv, std.datetime, std.uuid;
+import std.conv, std.datetime, std.uuid, std.stdio;
 import veda.common.logger, veda.common.type, veda.core.common.transaction, veda.storage.common;
 import veda.onto.individual, veda.onto.resource, veda.core.common.know_predicates, veda.util.module_info, veda.core.util.utils;
+import veda.core.az.acl;
 
-public class Storage
+public abstract class Storage
 {
     string     name;
     Ticket *[ string ] user_of_ticket;
     long       last_ticket_manager_op_id = 0;
-    KeyValueDB tickets_storage_r;
+
     Logger     log;
 
     abstract public long last_op_id();
@@ -17,19 +18,34 @@ public class Storage
     abstract public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
     abstract public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
     abstract public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
-    //public string find_ticket(string ticket_id);
 
-    abstract public ubyte authorize(string user_uri, string uri, bool trace);
     abstract public void flush(int force);
     abstract public void reopen();
     abstract public void open();
     abstract public void close();
     abstract long count_entries();
 
+	abstract Authorization get_acl_indexes ();
+	abstract KeyValueDB get_tickets_storage_r (); 
+
+    import backtrace.backtrace, Backtrace = backtrace.backtrace;
+    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload)
+    {
+        if (ticket is null)
+        {
+            printPrettyTrace(stderr);
+        }
+
+        //writeln ("@p ### uri=", uri, " ", request_acess);
+        ubyte res = get_acl_indexes().authorize(uri, ticket, request_acess, is_check_for_reload, null, null, null);
+
+        //writeln ("@p ### uri=", uri, " ", request_acess, " ", request_acess == res);
+        return request_acess == res;
+    }
+
     private void reopen_ro_ticket_manager_db()
     {
-        if (tickets_storage_r !is null)
-            tickets_storage_r.reopen();
+			get_tickets_storage_r().reopen();
     }
 
     public Ticket create_new_ticket(string user_id, string duration, string ticket_id, bool is_trace = false)
@@ -69,7 +85,7 @@ public class Storage
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = tickets_storage_r.find(OptAuthorize.NO, null, "systicket");
+        string systicket_id = get_tickets_storage_r().find(OptAuthorize.NO, null, "systicket");
 
         if (systicket_id is null)
             log.trace("SYSTICKET NOT FOUND");
@@ -103,7 +119,7 @@ public class Storage
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
+                string ticket_str = get_tickets_storage_r().find(OptAuthorize.NO, null, ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;

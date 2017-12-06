@@ -778,7 +778,7 @@ class XapianVQL
                 if (trace)
                     log.trace("found subject_id:[%s]", subject_id);
 
-                if (op_auth == OptAuthorize.NO || context.authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
+                if (op_auth == OptAuthorize.NO || context.get_storage().authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
                 {
                     //log.trace("found subject_id:[%s] authorized", subject_id);
 

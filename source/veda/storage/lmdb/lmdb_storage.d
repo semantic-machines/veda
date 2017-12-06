@@ -6,17 +6,17 @@ module veda.storage.lmdb.lmdb_storage;
 import veda.core.common.define, veda.common.logger;
 import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver;
+import veda.core.az.acl;
 
 public class LmdbStorage : Storage
 {
-    //private Authorization      _acl_indexes;
-    //private KeyValueDB       inividuals_storage_r;
+    private Authorization acl_indexes;
+    private KeyValueDB tickets_storage_r;
 
     this(string _name, Logger _log)
     {
         log               = _log;
         name              = _name;
-        tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);
     }
 
     ~this()
@@ -24,6 +24,22 @@ public class LmdbStorage : Storage
         log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
         tickets_storage_r.close();
     }
+
+	override Authorization get_acl_indexes ()
+	{
+		if (acl_indexes is null)
+	        acl_indexes = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl", this.log);        
+			
+		return acl_indexes;	
+	} 
+
+override KeyValueDB get_tickets_storage_r ()
+{
+	if (tickets_storage_r is null)
+        tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);
+        
+        return tickets_storage_r;
+}
 
     override public long last_op_id()
     {
@@ -48,16 +64,6 @@ public class LmdbStorage : Storage
     override public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {
         return null;
-    }
-
-//    public string find_ticket(string ticket_id)
-//    {
-//        return null;
-//    }
-
-    override public ubyte authorize(string user_uri, string uri, bool trace)
-    {
-        return 0;
     }
 
     override public void flush(int force)

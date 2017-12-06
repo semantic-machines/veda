@@ -44,7 +44,6 @@ interface Context
 
     string get_name();
 
-    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload);
     string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();
 
@@ -65,7 +64,6 @@ interface Context
     public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     public VQL get_vql();
-    public Authorization acl_indexes();
 
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
