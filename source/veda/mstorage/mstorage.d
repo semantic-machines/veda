@@ -256,7 +256,7 @@ void commiter(string thread_name)
 
     while (is_exit == false)
     {
-        receiveTimeout(dur!("seconds")(1),
+        receiveTimeout(dur!("msecs")(600),
                        (byte cmd, Tid tid_response_reciever)
                        {
                            if (cmd == CMD_EXIT)
@@ -273,7 +273,6 @@ void commiter(string thread_name)
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
         veda.storage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-
         veda.mstorage.acl_manager.flush(false);
         veda.storage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }

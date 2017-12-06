@@ -5,7 +5,7 @@ module veda.storage.binlog_tools;
 
 import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
 import veda.common.logger, veda.core.util.utils;
-import veda.common.type, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
+import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
        veda.onto.resource;
 
 bool check_binlog(string file_name)

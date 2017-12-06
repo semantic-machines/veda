@@ -7,8 +7,7 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
-    import veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
-           veda.onto.resource;
+    import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;

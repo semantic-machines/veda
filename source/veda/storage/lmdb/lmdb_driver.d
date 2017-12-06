@@ -6,7 +6,7 @@ module veda.storage.lmdb.lmdb_driver;
 private
 {
     import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
-    import veda.bind.lmdb_header, veda.onto.individual, veda.common.type;
+    import veda.storage.lmdb.lmdb_header, veda.onto.individual, veda.common.type;
     import veda.common.logger, veda.core.util.utils, veda.storage.common, veda.core.common.define;
 
     alias core.thread.Thread core_thread;

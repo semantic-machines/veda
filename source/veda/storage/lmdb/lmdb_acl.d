@@ -3,7 +3,7 @@ module veda.storage.lmdb.lmdb_acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
+    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
     import veda.core.util.utils, veda.common.logger;
     import veda.storage.lmdb.lmdb_driver, veda.storage.right_set, veda.storage.common;
