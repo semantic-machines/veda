@@ -46,8 +46,6 @@ interface Context
     string get_from_individual_storage(string user_uri, string uri);
     Onto get_onto();
 
-    public string get_ticket_from_storage(string ticket_id);
-
     public Ticket *get_systicket_from_storage();
 
     public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null);
