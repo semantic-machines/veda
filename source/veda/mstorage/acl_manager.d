@@ -10,7 +10,7 @@ private
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.storage.common;
     import veda.core.util.utils, veda.common.logger, veda.util.module_info;
-    import veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
+    import veda.core.impl.thread_context, veda.storage.common, veda.storage.right_set, veda.storage.lmdb.lmdb_acl;
 }
 
 // ////////////// ACLManager
@@ -67,7 +67,7 @@ public ResultCode flush(bool is_wait)
 void acl_manager(string thread_name, string db_path)
 {
     core.thread.Thread.getThis().name    = thread_name;
-    Authorization                storage = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+    Authorization                storage = new LmdbAuthorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
     //string                       bin_log_name = get_new_binlog_name(db_path);
 
     long l_op_id;
@@ -130,15 +130,15 @@ void acl_manager(string thread_name, string db_path)
 
                                 if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
                                 {
-                                    prepare_permission_statement(prev_ind, new_ind, op_id, storage);
+                                    prepare_permission_statement(prev_ind, new_ind, op_id, cast(KeyValueDB)storage);
                                 }
                                 else if (rdfType.anyExists(veda_schema__Membership) == true)
                                 {
-                                    prepare_membership(prev_ind, new_ind, op_id, storage);
+                                    prepare_membership(prev_ind, new_ind, op_id, cast(KeyValueDB)storage);
                                 }
                                 else if (rdfType.anyExists(veda_schema__PermissionFilter) == true)
                                 {
-                                    prepare_permission_filter(prev_ind, new_ind, op_id, storage);
+                                    prepare_permission_filter(prev_ind, new_ind, op_id, cast(KeyValueDB)storage);
                                 }
                             }
                             finally

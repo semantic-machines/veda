@@ -70,7 +70,7 @@ class VQL
 
             Individual individual = Individual();
 
-            string     data = context.get_from_individual_storage(ticket.user_uri, uri);
+            string     data = context.get_storage().get_from_individual_storage(ticket.user_uri, uri);
 
             if (data is null)
             {
@@ -162,7 +162,7 @@ class VQL
                     res = res.init;
                     return;
                 }
-                string data = context.get_from_individual_storage(ticket.user_uri, uri);
+                string data = context.get_storage().get_from_individual_storage(ticket.user_uri, uri);
 
                 if (data is null)
                 {
@@ -180,7 +180,7 @@ class VQL
                     {
                         //writeln("ERR! invalid individual=", uri);
                         context.reopen_ro_individuals_storage_db();
-                        data = context.get_from_individual_storage(ticket.user_uri, uri);
+                        data = context.get_storage().get_from_individual_storage(ticket.user_uri, uri);
                         if (ind.deserialize(data) > 0)
                         {
                             res ~= ind;

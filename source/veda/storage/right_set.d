@@ -1,4 +1,4 @@
-module veda.core.az.right_set;
+module veda.storage.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
 private import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.log_msg,
