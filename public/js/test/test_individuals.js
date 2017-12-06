@@ -39,8 +39,9 @@ function generate_test_document1(ticket)
     var new_test_doc1_uri = genUri();
     var new_test_doc1 = {
         '@': new_test_doc1_uri,
-        'rdf:type': newUri('rdfs:Resource'),
-        'v-s:test_integer': newInt(9223372036854775295),
+        'rdf:type': newUri('rdfs:Resource1'),
+        'v-s:test_integer_32': newInt(922337203),
+        'v-s:test_integer_64': newInt(9223372036854775295),
         'v-s:test_negative_integer': newInt(-144365435),
         'v-s:test_decimal': newDecimal(12.12345678912345),
         'v-s:test_negative_decimal': newDecimal(-54.89764),
@@ -66,6 +67,40 @@ function generate_test_document1(ticket)
     return new_test_doc1;
 }
 
+function generate_test_document2(ticket)
+{
+    var new_test_doc2_uri = genUri();
+    var new_test_doc2 = {
+        '@': new_test_doc2_uri,
+        'rdf:type': newUri('rdfs:Resource1'),
+        'v-s:test_integer_32': [newInt(922337203)[0], newInt(456403)[0]],
+        'v-s:test_negative_integer': newInt(-144365435),
+        'v-s:test_decimal': newDecimal(12.12345678912345),
+        'v-s:test_negative_decimal': newDecimal(-54.89764),
+        'v-s:test_decimal2': [newDecimal(0.7)[0], newDecimal(0.4)[0]],
+        'v-s:test_decimal3': newDecimal(764.3),
+        'v-s:test_decimal4': newDecimal(90.8),
+        'v-s:test_decimal5': newDecimal(7.6),
+        'v-s:test_decimal6': newDecimal(0.07),
+        'v-s:test_decimal6_1': newDecimal(-0.07),
+        'v-s:test_decimal7': newDecimal(0.007),
+        'v-s:test_decimal8': newDecimal(1),
+        'v-s:test_decimal9': newDecimal(5.0),
+        'v-s:created': newDate(new Date()),
+        'v-s:test_datetime0': newDate(new Date("2014-01-02")),
+        'v-s:test_datetime1': newDate(new Date("2014-01-02T20:00")),
+        'v-s:test_datetime2': newDate(new Date("2014-01-02T20:10:24")),
+        'v-s:test_datetime3': newDate(new Date("2014-01-02T20:10:24.768")),
+        'v-s:test_datetime4': newDate(new Date("1960-01-02")),
+        'v-s:canUpdate': newBool(true),
+        'v-s:permissionSubject': [newUri('individual_' + guid())[0], newUri('individual_' + guid())[0]],
+	'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+        'v-s:author': newUri(ticket.user_uri)
+    };
+
+    return new_test_doc2;
+}
+
 function create_test_document1(ticket, prefix)
 {
     var new_test_doc1 = generate_test_document1(ticket)
@@ -78,6 +113,20 @@ function create_test_document1(ticket, prefix)
     wait_module(m_acl, res.op_id);
     wait_module(m_scripts, res.op_id);
     return new_test_doc1;
+}
+
+function create_test_document2(ticket, prefix)
+{
+    var new_test_doc2 = generate_test_document2(ticket)
+
+    if (prefix)
+	new_test_doc2['@'] = prefix + new_test_doc2['@']
+
+    var res = put_individual(ticket.id, new_test_doc2);
+    //wait_module(m_subject, res.op_id);
+    wait_module(m_acl, res.op_id);
+    wait_module(m_scripts, res.op_id);
+    return new_test_doc2;
 }
 
 function test_success_read(ticket, read_indv_uri, ethalon_indv, reopen)
@@ -221,6 +270,243 @@ for (i = 0; i < 1; i++)
         });
 
     test(
+        "#030 search form test",
+        function()
+        {
+            var res;
+            var ticket_user1 = get_user1_ticket();
+
+            var test_group_uid = "test30:" + guid();
+
+            var new_test_doc1_uri = "test30:" + guid();
+            var label1 = "test30.1:" + guid();
+            var comment = "comment30:" + guid();
+            var new_test_doc1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'rdfs:label': newUri(label1),
+                'rdfs:comment': newUri(comment),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date())
+            };
+
+            var new_test_doc2_uri = "test30:" + guid();
+            var label2 = "test30.2:" + guid();
+            var new_test_doc2 = {
+                '@': new_test_doc2_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'rdfs:label': newUri(label2),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date())
+            };
+
+            var new_test_doc3_uri = "test30.1:" + guid();
+            var new_test_doc3 = {
+                '@': new_test_doc3_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'rdfs:label': newUri(label1),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date())
+            };
+
+            var new_test_doc4_uri = "test30.1:" + guid();
+            var new_test_doc4 = {
+                '@': new_test_doc4_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'rdfs:label': newUri(label2),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date())
+            };
+
+            var new_test_doc5_uri = "test30.2:" + guid();
+            var comment2 = "comm1" + guid();
+            var new_test_doc5 = {
+                '@': new_test_doc5_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'rdfs:label': newUri(label1),
+                'rdfs:comment' : newUri(comment2),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date())
+            };
+
+            var new_test_doc6_uri = "test30.2:" + guid();
+            var new_test_doc6 = {
+                '@': new_test_doc6_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:created': newDate(new Date())
+            };
+
+        console.log("@1");
+
+            res = put_individual(ticket_user1.id, new_test_doc1, false);
+            res = put_individual(ticket_user1.id, new_test_doc2, false);
+            res = put_individual(ticket_user1.id, new_test_doc3, false);
+            res = put_individual(ticket_user1.id, new_test_doc4, false);
+            res = put_individual(ticket_user1.id, new_test_doc5, false);
+            res = put_individual(ticket_user1.id, new_test_doc6, false);
+
+        console.log("@2");
+
+            flush (m_fulltext_indexer, res.op_id);
+
+        console.log("@3");
+
+            wait_module(m_fulltext_indexer, res.op_id);
+            wait_module(m_subject, res.op_id);
+
+        console.log("@4");
+
+            var data = query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+        console.log("@4.1");
+            //#2
+            ok(compare(data.length, 3));
+
+        console.log("@5");
+
+            var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
+
+        console.log("@5.0");
+            //#1
+            ok(compare(data.length, 6));
+
+        console.log("@5.1");
+
+            var data = query(ticket_user1.id, "'@' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#3
+            ok(compare(data.length, 2));
+
+        console.log("@5.2");
+
+            var data = query(ticket_user1.id, "('@' == 'test30.1*' || '@' == 'test30.2*') && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#4
+            ok(compare(data.length, 4));
+
+        console.log("@5.3");
+
+            var data = query(ticket_user1.id, "'@' == 'test30*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#5
+            ok(compare(data.length, 6));
+
+        console.log("@5.4");
+
+            var data = query(ticket_user1.id, "'rdfs:label.isExists' == 'true' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#6
+            ok(compare(data.length, 5));
+
+        console.log("@5.5");
+
+            var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#7
+            ok(compare(data.length, 1));
+
+        console.log("@6");
+
+            res = remove_individual(ticket_user1.id, new_test_doc1['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#8
+            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
+
+            //var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:deleted' == true && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#9
+            //ok(compare(data.length, 1));
+
+        console.log("@7");
+
+            var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#10
+            ok(compare(data.length, 1));
+
+            //var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1* && 'v-s:system' === true && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#
+            //ok(compare(data.length, 1));
+
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' == true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#11
+            //ok(compare(data.length, 1));
+
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*') || ('rdfs:comment' == 'comment*' && 'v-s:deleted' == true)) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#
+            //ok(compare(data.length, 2));//0
+
+
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*' && 'v-s:basic' === true) || ('rdfs:comment' == 'comment*' && 'v-s:deleted' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#
+            //ok(compare(data.length, 2));//0
+
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*' && 'v-s:basic' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#
+            //ok(compare(data.length, 2));//0
+        console.log("@8");
+
+            res = remove_individual(ticket_user1.id, new_test_doc5['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#12
+            test_fail_read(ticket_user1, new_test_doc5['@'], new_test_doc5);
+
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*' && 'v-s:basic' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            //
+            //#
+            //ok(compare(data.length, 2));//0
+
+            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+
+            //#13
+            //ok(compare(data.length, 2));
+
+        console.log("@9");
+
+            res = remove_individual(ticket_user1.id, new_test_doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#14
+            test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
+
+            res = remove_individual(ticket_user1.id, new_test_doc3['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#15
+            test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
+
+            res = remove_individual(ticket_user1.id, new_test_doc4['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#16
+            test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
+
+            res = remove_individual(ticket_user1.id, new_test_doc6['@']);
+            //wait_module(m_scripts, res.op_id);
+
+            //#17
+            test_fail_read(ticket_user1, new_test_doc6['@'], new_test_doc6);
+
+        console.log("@10");
+
+        }
+    );
+
+    test(
         "#004 Individual store user1 and no read user2, +lang",
         function()
         {
@@ -331,6 +617,7 @@ for (i = 0; i < 1; i++)
             try
             {
                 // test UPDATE rights
+                new_test_doc1['v-s:updateCounter'] = newInteger (0);
                 res = put_individual(ticket_user2.id, new_test_doc1);
                 ok (false);
             }
@@ -515,7 +802,7 @@ for (i = 0; i < 1; i++)
             //wait_module(m_scripts, res.op_id);
 
             //#6
-            test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);            
+            test_fail_read(ticket, new_test_doc3['@'], new_test_doc3);
         });
 
     test("#010 Individual of [v-s:Membership]",
@@ -737,13 +1024,13 @@ for (i = 0; i < 1; i++)
             //#9
             ok(compare(data.length, 2));
 
-            
+
             res = remove_individual(ticket_user1.id, new_test_doc1['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#10
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
-            
+
             res = remove_individual(ticket_user1.id, new_test_doc2['@']);
             //wait_module(m_scripts, res.op_id);
 
@@ -755,134 +1042,13 @@ for (i = 0; i < 1; i++)
 
             //#12
             test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
-            
+
             res = remove_individual(ticket_user1.id, new_test_doc4['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#13
             test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
-
-    test(
-        "#013 user1 store 5 individuals, ft search use range ",
-        function()
-        {
-            var ticket_user1 = get_user1_ticket();
-
-            //#1
-            ok(ticket_user1.id.length > 0);
-
-            var test_group_uid = "test13:" + guid();
-
-            var new_test_doc1_uri = "test13:" + guid();
-            var new_test_doc1 = {
-                '@': new_test_doc1_uri,
-                'rdf:type': newUri('rdfs:Resource'),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date()),
-                'v-s:test_group': newUri(test_group_uid),
-                'v-s:test_datetime0': newDate(new Date("2014-01-01")),
-                'v-s:test_datetime1': newDate(new Date("2014-05-01"))
-            };
-
-            var new_test_doc2_uri = "test13:" + guid();
-            var new_test_doc2 = {
-                '@': new_test_doc2_uri,
-                'rdf:type': newUri('rdfs:Resource'),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date()),
-                'v-s:test_group': newUri(test_group_uid),
-                'v-s:test_datetime0': newDate(new Date("2014-01-02")),
-                'v-s:test_datetime1': newDate(new Date("2014-05-01"))
-            };
-
-            var new_test_doc3_uri = "test13:" + guid();
-            var new_test_doc3 = {
-                '@': new_test_doc3_uri,
-                'rdf:type': newUri('rdfs:Resource'),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date()),
-                'v-s:test_group': newUri(test_group_uid),
-                'v-s:test_datetime0': newDate(new Date("2014-01-02")),
-                'v-s:test_datetime1': newDate(new Date("2014-06-11"))
-            };
-
-            var new_test_doc4_uri = "test13:" + guid();
-            var new_test_doc4 = {
-                '@': new_test_doc4_uri,
-                'rdf:type': newUri('rdfs:Resource'),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date()),
-                'v-s:test_group': newUri(test_group_uid),
-                'v-s:test_datetime0': newDate(new Date("2014-01-04")),
-                'v-s:test_datetime1': newDate(new Date("2014-06-12"))
-            };
-
-            var res = put_individual(ticket_user1.id, new_test_doc1, false);
-            var res = put_individual(ticket_user1.id, new_test_doc2, false);
-            var res = put_individual(ticket_user1.id, new_test_doc3, false);
-            var res = put_individual(ticket_user1.id, new_test_doc4, false);
-
-            wait_module(m_fulltext_indexer, res.op_id);
-            wait_module(m_subject, res.op_id);
-            //wait_module(m_acl, res.op_id);
-            //wait_module(m_scripts, res.op_id);
-
-            var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
-
-            //#2
-            ok(compare(data.length, 4));
-
-            data = query(ticket_user1.id, "'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
-
-            //#3
-            ok(compare(data.length, 4));
-
-            data = query(ticket_user1.id,
-                "'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
-
-            //#4
-            ok(compare(data.length, 3));
-
-            //#5
-            ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri || data[2] == new_test_doc1_uri) &&
-                (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri || data[2] == new_test_doc2_uri) &&
-                (data[0] == new_test_doc3_uri || data[1] == new_test_doc3_uri || data[2] == new_test_doc3_uri));
-
-            data = query(ticket_user1.id,
-                "'v-s:test_datetime1' === [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
-
-            //#6
-            ok(compare(data.length, 2));
-
-            //#7
-            ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
-
-            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
-            //wait_module(m_scripts, res.op_id);
-
-            //#8
-            test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
-
-            res = remove_individual (ticket_user1.id, new_test_doc2['@']);
-            //wait_module(m_scripts, res.op_id);
-
-            //#9
-            test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
-
-            res = remove_individual (ticket_user1.id, new_test_doc3['@']);
-            //wait_module(m_scripts, res.op_id);
-
-            //#10
-            test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
-
-            res = remove_individual (ticket_user1.id, new_test_doc4['@']);
-            //wait_module(m_scripts, res.op_id);
-
-            //#11
-            test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
-        });
-
 
     test(
         "#014 Individual store, add_to_individual, set_in_individual test, remove_from",
@@ -1006,10 +1172,10 @@ for (i = 0; i < 1; i++)
 
             //#6
             ok(compare(new_test_doc1_remove_from1, read_individual));
-            
+
             res = remove_individual(ticket_user1.id, new_test_doc1['@']);
             //wait_module(m_scripts, res.op_id);
-            
+
             //#7
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
         });
@@ -1056,13 +1222,13 @@ for (i = 0; i < 1; i++)
 
             //#8
             res = test_fail_read(ticket2, doc2['@'], doc2, true);
-            
+
             res = remove_individual (ticket1.id, doc1['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#9
             test_fail_read(ticket1, doc1['@'], doc1);
-            
+
             res = remove_individual (ticket1.id, doc2['@']);
             //wait_module(m_scripts, res.op_id);
 
@@ -1106,13 +1272,13 @@ for (i = 0; i < 1; i++)
 
             //#6
             res = test_success_read(ticket2, doc2['@'], doc2, true);
-            
+
             res = remove_individual (ticket1.id, doc1['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#7
             test_fail_read(ticket1, doc1['@'], doc1);
-            
+
             res = remove_individual (ticket1.id, doc2['@']);
             //wait_module(m_scripts, res.op_id);
 
@@ -1182,19 +1348,19 @@ for (i = 0; i < 1; i++)
 
             //#10
             check_rights_fail(ticket2.id, doc3['@'], [can_delete]);
-            
+
             res = remove_individual (ticket1.id, doc1['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#11
             test_fail_read(ticket1, doc1['@'], doc1);
-            
+
             res = remove_individual (ticket1.id, doc2['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#12
             test_fail_read(ticket1, doc2['@'], doc2);
-            
+
             res = remove_individual (ticket1.id, doc3['@']);
             //wait_module(m_scripts, res.op_id);
 
@@ -1267,19 +1433,19 @@ for (i = 0; i < 1; i++)
 
             //#10
             check_rights_success(ticket2.id, doc3['@'], [can_delete]);
-            
+
             res = remove_individual (ticket1.id, doc1['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#11
             test_fail_read(ticket1, doc1['@'], doc1);
-            
+
             res = remove_individual (ticket1.id, doc2['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#12
             test_fail_read(ticket1, doc2['@'], doc2);
-            
+
             res = remove_individual (ticket1.id, doc3['@']);
             //wait_module(m_scripts, res.op_id);
 
@@ -1349,26 +1515,26 @@ for (i = 0; i < 1; i++)
 
             //#8
             check_rights_success(ticket2.id, doc3['@'], [can_read, can_update, can_delete]);
-            
+
             res = remove_individual (ticket1.id, doc1['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#9
             test_fail_read(ticket1, doc1['@'], doc1);
-            
+
             res = remove_individual (ticket1.id, doc2['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#10
             test_fail_read(ticket1, doc2['@'], doc2);
-            
+
             res = remove_individual (ticket1.id, doc3['@']);
             //wait_module(m_scripts, res.op_id);
 
             //#11
             test_fail_read(ticket1, doc3['@'], doc3);
         });
-    
+
     test("#021 Search with cursor",
         function()
         {
@@ -1479,24 +1645,24 @@ for (i = 0; i < 1; i++)
                 }
             }
         }
-        
+
         res = remove_individual (ticket.id, A['@']);
         //wait_module(m_scripts, res.op_id);
 
         //#5
         test_fail_read(ticket, A['@'], A);
-            
+
         res = remove_individual (ticket.id, B['@']);
         //wait_module(m_scripts, res.op_id);
 
         //#6
         test_fail_read(ticket, B['@'], B);
-            
+
         res = remove_individual (ticket.id, C['@']);
         //wait_module(m_scripts, res.op_id);
 
         //#7
-        test_fail_read(ticket, C['@'], C);      
+        test_fail_read(ticket, C['@'], C);
     });
 
     test("#023 test search on invalid query", function()
@@ -1517,7 +1683,7 @@ for (i = 0; i < 1; i++)
 
         //#1
         ok(res.result.length == 0);
-        
+
         res = remove_individual (ticket.id, A['@']);
         //wait_module(m_scripts, res.op_id);
 
@@ -1604,7 +1770,7 @@ for (i = 0; i < 1; i++)
         if (res["v-s:canDelete"]) {
             expected_rights |= 8;
         }
-        
+
         //#1
         ok(result_rights == expected_rights);
     });
@@ -1648,27 +1814,27 @@ for (i = 0; i < 1; i++)
         var res;
 
         res = addToGroup(ticket_admin, group_A, group_B);
-        
+
         //#1
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, group_C);
-        
+
         //#2
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_C, group_A);
-        
+
         //#3
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_C, new_test_doc1['@']);
-        
+
         //#4
         ok (res[1].result == 200);
 
         res = addRight(ticket_admin.id, [can_read], group_C, new_test_doc1['@']);
-        
+
         //#5
         ok (res[1].result == 200);
 
@@ -1684,7 +1850,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#027 test different group subtrees 1", function()
+    test("#028 test different group subtrees 1", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1698,27 +1864,27 @@ for (i = 0; i < 1; i++)
         var res;
 
         res = addToGroup(ticket_admin, group_A, new_test_doc1['@'], [can_read]);
-        
+
         //#1
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, group_A, [can_read]);
-        
+
         //#2
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_C, new_test_doc1['@']);
-        
+
         //#3
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, group_C);
-        
+
         //#4
         ok (res[1].result == 200);
 
         res = addRight(ticket_admin.id, [can_read, can_update, can_delete], ticket1.user_uri, group_B);
-        
+
         //#5
         ok (res[1].result == 200);
 
@@ -1726,13 +1892,13 @@ for (i = 0; i < 1; i++)
 
         //#6
         check_rights_success(ticket1.id, new_test_doc1['@'], [can_read]);
-        
+
         //#7
         check_rights_success(ticket1.id, new_test_doc1['@'], [can_update]);
-        
+
         //#8
         check_rights_success(ticket1.id, new_test_doc1['@'], [can_delete]);
-        
+
         res = remove_individual (ticket_admin.id, new_test_doc1['@']);
         //wait_module(m_scripts, res.op_id);
 
@@ -1741,7 +1907,7 @@ for (i = 0; i < 1; i++)
 
     });
 
-    test("#028 test different group subtrees 2", function()
+    test("#029 test different group subtrees 2", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1755,27 +1921,27 @@ for (i = 0; i < 1; i++)
         var res;
 
         res = addToGroup(ticket_admin, group_A, new_test_doc1['@'], [can_read]);
-        
+
         //#1
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, group_A, [can_read]);
-        
+
         //#2
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_C, new_test_doc1['@']);
-        
+
         //#3
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, group_C);
-        
+
         //#4
         ok (res[1].result == 200);
 
         res = addRight(ticket_admin.id, [can_read], ticket1.user_uri, group_B);
-        
+
         //#5
         ok (res[1].result == 200);
 
@@ -1783,10 +1949,10 @@ for (i = 0; i < 1; i++)
 
         //#6
         check_rights_success(ticket1.id, new_test_doc1['@'], [can_read]);
-        
+
         //#7
         check_rights_fail(ticket1.id, new_test_doc1['@'], [can_update]);
-        
+
         //#8
         check_rights_fail(ticket1.id, new_test_doc1['@'], [can_delete]);
 
@@ -1797,7 +1963,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    test("#029 test different group subtrees 3", function()
+    test("#030 test different group subtrees 3", function()
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1810,27 +1976,27 @@ for (i = 0; i < 1; i++)
         var res;
 
         res = addToGroup(ticket_admin, doc2, doc1, [can_read]);
-        
+
         //#1
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_A, doc2, [can_read]);
-        
+
         //#2
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, group_A, [can_read]);
-        
+
         //#3
         ok (res[1].result == 200);
 
         res = addToGroup(ticket_admin, group_B, doc2);
-        
+
         //#4
         ok (res[1].result == 200);
 
         res = addRight(ticket_admin.id, [can_read, can_update, can_delete], ticket1.user_uri, group_B);
-        
+
         //5
         ok (res[1].result == 200);
 
@@ -1838,236 +2004,210 @@ for (i = 0; i < 1; i++)
 
         //#6
         check_rights_success(ticket1.id, doc1, [can_read]);
-        
+
         //#7
         check_rights_fail(ticket1.id, doc1, [can_update]);
-        
+
         //#8
         check_rights_fail(ticket1.id, doc1, [can_delete]);
     });
-    
+
+
+    test("#031 test server side script: decimal, and various format [{}], {}, [[{}]]", function()
+    {
+      var ticket_admin = get_admin_ticket();
+
+      var new_test_script_uri = genUri();
+      var new_test_script = {
+        '@': new_test_script_uri,
+        'rdf:type': newUri('v-s:Event'),
+        'v-s:triggerByType': newUri('rdfs:Resource1'),
+        'v-s:script': newStr('if (parent_script_id != "") return;' +
+            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
+            'document["v-s:test_ArArObj"]= [newDate(new Date("2017-02-03"))];' +
+            'document["v-s:test_Obj"]= newDate(new Date("2017-03-03"))[0];' +
+            'put_individual(ticket, document, _event_id);'),
+        'v-s:created': newDate(new Date()),
+        'v-s:author': newUri(ticket_admin.user_uri)
+      };
+
+      var res = put_individual(ticket_admin.id, new_test_script);
+      //wait_module(m_subject, res.op_id);
+      wait_module(m_acl, res.op_id);
+      wait_module(m_scripts, res.op_id);
+
+      var doc = create_test_document2(ticket_admin);
+
+      remove_individual(ticket_admin.id, new_test_script['@']);
+
+      test_fail_read(ticket_admin, doc['@'], doc);
+
+      doc["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));
+      doc["v-s:test_ArArObj"]= newDate(new Date("2017-02-03"));
+      doc["v-s:test_Obj"]= newDate(new Date("2017-03-03"));
+
+      test_success_read(ticket_admin, doc['@'], doc);
+    });
+
     test(
-        "#030 search form test",
+        "#013 user1 store 5 individuals, ft search use range ",
         function()
         {
-            var res;
             var ticket_user1 = get_user1_ticket();
-            
-            var test_group_uid = "test30:" + guid();
 
-            var new_test_doc1_uri = "test30:" + guid();
-            var label1 = "test30.1:" + guid();
-            var comment = "comment30:" + guid();
+            //#1
+            ok(ticket_user1.id.length > 0);
+
+            var test_group_uid = "test13:" + guid();
+
+            var new_test_doc1_uri = "test13:" + guid();
             var new_test_doc1 = {
                 '@': new_test_doc1_uri,
                 'rdf:type': newUri('rdfs:Resource'),
-                'rdfs:label': newUri(label1),
-                'rdfs:comment': newUri(comment),
-                'v-s:test_group': newUri(test_group_uid),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date())
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-01")),
+                'v-s:test_datetime1': newDate(new Date("2014-05-01"))
             };
-            
-            var new_test_doc2_uri = "test30:" + guid();
-            var label2 = "test30.2:" + guid();
+
+            var new_test_doc2_uri = "test13:" + guid();
             var new_test_doc2 = {
                 '@': new_test_doc2_uri,
                 'rdf:type': newUri('rdfs:Resource'),
-                'rdfs:label': newUri(label2),
-                'v-s:test_group': newUri(test_group_uid),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date())
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-02")),
+                'v-s:test_datetime1': newDate(new Date("2014-05-01"))
             };
-            
-            var new_test_doc3_uri = "test30.1:" + guid();
+
+            var new_test_doc3_uri = "test13:" + guid();
             var new_test_doc3 = {
                 '@': new_test_doc3_uri,
                 'rdf:type': newUri('rdfs:Resource'),
-                'rdfs:label': newUri(label1),
-                'v-s:test_group': newUri(test_group_uid),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date())
+                'v-s:created': newDate(new Date()),
+                'v-s:test_group': newUri(test_group_uid),
+                'v-s:test_datetime0': newDate(new Date("2014-01-02")),
+                'v-s:test_datetime1': newDate(new Date("2014-06-11"))
             };
-            
-            var new_test_doc4_uri = "test30.1:" + guid();
+
+            var new_test_doc4_uri = "test13:" + guid();
             var new_test_doc4 = {
                 '@': new_test_doc4_uri,
                 'rdf:type': newUri('rdfs:Resource'),
-                'rdfs:label': newUri(label2),
-                'v-s:test_group': newUri(test_group_uid),
                 'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date())
-            };
-            
-            var new_test_doc5_uri = "test30.2:" + guid();
-            var comment2 = "comm1" + guid();
-            var new_test_doc5 = {
-                '@': new_test_doc5_uri, 
-                'rdf:type': newUri('rdfs:Resource'),
-                'rdfs:label': newUri(label1),
-                'rdfs:comment' : newUri(comment2),
+                'v-s:created': newDate(new Date()),
                 'v-s:test_group': newUri(test_group_uid),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date())
-            };
-            
-            var new_test_doc6_uri = "test30.2:" + guid();
-            var new_test_doc6 = {
-                '@': new_test_doc6_uri,
-                'rdf:type': newUri('rdfs:Resource'),
-                'v-s:test_group': newUri(test_group_uid),
-                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-                'v-s:created': newDate(new Date())
+                'v-s:test_datetime0': newDate(new Date("2014-01-04")),
+                'v-s:test_datetime1': newDate(new Date("2014-06-12"))
             };
 
-        console.log("@1");
-
-            res = put_individual(ticket_user1.id, new_test_doc1, false);
-            res = put_individual(ticket_user1.id, new_test_doc2, false);
-            res = put_individual(ticket_user1.id, new_test_doc3, false);
-            res = put_individual(ticket_user1.id, new_test_doc4, false);
-            res = put_individual(ticket_user1.id, new_test_doc5, false);
-            res = put_individual(ticket_user1.id, new_test_doc6, false);
-
-        console.log("@2");
-
-            flush (m_fulltext_indexer, res.op_id);
-
-        console.log("@3");
+            var res = put_individual(ticket_user1.id, new_test_doc1, false);
+            var res = put_individual(ticket_user1.id, new_test_doc2, false);
+            var res = put_individual(ticket_user1.id, new_test_doc3, false);
+            var res = put_individual(ticket_user1.id, new_test_doc4, false);
 
             wait_module(m_fulltext_indexer, res.op_id);
             wait_module(m_subject, res.op_id);
+            //wait_module(m_acl, res.op_id);
+            //wait_module(m_scripts, res.op_id);
 
-        console.log("@4");
-            
             var data = query(ticket_user1.id, test_group_uid, undefined, undefined, true).result;
 
-        console.log("@5");
-
-            //#1
-            ok(compare(data.length, 6));
-            
-            var data = query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-
             //#2
-            ok(compare(data.length, 3));
-            
-            var data = query(ticket_user1.id, "'@' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            ok(compare(data.length, 4));
+
+            data = query(ticket_user1.id, "'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
 
             //#3
-            ok(compare(data.length, 2));
-            
-            var data = query(ticket_user1.id, "('@' == 'test30.1*' || '@' == 'test30.2*') && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            ok(compare(data.length, 4));
+
+            data = query(ticket_user1.id,
+                "'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
 
             //#4
-            ok(compare(data.length, 4));
-            
-            var data = query(ticket_user1.id, "'@' == 'test30*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            ok(compare(data.length, 3));
 
             //#5
-            ok(compare(data.length, 6));
-            
-            var data = query(ticket_user1.id, "'rdfs:label.isExists' == 'true' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri || data[2] == new_test_doc1_uri) &&
+                (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri || data[2] == new_test_doc2_uri) &&
+                (data[0] == new_test_doc3_uri || data[1] == new_test_doc3_uri || data[2] == new_test_doc3_uri));
+
+            data = query(ticket_user1.id,
+                "'v-s:test_datetime1' === [2014-04-01T00:00:00, 2014-06-03T00:00:00] && 'v-s:test_datetime0' === [2013-12-31T00:00:00, 2014-01-03T00:00:00] && 'v-s:test_group' === '" + test_group_uid + "'", undefined, undefined, true).result;
 
             //#6
-            ok(compare(data.length, 5));
-            
-            var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
+            ok(compare(data.length, 2));
 
             //#7
-            ok(compare(data.length, 1));            
-            
-        console.log("@6");
+            ok((data[0] == new_test_doc1_uri || data[1] == new_test_doc1_uri) && (data[0] == new_test_doc2_uri || data[1] == new_test_doc2_uri));
 
-            res = remove_individual(ticket_user1.id, new_test_doc1['@']);
+            res = remove_individual (ticket_user1.id, new_test_doc1['@']);
             //wait_module(m_scripts, res.op_id);
-            
+
             //#8
             test_fail_read(ticket_user1, new_test_doc1['@'], new_test_doc1);
-            
-            //var data = query(ticket_user1.id, "'rdfs:comment' == 'comment*' && 'v-s:deleted' == true && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
+
+            res = remove_individual (ticket_user1.id, new_test_doc2['@']);
+            //wait_module(m_scripts, res.op_id);
+
             //#9
-            //ok(compare(data.length, 1));            
-            
-        console.log("@7");
-            
-            var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#10
-            ok(compare(data.length, 1));            
-            
-            //var data = query(ticket_user1.id, "'rdfs:comment' == 'comm1* && 'v-s:system' === true && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#
-            //ok(compare(data.length, 1));            
-            
-            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' == true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#11
-            //ok(compare(data.length, 1));            
-            
-            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*') || ('rdfs:comment' == 'comment*' && 'v-s:deleted' == true)) && 'v-s:test_group' == '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#
-            //ok(compare(data.length, 2));//0
-            
-            
-            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comm1*' && 'v-s:basic' === true) || ('rdfs:comment' == 'comment*' && 'v-s:deleted' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#
-            //ok(compare(data.length, 2));//0
-            
-            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*' && 'v-s:basic' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#
-            //ok(compare(data.length, 2));//0            
-        console.log("@8");
-            
-            res = remove_individual(ticket_user1.id, new_test_doc5['@']);
-            //wait_module(m_scripts, res.op_id);
-            
-            //#12
-            test_fail_read(ticket_user1, new_test_doc5['@'], new_test_doc5);
-            
-            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*' && 'v-s:basic' === true)) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-            //
-            //#
-            //ok(compare(data.length, 2));//0            
-            
-            //var data = query(ticket_user1.id, "(('rdfs:comment' == 'comment*' && 'v-s:deleted' === true) || ('rdfs:comment' == 'comm1*')) && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
-            
-            //#13
-            //ok(compare(data.length, 2));
-
-        console.log("@9");
-            
-            res = remove_individual(ticket_user1.id, new_test_doc2['@']);
-            //wait_module(m_scripts, res.op_id);
-            
-            //#14
             test_fail_read(ticket_user1, new_test_doc2['@'], new_test_doc2);
-            
-            res = remove_individual(ticket_user1.id, new_test_doc3['@']);
+
+            res = remove_individual (ticket_user1.id, new_test_doc3['@']);
             //wait_module(m_scripts, res.op_id);
-            
-            //#15
+
+            //#10
             test_fail_read(ticket_user1, new_test_doc3['@'], new_test_doc3);
-            
-            res = remove_individual(ticket_user1.id, new_test_doc4['@']);
+
+            res = remove_individual (ticket_user1.id, new_test_doc4['@']);
             //wait_module(m_scripts, res.op_id);
-        
-            //#16
+
+            //#11
             test_fail_read(ticket_user1, new_test_doc4['@'], new_test_doc4);
-            
-            res = remove_individual(ticket_user1.id, new_test_doc6['@']);
-            //wait_module(m_scripts, res.op_id);
-            
-            //#17
-            test_fail_read(ticket_user1, new_test_doc6['@'], new_test_doc6);
+        });
 
-        console.log("@10");
 
-        }
-    );  
+
+/*
+    test("#032 test create individual with rdf:type rdfs:Resource", function()
+    {
+      var ticket_admin = get_admin_ticket();
+
+      var ticket_user = get_user1_ticket();
+
+      var doc_admin = {
+        '@': genUri(),
+        'rdf:type': [{
+          data: "rdfs:Resource",
+          type: "Uri"
+        }]
+      };
+
+      var doc_user = {
+        '@': genUri(),
+        'rdf:type': [{
+          data: "rdfs:Resource",
+          type: "Uri"
+        }]
+      };
+
+      try {
+        var res = put_individual(ticket_admin.id, doc_admin);
+        ok(true);
+      } catch (err) {
+        ok(false, "put_individual with rdfs:Resource type by admin must success.");
+      }
+
+      try {
+        var res = put_individual(ticket_user.id, doc_user);
+        ok(false, "put_individual with rdfs:Resource type by unprivileged user must fail with 472 error.");
+      } catch (err) {
+        ok(true);
+      }
+
+    });
+*/
 }

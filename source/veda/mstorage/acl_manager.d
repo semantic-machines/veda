@@ -8,9 +8,9 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
-           veda.core.common.know_predicates, veda.core.common.log_msg;
+           veda.core.common.know_predicates, veda.core.common.log_msg, veda.storage.common;
     import veda.core.util.utils, veda.common.logger, veda.util.module_info;
-    import veda.core.storage.lmdb_storage, veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
+    import veda.core.impl.thread_context, veda.core.az.acl, veda.core.az.right_set;
 }
 
 // ////////////// ACLManager
@@ -36,25 +36,10 @@ enum CMD : byte
     /// Включить/выключить отладочные сообщения
     SET_TRACE = 33,
 
-    /// Backup
-    BACKUP    = 41,
-
     /// Пустая комманда
     NOP       = 64,
 
     EXIT      = 49
-}
-
-public string backup(string backup_id)
-{
-    string res;
-
-    Tid    tid_acl_manager = getTid(P_MODULE.acl_preparer);
-
-    send(tid_acl_manager, CMD_BACKUP, backup_id, thisTid);
-    receive((string _res) { res = _res; });
-
-    return res;
 }
 
 public ResultCode flush(bool is_wait)
@@ -81,15 +66,12 @@ public ResultCode flush(bool is_wait)
 
 void acl_manager(string thread_name, string db_path)
 {
-    int                          size_bin_log     = 0;
-    int                          max_size_bin_log = 10_000_000;
+    core.thread.Thread.getThis().name    = thread_name;
+    Authorization                storage = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+    //string                       bin_log_name = get_new_binlog_name(db_path);
 
-    core.thread.Thread.getThis().name         = thread_name;
-    Authorization                storage      = new Authorization(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
-    string                       bin_log_name = get_new_binlog_name(db_path);
-
-    long                         l_op_id;
-    long                         committed_op_id;
+    long l_op_id;
+    long committed_op_id;
 
     // SEND ready
     receive((Tid tid_response_reciever)
@@ -179,41 +161,6 @@ void acl_manager(string thread_name, string db_path)
                             send(tid_response_reciever, true);
                         else
                             send(tid_response_reciever, false);
-                    },
-                    (byte cmd, string msg, Tid tid_response_reciever)
-                    {
-                        if (cmd == CMD_BACKUP)
-                        {
-                            try
-                            {
-                                string backup_id;
-                                if (msg.length > 0)
-                                    backup_id = msg;
-
-                                if (backup_id is null)
-                                    backup_id = "0";
-
-                                Result res = storage.backup(backup_id);
-                                if (res == Result.Ok)
-                                {
-                                    size_bin_log = 0;
-                                    bin_log_name = get_new_binlog_name(db_path);
-                                }
-                                else if (res == Result.Err)
-                                {
-                                    backup_id = "";
-                                }
-                                send(tid_response_reciever, backup_id);
-                            }
-                            catch (Exception ex)
-                            {
-                                send(tid_response_reciever, "");
-                            }
-                        }
-                        else
-                        {
-                            send(tid_response_reciever, "?");
-                        }
                     },
                     (byte cmd, int arg, bool arg2)
                     {

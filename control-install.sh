@@ -1,10 +1,40 @@
 #!/bin/bash
-
 # устанавливает среду для последующей компиляции, берет новые исходники зависимостей из github, но не собирает
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
 GO_VER=go1.9
+TARANTOOL_VER=1.7.5
+MSGPUCK_VER=2.0
+
+# Get other dependencies
+LIB_NAME[1]="libevent-pthreads-2.0-5"
+LIB_NAME[3]="libevent-dev"
+LIB_NAME[4]="libssl-dev"
+LIB_NAME[5]="libmysqlclient-dev"
+LIB_NAME[6]="cmake"
+LIB_NAME[7]="libtool"
+LIB_NAME[8]="pkg-config"
+LIB_NAME[9]="build-essential"
+LIB_NAME[10]="autoconf"
+LIB_NAME[11]="automake"
+
+LIB_OK="Status: install ok installed"
+F_UL=0
+
+### RUST LANG ###
+
+if ! rustc -V; then
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+else
+    rustup update stable
+fi
+
+
+rustc -V
+cargo -V
+
+### D LANG ###
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
@@ -23,20 +53,7 @@ if ! dub --version | grep $DUB_VER ; then
     rm dub
 fi
 
-# Get other dependencies
-LIB_NAME[1]="libevent-pthreads-2.0-5"
-LIB_NAME[3]="libevent-dev"
-LIB_NAME[4]="libssl-dev"
-LIB_NAME[5]="libmysqlclient-dev"
-LIB_NAME[6]="cmake"
-LIB_NAME[7]="libtool"
-LIB_NAME[8]="pkg-config"
-LIB_NAME[9]="build-essential"
-LIB_NAME[10]="autoconf"
-LIB_NAME[11]="automake"
-
-LIB_OK="Status: install ok installed"
-F_UL=0
+### GO LANG ###
 
     mkdir tmp
     cd tmp
@@ -70,6 +87,8 @@ go get github.com/divan/expvarmon
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go 
 
+### LIBS FROM APT ###
+
 for i in "${LIB_NAME[@]}"; do
 
     L1=`dpkg -s $i | grep 'install ok'`
@@ -85,6 +104,35 @@ for i in "${LIB_NAME[@]}"; do
     fi
 
 done
+
+
+### TARANTOOL SERVER ###
+
+if ! tarantool -V | grep $TARANTOOL_VER; then
+
+curl http://download.tarantool.org/tarantool/1.7/gpgkey | sudo apt-key add -
+release=`lsb_release -c -s`
+
+# install https download transport for APT
+sudo apt-get -y install apt-transport-https
+
+# append two lines to a list of source repositories
+sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
+sudo tee /etc/apt/sources.list.d/tarantool_1_7.list <<- EOF
+deb http://download.tarantool.org/tarantool/1.7/ubuntu/ $release main
+deb-src http://download.tarantool.org/tarantool/1.7/ubuntu/ $release main
+EOF
+    
+# install
+sudo apt-get update
+sudo apt-get -y install tarantool
+sudo apt-get -y install tarantool-dev
+
+tarantool -V
+
+fi
+
+### LIB WEBSOCKETS ###
 
 if ! ldconfig -p | grep libwebsockets; then
 
@@ -106,14 +154,16 @@ if ! ldconfig -p | grep libwebsockets; then
 
 fi
 
+### LIB NANOMSG ###
+
 if ! ldconfig -p | grep libnanomsg; then
 
     # make nanomsg dependency
     mkdir tmp
-    wget https://github.com/nanomsg/nanomsg/archive/1.0.0.tar.gz -P tmp
+    wget https://github.com/nanomsg/nanomsg/archive/1.1.2.tar.gz -P tmp
     cd tmp
-    tar -xvzf 1.0.0.tar.gz
-    cd nanomsg-1.0.0
+    tar -xvzf 1.1.2.tar.gz
+    cd nanomsg-1.1.2
     mkdir build
     cd build
     cmake ..
@@ -129,6 +179,8 @@ if ! ldconfig -p | grep libnanomsg; then
     cd ..
 
 fi
+
+### LIB TRAILDB ###
 
 if ! ldconfig -p | grep libtraildb; then
 
@@ -158,6 +210,8 @@ if ! ldconfig -p | grep libtraildb; then
     cd ..
 fi
 
+### LIB RAPTOR ###
+
 sudo apt-get remove -y libraptor2-0
 ldconfig -p | grep libraptor2
 if ! ldconfig -p | grep libraptor2; then
@@ -180,6 +234,34 @@ if ! ldconfig -p | grep libraptor2; then
     sudo make install
     sudo ldconfig
     cd ..
+    cd ..
+    cd ..
+
+fi
+
+if ! ldconfig -p | grep libtarantool; then
+
+    TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
+
+    mkdir tmp
+    cd tmp
+
+    wget https://github.com/tarantool/tarantool-c/archive/$TTC.tar.gz -P .
+    tar -xvzf $TTC.tar.gz
+
+    wget https://github.com/tarantool/msgpuck/archive/$MSGPUCK_VER.tar.gz -P third_party/msgpuck -P .
+    tar -xvzf $MSGPUCK_VER.tar.gz
+
+    cp msgpuck-$MSGPUCK_VER/* tarantool-c-$TTC/third_party/msgpuck 
+    cd tarantool-c-$TTC
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+    sudo ldconfig
+
     cd ..
     cd ..
 

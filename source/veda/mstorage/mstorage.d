@@ -8,18 +8,18 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid;
-    import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    import veda.bind.libwebsocketd, veda.mstorage.wslink;
+    import backtrace.backtrace, Backtrace = backtrace.backtrace, veda.util.properd;
+    import veda.bind.libwebsocketd, veda.storage.lmdb.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
-    import veda.mstorage.load_info, veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.mstorage.acl_manager, veda.storage.lmdb.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }
 
-alias veda.mstorage.storage_manager ticket_storage_module;
-alias veda.mstorage.storage_manager indv_storage_thread;
-alias veda.mstorage.acl_manager     acl_module;
-alias veda.mstorage.load_info       load_info;
+alias veda.storage.lmdb.storage_manager ticket_storage_module;
+alias veda.storage.lmdb.storage_manager indv_storage_thread;
+alias veda.mstorage.acl_manager         acl_module;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -57,7 +57,7 @@ extern (C) void handleTermination2(int _signal)
 }
 
 private Context l_context;
-private Storage inividuals_storage_r;
+
 private VQL     vql_r;
 private Ticket  sticket;
 
@@ -81,15 +81,8 @@ void main(char[][] args)
         spawn(&commiter, text(P_MODULE.commiter));
     wait_starting_thread(P_MODULE.commiter, tids);
 
-    tids[ P_MODULE.statistic_data_accumulator ] = spawn(&statistic_data_accumulator, text(P_MODULE.statistic_data_accumulator));
-    wait_starting_thread(P_MODULE.statistic_data_accumulator, tids);
-
     tids[ P_MODULE.n_channel ] = spawn(&nanomsg_channel, text(P_MODULE.n_channel));
     wait_starting_thread(P_MODULE.n_channel, tids);
-
-    tids[ P_MODULE.print_statistic ] = spawn(&print_statistic, text(P_MODULE.print_statistic),
-                                             tids[ P_MODULE.statistic_data_accumulator ]);
-    wait_starting_thread(P_MODULE.print_statistic, tids);
 
     foreach (key, value; tids)
         register(text(key), value);
@@ -179,11 +172,10 @@ void init(string node_id)
     {
         Individual node;
 
-        Storage    storage = null;                               //new LmdbStorage(db_path, DBMode.RW, "individuals_manager", log);
-        core_context         = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, storage, null);
-        l_context            = core_context;
-        inividuals_storage_r = l_context.get_inividuals_storage_r();
-        vql_r                = l_context.get_vql();
+        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null, null, null, null);
+        l_context    = core_context;
+
+        vql_r = l_context.get_vql();
 
         sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
@@ -278,16 +270,24 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+        veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+
         veda.mstorage.acl_manager.flush(false);
-        veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
+        veda.storage.lmdb.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-public Individual get_individual(Ticket *ticket, string uri)
+private KeyValueDB inividuals_storage_r;
+
+private Individual get_individual(Ticket *ticket, string uri)
 {
+    if (inividuals_storage_r is null)
+    {
+        inividuals_storage_r = l_context.get_inividuals_storage_r();
+    }
+
     Individual individual = Individual.init;
 
     if (ticket is null)
@@ -296,7 +296,7 @@ public Individual get_individual(Ticket *ticket, string uri)
         return individual;
     }
 
-    string individual_as_binobj = inividuals_storage_r.find(true, ticket.user_uri, uri);
+    string individual_as_binobj = inividuals_storage_r.find(OptAuthorize.YES, ticket.user_uri, uri);
     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
     {
 //                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
@@ -325,7 +325,7 @@ public Individual get_individual(Ticket *ticket, string uri)
     return individual;
 }
 
-public Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
+private Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
 {
     if (trace_msg[ T_API_50 ] == 1)
         log.trace("create_new_ticket, ticket__accessor=%s", user_id);
@@ -374,7 +374,7 @@ public Ticket create_new_ticket(string user_id, string duration = "40000", strin
     return ticket;
 }
 
-public Ticket authenticate(string login, string password)
+private Ticket authenticate(string login, string password)
 {
     StopWatch sw; sw.start;
 
@@ -383,150 +383,72 @@ public Ticket authenticate(string login, string password)
     if (trace_msg[ T_API_70 ] == 1)
         log.trace("authenticate, login=[%s] password=[%s]", login, password);
 
-    try
-    {
-        ticket.result = ResultCode.Authentication_Failed;
+    ticket.result = ResultCode.Authentication_Failed;
 
-        if (login == null || login.length < 1 || password == null || password.length < 6)
-            return ticket;
-
-        login = replaceAll(login, regex(r"[-]", "g"), " +");
-
-        Individual[] candidate_users;
-        vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, false, false);
-        foreach (user; candidate_users)
-        {
-            string user_id = user.getFirstResource(veda_schema__owner).uri;
-            if (user_id is null)
-                continue;
-
-            string pass;
-            string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
-            if (usesCredential_uri !is null)
-            {
-                log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-                Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
-                pass = i_usesCredential.getFirstLiteral("v-s:password");
-            }
-            else
-            {
-                pass = user.getFirstLiteral("v-s:password");
-
-                Individual i_usesCredential;
-                i_usesCredential.uri = user.uri ~ "-crdt";
-                i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
-                i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
-
-                Transaction tnx;
-                tnx.id            = -1;
-                tnx.is_autocommit = true;
-                OpResult op_res = add_to_transaction(
-                                                     l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
-                                                     OptFreeze.NONE, OptAuthorize.YES,
-                                                     OptTrace.NONE);
-
-                log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
-                user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
-                user.removeResource("v-s:password");
-
-                tnx.id            = -1;
-                tnx.is_autocommit = true;
-                op_res            = add_to_transaction(
-                                                       l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
-                                                       OptAuthorize.YES,
-                                                       OptTrace.NONE);
-
-                log.trace("authenticate: update user[%s], res=%s", user, op_res);
-            }
-
-            if (pass !is null && pass == password)
-            {
-                ticket = create_new_ticket(user_id);
-                return ticket;
-            }
-        }
-
-        log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-
-        ticket.result = ResultCode.Authentication_Failed;
-
+    if (login == null || login.length < 1 || password == null || password.length < 6)
         return ticket;
-    }
-    finally
+
+    login = replaceAll(login, regex(r"[-]", "g"), " +");
+
+    Individual[] candidate_users;
+    vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    foreach (user; candidate_users)
     {
-        stat(CMD_PUT, sw);
-    }
-}
+        string user_id = user.getFirstResource(veda_schema__owner).uri;
+        if (user_id is null)
+            continue;
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-public string execute_binobj(string in_msg, Context ctx)
-{
-//    log.trace("@1 execute_binobj %s", in_msg);
-    JSONValue  res;
-    Individual otnx;
-
-    if (otnx.deserialize(in_msg) > 0)
-    {
-//	    log.trace("@ execute_binobj otnx=%s", otnx);
-
-        string sfn = otnx.getFirstLiteral("fn");
-
-        if (sfn == "commit")
+        string pass;
+        string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+        if (usesCredential_uri !is null)
         {
-            log.trace("@ execute commit %s", otnx);
+            log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
+            Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
+            pass = i_usesCredential.getFirstLiteral("v-s:password");
+        }
+        else
+        {
+            pass = user.getFirstLiteral("v-s:password");
+
+            Individual i_usesCredential;
+            i_usesCredential.uri = user.uri ~ "-crdt";
+            i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
+            i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
 
             Transaction tnx;
-            tnx.id = otnx.getFirstInteger("fn");
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            OpResult op_res = add_to_transaction(
+                                                 l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 OptFreeze.NONE, OptAuthorize.YES,
+                                                 OptTrace.NONE);
 
-            Resources items = otnx.getResources("items");
+            log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
+            user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
+            user.removeResource("v-s:password");
 
-            tnx.is_autocommit = false;
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            op_res            = add_to_transaction(
+                                                   l_context.acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
+                                                   OptAuthorize.YES,
+                                                   OptTrace.NONE);
 
-            foreach (ib; items)
-            {
-                log.trace("@ ib= %s", ib);
+            log.trace("authenticate: update user[%s], res=%s", user, op_res);
+        }
 
-                Individual item;
-
-                if (item.deserialize(ib.data) > 0)
-                {
-                    immutable TransactionItem ti = immutable TransactionItem(cast(INDV_OP)item.getFirstInteger("cmd"), item.getFirstLiteral(
-                                                                                                                                            "user_uri"),
-                                                                             item.getFirstLiteral("uri"),
-                                                                             item.getFirstLiteral("prev_binobj"), item.getFirstLiteral(
-                                                                                                                                       "new_binobj"),
-                                                                             item.getFirstInteger("update_counter"), item.getFirstLiteral("event_id"),
-                                                                             false, false, item.getFirstInteger("assigned_subsystems"));
-
-                    log.trace("@ ti= %s", ti);
-
-                    tnx.add_immutable(ti);
-                }
-            }
-
-            OpResult[]  rcs = commit(OptAuthorize.YES, tnx);
-
-            JSONValue[] all_res;
-            foreach (rr; rcs)
-            {
-                JSONValue ires;
-                ires[ "result" ] = rr.result;
-                ires[ "op_id" ]  = rr.op_id;
-                all_res ~= ires;
-            }
-
-            res[ "data" ]   = all_res;
-            res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.OK;
-            res[ "op_id" ]  = -1;
+        if (pass !is null && pass == password)
+        {
+            ticket = create_new_ticket(user_id);
+            return ticket;
         }
     }
-    else
-        log.trace("ERR! execute_binobj: fail deserialize");
 
-    log.trace("@e execute_binobj");
-    return res.toString();
+    log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
+
+    ticket.result = ResultCode.Authentication_Failed;
+
+    return ticket;
 }
 
 public string execute_json(string in_msg, Context ctx)
@@ -670,7 +592,9 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(
+                                                       ctx.acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems,
+                                                       event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -743,18 +667,6 @@ public string execute_json(string in_msg, Context ctx)
             res[ "result" ] = ResultCode.OK;
             res[ "op_id" ]  = -1;
         }
-        else if (sfn == "backup")
-        {
-            bool to_binlog = jsn[ "to_binlog" ].type() == JSON_TYPE.TRUE;
-            bool rc        = backup(ctx, to_binlog, 0);
-
-            res[ "type" ] = "OpResult";
-            if (rc == true)
-                res[ "result" ] = ResultCode.OK;
-            else
-                res[ "result" ] = ResultCode.Internal_Server_Error;
-            res[ "op_id" ] = -1;
-        }
         else if (sfn == "freeze")
         {
             ctx.freeze();
@@ -789,19 +701,19 @@ public string execute_json(string in_msg, Context ctx)
     }
 }
 
-public void freeze()
+private void freeze()
 {
     indv_storage_thread.freeze(P_MODULE.subject_manager);
 }
 
-public void unfreeze()
+private void unfreeze()
 {
     indv_storage_thread.unfreeze(P_MODULE.subject_manager);
 }
 
 private Ticket *[ string ] user_of_ticket;
 
-public Ticket sys_ticket(Context ctx, bool is_new = false)
+private Ticket sys_ticket(Context ctx, bool is_new = false)
 {
     Ticket ticket = get_global_systicket();
 
@@ -851,81 +763,7 @@ public Ticket sys_ticket(Context ctx, bool is_new = false)
     return ticket;
 }
 
-public bool backup(Context ctx, bool to_binlog, int level = 0)
-{
-    bool result = false;
-
-    if (level == 0)
-        freeze();
-
-    Ticket sticket = sys_ticket(ctx);
-
-    try
-    {
-        string backup_id = "to_binlog";
-
-        if (to_binlog)
-        {
-            long count = ctx.get_inividuals_storage_r.dump_to_binlog();
-            if (count > 0)
-                result = true;
-        }
-        else
-        {
-            backup_id = indv_storage_thread.backup(P_MODULE.subject_manager);
-
-            if (backup_id != "")
-            {
-                result = true;
-
-                string res;         // = veda.core.threads.acl_manager.backup(backup_id);
-
-                if (res == "")
-                    result = false;
-                else
-                {
-                    Tid tid_ticket_manager = getTid(P_MODULE.ticket_manager);
-                    send(tid_ticket_manager, CMD_BACKUP, backup_id, thisTid);
-                    receive((string _res) { res = _res; });
-                    if (res == "")
-                        result = false;
-                    else
-                    {
-                        //res = veda.core.threads.xapian_indexer.backup(backup_id);
-
-                        if (res == "")
-                            result = false;
-                    }
-                }
-            }
-
-            if (result == false)
-            {
-                if (level < 10)
-                {
-                    log.trace_log_and_console("BACKUP FAIL, repeat(%d) %s", level, backup_id);
-
-                    core.thread.Thread.sleep(dur!("msecs")(500));
-                    return backup(ctx, to_binlog, level + 1);
-                }
-                else
-                    log.trace_log_and_console("BACKUP FAIL, %s", backup_id);
-            }
-        }
-
-        if (result == true)
-            log.trace_log_and_console("BACKUP Ok, %s", backup_id);
-    }
-    finally
-    {
-        if (level == 0)
-            unfreeze();
-    }
-
-    return result;
-}
-
-public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
+private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 {
     ResultCode rc;
 
@@ -938,21 +776,24 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         log.trace("commit: items=%s", items);
 
-        rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
-
-        log.trace("commit: rc=%s", rc);
-
-        if (rc == ResultCode.OK)
+        if (items.length > 0)
         {
-            MapResource rdfType;
+            rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
 
-            foreach (item; items)
+            log.trace("commit: rc=%s", rc);
+
+            if (rc == ResultCode.OK)
             {
-                log.trace("commit: item.rc=%s", item.rc);
-                if (item.rc == ResultCode.OK)
-                    rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                MapResource rdfType;
+
+                foreach (item; items)
+                {
+                    log.trace("commit: item.rc=%s", item.rc);
+                    if (item.rc == ResultCode.OK)
+                        rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                }
+                rcs ~= OpResult(rc, op_id);
             }
-            rcs ~= OpResult(rc, op_id);
         }
     }
 
@@ -963,11 +804,19 @@ public OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
-public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv, long assigned_subsystems,
-                                   string event_id,
-                                   OptFreeze opt_freeze,
-                                   OptAuthorize opt_request, OptTrace opt_trace)
+private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
+                                    long assigned_subsystems,
+                                    string event_id,
+                                    OptFreeze opt_freeze,
+                                    OptAuthorize opt_request,
+                                    OptTrace opt_trace)
 {
+    if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
+    {
+        log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
+        opt_request = OptAuthorize.NO;
+    }
+
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
     OpResult res = OpResult(ResultCode.Fail_Store, -1);
@@ -1002,49 +851,60 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
         string     prev_state;
         Individual prev_indv;
 
-        try
-        {
-            prev_state = indv_storage_thread.find(P_MODULE.subject_manager, indv.uri);
+        bool       is_new = false;
 
-            if ((prev_state is null ||
-                 prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
-                log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
-        }
-        catch (Exception ex)
+        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
         {
-            res.result = ResultCode.Unprocessable_Entity;
-            log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
-            return res;
+            is_new = true;
+            log.trace("INFO! %s is new, use UPSERT", indv.uri);
         }
 
-        if (prev_state !is null)
+        if (is_new == false)
         {
-            int code = prev_indv.deserialize(prev_state);
-            if (code < 0)
+            try
             {
-                log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
+                prev_state = indv_storage_thread.find(P_MODULE.subject_manager, indv.uri);
+
+                if ((prev_state is null ||
+                     prev_state.length == 0) && (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM))
+                    log.trace("ERR! add_to_transaction, cmd=%s: not read prev_state uri=[%s]", text(cmd), indv.uri);
+            }
+            catch (Exception ex)
+            {
                 res.result = ResultCode.Unprocessable_Entity;
+                log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                 return res;
             }
 
-            if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
+            if (prev_state !is null)
             {
-                // для обновляемого индивида проверим доступность бита Update
-                if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
+                int code = prev_indv.deserialize(prev_state);
+                if (code < 0)
                 {
-                    res.result = ResultCode.Not_Authorized;
+                    log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
+                    res.result = ResultCode.Unprocessable_Entity;
                     return res;
                 }
 
-                // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                foreach (rs; _types)
+                if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
                 {
-                    string   itype = rs.get!string;
+                    // для обновляемого индивида проверим доступность бита Update
+                    if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
+                    {
+                        res.result = ResultCode.Not_Authorized;
+                        return res;
+                    }
 
-                    Resource *rr = rdfType.get(itype, null);
+                    // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
+                    foreach (rs; _types)
+                    {
+                        string   itype = rs.get!string;
 
-                    if (rr !is null)
-                        rr.info = EXISTS_TYPE;
+                        Resource *rr = rdfType.get(itype, null);
+
+                        if (rr !is null)
+                            rr.info = EXISTS_TYPE;
+                    }
                 }
             }
         }
@@ -1152,9 +1012,9 @@ public OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tn
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! no store subject :%s, errcode=[%s], ticket=[%s]",
+            log.trace("ERR! add_to_transaction:no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text(res.result),
                       indv !is null ? text(*indv) : "null",
-                      text(res.result), ticket !is null ? text(*ticket) : "null");
+                      ticket !is null ? text(*ticket) : "null");
 
         if (opt_trace == OptTrace.TRACE)
             log.trace("add_to_transaction [%s] = %s", indv.uri, res);
@@ -1167,12 +1027,6 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
     ResultCode res;
 
     Tid        tid_acl;
-
-    if (rdfType.anyExists(owl_tags) == true && new_binobj != prev_binobj)
-    {
-        // изменения в онтологии, послать в interthread сигнал о необходимости перезагрузки (context) онтологии
-        //inc_count_onto_update();
-    }
 
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
     {
@@ -1212,7 +1066,7 @@ public ResultCode flush_storage()
     return rc;
 }
 
-public void flush_ext_module(P_MODULE f_module, long wait_op_id)
+private void flush_ext_module(P_MODULE f_module, long wait_op_id)
 {
     Tid tid = getTid(P_MODULE.subject_manager);
 
@@ -1222,7 +1076,7 @@ public void flush_ext_module(P_MODULE f_module, long wait_op_id)
     }
 }
 
-public ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
+private ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
 {
     ResultCode rc;
 
@@ -1255,7 +1109,7 @@ string allow_trusted_group = "cfg:TrustedAuthenticationUserGroup";
    Returns:
             экземпляр структуры Ticket
  */
-Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
+private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
 {
     Ticket ticket;
 
@@ -1289,7 +1143,7 @@ Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket(ctx);
-            Individual[] candidate_users = ctx.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'");
+            Individual[] candidate_users = ctx.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", OptAuthorize.NO);
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;
@@ -1315,5 +1169,3 @@ Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login)
     ticket.result = ResultCode.Authentication_Failed;
     return ticket;
 }
-
-

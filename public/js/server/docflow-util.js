@@ -4,7 +4,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
 {
     try
     {
-        var new_uri = genUri();
+        var new_uri = genUri() + "-wit";
         var new_work_item = {
             '@': new_uri,
             'rdf:type': [
@@ -22,15 +22,15 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
                 data: net_element_uri,
                 type: _Uri
             }],
-    	    'v-s:created': [
-    	    {
-        	data: new Date(),
-        	type: _Datetime
+          'v-s:created': [
+          {
+          data: new Date(),
+          type: _Datetime
             }],
-    	    'v-s:creator': [
-    	    {
-        	data: 'cfg:VedaSystem',
-        	type: _Uri
+          'v-s:creator': [
+          {
+          data: 'cfg:VedaSystem',
+          type: _Uri
             }]
         };
 
@@ -85,18 +85,18 @@ function WorkItemResult(_work_item_result)
         if (!this.work_item_result || this.work_item_result.length == 0)
             return false;
 
-        //	print ("@@@compareTaskResult 1");
+        //  print ("@@@compareTaskResult 1");
         var true_count = 0;
         for (var i in this.work_item_result)
         {
-            //	print ("@@@compareTaskResult 2");
+            //  print ("@@@compareTaskResult 2");
             var wirv = this.work_item_result[i][var_name];
             if (wirv && wirv.length == value.length)
             {
-                //	print ("@@@compareTaskResult 3");
+                //  print ("@@@compareTaskResult 3");
                 for (var j in wirv)
                 {
-                    //	print ("@@@compareTaskResult 4");
+                    //  print ("@@@compareTaskResult 4");
                     for (var k in value)
                     {
                         if (wirv[j].data == value[k].data && wirv[j].type == value[k].type)
@@ -116,7 +116,7 @@ function WorkItemResult(_work_item_result)
     {
         if (!this.work_item_result || this.work_item_result.length < 1)
             return false;
-        
+
         for (var i = 0; i < this.work_item_result.length; i++)
         {
             if (this.work_item_result[i].result)
@@ -185,13 +185,13 @@ function is_some_content_value(src, b)
         {
             if (src[i].type == b[j].type && src[i].data == b[j].data)
             {
-                //					print("@@@is_some_content_value: TRUE");
+                //          print("@@@is_some_content_value: TRUE");
                 return true;
             }
         }
     }
 
-    //					print("@@@is_some_content_value: FALSE");
+    //          print("@@@is_some_content_value: FALSE");
     return false;
 }
 
@@ -201,11 +201,11 @@ function Context(_src_data, _ticket)
     this.src_data = _src_data;
     this.ticket = _ticket;
 
-	this.getDecisionForms = function()
-	{
-        return this.src_data['v-wf:decisionFormList'];		
-	};
-	
+  this.getDecisionForms = function()
+  {
+        return this.src_data['v-wf:decisionFormList'];
+  };
+
     this.getExecutor = function()
     {
         return this.src_data['v-wf:executor'];
@@ -228,7 +228,7 @@ function Context(_src_data, _ticket)
             var count_agreed = 0;
             for (var i = 0; i < this.src_data.length; i++)
             {
-                //	   print ("data[i].result=", data[i].result);
+                //     print ("data[i].result=", data[i].result);
                 if (this.src_data[i].result == true_decision)
                 {
                     count_agreed++;
@@ -279,7 +279,7 @@ function Context(_src_data, _ticket)
     {
         try
         {
-            //        	print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
+            //          print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
             var variables = this.src_data[io];
 
             if (variables)
@@ -368,41 +368,31 @@ function Context(_src_data, _ticket)
     };
 }
 
-function get_new_variable(variable_name, value)
-{
-    try
-    {
-        var new_uri = genUri();
-        var new_variable = {
-            '@': new_uri,
-            'rdf:type': [
-            {
-                data: 'v-wf:Variable',
-                type: _Uri
-            }],
-            'v-wf:variableName': [
-            {
-                data: variable_name,
-                type: _String
-            }],
-    	    'v-s:created': [
-    	    {
-        	data: new Date(),
-        	type: _Datetime
-            }]
-        };
+function get_new_variable(variable_name, value) {
+  try {
+    var new_uri = genUri() + "-var";
+    var new_variable = {
+      '@': new_uri,
+      'rdf:type': [{
+        data: 'v-wf:Variable',
+        type: _Uri
+      }],
+      'v-wf:variableName': [{
+        data: variable_name,
+        type: _String
+      }],
+      'v-s:created': [{
+        data: new Date(),
+        type: _Datetime
+      }]
+    };
+    if (value) { new_variable['v-wf:variableValue'] = value; }
+    return new_variable;
 
-        if (value)
-            new_variable['v-wf:variableValue'] = value;
-
-        return new_variable;
-    }
-    catch (e)
-    {
-        print(e.stack);
-        throw e;
-    }
-
+  } catch (e) {
+    print(e.stack);
+    throw e;
+  }
 }
 
 function store_items_and_set_minimal_rights(ticket, data)
@@ -490,9 +480,9 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
 
                     if (find_local_var)
                     {
-                        // нашли, обновим значение в локальной переменной						
+                        // нашли, обновим значение в локальной переменной
                         find_local_var['v-wf:variableValue'] = value;
-                        //						print ("find_local_var=", toJson (find_local_var));
+                        //            print ("find_local_var=", toJson (find_local_var));
                         put_individual(ticket, find_local_var, _event_id);
 
                         //                        new_variable['@'] = find_local_var['@'];
@@ -712,18 +702,18 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, 
                     data: 'v-s:Journal',
                     type: _Uri
                 }],
-    		'v-s:created': [
-    		{
-        	    data: new Date(),
-        	    type: _Datetime
+        'v-s:created': [
+        {
+              data: new Date(),
+              type: _Datetime
                 }]
             };
 
             if (parent_journal_uri)
-	    {
-		create_new_journal(ticket, parent_journal_uri, null, "", is_trace)
+      {
+    create_new_journal(ticket, parent_journal_uri, null, "", is_trace)
                 new_journal['v-s:parentJournal'] = newUri(parent_journal_uri);
-	    }
+      }
 
             if (label)
                 new_journal['rdfs:label'] = label;
@@ -734,10 +724,10 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, 
             put_individual(ticket, new_journal, _event_id);
             //print ("create_new_journal, new_journal=", toJson (new_journal), ", ticket=", ticket);
         }
-	else
-	{
+  else
+  {
             //print ("create_new_journal, journal already exists, exists_journal=", toJson (exists_journal), ", ticket=", ticket);
-	}
+  }
 
         return new_journal_uri;
     }
@@ -756,7 +746,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
         {
             var process_uri = _process['@'];
 
-            //* выполнить маппинг для журнала 
+            //* выполнить маппинг для журнала
             var journalVars = [];
 
             if (_task && msg)
@@ -789,13 +779,13 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
 
 /*
  * функция mapToMessage, генерирует индивид/сообщение с помощью шаблонизатора mustache (http://mustache.github.io/)
- * 
- * 		! для работы требуется заполненная переменная $template, которая указывает на шаблон (индивид типа v-s:TemplateForText)
- *		
- * 		из шаблона используются поля:
- * 			v-s:templateLanguage - указание какой язык выбран для генерации текста
- *			v-s:templateSubject  - шаблон для заголовка 
- *			v-s:templateBody 	 - шаблон для тела
+ *
+ *    ! для работы требуется заполненная переменная $template, которая указывает на шаблон (индивид типа v-s:TemplateForText)
+ *
+ *    из шаблона используются поля:
+ *      v-s:templateLanguage - указание какой язык выбран для генерации текста
+ *      v-s:templateSubject  - шаблон для заголовка
+ *      v-s:templateBody   - шаблон для тела
  */
 
 function mapToMessage(map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment)
@@ -812,14 +802,14 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
             messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
             if (messageVars)
             {
-                var new_message_uri = genUri();
+                var new_message_uri = genUri() + "-msg";
                 var new_message = {
                     '@': new_message_uri,
-    		    'v-s:created': [
-    		    {
-        		data: new Date(),
-        		type: _Datetime
-    		    }]
+            'v-s:created': [
+            {
+            data: new Date(),
+            type: _Datetime
+            }]
                 };
                 var template;
 
@@ -841,8 +831,24 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                     var subject = getFirstValue(template['v-s:templateSubject']);
                     var body = getFirstValue(template['v-s:templateBody']);
 
-                    if (!lang)
-                        lang = 'ru';
+                    if (lang)
+        {
+                        var lang_indv = get_individual(ticket, lang);
+
+      if (lang_indv && lang_indv['rdf:value'])
+      {
+          lang = getFirstValue(lang_indv['rdf:value']).toLowerCase ();
+      }
+      else
+      {
+                          lang = 'RU';
+      }
+
+        }
+        else
+        {
+                        lang = 'RU';
+        }
 
                     var view = {};
 
@@ -866,7 +872,19 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                             {
                                 var inner_indv = get_individual(ticket, value.data);
 
-                                //print("@@@43 inner_indv=", toJson (inner_indv));
+        if (inner_indv == undefined)
+        {
+                                  araa.push('ERR! individual [' + value.data + '] not found, var.name=' + name);
+            continue;
+        }
+
+        if (inner_indv['rdfs:label'] == undefined)
+        {
+                                  araa.push('ERR! individual [' + value.data + '] not contains rdfs:label, var.name=' + name);
+            continue;
+        }
+
+                                //print("@@@43 inner_indv=", toJson (inner_indv), ", lang=", lang);
                                 value = getFirstValueUseLang(inner_indv['rdfs:label'], lang);
 
                                 if (!value)
@@ -878,13 +896,11 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                             {
                                 var aa = "";
 
-                                if (value.lang == lang)
+                                if (value.lang == lang || value.lang == "" || value.lang == undefined || value.lang == "NONE")
+                                {
                                     aa = value.data;
-
-                                if (!aa)
-                                    aa = value.data;
-
-                                araa.push(aa);
+                                    araa.push(aa);
+                                }
                             }
                         }
 
@@ -1040,7 +1056,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         var _started_net = get_individual(ticket, getUri(use_net));
         if (_started_net)
         {
-            var new_process_uri = genUri();
+            var new_process_uri = genUri() + "-prs";
 
             var new_process = {
                 '@': new_process_uri,
@@ -1055,10 +1071,10 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                     data: parent_process_uri,
                     type: _Uri
                 }],
-    		'v-s:created': [
-    		{
-        	    data: new Date(),
-        	    type: _Datetime
+        'v-s:created': [
+        {
+              data: new Date(),
+              type: _Datetime
                 }]
             };
 
@@ -1073,7 +1089,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                 type: _String
             }];
 
-            // возьмем входные переменные WorkItem	и добавим их процессу
+            // возьмем входные переменные WorkItem  и добавим их процессу
             if (f_inVars)
                 new_process['v-wf:inVars'] = f_inVars;
 
@@ -1131,8 +1147,8 @@ function get_properties_chain(var1, query, result_if_fail_search)
 
         //print('@@@get_properties_chain #2 res=', toJson(res));
 
-	if (result_if_fail_search && (res == undefined || res.length == 0))
-		res = result_if_fail_search;
+  if (result_if_fail_search && (res == undefined || res.length == 0))
+    res = result_if_fail_search;
 
         //print('@@@get_properties_chain #3 res=', toJson(res));
     }
@@ -1245,30 +1261,30 @@ function remove_empty_branches_from_journal(journal_uri)
             var parent_jrn = get_individual(ticket, parent_jrn_uri);
 
             var child_records = parent_jrn['v-s:childRecord'];
-			if (child_records)
-			{	
-				for (var i = 0; i < child_records.length; i++)
-				{
-					var chr_uri = child_records[i].data;
-					var chr = get_individual(ticket, chr_uri);
-					if (chr && getUri(chr["v-s:subJournal"]) == journal_uri)
-					{
-						var remove_from_journal = {
+      if (child_records)
+      {
+        for (var i = 0; i < child_records.length; i++)
+        {
+          var chr_uri = child_records[i].data;
+          var chr = get_individual(ticket, chr_uri);
+          if (chr && getUri(chr["v-s:subJournal"]) == journal_uri)
+          {
+            var remove_from_journal = {
                         '@': parent_jrn_uri,
                         'v-s:childRecord': [
                         {
                             data: chr_uri,
                             type: _Uri
                         }]
-						};
-						remove_from_individual(ticket, remove_from_journal, _event_id);
+            };
+            remove_from_individual(ticket, remove_from_journal, _event_id);
 
-						//print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
-						break;
-					}
+            //print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
+            break;
+          }
 
-				}
-			}
+        }
+      }
         }
     }
 

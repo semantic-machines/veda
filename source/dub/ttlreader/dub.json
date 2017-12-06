@@ -2,10 +2,12 @@
 	"name": "veda-ttlreader",
 	"description": "veda-ttlreader",
 	"dependencies": {
-		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.2", 
-                "d-nanomsg": "0.2.0",
-                "libasync": "0.8.2"
+	    "pacahon_third_party": "1.0.15", 
+	    "backtrace-d": "0.1.2", 
+	    "d-nanomsg": "0.2.0",
+	    "libasync": "0.8.2",
+	    "urld": "2.0.1",
+	    "msgpack-d": "1.0.0-beta.6"
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
@@ -20,20 +22,23 @@
             "../../veda/core/impl",
             "../../veda/core/az",
             "../../veda/core/search",
-            "../../veda/core/storage",
             "../../veda/core/common",
+            "../../veda/vmodule",
             "../../veda/ttlreader"
 	],
         "sourceFiles":[
         "../../lib64/liblmdb.a",
 	"../../lib64/libxapiand.a",
+        "../../veda/storage/common.d",
+        "../../veda/storage/lmdb/lmdb_driver.d",
         "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",
 	"../../veda/core/util/utils.d",
         "../../veda/bind/libraptor_header.d",
-            "../../veda/util/tests_tools.d",
-	"../../veda/util/raptor2individual.d"
+        "../../veda/util/tests_tools.d",
+	"../../veda/util/raptor2individual.d",
+        "../../veda/util/module_info.d"
 	],
 	"configurations": [
 	{

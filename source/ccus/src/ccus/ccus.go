@@ -1,3 +1,5 @@
+// System Event Notification SErvice
+
 package main
 
 import (
@@ -9,7 +11,9 @@ import (
 	"strings"
 	"time"
 	//"strconv"
+	"bufio"
 	"expvar"
+	"os"
 	"runtime"
 )
 
@@ -34,6 +38,7 @@ type updateInfo struct {
 	uid            string
 	opid           int
 	update_counter int
+	is_op          bool
 	cc_out         chan updateInfo
 }
 
@@ -112,6 +117,47 @@ func collector_stat(ch1 chan infoConn) {
 
 var ch_update_info_in = make(chan updateInfo, 1000)
 
+func module_info_reader(ch_collector_update chan updateInfo) {
+	time.Sleep(1000 * time.Millisecond)
+
+	var MODULES = [...]string{"acl_preparer_info", "fanout_email_info", "fanout_sql_lp_info", "fanout_sql_np_info", "fulltext_indexer_info", "ltr_scripts_info", "scripts_lp_info", "scripts_main_info", "subject_manager_info", "ticket_manager_info", "user_modules_tool_info"}
+	var prev_mod_time [22]time.Time
+
+	for {
+		time.Sleep(10 * time.Millisecond)
+
+		for idx, module_name := range MODULES {
+
+			file_name := "./data/module-info/" + module_name
+
+			new_stat_of_info, err := os.Stat(file_name)
+
+			if err == nil {
+				if prev_mod_time[idx] != new_stat_of_info.ModTime() {
+					prev_mod_time[idx] = new_stat_of_info.ModTime()
+
+					ff_fileinfo_r, err := os.OpenFile(file_name, os.O_RDONLY, 0644)
+					if err == nil {
+						rr := bufio.NewReader(ff_fileinfo_r)
+						str, err := Readln(rr)
+						if str != "" && err == nil {
+							ch := strings.Split(str[0:len(str)-1], ";")
+							if len(ch) == 4 {
+								new_info := updateInfo{module_name + "." + ch[2], 0, 0, true, nil}
+								ch_collector_update <- new_info
+							}
+						}
+						//log.Printf("@module info changed %s %s", module_name, new_stat_of_info.ModTime())
+						ff_fileinfo_r.Close()
+					} else {
+						log.Printf("ERR! module_info_reader: fail open FileInfo %s", file_name)
+					}
+				}
+			}
+		}
+	}
+}
+
 //  queue_reader - routine that read queue, and transmits information about the update to collector_updateInfo routine
 func queue_reader(ch_collector_update chan updateInfo) {
 
@@ -136,7 +182,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	dt_count_0 := count
 
 	for {
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(10 * time.Millisecond)
 
 		main_queue.reopen_reader()
 
@@ -179,7 +225,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 			if ok1 == true && ok2 == true {
 				//log.Printf("@3 uri=[%s], u_count=[%d], op_id=[%d]", uri.data.(string), u_count, op_id)
 
-				new_info := updateInfo{uri.data.(string), op_id, u_count, nil}
+				new_info := updateInfo{uri.data.(string), op_id, u_count, false, nil}
 				ch_collector_update <- new_info
 			}
 
@@ -211,9 +257,13 @@ func collector_updateInfo(ch_collector_update chan updateInfo) {
 	for {
 		arg := <-ch_collector_update
 
+		if arg.is_op == true {
+			//log.Printf("collector:update info: uid=%s opid=%d update_counter=%d", arg.uid, arg.opid, arg.update_counter)
+		}
+
 		if arg.opid == -1 {
 			// это команда на запрос last_opid
-			gg1 := updateInfo{"", _last_opid, 0, nil}
+			gg1 := updateInfo{"", _last_opid, 0, false, nil}
 			arg.cc_out <- gg1
 			//log.Printf("collector:ret: last_op_id=%d", gg1.opid)
 		} else if arg.update_counter == -1 {
@@ -252,6 +302,7 @@ func main() {
 	go collector_updateInfo(ch_update_info_in)
 	go collector_stat(ch_ws_counter)
 	go queue_reader(ch_update_info_in)
+	go module_info_reader(ch_update_info_in)
 
 	http.HandleFunc("/ccus", wsHandler)
 

@@ -117,6 +117,11 @@ v-s:RegistrationNumberYearNumeration8
   v-s:enumeratedProperty v-s:registrationNumber ;
   v-s:hasNumerationRule v-s:YearNumeration8 ;
 .
+v-s:RegistrationNumberYearNumeration2_6
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:YearNumeration2_6 ;
+.
 
 # --- Rules ---
 
@@ -213,7 +218,20 @@ v-s:IdeaAndProjectsNumeration
 v-s:NumerationEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Enumerated ;
+  v-s:preventByType v-s:Version ;
   v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+  // Get actual state
+  document = get_individual(ticket, document["@"]);
   var result = numerate(ticket, document, super_classes, prev_state, _event_id);
 """
 .

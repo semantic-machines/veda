@@ -50,6 +50,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0];
+        template = $( template["v-ui:template"][0].toString() );
         renderTemplate(individual, container, template, mode, specs);
       } else {
         individual["rdf:type"].map(function (type) {
@@ -183,9 +184,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function deletedHandler () {
       if ( this.hasValue("v-s:deleted", true) ) {
         if ( container.prop("id") === "main" && !template.hasClass("deleted") ) {
+          var alert = new veda.IndividualModel("v-s:DeletedAlert")["rdfs:label"].join(" ");
+          var recover = new veda.IndividualModel("v-s:Recover")["rdfs:label"].join(" ");
           var deletedAlert = $(
-            '<div id="deleted-alert" class="alert alert-warning no-margin" role="alert">\
-              <p>Объект удален.  <button class="btn btn-default btn-sm recover">Восстановить</button></p>\
+            '<div id="deleted-alert" class="alert alert-warning no-margin clearfix" role="alert">\
+              <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
             </div>'
           );
           template.prepend(deletedAlert);
@@ -683,7 +686,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       var control = $(this),
           rel_uri = control.attr("rel"),
           spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
-          rel = new veda.IndividualModel(rel_uri),
           type = control.attr("data-type") || "link",
           controlType = $.fn["veda_" + type];
 

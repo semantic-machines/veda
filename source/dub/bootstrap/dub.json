@@ -11,6 +11,7 @@
         "sourceFiles":[
     	    "../../veda/common/logger.d",
 	    "../../veda/common/type.d",
+	    "../../veda/util/properd.d",
 	    "../../veda/core/common/define.d",
     	    "../../veda/util/module_info.d",
     	    "../../veda/util/queue.d",

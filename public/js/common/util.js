@@ -8,13 +8,28 @@ var m_fanout_email = 8;
 var m_scripts = 16;
 var m_fanout_sql = 128;
 
-var _Uri = 1;
-var _String = 2;
-var _Integer = 4;
-var _Datetime = 8;
-var _Decimal = 32;
-var _Bool = 64;
-var _Boolean = 64;
+var _Uri = 'Uri';
+var _String = 'String';
+var _Integer = 'Integer';
+var _Datetime = 'Datetime';
+var _Decimal = 'Decimal';
+var _Bool = 'Boolean';
+var _Boolean = 'Boolean';
+
+function toJson(x)
+{
+  return JSON.stringify(x, null, 2);
+}
+
+function hasValue(doc, prop, val)
+{
+  var any = !!(doc && doc[prop] && doc[prop].length);
+  if (!val) return any;
+  return !!(any && doc[prop].filter(function(i)
+  {
+      return (i.type === val.type && i.data === val.data);
+  }).length);
+}
 
 function removeV(arr, what) {
   var res = [];
@@ -50,8 +65,17 @@ function guid()
 
 function compare(a, b)
 {
-  if (typeof a === "function") return a.toString() === b.toString();
-  else if (typeof a != "object" || typeof b != "object") return a === b;
+  if (typeof a === "function")
+    return a.toString() === b.toString();
+  else if (typeof a != "object" || typeof b != "object")
+    return a === b;
+
+  if (a instanceof Date)
+  {
+    return a.toString () == b.toString ();
+    //return a.valueOf() == b.valueOf();
+  }
+
   var dl = Object.keys(a).length - Object.keys(b).length;
   if (dl > 1 || dl < -1) return false;
   var result = true;
@@ -99,7 +123,7 @@ function compare(a, b)
           aa = 'Boolean';
       }
     }
-    else(key == "lang")
+    else if(key == "lang")
     {
       if (tbb == 'number' && taa == 'string')
       {
@@ -113,7 +137,8 @@ function compare(a, b)
       }
     }
     result &= compare(aa, bb);
-    if (!result) return false;
+    if (!result)
+  return false;
   }
   return result;
 }
@@ -762,7 +787,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           if (!grouping)
           {
             out_data0_el = {};
-            out_data0_el['@'] = genUri();
+            out_data0_el['@'] = genUri() + "-tr";
           }
           else
           {
@@ -783,7 +808,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               if (useExistsUid)
                 out_data0_el['@'] = individual['@'];
               else
-                out_data0_el['@'] = genUri();
+                out_data0_el['@'] = genUri() + "-tr";
             }
           }
 
@@ -841,7 +866,11 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     try
     {
-      scope = new veda.IndividualModel(scope, false);
+      if (typeof window === 'undefined') {
+        scope = get_individual(ticket, scope);
+      } else {
+        scope = new veda.IndividualModel(scope, false);
+      }
     }
     catch (e)
     {
@@ -858,7 +887,7 @@ function getNextValueSimple(ticket, scope, FIRST_VALUE)
   {
     scope['v-s:numerationCommitedInterval'].forEach(function(interval)
     {
-      interval = new veda.IndividualModel(interval.id, false);
+      interval = get_individual(ticket, interval.data);
       if (interval['v-s:numerationCommitedIntervalEnd'][0].data > max)
       {
         max = interval['v-s:numerationCommitedIntervalEnd'][0].data;
@@ -917,14 +946,13 @@ function newUri(uri)
 
 function newStr(_data, _lang)
 {
-  if (!_lang || _lang == 'NONE')
-    _lang = 0;
-
-  return [{
+  var value = {
     data: _data,
-    type: _String,
-    lang: _lang
-  }];
+    type: _String
+  };
+  if (_lang && _lang !== 'NONE')
+    value.lang = _lang;
+  return [ value ];
 }
 
 function newBool(_data)
@@ -1010,6 +1038,14 @@ function getUri(field)
   }
 }
 
+function getData(field)
+{
+  if (field && field.length > 0)
+  {
+    return field[0].data;
+  }
+}
+
 function getFirstValue(field)
 {
   if (field && field.length > 0)
@@ -1075,9 +1111,9 @@ function addToGroup(ticket, group, resource, rights, new_uri)
   }
 
   if (!new_uri)
-  new_uri = genUri();
+  new_uri = genUri() + "-gr";
 
-  var new_membership_uri = genUri();
+  var new_membership_uri = genUri() + "-mbh";
   var new_membership = {
     '@': new_membership_uri,
     'rdf:type': newUri('v-s:Membership'),
@@ -1088,22 +1124,23 @@ function addToGroup(ticket, group, resource, rights, new_uri)
   if (rights) {
     for (var i = 0; i < rights.length; i++)
     {
-      if (rights[i] == can_read)
+      if (rights[i] === can_read) {
         new_membership['v-s:canRead'] = newBool(true);
-      else if (rights[i] == can_update)
+      } else if (rights[i] === can_update) {
         new_membership['v-s:canUpdate'] = newBool(true);
-      else if (rights[i] == can_delete)
+      } else if (rights[i] === can_delete) {
         new_membership['v-s:canDelete'] = newBool(true);
-      else if (rights[i] == can_create)
+      } else if (rights[i] === can_create) {
         new_membership['v-s:canCreate'] = newBool(true);
-      else if (rights[i] == cant_read)
+      } else if (rights[i] === cant_read) {
         new_membership['v-s:canRead'] = newBool(false);
-      else if (rights[i] == cant_update)
+      } else if (rights[i] === cant_update) {
         new_membership['v-s:canUpdate'] = newBool(false);
-      else if (rights[i] == cant_delete)
+      } else if (rights[i] === cant_delete) {
         new_membership['v-s:canDelete'] = newBool(false);
-      else if (rights[i] == cant_create)
+      } else if (rights[i] === cant_create) {
         new_membership['v-s:canCreate'] = newBool(false);
+      }
     }
   }
 
@@ -1114,7 +1151,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 
 function removeFromGroup(ticket, group, resource)
 {
-  var new_membership_uri = genUri();
+  var new_membership_uri = genUri() + "-mbh";
   var new_membership = {
     '@': new_membership_uri,
     'rdf:type': newUri('v-s:Membership'),
@@ -1127,101 +1164,57 @@ function removeFromGroup(ticket, group, resource)
   return [new_membership, res];
 }
 
-function addRight(ticket, rights, subj_uri, obj_uri) {
+function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
 
-  if (subj_uri == undefined || obj_uri == undefined) {
+  if (subj_uri === undefined || obj_uri === undefined) {
     var error = new Error();
-
-    if (typeof window === "undefined")
-    {
-	print("ERR! addRight: INVALID ARGS IN");
-	print("subj_uri=", subj_uri);
-	print("obj_uri=", obj_uri);
-	print("Error stack:", error.stack);
+    if (typeof window === "undefined") {
+      print("ERR! addRight: INVALID ARGS IN");
+      print("subj_uri=", subj_uri);
+      print("obj_uri=", obj_uri);
+      print("Error stack:", error.stack);
+    } else {
+      console.log("ERR! addRight: INVALID ARGS IN");
+      console.log("subj_uri =", subj_uri);
+      console.log("obj_uri =", obj_uri);
+      console.log("Error stack:", error.stack);
     }
-    else
-    {
-	console.log("ERR! addRight: INVALID ARGS IN");
-	console.log("subj_uri=", subj_uri);
-	console.log("obj_uri=", obj_uri);
-	console.log("Error stack:", error.stack);
-    }
-
     return;
   }
 
-  var new_uri = genUri() + "_r";
+  var uri = right_uri || genUri() + "-r";
 
-  if (new_uri) {
-    try {
-      var prev = get_individual(ticket, new_uri);
-      if (prev) {
-        if ( getUri(prev["rdf:type"]) !== "v-s:PermissionStatement" ) 
-	{
-          var error = new Error();
-
-	  if (typeof window === "undefined")
-	  {
-            print ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
-	    print("subj_uri=", subj_uri);
-    	    print("obj_uri=", obj_uri);
-            print("Error stack:", error.stack);
-	  }
-	  else
-	  {
-            console.log ("ERR! addRight: INDIVIDUAL ALREADY EXISTS AND ITS TYPE IS NOT v-s:PermissionStatement, URI=" + new_uri);
-            console.log("Error stack:", error.stack);
-	    console.log("subj_uri=", subj_uri);
-	    console.log("obj_uri=", obj_uri);
-	  }
-
-          return;
-        }
-      }
-    } catch (ex) {
-
-	  if (typeof window === "undefined")
-	  {
-            print("addRight:Error stack:", ex.stack);
-	  }
-	  else
-	  {
-            console.log("addRight:Error stack:", ex.stack);
-	  }
-
-    }
-  }
-
-  var new_permission = {
-    '@': new_uri,
+  var permission = {
+    '@': uri,
     'rdf:type': newUri('v-s:PermissionStatement'),
     'v-s:permissionObject': newUri(obj_uri),
     'v-s:permissionSubject': newUri(subj_uri)
   };
 
   for (var i = 0; i < rights.length; i++) {
-    if (rights[i] == can_read)
-      new_permission['v-s:canRead'] = newBool(true);
-    else if (rights[i] == can_update)
-      new_permission['v-s:canUpdate'] = newBool(true);
-    else if (rights[i] == can_delete)
-      new_permission['v-s:canDelete'] = newBool(true);
-    else if (rights[i] == can_create)
-      new_permission['v-s:canCreate'] = newBool(true);
-    else if (rights[i] == cant_read)
-      new_permission['v-s:canRead'] = newBool(false);
-    else if (rights[i] == cant_update)
-      new_permission['v-s:canUpdate'] = newBool(false);
-    else if (rights[i] == cant_delete)
-      new_permission['v-s:canDelete'] = newBool(false);
-    else if (rights[i] == cant_create)
-      new_permission['v-s:canCreate'] = newBool(false);
+    if (rights[i] === can_read) {
+      permission['v-s:canRead'] = newBool(true);
+    } else if (rights[i] === can_update) {
+      permission['v-s:canUpdate'] = newBool(true);
+    } else if (rights[i] === can_delete) {
+      permission['v-s:canDelete'] = newBool(true);
+    } else if (rights[i] === can_create) {
+      permission['v-s:canCreate'] = newBool(true);
+    } else if (rights[i] === cant_read) {
+      permission['v-s:canRead'] = newBool(false);
+    } else if (rights[i] === cant_update) {
+      permission['v-s:canUpdate'] = newBool(false);
+    } else if (rights[i] === cant_delete) {
+      permission['v-s:canDelete'] = newBool(false);
+    } else if (rights[i] === cant_create) {
+      permission['v-s:canCreate'] = newBool(false);
+    }
   }
 
-  var res = put_individual(ticket, new_permission, _event_id);
+  var res = put_individual(ticket, permission, typeof _event_id !== "undefined" ? _event_id : undefined);
 
-  //print("ADD RIGHT:", toJson(new_permission));
-  return [new_permission, res];
+  //print("ADD RIGHT:", toJson(permission));
+  return [permission, res];
 }
 
 function clone(obj)
@@ -1257,4 +1250,73 @@ function clone(obj)
   }
 
   throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+
+function complexLabel(individual) {
+
+  var cache = {};
+  cache[individual["@"]] = individual;
+  function get (uri) {
+    return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
+  }
+
+  //print("INDIVIDUAL =", JSON.stringify(individual));
+
+  try {
+
+    var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
+
+    var availableLanguages = get("v-ui:AvailableLanguage");
+    var languages = availableLanguages["rdf:value"].map(function (languageValue) {
+      var languageUri = languageValue.data;
+      var language = get(languageUri);
+      return language["rdf:value"][0].data;
+    });
+
+    return individual["rdf:type"].reduce(function (acc, typeValue) {
+      var typeUri = typeValue.data;
+      var type = get(typeUri);
+      if ( !type || !hasValue(type, "v-s:labelPattern") ) return;
+      var pattern = type["v-s:labelPattern"][0].data;
+      var result = languages.map(function (language) {
+        var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
+          var chain = group.split(".");
+          return get_localized_chain.apply({}, [language, individual["@"]].concat(chain));
+        });
+        return {
+          data: replaced,
+          type: "String",
+          lang: language
+        }
+      });
+      return acc.concat(result);
+    }, []);
+  } catch (err) {
+    //print(err, err.stack);
+    return [];
+  }
+
+  function get_localized_chain(language, uri) {
+    var properties = [].slice.call(arguments, 2);
+    var intermediate = get(uri);
+    if (!intermediate) { return ""; }
+    for (var i = 0, property; property = properties[i]; i++) {
+      var length = properties.length;
+      if (i === length - 1) {
+        if (!intermediate[property] || !intermediate[property].length) return "";
+        return intermediate[property].reduce(function (acc, value) {
+          //print("VALUE =", JSON.stringify(value));
+          return ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ? acc += value.data : acc );
+        }, "");
+      }
+      if ( hasValue(intermediate, property) ) {
+        var intermediateUri = intermediate[property][0].data;
+        intermediate = get(intermediateUri);
+        if (!intermediate) { return ""; }
+      } else {
+        return "";
+      }
+    }
+    return "";
+  }
 }

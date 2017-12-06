@@ -88,7 +88,6 @@ v-ft:Event_UpdateTaskCounter
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обновления счетчиков задач" ;
   v-s:triggerByType v-wf:DecisionForm ;
-  v-s:triggerByType v-ft:TaskCounter ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -99,16 +98,8 @@ v-ft:Event_UpdateTaskCounter
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
  */
-
-// Force update task counter
-var forceUpdate = hasValue(document, "v-ft:forceUpdate", {data: true, type: _Boolean}),
-    counterOwner = getUri(document["v-s:owner"]);
-if ( forceUpdate && counterOwner ) {
-  //print("re-create task counter, owner =", counterOwner);
-  createTaskCounter(counterOwner);
-  return;
-}
 
 // Update task counter on task
 var task = document,
@@ -135,10 +126,15 @@ to_uris && to_uris.map(function (to_uri) {
   var toCounter_uri = "d:taskCounter_" + to_uri.split(':').join('_');
   var toCounter = get_individual(ticket, toCounter_uri) || createTaskCounter(to_uri);
 
-  var toInboxCount = toCounter["v-ft:inboxCount"][0],
-      toInboxWeekCount = toCounter["v-ft:inboxWeekCount"][0],
-      toOutboxCount = toCounter["v-ft:outboxCount"][0],
-      toCompletedCount = toCounter["v-ft:completedCount"][0];
+  if ( hasValue(toCounter, "rdf:type", { type: _Uri, data: "rdfs:Resource"} ) ) {
+    toCounter["rdf:type"] = [{ type: _Uri, data: "v-ft:TaskCounter" }];
+  }
+
+  var toInboxCount = toCounter["v-ft:inboxCount"] ? toCounter["v-ft:inboxCount"][0] : toCounter["v-ft:inboxCount"] = [{ type: _Integer, data: 0 }],
+      toInboxWeekCount = toCounter["v-ft:inboxWeekCount"] ? toCounter["v-ft:inboxWeekCount"][0] : toCounter["v-ft:inboxWeekCount"] = [{ type: _Integer, data: 0 }],
+      toOutboxCount = toCounter["v-ft:outboxCount"] ? toCounter["v-ft:outboxCount"][0] : toCounter["v-ft:outboxCount"] = [{ type: _Integer, data: 0 }],
+      toCompletedCount = toCounter["v-ft:completedCount"] ? toCounter["v-ft:completedCount"][0] : toCounter["v-ft:completedCount"] = [{ type: _Integer, data: 0 }];
+
   switch (true) {
     case isNew:
       toInboxCount.data++;
@@ -169,9 +165,14 @@ from_uris && from_uris.map(function (from_uri) {
   var fromCounter_uri = "d:taskCounter_" + from_uri.split(':').join('_');
   var fromCounter = get_individual(ticket, fromCounter_uri) || createTaskCounter(from_uri);
 
-  var fromInboxCount = fromCounter["v-ft:inboxCount"][0],
-      fromOutboxCount = fromCounter["v-ft:outboxCount"][0],
-      fromCompletedCount = fromCounter["v-ft:completedCount"][0];
+  if ( hasValue(fromCounter, "rdf:type", { type: _Uri, data: "rdfs:Resource"} ) ) {
+    fromCounter["rdf:type"] = [{ type: _Uri, data: "v-ft:TaskCounter" }];
+  }
+
+  var fromInboxCount = fromCounter["v-ft:inboxCount"] ? fromCounter["v-ft:inboxCount"][0] : fromCounter["v-ft:inboxCount"] = [{ type: _Integer, data: 0 }],
+      fromOutboxCount = fromCounter["v-ft:outboxCount"] ? fromCounter["v-ft:outboxCount"][0] : fromCounter["v-ft:outboxCount"] = [{ type: _Integer, data: 0 }],
+      fromCompletedCount = fromCounter["v-ft:completedCount"] ? fromCounter["v-ft:completedCount"][0] : fromCounter["v-ft:completedCount"] = [{ type: _Integer, data: 0 }];
+
   switch (true) {
     case isNew:
       fromOutboxCount.data++;
@@ -273,8 +274,8 @@ v-ft:TaskCounterTemplate
   var that = this;
   if (that.rights && individual.rights.hasValue("v-s:canUpdate")) {
     $("#refresh", template).click(function () {
-      that["v-ft:forceUpdate"] = [true];
-      that.save();
+      //that["v-ft:forceUpdate"] = [true];
+      //that.save();
     });
   } else {
     $("#refresh", template).remove();
@@ -314,7 +315,7 @@ v-ft:TaskCounterModel
   rdfs:label "Модель v-ft:TaskCounter"@ru ;
   v-s:script """
 // Force update outdated counter
-function getMonday(date) {
+/*function getMonday(date) {
   var monday = new Date(date);
   var day = monday.getDay();
   var diff = monday.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
@@ -327,7 +328,7 @@ var forceUpdate = !created || created < monday;
 if ( forceUpdate ) {
   this["v-ft:forceUpdate"] = [true];
   this.save();
-}
+}*/
 //# sourceURL=v-ft:TaskCounterModel
   """ ;
 .
@@ -504,6 +505,29 @@ v-ft:ActorFilterTemplate
     individual.trigger("search");
   });
 
+  // Update counter if counter & results count do not match
+  individual.on("search:complete", checkCounter);
+  template.one("remove", function () {
+    individual.off(checkCounter);
+  });
+  function checkCounter(results) {
+    try {
+      var actor_uri = individual[actor_property][0].id;
+      var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+      var counter = new veda.IndividualModel(counter_uri);
+      if ( counter.isNew() ) {
+        counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
+      }
+      var counter_val = counter[counter_prop][0];
+      if ( counter_val !== results.estimated ) {
+        counter[counter_prop] = [ results.estimated ];
+        counter.save();
+      }
+    } catch (err) {
+      console.log("Counter update error");
+    }
+  }
+
   //# sourceURL=v-ft:ActorFilterTemplate_pre
 </script>
 <ul class="nav nav-pills" role="tablist"></ul>
@@ -534,7 +558,10 @@ v-ft:TaskResultTemplate
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
-      <td><a href="#/@" property="rdfs:label"></a></td>
+      <td>
+        <a href="#/@" property="rdfs:label"></a>
+        <i property="v-s:description"></i>
+      </td>
       <td rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
       <td property="v-s:created"></td>
       <td property="v-wf:dateGiven"></td>

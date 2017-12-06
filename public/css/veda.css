@@ -262,7 +262,7 @@ hr.black {
   float: right;
 }
 
-#credentials {
+.credentials {
   max-width: 330px;
   padding: 15px;
   margin-top: 10%;
@@ -270,13 +270,13 @@ hr.black {
   margin-right: auto;
 }
 
-#credentials input#login {
+.credentials input#login {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-#credentials input#password {
+.credentials input#password {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
@@ -383,7 +383,7 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted, .deleted * {
+.deleted, .deleted *:not(#deleted-alert):not(#deleted-alert-msg):not(#deleted-alert-recover) {
   text-decoration: none!important;
   color: #aaa;
 }
@@ -425,10 +425,16 @@ fieldset[disabled] .form-control {
   .modal-lg {
     width: 900px;
   }
+  .modal-xl {
+    width: 96%;
+  }
 }
 @media (min-width: 1250px) {
   .modal-lg {
     width: 1200px;
+  }
+  .modal-xl {
+    width: 96%;
   }
 }
 
@@ -762,7 +768,7 @@ td > #rel-actions {
   position:absolute !important;
   top:0px;
   right:0px;
-  z-index:1;
+  z-index:2;
   padding:inherit;
 }
 .red-outline {

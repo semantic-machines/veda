@@ -3,7 +3,7 @@ module veda.frontend.core_rest;
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
 import core.vararg, core.stdc.stdarg, core.atomic, std.uri;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
-import properd, TrailDB;
+import veda.util.properd, TrailDB;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 import veda.frontend.cbor8vjson, veda.util.queue;
@@ -99,9 +99,6 @@ interface VedaStorageRest_API {
     @path("set_trace") @method(HTTPMethod.GET)
     void set_trace(int idx, bool state);
 
-    @path("backup") @method(HTTPMethod.GET)
-    void backup(bool to_binlog);
-
     @path("count_individuals") @method(HTTPMethod.GET)
     long count_individuals();
 
@@ -116,22 +113,22 @@ interface VedaStorageRest_API {
     Json get_individual(string ticket, string uri, bool reopen = false);
 
     @path("put_individual") @method(HTTPMethod.PUT)
-    OpResult put_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
+    OpResult put_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
 
     @path("put_individuals") @method(HTTPMethod.PUT)
-    OpResult[] put_individuals(string ticket, Json[] individual, long assigned_subsystems, string event_id);
+    OpResult[] put_individuals(string ticket, Json[] individual, string event_id, long assigned_subsystems = 0);
 
     @path("remove_individual") @method(HTTPMethod.PUT)
-    OpResult remove_individual(string ticket, string uri, long assigned_subsystems, string event_id);
+    OpResult remove_individual(string ticket, string uri, string event_id, long assigned_subsystems = 0);
 
     @path("remove_from_individual") @method(HTTPMethod.PUT)
-    OpResult remove_from_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
+    OpResult remove_from_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
 
     @path("set_in_individual") @method(HTTPMethod.PUT)
-    OpResult set_in_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
+    OpResult set_in_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
 
     @path("add_to_individual") @method(HTTPMethod.PUT)
-    OpResult add_to_individual(string ticket, Json individual, long assigned_subsystems, string event_id);
+    OpResult add_to_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
 }
 
 extern (C) void handleTerminationR(int _signal)
@@ -445,7 +442,7 @@ class VedaStorageRest : VedaStorageRest_API
                 {
                     log.trace("authenticate:check external user (%s)", ticket.user_uri);
                     Individual user = context.get_individual(&ticket, ticket.user_uri);
-                    if (user.exists("v-s:origin", Resource("External User")) == false)
+                    if (user.isExists("v-s:origin", Resource("External User")) == false)
                     {
                         log.trace("ERR! authenticate:user (%s) is not external", ticket.user_uri);
                         ticket = Ticket.init;
@@ -598,33 +595,6 @@ class VedaStorageRest : VedaStorageRest_API
         context.set_trace(idx, state);
     }
 
-    void backup(bool to_binlog)
-    {
-        ulong    timestamp = Clock.currTime().stdTime() / 10;
-
-        long     res  = -1;
-        Json     jreq = Json.emptyObject;
-        OpResult op_res;
-
-        try
-        {
-            jreq[ "function" ]  = "backup";
-            jreq[ "to_binlog" ] = to_binlog;
-
-            vibe.core.concurrency.send(wsc_server_task, jreq, Task.getThis());
-            vibe.core.concurrency.receive((string res){ op_res = parseOpResult(res); });
-
-            //log.trace("send:flush #e");
-            if (op_res.result != ResultCode.OK)
-                throw new HTTPStatusException(op_res.result, text(op_res.result));
-
-            return;
-        }
-        finally
-        {
-            trail(null, null, "backup", jreq, "", op_res.result, timestamp);
-        }
-    }
 
     long count_individuals()
     {
@@ -698,7 +668,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (rc != ResultCode.OK)
                 return sr;
 
-            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null, trace); //&prepare_element);
+            sr = context.get_individuals_ids_via_query(ticket, _query, sort, databases, from, top, limit, null, OptAuthorize.YES, trace); //&prepare_element);
 
             return sr;
         }
@@ -888,7 +858,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult remove_individual(string _ticket, string uri, long assigned_subsystems, string event_id)
+    OpResult remove_individual(string _ticket, string uri, string event_id, long assigned_subsystems = 0)
     {
         try
         {
@@ -915,6 +885,10 @@ class VedaStorageRest : VedaStorageRest_API
 
             return op_res[ 0 ];
         }
+        catch (HTTPStatusException ex)
+        {
+            throw ex;
+        }
         catch (Throwable tr)
         {
             log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
@@ -922,7 +896,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult put_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
+    OpResult put_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
         try
         {
@@ -945,6 +919,10 @@ class VedaStorageRest : VedaStorageRest_API
 
             return op_res[ 0 ];
         }
+        catch (HTTPStatusException ex)
+        {
+            throw ex;
+        }
         catch (Throwable tr)
         {
             log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
@@ -952,7 +930,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult[] put_individuals(string _ticket, Json[] individuals_json, long assigned_subsystems, string event_id)
+    OpResult[] put_individuals(string _ticket, Json[] individuals_json, string event_id, long assigned_subsystems = 0)
     {
         try
         {
@@ -973,6 +951,10 @@ class VedaStorageRest : VedaStorageRest_API
 
             return res;
         }
+        catch (HTTPStatusException ex)
+        {
+            throw ex;
+        }
         catch (Throwable tr)
         {
             log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
@@ -980,7 +962,7 @@ class VedaStorageRest : VedaStorageRest_API
         }
     }
 
-    OpResult add_to_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
+    OpResult add_to_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -1001,7 +983,7 @@ class VedaStorageRest : VedaStorageRest_API
         return op_res[ 0 ];
     }
 
-    OpResult set_in_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
+    OpResult set_in_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -1022,7 +1004,7 @@ class VedaStorageRest : VedaStorageRest_API
         return op_res[ 0 ];
     }
 
-    OpResult remove_from_individual(string _ticket, Json individual_json, long assigned_subsystems, string event_id)
+    OpResult remove_from_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
         ulong      timestamp = Clock.currTime().stdTime() / 10;
         Ticket     *ticket;
@@ -1104,6 +1086,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
         tdb_cons.add(uuid, timestamp / 1000, vals);
         count_trails++;
 
+        //log.trace("REST:%s", vals);
+
         if (count_trails > 1000)
         {
             log.trace("flush trail db");
@@ -1116,7 +1100,7 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
     }
     catch (Throwable tr)
     {
-        log.trace("ERR: error=[%s], stack=%s", tr.msg, tr.info);
+        log.trace("ERR: trail:error=[%s], stack=%s", tr.msg, tr.info);
     }
 }
 
@@ -1243,7 +1227,7 @@ private Ticket *get_ticket(Context context, string ticket_id)
         if (external_users_ticket_id.get(ticket_id, false) == false)
         {
             Individual user = context.get_individual(ticket, ticket.user_uri);
-            if (user.exists("v-s:origin", Resource("External User")) == false)
+            if (user.isExists("v-s:origin", Resource("External User")) == false)
             {
                 log.trace("ERR! user (%s) is not external", ticket.user_uri);
                 ticket.id     = "?";

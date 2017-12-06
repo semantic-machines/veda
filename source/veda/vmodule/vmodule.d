@@ -4,9 +4,9 @@ private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
-    import kaleidic.nanomsg.nano;
+    import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
-    import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+    import veda.common.logger, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
@@ -75,7 +75,7 @@ class VedaModule
     bool[ string ]   subsrc;
 
     long   module_id;
-	long   subsystem_id;
+    long   subsystem_id;
 
     Logger log;
 
@@ -94,7 +94,7 @@ class VedaModule
         log            = _log;
         main_cs.length = 1;
         module_id      = _module_id;
-        subsystem_id = _subsystem_id;
+        subsystem_id   = _subsystem_id;
     }
 
     ~this()
@@ -181,6 +181,19 @@ class VedaModule
         // attempt open [prepareall] queue
         open_perapare_batch_queue(true);
         load_systicket();
+
+        try
+        {
+    	    string[ string ] properties;
+            properties         = readProperties("./veda.properties");
+            notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
+            main_module_url = properties.as!(string)("main_module_url") ~ "\0";
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! unable read ./veda.properties");
+        }
+
 
         sock = nn_socket(AF_SP, NN_SUB);
         if (sock >= 0)
@@ -384,11 +397,11 @@ class VedaModule
                 continue;
             }
 
-            string new_bin          = imm.getFirstLiteral("new_state");
-            string prev_bin         = imm.getFirstLiteral("prev_state");
-            string user_uri         = imm.getFirstLiteral("user_uri");
-            string event_id         = imm.getFirstLiteral("event_id");
-            long   transaction_id   = imm.getFirstInteger("tnx_id");
+            string new_bin             = imm.getFirstLiteral("new_state");
+            string prev_bin            = imm.getFirstLiteral("prev_state");
+            string user_uri            = imm.getFirstLiteral("user_uri");
+            string event_id            = imm.getFirstLiteral("event_id");
+            long   transaction_id      = imm.getFirstInteger("tnx_id");
             long   assigned_subsystems = imm.getFirstInteger("assigned_subsystems");
 
             if (assigned_subsystems > 0)
@@ -396,6 +409,8 @@ class VedaModule
                 if ((assigned_subsystems & subsystem_id) != subsystem_id)
                 {
                     log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
+
+                    main_cs[ i ].commit_and_next(true);
                     continue;
                 }
             }
@@ -405,6 +420,8 @@ class VedaModule
                 if (((assigned_subsystems * -1) & subsystem_id) == subsystem_id)
                 {
                     log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
+
+                    main_cs[ i ].commit_and_next(true);
                     continue;
                 }
             }
@@ -437,15 +454,19 @@ class VedaModule
             count_success_prepared++;
 
             //writeln ("%1 prev_bin=[", prev_bin, "], \nnew_bin=[", new_bin, "]");
-            if (onto is null)
-                onto = context.get_onto();
 
-            onto.update_onto_hierarchy(new_indv, true);
+            if (new_indv.uri !is null)
+            {
+                if (onto is null)
+                    onto = context.get_onto();
 
-            if (new_indv.uri is null)
-                log.trace("WARN! individual not contain uri: %s", new_indv);
+                onto.update_onto_hierarchy(new_indv, true);
 
-            cache_of_indv.put(new_indv.uri, new_bin);
+                //if (new_indv.uri is null)
+                //    log.trace("WARN! individual not contain uri: %s", new_indv);
+
+                cache_of_indv.put(new_indv.uri, new_bin);
+            }
 
             try
             {
@@ -455,6 +476,7 @@ class VedaModule
                 {
                     main_cs[ i ].commit_and_next(true);
                     module_info.put_info(op_id, committed_op_id);
+                    //log.trace("put info: op_id=%d, committed_op_id=%d", op_id, committed_op_id);
                 }
                 else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
                          res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
@@ -472,7 +494,7 @@ class VedaModule
             }
             catch (Throwable ex)
             {
-                log.trace("ERR! ex=%s", ex.msg);
+                log.trace("ERR! ex=%s %s", ex.msg, ex.info);
             }
 
             //if (count_success_prepared % 1000 == 0)

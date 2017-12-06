@@ -23,6 +23,12 @@ veda.Module(function (veda) { "use strict";
       }, {});
     self.defaultLanguage = (new veda.IndividualModel("v-ui:DefaultLanguage"))["rdf:value"][0]["rdf:value"][0].toString();
 
+    if (uri === "cfg:Guest") {
+      self.language = {};
+      self.language[self.defaultLanguage] = self.availableLanguages[self.defaultLanguage];
+      return self;
+    }
+
     if (self.hasValue("v-s:defaultAppointment")) {
       veda.appointment = self["v-s:defaultAppointment"][0];
     } else if (self.hasValue("v-s:hasAppointment")) {

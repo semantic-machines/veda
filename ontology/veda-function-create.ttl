@@ -33,42 +33,6 @@ v-fc:Blank
   v-ui:hasTemplate v-fc:BlankTemplateShort ;
 .
 
-v-fc:hasFormBlank
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-fc:Blank ;
-  rdfs:label "Form blank"@en ;
-  rdfs:label "Вид бланка"@ru ;
-  rdfs:range v-fc:Blank ;
-.
-
-v-fc:FormBlank
-  rdf:type owl:Class ;
-  rdfs:label "Form blank"@en ;
-  rdfs:label "Вид бланка"@ru ;
-  rdfs:subClassOf v-s:UserThing ;
-.
-
-v-fc:FormBlankCreate
-  a v-fc:FormBlank;
-  rdfs:label "Создание"@ru;
-  rdfs:label "Create"@en;
-  v-s:updateCounter "1"^^xsd:integer ;
-.
-
-v-fc:FormBlankSearch
-  a v-fc:FormBlank;
-  rdfs:label "Поиск"@ru;
-  rdfs:label "Search"@en;
-  v-s:updateCounter "1"^^xsd:integer ;
-.
-
-v-fc:FormBlankReport
-  a v-fc:FormBlank;
-  rdfs:label "Отчет"@ru;
-  rdfs:label "Search"@en;
-  v-s:updateCounter "1"^^xsd:integer ;
-.
-
 v-fc:BlankMgmt
   rdf:type v-s:Bundle ;
   rdfs:label "Запомнить"@ru ;
@@ -167,6 +131,16 @@ v-fc:FunctionCreateTemplate
       blank["v-fc:targetType"] = values;
       blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
       blank.present(holder, blankTemplate, "edit");
+      blank.object.one("afterSave", saveHandler);
+      holder.one("remove", function () {
+        blank.object.off("afterSave", saveHandler);
+      });
+    }
+    function saveHandler() {
+      var self = this;
+      setTimeout(function () {
+        riot.route("#/" + self.id);
+      }, 100);
     }
   }
   self.on("v-fc:targetType", typeHandler);
@@ -287,6 +261,9 @@ v-fc:BlankTemplate
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
 #  v-ui:forClass v-fc:Blank ;
   v-ui:template """
+<script>
+  individual._init();
+</script>
 <div role="tabpanel">
   <br>
   <ul class="nav nav-tabs nav-right hidden-print" role="tablist">
@@ -317,7 +294,6 @@ v-fc:BlankTemplate
   </div>
 </div>
 <script>
-  individual._init();
   var self = individual,
       objectContainer = $("#object-container", template),
       object = self.object;
@@ -357,6 +333,9 @@ v-fc:BlankTemplateShort
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
+<script>
+  individual._init();
+</script>
 <div class="container sheet">
   <br>
   <div class="ribbon-wrapper top-left">
@@ -369,7 +348,6 @@ v-fc:BlankTemplateShort
   </div>
 </div>
 <script>
-  individual._init();
   var self = individual,
       objectContainer = $("#object-container", template),
       object = self.object;
@@ -377,7 +355,7 @@ v-fc:BlankTemplateShort
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
     object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
-    $("#cancel.action",objectContainer).click(function () {
+    $("#cancel.action", objectContainer).click(function () {
       window.history.back();
     });
     object.one("afterSave", saveHandler);

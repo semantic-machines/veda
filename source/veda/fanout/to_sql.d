@@ -7,7 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 //private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools;
 private import veda.vmodule.vmodule;
 
@@ -99,7 +99,7 @@ public class FanoutProcess : VedaModule
             existsTable = existsTable.init;
             //log.trace("push_to_mysql: prev_indv=%s", prev_indv);
             //log.trace("push_to_mysql: new_indv=%s", new_indv);
-            bool   is_deleted = new_indv.exists("v-s:deleted", true);
+            bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
             string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
             string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");

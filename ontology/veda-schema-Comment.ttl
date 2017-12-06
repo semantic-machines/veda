@@ -89,6 +89,7 @@ v-s:CommentsTemplate
     comment["rdf:type"] = [_class];
     comment["v-s:backwardTarget"] = [individual];
     comment["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
+    comment["v-s:canRead"] = [ true ];
     comment.present(cntr, tmpl, "edit");
     comment.one("beforeReset", function () {
       cntr.hide();
@@ -109,6 +110,7 @@ v-s:CommentsTemplate
     reply["rdf:type"] = [_class];
     reply["v-s:backwardTarget"] = [targetComment];
     reply["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasComment")];
+    reply["v-s:canRead"] = [ true ];
     reply.present(cntr, tmpl, "edit");
 
     reply.one("beforeReset", function () {

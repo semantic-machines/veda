@@ -1,7 +1,7 @@
 /**
  * core API
 
-   Copyright: © 2014-2015 Semantic Machines
+   Copyright: © 2014-2017 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
 
@@ -10,46 +10,10 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info;
+               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.core.az.acl, veda.util.module_info, veda.storage.common;
 
 alias MODULES_MASK = long;
-const ALL_MODULES = 0;
-
-/**
- * Обьект - сессионный тикет
- */
-public struct Ticket
-{
-    /// ID
-    string     id;
-
-    /// Uri пользователя
-    string     user_uri;
-
-    /// Код результата, если тикет не валидный != ResultCode.Ok
-    ResultCode result;
-
-    /// Дата начала действия тикета
-    long       start_time;
-
-    /// Дата окончания действия тикета
-    long       end_time;
-
-    /// Конструктор
-    this(Ticket tt)
-    {
-        id       = tt.id.dup;
-        user_uri = tt.user_uri.dup;
-        end_time = tt.end_time;
-    }
-
-    this(string _id, string _user_uri, long _end_time)
-    {
-        id       = _id;
-        user_uri = _user_uri;
-        end_time = _end_time;
-    }
-}
+const ALL_MODULES  = 0;
 
 public struct SearchResult
 {
@@ -59,19 +23,6 @@ public struct SearchResult
     int        processed;
     long       cursor;
     ResultCode result_code = ResultCode.Not_Ready;
-}
-
-interface Storage
-{
-    public ResultCode put(bool need_auth, string user_id, string in_key, string in_value, long op_id);
-    public string find(bool need_auth, string user_id, string uri, bool return_value = true);
-    public ResultCode remove(bool need_auth, string user_id, string in_key);
-    public int get_of_cursor(bool delegate(string key, string value) prepare, bool only_ids);
-    public void unload_to_queue(string path, string queue_id, bool only_ids);
-    public long count_entries();
-    public void reopen_db();
-    public void close_db();
-    public long dump_to_binlog();
 }
 
 interface ScriptVM
@@ -116,7 +67,7 @@ interface Context
 
     public Logger get_logger();
 
-    public ResultCode commit(Transaction *in_tnx);
+    public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     public VQL get_vql();
     public Authorization acl_indexes();
@@ -124,7 +75,7 @@ interface Context
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
-    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, bool inner_get = false, int top = 10, int limit = 10000);
+    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);
 
 
     public Individual[ string ] get_onto_as_map_individuals();
@@ -151,6 +102,7 @@ interface Context
     public bool is_ticket_valid(string ticket_id);
 
     // ////////////////////////////////////////////// INDIVIDUALS IO ////////////////////////////////////////////
+
     /**
        Вернуть индивидуалов согласно заданному запросу
        Params:
@@ -167,7 +119,7 @@ interface Context
                 список авторизованных uri
      */
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event,
+                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth,
                                                       bool trace);
 
     public void reopen_ro_fulltext_indexer_db();
@@ -175,7 +127,7 @@ interface Context
     public void reopen_ro_acl_storage_db();
     public void reopen_ro_ticket_manager_db();
 
-    public Storage get_inividuals_storage_r();
+    public KeyValueDB get_inividuals_storage_r();
 
     /**
        Вернуть индивидуала по его uri
@@ -186,7 +138,7 @@ interface Context
        Returns:
                 авторизованный экземпляр onto.Individual
      */
-    public Individual               get_individual(Ticket *ticket, Uri uri);
+    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize = OptAuthorize.YES);
 
     /**
        Вернуть список индивидуалов по списку uri
@@ -224,8 +176,8 @@ interface Context
     public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                    OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
-    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems, 
-							    	OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
+    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
+                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
 
     public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
                                       OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);

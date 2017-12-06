@@ -7,7 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import veda.common.logger, veda.core.storage.lmdb_storage, veda.core.impl.thread_context;
+private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools;
 private import veda.vmodule.vmodule;
 
@@ -146,16 +146,16 @@ class FanoutProcess : VedaModule
 
         label = indv.getFirstLiteral("rdfs:label");
 
-        if (indv.exists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
+        if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
         {
             res = get_email_from_appointment(sticket, indv);
         }
-        else if (indv.exists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
+        else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
         {
             Individual[] l_individuals = context.get_individuals_via_query(
                                                                            &sticket,
                                                                            "'rdf:type' == 'v-s:Appointment' && 'v-s:occupation' == '" ~ indv.uri ~
-                                                                           "'", true, 10000, 10000);
+                                                                           "'", OptAuthorize.NO, 10000, 10000);
 
             foreach (individual; l_individuals)
             {
@@ -220,7 +220,7 @@ class FanoutProcess : VedaModule
         {
             Ticket sticket = context.sys_ticket();
 
-            bool   is_deleted = new_indv.exists("v-s:deleted", true);
+            bool   is_deleted = new_indv.isExists("v-s:deleted", true);
 
             string isDraftOf            = new_indv.getFirstLiteral("v-s:isDraftOf");
             string actualVersion        = new_indv.getFirstLiteral("v-s:actualVersion");

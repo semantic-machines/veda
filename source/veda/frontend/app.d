@@ -1,8 +1,8 @@
 import std.conv, std.stdio, std.file, core.runtime, core.thread, std.base64;
 import vibe.d;
-import properd;
+import veda.util.properd;
 import veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define, veda.core.impl.thread_context;
-import veda.frontend.core_rest, veda.frontend.individual8vjson;
+import veda.frontend.core_rest, veda.frontend.individual8vjson, veda.common.type;
 import vibe.inet.url, vibe.http.client, vibe.http.server, vibe.http.websockets : WebSocket, handleWebSockets;
 
 
@@ -175,9 +175,9 @@ shared static this()
 
     Individual *[ string ] onto_config;
 
-    Individual delegate(Ticket * ticket, string uri) get_individual;
+    Individual delegate(Ticket * ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES) get_individual;
 
-    Individual get_individual_from_local(Ticket *ticket, string uri)
+    Individual get_individual_from_local(Ticket *ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         Individual *ii = onto_config.get(uri, null);
 
@@ -188,7 +188,7 @@ shared static this()
     }
 
     string[] uris =
-        context.get_individuals_ids_via_query(&sys_ticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, false).result;
+        context.get_individuals_ids_via_query(&sys_ticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, OptAuthorize.NO, false).result;
 
 //    long count_individuals = context.count_individuals();
     if (uris.length == 0)

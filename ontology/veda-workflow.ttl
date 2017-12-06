@@ -1799,6 +1799,7 @@ v-wf:Transform
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Трансформация"@ru ;
   rdfs:label "Transformation"@en ;
+  v-ui:hasTemplate v-wf:TransformationTemplate ;
 .
 
 v-wf:transformRule
@@ -1813,6 +1814,7 @@ v-wf:Rule
   rdf:type rdfs:Class ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Правило"@ru ;
+  v-ui:hasTemplate v-wf:RuleTemplate ;
 .
 
 v-wf:segregateObject
@@ -2029,14 +2031,22 @@ v-wf:event_df1
   v-s:triggerByType v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
   v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
 
-  if (!parent_script_id
-      && document['v-wf:hasStatusWorkflow']
-      && document['v-wf:hasStatusWorkflow'][0].data == 'v-wf:ToBeSent'
-  ) {
-    prepare_start_form (ticket, document);
-  }
+var toBeSent = hasValue(document, 'v-wf:hasStatusWorkflow', {data: 'v-wf:ToBeSent', type: _Uri});
 
+if ( !parent_script_id && toBeSent) {
+  prepare_start_form (ticket, document);
+}
 """ ;
   rdfs:label "Триггер запуска маршрута из пользовательской формы"@ru ;
 .
@@ -2047,18 +2057,26 @@ v-wf:event_df2
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:Process ;
   v-s:script """
-  //print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (
-    (
-      (!document['v-wf:isStopped'] || document['v-wf:isStopped'][0].data == false)
-      && parent_script_id
-      && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5')
-    )
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
-  ) {
-    prepare_process (ticket, document);
-  }
-""" ;
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+//print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean}),
+    stopped = hasValue(document, 'v-wf:isStopped', {data: true, type: _Boolean}),
+    triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
+
+if ( !deleted && !stopped && triggeredByWf ) {
+  prepare_process (ticket, document);
+}
+  """ ;
   rdfs:label "Триггер выполнения маршрута"@ru ;
 .
 
@@ -2068,16 +2086,24 @@ v-wf:event_df3
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkItem ;
   v-s:script """
-  //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (
-    (
-      parent_script_id
-      && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4')
-    )
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
-  ) {
-    prepare_work_item (ticket, document);
-  }
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+//print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean}),
+    triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' ;
+
+if ( !deleted && triggeredByWf ) {
+  prepare_work_item (ticket, document);
+}
 
 """ ;
   rdfs:label "Триггер выполнения элемента сети"@ru ;
@@ -2089,21 +2115,26 @@ v-wf:event_df4
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkOrder ;
   v-s:script """
-  var enforce_processing = document['v-wf:enforceProcessing'];
-  if (enforce_processing && getFirstValue(enforce_processing) == true) {
-    enforce_processing = true;
-  } else {
-    enforce_processing = false;
-  }
-  //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-  if (
-    enforce_processing == true
-    || (parent_script_id && (parent_script_id == 'v-wf:event_df1' || parent_script_id == 'v-wf:event_df2' || parent_script_id == 'v-wf:event_df3' || parent_script_id == 'v-wf:event_df4' || parent_script_id == 'v-wf:event_df5'))
-    && (!document['v-s:deleted'] || document['v-s:deleted'][0].data == 'false')
-  ) {
-    prepare_work_order (ticket, document);
-  }
-""" ;
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean}),
+    enforce_processing = hasValue(document, 'v-wf:enforceProcessing', {data: true, type: _Boolean}),
+    triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
+
+//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+if ( enforce_processing || triggeredByWf && !deleted ) {
+  prepare_work_order (ticket, document);
+}
+  """ ;
   rdfs:label "Триггер выполнения рабочего задания"@ru ;
 .
 
@@ -2113,22 +2144,71 @@ v-wf:event_df5
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:script """
-  if (
-    ( !document['v-s:deleted']
-      || document['v-s:deleted'][0].data == 'false'
-    ) /*&& (
-      !parent_script_id
-      || parent_script_id == 'v-wf:event_df1'
-      || parent_script_id == 'v-wf:event_df2'
-      || parent_script_id == 'v-wf:event_df3'
-      || parent_script_id == 'v-wf:event_df4'
-      || parent_script_id == 'v-wf:event_df5'
-    )*/
-  ) {
-    prepare_decision_form (ticket, document);
-  }
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean});
+
+if ( !deleted ) {
+  prepare_decision_form (ticket, document);
+}
 """ ;
   rdfs:label "Триггер обработки решения пользователя"@ru ;
+.
+
+v-wf:ProcessStopEvent
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает процесс в группу журнала документа." ;
+  rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
+  v-s:triggerByType v-wf:Process ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+  if (document['v-wf:isStopped'] &&
+      document['v-wf:isStopped'][0].data == true &&
+      !prev_state['v-wf:isStopped']) {
+    // Disable all active tasks
+    recursiveCall(document, {}, ticket, _event_id);
+    // Add journal record to process
+
+    var pb = get_individual(ticket, 'v-wf:ProcessStopped');
+
+    var journal_record = newJournalRecord(document['@']+'j');
+
+      journal_record['rdf:type'] = [
+      {
+          data: 'v-wf:ProcessStopped',
+          type: _Uri
+      }];
+        journal_record['v-s:actor'] = [
+        {
+            data: user_uri,
+            type: _Uri
+        }];
+      journal_record['rdfs:label'] = pb['rdfs:label'];
+      journal_record['rdfs:comment'] = pb['rdfs:label'];
+
+      logToJournal(ticket, document['@']+'j', journal_record, true);
+      interrupt_process(ticket, document, _event_id);
+  }
+""" ;
 .
 
 v-wf:Decision
@@ -2896,6 +2976,128 @@ v-wf:transformPropertySpecification1
   v-ui:maxCardinality "100"^^xsd:nonNegativeInteger ;
 .
 
+v-wf:TransformationTemplate
+rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Трансформация"@ru ;
+  rdfs:label "Template for Transofrmaion class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="@" property="rdf:type"></span>
+  </h2>
+  <!-- <div class="row">
+    <div class="col-md-5 col-xs-5 text-right name">
+      <strong class="text-muted" about="v-wf:aggregate" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7 col-xs-7" rel="transformRule">
+      <span class="view search -create" property="@"></span>
+      <veda-control property="@" class="-view edit create"></veda-control>
+    </div>
+  </div> -->
+  <div class="row">
+    <div class="col-md-5">
+      <em about="v-wf:transformRule" property="rdfs:label"></em>
+    </div>
+  </div>
+  <div rel="v-wf:transformRule" data-template="v-wf:RuleTemplate" data-embedded="true"></div>
+    <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="actions view edit pull-left">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  </div>
+</div>
+"""
+.
+
+v-wf:RuleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Шаблон для класса Правило"@ru ;
+  rdfs:label "Template for Rule class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="@" property="rdf:type"></span>
+  </h2>
+  <div class="row">
+    <div class="col-md-5 text-right">
+      <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+    </div>
+    <div class="col-md-7">
+      <div property="rdfs:label" class="view search -create"></div>
+      <veda-control property="rdfs:label" data-type="multilingualString" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:segregateObject" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:segregateObject"></span>
+      <veda-control property="v-wf:segregateObject" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:segregateElement" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:segregateElement"></span>
+      <veda-control property="v-wf:segregateElement" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:conversion" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:conversion"></span>
+      <veda-control property="v-wf:conversion" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:grouping" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:grouping"></span>
+      <veda-control property="v-wf:grouping" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="row">
+    <div class="col-md-5 text-right name">
+      <strong class="text-muted" about="v-wf:aggregate" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7">
+      <span class="view search -create" property="v-wf:aggregate"></span>
+      <veda-control property="v-wf:aggregate" class="-view edit create"></veda-control>
+    </div>
+  </div>
+  <hr style="margin: 10px 0px">
+  <div class="actions view edit pull-left">
+    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
+    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
+    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  </div>
+</div>
+<script>
+  if ($(template).parent().attr('data-embedded')){
+    $(".actions", template).remove();
+  };
+</script>
+""".
+
 v-wf:RuleTemplateEmbedded
   rdf:type v-ui:ClassTemplate ;
   rdfs:isDefinedBy v-wf: ;
@@ -2904,44 +3106,48 @@ v-wf:RuleTemplateEmbedded
   v-ui:template """
 <div>
   <div class="row">
-    <div class="col-md-1">
-      <strong>Segregate Object</strong>
+    <div class="col-md-4">
+      <strong class="text-muted">Выделение подмножества обьектов</strong>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-8">
     <div property="v-wf:segregateObject"></div>
-      <veda-control data-type="string" property="v-wf:segregateObject" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:segregateObject" class="view edit search -create"></veda-control>
     </div>
-    <div class="col-md-1">
-      <strong>Segregate Element</strong>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <strong class="text-muted">Выделение подмножества элементов</strong>
     </div>
-    <div class="col-md-5">
+    <div class="col-md-8">
     <div property="v-wf:segregateElement"></div>
-      <veda-control data-type="string" property="v-wf:segregateElement" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:segregateElement" class="view edit search -create"></veda-control>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-1">
-      <strong>Create</strong>
+    <div class="col-md-4">
+      <strong class="text-muted">Преобразование элемента</strong>
     </div>
-    <div class="col-md-5">
-    <div property="v-wf:create"></div>
-      <veda-control data-type="string" property="v-wf:create" class="view edit search -create"></veda-control>
-    </div>
-    <div class="col-md-1">
-      <strong>Conversion</strong>
-    </div>
-    <div class="col-md-5">
+    <div class="col-md-8">
     <div property="v-wf:conversion"></div>
-      <veda-control data-type="string" property="v-wf:conversion" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:conversion" class="view edit search -create"></veda-control>
     </div>
   </div>
   <div class="row">
-    <div class="col-md-1">
-      <strong>Aggregate</strong>
+    <div class="col-md-4">
+      <strong class="text-muted">Группировка объектов</strong>
     </div>
-    <div class="col-md-11">
+    <div class="col-md-8">
+    <div property="v-wf:grouping"></div>
+      <veda-control property="v-wf:grouping" class="view edit search -create"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <strong class="text-muted">Размещение элемента в обьекте</strong>
+    </div>
+    <div class="col-md-8">
     <div property="v-wf:aggregate"></div>
-      <veda-control data-type="string" property="v-wf:aggregate" class="view edit search -create"></veda-control>
+      <veda-control property="v-wf:aggregate" class="view edit search -create"></veda-control>
     </div>
   </div>
 </div>

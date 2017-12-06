@@ -52,8 +52,8 @@ v-cal:FunctionCalendarModel
     }
     var q = format (
       this["v-cal:query"][0],
-      start.toISOString().substr(0,10),
-      end.toISOString().substr(0,10),
+      start.toJSON(),
+      end.toJSON(),
       veda.user.id
     );
     var sort = this["v-cal:sortOrder"][0];
@@ -109,7 +109,7 @@ v-cal:TasksCalendar
   rdf:type v-cal:FunctionCalendar ;
   rdfs:label "Tasks calendar"@en ;
   rdfs:label "Календарь задач"@ru ;
-  v-cal:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1}T00:00:00,{2}T23:59:59] && 'v-wf:to' == '{3}'"^^xsd:string ;
+  v-cal:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1},{2}] && 'v-wf:to' == '{3}'"^^xsd:string ;
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-cal:FunctionCalendarTemplate
@@ -123,11 +123,18 @@ v-cal:FunctionCalendarTemplate
   <div id="fullcalendar"></div>
 </div>
 <script>
+  var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  var counter = new veda.IndividualModel(counter_uri);
   var fullCalendarOptions = {
     eventSources: [
       {
         events: function(start, end, timezone, callback) {
           var events = individual.getEvents(start, end);
+          // Update counter if counter & events count do not match
+          if ( !counter.isNew() && !counter.hasValue("v-ft:inboxWeekCount", events.length) && start.toDate() <= new Date() && new Date() <= end.toDate() ) {
+            counter["v-ft:inboxWeekCount"] = [events.length];
+            counter.save();
+          }
           callback(events);
         }
       }

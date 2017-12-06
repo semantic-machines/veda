@@ -5,9 +5,9 @@ module veda.onto.individual;
 
 private
 {
-    import std.stdio, std.typecons, std.conv, std.algorithm, std.exception : assumeUnique;
+    import std.stdio, std.typecons, std.conv, std.algorithm, std.digest.crc, std.exception : assumeUnique;
     import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils;
-    import veda.util.container, veda.common.type, veda.onto.bj8individual.cbor8individual;
+    import veda.util.container, veda.common.type, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
@@ -22,6 +22,7 @@ public struct Individual
     Resources[ string ]    resources;
 
     private ResultCode rc;
+    private CRC32      hash;
 
     /// Вернуть код ошибки
     public ResultCode  getStatus()
@@ -40,15 +41,20 @@ public struct Individual
         resources = _resources;
     }
 
-	int deserialize (string bin)
-	{
-		return cbor2individual (&this, bin);
-	}
+    int deserialize(string bin)
+    {
+        return cbor2individual(&this, bin);
+    }
 
-	string serialize ()
-	{
-		return individual2cbor (&this);
-	}
+    string serialize()
+    {
+        return individual2cbor(&this);
+    }
+
+    string serialize_to_msgpack()
+    {
+        return individual2msgpack(this);
+    }
 
     Individual dup()
     {
@@ -192,7 +198,7 @@ public struct Individual
         return rss;
     }
 
-    bool exists(T) (string predicate, T object)
+    bool isExists(T) (string predicate, T object)
     {
         Resources rss;
 
@@ -318,23 +324,51 @@ public struct Individual
         }
         return this;
     }
+
+    string get_CRC32()
+    {
+        string[] predicates = resources.keys;
+
+        predicates.sort();
+
+        hash.start();
+        foreach (pp; predicates)
+        {
+            if (pp != "v-s:hash" && pp != "v-s:updateCounter")
+            {
+                hash.put(cast(ubyte[])pp);
+
+                foreach (rr; resources[ pp ])
+                {
+                    hash.put(rr.type);
+                    hash.put(cast(ubyte[])rr.asString());
+                    hash.put(rr.lang);
+                }
+            }
+        }
+
+        string str_hash = crcHexString(hash.finish());
+
+        return str_hash;
+    }
 }
 
+
 unittest
-    {
-		import std.datetime;
-		import veda.onto.lang;
-		import veda.util.tests_tools;
-		
-		Individual new_indv_A = generate_new_test_individual ();        
-        string bin = new_indv_A.serialize ();
-        
-		Individual new_indv_B;         
-        new_indv_B.deserialize (bin);
-        
-		assert (new_indv_B.compare(new_indv_A));
-        new_indv_B.setResources("rdfs:label", [Resource(decimal (cast(long)122234, cast(byte)25))]);
-		assert (!new_indv_B.compare(new_indv_A));
-		
-		writeln("unittest [Individual serialize, deserialize] Ok");
-	}
+{
+    import std.datetime;
+    import veda.onto.lang;
+    import veda.util.tests_tools;
+
+    Individual new_indv_A = generate_new_test_individual();
+    string     bin        = new_indv_A.serialize();
+
+    Individual new_indv_B;
+    new_indv_B.deserialize(bin);
+
+    assert(new_indv_B.compare(new_indv_A));
+    new_indv_B.setResources("rdfs:label", [ Resource(decimal(cast(long)122234, cast(byte)25)) ]);
+    assert(!new_indv_B.compare(new_indv_A));
+
+    writeln("unittest [Individual serialize, deserialize] Ok");
+}

@@ -49,9 +49,22 @@
 
     // Load ontology
     self.init = function () {
-      self.ontology = new veda.OntologyModel();
+      try {
+        self.ontology = new veda.OntologyModel();
+        self.drafts = new veda.DraftsModel();
+        self.user = new veda.UserModel("cfg:Guest");
+      } catch (err) {
+        delete self.ontology;
+      }
+    };
+
+    // Start application
+    self.start = function () {
+      if ( !self.ontology ) {
+        self.ontology = new veda.OntologyModel();
+        self.drafts = new veda.DraftsModel();
+      }
       self.user = new veda.UserModel(self.user_uri);
-      self.drafts = new veda.DraftsModel();
       self.status = "started";
       self.trigger("started");
     };

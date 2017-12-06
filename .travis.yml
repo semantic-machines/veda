@@ -7,6 +7,8 @@ addons:
     access_key: 0fdd3d85-3d51-4fd5-89ed-10980baa57a5
     no_ssl_bump_domains: localhost
 
+language: rust
+
 env:
   global:
     - secure: PYwCZBpLe87Qg2RXibiGk9LrNrkFMlGuFnf/mp+f5kc4bFoVMo7Pl+Rdl4S1H33kLYK6d3pFggddwWxO7HGH9IyHzQ6Gfu3u9gR9rJXovQYfEp8muDCJDXvLEUoMxRgnRPa202p+BUnrNMwebxYHmwgef0s1dYQpRsewmPWHevk=
@@ -15,67 +17,55 @@ env:
 # Load all dependencies
 # Compile vibe-d before main project to prevent OutOfMemory issue
 before_install:
-  - ./control-install.sh&>install.log    
+  - ./control-install.sh
+#&>install.log    
   - dub -v fetch vibe-d --version=0.7.30
   - npm install selenium-webdriver@2.47.0
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
   - npm install grunt --save-dev
-  - npm install coveralls --save-dev
-  - npm install grunt-coveralls --save-dev
+#  - npm install coveralls --save-dev
+#  - npm install grunt-coveralls --save-dev
 
 # Build
 install:
   - go version
   - ./build.sh
-  - sudo timedatectl set-ntp no
 
 
 # Run service as daemon and GUI
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - sudo date --set "15:00:00"
+  #- "export DISPLAY=:99.0"
+  #- "sh -e /etc/init.d/xvfb start"
+  #- sleep 3 # give xvfb some time to start
   - ./control-start.sh
   - sleep 180  # give Web server some time to bind to sockets, load startup data, etc
   - date
 
 # Run API & integration test
 script:
-  - grunt test --stack --verbose
+  - travis_wait 20 grunt test --stack --verbose
 # - grunt coveralls
 #  - node ./qa/testAPI.js
   - node ./qa/testLogin.js
-#  - node ./qa/testSendGet.js
   - node ./qa/testDeleteAndRecovery.js
   - node ./qa/testRights.js
   - node ./qa/testComment.js
   - node ./qa/testVersionedDocument.js
-  - node ./qa/testJournal.js
   - node ./qa/testAttachment.js
   - node ./qa/testPager.js
   - node ./qa/testSearchRangeOfDates.js
   - node ./qa/testAttributiveSearchPerson.js
+  - node ./qa/testJournal.js
   - node ./qa/testCreatingNetInterface.js
-  - travis_wait 20 node ./qa/testInbox.js
-  - travis_wait 20 node ./qa/testRepeatComplexRoute.js
-  - travis_wait 20 node ./qa/testNetComplexRoute.js
-  - travis_wait 20 node ./qa/testSimpleNet.js
-  - sudo date --set "15:10:00"
-  - travis_wait 20 node ./qa/testSimpleNet2.js
-  - travis_wait 20 node ./qa/testSimpleNet3.js
-  - sudo date --set "15:11:00"
-  - travis_wait 20 node ./qa/testSimpleWorkflow.js
-  - travis_wait 20 node ./qa/testDelegationDocument.js
-  - sudo date --set "15:12:00"
-  - date
-  - node ./qa/testDelegationTask.js
+  - node ./qa/testSimpleNet.js
+  - node ./qa/testSimpleNet2.js
+  - node ./qa/testSimpleNet3.js
 
 # Stop deamon and show log
 after_script:
   - ./control-stop.sh
-  - ./send-to-chunk-io.sh
+#  - ./send-to-chunk-io.sh
 #  - grunt coveralls
 
 after_failure:

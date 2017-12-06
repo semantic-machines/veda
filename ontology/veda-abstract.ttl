@@ -334,13 +334,6 @@ v-s:UserThing
   rdfs:label "User thing"@en ;
   rdfs:label "Пользовательская сущность"@ru ;
 .
-v-s:hasStatusManual
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Status manual"@en ;
-  rdfs:label "Статус ручной"@ru ;
-  rdfs:range v-s:StatusManual ;
-  rdfs:domain v-s:UserThing ;
-.
 ### -------------------------------------------------------
 v-s:SystemThing
   rdf:type owl:Class ;
@@ -636,7 +629,13 @@ v-s:hasAsset
   rdfs:range v-s:Asset ;
   rdfs:domain v-s:Contractual ;
 .
-
+v-s:hasConfidentialDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Confidential document"@en ;
+  rdfs:label "Конфиденциальный документ"@ru ;
+  rdfs:range v-s:InternalDocument ;
+  rdfs:domain v-s:Contractual ;
+.
 ### -------------------------------------------------------
 v-s:Controlled
   rdf:type owl:Class ;

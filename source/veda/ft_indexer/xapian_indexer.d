@@ -1,3 +1,4 @@
+
 /**
  * XAPIAN ft indexer
  */
@@ -9,7 +10,7 @@ private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import veda.common.type;
 private import veda.bind.xapian_d_header;
 private import veda.core.util.utils, veda.common.logger;
-private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.storage.lmdb_storage;
+private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg,
                veda.core.impl.thread_context;
 private import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property;
@@ -187,16 +188,16 @@ public class IndexerContext
     {
         bool is_deleted, prev_is_deleted, is_restored;
 
-        if (is_trace)
-            log.trace("index msg %s", indv.uri);
+        //if (is_trace)
+            log.trace("index uri=%s", indv.uri);
 
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
 
-        if (is_deleted == false && indv.exists(veda_schema__deleted, true) == true)
+        if (is_deleted == false && indv.isExists(veda_schema__deleted, true) == true)
             is_deleted = true;
 
-        if (prev_indv.exists(veda_schema__deleted, true) == true)
+        if (prev_indv.isExists(veda_schema__deleted, true) == true)
             prev_is_deleted = true;
 
         if (prev_is_deleted == true && is_deleted == false)

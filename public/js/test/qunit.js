@@ -109,6 +109,7 @@ QUnit = {
 	},
 
 	test: function( testName, expected, callback, async ) {
+		//console.log (testName);
 		var test,
 			nameHtml = "<span class='test-name'>" + escapeText( testName ) + "</span>";
 

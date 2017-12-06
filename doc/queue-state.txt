@@ -1,0 +1,16 @@
+Для получения текущего статуса состояния очереди,
+с клиента следует запросить индивид вида: 
+	srv:queue-state-xxxxx
+
+доступные имена очередей:
+
+fanout_email0
+fanout_sql_lp0
+fanout_sql_np0
+fulltext_indexer0
+fulltext_indexer1
+ltr_scripts0
+scripts_lp0
+scripts_main0
+user_modules_tool0
+

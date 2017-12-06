@@ -15,9 +15,8 @@
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
-  rdfs:label "Mondi individuals ontology"@en ;
-  rdfs:label "Онтология индивидов Монди"@ru ;
-# owl:versionInfo "1.3" ;
+  rdfs:label "data tests"@en ;
+  rdfs:label "данные для тестов"@ru ;
 .
 
 td:arg1
@@ -77,6 +76,13 @@ td:CommercialDirector
   rdfs:label "Коммерческий директор"@ru ;
 .
 
+td:CommercialDirector2
+  rdf:type v-s:Position ;
+  v-s:parentUnit d:org_RU1121001280 ;
+  rdfs:label "Commercial director"@en ;
+  rdfs:label "Коммерческий директор"@ru ;
+.
+
 td:ExecutiveDirector
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
@@ -96,6 +102,13 @@ td:Programmer1
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
   rdfs:label "Programmer"@en ;
   rdfs:label "Программист"@ru ;
+.
+
+td:BB-semantic_machines
+  rdf:type v-s:Account ;
+  v-s:login "semantic_machines"^^xsd:string ;
+  v-s:password "f7apqs65FnWF7YGpj6cLFbc27ae3"^^xsd:string ;
+  rdfs:label "BB sm account" ;
 .
 
 td:BushenevVT
@@ -352,7 +365,7 @@ td:AndreyBychin-Analyst2
 td:RomanKarpov
   rdf:type v-s:Person ;
   v-s:actualVersion td:RomanKarpov ;
-  v-s:birthday "1981-01-09"^^xsd:dateTime ;
+  v-s:birthday "1981-01-09T00:00:00Z"^^xsd:dateTime ;
   v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
   v-s:hasAccount td:KarpovRT ;
@@ -473,44 +486,6 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:origin "Internal User" ;
 .
 
-# ---------------------------- Тестовые экземпляры маршрутов ------------------------------
-
-# -------- стартовая форма маршрута ----------------
-td:ComplexRouteStartForm1
-  v-s:author cfg:VedaSystemAccount ;
-  rdf:type s-wf:ComplexRouteStartForm ;
-  rdf:type v-wf:StartForm ;
-  v-wf:forNet s-wf:net_complex_route ;
-  v-wf:processedDocument td:SavedSearch1 ;
-  v-wf:processInitiator td:RomanKarpov-Analyst1 ;
-  v-wf:useTransformation s-wf:transformation1 ;
-  rdfs:label "ТЕСТ Комплексный маршрут"@ru ;
-  s-wf:ComplexRouteStartForm_coordinator1 td:RomanKarpov-Analyst1 ;
-  s-wf:ComplexRouteStartForm_coordinator1 td:ValeriyBushenev-Programmer1 ;
-  s-wf:ComplexRouteStartForm_coordinator2 td:ValeriyBushenev-Programmer1 ;
-  s-wf:ComplexRouteStartForm_coordinator3 td:AndreyBychin-ExecutiveDirector ;
-  s-wf:ComplexRouteStartForm_reviewer td:ValeriyBushenev-Programmer1 ;
-  s-wf:ComplexRouteStartForm_signer td:AndreyBychin-ExecutiveDirector ;
-.
-
-:b435740-f19e-7731-03ef-e7cb2203f8c4
-  a v-s:SavedSearch;
-  v-s:author cfg:VedaSystemAccount ;
-  v-s:query "'rdf:type' == 'v-wf:Process'"^^xsd:string;
-  rdfs:label "Экземпляры маршрута"^^xsd:string;
-  v-s:created "2015-03-23T13:27:18.000Z"^^xsd:dateTime.
-
-:b435740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-  v-s:author cfg:VedaSystemAccount ;
-  v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false "^^xsd:string;
-  rdfs:label "Общий инбокс: новые задачи"^^xsd:string;
-  v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
-
-:b555740-119e-1731-13ef-e7cb2203f8c4 a v-s:SavedSearch;
-v-s:author cfg:VedaSystemAccount ;
-  v-s:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true "^^xsd:string;
-  rdfs:label "Общий инбокс: выполненые задачи"^^xsd:string;
-  v-s:created "2015-04-23T13:27:18.000Z"^^xsd:dateTime.
 
 ######################## сеть, пример 1 #######################
 
@@ -715,22 +690,23 @@ v-wf:UserTaskForm1
   v-wf:from td:RomanKarpov-Analyst1 ;
 .
 
-d:khvostia_dismantlingProjectSpecialist
-  a v-s:Appointment;
-  v-s:occupation d:dismantlingProjectSpecialist;
-  v-s:employee td:AleksandraKhvostikova;
-  v-s:official "true"^^xsd:boolean;
-  v-s:valid "true"^^xsd:boolean;
-  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
-.
-d:khvostia_financialController
-  a v-s:Appointment;
-  v-s:occupation d:financialController;
-  v-s:employee td:AleksandraKhvostikova;
-  v-s:official "true"^^xsd:boolean;
-  v-s:valid "true"^^xsd:boolean;
-  rdfs:label "Хвостикова : Финансовый контролер"@ru
-.
+#d:khvostia_dismantlingProjectSpecialist
+#  a v-s:Appointment;
+#  v-s:occupation d:dismantlingProjectSpecialist;
+#  v-s:employee td:AleksandraKhvostikova;
+#  v-s:official "true"^^xsd:boolean;
+#  v-s:valid "true"^^xsd:boolean;
+#  rdfs:label "Хвостикова : Специалист по проектам демонтажа"@ru
+#.
+
+#d:khvostia_financialController
+#  a v-s:Appointment;
+#  v-s:occupation d:financialController;
+#  v-s:employee td:AleksandraKhvostikova;
+#  v-s:official "true"^^xsd:boolean;
+#  v-s:valid "true"^^xsd:boolean;
+#  rdfs:label "Хвостикова : Финансовый контролер"@ru
+#.
 
 d:Bychina_create_Person
   rdf:type v-s:PermissionStatement ;
@@ -752,3 +728,5 @@ d:Membership_71014133_71025564
   rdfs:label "Начальник управления - в группу Начальник службы"@en ;
   rdfs:label "Начальник управления - в группу Начальник службы"@ru ;
 .
+
+

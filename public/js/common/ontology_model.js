@@ -27,6 +27,8 @@ veda.Module(function (veda) { "use strict";
     var self = this;
 
     var ontology,
+        ontologies = {},
+        datatypes = {},
         classes = {},
         properties = {},
         specifications = {},
@@ -95,6 +97,12 @@ veda.Module(function (veda) { "use strict";
           case "v-ui:ObjectPropertySpecification" :
             specifications[uri] = individual;
             break;
+          case "owl:Ontology" :
+            ontologies[uri] = individual;
+            break;
+          case "rdfs:Datatype" :
+            datatypes[uri] = individual;
+            break;
         }
       });
 
@@ -117,7 +125,6 @@ veda.Module(function (veda) { "use strict";
         // If class is not a subclass of another then make it a subclass of rdfs:Resource
         if ( !_class.hasValue("rdfs:subClassOf") ) {
           _class["rdfs:subClassOf"] = [ classes["rdfs:Resource"] ];
-          classTree[_class.id].superClasses.push("rdfs:Resource");
         }
         _class["rdfs:subClassOf"].map( function ( superClass ) {
           classTree[_class.id].superClasses.push( superClass.id );
@@ -129,11 +136,15 @@ veda.Module(function (veda) { "use strict";
 
       // Process properties
       Object.keys(properties).map( function (uri) {
-        var property = properties[uri];
-        if (!property["rdfs:domain"]) { return; }
-        property["rdfs:domain"].map( function ( _class ) {
-          classTree[_class.id].properties.push(property.id);
-        });
+        try {
+          var property = properties[uri];
+          if (!property["rdfs:domain"]) { return; }
+          property["rdfs:domain"].map( function ( _class ) {
+            classTree[_class.id].properties.push(property.id);
+          });
+        } catch (err) {
+          console.error("Ontology init error, uri = %s", uri, err.name);
+        }
       });
 
       // Initialization percentage
@@ -141,13 +152,17 @@ veda.Module(function (veda) { "use strict";
 
       // Process specifications
       Object.keys(specifications).map( function (uri) {
-        var spec = specifications[uri];
-        if (!spec["v-ui:forClass"]) { return; }
-        spec["v-ui:forClass"].map( function ( _class ) {
-          spec["v-ui:forProperty"].map( function (prop) {
-            classTree[_class.id].specifications[prop.id] = spec.id;
+        try {
+          var spec = specifications[uri];
+          if (!spec["v-ui:forClass"]) { return; }
+          spec["v-ui:forClass"].map( function ( _class ) {
+            spec["v-ui:forProperty"].map( function (prop) {
+              classTree[_class.id].specifications[prop.id] = spec.id;
+            });
           });
-        });
+        } catch (err) {
+          console.error("Ontology init error, uri = %s", uri, err.name);
+        }
       });
 
       // Initialization percentage
@@ -155,20 +170,32 @@ veda.Module(function (veda) { "use strict";
 
       // Init class individuals
       Object.keys(classes).map( function (uri) {
-        var _class = classes[uri];
-        _class.init();
+        try {
+          var _class = classes[uri];
+          _class.init();
+        } catch (err) {
+          console.error("Ontology init error, uri = %s", uri, err.name);
+        }
       });
 
       // Init property individuals
       Object.keys(properties).map( function (uri) {
-        var property = properties[uri];
-        property.init();
+        try {
+          var property = properties[uri];
+          property.init();
+        } catch (err) {
+          console.error("Ontology init error, uri = %s", uri, err.name);
+        }
       });
 
       // Init specification individuals
       Object.keys(specifications).map( function (uri) {
-        var spec = specifications[uri];
-        spec.init();
+        try {
+          var spec = specifications[uri];
+          spec.init();
+        } catch (err) {
+          console.error("Ontology init error, uri = %s", uri, err.name);
+        }
       });
 
       veda.trigger("init:progress", 100);

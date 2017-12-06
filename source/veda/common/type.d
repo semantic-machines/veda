@@ -9,19 +9,56 @@ module veda.common.type;
 
 import std.math, std.stdio, std.conv, std.string;
 
+/**
+ * Обьект - сессионный тикет
+ */
+public struct Ticket
+{
+    /// ID
+    string     id;
+
+    /// Uri пользователя
+    string     user_uri;
+
+    /// Код результата, если тикет не валидный != ResultCode.Ok
+    ResultCode result;
+
+    /// Дата начала действия тикета
+    long       start_time;
+
+    /// Дата окончания действия тикета
+    long       end_time;
+
+    /// Конструктор
+    this(Ticket tt)
+    {
+        id       = tt.id.dup;
+        user_uri = tt.user_uri.dup;
+        end_time = tt.end_time;
+    }
+
+    this(string _id, string _user_uri, long _end_time)
+    {
+        id       = _id;
+        user_uri = _user_uri;
+        end_time = _end_time;
+    }
+}
+
 /// id подсистем
-public enum SUBSYSTEM : long
+public enum SUBSYSTEM : ubyte
 {
     STORAGE           = 1,
     ACL               = 2,
     FULL_TEXT_INDEXER = 4,
-    SCRIPTS           = 16,
     FANOUT_EMAIL      = 8,
-    FANOUT_SQL        = 128
+    SCRIPTS           = 16,
+    FANOUT_SQL        = 32,
+    USER_MODULES_TOOL = 64
 }
 
 /// id компонентов
-public enum COMPONENT : long
+public enum COMPONENT : ubyte
 {
     /// сохранение индивидуалов
     subject_manager            = 1,
@@ -39,40 +76,44 @@ public enum COMPONENT : long
     scripts_main               = 16,
 
     /// Выдача и проверка тикетов
-    ticket_manager             = 32,
-
-    /// Загрузка из файлов
-    file_reader                = 64,
-
-    /// Выгрузка в sql, высокоприоритетное исполнение
-    fanout_sql_np              = 128,
-
-    /// исполнение скриптов, low priority
-    scripts_lp                 = 256,
-
-    //// long time run scripts
-    ltr_scripts                = 512,
+    ticket_manager             = 29,
 
     /// Выгрузка в sql, низкоприоритетное исполнение
-    fanout_sql_lp              = 1024,
+    fanout_sql_lp              = 30,
+
+    /// Выгрузка в sql, высокоприоритетное исполнение
+    fanout_sql_np              = 32,
+
+    /// исполнение скриптов, low priority
+    scripts_lp                 = 33,
+
+    //// long time run scripts
+    ltr_scripts                = 34,
+
+	///////////////////////////////////////
 
     /// Сбор статистики
-    statistic_data_accumulator = 2048,
+    statistic_data_accumulator = 35,
 
     /// Сохранение накопленных в памяти данных
-    commiter                   = 4096,
+    commiter                   = 36,
 
     /// Вывод статистики
-    print_statistic            = 8192,
+    print_statistic            = 37,
 
-    n_channel                  = 16384,
+    n_channel                  = 38,
 
-    webserver                  = 32768
+    webserver                  = 39,
+
+    /// Загрузка из файлов
+    file_reader                = 40,
+    
+    user_modules_tool		   = 64
 }
 
 
 /// id процессов
-public enum P_MODULE : COMPONENT
+public enum P_MODULE : ubyte
 {
     ticket_manager             = COMPONENT.ticket_manager,
     subject_manager            = COMPONENT.subject_manager,
@@ -86,7 +127,7 @@ public enum P_MODULE : COMPONENT
 }
 
 /// id модулей обрабатывающих очередь
-public enum MODULE : COMPONENT
+public enum MODULE : ubyte
 {
     ticket_manager   = COMPONENT.ticket_manager,
     subject_manager  = COMPONENT.subject_manager,
@@ -95,6 +136,7 @@ public enum MODULE : COMPONENT
     scripts_main     = COMPONENT.scripts_main,
     scripts_lp       = COMPONENT.scripts_lp,
     fanout_email     = COMPONENT.fanout_email,
+    user_modules_tool = COMPONENT.user_modules_tool,
     ltr_scripts      = COMPONENT.ltr_scripts,
     fanout_sql_np    = COMPONENT.fanout_sql_np,
     fanout_sql_lp    = COMPONENT.fanout_sql_lp
@@ -288,6 +330,12 @@ public enum INDV_OP : byte
     /// Сохранить
     GET         = 2,
 
+    /// Получить тикет
+    GET_TICKET = 3,
+
+    /// Авторизовать
+    AUTHORIZE = 8,
+
     /// Установить в
     SET_IN      = 45,
 
@@ -343,9 +391,6 @@ byte CMD_FREEZE       = 42;
 
 /// Возобновить прием команд на изменение
 byte CMD_UNFREEZE     = 43;
-
-/// Сохранить соответствие ключ - слот (xapian)
-byte CMD_PUT_KEY2SLOT = 44;
 
 /// Установить в
 byte CMD_SET_IN       = 45;
