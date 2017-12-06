@@ -185,10 +185,12 @@ void init(string node_id)
         log.trace("init core");
 
         sticket = sys_ticket(core_context, true);
-        string guest_ticket = core_context.get_ticket_from_storage("guest");
+        Ticket* guest_ticket = core_context.get_ticket("guest");
 
-        if (guest_ticket is null)
+        if (guest_ticket is null || guest_ticket.result == ResultCode.Ticket_not_found)
+        {
             create_new_ticket("cfg:Guest", "900000000", "guest");
+        }    
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (node.getStatus() != ResultCode.OK)
@@ -327,9 +329,6 @@ private Individual get_individual(Ticket *ticket, string uri)
 
 private Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
 {
-    if (trace_msg[ T_API_50 ] == 1)
-        log.trace("create_new_ticket, ticket__accessor=%s", user_id);
-
     Ticket     ticket;
     Individual new_ticket;
 

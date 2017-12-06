@@ -478,12 +478,6 @@ class PThreadContext : Context
         return ticket;
     }
 
-
-    public string get_ticket_from_storage(string ticket_id)
-    {
-        return tickets_storage_r.find(OptAuthorize.NO, null, ticket_id);
-    }
-
     public Ticket *get_systicket_from_storage()
     {
         string systicket_id = tickets_storage_r.find(OptAuthorize.NO, null, "systicket");
