@@ -194,12 +194,11 @@ veda.Module(function UpdateService(veda) { "use strict";
       //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
-
-	if (address == address0)
-	    address = address1;
-	else
-	    address = address0;
-
+        if (address == address0) { 
+          address = address1;
+        } else {
+          address = address0;
+        }
         socket = initSocket();
       }, delay);
     }
