@@ -435,7 +435,7 @@ v-ui:StandardButtonsTemplate
   rdfs:label "Template with standard buttons"@en ;
   v-ui:template """
 <script>
-  // var allButtons = "send edit save cancel delete destroy journal task";
+  // var allButtons = "send edit save cancel delete destroy journal journal-dms task";
   var defaultButtons = "send edit save cancel delete journal task";
   var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
   var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
@@ -464,6 +464,13 @@ v-ui:StandardButtonsTemplate
     } else {
       var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty")["rdfs:label"].join(" ");
       alert(journalEmpty);
+    }
+  });
+  $("#journal-dms", template).on("click", function (e) {
+    var uri = individual.id.substring(2,100);
+    var journalDMS_url = (new veda.IndividualModel("cfg:JournalDMSUrl"))["rdf:value"][0];
+    if (journalDMS_url) {
+      window.open(journalDMS_url + uri, "journal-dms");
     }
   });
   $("#send", template).on("click", function () { veda.Util.send(individual, template); });
@@ -520,6 +527,7 @@ v-ui:StandardButtonsTemplate
   <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"/>
   <div class="rm action btn-group dropup" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
