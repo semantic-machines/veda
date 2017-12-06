@@ -15,15 +15,32 @@ enum DBMode
     RW = false
 }
 
-public interface KeyValueDB
+interface Authorization
 {
-    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+    ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                string subject_group,
+                                                                                                                string right)
+                    _trace_acl,
+                    void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
+                    );
+
     public void open();
     public void reopen();
     public void close();
+    public void flush(int force);
+}    
+
+public interface KeyValueDB
+{
+    public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
+
+    public void open();
+    public void reopen();
+    public void close();
+    public void flush(int force);
+
     public long count_entries();
 
-    public void flush(int force);
     public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
 }

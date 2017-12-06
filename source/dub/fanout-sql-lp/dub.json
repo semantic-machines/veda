@@ -16,7 +16,6 @@
             "../../veda/onto/bj8individual",
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
-	    "../../veda/core/az", 
 	    "../../veda/core/search", 
 	    "../../veda/core/common"
 	],
@@ -35,9 +34,11 @@
         "../../veda/util/tests_tools.d",
         "../../veda/fanout/fanout_sql_lp.d",
         "../../veda/fanout/to_sql.d",
+        "../../veda/storage/right_set.d",
         "../../veda/storage/common.d",
         "../../veda/storage/storage.d",
         "../../veda/storage/binlog_tools.d",
+        "../../veda/storage/lmdb/lmdb_acl.d",
         "../../veda/storage/lmdb/lmdb_driver.d",
         "../../veda/storage/lmdb/lmdb_storage.d"
 	],

@@ -6,7 +6,7 @@ module veda.storage.lmdb.lmdb_storage;
 import veda.core.common.define, veda.common.logger;
 import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver;
-import veda.core.az.acl;
+import veda.storage.lmdb.lmdb_acl;
 
 public class LmdbStorage : Storage
 {
@@ -31,7 +31,7 @@ public class LmdbStorage : Storage
     override Authorization get_acl_indexes()
     {
         if (acl_indexes is null)
-            acl_indexes = new Authorization(acl_indexes_db_path, DBMode.R, name ~ ":acl", this.log);
+            acl_indexes = new LmdbAuthorization(acl_indexes_db_path, DBMode.R, name ~ ":acl", this.log);
 
         return acl_indexes;
     }

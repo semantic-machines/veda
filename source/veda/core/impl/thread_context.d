@@ -13,7 +13,7 @@ private
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
-    import veda.core.az.acl, veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger, veda.storage.lmdb.lmdb_storage;
+    import veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger, veda.storage.lmdb.lmdb_storage;
 
     version (isMStorage)
     {

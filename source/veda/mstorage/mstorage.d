@@ -12,7 +12,7 @@ private
     import veda.bind.libwebsocketd, veda.storage.lmdb.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
-    import veda.common.logger, veda.core.util.utils, veda.core.common.transaction, veda.core.az.acl;
+    import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel;
     import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }

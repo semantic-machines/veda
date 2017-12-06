@@ -10,7 +10,6 @@
         "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
 	"sourcePaths":[
-            "../../veda/core/az",
 	    "../../veda/common", 
 	    "../../veda/onto",  
             "../../veda/onto/bj8individual",
@@ -22,9 +21,11 @@
         "sourceFiles":[
 	"../../lib64/libxapiand.a", 
         "../../lib64/liblmdb.a",
+        "../../veda/storage/right_set.d",
         "../../veda/storage/common.d",
         "../../veda/storage/storage.d",
         "../../veda/storage/binlog_tools.d",
+        "../../veda/storage/lmdb/lmdb_acl.d",
         "../../veda/storage/lmdb/lmdb_driver.d",
         "../../veda/storage/lmdb/lmdb_storage.d",
         "../../veda/bind/lmdb_header.d",
