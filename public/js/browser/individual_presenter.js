@@ -216,6 +216,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("delete", deleteHandler);
 
+    function destroyHandler (e) {
+      individual.remove();
+      e.stopPropagation();
+    }
+    template.on("destroy", destroyHandler);
+
     function recoverHandler (e) {
       individual.recover();
       e.stopPropagation();
