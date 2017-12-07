@@ -592,7 +592,6 @@ class VedaStorageRest : VedaStorageRest_API
 
     void set_trace(int idx, bool state)
     {
-        context.set_trace(idx, state);
     }
 
 

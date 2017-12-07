@@ -425,7 +425,6 @@ class PThreadContext : Context
     public void reopen_ro_acl_storage_db()
     {
         storage.get_acl_indexes().reopen();
-        //log.trace ("reopen_ro_acl_storage_db");
     }
 
     // ////////// external ////////////
@@ -552,9 +551,6 @@ class PThreadContext : Context
         }
     }
 
-    static const byte NEW_TYPE    = 0;
-    static const byte EXISTS_TYPE = 1;
-
     public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
@@ -623,57 +619,6 @@ class PThreadContext : Context
 
             //stat(CMD_PUT, sw);
         }
-    }
-
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                   OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
-    {
-        individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.PUT, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
-    }
-
-    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
-    {
-        Individual individual;
-
-        individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
-    }
-
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
-    {
-        individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.ADD_IN, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
-    }
-
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES)
-    {
-        individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.SET_IN, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
-    }
-
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, string event_id,
-                                           long transaction_id, MODULES_MASK assigned_subsystems, OptFreeze opt_freeze = OptFreeze.NONE,
-                                           OptAuthorize opt_request = OptAuthorize.YES)
-    {
-        individual.uri = uri;
-        return update(transaction_id, ticket, INDV_OP.REMOVE_FROM, &individual, event_id, assigned_subsystems, opt_freeze, opt_request);
-    }
-
-    public void set_trace(int idx, bool state)
-    {
-//        writeln("set trace idx=", idx, ":", state);
-//        foreach (mid; is_traced_module.keys)
-//        {
-//            Tid tid = getTid(mid);
-//            if (tid != Tid.init)
-//                send(tid, CMD_SET_TRACE, idx, state);
-//        }
-
-//        veda.core.log_msg.set_trace(idx, state);
     }
 
     public void freeze()

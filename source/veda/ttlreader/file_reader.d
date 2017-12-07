@@ -128,14 +128,20 @@ void main(char[][] args)
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
-            context.remove_individual(&sticket, uri, "ttl-reader", -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
+            Individual individual;
+            individual.uri = uri;
+            context.update(-1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         }
 
         uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, OptAuthorize.NO, false).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
-            res = context.remove_individual(&sticket, uri, "ttl-reader", -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
+            Individual individual;
+            individual.uri = uri;
+            context.update(-1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         }
 
         wait_complete_operations(context, res.op_id);
@@ -238,7 +244,7 @@ void main(char[][] args)
         new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
         new_indv.addResource("rdfs:label", Resource("RELOAD ONTOLOGY"));
 
-        OpResult res = context.put_individual(&sticket, new_indv.uri, new_indv, null, -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+        OpResult res = context.update(-1, &sticket, INDV_OP.PUT, &new_indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
         wait_complete_operations(context, res.op_id);
         log.tracec("WARN: RELOAD ONTO FINISH !!!! VEDA SYSTEM NEED RESTART");
@@ -439,7 +445,8 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
 
-                                ResultCode res = context.put_individual(&sticket, indv.uri, indv, null, -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
+                                ResultCode res = context.update(-1, &sticket, INDV_OP.PUT, &indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
+
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
@@ -565,8 +572,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 //            }
 //            catch (Exception ex) {}
 
-        OpResult orc = context.put_individual(&sticket, indv_ttl_file.uri, indv_ttl_file, null, -1, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
-
+        OpResult orc = context.update(-1, &sticket, INDV_OP.PUT, &indv_ttl_file, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
             log.trace("[%s] prepare_list end", filename);
