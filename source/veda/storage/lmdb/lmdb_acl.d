@@ -3,7 +3,8 @@ module veda.storage.lmdb.lmdb_acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_header, veda.core.common.context, veda.core.common.define,
+    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_header, veda.core.common.context,
+           veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
     import veda.core.util.utils, veda.common.logger;
     import veda.storage.lmdb.lmdb_driver, veda.storage.right_set, veda.storage.common;
@@ -350,7 +351,8 @@ class LmdbAuthorization : LmdbDriver, Authorization
                         Right *permission = permissions.data.get(perm_key, null);
 
                         if (trace_info !is null)
-                            trace_info(format("%d restriction=%s %s, permission=%s, request=%s", str_num++, object_group_id, access_to_pretty_string(object_group_access),
+                            trace_info(format("%d restriction=%s %s, permission=%s, request=%s", str_num++, object_group_id,
+                                              access_to_pretty_string(object_group_access),
                                               *permission,
                                               access_to_pretty_string(request_access)));
 
@@ -422,7 +424,8 @@ class LmdbAuthorization : LmdbDriver, Authorization
     }
 
 
-    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] walked_groups, int level = 0)
+    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] walked_groups,
+                                     int level = 0)
     {
         //if (level > 16)
         //{

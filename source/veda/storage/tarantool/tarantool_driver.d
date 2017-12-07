@@ -52,11 +52,6 @@ public class TarantoolDriver : KeyValueDB
         return -1;
     }
 
-    public int update_or_create(string uri, string content, long op_id, out string new_hash)
-    {
-        return -1;
-    }
-
     public void open()
     {
     }
