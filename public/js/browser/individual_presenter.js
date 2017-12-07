@@ -581,8 +581,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           if (property_uri === "state") { return acc; }
           return acc && validation[property_uri].state;
         }, true);
-        validation.state = validation.state && embedded.reduce(function (acc, template) {
-          var embeddedValidation = template.data("validation");
+        validation.state = validation.state && embedded.reduce(function (acc, embeddedTemplate) {
+          var embeddedValidation = embeddedTemplate.data("validation");
           return embeddedValidation ? acc && embeddedValidation.state : acc;
         }, true);
         template.trigger("internal-validated");
@@ -620,6 +620,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         validation.state = validation.state && validationResult.state;
       }
     });
+
 
     // Property control
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
