@@ -205,7 +205,7 @@ shared static this()
 
     Ticket sticket = *context.get_storage().get_systicket_from_storage();
 
-    bool is_exist_listener = false;
+    bool   is_exist_listener = false;
 
 
     Individual node = get_individual(&sticket, node_id);
@@ -298,7 +298,7 @@ bool start_http_listener(Context context, ushort http_port)
 
         log.tracec("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 
-        runTask(() => connectToWS());
+        runTask(() = > connectToWS());
 
         return true;
     }
