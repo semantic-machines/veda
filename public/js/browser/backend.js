@@ -170,6 +170,8 @@ veda.Module(function Backend(veda) { "use strict";
   }
 
   window.authenticate = function (login, password) {
+    if (login == "VedaNTLMFilter")
+        login = "cfg:Guest";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
