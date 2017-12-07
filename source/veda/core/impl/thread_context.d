@@ -729,36 +729,6 @@ class PThreadContext : Context
         return res;
     }
 
-    private bool wait_module(MODULE pm, long wait_op_id, long timeout)
-    {
-        long wait_time         = 0;
-        long op_id_from_module = 0;
-
-        //writefln ("wait_module pm=%s op_id=%d", text (pm), op_id);
-        while (wait_op_id > op_id_from_module)
-        {
-            MInfo info = storage.get_info(pm);
-
-            if (info.is_Ok)
-                op_id_from_module = info.committed_op_id;
-            else
-                return false;
-
-            if (op_id_from_module >= wait_op_id)
-                return true;
-
-            core.thread.Thread.sleep(dur!("msecs")(100));
-            wait_time += 100;
-
-            if (wait_time > timeout)
-            {
-                log.trace("WARN! timeout (wait opid=%d, opid from module = %d) wait_module:%s", wait_op_id, op_id_from_module, text(pm));
-                return false;
-            }
-        }
-        return true;
-    }
-
     public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES)
     {
         ResultCode rc;
