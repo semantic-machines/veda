@@ -9,24 +9,12 @@ private
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
-    import veda.core.search.vel, veda.common.type;
+    import veda.core.search.vel, veda.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
-    import veda.core.common.transaction;
-    import veda.storage.tarantool.tarantool_storage, veda.storage.common;
 }
 
-private string           lmdb_mode;
-
-private TarantoolStorage l_tt_storage;
-public TarantoolStorage get_storage_connector()
-{
-    //if (l_tt_storage is null)
-    //    l_tt_storage = new TarantoolStorage(log());
-
-    return l_tt_storage;
-}
-
+string lmdb_mode;
 public string get_lmdb_mode()
 {
     if (lmdb_mode is null)
@@ -172,8 +160,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
     core.thread.Thread.getThis().name = thread_name;
 
-    LmdbDriver                   storage = null;
-	string db_path;
+    KeyValueDB                   storage = null;
+    string                       db_path;
 
     if (get_lmdb_mode() == "as_server")
     {
@@ -182,17 +170,17 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     }
     else
     {
-    	if (_storage_id == P_MODULE.subject_manager)
-    	{
-	        storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
-	        db_path = individuals_db_path;
-    	}
-	    else if (_storage_id == P_MODULE.ticket_manager) 
-	    {
-	        storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
-	        db_path = tickets_db_path;
-	    }
-	       
+        if (_storage_id == P_MODULE.subject_manager)
+        {
+            storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
+            db_path = individuals_db_path;
+        }
+        else if (_storage_id == P_MODULE.ticket_manager)
+        {
+            storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
+            db_path = tickets_db_path;
+        }
+
         long count = storage.count_entries();
 
         log.trace("COUNT INDIVIDUALS=%d", count);
@@ -204,7 +192,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     long           last_reopen_rw_op_id = 0;
     int            max_count_updates    = 10_000;
 
-    long           op_id           = storage.last_op_id;
+    long           op_id           = storage.get_last_op_id;
     long           committed_op_id = 0;
 
     string         notify_channel_url = "tcp://127.0.0.1:9111\0";

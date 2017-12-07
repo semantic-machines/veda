@@ -8,13 +8,13 @@ import veda.common.type, veda.storage.common, veda.core.common.transaction, veda
 import veda.storage.lmdb.lmdb_driver;
 import veda.storage.lmdb.lmdb_acl;
 
-const string   individuals_db_path   = "./data/lmdb-individuals";
-const string   tickets_db_path       = "./data/lmdb-tickets";
+const string individuals_db_path = "./data/lmdb-individuals";
+const string tickets_db_path     = "./data/lmdb-tickets";
 
-static this ()
+static this()
 {
-	paths_list ~= individuals_db_path;
-	paths_list ~= tickets_db_path;
+    paths_list ~= individuals_db_path;
+    paths_list ~= tickets_db_path;
 }
 
 
@@ -62,45 +62,11 @@ public class LmdbStorage : Storage
         return inividuals_storage_r;
     }
 
-    override public long last_op_id()
-    {
-        return -1;
-    }
-
-    override public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti)
-    {
-        return OpResult(ResultCode.Not_Implemented, -1);
-    }
-
-    override public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items)
-    {
-        return [ OpResult(ResultCode.Not_Implemented, -1) ];
-    }
-
-    override public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key)
-    {
-        return OpResult(ResultCode.Not_Implemented, -1);
-    }
+    //abstract public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze, out long op_id);
 
     override public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {
         return null;
-    }
-
-    override public void flush(int force)
-    {
-    }
-
-    override public void reopen()
-    {
-    }
-
-    override public void open()
-    {
-    }
-
-    override public void close()
-    {
     }
 
     override long count_individuals()

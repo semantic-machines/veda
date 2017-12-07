@@ -10,11 +10,11 @@ private
     import veda.util.container, veda.util.module_info;
 }
 
-const string   acl_indexes_db_path   = "./data/acl-indexes";
+const string acl_indexes_db_path = "./data/acl-indexes";
 
-static this ()
+static this()
 {
-	paths_list ~= acl_indexes_db_path;
+    paths_list ~= acl_indexes_db_path;
 }
 
 string lstr = "                                                                           ";

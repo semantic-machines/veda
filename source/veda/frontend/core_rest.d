@@ -877,7 +877,13 @@ class VedaStorageRest : VedaStorageRest_API
             individual_json[ "@" ] = uri;
 
             OpResult[] op_res = modify_individuals(context, "remove", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
-            rc = op_res[ 0 ].result;
+            if (op_res.length > 0)
+                rc = op_res[ 0 ].result;
+            else
+            {
+                log.trace("ERR! fail remove_individual, request=%s", [ individual_json ]);
+                rc = ResultCode.Internal_Server_Error;
+            }
 
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
@@ -911,7 +917,13 @@ class VedaStorageRest : VedaStorageRest_API
                 throw new HTTPStatusException(rc, text(rc));
 
             OpResult[] op_res = modify_individuals(context, "put", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
-            rc = op_res[ 0 ].result;
+            if (op_res.length > 0)
+                rc = op_res[ 0 ].result;
+            else
+            {
+                log.trace("ERR! fail put_individual, request=%s", [ individual_json ]);
+                rc = ResultCode.Internal_Server_Error;
+            }
 
             if (rc != ResultCode.OK)
                 throw new HTTPStatusException(rc, text(rc));
@@ -974,7 +986,13 @@ class VedaStorageRest : VedaStorageRest_API
             throw new HTTPStatusException(rc, text(rc));
 
         OpResult[] op_res = modify_individuals(context, "add_to", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
-        rc = op_res[ 0 ].result;
+        if (op_res.length > 0)
+            rc = op_res[ 0 ].result;
+        else
+        {
+            log.trace("ERR! fail add_to_individual, request=%s", [ individual_json ]);
+            rc = ResultCode.Internal_Server_Error;
+        }
 
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
@@ -995,7 +1013,13 @@ class VedaStorageRest : VedaStorageRest_API
             throw new HTTPStatusException(rc, text(rc));
 
         OpResult[] op_res = modify_individuals(context, "set_in", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
-        rc = op_res[ 0 ].result;
+        if (op_res.length > 0)
+            rc = op_res[ 0 ].result;
+        else
+        {
+            log.trace("ERR! set_in_individual, request=%s", [ individual_json ]);
+            rc = ResultCode.Internal_Server_Error;
+        }
 
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
@@ -1016,7 +1040,13 @@ class VedaStorageRest : VedaStorageRest_API
             throw new HTTPStatusException(rc, text(rc));
 
         OpResult[] op_res = modify_individuals(context, "remove_from", _ticket, [ individual_json ], assigned_subsystems, event_id, timestamp);
-        rc = op_res[ 0 ].result;
+        if (op_res.length > 0)
+            rc = op_res[ 0 ].result;
+        else
+        {
+            log.trace("ERR! fail remove_from_individual, request=%s", [ individual_json ]);
+            rc = ResultCode.Internal_Server_Error;
+        }
 
         if (rc != ResultCode.OK)
             throw new HTTPStatusException(rc, text(rc));
@@ -1265,7 +1295,7 @@ private OpResult[] parseOpResults(string str)
     }
     catch (Throwable tr)
     {
-        log.trace("ERR! parseOpResult: %s", tr.info);
+        log.trace("ERR! parseOpResult: %s, src=%s", tr.info, str);
     }
 
     return ress;

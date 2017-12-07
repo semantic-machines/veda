@@ -24,7 +24,7 @@ public class LmdbDriver : KeyValueDB
     private string      _path;
     string              db_name;
     string              parent_thread_name;
-    long                last_op_id;
+    private long        last_op_id;
     long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
@@ -55,6 +55,11 @@ public class LmdbDriver : KeyValueDB
     string path()
     {
         return this._path;
+    }
+
+    public long get_last_op_id()
+    {
+        return last_op_id;
     }
 
     public void close()

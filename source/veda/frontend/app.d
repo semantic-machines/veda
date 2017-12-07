@@ -205,7 +205,7 @@ shared static this()
 
     Ticket sticket = *context.get_storage().get_systicket_from_storage();
 
-    bool is_exist_listener = false;
+    bool   is_exist_listener = false;
 
 
     Individual node = get_individual(&sticket, node_id);
