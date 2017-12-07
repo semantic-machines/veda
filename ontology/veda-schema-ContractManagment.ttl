@@ -609,6 +609,7 @@ v-s:CurrencyExchangeRateTemplate
       <veda-control data-type="link" rel="v-s:hasCurrencyExchangeRatePurpose" class="-view edit search fulltext dropdown"></veda-control>
     </div>
   </div>
+  <br>
   <!-- BUTTONS -->
   <div class="actions view edit -search">
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></div>

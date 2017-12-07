@@ -536,7 +536,7 @@ v-ui:StandardButtonsTemplate
   <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"/>
-  <div class="rm action btn-group dropup" id="task">
+  <div class="rm action btn-group dropup view -edit -search" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
       <span class="caret"></span>
