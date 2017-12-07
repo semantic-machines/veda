@@ -1290,31 +1290,31 @@ v-fs:AttributiveSearchTemplate
     <div class="ribbon-wrapper top-left">
       <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
     </div>
-    <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
     <div id="search-form"></div>
-    <br>
-    <br>
-    <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-    <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
-    <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
-    <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
-    <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+    <div class="search-actions">
+      <br>
+      <br>
+      <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
+      <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
+      <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
+      <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
+      <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
 
-    <div class="dropup pull-right set-columns-wrapper">
-      <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span about="v-fs:SetColumns" property="rdfs:label"></span>
-        <span class="caret"></span>
-      </button>
-      <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
-        <div class="checkbox">
-          <label>
-            <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
-          </label>
+      <div class="dropup pull-right set-columns-wrapper">
+        <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span about="v-fs:SetColumns" property="rdfs:label"></span>
+          <span class="caret"></span>
+        </button>
+        <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
+          <div class="checkbox">
+            <label>
+              <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
+            </label>
+          </div>
         </div>
       </div>
+      <br>
     </div>
-
-    <br>
   </div>
   <div id="results" class="hidden">
     <div class="result-header">
@@ -1353,6 +1353,16 @@ v-fs:AttributiveSearchTemplate
   </div>
 </div>
 <script>
+  setTimeout(function () {
+    var actions = $(".search-actions", template);
+    var actionsOffsetTop = actions.offset().top;
+    var windowHeight = $(window).height();
+    console.log(actions, "actionsOffsetTop", actionsOffsetTop, "windowHeight", windowHeight);
+    if (actionsOffsetTop >= windowHeight) {
+      actions.addClass("actions-fixed");
+      actions.find("br").remove();
+    }
+  }, 500);
   var self = individual,
       searchBlankContainer = $("#search-form", template),
       searchResultContainer = $("#search-result", template),
@@ -1954,7 +1964,6 @@ v-fs:FulltextBlankTemplate
   </div>
 </div>
 <script>
-  container.siblings(".search-button.pull-right").remove();
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;
@@ -2148,7 +2157,6 @@ v-fs:AttributiveSearchInlineTemplate
     }
   </style>
   <div id="params">
-    <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
     <div id="search-form"></div>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
