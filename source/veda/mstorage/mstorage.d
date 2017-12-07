@@ -9,12 +9,12 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid;
     import backtrace.backtrace, Backtrace = backtrace.backtrace, veda.util.properd;
-    import veda.bind.libwebsocketd, veda.storage.lmdb.wslink;
+    import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel;
-    import veda.storage.tarantool.tarantool_storage, veda.storage.common;
+    import veda.storage.common;
 }
 
 alias veda.storage.storage_manager ticket_storage_module;
@@ -67,14 +67,14 @@ void main(char[][] args)
     process_name = "mstorage";
     string node_id = null;
 
-    tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, individuals_db_path, node_id);
+    tids[ P_MODULE.subject_manager ] = spawn(&individuals_manager, P_MODULE.subject_manager, node_id);
     if (wait_starting_thread(P_MODULE.subject_manager, tids) == false)
         return;
 
-    tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, tickets_db_path, node_id);
+    tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, node_id);
     wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer), acl_indexes_db_path);
+    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer));
     wait_starting_thread(P_MODULE.acl_preparer, tids);
 
     tids[ P_MODULE.commiter ] =
@@ -172,7 +172,7 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", individuals_db_path, log, null);
+        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", log, null);
         l_context    = core_context;
 
         vql_r = l_context.get_vql();
@@ -256,7 +256,7 @@ void commiter(string thread_name)
 
     while (is_exit == false)
     {
-        receiveTimeout(dur!("seconds")(1),
+        receiveTimeout(dur!("msecs")(600),
                        (byte cmd, Tid tid_response_reciever)
                        {
                            if (cmd == CMD_EXIT)
@@ -273,7 +273,6 @@ void commiter(string thread_name)
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
         veda.storage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-
         veda.mstorage.acl_manager.flush(false);
         veda.storage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }

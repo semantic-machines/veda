@@ -86,7 +86,7 @@ class FTIndexerProcess : VedaModule
 
         long now = Clock.currTime().stdTime();
 
-        if (now - last_update_time > 1_000_000)
+        if (now - last_update_time > 600_000)
         {
             ictx.commit_all_db();
             last_update_time = now;

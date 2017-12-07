@@ -21,7 +21,6 @@ static const int AUTHORIZE = 4;
 static const int SOURCE    = 5;
 
 static const int XAPIAN = 2;
-static const int LMDB   = 3;
 
 class VQL
 {

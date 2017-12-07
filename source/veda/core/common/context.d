@@ -25,16 +25,6 @@ public struct SearchResult
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
-interface ScriptVM
-{
-    Script compile(string code);
-}
-
-interface Script
-{
-    void run();
-}
-
 /**
  * Внешнее API - Интерфейс
  */
@@ -124,32 +114,6 @@ interface Context
      */
     public Individual[] get_individuals(Ticket *ticket, string[] uris);
 
-    /**
-       Сохранить индивидуал, по указанному uri
-       Params:
-                 ticket = указатель на обьект Ticket
-                 indv   = указатель на экземпляр Individual, сохраняется если !is null
-                 uri    = uri, по которому сохраняется индивидула
-                 wait_for_indexing = ожидать окончания полнотекстовой индексации
-
-       Returns:
-                Код результата операции
-     */
-    public OpResult put_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                   OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
-
-    public OpResult remove_individual(Ticket *ticket, string uri, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
-
-    public OpResult add_to_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
-
-    public OpResult set_in_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                      OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
-
-    public OpResult remove_from_individual(Ticket *ticket, string uri, Individual individual, string event_id, long transaction_id, MODULES_MASK assigned_subsystems,
-                                           OptFreeze opt_freeze = OptFreeze.NONE, OptAuthorize opt_request = OptAuthorize.YES);
-
     // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
     /**
        Вернуть список доступных прав для пользователя на указанномый uri
@@ -184,14 +148,6 @@ interface Context
                                         void delegate(string resource_group) trace_group);
 
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
-
-    /**
-       Включить/выключить отладочные сообщения
-       Params:
-                 idx   = id отладочного сообщения (0 - все сообщения)
-                 state = true/false
-     */
-    public void set_trace(int idx, bool state);
 
     /**
        Остановить выполнение операций записи, новые команды на запись не принимаются
@@ -236,48 +192,6 @@ public long get_subject_manager_op_id()
 {
     return atomicLoad(subject_manager_op_id);
 }
-
-///
-/*
-   private shared long indexer_op_id = 0;
-
-   public void set_indexer_op_id(long data)
-   {
-    atomicStore(indexer_op_id, data);
-   }
-
-   public long get_indexer_op_id()
-   {
-    return atomicLoad(indexer_op_id);
-   }
- */
-////
-
-private shared long acl_manager_op_id = 0;
-
-public void set_acl_manager_op_id(long data)
-{
-    atomicStore(acl_manager_op_id, data);
-}
-
-public long get_acl_manager_op_id()
-{
-    return atomicLoad(acl_manager_op_id);
-}
-
-////
-
-//private shared long count_indexed = 0;
-
-//public void set_count_indexed(long data)
-//{
-//    atomicStore(count_indexed, data);
-//}
-
-//public long get_count_indexed()
-//{
-//    return atomicLoad(count_indexed);
-//}
 
 /////////////////////////////// global_systicket //////////////////////////
 

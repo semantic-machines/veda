@@ -16,17 +16,13 @@
 	"sourceFiles":[
 	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a",
-    	    "../../veda/bind/lmdb_header.d",
             "../../veda/bind/xapian_d_header.d",
             "../../veda/util/tests_tools.d",
             "../../veda/bind/libraptor_header.d",
     	    "../../veda/storage/right_set.d",
             "../../veda/storage/common.d",
             "../../veda/storage/storage.d",
-            "../../veda/storage/binlog_tools.d",
-            "../../veda/storage/lmdb/lmdb_acl.d",
-            "../../veda/storage/lmdb/lmdb_driver.d",
-            "../../veda/storage/lmdb/lmdb_storage.d"
+            "../../veda/storage/binlog_tools.d"
 	],
 	"sourcePaths":[
             "../../veda/util",
@@ -36,6 +32,7 @@
 	    "../../veda/core/common",
 	    "../../veda/core/impl", 
 	    "../../veda/core/search", 
+            "../../veda/storage/lmdb",
 	    "../../veda/core/util"
 	],
 	"configurations": [

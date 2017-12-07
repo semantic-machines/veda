@@ -3,11 +3,18 @@ module veda.storage.lmdb.lmdb_acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define,
+    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_header, veda.core.common.context, veda.core.common.define,
            veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
     import veda.core.util.utils, veda.common.logger;
     import veda.storage.lmdb.lmdb_driver, veda.storage.right_set, veda.storage.common;
     import veda.util.container, veda.util.module_info;
+}
+
+const string acl_indexes_db_path = "./data/acl-indexes";
+
+static this()
+{
+    paths_list ~= acl_indexes_db_path;
 }
 
 string lstr = "                                                                           ";
@@ -40,10 +47,10 @@ class LmdbAuthorization : LmdbDriver, Authorization
     ubyte request_access;
     ubyte[ string ] checked_groups;
 
-    this(string _path, DBMode mode, string _parent_thread_name, Logger _log)
+    this(DBMode mode, string _parent_thread_name, Logger _log)
     {
         log = _log;
-        super(_path, mode, _parent_thread_name, log);
+        super(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 
     int count_permissions = 0;
@@ -567,5 +574,4 @@ public bool acl_check_for_reload(void delegate() load)
         return true;
     }
     return false;
-    //return _check_for_reload(acl_local_time_check, acl_local_count, &get_acl_manager_op_id, load);
 }

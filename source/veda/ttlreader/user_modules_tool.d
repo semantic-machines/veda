@@ -134,8 +134,8 @@ class UserModuleInfo
         indv.uri = uri;
         indv.setResources("rdfs:comment", [ Resource(DataType.String, log.raw()) ]);
 
-        OpResult rs = context.set_in_individual(&sticket, uri, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                OptAuthorize.NO);
+        OpResult rs = context.update(-1, &sticket, INDV_OP.SET_IN, &indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
         if (rs.result != ResultCode.OK)
         {
             log.trace("ERR! fail store log [%s], err=[%s]", uri, rs.result);
@@ -152,7 +152,7 @@ class UserModuleInfo
         SearchResult sr =
             context.get_individuals_ids_via_query(&sticket, "'rdf:type' === 'v-s:Module'", "'rdf:type' asc", "base,system", 0, 100000,
                                                   10000,
-                                                  null, OptAuthorize.NO, 
+                                                  null, OptAuthorize.NO,
                                                   false);
 
         Individual[ string ] mmsrc;
@@ -286,8 +286,11 @@ class UserModuleInfo
             foreach (uid; sr.result)
             {
                 log.trace("[%s][%s] REMOVE %s", module_id, ver, uid);
-                OpResult operation_result = context.remove_individual(&sticket, uid, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                                      OptAuthorize.NO);
+
+                Individual individual;
+                individual.uri = uid;
+                OpResult   operation_result = context.update(-1, &sticket, INDV_OP.REMOVE, &individual, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
                 if (operation_result.result != ResultCode.OK)
                 {
                     log.trace("ERR! fail remove [%s], err=[%s]", uid, operation_result.result);
@@ -315,8 +318,8 @@ class UserModuleInfo
                     indv.uri = module_id;
                     indv.setResources("v-s:deleted", [ Resource(DataType.Boolean, true) ]);
 
-                    OpResult rs = context.set_in_individual(&sticket, module_id, indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                            OptAuthorize.NO);
+                    OpResult rs = context.update(-1, &sticket, INDV_OP.SET_IN, &indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
                     if (rs.result != ResultCode.OK)
                     {
                         log.trace("ERR! fail deactivate [%s], err=[%s]", module_id, rs.result);
@@ -391,8 +394,8 @@ class UserModuleInfo
             image_indv.setResources("v-s:filePath", [ Resource(DataType.String, "/") ]);
             image_indv.setResources("v-s:fileUri", [ Resource(DataType.String, dest_image_name) ]);
 
-            OpResult orc = context.put_individual(&sticket, image_indv.uri, image_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                  OptAuthorize.NO);
+            OpResult orc = context.update(-1, &sticket, INDV_OP.PUT, &image_indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
             if (orc.result != ResultCode.OK)
             {
                 log.trace("WARN! can not install %s, err=%s", image_indv.uri, orc.result);
@@ -405,8 +408,7 @@ class UserModuleInfo
             log.trace("WARN! can not install %s, err=%s", dest_image_name, tr.msg);
         }
 
-        OpResult orc = context.put_individual(&sticket, uri, module_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                              OptAuthorize.NO);
+        OpResult orc = context.update(-1, &sticket, INDV_OP.PUT, &module_indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
     }
 
     bool install()
@@ -438,8 +440,8 @@ class UserModuleInfo
 
         foreach (uid; module_individuals.keys)
         {
-            OpResult orc = context.put_individual(&sticket, uid, *module_individuals[ uid ], umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                  OptAuthorize.NO);
+            OpResult orc = context.update(-1, &sticket, INDV_OP.PUT, module_individuals[ uid ], umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
             log.trace("[%s][%s] INSERT %s", uri, ver, uid);
 
             if (orc.result == ResultCode.OK)
@@ -458,8 +460,9 @@ class UserModuleInfo
 
             foreach (uid; installed.keys)
             {
-                context.remove_individual(&sticket, uid, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                          OptAuthorize.NO);
+                Individual individual;
+                individual.uri = uid;
+                OpResult   operation_result = context.update(-1, &sticket, INDV_OP.REMOVE, &individual, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
             }
 
             return false;
@@ -767,8 +770,9 @@ class UserModuleInfo
                         log.trace("WARN! prepared module [%s] not equal loaded module [%s]", uri, root_indv);
                         log.trace("WARN! remove prepared module [%s]", uri);
 
-                        context.remove_individual(&sticket, uri, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                  OptAuthorize.NO);
+                        Individual individual;
+                        individual.uri = uri;
+                        OpResult   operation_result = context.update(-1, &sticket, INDV_OP.REMOVE, &individual, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
                     }
 
                     uri = root_indv;
@@ -934,8 +938,8 @@ class UserModulesTool : VedaModule
                 {
                     Individual request = create_request(new_indv.getFirstLiteral("v-s:moduleUrl"), RequestCommand.INSTALL);
 
-                    OpResult   orc = context.put_individual(&sticket, request.uri, request, "", -1, ALL_MODULES, OptFreeze.NONE,
-                                                            OptAuthorize.NO);
+                    OpResult   orc = context.update(-1, &sticket, INDV_OP.PUT, &request, "", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+
                     if (orc.result != ResultCode.OK)
 
                         log.trace("ERR! can not store request %s, err=%s", request.uri, orc.result);
@@ -956,8 +960,7 @@ class UserModulesTool : VedaModule
                     {
                         if (uninstall_user_module(new_indv.uri) == false)
                         {
-                            OpResult orc = context.put_individual(&sticket, prev_indv.uri, prev_indv, umt_event_id, -1, ALL_MODULES, OptFreeze.NONE,
-                                                                  OptAuthorize.NO);
+                            OpResult orc = context.update(-1, &sticket, INDV_OP.PUT, &prev_indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
                             if (orc.result != ResultCode.OK)
                                 log.trace("ERR! can not restore %s, err=%s", prev_indv.uri, orc.result);

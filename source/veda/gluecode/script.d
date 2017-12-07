@@ -4,6 +4,16 @@ import std.stdio, std.path, std.container.array, std.algorithm, std.conv, std.ra
 import veda.gluecode.v8d_header, veda.core.common.context, veda.onto.individual, veda.core.common.log_msg, veda.core.common.know_predicates,
        veda.onto.resource;
 
+interface ScriptVM
+{
+    Script compile(string code);
+}
+
+interface Script
+{
+    void run();
+}
+
 struct ScriptInfo
 {
     string id;

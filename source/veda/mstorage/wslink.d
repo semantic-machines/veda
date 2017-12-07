@@ -1,4 +1,4 @@
-module veda.storage.lmdb.wslink;
+module veda.mstorage.wslink;
 
 private
 {
