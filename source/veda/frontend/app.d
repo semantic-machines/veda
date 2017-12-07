@@ -298,7 +298,7 @@ bool start_http_listener(Context context, ushort http_port)
 
         log.tracec("Please open http://127.0.0.1:" ~ text(settings.port) ~ "/ in your browser.");
 
-        runTask(() = > connectToWS());
+        runTask(() => connectToWS());
 
         return true;
     }
