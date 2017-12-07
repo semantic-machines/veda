@@ -188,7 +188,7 @@ void main(string[] args)
     	writefln("THIS CONFIGURATION USE LMDB_SERVER, lmdb_mode=%s", lmdb_mode);
         modules ~= "veda";
         modules ~= "veda-ccus";
-        modules ~= "veda-ft-query";
+        //modules ~= "veda-ft-query";
         modules ~= "veda-lmdb-server";
         modules ~= "veda-mstorage";
         modules ~= "veda-ttlreader";
@@ -205,7 +205,7 @@ void main(string[] args)
     	writefln("THIS CONFIGURATION USE LMDB_LIBRARY, lmdb_mode=%s", lmdb_mode);
         modules ~= "veda";
         modules ~= "veda-ccus";
-        modules ~= "veda-ft-query";
+        //modules ~= "veda-ft-query";
         modules ~= "veda-mstorage";
         modules ~= "veda-ttlreader";
         modules ~= "veda-fanout-email";
