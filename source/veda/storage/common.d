@@ -28,12 +28,13 @@ interface Authorization
     public void reopen();
     public void close();
     public void flush(int force);
-}    
+}
 
 public interface KeyValueDB
 {
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
 
+    public long get_last_op_id();
     public void open();
     public void reopen();
     public void close();
@@ -41,6 +42,7 @@ public interface KeyValueDB
 
     public long count_entries();
 
+    public int update_or_create(string uri, string content, long op_id, out string new_hash);
     public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
 }

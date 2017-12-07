@@ -13,17 +13,8 @@ public abstract class Storage
 
     Logger log;
 
-    abstract public long last_op_id();
-    abstract public OpResult put(OptAuthorize op_auth, immutable TransactionItem ti);
-    abstract public OpResult[] put(OptAuthorize op_auth, immutable(TransactionItem)[] items);
-    abstract public OpResult remove(OptAuthorize op_auth, string user_uri, string in_key);
+    //abstract public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze, out long op_id);
     abstract public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
-
-    abstract public void flush(int force);
-    abstract public void reopen();
-    abstract public void open();
-    abstract public void close();
-
 
     /**
        Количество индивидуалов в базе данных
