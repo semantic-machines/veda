@@ -17,13 +17,13 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
 	    "../../veda/core/search", 
-	    "../../veda/core/common"
+	    "../../veda/core/common",
+            "../../veda/storage/lmdb"
 	],
         "sourceFiles":[
         "../../lib64/liblmdb.a",
 	"../../lib64/libxapiand.a", 
         "../../veda/util/properd.d",
-        "../../veda/bind/lmdb_header.d",
 	"../../veda/bind/xapian_d_header.d",
         "../../veda/bind/nano.d",
  	"../../veda/core/util/utils.d",
@@ -37,10 +37,7 @@
         "../../veda/storage/right_set.d",
         "../../veda/storage/common.d",
         "../../veda/storage/storage.d",
-        "../../veda/storage/binlog_tools.d",
-        "../../veda/storage/lmdb/lmdb_acl.d",
-        "../../veda/storage/lmdb/lmdb_driver.d",
-        "../../veda/storage/lmdb/lmdb_storage.d"
+        "../../veda/storage/binlog_tools.d"
 	],
         "libs":["nanomsg"],
 	"configurations": [

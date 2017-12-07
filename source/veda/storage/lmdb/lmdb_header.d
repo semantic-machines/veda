@@ -1,7 +1,7 @@
 /**
  * обвязка к lmdb
  */
-module veda.bind.lmdb_header;
+module veda.storage.lmdb.lmdb_header;
 
 import core.sys.posix.sys.stat;
 

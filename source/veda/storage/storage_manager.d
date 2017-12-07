@@ -7,9 +7,8 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
-    import veda.bind.lmdb_header, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual,
-           veda.onto.resource;
-    import veda.storage.lmdb.lmdb_driver, veda.storage.binlog_tools, veda.util.module_info;
+    import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
+    import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type;
     import kaleidic.nanomsg.nano;
     import veda.bind.libwebsocketd, veda.util.properd;
@@ -163,7 +162,7 @@ public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP 
     return rc;
 }
 
-public void individuals_manager(P_MODULE _storage_id, string db_path, string node_id)
+public void individuals_manager(P_MODULE _storage_id, string node_id)
 {
     Queue                        individual_queue;
     Queue                        uris_queue;
@@ -174,16 +173,26 @@ public void individuals_manager(P_MODULE _storage_id, string db_path, string nod
     core.thread.Thread.getThis().name = thread_name;
 
     LmdbDriver                   storage = null;
+	string db_path;
 
     if (get_lmdb_mode() == "as_server")
     {
         log.trace(
-                  "LMDB_MODE=AS_SERVER, individuals_manager %s %s", _storage_id, db_path);
+                  "LMDB_MODE=AS_SERVER, individuals_manager %s", _storage_id);
     }
     else
     {
-        storage = new LmdbDriver(db_path, DBMode.RW, "individuals_manager", log);
-
+    	if (_storage_id == P_MODULE.subject_manager)
+    	{
+	        storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
+	        db_path = individuals_db_path;
+    	}
+	    else if (_storage_id == P_MODULE.ticket_manager) 
+	    {
+	        storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
+	        db_path = tickets_db_path;
+	    }
+	       
         long count = storage.count_entries();
 
         log.trace("COUNT INDIVIDUALS=%d", count);

@@ -228,12 +228,12 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.wait_module = function (module_id, op_id) {
+  window.wait_module = function (module_id, in_op_id) {
     var timeout = 1;
     var op_id_from_module;
     for (var i = 0; i < 100; i++) {
-      op_id_from_module = get_operation_state (module_id, op_id);
-      if (op_id_from_module >= op_id) { break; }
+      op_id_from_module = get_operation_state (module_id, in_op_id);
+      if (op_id_from_module >= in_op_id) { break; }
       var endtime = new Date().getTime() + timeout;
       while (new Date().getTime() < endtime);
       timeout += 2;

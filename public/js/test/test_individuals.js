@@ -1551,7 +1551,8 @@ for (i = 0; i < 1; i++)
           createMeetings(user, 1, 5);
           createMeetings(admin, 6, 3);
           createMeetings(user, 9, 3);
-          createMeetings(admin, 12, 9);
+          var res = createMeetings(admin, 12, 9);
+          wait_module(m_fulltext_indexer, res.op_id);
 
           var q = "'rdf:type'==='rdfs:Resource' && '@'=='d:QueryTestResource*'";
           var s = "'rdfs:label' asc";
@@ -1610,11 +1611,12 @@ for (i = 0; i < 1; i++)
           ok(results_user2.count === 5 && results_user2.cursor === 13 && results_user2.processed === 10);
 
           function createMeetings(creator, start, count) {
+	    var res;
             for (var i = start; i < start + count; i++) {
               var meeting = JSON.parse( meeting_template.replace(/\$i/g, i.toString().length === 2 ? i : "0" + i ).replace(/\$creator/g, creator.user_uri) );
-              var res = put_individual(creator.id, meeting);
-              wait_module(m_fulltext_indexer, res.op_id);
+              res = put_individual(creator.id, meeting);
             }
+	    return res;
           }
 
         });

@@ -169,7 +169,7 @@ shared static this()
 
     veda.core.common.context.Context context;
 
-    context = PThreadContext.create_new(node_id, "frontend", individuals_db_path, log, "127.0.0.1:8088/ws");
+    context = PThreadContext.create_new(node_id, "frontend", log, "127.0.0.1:8088/ws");
 
     sys_ticket = context.sys_ticket(false);
 
@@ -204,25 +204,6 @@ shared static this()
     }
 
     Ticket sticket = *context.get_storage().get_systicket_from_storage();
-
-//    if (sys_ticket_id !is null)
-//    {
-//       sticket = *context.get_ticket(sys_ticket_id);
-    //set_global_systicket(sticket);
-//    }
-//    else
-//    {
-//        sticket = core_context.sys_ticket();
-//    }
-
-//    ushort                count_thread = 4;
-
-//    std.concurrency.Tid[] pool;
-//    for (int i = 0; i < count_thread; i++)
-//    {
-//        pool ~= std.concurrency.spawnLinked(&core_thread, node_id);
-//        core.thread.Thread.sleep(dur!("msecs")(10));
-//    }
 
     bool is_exist_listener = false;
 

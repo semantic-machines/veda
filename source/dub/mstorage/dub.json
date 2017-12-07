@@ -17,7 +17,6 @@
         "../../veda/util/properd.d",
         "../../veda/bind/libwebsockets.d",
 	"../../veda/bind/nano.d", 
-	"../../veda/bind/lmdb_header.d", 
 	"../../veda/bind/xapian_d_header.d",
 	"../../veda/util/tools.d",
 	"../../veda/util/queue.d",
@@ -26,8 +25,7 @@
 	"../../veda/util/tests_tools.d",
         "../../veda/storage/common.d",
         "../../veda/storage/storage.d",
-        "../../veda/storage/binlog_tools.d",
-        "../../veda/storage/lmdb/lmdb_storage.d"
+        "../../veda/storage/binlog_tools.d"
  	],
 	"sourcePaths":[
 	    "../../veda/mstorage", 

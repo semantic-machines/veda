@@ -8,6 +8,16 @@ import veda.common.type, veda.storage.common, veda.core.common.transaction, veda
 import veda.storage.lmdb.lmdb_driver;
 import veda.storage.lmdb.lmdb_acl;
 
+const string   individuals_db_path   = "./data/lmdb-individuals";
+const string   tickets_db_path       = "./data/lmdb-tickets";
+
+static this ()
+{
+	paths_list ~= individuals_db_path;
+	paths_list ~= tickets_db_path;
+}
+
+
 public class LmdbStorage : Storage
 {
     private Authorization acl_indexes;
@@ -31,7 +41,7 @@ public class LmdbStorage : Storage
     override Authorization get_acl_indexes()
     {
         if (acl_indexes is null)
-            acl_indexes = new LmdbAuthorization(acl_indexes_db_path, DBMode.R, name ~ ":acl", this.log);
+            acl_indexes = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
 
         return acl_indexes;
     }
