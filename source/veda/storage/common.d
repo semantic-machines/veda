@@ -42,7 +42,6 @@ public interface KeyValueDB
 
     public long count_entries();
 
-    public int update_or_create(string uri, string content, long op_id, out string new_hash);
     public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
 }

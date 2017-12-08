@@ -248,8 +248,8 @@ public class LmdbDriver : KeyValueDB
 
             if (rc != 0)
             {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
-                                                                                                                                         rc)),
+                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR! %s, key=%s", _path, fromStringz(mdb_strerror(
+                                                                                                                                          rc)),
                                           _key);
                 return ResultCode.Fail_Commit;
             }
@@ -384,124 +384,6 @@ public class LmdbDriver : KeyValueDB
         BigInt msg_hash = "0x" ~ toHexString(hash);
         summ_hash_this_db += msg_hash;
         return toHex(summ_hash_this_db);
-    }
-
-
-
-    public int update_or_create(string uri, string content, long op_id, out string new_hash)
-    {
-        if (db_is_opened == false)
-            open();
-
-        last_op_id = op_id;
-
-        try
-        {
-//                                      StopWatch sw; sw.start;
-            new_hash = get_new_hash(content);
-
-            int     rc;
-            MDB_dbi dbi;
-            MDB_txn *txn;
-
-            rc = mdb_txn_begin(env, null, 0, &txn);
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
-            }
-            rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
-            }
-
-            MDB_val key;
-
-            key.mv_data = cast(char *)uri;
-            key.mv_size = uri.length;
-
-            MDB_val data;
-
-            data.mv_data = cast(char *)content;
-            data.mv_size = content.length;
-
-            rc = mdb_put(txn, dbi, &key, &data, 0);
-            if (rc == MDB_MAP_FULL)
-            {
-                growth_db(env, txn);
-
-                // retry
-                return update_or_create(uri, content, op_id, new_hash);
-            }
-
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                mdb_txn_abort(txn);
-                throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
-            }
-/*
-            if (summ_hash_this_db != BigInt.init)
-            {   // put current db summ hash
-                string f_data = new_hash ~ "," ~ text(op_id);
-
-                key.mv_data  = cast(char *)summ_hash_this_db_id;
-                key.mv_size  = summ_hash_this_db_id.length;
-                data.mv_data = cast(char *)f_data;
-                data.mv_size = f_data.length;
-                rc           = mdb_put(txn, dbi, &key, &data, 0);
-
-                if (rc == MDB_MAP_FULL)
-                {
-                    growth_db(env, txn);
-
-                    // retry
-                    return update_or_create(uri, content, op_id, new_hash);
-                }
-
-                if (rc != 0)
-                {
-                    log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", put summ_hash (%s) ERR:%s", _path,
-                                              fromStringz(mdb_strerror(rc)));
-                    mdb_txn_abort(txn);
-                    throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
-                }
-            }
- */
-            rc = mdb_txn_commit(txn);
-
-            if (rc == MDB_MAP_FULL)
-            {
-                growth_db(env, null);
-
-                // retry
-                return update_or_create(uri, content, op_id, new_hash);
-            }
-
-            if (rc != 0)
-            {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
-                mdb_txn_abort(txn);
-                throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
-            }
-//                                sw.stop;
-//                               long t = sw.peek.usecs;
-//                                writeln ("@1 store : t=", t);
-
-            mdb_dbi_close(env, dbi);
-
-//        if (count_update % 2_000 == 0)
-//            reopen_db();
-
-            return 0;
-        }
-        catch (Throwable tr)
-        {
-            log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
-            return -1;
-        }
     }
 
     public long count_entries()

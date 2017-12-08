@@ -5,7 +5,7 @@ module veda.storage.storage_manager;
 
 private
 {
-    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string;
+    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string, std.digest.ripemd, std.bigint;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
@@ -378,7 +378,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 {
                                     string new_hash;
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
-                                    if (storage.update_or_create(ti.uri, ti.new_binobj, op_id, new_hash) == 0)
+                                    if (storage.put(OptAuthorize.NO, ti.user_uri, ti.uri, ti.new_binobj, op_id) == ResultCode.OK)
                                     {
                                         rc = ResultCode.OK;
                                         op_id++;
@@ -394,6 +394,10 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                     if (rc == ResultCode.OK)
                                     {
                                         module_info.put_info(op_id, committed_op_id);
+
+                                        ubyte[ 20 ] hash = ripemd160Of(ti.new_binobj);
+                                        BigInt msg_hash = "0x" ~ toHexString(hash);
+                                        new_hash = toHex(msg_hash);
 
                                         bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
 
