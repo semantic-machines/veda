@@ -19,7 +19,6 @@ static this()
 /// Хранение, чтение PermissionStatement, Membership
 class LmdbAuthorization : Authorization
 {
-    Logger     log;
     LmdbDriver lmdb_driver;
 
     // short life time vars
