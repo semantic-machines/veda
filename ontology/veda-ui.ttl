@@ -560,11 +560,15 @@ v-ui:StandardButtonsTemplate
     var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
     var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
     if ( !actions_inside_viewport && main_inside_viewport )  {
-      placeholder.insertBefore(actions);
-      actions.addClass("actions-fixed");
+      if ( !actions.hasClass("actions-fixed") ) {
+        placeholder.insertBefore(actions);
+        actions.addClass("actions-fixed");
+      }
     } else {
-      placeholder.remove();
-      actions.removeClass("actions-fixed");
+      if ( actions.hasClass("actions-fixed") ) {
+         placeholder.remove();
+        actions.removeClass("actions-fixed");
+      }
     }
   }
   setTimeout(function () {
