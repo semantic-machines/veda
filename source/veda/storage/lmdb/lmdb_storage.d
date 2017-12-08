@@ -5,8 +5,7 @@ module veda.storage.lmdb.lmdb_storage;
 
 import veda.core.common.define, veda.common.logger;
 import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
-import veda.storage.lmdb.lmdb_driver;
-import veda.storage.lmdb.lmdb_acl;
+import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.storage.authorization;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
@@ -61,8 +60,6 @@ public class LmdbStorage : Storage
 
         return inividuals_storage_r;
     }
-
-    //abstract public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze, out long op_id);
 
     override public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {

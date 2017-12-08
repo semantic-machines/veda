@@ -23,6 +23,7 @@
 	"../../lib64/libxapiand.a", 
         "../../lib64/liblmdb.a",
         "../../veda/storage/right_set.d",
+	"../../veda/storage/authorization.d",
         "../../veda/storage/common.d",
         "../../veda/storage/storage.d",
         "../../veda/storage/binlog_tools.d",
