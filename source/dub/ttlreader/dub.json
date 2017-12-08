@@ -27,19 +27,20 @@
             "../../veda/ttlreader"
 	],
         "sourceFiles":[
-        "../../lib64/liblmdb.a",
-	"../../lib64/libxapiand.a",
-        "../../veda/storage/right_set.d",
-        "../../veda/storage/common.d",
-        "../../veda/storage/storage.d",
-        "../../veda/storage/binlog_tools.d",
-	"../../veda/bind/xapian_d_header.d",
-        "../../veda/bind/nano.d",
-	"../../veda/core/util/utils.d",
-        "../../veda/bind/libraptor_header.d",
-        "../../veda/util/tests_tools.d",
-	"../../veda/util/raptor2individual.d",
-        "../../veda/util/module_info.d"
+    	    "../../lib64/liblmdb.a",
+	    "../../lib64/libxapiand.a",
+    	    "../../veda/storage/right_set.d",
+    	    "../../veda/storage/authorization.d",
+	    "../../veda/storage/common.d",
+    	    "../../veda/storage/storage.d",
+    	    "../../veda/storage/binlog_tools.d",
+	    "../../veda/bind/xapian_d_header.d",
+    	    "../../veda/bind/nano.d",
+	    "../../veda/core/util/utils.d",
+    	    "../../veda/bind/libraptor_header.d",
+    	    "../../veda/util/tests_tools.d",
+	    "../../veda/util/raptor2individual.d",
+    	    "../../veda/util/module_info.d"
 	],
 	"configurations": [
 	{
