@@ -1,15 +1,15 @@
 module veda.storage.authorization;
 
 import std.conv, std.datetime, std.uuid, std.outbuffer, std.string, std.stdio;
-import veda.common.logger, veda.core.common.define;
-import veda.common.type, veda.core.common.transaction;
-import veda.onto.individual, veda.onto.resource, veda.core.common.know_predicates, veda.util.module_info, veda.core.util.utils;
+import veda.common.logger, veda.core.common.define, veda.common.type;
+import veda.core.common.know_predicates, veda.util.module_info;
 import veda.storage.right_set, veda.storage.common;
 
 string lstr = "                                                                           ";
 
 abstract class Authorization
 {
+	Logger 								 log;
     string                               filter_value;
     ubyte                                calc_right_res;
 
@@ -425,9 +425,32 @@ abstract class Authorization
     abstract public bool open();
     abstract public void reopen();
     abstract public void close();
-//    public void flush(int force);
 
     abstract string get_in_current_transaction(string in_key);
     abstract void abort_transaction();
     abstract bool begin_transaction(bool is_check_for_reload);
+}
+
+string access_to_pretty_string(const ubyte src)
+{
+    string res = "";
+
+    if (src & Access.can_create)
+        res ~= "C ";
+    if (src & Access.can_read)
+        res ~= "R ";
+    if (src & Access.can_update)
+        res ~= "U ";
+    if (src & Access.can_delete)
+        res ~= "D ";
+    if (src & Access.cant_create)
+        res ~= "!C ";
+    if (src & Access.cant_read)
+        res ~= "!R ";
+    if (src & Access.cant_update)
+        res ~= "!U ";
+    if (src & Access.cant_delete)
+        res ~= "!D ";
+
+    return res;
 }
