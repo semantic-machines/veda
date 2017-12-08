@@ -1368,7 +1368,6 @@ v-fs:AttributiveSearchTemplate
   setTimeout(function () {
     var actions = $(".search-actions", template);
     var staticTop = actions.offset().top;
-    var staticWidth = actions.css("width");
     checkOffset(actions, staticTop);
     $(window).on("scroll", scrollHandler);
     template.one("remove", function () {

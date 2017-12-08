@@ -564,7 +564,6 @@ v-ui:StandardButtonsTemplate
   setTimeout(function () {
     var actions = template.closest(".actions");
     var staticTop = actions.offset().top;
-    var staticWidth = actions.css("width");
     checkOffset(actions, staticTop);
     $(window).on("scroll", scrollHandler);
     template.one("remove", function () {
