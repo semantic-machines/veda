@@ -2,12 +2,11 @@ module veda.storage.lmdb.lmdb_acl;
 
 private
 {
-    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
+    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string;
     import veda.common.type, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_header, veda.core.common.context;
     import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
-    import veda.core.util.utils, veda.common.logger;
+    import veda.core.util.utils, veda.common.logger, veda.util.container, veda.util.module_info, veda.storage.authorization;
     import veda.storage.lmdb.lmdb_driver, veda.storage.right_set, veda.storage.common;
-    import veda.util.container, veda.util.module_info, veda.storage.authorization;
 }
 
 const string acl_indexes_db_path = "./data/acl-indexes";
@@ -35,10 +34,6 @@ class LmdbAuthorization : Authorization
         lmdb_driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 
-
-
-////////////////////////////////// DB interaction part
-
     override void reopen()
     {
         lmdb_driver.reopen();
@@ -56,11 +51,6 @@ class LmdbAuthorization : Authorization
     {
         lmdb_driver.close();
     }
-
-//    override void flush(int force)
-//    {
-//        lmdb_driver.flush(force);
-//    }
 
     override string get_in_current_transaction(string in_key)
     {
