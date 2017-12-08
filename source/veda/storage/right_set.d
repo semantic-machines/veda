@@ -1,9 +1,7 @@
 module veda.storage.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
-private import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.log_msg,
-               veda.core.common.know_predicates;
-private import veda.core.util.utils, veda.common.logger, veda.storage.common;
+private import veda.common.type, veda.core.common.know_predicates, veda.common.logger;
 
 public static string membership_prefix = "M";
 public static string permission_prefix = "P";
@@ -17,7 +15,7 @@ struct Right
 
     void   toString(scope void delegate(const(char)[]) sink) const
     {
-        string aaa = access_to_pretty_string(access);
+        string aaa = access_to_pretty_string1(access);
 
         sink("(" ~ text(id) ~ ", " ~ aaa ~ ")");
 //        sink("(" ~ text(id) ~ ", " ~ to!string(access, 16) ~ ", " ~ text(is_deleted) ~ ")");
@@ -140,3 +138,29 @@ Access[] getAccessListFromByte(ubyte permission)
 
     return res;
 }
+
+string access_to_pretty_string1(const ubyte src)
+{
+    string res = "";
+
+    if (src & Access.can_create)
+        res ~= "C ";
+    if (src & Access.can_read)
+        res ~= "R ";
+    if (src & Access.can_update)
+        res ~= "U ";
+    if (src & Access.can_delete)
+        res ~= "D ";
+    if (src & Access.cant_create)
+        res ~= "!C ";
+    if (src & Access.cant_read)
+        res ~= "!R ";
+    if (src & Access.cant_update)
+        res ~= "!U ";
+    if (src & Access.cant_delete)
+        res ~= "!D ";
+
+    return res;
+}
+
+
