@@ -519,7 +519,7 @@ v-ui:StandardButtonsTemplate
   isDraftHandler("v-s:isDraft");
   //# sourceURL=v-ui:StandardButtonsTemplate_pre
 </script>
-<div class="actions standard-actions">
+<div class="standard-actions">
   <style>
     .standard-actions {
       margin: 0 3px;
@@ -551,6 +551,30 @@ v-ui:StandardButtonsTemplate
   </div>
 </div>
 <script>
+  // Make position fixed for buttons bar that doesn't fit the window
+  function checkOffset(actions, staticTop) {
+    var windowHeight = window.innerHeight;
+    var windowTop = window.scrollY;
+    if ( (staticTop) < windowTop || (staticTop) >= (windowHeight + windowTop) )  {
+      actions.addClass("actions-fixed");
+    } else {
+      actions.removeClass("actions-fixed");
+    }
+  }
+  setTimeout(function () {
+    var actions = template.closest(".actions");
+    var staticTop = actions.offset().top;
+    var staticWidth = actions.css("width");
+    checkOffset(actions, staticTop);
+    $(window).on("scroll", scrollHandler);
+    template.one("remove", function () {
+      $(window).off("scroll", scrollHandler);
+    });
+    function scrollHandler () {
+      checkOffset(actions, staticTop);
+    }
+  }, 500);
+
   // Respect validation state of parent template
   var closest = template.parent().closest("[resource='" + individual.id + "']");
   closest.on("internal-validated", function (e) {
@@ -2670,7 +2694,7 @@ v-ui:generic
   </div>
   <br>
   <br>
-  <div class="actions actions-fixed clearfix">
+  <div class="actions clearfix">
     <div about="@" class="pull-left" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></div>
     <div class="pull-left">
       <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>

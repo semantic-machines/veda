@@ -1353,16 +1353,32 @@ v-fs:AttributiveSearchTemplate
   </div>
 </div>
 <script>
+  // Make position fixed for buttons bar that doesn't fit the window
+  function checkOffset(actions, staticTop) {
+    var windowHeight = window.innerHeight;
+    var windowTop = window.scrollY;
+    if ( (staticTop) < windowTop || (staticTop) >= (windowHeight + windowTop) )  {
+      actions.find("br").addClass("hidden");
+      actions.addClass("actions-fixed");
+    } else {
+      actions.find("br").removeClass("hidden");
+      actions.removeClass("actions-fixed");
+    }
+  }
   setTimeout(function () {
     var actions = $(".search-actions", template);
-    var actionsOffsetTop = actions.offset().top;
-    var windowHeight = $(window).height();
-    console.log(actions, "actionsOffsetTop", actionsOffsetTop, "windowHeight", windowHeight);
-    if (actionsOffsetTop >= windowHeight) {
-      actions.addClass("actions-fixed");
-      actions.find("br").remove();
+    var staticTop = actions.offset().top;
+    var staticWidth = actions.css("width");
+    checkOffset(actions, staticTop);
+    $(window).on("scroll", scrollHandler);
+    template.one("remove", function () {
+      $(window).off("scroll", scrollHandler);
+    });
+    function scrollHandler () {
+      checkOffset(actions, staticTop);
     }
   }, 500);
+
   var self = individual,
       searchBlankContainer = $("#search-form", template),
       searchResultContainer = $("#search-result", template),
@@ -1968,7 +1984,7 @@ v-fs:FulltextBlankTemplate
     if (e.which === 13) {
       var value = this.value;
       individual.set("*", [value]);
-      container.siblings(".search-button").click();
+      container.siblings(".search-actions").find(".search-button").click();
     }
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
