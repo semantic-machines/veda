@@ -1,0 +1,33 @@
+{
+	"name": "veda-authorization",
+	"description": "veda-authorization",
+        "versions": ["isModule", "std_socket"],
+        "license": "LGPL v3",
+        "dependencies": {
+                "backtrace-d": "0.1.2",
+                "msgpack-d": "1.0.0-beta.6"
+        },
+	"sourcePaths":[
+	    "../../veda/authorization"
+	],
+        "sourceFiles":[
+        "../../lib64/liblmdb.a",
+        "../../veda/util/container.d",
+        "../../veda/util/module_info.d",
+        "../../veda/storage/right_set.d",
+	"../../veda/storage/authorization.d",
+        "../../veda/storage/common.d",
+        "../../veda/common/logger.d",
+        "../../veda/common/type.d",
+        "../../veda/util/properd.d",
+        "../../veda/core/common/know_predicates.d",
+        "../../veda/core/common/define.d"
+	],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	}
+	]
+}
