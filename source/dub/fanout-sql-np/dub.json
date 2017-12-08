@@ -36,6 +36,7 @@
 	    "../../veda/fanout/to_sql.d",
     	    "../../veda/storage/right_set.d",
 	    "../../veda/storage/common.d",
+            "../../veda/storage/authorization.d",
             "../../veda/storage/storage.d",
 	    "../../veda/storage/binlog_tools.d"
 	],

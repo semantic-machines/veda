@@ -20,6 +20,7 @@
             "../../veda/util/tests_tools.d",
             "../../veda/bind/libraptor_header.d",
     	    "../../veda/storage/right_set.d",
+	    "../../veda/storage/authorization.d",
             "../../veda/storage/common.d",
             "../../veda/storage/storage.d",
             "../../veda/storage/binlog_tools.d"
