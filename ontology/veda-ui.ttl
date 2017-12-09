@@ -429,6 +429,184 @@ v-ui:SystemPropertiesTemplate
 </div>
 """ ;
 .
+v-ui:StandardButtonsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с набором стандартных кнопок"@ru ;
+  rdfs:label "Template with standard buttons"@en ;
+  v-ui:template """
+<script>
+  // var allButtons = "send edit save cancel delete destroy journal journal-dms task";
+  var defaultButtons = "send edit save cancel delete journal task";
+  var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
+  var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
+  var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
+  enabledButtons.forEach(function (id) {
+    if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
+    if ( !canUpdate && (id === "delete") ) { return; }
+    $("#" + id, template).removeClass("rm");
+  });
+  $(".rm", template).remove();
+  template.on("click", "#edit, #save, #cancel, #delete, #destroy", function (e) {
+    e.preventDefault();
+    var action = this.id;
+    if (action === "delete" || action === "destroy") {
+      var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+      if ( !confirm(warning) ) { return; }
+    }
+    template.parent().closest("[resource='" + individual.id + "']").trigger(action);
+  });
+  $("#journal", template).on("click", function (e) {
+    e.preventDefault();
+    var journal_uri = individual.id + "j",
+        journal = new veda.IndividualModel(journal_uri);
+    if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
+      riot.route("#/" + journal_uri);
+    } else {
+      var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty")["rdfs:label"].join(" ");
+      alert(journalEmpty);
+    }
+  });
+  $("#journal-dms", template).on("click", function (e) {
+    var uri = individual.id.substring(2,100);
+    var journalDMS_url = (new veda.IndividualModel("cfg:JournalDMSUrl"))["rdf:value"][0];
+    if (journalDMS_url) {
+      window.open(journalDMS_url + uri, "journal-dms");
+    }
+  });
+  $("#send", template).on("click", function () { veda.Util.send(individual, template); });
+  $("#createReport", template).on("click", function () { veda.Util.createReport(individual); });
+  $("#showRights", template).on("click", function () { veda.Util.showRights(individual); });
+
+  // Standard tasks
+  template.on("click", "ul#standard-tasks a", function (e) {
+    e.preventDefault();
+    var task = $(this).attr("about");
+    if (task === "v-s:Question") {
+      veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true);
+    } else if (task === "v-s:Instruction") {
+      veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true);
+    } else if (task === "v-s:Introduction") {
+      veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true);
+    } else if (task === "v-s:Distribution") {
+      veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true);
+    } else if (task === "v-s:Coordination") {
+      veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true);
+    }
+  });
+
+  // Standart buttons labels change for drafts
+  var Edit = new veda.IndividualModel("v-s:Edit")["rdfs:label"].join(" ");
+  var ContinueEdit = new veda.IndividualModel("v-s:ContinueEdit")["rdfs:label"].join(" ");
+  var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft")["rdfs:label"].join(" ");
+  var Cancel = new veda.IndividualModel("v-s:Cancel")["rdfs:label"].join(" ");
+  function isDraftHandler() {
+    if ( individual.hasValue("v-s:isDraft", true) ) {
+      //Rename "Edit" -> "Continue edit"
+      $(".action#edit", template).text(ContinueEdit);
+      //Rename "Cancel" -> "Delete draft"
+      $(".action#cancel", template).text(DeleteDraft);
+    } else {
+      //Rename "Continue edit" -> Edit"
+      $(".action#edit", template).text(Edit);
+      //Rename "Delete draft" -> "Cancel"
+      $(".action#cancel", template).text(Cancel);
+    }
+  }
+  individual.on("v-s:isDraft", isDraftHandler);
+  template.one("remove", function () {
+    individual.off("v-s:isDraft", isDraftHandler);
+  });
+  isDraftHandler("v-s:isDraft");
+  //# sourceURL=v-ui:StandardButtonsTemplate_pre
+</script>
+<div class="standard-actions">
+  <style>
+    .standard-actions {
+      margin: 0 3px;
+    }
+    .standard-actions:first-child {
+      margin-left: 0px;
+    }
+  </style>
+  <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
+  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"/>
+  <div class="rm action btn-group dropup view -edit -search" id="task">
+    <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
+      <span about="v-s:SendTask" property="rdfs:label"> </span>
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" id="standard-tasks">
+      <li><a href="#" about="v-s:Question" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Instruction" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Introduction" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Distribution" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Coordination" property="rdfs:label"></a></li>
+    </ul>
+  </div>
+</div>
+<script>
+  // Make position fixed for buttons bar that doesn't fit the window
+  function checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder) {
+    var mainTop = main.offset().top;
+    var mainHeight = main.height();
+    var windowHeight = window.innerHeight;
+    var windowTop = window.scrollY;
+    var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
+    var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
+    if ( !actions_inside_viewport && main_inside_viewport )  {
+      if ( !actions.hasClass("actions-fixed") ) {
+        placeholder.insertBefore(actions);
+        actions.addClass("actions-fixed");
+      }
+    } else {
+      if ( actions.hasClass("actions-fixed") ) {
+         placeholder.remove();
+        actions.removeClass("actions-fixed");
+      }
+    }
+  }
+  setTimeout(function () {
+    var main = template.parent().closest("[resource='" + individual.id + "']");
+    var actions = template.closest(".actions");
+    if (!actions.length) { return; }
+    var actionsStaticTop = actions.offset().top;
+    var actionsStaticHeight = actions.height();
+    var placeholder = $("<div>&nbsp;</div>").css("height", actionsStaticHeight);
+    checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+    $(window).on("scroll", scrollHandler);
+    template.one("remove", function () {
+      $(window).off("scroll", scrollHandler);
+    });
+    function scrollHandler () {
+      checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+    }
+  }, 500);
+
+  // Respect validation state of parent template
+  var closest = template.parent().closest("[resource='" + individual.id + "']");
+  closest.on("internal-validated", function (e) {
+    var validation = $(this).data("validation");
+    if (validation.state) {
+      $(".action#save", template).removeAttr("disabled");
+      $(".action#send", template).removeAttr("disabled");
+      $(".action#task-button", template).removeAttr("disabled");
+    } else {
+      $(".action#save", template).attr("disabled", "disabled");
+      $(".action#send", template).attr("disabled", "disabled");
+      $(".action#task-button", template).attr("disabled", "disabled");
+    }
+    e.stopPropagation();
+  });
+  //# sourceURL=v-ui:StandardButtonsTemplate_post
+</script>
+""" ;
+.
 v-ui:VersionTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Version"@ru ;
@@ -680,10 +858,8 @@ v-ui:LinkTemplateForGreenButton
           <small about="v-s:mutualMembership" property="rdfs:label"></small>
         </label>
       </i>
-      <div class="actions clearfix">
-        <button type="submit" class="action btn btn-success -view edit -search" id="save">Ok</button>
-        <button type="button" class="action btn btn-default -view edit -search" id="cancel" property="rdfs:label" about="v-s:Cancel"></button>
-        <button type="button" class="action btn btn-link view edit search pull-right" id="delete" property="rdfs:label" about="v-s:Delete"></button>
+      <div class="actions">
+        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel delete"></div>
       </div>
     </div>
   </div>
@@ -1059,10 +1235,9 @@ v-ui:SavedSearchTemplate
     <em about="v-s:query" property="rdfs:label"></em>
     <div property="v-s:query"></div>
     <br/>
-    <button type="button" class="action btn btn-sm btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-sm btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-sm btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-sm btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <div class="actions">
+      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    </div>
   </div>
   """ ;
 .
@@ -1287,10 +1462,7 @@ v-ui:TestUITemplate
   <veda-control rel="v-ui:testFile" data-type="file" class="-view edit -search"></veda-control>
 
   <div class="actions">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
 </div>
   """ ;
@@ -1421,8 +1593,8 @@ v-ui:FileTemplateWithComment2
   </div>
 
   <!--Remove-->
-  <div class="panel-footer">
-    <button class="action btn btn-success" id="save">Save</button>
+  <div class="actions panel-footer">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save"></div>
   </div>
   <!--/Remove-->
 
@@ -2204,11 +2376,8 @@ td:PersonTemplate1
     </div>
   </div>
   <br>
-  <button class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label" />
-  <button class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label" />
-  <button class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label" />
-  <button class="action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label" />
-  <!--button class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/-->
+  <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+  <br>
   <div about="@" data-template="v-ui:LinkTemplate" data-embedded="true"></div>
   <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
@@ -2262,11 +2431,8 @@ td:AppointmentTemplate1
         </div>
       </div>
     </div>
-    <!--div class="panel-footer">
-      <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label">Редактировать</button>
-      <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label">Сохранить</button>
-      <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label">Отмена</button>
-      <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label">Удалить</button>
+    <!--div class="actions panel-footer">
+      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
     </div-->
   </div>
   """ ;
@@ -2291,9 +2457,8 @@ v-ui:ttl
   v-ui:template """
 <div class="container sheet">
   <pre style="border:none;background-color:#fff;"></pre>
-  <div class="pull-left">
-    <button type="button" class="action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-danger view -edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  <div class="actions pull-left">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete destroy"></div>
   </div>
   <div class="pull-right">
     <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
@@ -2327,12 +2492,8 @@ v-ui:json
     <a id="json" class="disabled btn btn-default" href="#/@//v-ui:json">json</a>
     <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
-  <div class="pull-left">
-    <button id="edit" class="btn btn-primary" about="v-s:Edit" property="rdfs:label"></button>
-    <button id="save" class="hidden btn btn-success" about="v-s:Save" property="rdfs:label"></button>
-    <button id="cancel" class="hidden btn btn-default" about="v-s:Cancel" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-link view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-danger view -edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  <div class="actions pull-left">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
 <script>
@@ -2546,29 +2707,22 @@ v-ui:generic
   </div>
   <br>
   <br>
-  <div class="actions pull-left">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-default view -edit -search" id="journal" about="v-s:Journal" property="rdfs:label"></button>
-    <div class="btn-group dropup">
-      <button type="button" class="action btn btn-warning dropdown-toggle view edit -search -draft -version" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span about="v-s:Send" property="rdfs:label"></span>
-        <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" id="standard-tasks"></ul>
+  <div class="actions clearfix">
+    <div about="@" class="pull-left" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></div>
+    <div class="pull-left">
+      <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+      <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+      <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
+      <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+      <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
     </div>
-    <button type="button" class="action btn btn-danger view -edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
-  </div>
-  <div class="pull-right">
-    <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
-    <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
-    <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
-    <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
 </div>
+<script>
+  $("#rightsOrigin.action").on("click", function () {
+    veda.Util.showRights(individual);
+  });
+</script>
   """ ;
 .
 
@@ -2622,7 +2776,6 @@ td:AccountTemplate1
       </div>
     </div>
   </div>
-  <!--button type="submit" class="action btn btn-success -view edit -search" id="save">Сохранить</button-->
 </div>
   """ ;
 .
@@ -2655,11 +2808,8 @@ td:PreferencesTemplate1
         <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
       </div>
     </div>
-    <!--div class="panel-footer">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit">Редактировать</button>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save">Сохранить</button>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel">Отмена</button>
-    <button type="button" class="action btn btn-link view edit -search" id="delete">Удалить</button>
+    <!--div class="actions panel-footer">
+      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
     </div-->
   </div>
   """ ;

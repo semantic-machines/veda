@@ -297,12 +297,8 @@ v-ui:ClassClassTemplate
     </div>
   </div>
   <hr>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
 <script>
@@ -432,12 +428,8 @@ v-ui:PropertyClassTemplate
     </div>
   </div>
   <hr>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -557,12 +549,8 @@ v-ui:PropertySpecificationTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -717,12 +705,8 @@ v-ui:DatatypePropertySpecificationTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -926,12 +910,8 @@ v-ui:ObjectPropertySpecificationTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -978,12 +958,8 @@ v-ui:ClassTemplateTemplate
   <br>
   <veda-control property="v-ui:template" data-type="source"></veda-control>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -1002,12 +978,8 @@ v-ui:ClassModelTemplate
   <br>
   <veda-control property="v-s:script" data-type="source"></veda-control>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -1106,12 +1078,8 @@ v-ui:EventTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -1164,9 +1132,8 @@ v-ui:ModuleTemplate
     </div>
   </div> -->
   <hr>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-default view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="cancel delete"></div>
   </div>
 </div>
 <script>
@@ -1241,12 +1208,8 @@ v-ui:GroupTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -1329,12 +1292,8 @@ v-ui:PermissionStatementTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;
@@ -1417,12 +1376,8 @@ v-ui:MembershipTemplate
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-    <button type="button" class="pull-right action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
   </div>
 </div>
   """ ;

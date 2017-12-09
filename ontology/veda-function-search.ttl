@@ -434,10 +434,8 @@ v-fs:FulltextRequestTemplate
       <p property="rdfs:label" class="view -edit -search"></p>
       <veda-control id="query" data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
       <br>
-      <div>
-        <button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="submit" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
-        <button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
+      <div class="actions">
+        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></div>
       </div>
     </div>
   </div>
@@ -743,10 +741,8 @@ v-fs:AttributiveRequestTemplate
       <p property="rdfs:label" class="view -edit -search"></p>
       <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
       <br>
-      <div>
-        <button type="button" class="action btn btn-primary view -edit" id="edit" about="v-s:Edit" property="rdfs:label"/>
-        <button type="submit" class="action btn btn-success -view edit" id="save" about="v-s:Save" property="rdfs:label"/>
-        <button type="button" class="action btn btn-link view -edit" id="delete" about="v-s:Delete" property="rdfs:label"/>
+      <div class="actions">
+        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></div>
       </div>
     </div>
   </div>
@@ -1292,31 +1288,31 @@ v-fs:AttributiveSearchTemplate
     <div class="ribbon-wrapper top-left">
       <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
     </div>
-    <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
     <div id="search-form"></div>
-    <br>
-    <br>
-    <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-    <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
-    <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
-    <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
-    <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+    <div class="search-actions">
+      <br>
+      <br>
+      <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
+      <!--button class="btn btn-link clear-button" about="v-s:Clear" property="rdfs:label"></button-->
+      <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
+      <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
+      <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
 
-    <div class="dropup pull-right set-columns-wrapper">
-      <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span about="v-fs:SetColumns" property="rdfs:label"></span>
-        <span class="caret"></span>
-      </button>
-      <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
-        <div class="checkbox">
-          <label>
-            <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
-          </label>
+      <div class="dropup pull-right set-columns-wrapper">
+        <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span about="v-fs:SetColumns" property="rdfs:label"></span>
+          <span class="caret"></span>
+        </button>
+        <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
+          <div class="checkbox">
+            <label>
+              <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
+            </label>
+          </div>
         </div>
       </div>
+      <br>
     </div>
-
-    <br>
   </div>
   <div id="results" class="hidden">
     <div class="result-header">
@@ -1355,6 +1351,45 @@ v-fs:AttributiveSearchTemplate
   </div>
 </div>
 <script>
+  // Make position fixed for buttons bar that doesn't fit the window
+  function checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder) {
+    var mainTop = main.offset().top;
+    var mainHeight = main.height();
+    var windowHeight = window.innerHeight;
+    var windowTop = window.scrollY;
+    var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
+    var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
+    if ( !actions_inside_viewport && main_inside_viewport )  {
+      if ( !actions.hasClass("actions-fixed") ) {
+        placeholder.insertBefore(actions);
+        actions.find("br").addClass("hidden");
+        actions.addClass("actions-fixed");
+      }
+    } else {
+      if ( actions.hasClass("actions-fixed") ) {
+        placeholder.remove();
+        actions.find("br").removeClass("hidden");
+        actions.removeClass("actions-fixed");
+      }
+    }
+  }
+  setTimeout(function () {
+    var main = template;
+    var actions = $(".search-actions", template);
+    if (!actions.length) { return; }
+    var actionsStaticTop = actions.offset().top;
+    var actionsStaticHeight = actions.height();
+    var placeholder = $("<div>&nbsp;</div>").css("height", actionsStaticHeight);
+    checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+    $(window).on("scroll", scrollHandler);
+    template.one("remove", function () {
+      $(window).off("scroll", scrollHandler);
+    });
+    function scrollHandler () {
+      checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+    }
+  }, 500);
+
   var self = individual,
       searchBlankContainer = $("#search-form", template),
       searchResultContainer = $("#search-result", template),
@@ -1956,12 +1991,11 @@ v-fs:FulltextBlankTemplate
   </div>
 </div>
 <script>
-  container.siblings(".search-button.pull-right").remove();
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;
       individual.set("*", [value]);
-      container.siblings(".search-button").click();
+      container.siblings(".search-actions").find(".search-button").click();
     }
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
@@ -2150,7 +2184,6 @@ v-fs:AttributiveSearchInlineTemplate
     }
   </style>
   <div id="params">
-    <button class="btn btn-primary search-button pull-right" about="v-fs:Find" property="rdfs:label"></button>
     <div id="search-form"></div>
     <br>
     <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>

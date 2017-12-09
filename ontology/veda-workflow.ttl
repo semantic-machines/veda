@@ -2809,8 +2809,7 @@ v-wf:TaskTemplateAsModal
 <!-- BUTTONS -->
   <hr class="margin-sm">
   <div class="actions">
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></div>
   </div>
 </div>
 <script>
@@ -3004,11 +3003,8 @@ rdf:type v-ui:ClassTemplate ;
     <veda-control data-type="link" rel="v-wf:transformRule" class="view edit search create"></veda-control>
   </div>
   <hr style="margin: 10px 0px">
-  <div class="actions view edit pull-left">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  <div class="actions view edit -search">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
 </div>
 """
@@ -3084,11 +3080,8 @@ v-wf:RuleTemplate
     </div>
   </div>
   <hr style="margin: 10px 0px">
-  <div class="actions view edit pull-left">
-    <button type="button" class="action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button type="submit" class="action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-    <button type="button" class="action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  <div class="actions view edit -search">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
 </div>
 <script>
