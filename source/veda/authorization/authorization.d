@@ -3,10 +3,9 @@ module veda.authorization.auth;
  * authorization module
  */
 
-import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
+import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer;
-import core.thread, core.atomic;
-import veda.common.logger;
+import veda.common.logger, veda.storage.authorization, veda.storage.lmdb.lmdb_acl, veda.storage.common;
 
 static this()
 {
@@ -28,30 +27,39 @@ extern (C) void handleTermination3(int _signal)
 
 class HandlerThread : Thread
 {
-    Socket                           socket;
+    private Socket        socket;
+    private Authorization acl_indexes;
+    private Logger        log;
 
 public:
     this(Socket socket)
     {
-        this.socket  = socket;
+        this.socket = socket;
         super(&run);
     }
 
 private:
     void run()
     {
+        stderr.writefln("accept connection from %s", socket.remoteAddress());
+
+        log = new Logger("veda-authorization", "log", "");
+
+        if (acl_indexes is null)
+            acl_indexes = new LmdbAuthorization(DBMode.R, "acl", this.log);
+
         try
         {
-            string       request = _recv(socket);
+            string   request = _recv(socket);
 
-            string[]     els = request.split('�');
-            if (els.length == 8)
+            string[] els = request.split('�');
+            if (els.length == 2)
             {
                 //context.get_logger.trace ("query: %s", els);
 
-                string _user_uri    = els[ 0 ];
-                string _uri         = els[ 1 ];
-	    }
+                string _user_uri = els[ 0 ];
+                string _uri      = els[ 1 ];
+            }
 
             string response = "F";
             _send(socket, response);
@@ -69,15 +77,20 @@ private:
 
 private string _recv(Socket socket)
 {
-    ubyte[] buf          = new ubyte[ 4 ];
-    long    request_size = 0;
+    ubyte[] buf          = new ubyte[ 7 ];
+    ulong   request_size = 0;
     socket.receive(buf);
-    for (int i = 0; i < 4; i++)
-        request_size = (request_size << 8) + buf[ i ];
+    ubyte[] request;
 
-    ubyte[] request = new ubyte[ request_size ];
-    socket.receive(request);
-    stderr.writefln("@REQ [%s]", cast(string)request);
+    if (buf[ 0 ] == 'T' && buf[ 1 ] == 'P' && buf[ 2 ] == 'S')
+    {
+        for (int i = 3; i < 7; i++)
+            request_size = (request_size << 8) + buf[ i ];
+
+        request = new ubyte[ request_size ];
+        socket.receive(request);
+        stderr.writefln("@REQ [%s]", cast(string)request);
+    }
 
     return cast(string)request;
 }
@@ -101,26 +114,31 @@ void handle_request()
 {
 }
 
-Logger log;
+Logger    log;
 
-TcpSocket          listener;
+TcpSocket listener;
 
 void main()
 {
+    string host = "127.0.0.1";
+    ushort port = 11113;
+
     listener = new TcpSocket();
 
-    listener.bind(getAddress("localhost", 11112)[ 0 ]);
+    listener.bind(getAddress(host, port)[ 0 ]);
     listener.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, 1);
     listener.listen(65535);
 
     log = new Logger("veda-authorization", "log", "");
+
+    stderr.writefln("listen %s:%d", host, port);
 
     try
     {
         while (!f_listen_exit)
         {
             Socket socket = listener.accept();
-            auto   ht = new HandlerThread(socket);
+            auto   ht     = new HandlerThread(socket);
             ht.start();
         }
     }

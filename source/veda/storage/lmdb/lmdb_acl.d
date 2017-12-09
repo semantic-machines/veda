@@ -3,10 +3,9 @@ module veda.storage.lmdb.lmdb_acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string;
-    import veda.common.type, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_header, veda.core.common.context;
-    import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.log_msg, veda.common.type;
-    import veda.core.util.utils, veda.common.logger, veda.util.container, veda.util.module_info, veda.storage.authorization;
-    import veda.storage.lmdb.lmdb_driver, veda.storage.right_set, veda.storage.common;
+    import veda.common.type, veda.storage.lmdb.lmdb_header, veda.storage.lmdb.lmdb_driver, veda.core.common.define;
+    import veda.common.logger, veda.util.module_info, veda.storage.authorization;
+    import veda.storage.right_set, veda.storage.common;
 }
 
 const string acl_indexes_db_path = "./data/acl-indexes";
@@ -73,7 +72,7 @@ class LmdbAuthorization : Authorization
     override bool begin_transaction(bool is_check_for_reload)
     {
         if (is_check_for_reload)
-            acl_check_for_reload(&reopen);
+            acl_check_for_reload(&reopen, log);
 
         rc = mdb_txn_begin(lmdb_driver.env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
@@ -130,7 +129,7 @@ class LmdbAuthorization : Authorization
 ///////////////////////////
 
 private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
-private MInfo get_info(MODULE module_id)
+private MInfo get_info(MODULE module_id, Logger log)
 {
     ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
 
@@ -143,11 +142,11 @@ private MInfo get_info(MODULE module_id)
     return info;
 }
 
-int  _timeout                         = 10;
-long last_committed_op_id_acl_manager = 0;
-public bool acl_check_for_reload(void delegate() load)
+private int  _timeout                         = 10;
+private long last_committed_op_id_acl_manager = 0;
+private bool acl_check_for_reload(void delegate() load, Logger log)
 {
-    MInfo mi = get_info(MODULE.acl_preparer);
+    MInfo mi = get_info(MODULE.acl_preparer, log);
 
     //log.trace ("acl_check_for_reload #1, last_committed_op_id_acl_manager=%d, mi=%s", last_committed_op_id_acl_manager, mi);
     if (last_committed_op_id_acl_manager < mi.committed_op_id)
