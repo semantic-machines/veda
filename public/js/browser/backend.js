@@ -1,6 +1,8 @@
 // HTTP server functions
 veda.Module(function Backend(veda) { "use strict";
 
+  veda.Backend = {};
+
   // Check server health
   var notify = veda.Notify ? new veda.Notify() : function () {};
   var interval;
@@ -68,11 +70,9 @@ veda.Module(function Backend(veda) { "use strict";
   BackendError.prototype = Object.create(Error.prototype);
   BackendError.prototype.constructor = BackendError;
 
-  // Common server call function
-
-////////////////////////////////////// ASYNC + PROMISE
 
   // Common server call function
+
   function call_server(params) {
     var method = params.method,
         url = params.url,
@@ -94,7 +94,9 @@ veda.Module(function Backend(veda) { "use strict";
       if (method === "GET") {
         var params = [];
         for (var name in data) {
-          params.push(name + "=" + encodeURIComponent(data[name]));
+          if (typeof data[name] !== "undefined") {
+            params.push(name + "=" + encodeURIComponent(data[name]));
+          }
         }
         params = params.join("&");
         xhr.open(method, url + "?" + params, true);
@@ -110,7 +112,7 @@ veda.Module(function Backend(veda) { "use strict";
     });
   }
 
-  window.flush = function (module_id, wait_op_id) {
+  veda.Backend.flush = function flush(module_id, wait_op_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -124,7 +126,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.get_rights = function (ticket, uri) {
+  veda.Backend.get_rights = function get_rights(ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -138,7 +140,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.get_rights_origin = function (ticket, uri) {
+  veda.Backend.get_rights_origin = function get_rights_origin(ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -152,7 +154,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.get_membership = function (ticket, uri) {
+  veda.Backend.get_membership = function get_membership(ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -166,7 +168,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.authenticate = function (login, password) {
+  veda.Backend.authenticate = function authenticate(login, password) {
     if (login == "VedaNTLMFilter")
         login = "cfg:Guest";
     var arg = arguments[0];
@@ -182,7 +184,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.get_ticket_trusted = function (ticket, login) {
+  veda.Backend.get_ticket_trusted = function get_ticket_trusted(ticket, login) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -196,7 +198,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.is_ticket_valid = function (ticket) {
+  veda.Backend.is_ticket_valid = function is_ticket_valid(ticket) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -209,7 +211,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.get_operation_state = function (module_id, wait_op_id) {
+  veda.Backend.get_operation_state = function get_operation_state(module_id, wait_op_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -223,7 +225,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.wait_module = function (module_id, in_op_id) {
+  veda.Backend.wait_module = function wait_module(module_id, in_op_id) {
     var timeout = 1;
     var op_id_from_module;
     for (var i = 0; i < 100; i++) {
@@ -235,7 +237,7 @@ veda.Module(function Backend(veda) { "use strict";
     }
   }
 
-  window.restart = function (ticket) {
+  veda.Backend.restart = function restart(ticket) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -248,7 +250,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.backup = function (to_binlog) {
+  veda.Backend.backup = function backup(to_binlog) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -261,7 +263,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.count_individuals = function () {
+  veda.Backend.count_individuals = function count_individuals() {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -272,7 +274,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.set_trace = function (idx, state) {
+  veda.Backend.set_trace = function set_trace(idx, state) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -286,7 +288,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.query = function (ticket, query, sort, databases, reopen, top, limit, from) {
+  veda.Backend.query = function query(ticket, query, sort, databases, reopen, top, limit, from) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -295,18 +297,18 @@ veda.Module(function Backend(veda) { "use strict";
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : query,
-        "sort": (isObj ? arg.sort : sort) || null,
-        "databases" : (isObj ? arg.databases : databases) || null,
-        "reopen" : (isObj ? arg.reopen : reopen) || false,
-        "top" : (isObj ? arg.top : top) || 0,
-        "limit" : (isObj ? arg.limit : limit) || 1000,
-        "from"  : (isObj ? arg.from : from) || 0
+        "sort": isObj ? arg.sort : sort,
+        "databases" : isObj ? arg.databases : databases,
+        "reopen" : isObj ? arg.reopen : reopen,
+        "top" : isObj ? arg.top : top,
+        "limit" : isObj ? arg.limit : limit,
+        "from"  : isObj ? arg.from : from
       }
     };
     return call_server(params);
   }
 
-  window.get_individual = function (ticket, uri, reopen) {
+  veda.Backend.get_individual = function get_individual(ticket, uri, reopen) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -321,7 +323,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.get_individuals = function (ticket, uris) {
+  veda.Backend.get_individuals = function get_individuals(ticket, uris) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -337,7 +339,7 @@ veda.Module(function Backend(veda) { "use strict";
 
 //////////////////////////
 
-  window.remove_individual = function (ticket, uri, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.remove_individual = function remove_individual(ticket, uri, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -355,7 +357,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.put_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.put_individual = function put_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -373,7 +375,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.add_to_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.add_to_individual = function add_to_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -391,7 +393,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.set_in_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.set_in_individual = function set_in_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -409,7 +411,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.remove_from_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.remove_from_individual = function remove_from_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -427,7 +429,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.put_individuals = function (ticket, individuals, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.put_individuals = function put_individuals(ticket, individuals, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -447,7 +449,7 @@ veda.Module(function Backend(veda) { "use strict";
 
 /////////////////////////////////////////
 
-  window.get_property_value = function (ticket, uri, property_uri) {
+  veda.Backend.get_property_value = function get_property_value(ticket, uri, property_uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -462,7 +464,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   }
 
-  window.execute_script = function (script) {
+  veda.Backend.execute_script = function execute_script(script) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
