@@ -194,7 +194,7 @@ veda.Module(function (veda) { "use strict";
         this._.membership = new veda.IndividualModel({ cache: false });
         return Promise.resolve(this._.membership);
       }
-      return get_membership(veda.ticket, this.id).then(function (membershipJSON) {
+      return veda.Backend.get_membership(veda.ticket, this.id).then(function (membershipJSON) {
         self._.membership = new veda.IndividualModel({ uri: membershipJSON, cache: false });
         return self._.membership;
       }).catch(function  (error) {
@@ -218,7 +218,7 @@ veda.Module(function (veda) { "use strict";
         this._.rights["v-s:canDelete"] = [ true ];
         return Promise.resolve(this._.rights);
       }
-      return get_rights(veda.ticket, this.id).then(function (rightsJSON) {
+      return veda.Backend.get_rights(veda.ticket, this.id).then(function (rightsJSON) {
         self._.rights = new veda.IndividualModel( rightsJSON, false );
         return self._.rights;
       }).catch(function  (error) {
@@ -235,7 +235,7 @@ veda.Module(function (veda) { "use strict";
     get: function () {
       var self = this;
       if (this._.rightsOrigin) { return Promise.resolve(this._.rights); }
-      return get_rights_origin(veda.ticket, this.id).then(function (rightsOriginArr) {
+      return veda.Backend.get_rights_origin(veda.ticket, this.id).then(function (rightsOriginArr) {
         self._.rightsOrigin = rightsOriginArr.map(function (item) {
           return new veda.IndividualModel( item, false );
         });
@@ -264,7 +264,7 @@ veda.Module(function (veda) { "use strict";
         this.trigger("afterLoad", veda.cache[uri]);
         return Promise.resolve( veda.cache[uri] );
       }
-      return get_individual(veda.ticket, uri).then(function (individualJson) {
+      return veda.Backend.get_individual(veda.ticket, uri).then(function (individualJson) {
         self.isNew(false);
         self.isSync(true);
         self.properties = individualJson;
@@ -348,7 +348,7 @@ veda.Module(function (veda) { "use strict";
       return acc;
     }, this.properties);
 
-    return put_individual(veda.ticket, this.properties).then(function () {
+    return veda.Backend.put_individual(veda.ticket, this.properties).then(function () {
       self.isNew(false);
       self.isSync(true);
       self.trigger("afterSave");
@@ -386,10 +386,7 @@ veda.Module(function (veda) { "use strict";
       var drafts = new veda.DraftsModel();
       drafts.remove(self.id);
     }
-    return get_individual({
-      ticket: veda.ticket,
-      uri: self.id
-    }).then(function (original) {
+    return veda.Backend.get_individual(veda.ticket, self.id).then(function (original) {
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
       var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
@@ -445,7 +442,7 @@ veda.Module(function (veda) { "use strict";
       this.trigger("afterRemove");
       return Promise.resolve(this);
     }
-    return remove_individual(veda.ticket, this.id).then(function () {
+    return veda.Backend.remove_individual(veda.ticket, this.id).then(function () {
       self.trigger("afterRemove");
       return self;
     }).catch(function (error) {
@@ -718,7 +715,7 @@ veda.Module(function (veda) { "use strict";
     });
     uris = veda.Util.unique( veda.Util.flatten(uris, false) );
     for (var i = 0; i < depth && uris.length; i++) {
-      var result = get_individuals(veda.ticket, uris),
+      var result = veda.Backend.get_individuals(veda.ticket, uris),
         res_map = result.map(function (value) {
           var obj;
           if (!veda.cache[ value["@"] ]) {
