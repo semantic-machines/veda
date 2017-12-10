@@ -31,9 +31,10 @@ public abstract class Storage
         if (ticket is null)
         {
             printPrettyTrace(stderr);
+            return false;
         }
 
-        ubyte res = get_acl_indexes().authorize(uri, ticket, request_acess, is_check_for_reload, null, null, null);
+        ubyte res = get_acl_indexes().authorize(uri, ticket.user_uri, request_acess, is_check_for_reload, null, null, null);
 
         return request_acess == res;
     }

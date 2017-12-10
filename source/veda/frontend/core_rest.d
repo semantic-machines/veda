@@ -1097,7 +1097,7 @@ string get_individual_as_binobj(Storage storage, Ticket *ticket, string uri, out
             return res;
         }
 
-        if (storage.get_acl_indexes().authorize(uri, ticket, Access.can_read, true, null, null, null) != Access.can_read)
+        if (storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) != Access.can_read)
         {
             if (is_trace)
                 log.trace("get_individual as binobj, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
