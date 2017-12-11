@@ -44,24 +44,28 @@ veda.Module(function (veda) { "use strict";
     };
   }
 
-  proto.getClassSpecifications = function getSpecs (_class_uri) {
+  proto.getClassSpecifications = function (_class_uri) {
     var classTree = this.classTree;
-    var _class = classTree[_class_uri];
-    var specs;
-    if (_class) {
-      specs = _class.specifications;
-      var superSpecsArray = _class.superClasses.map( getSpecs );
-      superSpecsArray.map( function (superSpecs) {
-        for (var property_uri in superSpecs) {
-          if ( !specs[property_uri] ) {
-            specs[property_uri] = superSpecs[property_uri];
+    return veda.Util.unique( getSpecs(_class_uri) );
+
+    function getSpecs (_class_uri) {
+      var _class = classTree[_class_uri];
+      var specs;
+      if (_class) {
+        specs = _class.specifications;
+        var superSpecsArray = _class.superClasses.map( getSpecs );
+        superSpecsArray.map( function (superSpecs) {
+          for (var property_uri in superSpecs) {
+            if ( !specs[property_uri] ) {
+              specs[property_uri] = superSpecs[property_uri];
+            }
           }
-        }
-      });
-    } else {
-      specs = getSpecs( "rdfs:Resource" );
+        });
+      } else {
+        specs = getSpecs( "rdfs:Resource" );
+      }
+      return specs;
     }
-    return specs;
   };
 
   // Get ontology from server
