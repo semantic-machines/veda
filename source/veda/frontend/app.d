@@ -212,28 +212,11 @@ shared static this()
 
     //count_thread = cast(ushort)node.getFirstInteger("v-s:count_thread", 4);
 
-    if (opt_http_port == 0)
-    {
-        Resources listeners = node.resources.get("v-s:listener", Resources.init);
-        foreach (listener_uri; listeners)
-        {
-            Individual connection = get_individual(&sticket, listener_uri.uri);
-
-            Resource   transport = connection.getFirstResource("v-s:transport");
-            if (transport != Resource.init)
-            {
-                if (transport.data() == "http")
-                {
-                    http_port         = cast(ushort)connection.getFirstInteger("v-s:port", 8080);
-                    is_exist_listener = start_http_listener(context, http_port);
-                }
-            }
-        }
-    }
-    else
-    {
+	if (opt_http_port == 0)
+		opt_http_port = 8080;
+		
         is_exist_listener = start_http_listener(context, opt_http_port);
-    }
+
 }
 
 bool start_http_listener(Context context, ushort http_port)

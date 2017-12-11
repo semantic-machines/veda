@@ -174,22 +174,15 @@ void main(string[] args)
         writefln("use options http_ports=%s", webserver_ports);
     }
 
-    string[ string ] properties;
-    properties = readProperties("./veda.properties");
-    string lmdb_mode = properties.as!(string)("lmdb_mode");
-
     string[ string ] env;
     int      exit_code;
 
     string[] modules;
 					  
-    if (lmdb_mode == "as_server")
-    {
-    	writefln("THIS CONFIGURATION USE LMDB_SERVER, lmdb_mode=%s", lmdb_mode);
         modules ~= "veda";
         modules ~= "veda-ccus";
         //modules ~= "veda-ft-query";
-        modules ~= "veda-lmdb-server";
+        modules ~= "veda-authorization";
         modules ~= "veda-mstorage";
         modules ~= "veda-ttlreader";
         modules ~= "veda-fanout-email";
@@ -199,23 +192,6 @@ void main(string[] args)
         modules ~= "veda-scripts-lp";
         modules ~= "veda-ft-indexer";
         modules ~= "veda-ltr-scripts";
-    }
-    else
-    {
-    	writefln("THIS CONFIGURATION USE LMDB_LIBRARY, lmdb_mode=%s", lmdb_mode);
-        modules ~= "veda";
-        modules ~= "veda-ccus";
-        //modules ~= "veda-ft-query";
-        modules ~= "veda-mstorage";
-        modules ~= "veda-ttlreader";
-        modules ~= "veda-fanout-email";
-        modules ~= "veda-fanout-sql-np";
-        modules ~= "veda-fanout-sql-lp";
-        modules ~= "veda-scripts-main";
-        modules ~= "veda-scripts-lp";
-        modules ~= "veda-ft-indexer";
-        modules ~= "veda-ltr-scripts";
-    }
 
 
     bool     is_found_modules = false;
