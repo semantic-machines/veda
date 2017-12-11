@@ -73,13 +73,7 @@ veda.Module(function (veda) { "use strict";
     return self.load().then( function () {
       if ( self.hasValue("v-ui:hasPreferences") ) {
         self.preferences = self["v-ui:hasPreferences"][0];
-        self.preferences.load().then(function () {
-          if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
-            self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages[self.defaultLanguage] ];
-            self.preferences["v-ui:displayedElements"] = [ 10 ];
-            self.preferences.save();
-          }
-        });
+        return self.preferences.load();
       } else {
         var preferences_id = self.id + "_pref";
         self.preferences = new veda.IndividualModel(preferences_id);
@@ -88,8 +82,15 @@ veda.Module(function (veda) { "use strict";
         self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
         self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages["RU"] ];
         self.preferences["v-ui:displayedElements"] = [ 10 ];
-        self.preferences.save();
         self["v-ui:hasPreferences"] = [ self.preferences ];
+        return self.preferences.save();
+      }
+    }).then(function () {
+
+      if ( !self.preferences.hasValue("v-ui:preferredLanguage") || !self.preferences.hasValue("v-ui:displayedElements")) {
+        self.preferences["v-ui:preferredLanguage"] = [ self.availableLanguages[self.defaultLanguage] ];
+        self.preferences["v-ui:displayedElements"] = [ 10 ];
+        self.preferences.save();
       }
 
       self.language = self.preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
@@ -101,6 +102,7 @@ veda.Module(function (veda) { "use strict";
       self.preferences.on("v-ui:displayedElements", function (values) {
         self.displayedElements = values[0];
       });
+
       self.preferences.on("v-ui:preferredLanguage", function (values) {
         self.language = values.reduce( function (acc, lang) {
           acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
@@ -109,6 +111,7 @@ veda.Module(function (veda) { "use strict";
       });
 
     });
+
   };
 
   proto.initAppointment = function () {
