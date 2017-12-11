@@ -1,6 +1,6 @@
-module veda.authorization.auth;
+module veda.authorization.az_server;
 /**
- * authorization module
+ * authorization module as service
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;

@@ -7,7 +7,21 @@ import veda.storage.right_set, veda.storage.common;
 
 string lstr = "                                                                           ";
 
-abstract class Authorization
+interface Authorization
+{
+    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                string subject_group,
+                                                                                                                string right)
+                    _trace_acl,
+                    void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
+                    );
+    
+    public bool open();
+    public void reopen();
+    public void close();    
+}
+
+abstract class ImplAuthorization : Authorization
 {
 	Logger 								 log;
     string                               filter_value;
@@ -413,11 +427,6 @@ abstract class Authorization
 
         return false;
     }
-
-
-    abstract public bool open();
-    abstract public void reopen();
-    abstract public void close();
 
     abstract string get_in_current_transaction(string in_key);
     abstract void abort_transaction();
