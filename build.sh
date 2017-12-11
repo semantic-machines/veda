@@ -87,4 +87,10 @@ if [ -z $1 ] || [ $1 == "lmdb-server" ] || [ $1 == "veda-lmdb-server" ] ; then
   cd $BUILD_PATH
 fi
 
+if [ -z $1 ] || [ $1 == "db_handler" ] ; then
+  cd source/rust_db_handler/db_handler
+  cargo build --release
+  cd ../../..
+fi
+
 #sudo ifup -a
