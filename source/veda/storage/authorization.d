@@ -424,6 +424,23 @@ abstract class Authorization
     abstract bool begin_transaction(bool is_check_for_reload);
 }
 
+ubyte access_from_pretty_string(const string access)
+{
+	ubyte res;
+	foreach (c_access; access)
+	{
+		if (c_access == 'c')
+			res = res | Access.can_create;
+		if (c_access == 'r')
+			res = res | Access.can_read;
+		if (c_access == 'u')
+			res = res | Access.can_update;
+		if (c_access == 'd')
+			res = res | Access.can_delete;			
+	}
+	return res;
+}
+
 string access_to_pretty_string(const ubyte src)
 {
     string res = "";
