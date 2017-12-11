@@ -28,7 +28,7 @@ abstract class Authorization
     int    str_num;
     int    count_permissions = 0;
 
-    ubyte authorize(string _uri, Ticket *ticket, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
+    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
                                                                                                                 string subject_group,
                                                                                                                 string right)
                     _trace_acl,
@@ -49,12 +49,6 @@ abstract class Authorization
         //log.trace("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
         //          access_to_pretty_string(request_access));
 
-        if (ticket is null)
-        {
-            log.trace("ERR! authorize uri=%s, request_access=%s, ticket IS NULL", uri, access_to_pretty_string(request_access));
-            return request_access;
-        }
-
         if (open() == false)
             return calc_right_res;
 
@@ -65,8 +59,7 @@ abstract class Authorization
         }
 
         if (trace_info !is null)
-            trace_info(format("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
-                              access_to_pretty_string(request_access)));
+            trace_info(format("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, user_uri, access_to_pretty_string(request_access)));
 
         //if (db_is_open.get(path, false) == false)
         //    return res;
@@ -83,7 +76,7 @@ abstract class Authorization
             filter_value = get_in_current_transaction(filter);
 
             if (trace_info !is null)
-                trace_info(format("%d user_uri=%s", str_num++, ticket.user_uri));
+                trace_info(format("%d user_uri=%s", str_num++, user_uri));
 
             // читаем группы subject (ticket.user_uri)
             if (trace_info !is null)
@@ -91,10 +84,10 @@ abstract class Authorization
 
             ubyte[ string ] walked_groups;
             Right *[] groups;
-            get_resource_groups(false, membership_prefix ~ ticket.user_uri, 15, groups, walked_groups, 0);
+            get_resource_groups(false, membership_prefix ~ user_uri, 15, groups, walked_groups, 0);
             subject_groups = new RightSet(groups, log);
 
-            subject_groups.data[ ticket.user_uri ] = new Right(ticket.user_uri, 15, false);
+            subject_groups.data[ user_uri ] = new Right(user_uri, 15, false);
             if (trace_info !is null)
                 trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
 

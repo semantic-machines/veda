@@ -819,6 +819,12 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
 
     OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
+	if (ticket is null)
+	{
+	    res = OpResult(ResultCode.Authentication_Failed, -1);
+		return res;
+	}	
+
     try
     {
         if (indv !is null && (indv.uri is null || indv.uri.length < 2))
@@ -887,7 +893,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
                 if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
                 {
                     // для обновляемого индивида проверим доступность бита Update
-                    if (acl_indexes.authorize(indv.uri, ticket, Access.can_update, true, null, null, null) != Access.can_update)
+                    if (acl_indexes.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
                     {
                         res.result = ResultCode.Not_Authorized;
                         return res;
@@ -914,7 +920,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
             {
                 if (rr.info == NEW_TYPE)
                 {
-                    if (acl_indexes.authorize(key, ticket, Access.can_create, true, null, null, null) != Access.can_create)
+                    if (acl_indexes.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create)
                     {
                         res.result = ResultCode.Not_Authorized;
                         return res;
