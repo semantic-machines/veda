@@ -70,7 +70,7 @@ private char[] az_prepare(string request, Authorization acl_indexes)
                     {
                         uri = el.array[ 0 ].str;
 
-                        string s_access = el.array[ 1 ].str.toLower();
+                        string s_access = el.array[ 1 ].str;
                         ubyte  access;
 
                         ubyte  res = acl_indexes.authorize(uri, user_uri, access_from_pretty_string(s_access), true, null, null, null);

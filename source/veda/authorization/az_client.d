@@ -2,7 +2,7 @@ module veda.authorization.az_client;
 
 private
 {
-    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string, core.time;
+    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string, core.time, std.outbuffer;
     import url;
     import veda.common.type, veda.core.common.define, veda.storage.authorization;
     import veda.common.logger, veda.util.module_info;
@@ -40,44 +40,57 @@ class ClientAuthorization : Authorization
                     void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
                     )
     {
-        version (VibeDefaultMain)
-        {
-            //if (az_conn is null || az_conn.connected == false)
+            ubyte res;
 
-            for (int i = 0; i < 100000; i++)
+            bool  is_open = false;
+            while (is_open == false)
             {
-                bool is_open = false;
-                while (is_open == false)
-                {
-                    is_open = open();
+                is_open = open();
 
-                    if (is_open == false)
-                        core.thread.Thread.sleep(dur!("seconds")(1));
-                }
-
-                string req = "[\"td:RomanKarpov\",[\"td:UserGroup_1\",\"crud\"],[\":net4-tr1-r1\",\"ru\"]]";
-
-                if (sock >= 0)
-                {
-                    char *buf = cast(char *)0;
-                    int  bytes;
-
-                    bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                    stderr.writefln("AZCL send [%d](%s) i=%d", req.length, req, i);
-                    bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                    if (bytes > 0)
-                    {
-                        string rep = to!string(buf);
-                        stderr.writefln("AZCL recv (%s)", rep);
-
-                        nn_freemsg(buf);
-                    }
-                    nn_close(sock);
-                    sock = -1;
-                }
+                if (is_open == false)
+                    core.thread.Thread.sleep(dur!("seconds")(1));
             }
-        }
-        return 0;
+
+            OutBuffer buff = new OutBuffer();
+
+            buff.write("[\"");
+            buff.write(user_uri);
+            buff.write("\",[\"");
+            buff.write(_uri);
+            buff.write("\",\"");
+            buff.write(access_to_short_string(_request_access));
+            buff.write("\"]]");
+
+            if (sock >= 0)
+            {
+                char   *buf = cast(char *)0;
+                int    bytes;
+
+                string req = buff.toString();
+
+                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+                stderr.writefln("AZCL send [%d](%s)", req.length, req);
+                bytes = nn_recv(sock, &buf, NN_MSG, 0);
+                if (bytes > 0)
+                {
+                    string rep = to!string(buf);
+                    stderr.writefln("AZCL recv (%s)", rep);
+
+                    if (rep.length > 4 && rep[ 0 ] == '[' && rep[ 1 ] == '"')
+                    {
+                        rep = rep[ 2..$ - 2 ];
+                        stderr.writefln("AZCL rep (%s)", rep);
+
+                        res = access_from_pretty_string(rep);
+                    }
+
+                    nn_freemsg(buf);
+                }
+                nn_close(sock);
+                sock = -1;
+            }
+        stderr.writefln("AZCL _request_access (%d), res (%d)", _request_access, res);
+        return res;
     }
 
     void reopen()

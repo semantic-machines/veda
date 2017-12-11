@@ -475,3 +475,19 @@ string access_to_pretty_string(const ubyte src)
 
     return res;
 }
+
+string access_to_short_string(const ubyte src)
+{
+    string res = "";
+
+    if (src & Access.can_create)
+        res ~= "C";
+    if (src & Access.can_read)
+        res ~= "R";
+    if (src & Access.can_update)
+        res ~= "U";
+    if (src & Access.can_delete)
+        res ~= "D";
+
+    return res;
+}
