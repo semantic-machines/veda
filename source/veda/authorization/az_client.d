@@ -40,9 +40,8 @@ class ClientAuthorization : Authorization
                     void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
                     )
     {
-        version (VibeDefaultMain)
-        {
             ubyte res;
+
             bool  is_open = false;
             while (is_open == false)
             {
@@ -90,7 +89,7 @@ class ClientAuthorization : Authorization
                 nn_close(sock);
                 sock = -1;
             }
-        }
+        stderr.writefln("AZCL _request_access (%d), res (%d)", _request_access, res);
         return res;
     }
 
