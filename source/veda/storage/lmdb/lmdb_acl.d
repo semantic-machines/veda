@@ -66,7 +66,10 @@ class LmdbAuthorization : ImplAuthorization
     override void abort_transaction()
     {
         if (txn_r != null)
+        {
+            mdb_dbi_close(lmdb_driver.env, dbi);
             mdb_txn_abort(txn_r);
+        }
     }
 
     override bool begin_transaction(bool is_check_for_reload)

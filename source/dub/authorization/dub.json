@@ -8,11 +8,15 @@
                 "msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
         },
+        "libs": [
+                    "nanomsg"
+        ],
 	"sourcePaths":[
 	    "../../veda/authorization"
 	],
         "sourceFiles":[
         "../../lib64/liblmdb.a",
+        "../../veda/bind/nano.d",
         "../../veda/util/container.d",
         "../../veda/util/module_info.d",
         "../../veda/storage/lmdb/lmdb_acl.d",
