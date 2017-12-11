@@ -18,7 +18,7 @@ veda.Module(function (veda) { "use strict";
       init  = uri.init;
       uri   = uri.uri;
     }
-    
+
     // Define Model data
     this._ = {
       cache: typeof cache !== "undefined" ? cache : true,
@@ -35,7 +35,7 @@ veda.Module(function (veda) { "use strict";
     }
 
     var self = riot.observable(this);
-    
+
     if (typeof uri === "string") {
       this.id = uri;
     }
@@ -196,11 +196,11 @@ veda.Module(function (veda) { "use strict";
       }
       return veda.Backend.get_membership(veda.ticket, this.id).then(function (membershipJSON) {
         self._.membership = new veda.IndividualModel({ uri: membershipJSON, cache: false });
-        return self._.membership;
+        return self._.membership.load();
       }).catch(function  (error) {
         console.log("membership error", self.id, error);
         self._.membership = new veda.IndividualModel({ cache: false });
-        return self._.membership;
+        return self._.membership.load();
       });
     },
     configurable: false,
@@ -220,11 +220,11 @@ veda.Module(function (veda) { "use strict";
       }
       return veda.Backend.get_rights(veda.ticket, this.id).then(function (rightsJSON) {
         self._.rights = new veda.IndividualModel( rightsJSON, false );
-        return self._.rights;
+        return self._.rights.load();
       }).catch(function  (error) {
         console.log("rights error", self.id, error);
         self._.rights = new veda.IndividualModel({ cache: false });
-        return self._.rights;
+        return self._.rights.load();
       });
     },
     configurable: false,
@@ -234,16 +234,16 @@ veda.Module(function (veda) { "use strict";
   Object.defineProperty(proto, "rightsOrigin", {
     get: function () {
       var self = this;
-      if (this._.rightsOrigin) { return Promise.resolve(this._.rights); }
+      if (this._.rightsOrigin) { return Promise.resolve(this._.rightsOrigin); }
       return veda.Backend.get_rights_origin(veda.ticket, this.id).then(function (rightsOriginArr) {
         self._.rightsOrigin = rightsOriginArr.map(function (item) {
-          return new veda.IndividualModel( item, false );
+          return new veda.IndividualModel( item, false ).load();
         });
-        return self._.rightsOrigin;
+        return Promise.all(self._.rightsOrigin);
       }).catch(function  (error) {
         console.log("rights error", self.id, error);
         self._.rightsOrigin = [];
-        return self._.rightsOrigin;
+        return Promise.resolve(self._.rightsOrigin);
       });
     },
     configurable: false,
@@ -353,13 +353,6 @@ veda.Module(function (veda) { "use strict";
       self.isSync(true);
       self.trigger("afterSave");
       return self;
-    }).catch(function (error) {
-      console.log("save individual error", self.id, error);
-      var notify = veda.Notify ? new veda.Notify() : function () {};
-      notify("danger", error);
-      if ( self.is("v-s:UserThing") && error.code !== 472 ) { self.draft(); }
-      self.trigger("afterSave");
-      return self;
     });
   }
 
@@ -398,10 +391,6 @@ veda.Module(function (veda) { "use strict";
         self.trigger("propertyModified", property_uri, self.get(property_uri));
         self.trigger(property_uri, self.get(property_uri));
       });
-      self.trigger("afterReset");
-      return self;
-    }).catch(function (error) {
-      console.log("reset individual error", self.id, error);
       self.trigger("afterReset");
       return self;
     });
@@ -443,10 +432,6 @@ veda.Module(function (veda) { "use strict";
       return Promise.resolve(this);
     }
     return veda.Backend.remove_individual(veda.ticket, this.id).then(function () {
-      self.trigger("afterRemove");
-      return self;
-    }).catch(function (error) {
-      console.log("remove individual error", self.id, error);
       self.trigger("afterRemove");
       return self;
     });
@@ -571,9 +556,9 @@ veda.Module(function (veda) { "use strict";
     function isSub(type) {
       return type.load().then(function (type) {
         if (is) { return is; }
-        if (!type.hasValue("rdfs:subClassOf")) { 
+        if (!type.hasValue("rdfs:subClassOf")) {
           return (is = is || false);
-        } else if (type.hasValue("rdfs:subClassOf", _class.id)) { 
+        } else if (type.hasValue("rdfs:subClassOf", _class.id)) {
           return (is = is || true);
         } else {
           var types = type.get("rdfs:subClassOf");
@@ -621,7 +606,7 @@ veda.Module(function (veda) { "use strict";
         });
     }
   };
-  
+
   /**
    * @method
    * Clone individual with different (generated) id
