@@ -4,8 +4,8 @@ module veda.authorization.auth;
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
-import std.stdio, std.socket, std.conv, std.array, std.outbuffer;
-import veda.common.logger, veda.storage.authorization, veda.storage.lmdb.lmdb_acl, veda.storage.common;
+import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string;
+import veda.common.logger, veda.storage.authorization, veda.storage.lmdb.lmdb_acl, veda.storage.common, veda.common.type;
 
 static this()
 {
@@ -50,21 +50,98 @@ private:
 
         try
         {
-            string   request = _recv(socket);
-
-            string[] els = request.split('�');
-            if (els.length == 2)
+            while (true)
             {
-                //context.get_logger.trace ("query: %s", els);
+                char[] request = _recv(socket);
 
-                string _user_uri = els[ 0 ];
-                string _uri      = els[ 1 ];
+                long   response_offset = 2;
+                char[] response        = request;
+
+                if (request == "close")
+                    break;
+
+                //correct len
+                for (long i = request.length; i > 0; i--)
+                {
+                    if (request[ i ] == ']')
+                    {
+                        request = request[ 0..i + 1 ];
+                        break;
+                    }
+                }
+
+                string user_uri;
+                stderr.writefln("request=|%s| len=%d", request, request.length);
+
+                JSONValue jsn;
+
+                try
+                {
+                    jsn = parseJSON(request);
+                }
+                catch (Throwable tr)
+                {
+                    stderr.writefln("ERR! fail parse request=%s, err=%s", request, tr.msg);
+                }
+
+                if (jsn.type == JSON_TYPE.ARRAY)
+                {
+                    foreach (idx, el; jsn.array)
+                    {
+                        string uri;
+                        ubyte  request_access;
+
+                        if (idx == 0)
+                        {
+                            if (el.type != JSON_TYPE.STRING)
+                            {
+                                break;
+                            }
+                            user_uri = el.str;
+                        }
+
+                        if (idx > 1)
+                            response[ response_offset++ ] = ',';
+                        response[ response_offset++ ] = '"';
+                        if (el.type == JSON_TYPE.ARRAY)
+                        {
+                            if (el.array.length == 2)
+                            {
+                                uri = el.array[ 0 ].str;
+
+                                string s_access = el.array[ 1 ].str.toLower();
+                                ubyte  access;
+
+                                ubyte  res = acl_indexes.authorize(uri, user_uri, access_from_pretty_string(s_access), true, null, null, null);
+
+                                stderr.writefln("uri=%s user_uri=%s response_access=%s", uri, user_uri, access_to_pretty_string(res));
+
+                                if (res & Access.can_create)
+                                    response[ response_offset++ ] = 'C';
+                                if (res & Access.can_read)
+                                    response[ response_offset++ ] = 'R';
+                                if (res & Access.can_update)
+                                    response[ response_offset++ ] = 'U';
+                                if (res & Access.can_delete)
+                                    response[ response_offset++ ] = 'D';
+                            }
+                            else
+                            {
+                            }
+                            response[ response_offset++ ] = '"';
+                        }
+                    }
+                }
+                else
+                    stderr.writefln("ERR! bad request: unknown json");
+
+                response[ response_offset++ ] = ']';
+
+                _send(socket, response[ 0..response_offset ]);
             }
 
-            string response = "F";
-            _send(socket, response);
-
             socket.close();
+            acl_indexes.close();
         }
         catch (Exception ex)
         {
@@ -75,27 +152,53 @@ private:
     }
 }
 
-private string _recv(Socket socket)
+const byte     HEADER_SIZE = 16;
+
+private char[] _recv(Socket socket)
 {
-    ubyte[] buf          = new ubyte[ 7 ];
-    ulong   request_size = 0;
-    socket.receive(buf);
-    ubyte[] request;
+    ubyte[]   buf          = new ubyte[ HEADER_SIZE ];
+    ulong     request_size = 0;
+    ubyte[]   request;
 
-    if (buf[ 0 ] == 'T' && buf[ 1 ] == 'P' && buf[ 2 ] == 'S')
+    ptrdiff_t res = socket.receive(buf);
+    stderr.writefln("res= [%d] buf |%s|", res, cast(string)buf);
+
+    if (res > 0)
     {
-        for (int i = 3; i < 7; i++)
-            request_size = (request_size << 8) + buf[ i ];
+        if (buf[ 0 ] == 'T' && buf[ 1 ] == 'P' && buf[ 2 ] == 'S' && buf[ 3 ] == '=')
+        {
+            int idx = 3;
+            for (; idx < HEADER_SIZE; idx++)
+            {
+                if (buf[ idx ] == ' ')
+                    break;
+            }
 
-        request = new ubyte[ request_size ];
-        socket.receive(request);
-        stderr.writefln("@REQ [%s]", cast(string)request);
+            if (idx < HEADER_SIZE)
+            {
+                string ssize = cast(string)buf[ 4..idx ];
+                stderr.writefln("ssize=[%s], idx=%d", ssize, idx);
+
+                request_size = to!int (ssize);
+
+                //stderr.writefln("request_size=%d", request_size);
+
+                request = new ubyte[ request_size + (HEADER_SIZE - idx) ];
+                ubyte[] trq = request[ (HEADER_SIZE - idx)..$ ];
+                socket.receive(trq);
+                stderr.writefln("request=|%s|", cast(string)request);
+
+                for (int i = idx, q = 0; i < HEADER_SIZE; i++, q++)
+                    request[ q ] = buf[ i ];
+            }
+            return cast(char[])request;
+        }
     }
 
-    return cast(string)request;
+    return cast(char[])"close";
 }
 
-private void _send(Socket socket, string data)
+private void _send(Socket socket, char[] data)
 {
     ubyte[] buf           = new ubyte[ 4 ];
     long    response_size = data.length;
@@ -121,7 +224,7 @@ TcpSocket listener;
 void main()
 {
     string host = "127.0.0.1";
-    ushort port = 11113;
+    ushort port = 22000;
 
     listener = new TcpSocket();
 
