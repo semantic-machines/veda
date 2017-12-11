@@ -424,7 +424,7 @@ class PThreadContext : Context
 
     public void reopen_ro_acl_storage_db()
     {
-        storage.get_acl_indexes().reopen();
+        storage.get_acl_client().reopen();
     }
 
     // ////////// external ////////////
@@ -433,7 +433,7 @@ class PThreadContext : Context
     {
     	if (ticket is null)
 	    	return 0;
-        return storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, null, null);
+        return storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, null, null);
     }
 
     public void get_rights_origin_from_acl(Ticket *ticket, string uri,
@@ -441,7 +441,7 @@ class PThreadContext : Context
     {
     	if (ticket is null)
 	    	return;
-        storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null, trace_info);
+        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null, trace_info);
     }
 
     public void get_membership_from_acl(Ticket *ticket, string uri,
@@ -449,7 +449,7 @@ class PThreadContext : Context
     {
     	if (ticket is null)
 	    	return;
-        storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, trace_group, null);
+        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, trace_group, null);
     }
 
     public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
@@ -486,7 +486,7 @@ class PThreadContext : Context
             string individual_as_binobj = storage.get_from_individual_storage(ticket.user_uri, uri);
             if (individual_as_binobj !is null && individual_as_binobj.length > 1)
             {
-                if (opt_authorize == OptAuthorize.NO || storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
+                if (opt_authorize == OptAuthorize.NO || storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
                 {
                     if (individual.deserialize(individual_as_binobj) > 0)
                         individual.setStatus(ResultCode.OK);
@@ -535,7 +535,7 @@ class PThreadContext : Context
 
             foreach (uri; uris)
             {
-                if (storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
+                if (storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
                 {
                     Individual individual           = Individual.init;
                     string     individual_as_binobj = storage.get_from_individual_storage(ticket.user_uri, uri);
