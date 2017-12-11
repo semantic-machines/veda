@@ -1686,7 +1686,7 @@ v-wf:to
   rdfs:label "Кому"@ru ;
   rdfs:label "To"@en ;
   rdfs:domain v-wf:DecisionForm ;
-  rdfs:domain v-wf:DecisionRedirect ;
+  rdfs:domain v-wf:Decision ;
   rdfs:domain v-s:JournalRecord ;
   rdfs:domain v-s:Deliverable ;
   rdfs:range v-s:Appointment ;
