@@ -5,7 +5,8 @@
         "license": "LGPL v3",
         "dependencies": {
                 "backtrace-d": "0.1.2",
-                "msgpack-d": "1.0.0-beta.6"
+                "msgpack-d": "1.0.0-beta.6",
+                "urld": "2.0.1"
         },
 	"sourcePaths":[
 	    "../../veda/authorization"
@@ -19,6 +20,7 @@
         "../../veda/storage/lmdb/lmdb_header.d",
         "../../veda/storage/right_set.d",
 	"../../veda/storage/authorization.d",
+            "../../veda/authorization/az_client.d",
         "../../veda/storage/common.d",
         "../../veda/common/logger.d",
         "../../veda/common/type.d",

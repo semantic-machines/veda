@@ -3,7 +3,7 @@
  */
 module veda.storage.lmdb.lmdb_storage;
 
-import veda.core.common.define, veda.common.logger;
+import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
 import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.storage.authorization;
 
@@ -40,7 +40,22 @@ public class LmdbStorage : Storage
     override Authorization get_acl_client()
     {
         if (acl_client is null)
-            acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
+        {
+            try
+            {
+                string[ string ] properties;
+                properties = readProperties("./veda.properties");
+                string acl_service = properties.as!(string)("acl_service_url");
+                if (acl_service !is null)
+                    acl_client = new ClientAuthorization(acl_service, this.log);
+                else
+                    acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
+            }
+            catch (Throwable ex)
+            {
+                log.trace("ERR! unable read ./veda.properties");
+            }
+        }
 
         return acl_client;
     }
