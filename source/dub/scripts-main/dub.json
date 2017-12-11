@@ -5,7 +5,8 @@
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2", 
 		"d-nanomsg": "0.2.0",
-        	"msgpack-d": "1.0.0-beta.6"
+        	"msgpack-d": "1.0.0-beta.6",
+                "urld": "2.0.1"
 	},
         "versions": ["libV8", "isModule"],
         "license": "LGPL v3",
@@ -24,6 +25,7 @@
     	    "../../lib64/libv8d.a", 
 	    "../../lib64/libxapiand.a",
     	    "../../veda/storage/right_set.d",
+            "../../veda/authorization/az_client.d",
 	    "../../veda/storage/authorization.d",
     	    "../../veda/storage/common.d",
     	    "../../veda/storage/storage.d",
