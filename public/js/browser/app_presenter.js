@@ -62,51 +62,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
   veda.on("started", function () {
     var layout_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:LayoutExternal" : "cfg:Layout" ;
     var layout_param = new veda.IndividualModel( layout_param_uri );
-    var layout = layout_param["rdf:value"][0];
     var welcome_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
     var welcome_param = new veda.IndividualModel( welcome_param_uri );
-    var welcome = welcome_param["rdf:value"][0];
-    layout.present("#app");
-    riot.route( function (hash) {
-      if ( !hash ) { return welcome.present("#main"); }
-      if ( hash.indexOf("#/") < 0 ) { return; }
-      var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
-      var page = hash_tokens[0];
-      var params = hash_tokens.slice(1);
-      page ? veda.load(page, params) : welcome.present("#main");
-      });
-    riot.route(location.hash);
-    /*
-    var layout_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:LayoutExternal" : "cfg:Layout" ;
-    var layout_param = new veda.IndividualModelAsync( layout_param_uri );
-    var welcome_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
-    var welcome_param = new veda.IndividualModelAsync( welcome_param_uri );
 
-    Promise.all([ layout_param.load(), welcome_param.load() ])
-      .then(function (params) {
-        return Promise.all([ params[0]["rdf:value"][0].load(), params[1]["rdf:value"][0].load() ]);
-      })
-      .then(function (params) {
-        var layout = params[0];
-        var welcome = params[1];
-        layout.present("#app");
-        riot.route( function (hash) {
-          if ( !hash ) { return welcome.present("#main"); }
-          if ( hash.indexOf("#/") < 0 ) { return; }
-          var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
-          var page = hash_tokens[0];
-          var params = hash_tokens.slice(1);
-          page ? veda.load(page, params) : welcome.present("#main");
-          });
-        riot.route(location.hash);
-      })
-      .catch( function (err) {
-        var notify = new veda.Notify();
-        notify("danger", err);
-        console.log(err);
-      });*/
-    
-    /*
     layout_param.load().then(function (layout_param) {
       return layout_param["rdf:value"][0].load();
     }).then(function (layout) {
@@ -129,7 +87,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
       var notify = new veda.Notify();
       notify("danger", err);
     });
-    */
+
   });
 
   // Login invitation
@@ -145,47 +103,48 @@ veda.Module(function AppPresenter(veda) { "use strict";
       password = $("#password", loginForm).val(),
       hash = Sha256.hash(password),
       authResult;
-    try {
-      authResult = veda.login(login, hash);
-    } catch (ex1) {
-      console.log(ex1);
-      authResult = undefined;
-      if (ntlm) {
-        var params = {
-          type: "POST",
-          url: ntlm + "ad/",
-          data: {
-            "login": login,
-            "password": password
-          },
-          async: false
-        };
-        try {
-          authResult = $.ajax(params);
-          authResult = JSON.parse( authResult.responseText );
-        } catch (ex2) {
-          console.log(ex2);
-          authResult = undefined;
+
+    // Try internal authentication
+    veda.login(login, hash)
+      // Try ntlm authentication
+      .catch(function (error) {
+        console.log(error);
+        if (ntlm) {
+          var params = {
+            type: "POST",
+            url: ntlm + "ad/",
+            data: {
+              "login": login,
+              "password": password
+            },
+            async: true
+          };
+          return $.ajax(params);
+        } else {
+          throw new Error("No ntlm");
         }
-      }
-    } finally {
-      if (authResult) {
+      })
+      .then(function (authResult) {
         errorMsg.addClass("hidden");
         veda.trigger("login:success", authResult);
-      } else {
+      })
+      .catch(function (error) {
+        console.log(error);
         errorMsg.removeClass("hidden");
         veda.trigger("login:failed");
-      }
-    }
+      });
   });
 
   // NTLM auth using iframe
-  var ntlmProvider = new veda.IndividualModel({uri: "cfg:NTLMAuthProvider", cache: true, init: false}),
-    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0],
-    iframe = $("<iframe>", {"class": "hidden"});
-  if ( ntlm ) {
-    iframe.appendTo(credentials);
-  }
+  var ntlm;
+  var iframe = $("<iframe>", {"class": "hidden"});
+  var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
+  ntlmProvider.load().then(function (ntlmProvider) {
+    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
+    if (ntlm) {
+      iframe.appendTo(credentials);
+    }
+  });
 
   veda.on("login:failed", function () {
     $("#app").empty();
@@ -255,25 +214,32 @@ veda.Module(function AppPresenter(veda) { "use strict";
     credentials.removeClass("hidden");
   });
 
-  // Load ontology
-  veda.init();
-
-  try {
+  // Init application
+  veda.init().then(function () {
     // Check if ticket in cookies is valid
     var ticket = storage.ticket,
         user_uri = storage.user_uri,
-        end_time = storage.end_time && ( new Date() < new Date(parseInt(storage.end_time)) ) ? storage.end_time : undefined ;
-    if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
+        end_time = ( new Date() < new Date(parseInt(storage.end_time)) ) && storage.end_time;
+    if (ticket && user_uri && end_time) {
+      return veda.Backend.is_ticket_valid(ticket);
+    } else {
+      veda.trigger("login:failed");
+      throw new Error("Auth expired");
+    }
+  }).then(function (valid) {
+    if (valid) {
       veda.trigger("login:success", {
-        ticket: ticket,
-        user_uri: user_uri,
-        end_time: end_time
+        ticket: storage.ticket,
+        user_uri: storage.user_uri,
+        end_time: storage.end_time
       });
     } else {
       veda.trigger("login:failed");
+      throw new Error("Auth expired");
     }
-  } catch (ex) {
-    console.log(ex);
+  }).catch(function (error) {
+    console.log( new Error("Auth expired") );
     veda.trigger("login:failed");
-  }
+  });
+
 });
