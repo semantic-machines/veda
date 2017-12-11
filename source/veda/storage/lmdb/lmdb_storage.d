@@ -19,7 +19,7 @@ static this()
 
 public class LmdbStorage : Storage
 {
-    private Authorization acl_indexes;
+    private Authorization acl_client;
     private KeyValueDB    tickets_storage_r;
     private KeyValueDB    inividuals_storage_r;
 
@@ -34,15 +34,15 @@ public class LmdbStorage : Storage
         log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
         tickets_storage_r.close();
         inividuals_storage_r.close();
-        acl_indexes.close();
+        acl_client.close();
     }
 
-    override Authorization get_acl_indexes()
+    override Authorization get_acl_client()
     {
-        if (acl_indexes is null)
-            acl_indexes = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
+        if (acl_client is null)
+            acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
 
-        return acl_indexes;
+        return acl_client;
     }
 
     override KeyValueDB get_tickets_storage_r()
