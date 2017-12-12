@@ -1306,7 +1306,15 @@ function complexLabel(individual) {
         if (!intermediate[property] || !intermediate[property].length) return "";
         return intermediate[property].reduce(function (acc, value) {
           //print("VALUE =", JSON.stringify(value));
-          return ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ? acc += value.data : acc );
+          if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
+            var data = value.data;
+            if (data instanceof Date) {
+              data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+            }
+            return acc += data;
+          } else {
+            return acc;
+          }
         }, "");
       }
       if ( hasValue(intermediate, property) ) {

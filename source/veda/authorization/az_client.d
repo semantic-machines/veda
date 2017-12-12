@@ -74,7 +74,7 @@ class ClientAuthorization : Authorization
                 if (bytes > 0)
                 {
                     string rep = to!string(buf);
-                    stderr.writefln("AZCL recv (%s)", rep);
+                    //stderr.writefln("AZCL recv (%s)", rep);
 
                     if (rep.length > 4 && rep[ 0 ] == '[' && rep[ 1 ] == '"')
                     {
@@ -89,7 +89,7 @@ class ClientAuthorization : Authorization
                 nn_close(sock);
                 sock = -1;
             }
-        stderr.writefln("AZCL _request_access (%d), res (%d)", _request_access, res);
+        //stderr.writefln("AZCL _request_access (%d), res (%d)", _request_access, res);
         return res;
     }
 
