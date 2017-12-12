@@ -640,17 +640,6 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Call individual presenter
-   * @param {String/jQuery} container Container to render individual in. If passed as String, then must be a valid css selector. If passed as jQuery, then is used as is. If not specified, than individual will not be presented.
-   * @param {String/jQuery/veda.IndividualModel} template Template to render individual with.
-   * @param {String} mode Initial mode for individual presenter. Expected values: "view", "edit", "search".
-   */
-  proto.present = function () {
-    return veda.IndividualPresenter.apply(this, arguments);
-  };
-
-  /**
-   * @method
    * Serialize to JSON
    * @return {Object} JSON representation of individual.
    */
