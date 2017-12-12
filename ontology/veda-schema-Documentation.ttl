@@ -166,7 +166,7 @@ v-s:Request
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
 #  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+#  rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Spatial ;

@@ -3,7 +3,7 @@
  */
 module veda.storage.lmdb.lmdb_storage;
 
-import veda.core.common.define, veda.common.logger;
+import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
 import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.storage.authorization;
 
@@ -19,7 +19,7 @@ static this()
 
 public class LmdbStorage : Storage
 {
-    private Authorization acl_indexes;
+    private Authorization acl_client;
     private KeyValueDB    tickets_storage_r;
     private KeyValueDB    inividuals_storage_r;
 
@@ -34,15 +34,30 @@ public class LmdbStorage : Storage
         log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
         tickets_storage_r.close();
         inividuals_storage_r.close();
-        acl_indexes.close();
+        acl_client.close();
     }
 
-    override Authorization get_acl_indexes()
+    override Authorization get_acl_client()
     {
-        if (acl_indexes is null)
-            acl_indexes = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
+        if (acl_client is null)
+        {
+            try
+            {
+                string[ string ] properties;
+                properties = readProperties("./veda.properties");
+                string acl_service = properties.as!(string)("acl_service_url");
+                if (acl_service !is null)
+                    acl_client = new ClientAuthorization(acl_service, this.log);
+                else
+                    acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", this.log);
+            }
+            catch (Throwable ex)
+            {
+                log.trace("ERR! unable read ./veda.properties");
+            }
+        }
 
-        return acl_indexes;
+        return acl_client;
     }
 
     override KeyValueDB get_tickets_storage_r()

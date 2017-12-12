@@ -300,7 +300,7 @@ private Individual get_individual(Ticket *ticket, string uri)
     string individual_as_binobj = inividuals_storage_r.find(OptAuthorize.YES, ticket.user_uri, uri);
     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
     {
-//                if (acl_indexes.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
+//                if (acl_client.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
         {
             if (individual.deserialize(individual_as_binobj) > 0)
                 individual.setStatus(ResultCode.OK);
@@ -417,7 +417,7 @@ private Ticket authenticate(string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             OpResult op_res = add_to_transaction(
-                                                 l_context.get_storage().get_acl_indexes(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
                                                  OptFreeze.NONE, OptAuthorize.YES,
                                                  OptTrace.NONE);
 
@@ -428,7 +428,7 @@ private Ticket authenticate(string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             op_res            = add_to_transaction(
-                                                   l_context.get_storage().get_acl_indexes(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
+                                                   l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
                                                    OptAuthorize.YES,
                                                    OptTrace.NONE);
 
@@ -528,7 +528,7 @@ public string execute_json(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
-                                                       ctx.get_storage().get_acl_indexes(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems, event_id.str,
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -550,7 +550,7 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_indexes(), tnx, ticket, INDV_OP.ADD_IN, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.ADD_IN, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -570,7 +570,7 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_indexes(), tnx, ticket, INDV_OP.SET_IN, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.SET_IN, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -591,7 +591,7 @@ public string execute_json(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
-                                                       ctx.get_storage().get_acl_indexes(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems,
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems,
                                                        event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
@@ -612,7 +612,7 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_indexes(), tnx, ticket, INDV_OP.REMOVE, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE, &individual, assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -738,7 +738,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             OpResult opres = add_to_transaction(
-                                                ctx.get_storage().get_acl_indexes(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", OptFreeze.NONE,
+                                                ctx.get_storage().get_acl_client(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", OptFreeze.NONE,
                                                 OptAuthorize.NO,
                                                 OptTrace.NONE);
 
@@ -802,7 +802,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
 
-private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
+private OpResult add_to_transaction(Authorization acl_client, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
                                     long assigned_subsystems,
                                     string event_id,
                                     OptFreeze opt_freeze,
@@ -821,6 +821,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
 
 	if (ticket is null)
 	{
+	    log.trace("ERR! add_to_transaction: %s %s, ticket is null", text(cmd), *indv);
 	    res = OpResult(ResultCode.Authentication_Failed, -1);
 		return res;
 	}	
@@ -893,7 +894,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
                 if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
                 {
                     // для обновляемого индивида проверим доступность бита Update
-                    if (acl_indexes.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
+                    if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
                     {
                         res.result = ResultCode.Not_Authorized;
                         return res;
@@ -920,7 +921,7 @@ private OpResult add_to_transaction(Authorization acl_indexes, ref Transaction t
             {
                 if (rr.info == NEW_TYPE)
                 {
-                    if (acl_indexes.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create)
+                    if (acl_client.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create)
                     {
                         res.result = ResultCode.Not_Authorized;
                         return res;

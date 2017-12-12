@@ -6,16 +6,18 @@
 		"pacahon_third_party": "1.0.15", 
 		"backtrace-d": "0.1.2",
 		"traildb": "0.0.2",
-                "msgpack-d": "1.0.0-beta.6"
+                "msgpack-d": "1.0.0-beta.6",
+		"urld": "2.0.1"
 	},
 	"versions": ["VibeDefaultMain", "WebServer"],	
         "libs": [
-                "raptor2"
+                "raptor2", "nanomsg"
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
 	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a",
+        "../../veda/bind/nano.d",
             "../../veda/bind/xapian_d_header.d",
             "../../veda/util/tests_tools.d",
             "../../veda/bind/libraptor_header.d",
@@ -23,7 +25,8 @@
 	    "../../veda/storage/authorization.d",
             "../../veda/storage/common.d",
             "../../veda/storage/storage.d",
-            "../../veda/storage/binlog_tools.d"
+            "../../veda/storage/binlog_tools.d",
+            "../../veda/authorization/az_client.d"
 	],
 	"sourcePaths":[
             "../../veda/util",

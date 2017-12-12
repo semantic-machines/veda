@@ -16,7 +16,7 @@ static this()
 }
 
 /// Хранение, чтение PermissionStatement, Membership
-class LmdbAuthorization : Authorization
+class LmdbAuthorization : ImplAuthorization
 {
     LmdbDriver lmdb_driver;
 
@@ -32,12 +32,7 @@ class LmdbAuthorization : Authorization
         lmdb_driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 
-    override void reopen()
-    {
-        lmdb_driver.reopen();
-    }
-
-    override bool open()
+    bool open()
     {
         if (lmdb_driver.db_is_opened == false)
             lmdb_driver.open();
@@ -45,7 +40,12 @@ class LmdbAuthorization : Authorization
         return lmdb_driver.db_is_opened;
     }
 
-    override void close()
+    void reopen()
+    {
+        lmdb_driver.reopen();
+    }
+
+    void close()
     {
         lmdb_driver.close();
     }
@@ -66,7 +66,10 @@ class LmdbAuthorization : Authorization
     override void abort_transaction()
     {
         if (txn_r != null)
+        {
+            mdb_dbi_close(lmdb_driver.env, dbi);
             mdb_txn_abort(txn_r);
+        }
     }
 
     override bool begin_transaction(bool is_check_for_reload)

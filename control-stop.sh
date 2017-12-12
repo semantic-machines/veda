@@ -20,6 +20,7 @@ killall -9 veda-ft-query
 killall -9 veda-lmdb-server
 killall -9 veda-authorization
 
+rm .veda-pid
 rm data/module-info/*.lock
 rm data/queue/*.lock
 rm data/uris/*.lock

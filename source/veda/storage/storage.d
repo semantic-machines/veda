@@ -21,7 +21,7 @@ public abstract class Storage
      */
     abstract long count_individuals();
 
-    abstract Authorization get_acl_indexes();
+    abstract Authorization get_acl_client();
     abstract KeyValueDB get_tickets_storage_r();
     abstract KeyValueDB get_inividuals_storage_r();
 
@@ -34,7 +34,7 @@ public abstract class Storage
             return false;
         }
 
-        ubyte res = get_acl_indexes().authorize(uri, ticket.user_uri, request_acess, is_check_for_reload, null, null, null);
+        ubyte res = get_acl_client().authorize(uri, ticket.user_uri, request_acess, is_check_for_reload, null, null, null);
 
         return request_acess == res;
     }

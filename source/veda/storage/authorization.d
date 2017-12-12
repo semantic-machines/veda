@@ -7,9 +7,23 @@ import veda.storage.right_set, veda.storage.common;
 
 string lstr = "                                                                           ";
 
-abstract class Authorization
+interface Authorization
 {
-	Logger 								 log;
+    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
+                                                                                                                 string subject_group,
+                                                                                                                 string right)
+                    _trace_acl,
+                    void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
+                    );
+
+    public bool open();
+    public void reopen();
+    public void close();
+}
+
+abstract class ImplAuthorization : Authorization
+{
+    Logger                               log;
     string                               filter_value;
     ubyte                                calc_right_res;
 
@@ -29,8 +43,8 @@ abstract class Authorization
     int    count_permissions = 0;
 
     ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                                string subject_group,
-                                                                                                                string right)
+                                                                                                                 string subject_group,
+                                                                                                                 string right)
                     _trace_acl,
                     void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
                     )
@@ -63,104 +77,105 @@ abstract class Authorization
 
         //if (db_is_open.get(path, false) == false)
         //    return res;
-
-        if (begin_transaction(is_check_for_reload) == false)
-            return calc_right_res;
-
         try
         {
-            string skey;
-
-            // 0. читаем фильтр прав у object (uri)
-            string filter = filter_prefix ~ uri;
-            filter_value = get_in_current_transaction(filter);
-
-            if (trace_info !is null)
-                trace_info(format("%d user_uri=%s", str_num++, user_uri));
-
-            // читаем группы subject (ticket.user_uri)
-            if (trace_info !is null)
-                trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
-
-            ubyte[ string ] walked_groups;
-            Right *[] groups;
-            get_resource_groups(false, membership_prefix ~ user_uri, 15, groups, walked_groups, 0);
-            subject_groups = new RightSet(groups, log);
-
-            subject_groups.data[ user_uri ] = new Right(user_uri, 15, false);
-            if (trace_info !is null)
-                trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
-
-            // читаем группы object (uri)
-            if (trace_info !is null)
-                trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
-
-            ubyte[ string ] walked_groups1;
-            Right *[] groups1;
-
-            if (prepare_group(veda_schema__AllResourcesGroup, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
-            {
-                if (trace_info !is null)
-                    trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
-
+            if (begin_transaction(is_check_for_reload) == false)
                 return calc_right_res;
-            }
 
-            if (prepare_group(uri, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
+            try
             {
+                string skey;
+
+                // 0. читаем фильтр прав у object (uri)
+                string filter = filter_prefix ~ uri;
+                filter_value = get_in_current_transaction(filter);
+
                 if (trace_info !is null)
-                    trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+                    trace_info(format("%d user_uri=%s", str_num++, user_uri));
 
-                return calc_right_res;
-            }
-
-            if (get_resource_groups(true, membership_prefix ~ uri, 15, groups1, walked_groups1,
-                                    0) == true && trace_info is null && trace_group is null && trace_acl is null)
-            {
+                // читаем группы subject (ticket.user_uri)
                 if (trace_info !is null)
-                    trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+                    trace_info(format("\n%d READ SUBJECT GROUPS", str_num++));
 
-                return calc_right_res;
-            }
+                ubyte[ string ] walked_groups;
+                Right *[] groups;
+                get_resource_groups(false, membership_prefix ~ user_uri, 15, groups, walked_groups, 0);
+                subject_groups = new RightSet(groups, log);
 
-            if (trace_info is null && trace_group is null && trace_acl is null)
-            {
-                //object_groups = new RightSet(log);
-            }
-            else
-            {
-                object_groups = new RightSet(groups1, log);
-
-                //object_groups.data[ uri ]                            = new Right(uri, 15, false);
-                //object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+                subject_groups.data[ user_uri ] = new Right(user_uri, 15, false);
                 if (trace_info !is null)
-                    trace_info(format("%d object_groups=%s", str_num++, object_groups));
+                    trace_info(format("%d subject_groups=%s", str_num++, subject_groups));
 
-                foreach (object_group; object_groups.data)
+                // читаем группы object (uri)
+                if (trace_info !is null)
+                    trace_info(format("\n%d READ OBJECT GROUPS", str_num++));
+
+                ubyte[ string ] walked_groups1;
+                Right *[] groups1;
+
+                if (prepare_group(veda_schema__AllResourcesGroup, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
                 {
-                    if (prepare_group(object_group.id, object_group.access) == true && trace_info is null && trace_group is null && trace_acl is null)
+                    if (trace_info !is null)
+                        trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+
+                    return calc_right_res;
+                }
+
+                if (prepare_group(uri, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
+                {
+                    if (trace_info !is null)
+                        trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+
+                    return calc_right_res;
+                }
+
+                if (get_resource_groups(true, membership_prefix ~ uri, 15, groups1, walked_groups1,
+                                        0) == true && trace_info is null && trace_group is null && trace_acl is null)
+                {
+                    if (trace_info !is null)
+                        trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+
+                    return calc_right_res;
+                }
+
+                if (trace_info is null && trace_group is null && trace_acl is null)
+                {
+                    //object_groups = new RightSet(log);
+                }
+                else
+                {
+                    object_groups = new RightSet(groups1, log);
+
+                    //object_groups.data[ uri ]                            = new Right(uri, 15, false);
+                    //object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
+                    if (trace_info !is null)
+                        trace_info(format("%d object_groups=%s", str_num++, object_groups));
+
+                    foreach (object_group; object_groups.data)
                     {
-                        if (trace_info !is null)
-                            trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
-                        return calc_right_res;
+                        if (prepare_group(object_group.id,
+                                          object_group.access) == true && trace_info is null && trace_group is null && trace_acl is null)
+                        {
+                            if (trace_info !is null)
+                                trace_info(format("\n%d RETURN MY BE ASAP", str_num++));
+                            return calc_right_res;
+                        }
                     }
                 }
+            }catch (Exception ex)
+            {
+                stderr.writeln("EX!,", ex.msg);
             }
-        }catch (Exception ex)
-        {
-            writeln("EX!,", ex.msg);
+            return calc_right_res;
         }
-
-        abort_transaction();
-
-        scope (exit)
+        finally
         {
+            abort_transaction();
+
             if (trace_info !is null)
                 trace_info(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
                                   access_to_pretty_string(calc_right_res)));
         }
-
-        return calc_right_res;
     }
 
     private bool prepare_group(string object_group_id, ubyte object_group_access)
@@ -414,11 +429,6 @@ abstract class Authorization
         return false;
     }
 
-
-    abstract public bool open();
-    abstract public void reopen();
-    abstract public void close();
-
     abstract string get_in_current_transaction(string in_key);
     abstract void abort_transaction();
     abstract bool begin_transaction(bool is_check_for_reload);
@@ -426,19 +436,20 @@ abstract class Authorization
 
 ubyte access_from_pretty_string(const string access)
 {
-	ubyte res;
-	foreach (c_access; access)
-	{
-		if (c_access == 'c')
-			res = res | Access.can_create;
-		if (c_access == 'r')
-			res = res | Access.can_read;
-		if (c_access == 'u')
-			res = res | Access.can_update;
-		if (c_access == 'd')
-			res = res | Access.can_delete;			
-	}
-	return res;
+    ubyte res;
+
+    foreach (c_access; access)
+    {
+        if (c_access == 'c' || c_access == 'C')
+            res = res | Access.can_create;
+        if (c_access == 'r' || c_access == 'R')
+            res = res | Access.can_read;
+        if (c_access == 'u' || c_access == 'U')
+            res = res | Access.can_update;
+        if (c_access == 'd' || c_access == 'D')
+            res = res | Access.can_delete;
+    }
+    return res;
 }
 
 string access_to_pretty_string(const ubyte src)
@@ -461,6 +472,22 @@ string access_to_pretty_string(const ubyte src)
         res ~= "!U ";
     if (src & Access.cant_delete)
         res ~= "!D ";
+
+    return res;
+}
+
+string access_to_short_string(const ubyte src)
+{
+    string res = "";
+
+    if (src & Access.can_create)
+        res ~= "C";
+    if (src & Access.can_read)
+        res ~= "R";
+    if (src & Access.can_update)
+        res ~= "U";
+    if (src & Access.can_delete)
+        res ~= "D";
 
     return res;
 }

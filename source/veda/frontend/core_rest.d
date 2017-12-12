@@ -3,7 +3,7 @@ module veda.frontend.core_rest;
 import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
 import core.vararg, core.stdc.stdarg, core.atomic, std.uri;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
-import veda.util.properd, TrailDB;
+import veda.util.properd, TrailDB, veda.authorization.az_client;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
 import veda.frontend.cbor8vjson, veda.util.queue, veda.storage.storage;
@@ -1097,7 +1097,7 @@ string get_individual_as_binobj(Storage storage, Ticket *ticket, string uri, out
             return res;
         }
 
-        if (storage.get_acl_indexes().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) != Access.can_read)
+        if (storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) != Access.can_read)
         {
             if (is_trace)
                 log.trace("get_individual as binobj, not authorized, uri=[%s], user_uri=[%s]", uri, ticket.user_uri);
