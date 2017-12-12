@@ -435,24 +435,32 @@ v-s:OrganizationTemplate
   rdfs:label "Шаблон для класса v-s:Organization"@ru ;
   v-ui:template """
 <script>
-  var _class = new veda.IndividualModel("v-s:ContractorProfile");
-  var hasRights = _class.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
+  var classCP = new veda.IndividualModel("v-s:ContractorProfile");
+  Promise.all([classCP.rights, individual.rights]).then(function (rightsArr) {
+    classCPRights = rightsArr[0];
+    individualRights = rightsArr[1];
+    var hasRights = classCPRights.hasValue("v-s:canCreate", true) && individualRights.hasValue("v-s:canUpdate", true);
 
-  function handler() {
-    if (individual.hasValue("v-s:hasContractorProfile") || !hasRights) {
-      $("#add-profile", template).remove();
+    function handler() {
+      if (individual.hasValue("v-s:hasContractorProfile") || !hasRights) {
+        $("#add-profile", template).remove();
+      }
     }
-  }
-  individual.on("v-s:hasContractorProfile", handler);
-  template.one("remove", function () {
-    individual.off("v-s:hasContractorProfile", handler);
+    individual.on("v-s:hasContractorProfile", handler);
+    template.one("remove", function () {
+      individual.off("v-s:hasContractorProfile", handler);
+    });
+    handler();
   });
-  handler();
 
-  var _class = new veda.IndividualModel("v-s:Subsidiary");
-  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
-    $("#add-subsidiary", template).remove();
-  }
+  var classS = new veda.IndividualModel("v-s:Subsidiary");
+  Promise.all([classS.rights, individual.rights]).then(function (rightsArr) {
+    classSRights = rightsArr[0];
+    individualRights = rightsArr[1];
+    if ( !classSRights.hasValue("v-s:canCreate", true) || !individualRights.hasValue("v-s:canUpdate", true)) {
+      $("#add-subsidiary", template).remove();
+    }
+  });
 
   var prevTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
 
@@ -460,9 +468,9 @@ v-s:OrganizationTemplate
   template.on("validate", function () {
     var result = {},
         regexp;
-    if ( !individual.hasValue("v-s:hasClassifierCountry") || individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
+    if ( !individual.hasValue("v-s:hasClassifierCountry") || individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") ) {
       regexp = /^([0-9]{10}|[0-9]{12})$/gi;
-    } else if ( individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_NLD")) ){
+    } else if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_NLD") ) {
       regexp = /^[A-Z]{1,3}[0-9]{9}[B]{1}[0-9]{2}$/gi;
     } else if ( individual.hasValue("v-s:hasClassifierCountry") ) {
       regexp = /^[A-Z]{1,3}[0-9]{4,}$/gi;
@@ -483,22 +491,25 @@ v-s:OrganizationTemplate
       var newTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
       if ( prevTaxId !== newTaxId ) { prevTaxId = newTaxId; }
       if ( result["v-s:taxId"].state ) {
-        var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").result;
-        result["v-s:taxId"] = {
-          state: (!tmp.length || tmp[0] === individual.id),
-          cause: ["v-s:NonUniqueTaxId"]
-        }
+        query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").then(function (queryRes) {
+          var result = queryRes.result;
+          result["v-s:taxId"] = {
+            state: (!tmp.length || result[0] === individual.id),
+            cause: ["v-s:NonUniqueTaxId"]
+          }
+          template.trigger("validated", result);
+        });
       }
     }
     // Если значение поля v-s:hasClassifierCountry=d:Country_RUS то поле v-s:hasClassifierLegalForm Обязательное
-    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS"))) {
+    if (individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS")) {
       result["v-s:hasClassifierLegalForm"] = {
         state: individual.hasValue("v-s:hasClassifierLegalForm"),
         cause: ["v-ui:minCardinality"]
       }
     }
     // Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102 то поле v-s:taxRegistrationCause должно быть обязательным.
-    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && !individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
+    if (individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && !individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50102") ) {
       result["v-s:taxRegistrationCause"] = {
         state: /^[0-9]{9}$/.test(individual["v-s:taxRegistrationCause"][0]),
         cause: ["v-ui:regexp"]

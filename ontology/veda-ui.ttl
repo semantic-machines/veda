@@ -425,15 +425,18 @@ v-ui:StandardButtonsTemplate
 <script>
   // var allButtons = "send edit save cancel delete destroy journal journal-dms task";
   var defaultButtons = "send edit save cancel delete journal task";
-  var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
-  var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
-  var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
-  enabledButtons.forEach(function (id) {
-    if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
-    if ( !canUpdate && (id === "delete") ) { return; }
-    $("#" + id, template).removeClass("rm");
+  individual.rights.then(function (rights) {
+    var canUpdate = rights.hasValue("v-s:canUpdate", true);
+    var canDelete = rights.hasValue("v-s:canDelete", true);
+    var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
+    enabledButtons.forEach(function (id) {
+      if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
+      if ( !canDelete && (id === "delete") ) { return; }
+      $("#" + id, template).removeClass("rm");
+    });
+    $(".rm", template).remove();
   });
-  $(".rm", template).remove();
+
   template.on("click", "#edit, #save, #cancel, #delete, #destroy", function (e) {
     e.preventDefault();
     var action = this.id;
@@ -483,22 +486,29 @@ v-ui:StandardButtonsTemplate
   });
 
   // Standart buttons labels change for drafts
-  var Edit = new veda.IndividualModel("v-s:Edit")["rdfs:label"].join(" ");
-  var ContinueEdit = new veda.IndividualModel("v-s:ContinueEdit")["rdfs:label"].join(" ");
-  var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft")["rdfs:label"].join(" ");
-  var Cancel = new veda.IndividualModel("v-s:Cancel")["rdfs:label"].join(" ");
   function isDraftHandler() {
-    if ( individual.hasValue("v-s:isDraft", true) ) {
-      //Rename "Edit" -> "Continue edit"
-      $(".action#edit", template).text(ContinueEdit);
-      //Rename "Cancel" -> "Delete draft"
-      $(".action#cancel", template).text(DeleteDraft);
-    } else {
-      //Rename "Continue edit" -> Edit"
-      $(".action#edit", template).text(Edit);
-      //Rename "Delete draft" -> "Cancel"
-      $(".action#cancel", template).text(Cancel);
-    }
+    var Edit = new veda.IndividualModel("v-s:Edit").load();
+    var ContinueEdit = new veda.IndividualModel("v-s:ContinueEdit").load();
+    var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft").load();
+    var Cancel = new veda.IndividualModel("v-s:Cancel").load();
+    Promise.all([Edit, ContinueEdit, DeleteDraft, Cancel]).then(function (arr) {
+      var Edit         = arr[0]["rdfs:label"].join(" ");
+      var ContinueEdit = arr[1]["rdfs:label"].join(" ");
+      var DeleteDraft  = arr[2]["rdfs:label"].join(" ");
+      var Cancel       = arr[3]["rdfs:label"].join(" ");
+
+      if ( individual.hasValue("v-s:isDraft", true) ) {
+        //Rename "Edit" -> "Continue edit"
+        $(".action#edit", template).text(ContinueEdit);
+        //Rename "Cancel" -> "Delete draft"
+        $(".action#cancel", template).text(DeleteDraft);
+      } else {
+        //Rename "Continue edit" -> Edit"
+        $(".action#edit", template).text(Edit);
+        //Rename "Delete draft" -> "Cancel"
+        $(".action#cancel", template).text(Cancel);
+      }
+    });
   }
   individual.on("v-s:isDraft", isDraftHandler);
   template.one("remove", function () {
@@ -540,21 +550,22 @@ v-ui:StandardButtonsTemplate
 </div>
 <script>
   // Make position fixed for buttons bar that doesn't fit the window
-  function checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder) {
+  function checkOffset(main, actions, actionsStaticHeight, placeholder) {
     var mainTop = main.offset().top;
     var mainHeight = main.height();
     var windowHeight = window.innerHeight;
     var windowTop = window.scrollY;
+    var actionsStaticTop = placeholder.offset().top;
     var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
     var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
     if ( !actions_inside_viewport && main_inside_viewport )  {
       if ( !actions.hasClass("actions-fixed") ) {
-        placeholder.insertBefore(actions);
+        placeholder.css("height", actionsStaticHeight);
         actions.addClass("actions-fixed");
       }
     } else {
       if ( actions.hasClass("actions-fixed") ) {
-         placeholder.remove();
+        placeholder.css("height", 0);
         actions.removeClass("actions-fixed");
       }
     }
@@ -563,16 +574,15 @@ v-ui:StandardButtonsTemplate
     var main = template.parent().closest("[resource='" + individual.id + "']");
     var actions = template.closest(".actions");
     if (!actions.length) { return; }
-    var actionsStaticTop = actions.offset().top;
     var actionsStaticHeight = actions.height();
-    var placeholder = $("<div>&nbsp;</div>").css("height", actionsStaticHeight);
-    checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+    var placeholder = $("<div></div>").insertBefore(actions);
+    checkOffset(main, actions, actionsStaticHeight, placeholder);
     $(window).on("scroll", scrollHandler);
     template.one("remove", function () {
       $(window).off("scroll", scrollHandler);
     });
     function scrollHandler () {
-      checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+      checkOffset(main, actions, actionsStaticHeight, placeholder);
     }
   }, 500);
 
@@ -1027,17 +1037,7 @@ v-ui:IconModalTemplate
     if (parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.data("mode");
     }
-    var modal;
-    if(newMode==="view") {
-      if (!individual.rights.hasValue("v-s:canUpdate", true)) {
-        modal = $("#individual-modal-template").html();
-      }
-      else if(individual.rights.hasValue("v-s:canUpdate", true)) {
-        modal = $("#notification-modal-template").html();
-      }
-    } else if (newMode==="edit") {
-      modal = $("#individual-modal-template").html();
-    }
+    var modal = $("#notification-modal-template").html();
     modal = $(modal).modal({"show": false});
     $("body").append(modal);
     modal.modal("show");
@@ -1052,15 +1052,13 @@ v-ui:IconModalTemplate
     cntr.on("invalid", function () {
     ok.attr("disabled", "disabled");
     });
- // var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-    var tmpl = individual["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( individual["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
 
     if (newMode === "edit") {
-      individual.present(cntr, tmpl, newMode);
+      individual.present(cntr, undefined, newMode);
       $(".actions", tmpl).remove();
     } else {
       $("#cancel", tmpl).addClass("viev").removeClass("-view");
-      individual.present(cntr, tmpl, newMode);
+      individual.present(cntr, undefined, newMode);
     }
     individual.one("beforeReset", function () {
       modal.modal("hide").remove();
@@ -2722,10 +2720,13 @@ td:AccountTemplate1
   v-ui:template """
 <script>
   var _class = new veda.IndividualModel("v-s:Credential");
-  var canCreate = _class.rights.hasValue("v-s:canCreate", true);
-  if ( !canCreate ) {
-    $("[rel='v-s:usesCredential']", template).remove();
-  }
+  _class.rights.then(function (rights) {
+    var canCreate = rights.hasValue("v-s:canCreate", true);
+    if ( !canCreate ) {
+      $("[rel='v-s:usesCredential']", template).remove();
+    }
+  });
+
   //# sourceURL=td:AccountTemplate1_pre
 </script>
 <div class="panel panel-default">

@@ -1600,15 +1600,12 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <script>
-  if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
-    individual["v-wf:read"] = [true];
-    //individual.save();
-    put_individual({
-      ticket: veda.ticket,
-      individual: individual.properties,
-      async: true
-    });
-  }
+  individual.rights.load().then(function (rights) {
+    if ( !individual.hasValue("v-wf:read") && rights.hasValue("v-s:canUpdate", true) ) {
+      individual["v-wf:read"] = [true];
+      individual.save();
+    }
+  });
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
 <div class="hidden"></div>

@@ -181,14 +181,20 @@ v-s:RecursiveCommentTemplate
   v-ui:template """
 <script>
   var actions = $("#edit-comment, #delete", template);
-  if (!individual.rights.hasValue("v-s:canUpdate", true)) {
-    actions.remove();
-  }
+  individual.rights.then(function (rights) {
+    if ( !rights.hasValue("v-s:canUpdate", true) ) {
+      actions.remove();
+    }
+  });
+
   $(".action", template).click(function (e) {
     e.preventDefault();
-    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
-    if ( this.id === "delete" && !confirm(warning) ) { return; }
-    template.trigger(this.id);
+    var warning = new veda.IndividualModel("v-s:AreYouSure");
+    warning.load().then(function (warning) {
+      warning = warning["rdfs:label"].join(" ");
+      if ( this.id === "delete" && !confirm(warning) ) { return; }
+      template.trigger(this.id);
+    });
   });
 
   individual.on("v-s:hasComment", commentHandler);

@@ -1482,59 +1482,62 @@
     if ( this.hasClass("create") || this.hasClass("full") ) {
       var inModal = this.hasClass("create-modal");
       var rel_range = rangeRestriction ? rangeRestriction : (new veda.IndividualModel(rel_uri))["rdfs:range"][0];
-      if ( !rel_range.rights.hasValue("v-s:canCreate", true) ) {
-        create.addClass("disabled");
-        create.off("click");
-      } else {
-        create.click( function (e) {
-          e.stopPropagation();
-          var newVal = createValue();
-          if ( inModal ) {
-            var modal = $("#individual-modal-template").html();
-            modal = $(modal).modal({"show": false});
-            $("body").append(modal);
-            modal.modal("show");
-            create.one("remove", function () {
-              modal.modal("hide").remove();
-              $(document).off("keyup", escHandler);
-            });
-            var ok = $("#ok", modal).click(function (e) {
-              select(newVal);
-              $(document).off("keyup", escHandler);
-            });
-            var close = $(".close", modal).click(function (e) {
-              newVal.delete();
-              $(document).off("keyup", escHandler);
-            });
-            var escHandler = function (e) {
-              if (e.keyCode === 27) {
-                close.click();
+      rel_range.rights.then(function (rights) {
+        if ( !rights.hasValue("v-s:canCreate", true) ) {
+          create.addClass("disabled");
+          create.off("click");
+        } else {
+          create.click( function (e) {
+            e.stopPropagation();
+            var newVal = createValue();
+            if ( inModal ) {
+              var modal = $("#individual-modal-template").html();
+              modal = $(modal).modal({"show": false});
+              $("body").append(modal);
+              modal.modal("show");
+              create.one("remove", function () {
+                modal.modal("hide").remove();
+                $(document).off("keyup", escHandler);
+              });
+              var ok = $("#ok", modal).click(function (e) {
+                select(newVal);
+                $(document).off("keyup", escHandler);
+              });
+              var close = $(".close", modal).click(function (e) {
+                newVal.delete();
+                $(document).off("keyup", escHandler);
+              });
+              var escHandler = function (e) {
+                if (e.keyCode === 27) {
+                  close.click();
+                }
+              };
+              $(document).on("keyup", escHandler);
+              var cntr = $(".modal-body", modal);
+              newVal.one("beforeReset", function () {
+                modal.modal("hide").remove();
+              });
+              newVal.one("afterSave", function () {
+                select(newVal);
+                modal.modal("hide").remove();
+              });
+              var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
+              if (tmpl) {
+                $(".action", tmpl).remove();
               }
-            };
-            $(document).on("keyup", escHandler);
-            var cntr = $(".modal-body", modal);
-            newVal.one("beforeReset", function () {
-              modal.modal("hide").remove();
-            });
-            newVal.one("afterSave", function () {
+              newVal.present(cntr, tmpl, "edit");
+              var template = cntr.children("[resource]");
+              template.on("internal-validated", function () {
+                var validation = template.data("validation");
+                validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
+              });
+            } else {
               select(newVal);
-              modal.modal("hide").remove();
-            });
-            var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-            if (tmpl) {
-              $(".action", tmpl).remove();
             }
-            newVal.present(cntr, tmpl, "edit");
-            var template = cntr.children("[resource]");
-            template.on("internal-validated", function () {
-              var validation = template.data("validation");
-              validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
-            });
-          } else {
-            select(newVal);
-          }
-        });
-      }
+          });
+        }
+      })
+
 
       // Hide create button for single value relations if value exists
       if (isSingle) {
