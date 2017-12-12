@@ -4,7 +4,7 @@ veda.Module(function (veda) { "use strict";
 
   //var c = 0;
 
-  veda.IndividualPresenter = function (container, template, mode) {
+  veda.IndividualModel.prototype.present = function (container, template, mode) {
 
     //console.log(individual.id, "presenter count:", ++c);
 
