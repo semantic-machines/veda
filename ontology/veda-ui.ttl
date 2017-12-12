@@ -359,37 +359,25 @@ v-ui:LanguageSwitchTemplate
   v-ui:template """
 <div about="@" class="btn-group" rel="rdf:value">
   <button about="@" property="rdfs:label" class="btn btn-xs btn-default navbar-btn"></button>
-</div>
-<script>
-  var switches = $(".btn", template);
-  veda.user.preferences.on("v-ui:preferredLanguage", langHandler);
-  template.one("remove", function () {
-    veda.user.preferences.off("v-ui:preferredLanguage", langHandler);
-  });
-  langHandler();
-  template.on("click", function(e) {
-    e.stopPropagation();
-    var target = $(e.target);
-    var lang_uri = target.attr("resource");
-    var lang = new veda.IndividualModel(lang_uri);
-    var lang_name = lang["rdf:value"][0].toString();
-    veda.user.toggleLanguage(lang_name);
-  });
-  function langHandler() {
-    var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
-    switches.each(function () {
-      var $this = $(this);
-      var lang_uri = $this.attr("resource");
-      if (preferredLanguage.indexOf(lang_uri) > -1) {
-        $this.addClass("active btn-success").removeClass("btn-default");
+  <script>
+    function handler() {
+      var preferred = veda.user.preferences["v-ui:preferredLanguage"];
+      if ( preferred.indexOf(individual) >= 0) {
+        template.addClass("active btn-success").removeClass("btn-default");
       } else {
-        $this.removeClass("active btn-success").addClass("btn-default");
+        template.removeClass("active btn-success").addClass("btn-default");
       }
+    }
+    handler();
+    template.click(function (e) {
+      e.stopPropagation();
+      var langValue = individual["rdf:value"][0].toString();
+      veda.user.toggleLanguage(langValue);
+      handler();
     });
-  }
-  //# sourceURL=v-ui:LanguageSwitchTemplate
-</script>
-
+    //# sourceURL=v-ui:LanguageButtonTemplate
+  </script>
+</div>
   """
 .
 
