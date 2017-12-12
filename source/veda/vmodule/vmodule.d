@@ -3,7 +3,7 @@ module veda.vmodule.vmodule;
 private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
-    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.algorithm : remove;
+    import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.outbuffer, std.algorithm : remove;
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.core.impl.thread_context;
@@ -184,10 +184,10 @@ class VedaModule
 
         try
         {
-    	    string[ string ] properties;
+            string[ string ] properties;
             properties         = readProperties("./veda.properties");
             notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
-            main_module_url = properties.as!(string)("main_module_url") ~ "\0";
+            main_module_url    = properties.as!(string)("main_module_url") ~ "\0";
         }
         catch (Throwable ex)
         {
@@ -496,7 +496,6 @@ class VedaModule
             {
                 log.trace("ERR! ex=%s %s", ex.msg, ex.info);
             }
-
         }
         //if (count_readed != count_success_prepared)
         //    log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
@@ -512,15 +511,28 @@ class VedaModule
 
             bool is_superadmin = false;
 
-            void trace_acl(string resource_group, string subject_group, string right)
-            {
-                if (subject_group == "cfg:SuperUser")
-                    is_superadmin = true;
-            }
-
             while (is_superadmin == false)
             {
-                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", &trace_acl, null);
+                OutBuffer trace_acl = new OutBuffer();
+
+                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", trace_acl, null);
+
+                foreach (rr; trace_acl.toString().split('\n'))
+                {
+                    string[] cc = rr.split(";");
+                    if (cc.length == 3)
+                    {
+                        string resource_group = cc[ 0 ];
+                        string subject_group  = cc[ 1 ];
+                        string right          = cc[ 2 ];
+
+                        if (subject_group == "cfg:SuperUser")
+                        {
+                            is_superadmin = true;
+                            break;
+                        }
+                    }
+                }
 
                 log.trace("child_process is_superadmin=%s", text(is_superadmin));
                 Thread.sleep(dur!("seconds")(1));

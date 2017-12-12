@@ -33,62 +33,64 @@ class ClientAuthorization : Authorization
         log = _log;
     }
 
-    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, void delegate(string resource_group,
-                                                                                                                 string subject_group,
-                                                                                                                 string right)
-                    _trace_acl,
-                    void delegate(string resource_group) _trace_group, void delegate(string log) _trace_info
-                    )
+    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group, OutBuffer _trace_info)
     {
-            ubyte res;
+        ubyte res;
 
-            bool  is_open = false;
-            while (is_open == false)
+        bool  is_open = false;
+
+        while (is_open == false)
+        {
+            is_open = open();
+
+            if (is_open == false)
+                core.thread.Thread.sleep(dur!("seconds")(1));
+        }
+
+        OutBuffer buff = new OutBuffer();
+
+        buff.write("[\"");
+        buff.write(user_uri);
+        buff.write("\",[\"");
+        buff.write(_uri);
+        buff.write("\",\"");
+        buff.write(access_to_short_string(_request_access));
+        if (_trace_acl !is null)
+            buff.write("\",\"TRACE-ACL");
+        if (_trace_group !is null)
+            buff.write("\",\"TRACE-GROUP");
+        if (_trace_info !is null)
+            buff.write("\",\"TRACE-INFO");
+        buff.write("\"]]");
+
+        if (sock >= 0)
+        {
+            char   *buf = cast(char *)0;
+            int    bytes;
+
+            string req = buff.toString();
+
+            bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+            stderr.writefln("AZCL send [%d](%s)", req.length, req);
+            bytes = nn_recv(sock, &buf, NN_MSG, 0);
+            if (bytes > 0)
             {
-                is_open = open();
+                string rep = to!string(buf);
+                //stderr.writefln("AZCL recv (%s)", rep);
 
-                if (is_open == false)
-                    core.thread.Thread.sleep(dur!("seconds")(1));
-            }
-
-            OutBuffer buff = new OutBuffer();
-
-            buff.write("[\"");
-            buff.write(user_uri);
-            buff.write("\",[\"");
-            buff.write(_uri);
-            buff.write("\",\"");
-            buff.write(access_to_short_string(_request_access));
-            buff.write("\"]]");
-
-            if (sock >= 0)
-            {
-                char   *buf = cast(char *)0;
-                int    bytes;
-
-                string req = buff.toString();
-
-                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-                stderr.writefln("AZCL send [%d](%s)", req.length, req);
-                bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                if (bytes > 0)
+                if (rep.length > 4 && rep[ 0 ] == '[' && rep[ 1 ] == '"')
                 {
-                    string rep = to!string(buf);
-                    //stderr.writefln("AZCL recv (%s)", rep);
+                    rep = rep[ 2..$ - 2 ];
+                    stderr.writefln("AZCL rep (%s)", rep);
 
-                    if (rep.length > 4 && rep[ 0 ] == '[' && rep[ 1 ] == '"')
-                    {
-                        rep = rep[ 2..$ - 2 ];
-                        stderr.writefln("AZCL rep (%s)", rep);
-
-                        res = access_from_pretty_string(rep);
-                    }
-
-                    nn_freemsg(buf);
+                    res = access_from_pretty_string(rep);
                 }
-                nn_close(sock);
-                sock = -1;
+
+                nn_freemsg(buf);
             }
+            nn_close(sock);
+            sock = -1;
+        }
         //stderr.writefln("AZCL _request_access (%d), res (%d)", _request_access, res);
         return res;
     }

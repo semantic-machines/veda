@@ -1,6 +1,6 @@
 module veda.frontend.core_rest;
 
-import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf;
+import std.stdio, std.datetime, std.conv, std.string, std.datetime, std.file, core.runtime, core.thread, core.sys.posix.signal, std.uuid, std.utf, std.outbuffer;
 import core.vararg, core.stdc.stdarg, core.atomic, std.uri;
 import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetypes;
 import veda.util.properd, TrailDB, veda.authorization.az_client;
@@ -320,13 +320,15 @@ class VedaStorageRest : VedaStorageRest_API
             indv_res.addResource("v-s:resource",
                                  Resource(DataType.Uri, uri));
 
-            void trace_group(string resource_group)
-            {
-                indv_res.addResource("v-s:memberOf",
-                                     Resource(DataType.Uri, resource_group));
-            }
+            OutBuffer trace_group = new OutBuffer();
+            context.get_membership_from_acl(ticket, uri, trace_group);
 
-            context.get_membership_from_acl(ticket, uri, &trace_group);
+            foreach (resource_group; trace_group.toString().split('\n'))
+            {
+                if (resource_group.length > 0)
+                    indv_res.addResource("v-s:memberOf",
+                                         Resource(DataType.Uri, resource_group));
+            }
 
             json = individual_to_json(indv_res);
             return json;
@@ -363,36 +365,41 @@ class VedaStorageRest : VedaStorageRest_API
             indv_info.addResource(veda_schema__permissionSubject,
                                   Resource(DataType.Uri, "?"));
 
+            OutBuffer trace_info = new OutBuffer();
 
-            void trace_info(string info)
-            {
-                all_info ~= info ~ "\n";
-            }
+            OutBuffer trace_acl = new OutBuffer();
 
-            void trace_acl(string resource_group, string subject_group, string right)
-            {
-                Individual indv_res = Individual.init;
+            context.get_rights_origin_from_acl(ticket, uri, trace_acl, trace_info);
 
-                indv_res.uri = "_";
-                indv_res.addResource(rdf__type,
-                                     Resource(DataType.Uri, veda_schema__PermissionStatement));
-                indv_res.addResource(veda_schema__permissionObject,
-                                     Resource(DataType.Uri, resource_group));
-                indv_res.addResource(veda_schema__permissionSubject,
-                                     Resource(DataType.Uri, subject_group));
-                indv_res.addResource(right, Resource(true));
-
-                res ~= indv_res;
-            }
-
-            context.get_rights_origin_from_acl(ticket, uri, &trace_acl, &trace_info);
-
-            indv_info.addResource("rdfs:comment", Resource(all_info));
+            indv_info.addResource("rdfs:comment", Resource(trace_info.toString()));
             res ~= indv_info;
 
             json = Json[].init;
-            foreach (individual; res)
-                json ~= individual_to_json(individual);
+
+            foreach (rr; trace_acl.toString().split('\n'))
+            {
+                string[] cc = rr.split(";");
+
+                if (cc.length == 3)
+                {
+                    string     resource_group = cc[ 0 ];
+                    string     subject_group  = cc[ 1 ];
+                    string     right          = cc[ 2 ];
+
+                    Individual indv_res = Individual.init;
+
+                    indv_res.uri = "_";
+                    indv_res.addResource(rdf__type,
+                                         Resource(DataType.Uri, veda_schema__PermissionStatement));
+                    indv_res.addResource(veda_schema__permissionObject,
+                                         Resource(DataType.Uri, resource_group));
+                    indv_res.addResource(veda_schema__permissionSubject,
+                                         Resource(DataType.Uri, subject_group));
+                    indv_res.addResource(right, Resource(true));
+
+                    json ~= individual_to_json(indv_res);
+                }
+            }
 
             return json;
         }

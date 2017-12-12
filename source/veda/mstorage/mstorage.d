@@ -819,12 +819,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
     OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
-	if (ticket is null)
-	{
-	    log.trace("ERR! add_to_transaction: %s %s, ticket is null", text(cmd), *indv);
-	    res = OpResult(ResultCode.Authentication_Failed, -1);
-		return res;
-	}	
+    if (ticket is null)
+    {
+        log.trace("ERR! add_to_transaction: %s %s, ticket is null", text(cmd), *indv);
+        res = OpResult(ResultCode.Authentication_Failed, -1);
+        return res;
+    }
 
     try
     {
@@ -1132,16 +1132,27 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
     Ticket *tr_ticket = ctx.get_storage().get_ticket(tr_ticket_id, false);
     if (tr_ticket.result == ResultCode.OK)
     {
-        bool is_allow_trusted = false;
+        bool      is_allow_trusted = false;
 
-        void trace_acl(string resource_group, string subject_group, string right)
+        OutBuffer trace_acl = new OutBuffer();
+        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, trace_acl, null);
+        foreach (rr; trace_acl.toString().split('\n'))
         {
-            //log.trace ("trusted authenticate: %s %s %s", resource_group, subject_group, right);
-            if (subject_group == allow_trusted_group)
-                is_allow_trusted = true;
-        }
+            string[] cc = rr.split(";");
 
-        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, &trace_acl, null);
+            if (cc.length == 3)
+            {
+                string resource_group = cc[ 0 ];
+                string subject_group  = cc[ 1 ];
+                string right          = cc[ 2 ];
+
+                if (subject_group == allow_trusted_group)
+                {
+                    is_allow_trusted = true;
+                    break;
+                }
+            }
+        }
 
         if (is_allow_trusted)
         {
