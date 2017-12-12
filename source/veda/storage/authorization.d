@@ -440,13 +440,13 @@ ubyte access_from_pretty_string(const string access)
 
     foreach (c_access; access)
     {
-        if (c_access == 'c')
+        if (c_access == 'c' || c_access == 'C')
             res = res | Access.can_create;
-        if (c_access == 'r')
+        if (c_access == 'r' || c_access == 'R')
             res = res | Access.can_read;
-        if (c_access == 'u')
+        if (c_access == 'u' || c_access == 'U')
             res = res | Access.can_update;
-        if (c_access == 'd')
+        if (c_access == 'd' || c_access == 'D')
             res = res | Access.can_delete;
     }
     return res;

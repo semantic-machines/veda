@@ -821,6 +821,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
 	if (ticket is null)
 	{
+	    log.trace("ERR! add_to_transaction: %s %s, ticket is null", text(cmd), *indv);
 	    res = OpResult(ResultCode.Authentication_Failed, -1);
 		return res;
 	}	
