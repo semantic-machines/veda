@@ -46,7 +46,7 @@ veda.Module(function (veda) { "use strict";
 
   proto.getClassSpecifications = function (_class_uri) {
     var classTree = this.classTree;
-    return veda.Util.unique( getSpecs(_class_uri) );
+    return getSpecs(_class_uri);
 
     function getSpecs (_class_uri) {
       var _class = classTree[_class_uri];
