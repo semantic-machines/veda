@@ -3114,7 +3114,7 @@ v-ui:Graph
   function addInLinks (id, query) {
     var q = query || "'*'=='{id}'";
     q = q.replace("{id}", id);
-    var s = query(veda.ticketm, q);
+    var s = query(veda.ticket, q);
     s.result.forEach(function (uri) {
       var res = new veda.IndividualModel(uri);
       addNode(res);
