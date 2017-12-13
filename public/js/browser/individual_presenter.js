@@ -13,15 +13,10 @@ veda.Module(function (veda) { "use strict";
       if (typeof container === "string") {
         container = $(container).empty();
       }
+
       mode = mode || "view";
 
-      if (container.prop("id") === "main") { container.hide(); }
-
-      var renderedTemplate = present(individual, container, template, mode);
-
-      if (container.prop("id") === "main") { container.show("fade", 250); }
-
-      return renderedTemplate;
+      return present(individual, container, template, mode);
 
     }).catch(function (error) {
 
@@ -86,6 +81,7 @@ veda.Module(function (veda) { "use strict";
   }
 
   function renderTemplate(individual, container, template, mode, specs) {
+
     var pre_render_src,
         pre_render,
         post_render_src,
@@ -106,6 +102,7 @@ veda.Module(function (veda) { "use strict";
     template = template.filter("*:not(script)");
 
     return new Promise(function (resolve, reject) {
+
       try {
         var result = pre_render.call(individual, veda, individual, container, template, mode, specs);
         resolve(result);
