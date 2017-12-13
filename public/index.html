@@ -114,128 +114,6 @@
       </div>
     </script>
 
-    <!-- Search template -->
-    <script type="html/template" id="search-template">
-      <div class="container sheet">
-        <div role="tabpanel" id="search-tab-panel-{id}">
-          <!-- Nav tabs -->
-          <ul class="nav nav-pills" role="tablist">
-            <li role="presentation" id="params-pill-{id}" class="active"><a href="#params-{id}" aria-controls="params-{id}" role="tab" data-toggle="tab">Параметры</a></li>
-            <li role="presentation" id="results-pill-{id}"><a href="#results-{id}" id="results-link-{id}" aria-controls="results-{id}" role="tab" data-toggle="tab">Результаты <span class="badge" id="results_count" bound>{results_count}</span></a></li>
-            <li role="presentation" id="timing-pill-{id}" class="disabled">
-              <a id="timing-{id}" style="display: none">
-                <small><small>
-                  <span><strong>timing: </strong>search query time = <span id="query_time" bound>{query_time}</span> ms | get request count = <span id="get_count"></span> | get summary time = <span id="get_summary_time"></span> ms | total render time = <span id="render_time"></span> ms </span>
-                </small></small>
-              </a>
-            </li>
-            <li role="presentation" id="query-pill-{id}" class="disabled">
-              <a id="query-{id}" style="display: none">
-                <small><small>
-                  <span><strong>query: </strong><span id="query-text"></span></span>
-                </small></small>
-              </a>
-            </li>
-          </ul>
-          <br />
-          <!-- Tab panes -->
-          <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="params-{id}">
-              <div id="search">
-                <form role="form" class="form-horizontal">
-                  <div class="input-group">
-                    <input id="q" bound value="{q}" type="text" name="q" class="form-control" autofocus="autofocus"/>
-                    <span class="input-group-btn" id="q-actions">
-                      <button type="submit" id="search-submit" class="btn btn-primary">Найти</button>
-                    </span>
-                  </div>
-                </form>
-              </div>
-              <div class="alert alert-warning not-found" style="display: none">
-                <strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-              </div>
-            </div>
-
-            <div role="tabpanel" class="tab-pane" id="results-{id}">
-              <div id="search-results" style="display: none">
-                <div id="search-features" class="form-inline">
-                  <div class="checkbox">
-                    <label>
-                      <input type="checkbox" id="select-all"> <span>Выбрать все</span>
-                    </label>
-                  </div>
-                </div>
-                <hr class="margin-sm"/>
-                <ol id="search-results-list"></ol>
-                <hr/>
-                <div class="text-center">
-                  <ul class="pagination" id="pager"></ul>
-                  <br />
-                </div>
-              </div>
-              <div class="alert alert-warning not-found" style="display: none">
-                <strong>Пусто!</strong> <span>По вашему запросу ничего не найдено. Пожалуйста, учточните запрос.</span>
-              </div>
-              <div id="selected-actions-{id}">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </script>
-
-    <!-- Selected actions -->
-    <script type="html/template" id="selected-actions-template">
-      <div id="selected-actions">
-        <button id="export-ttl" class="btn btn-success">Экспорт в ttl</button>
-        <button id="update" class="btn btn-default">Обновить</button>
-        <button id="delete" class="btn btn-link">Удалить</button>
-      </div>
-    </script>
-
-    <!-- Checkbox for search -->
-    <script type="html/template" id="search-select-template">
-      <label class="checkbox-inline">
-        <input type="checkbox"> &nbsp;
-      </label>
-    </script>
-
-    <!-- Save search button -->
-    <script type="html/template" id="save-search-template">
-      <button class="btn btn-default" type="button" id="save-search">
-        <i class="glyphicon glyphicon-star-empty"></i>
-      </button>
-    </script>
-
-    <!-- Saved search list button -->
-    <script type="html/template" id="saved-search-list-button-template">
-      <button class="btn btn-default" type="button" id="saved-search-list">
-        <i class="glyphicon glyphicon-menu-hamburger"></i>
-      </button>
-    </script>
-
-    <!-- Sort property template -->
-    <script type="html/template" id="sort-property-template">
-      <span class="form-inline" id="sort-property-container">
-        <div class="form-group" style="margin-right:15px"></div>
-        <div class="checkbox">
-          <label>
-            <strong>Упорядочить: </strong>
-          </label>
-        </div>
-        <div class="form-group sort-property">
-          <div class="form-group" style="margin-right:15px"></div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="order-by">
-              <span class="property-name">имя свойства</span>
-              <a href="" class="direction btn btn-xs disabled glyphicon glyphicon-sort-by-alphabet"></a>
-            </label>
-          </div>
-        </div>
-      </span>
-    </script>
-
     <!-- MODALS -->
 
     <!-- Individual modal -->
@@ -277,9 +155,6 @@
     <script type="html/template" id="link-control-template">
       <div class="scrollable-typeahead">
         <div class="input-group">
-          <div class="input-group-addon btn btn-default" id="fullsearch">
-            <i class="glyphicon glyphicon-search"></i>
-          </div>
           <div class="input-group-addon btn btn-default" id="tree">
             <i class="fa fa-sitemap"></i>
           </div>
@@ -360,7 +235,7 @@
     <!-- Numeration control template -->
     <script type="html/template" id="numeration-control-template">
       <div class="input-group">
-        <div class="get-numeration-value input-group-addon btn btn-default" id="fullsearch">
+        <div class="get-numeration-value input-group-addon btn btn-default">
           <i class="glyphicon glyphicon-retweet"></i>
         </div>
         <input type="text" class="form-control" />
@@ -479,9 +354,7 @@
     <script type="text/javascript" src="/js/common/individual_model.js"></script>
     <script type="text/javascript" src="/js/common/individual_model_async.js"></script>
     <script type="text/javascript" src="/js/common/individual_list_model.js"></script>
-    <script type="text/javascript" src="/js/common/search_result_model.js"></script>
     <script type="text/javascript" src="/js/common/user_model.js"></script>
-    <script type="text/javascript" src="/js/common/search_model.js"></script>
     <script type="text/javascript" src="/js/common/ontology_model.js"></script>
     <script type="text/javascript" src="/js/common/drafts_model.js"></script>
 
@@ -495,12 +368,6 @@
     <script type="text/javascript" src="/js/browser/displayed_services.js"></script>
     <script type="text/javascript" src="/js/browser/individual_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/individual_presenter_async.js"></script>
-    <script type="text/javascript" src="/js/browser/saved_search_list.js"></script>
-    <script type="text/javascript" src="/js/browser/save_search.js"></script>
-    <script type="text/javascript" src="/js/browser/search_presenter.js"></script>
-    <script type="text/javascript" src="/js/browser/search_result_presenter.js"></script>
-    <script type="text/javascript" src="/js/browser/search_sort.js"></script>
-    <script type="text/javascript" src="/js/browser/search_selected_actions.js"></script>
     <script type="text/javascript" src="/js/browser/drafts_presenter.js"></script>
     <script type="text/javascript" src="/js/browser/veda_net_editor.js"></script>
     <script type="text/javascript" src="/js/browser/app_presenter.js"></script>
