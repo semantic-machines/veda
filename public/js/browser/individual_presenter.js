@@ -457,20 +457,19 @@ veda.Module(function (veda) { "use strict";
           about_inline_template = aboutContainer.children(),
           isEmbedded = aboutContainer.attr("data-embedded") === "true",
           about, aboutTemplate;
-      if ( about_template_uri ) {
-        aboutTemplate = new veda.IndividualModel( about_template_uri );
-      }
-      if ( about_inline_template.length ) {
-        aboutTemplate = about_inline_template.remove();
-      }
       if (aboutContainer.attr("about") === "@") {
         about = individual;
         aboutContainer.attr("about", about.id);
       } else {
         about = new veda.IndividualModel(aboutContainer.attr("about"));
       }
+      if ( about_template_uri ) {
+        aboutTemplate = new veda.IndividualModel( about_template_uri );
+      } else if ( about_inline_template.length ) {
+        aboutTemplate = about_inline_template.remove();
+      }
       aboutContainer.empty();
-      about.present(aboutContainer, aboutTemplate).then(function (aboutTemplate) {
+      about.present(aboutContainer, aboutTemplate, isEmbedded ? mode : undefined).then(function (aboutTemplate) {
         if (isEmbedded) {
           aboutTemplate.data("isEmbedded", true);
           embedded.push(aboutTemplate);
