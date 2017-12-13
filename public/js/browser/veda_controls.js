@@ -1441,8 +1441,7 @@
       create = $("#create", control),
       dropdown = $("#dropdown", control),
       fulltext = $("#fulltext", control),
-      tree = $("#tree", control),
-      fullsearch = $("#fullsearch", control);
+      tree = $("#tree", control);
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
@@ -1672,32 +1671,6 @@
       });
     } else {
       dropdown.remove();
-    }
-
-    // Search modal feature
-    if ( this.hasClass("fullsearch") || this.hasClass("full") ) {
-      // Search modal
-      var tmpl = $("#individual-modal-template").html();
-      fullsearch.on("click", function (e) {
-        var $modal = $(tmpl);
-        $modal.on('hidden.bs.modal', function (e) {
-          $modal.remove();
-        });
-        $modal.modal();
-        $("body").append($modal);
-        var srch = new veda.SearchModel(undefined, $(".modal-body", $modal), queryPrefix, sort);
-        // Add found values
-        $("#ok", $modal).on("click", function (e) {
-          $(this).off("click");
-          var selected = [];
-          for (var uri in srch.selected) {
-            selected.push( srch.selected[uri] );
-          }
-          select(selected);
-        });
-      });
-    } else {
-      fullsearch.remove();
     }
 
     if ( !$("input", control).length ) {

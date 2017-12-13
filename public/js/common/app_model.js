@@ -34,9 +34,6 @@
 
     self.load = function (page, params) {
       switch (page) {
-        case "search":
-          construct(veda.SearchModel, params);
-          break;
         case "drafts":
           self.trigger.apply(self, ["load:drafts"].concat(params));
           break;
