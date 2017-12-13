@@ -117,6 +117,29 @@ veda.Module(function (veda) { "use strict";
       post_render.call(individual, veda, individual, container, template, mode, specs);
     }
 
+    // Watch individual updates on server
+    var updateService = new veda.UpdateService();
+    updateService.subscribe(individual.id);
+    template.one("remove", function () {
+      updateService.unsubscribe(individual.id);
+    });
+
+    // Watch language change
+    veda.on("language:changed", localizeIndividual);
+    template.one("remove", function () {
+      veda.off("language:changed", localizeIndividual);
+    });
+
+    function localizeIndividual () {
+      for (var property_uri in individual.properties) {
+        if (property_uri === "@") { continue; }
+        if ( individual.hasValue(property_uri) && individual.properties[property_uri][0].type === "String" ) {
+          individual.trigger("propertyModified", property_uri, individual.get(property_uri));
+          individual.trigger(property_uri, individual.get(property_uri));
+        }
+      }
+    }
+
     return template;
   }
 
