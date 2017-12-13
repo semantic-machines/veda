@@ -160,7 +160,7 @@ veda.Module(function (veda) { "use strict";
       });
       e.stopPropagation();
     }
-    template.on("view edit search save cancel delete recover draft destroy", syncEmbedded);
+    template.on("view edit search save cancel delete recover destroy", syncEmbedded);
 
     // Define handlers
 
@@ -178,15 +178,6 @@ veda.Module(function (veda) { "use strict";
       e.stopPropagation();
     }
     template.on("save", saveHandler);
-
-    function draftHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.draft();
-      }
-      template.trigger("view");
-      e.stopPropagation();
-    }
-    template.on("draft", draftHandler);
 
     function cancelHandler (e, parent) {
       if (parent !== individual.id) {
@@ -272,46 +263,6 @@ veda.Module(function (veda) { "use strict";
       e.stopPropagation();
     }
     template.on("recover", recoverHandler);
-
-    // Draft label
-    var draftLabel = null;
-    function isDraftHandler(property_uri) {
-      if (property_uri === "v-s:isDraft") {
-        // If individual is draft
-        if ( individual.hasValue("v-s:isDraft", true) ) {
-          if ( !template.parent().closest("[resource='" + individual.id + "']").length && !draftLabel ) {
-            var draft = new veda.IndividualModel("v-s:Draft");
-            draft.load().then(function (draft) {
-              draft = draft["rdfs:comment"].join(" ");
-              draftLabel = $("<div class='label label-default label-draft'></div>").text(draft);
-              if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
-                var cell = template.children().first();
-                cell.css("position", "relative").append(draftLabel);
-              } else {
-                template.css("position", "relative");
-                // It is important to skip script element in template!
-                template.not("script").append(draftLabel);
-              }
-            });
-          }
-        } else {
-          if (draftLabel) {
-            draftLabel.remove();
-            draftLabel = null;
-          }
-        }
-      } else {
-        if ( mode === "edit" && individual.is("v-s:UserThing") ) {
-          individual.draft();
-        }
-      }
-    }
-    individual.on("propertyModified", isDraftHandler);
-    template.one("remove", function () {
-      individual.off("propertyModified", isDraftHandler);
-      draftLabel = null;
-    });
-    isDraftHandler("v-s:isDraft");
 
     // Process RDFa compliant template
 

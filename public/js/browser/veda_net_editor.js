@@ -1013,16 +1013,8 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('#workflow-export-ttl').on('click', function() {
-              var list = new veda.IndividualListModel(net, net['v-wf:consistsOf']);
-              /* temporary commented
-            net['v-wf:consistsOf'].forEach(function(element) {
-              element['rdf:type'].forEach(function (rdfType) {
-                if (rdfType.id === 'v-wf:Task') {
-                  collectEntities(element, list);
-                }
-              });
-            }); */
-          collectEntities(net, list);
+              var list = [net].concat(net['v-wf:consistsOf']);
+              collectEntities(net, list);
               veda.Util.exportTTL(list);
             });
 
@@ -1149,10 +1141,10 @@ function collectEntities(element, list) {
           {
             subelement['rdf:type'].forEach(function (subRdfType) {
               if (subRdfType.id == 'v-wf:VarDefine' || subRdfType.id == 'v-wf:Transform' || subRdfType.id == 'v-wf:Mapping') {
-                list.add(subelement);
+                list.push(subelement);
               }
               if (subRdfType.id == 'v-wf:Mapping') {
-                list.add(subelement['v-wf:mapToVariable'][0]);
+                list.push(subelement['v-wf:mapToVariable'][0]);
               }
             });
           }

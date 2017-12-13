@@ -783,15 +783,6 @@ td > #rel-actions {
   outline: 3px dashed #aaa!important;
   outline-offset: -3px!important;
 }
-.label-draft {
-  display: block;
-  position: absolute;
-  top: 0px;
-  left:0px;
-  z-index: 99;
-  padding: 2px 4px;
-  opacity: 0.7;
-}
 .sortable-placeholder {
   outline: 3px dashed #aaa!important;
   outline-offset: -3px!important;

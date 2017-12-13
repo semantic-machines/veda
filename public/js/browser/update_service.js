@@ -31,7 +31,7 @@ veda.Module(function UpdateService(veda) { "use strict";
         delta = {},
         ready;
 
-    var	address1 = "ws://" + location.hostname + ":8088/ccus",
+    var address1 = "ws://" + location.hostname + ":8088/ccus",
         socket,
         msgTimeout,
         msgDelay = 1000,
@@ -179,13 +179,6 @@ veda.Module(function UpdateService(veda) { "use strict";
       var uris = Object.keys(list);
       self.synchronize();
       uris.map(self.subscribe);
-      /*uris.map(function (uri) {
-        var i = new veda.IndividualModel(uri);
-        if ( !i.isSync() && !i.isNew() && !i.hasValue("v-s:isDraft", true) ) {
-          i.reset();
-        }
-        self.subscribe(uri);
-      });*/
     }
 
     function closedHandler(event) {
@@ -194,7 +187,7 @@ veda.Module(function UpdateService(veda) { "use strict";
       //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
-        if (address == address0) { 
+        if (address == address0) {
           address = address1;
         } else {
           address = address0;
@@ -229,7 +222,7 @@ veda.Module(function UpdateService(veda) { "use strict";
               updateCounter = parseInt(tmp[1]),
               individual = new veda.IndividualModel(uri),
               list = self.list();
-          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.hasValue("v-s:isDraft", true) ) { continue; }
+          if ( individual.hasValue("v-s:updateCounter", updateCounter) ) { continue; }
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
           }

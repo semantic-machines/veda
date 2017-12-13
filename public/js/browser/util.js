@@ -171,7 +171,7 @@ veda.Module(function Util(veda) { "use strict";
       }
     }
 
-    individualList.each(function (individual) {
+    individualList.forEach(function (individual) {
       var subject = prefixer(individual.id);
       // Type first
       individual.properties["rdf:type"].map(function (value) {
@@ -305,7 +305,7 @@ veda.Module(function Util(veda) { "use strict";
     }
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
-        if (property_uri === "@" || property_uri === "v-s:isDraft") { return }
+        if (property_uri === "@") { return }
         var values = flat[property_uri].sort(function compare(a, b) {
           return a.data < b.data ? - 1 : a.data === b.data ? 0 : 1;
         });

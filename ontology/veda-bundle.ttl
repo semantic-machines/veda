@@ -104,11 +104,6 @@ v-s:LeaveComment
   rdfs:label "Commment"@en ;
   rdfs:label "Комментировать"@ru ;
 .
-v-s:Drafts
-  rdf:type v-s:Bundle ;
-  rdfs:label "Черновики"@ru ;
-  rdfs:label "Drafts"@en ;
-.
 v-s:Registries
   rdf:type v-s:Bundle ;
   rdfs:label "Реестры"@ru ;
@@ -154,18 +149,6 @@ v-s:Save
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;
 .
-v-s:Draft
-  rdf:type v-s:Bundle ;
-  rdfs:label "Черновик"@ru ;
-  rdfs:label "Draft"@en ;
-  rdfs:comment "ч"@ru ;
-  rdfs:comment "d"@en ;
-.
-v-s:ToDraft
-  rdf:type v-s:Bundle ;
-  rdfs:label "В черновик"@ru ;
-  rdfs:label "Save to draft"@en ;
-.
 v-s:Find
   rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;
@@ -200,11 +183,6 @@ v-s:DeleteAll
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить все"@ru ;
   rdfs:label "Delete all"@en ;
-.
-v-s:DeleteDraft
-  rdf:type v-s:Bundle ;
-  rdfs:label "Удалить черновик"@ru ;
-  rdfs:label "Delete draft"@en ;
 .
 v-s:Clear
   rdf:type v-s:Bundle ;

@@ -33,9 +33,6 @@
 
     self.load = function (page, params) {
       switch (page) {
-        case "drafts":
-          self.trigger.apply(self, ["load:drafts"].concat(params));
-          break;
         default:
           if (!params[0]) { params[0] = "#main"; }
           var individual = new veda.IndividualModel(page);
@@ -47,7 +44,6 @@
     self.init = function () {
       self.ontology = new veda.OntologyModel();
       return self.ontology.init().then(function () {
-        self.drafts = new veda.DraftsModel();
         self.user = new veda.UserModel("cfg:Guest");
         self.user._init();
       });

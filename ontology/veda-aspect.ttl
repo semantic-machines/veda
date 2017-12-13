@@ -40,14 +40,6 @@ v-s:BusinessAspect
   rdfs:label "Деловой аспект"@ru ;
 .
 
-v-s:hasDocumentDraft
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:PersonalAspect ;
-  rdfs:range rdfs:Resource ;
-  rdfs:label "Черновик"@en ;
-  rdfs:label "Draft"@ru ;
-.
-
 v-s:hasFavorite
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
@@ -290,21 +282,6 @@ v-s:PersonalAspectTemplate
             </div>
           </div>
           <veda-control data-type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Drafts" property="rdfs:label"></strong></h3>
-        </div>
-        <div class="panel-body">
-          <ol rel="v-s:hasDocumentDraft">
-            <li><a href="#/@" property="rdfs:label"></a></li>
-          </ol>
-          <!--veda-control data-type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
         </div>
       </div>
     </div>

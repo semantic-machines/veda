@@ -190,7 +190,7 @@ veda.Module(function (veda) { "use strict";
     get: function () {
       var self = this;
       if (this._.membership) { return Promise.resolve(this._.membership); }
-      if (this.isNew() || this.hasValue("v-s:isDraft", true)) {
+      if (this.isNew()) {
         this._.membership = new veda.IndividualModel({ cache: false });
         return Promise.resolve(this._.membership);
       }
@@ -211,7 +211,7 @@ veda.Module(function (veda) { "use strict";
     get: function () {
       var self = this;
       if (this._.rights) { return Promise.resolve(this._.rights); }
-      if (this.isNew() || this.hasValue("v-s:isDraft", true)) {
+      if (this.isNew()) {
         this._.rights = new veda.IndividualModel({ cache: false });
         this._.rights["v-s:canRead"] = [ true ];
         this._.rights["v-s:canUpdate"] = [ true ];
@@ -336,9 +336,6 @@ veda.Module(function (veda) { "use strict";
       this.trigger("afterSave");
       return Promise.resolve(this);
     }
-    if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
-    }
     Object.keys(this.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
       acc[property_uri] = acc[property_uri].filter(function (item) {
@@ -358,27 +355,12 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Save current individual without validation and without adding new version
-   */
-  proto.draft = function() {
-    this.trigger("beforeDraft");
-    veda.drafts.set(this.id, this);
-    this.trigger("afterDraft");
-    return Promise.resolve(this);
-  }
-
-  /**
-   * @method
    * Reset current individual to database
    */
   proto.reset = function () {
     var self = this;
     this.trigger("beforeReset");
     self.filtered = {};
-    if ( self.hasValue("v-s:isDraft") ) {
-      var drafts = new veda.DraftsModel();
-      drafts.remove(self.id);
-    }
     return veda.Backend.get_individual(veda.ticket, self.id).then(function (original) {
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
@@ -402,9 +384,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.delete = function () {
     this.trigger("beforeDelete");
-    if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
-    }
     if ( this.isNew() ) {
       this.trigger("afterDelete");
       return Promise.resolve(this);
@@ -421,9 +400,6 @@ veda.Module(function (veda) { "use strict";
   proto.remove = function () {
     var self = this;
     this.trigger("beforeRemove");
-    if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
-    }
     if ( this._.cache && veda.cache && veda.cache[this.id] ) {
       delete veda.cache[this.id];
     }
@@ -443,9 +419,6 @@ veda.Module(function (veda) { "use strict";
    */
   proto.recover = function () {
     this.trigger("beforeRecover");
-    if ( this.hasValue("v-s:isDraft", true) ) {
-      veda.drafts.remove(this.id);
-    }
     this["v-s:deleted"] = [];
     this.trigger("afterRecover");
     return this.save();

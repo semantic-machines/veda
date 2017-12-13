@@ -48,7 +48,6 @@ v-l:MainPageTemplate
           <li about="v-fs:FulltextSearch"><a href="#/@"><span class="fa fa-lg fa-search"></span></a></li>
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
           <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
-          <li about="v-s:Drafts" data-template="v-ui:DraftsIndicatorTemplate"></li>
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-l:MainMenu" data-template="v-l:MenuTemplate"></li>
           <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
@@ -248,7 +247,6 @@ v-l:MainMenu
   v-l:menuItem v-l:Divider ;
   v-l:menuItem v-l:Create ;
   v-l:menuItem v-l:Find ;
-  v-l:menuItem v-l:Drafts ;
   v-l:menuItem v-l:Divider ;
   v-l:menuItem v-l:Graph ;
   v-l:menuItem v-l:Tests ;
@@ -292,12 +290,6 @@ v-l:Find
   rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
   v-l:objectLink v-fs:Search ;
-.
-v-l:Drafts
-  rdf:type v-l:Menu ;
-  rdfs:label "Drafts"@en ;
-  rdfs:label "Черновики"@ru ;
-  v-l:staticLink "#/drafts"^^xsd:string ;
 .
 v-l:Graph
   rdf:type v-l:Menu ;

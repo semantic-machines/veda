@@ -334,24 +334,6 @@ v-ui:displayedElements
 
 # --------------- System properties template ------------------
 
-v-ui:DraftsIndicatorTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон переключения языка"@ru ;
-  rdfs:label "Language switch template"@en ;
-  v-ui:template """
-<script>
-  $("#drafts-counter", template).text(veda.drafts.length);
-  template.tooltip({
-    container: template,
-    title: individual["rdfs:label"].join(" ")
-  });
-  //# sourceURL=v-ui:DraftsIndicatorTemplate_pre
-</script>
-<a href="#/drafts" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
-  <span class="fa fa-file-text-o fa-lg"></span> <span class="label label-default" id="drafts-counter"></span>
-</a>
-  """
-.
 v-ui:LanguageSwitchTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон переключения языка"@ru ;
@@ -485,36 +467,6 @@ v-ui:StandardButtonsTemplate
     }
   });
 
-  // Standart buttons labels change for drafts
-  function isDraftHandler() {
-    var Edit = new veda.IndividualModel("v-s:Edit").load();
-    var ContinueEdit = new veda.IndividualModel("v-s:ContinueEdit").load();
-    var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft").load();
-    var Cancel = new veda.IndividualModel("v-s:Cancel").load();
-    Promise.all([Edit, ContinueEdit, DeleteDraft, Cancel]).then(function (arr) {
-      var Edit         = arr[0]["rdfs:label"].join(" ");
-      var ContinueEdit = arr[1]["rdfs:label"].join(" ");
-      var DeleteDraft  = arr[2]["rdfs:label"].join(" ");
-      var Cancel       = arr[3]["rdfs:label"].join(" ");
-
-      if ( individual.hasValue("v-s:isDraft", true) ) {
-        //Rename "Edit" -> "Continue edit"
-        $(".action#edit", template).text(ContinueEdit);
-        //Rename "Cancel" -> "Delete draft"
-        $(".action#cancel", template).text(DeleteDraft);
-      } else {
-        //Rename "Continue edit" -> Edit"
-        $(".action#edit", template).text(Edit);
-        //Rename "Delete draft" -> "Cancel"
-        $(".action#cancel", template).text(Cancel);
-      }
-    });
-  }
-  individual.on("v-s:isDraft", isDraftHandler);
-  template.one("remove", function () {
-    individual.off("v-s:isDraft", isDraftHandler);
-  });
-  isDraftHandler("v-s:isDraft");
   //# sourceURL=v-ui:StandardButtonsTemplate_pre
 </script>
 <div class="standard-actions">
@@ -1125,34 +1077,6 @@ v-ui:ClassNameLabelLinkEditTemplate
       $("#label", template).text(individual.id);
     }
     //# sourceURL=v-ui:ClassNameLabelLinkTemplate
-  </script>
-  """ ;
-.
-v-ui:DraftLinkEditTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон черновика со ссылкой"@ru ;
-  rdfs:label "Draft template with link"@en ;
-  v-ui:template """
-  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:DraftLinkEditTemplate_post
-  </script>
-  """ ;
-.
-v-ui:DraftTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон черновика"@ru ;
-  rdfs:label "Draft template"@en ;
-  v-ui:template """
-  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:DraftLinkEditTemplate_post
   </script>
   """ ;
 .
@@ -2454,7 +2378,7 @@ v-ui:ttl
   </div>
 </div>
 <script>
-  var list = new veda.IndividualListModel(individual);
+  var list = [individual];
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
         anchored = ttl.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
@@ -3212,7 +3136,7 @@ v-ui:Graph
 
   // Buttons
   var exportBtn = $("#export-ttl", template).click(function () {
-    var list = new veda.IndividualListModel( nodes.get().map(function (item) { return item.individual; }) );
+    var list = nodes.get().map(function (item) { return item.individual; });
     veda.Util.exportTTL(list);
   });
   var freezeBtn = $("#freeze", template).click(function () {

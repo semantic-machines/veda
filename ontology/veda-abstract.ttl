@@ -77,13 +77,6 @@ v-s:lastEditor
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Thing ;
 .
-v-s:isDraft
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Is draft of"@en ;
-  rdfs:label "Является черновиком"@ru ;
-  rdfs:range xsd:boolean ;
-  rdfs:domain v-s:Thing ;
-.
 v-s:created
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Creation date"@en ;
