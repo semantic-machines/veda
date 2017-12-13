@@ -478,29 +478,34 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.createReport = function (individual, reportId) {
     if (reportId !== undefined) {
-      $('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
       veda.Util.redirectToReport(individual, reportId);
     } else {
-      var s = query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'");
-      if (s.result.length === 0) {
-        alert('Нет отчета. Меня жизнь к такому не готовила.');
-      } else if (s.result.length === 1) {
-        $('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
-        veda.Util.redirectToReport(individual, s.result[0]);
-      } else {
-        var reportsDropdown = $('[resource="'+individual.id+'"] #chooseReport + .dropdown-menu');
-        if (reportsDropdown.html()== '') {
-          s.result.forEach( function (res_id) {
-            $("<li/>", {
-              "style" : "cursor:pointer",
-              "html" : "<a href='#'>"+new veda.IndividualModel(res_id)['rdfs:label'][0]+"</a>",
-              "click": (function (e) {
-                veda.Util.redirectToReport(individual, res_id);
-               })
-            }).appendTo(reportsDropdown);
-          });
+      var s = veda.Backend.query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'").then(function (queryResult) {
+        var reportUris = queryResult.result;
+        if (reportUris.length === 0) {
+          alert("Нет отчета. Меня жизнь к такому не готовила.");
+        } else if (reportUris.length === 1) {
+          veda.Util.redirectToReport(individual, reportUris[0]);
+        } else {
+          var reportsDropdown = $('[resource="'+individual.id+'"] #chooseReport + .dropdown-menu');
+          if (reportsDropdown.html() === "") {
+            var reportPromises = reportUris.map(function (reportUri) {
+              return new veda.IndividualModel(reportUri).load();
+            });
+            Promise.all(reportPromises).then(function (reports) {
+              reports.forEach(function (report) {
+                $("<li/>", {
+                  "style" : "cursor:pointer",
+                  "html" : "<a href='#'>" + report["rdfs:label"].join(" ") + "</a>",
+                  "click": (function (e) {
+                    veda.Util.redirectToReport(individual, report.id);
+                  })
+                }).appendTo(reportsDropdown);
+              });
+            });
+          }
         }
-      }
+      });
     }
   }
 
