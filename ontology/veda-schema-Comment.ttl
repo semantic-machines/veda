@@ -189,11 +189,12 @@ v-s:RecursiveCommentTemplate
 
   $(".action", template).click(function (e) {
     e.preventDefault();
+    var actionId = this.id;
     var warning = new veda.IndividualModel("v-s:AreYouSure");
     warning.load().then(function (warning) {
       warning = warning["rdfs:label"].join(" ");
-      if ( this.id === "delete" && !confirm(warning) ) { return; }
-      template.trigger(this.id);
+      if ( actionId === "delete" && !confirm(warning) ) { return; }
+      template.trigger(actionId);
     });
   });
 
