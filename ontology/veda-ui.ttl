@@ -2972,8 +2972,8 @@ v-ui:Graph
     });
   }
 
-  function addInLinks (id, query) {
-    var q = query || "'*'=='{id}'";
+  function addInLinks (id, queryStr) {
+    var q = queryStr || "'*'=='{id}'";
     q = q.replace("{id}", id);
     var s = query(veda.ticket, q);
     s.result.forEach(function (uri) {
