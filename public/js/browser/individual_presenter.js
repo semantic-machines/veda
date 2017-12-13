@@ -17,9 +17,11 @@ veda.Module(function (veda) { "use strict";
 
       if (container.prop("id") === "main") { container.hide(); }
 
-      present(individual, container, template, mode);
+      var renderedTemplate = present(individual, container, template, mode);
 
       if (container.prop("id") === "main") { container.show("fade", 250); }
+
+      return renderedTemplate;
 
     }).catch(function (error) {
 
@@ -42,36 +44,41 @@ veda.Module(function (veda) { "use strict";
 
     if (template) {
       if (template instanceof veda.IndividualModel) {
-        template.load().then(function (template) {
+        return template.load().then(function (template) {
           template = $( template["v-ui:template"][0].toString() );
-          renderTemplate(individual, container, template, mode, specs);
+          return renderTemplate(individual, container, template, mode, specs);
         });
       } else if (typeof template === "string") {
         template = new veda.IndividualModel(template);
-        template.load().then(function (template) {
+        return template.load().then(function (template) {
           template = $( template["v-ui:template"][0].toString() );
-          renderTemplate(individual, container, template, mode, specs);
+          return renderTemplate(individual, container, template, mode, specs);
         });
       } else {
-        renderTemplate(individual, container, template, mode, specs);
+        return renderTemplate(individual, container, template, mode, specs);
       }
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0];
-        template.load().then(function (template) {
+        return template.load().then(function (template) {
           template = $( template["v-ui:template"][0].toString() );
-          renderTemplate(individual, container, template, mode, specs);
+          return renderTemplate(individual, container, template, mode, specs);
         });
       } else {
-        individual["rdf:type"].map(function (type) {
-          type.load()
-            .then(function (type) {
-              return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
-            })
-            .then(function (template) {
-              template = $( template["v-ui:template"][0].toString() );
-              renderTemplate(individual, container, template, mode, specs);
-            });
+        var typePromises = individual["rdf:type"].map(function (type) {
+          return type.load();
+        });
+        Promise.all(typePromises).then(function (types) {
+          var templatesPromises = types.map( function (type) {
+            return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
+          });
+          return Promise.all(templatesPromises);
+        }).then(function (templates) {
+          var renderedTemplates = templates.map( function (template) {
+            template = $( template["v-ui:template"][0].toString() );
+            return renderTemplate(individual, container, template, mode, specs);
+          });
+          return $(renderedTemplates);
         });
       }
     }
@@ -109,6 +116,8 @@ veda.Module(function (veda) { "use strict";
     if (post_render) {
       post_render.call(individual, veda, individual, container, template, mode, specs);
     }
+
+    return template;
   }
 
   function processTemplate (individual, container, template, mode, specs) {
@@ -510,12 +519,12 @@ veda.Module(function (veda) { "use strict";
         about = new veda.IndividualModel(aboutContainer.attr("about"));
       }
       aboutContainer.empty();
-      about.present(aboutContainer, aboutTemplate);
-      if (isEmbedded) {
-        aboutTemplate = $("[resource='" + about.id + "']", aboutContainer);
-        aboutTemplate.data("isEmbedded", true);
-        embedded.push(aboutTemplate);
-      }
+      about.present(aboutContainer, aboutTemplate).then(function (aboutTemplate) {
+        if (isEmbedded) {
+          aboutTemplate.data("isEmbedded", true);
+          embedded.push(aboutTemplate);
+        }
+      });
     });
 
     // About resource property
@@ -810,8 +819,7 @@ veda.Module(function (veda) { "use strict";
   }
 
   function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
-    return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined).then(function () {
-      var valTemplate = $("[resource='" + value.id + "']", relContainer).first();
+    return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined).then(function (valTemplate) {
       if (isEmbedded) {
         valTemplate.data("isEmbedded", true);
         embedded.push(valTemplate);
