@@ -124,22 +124,6 @@ veda.Module(function (veda) { "use strict";
       updateService.unsubscribe(individual.id);
     });
 
-    // Watch language change
-    veda.on("language:changed", localizeIndividual);
-    template.one("remove", function () {
-      veda.off("language:changed", localizeIndividual);
-    });
-
-    function localizeIndividual () {
-      for (var property_uri in individual.properties) {
-        if (property_uri === "@") { continue; }
-        if ( individual.hasValue(property_uri) && individual.properties[property_uri][0].type === "String" ) {
-          individual.trigger("propertyModified", property_uri, individual.get(property_uri));
-          individual.trigger(property_uri, individual.get(property_uri));
-        }
-      }
-    }
-
     return template;
   }
 
@@ -524,18 +508,6 @@ veda.Module(function (veda) { "use strict";
       template.one("remove", function () {
         updateService.unsubscribe(about.id);
       });
-
-      // Watch language change
-      veda.on("language:changed", localize);
-      template.one("remove", function () {
-        veda.off("language:changed", localize);
-      });
-      function localize() {
-        if ( about.hasValue(property_uri) && about.properties[property_uri][0].type === "String" ) {
-          about.trigger("propertyModified", property_uri, about.get(property_uri));
-          about.trigger(property_uri, about.get(property_uri));
-        }
-      }
     });
 
     // Validation with support of embedded templates (arbitrary depth)
