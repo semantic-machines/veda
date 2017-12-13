@@ -269,8 +269,10 @@ veda.Module(function (veda) { "use strict";
         self.isSync(true);
         self.properties = individualJson;
         if (self._.cache) veda.cache[self.id] = self;
-        if (self._.init) self.init();
         self.trigger("afterLoad", self);
+        if (self._.init) {
+          return self.init();
+        }
         return self;
       }).catch(function (error) {
         console.log("load individual error", self.id, error);
@@ -319,8 +321,12 @@ veda.Module(function (veda) { "use strict";
       this.id = veda.Util.genUri();
     }
     if (this._.cache) { veda.cache[this.id] = this; }
-    if (this._.init) { this.init(); }
+
     this.trigger("afterLoad", this);
+
+    if (this._.init) {
+      return this.init();
+    }
     return Promise.resolve(this);
   };
 
@@ -565,7 +571,7 @@ veda.Module(function (veda) { "use strict";
           var models_promises = [];
           types.map( function (type) {
             if ( type.hasValue("v-ui:hasModel") ) {
-              models_promises.push( type.get("v-ui:hasModel")[0] );
+              models_promises.push( type.get("v-ui:hasModel")[0].load() );
             }
           });
           return Promise.all( models_promises );
