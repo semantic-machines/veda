@@ -8,7 +8,7 @@
  */
 module veda.core.common.context;
 
-private import std.concurrency, std.datetime;
+private import std.concurrency, std.datetime, std.outbuffer;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
                veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.util.module_info, veda.storage.common, veda.storage.storage;
 
@@ -30,7 +30,7 @@ public struct SearchResult
  */
 interface Context
 {
-	Storage get_storage ();
+    Storage get_storage();
 
     string get_name();
 
@@ -132,20 +132,18 @@ interface Context
        Params:
                  ticket = указатель на обьект Ticket
                  uri    = uri субьекта
-                 trace_acl  = функция делегат, собирающая результат выполнения функции
+                 trace_acl  = буффер, собирающий результат выполнения функции
      */
-    public void get_rights_origin_from_acl(Ticket *ticket, string uri,
-                                           void delegate(string resource_group, string subject_group, string right) trace_acl, void delegate(string log) trace_info);
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info);
 
     /**
        Вернуть список групп в которые входит индивид указанный по uri, список представляет собой индивид
        Params:
                  ticket = указатель на обьект Ticket
                  uri    = uri субьекта
-                 trace_group  = функция делегат, собирающая результат выполнения функции
+                 trace_group  = буффер,, собирающий результат выполнения функции
      */
-    public void get_membership_from_acl(Ticket *ticket, string uri,
-                                        void delegate(string resource_group) trace_group);
+    public void get_membership_from_acl(Ticket *ticket, string uri, OutBuffer trace_group);
 
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 
