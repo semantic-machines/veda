@@ -257,7 +257,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.load = function () {
     var self = this;
-    var uri = this._.uri;
+    var uri = this.id || this._.uri ;
     this.trigger("beforeLoad");
     if (typeof uri === "string") {
       if (this._.cache && veda.cache[uri]) {
