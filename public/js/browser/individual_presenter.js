@@ -423,7 +423,7 @@ veda.Module(function (veda) { "use strict";
       }
 
       // Re-render link property if its' values were changed
-      /*function propertyModifiedHandler (values) {
+      function propertyModifiedHandler (values) {
         ++counter;
         if (values.length) {
           values.map(function (value) {
@@ -446,15 +446,6 @@ veda.Module(function (veda) { "use strict";
           rendered[i].tmpl.remove();
           delete rendered[i];
         }
-      }*/
-
-      function propertyModifiedHandler (values) {
-        relContainer.empty();
-        values.forEach(function (value) {
-          value.load().then(function (value) {
-            renderRelationValue (about, rel_uri, value, relContainer, typeof relTemplate === "object" ? relTemplate : $(relTemplate), isEmbedded, embedded, isAbout, template, mode);
-          });
-        });
       }
 
       function embeddedHandler(values) {
@@ -608,6 +599,7 @@ veda.Module(function (veda) { "use strict";
           validation[property_uri] = validationResult[property_uri];
         });
         validation.state = validation.state && validationResult.state;
+        template.trigger("internal-validated");
       }
     });
 
@@ -792,6 +784,7 @@ veda.Module(function (veda) { "use strict";
   }
 
   function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
+    relTemplate = typeof relTemplate === "string" ? $(relTemplate) : relTemplate;
     return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined).then(function (valTemplate) {
       if (isEmbedded) {
         valTemplate.data("isEmbedded", true);
