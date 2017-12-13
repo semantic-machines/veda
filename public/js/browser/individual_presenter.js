@@ -95,36 +95,50 @@ veda.Module(function (veda) { "use strict";
 
     if (template.first().is("script")) {
       pre_render_src = template.first().text();
-      pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
     }
+    pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
+
     if (template.last().is("script")) {
       post_render_src = template.last().text();
-      post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
     }
+    post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
+
     template = template.filter("*:not(script)");
 
-    if (pre_render) {
-      pre_render.call(individual, veda, individual, container, template, mode, specs);
-    }
+    return new Promise(function (resolve, reject) {
+      try {
+        var result = pre_render.call(individual, veda, individual, container, template, mode, specs);
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
 
-    template = processTemplate (individual, container, template, mode, specs);
+    }).catch(function (error) {
 
-    container.append(template);
-    individual.trigger("individual:templateReady", template);
+      console.log(error);
 
-    template.trigger(mode);
-    if (post_render) {
+    }).then(function (result) {
+
+      template = processTemplate (individual, container, template, mode, specs);
+
+      container.append(template);
+      template.trigger(mode);
       post_render.call(individual, veda, individual, container, template, mode, specs);
-    }
 
-    // Watch individual updates on server
-    var updateService = new veda.UpdateService();
-    updateService.subscribe(individual.id);
-    template.one("remove", function () {
-      updateService.unsubscribe(individual.id);
+      // Watch individual updates on server
+      var updateService = new veda.UpdateService();
+      updateService.subscribe(individual.id);
+      template.one("remove", function () {
+        updateService.unsubscribe(individual.id);
+      });
+
+      return template;
+
+    }).catch(function (error) {
+
+      console.log(error);
+
     });
-
-    return template;
   }
 
   function processTemplate (individual, container, template, mode, specs) {
