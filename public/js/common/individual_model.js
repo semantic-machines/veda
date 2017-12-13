@@ -626,7 +626,13 @@ veda.Module(function (veda) { "use strict";
    * @return {String} String representation of individual.
    */
   proto.toString = function () {
-    return this.hasValue("rdfs:label") ? this.get("rdfs:label").join(" ") : this.get("rdf:type")[0].get("rdfs:label").join(" ") + ": " + this.id ;
+    if ( this.hasValue("rdfs:label") ) {
+      return this.get("rdfs:label").join(" ");
+    } else if ( this.hasValue("rdf:type") ) {
+      return this.get("rdf:type")[0].get("rdfs:label").join(" ");
+    } else {
+      return this.id;
+    }
   };
 
   /**
