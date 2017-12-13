@@ -2,7 +2,7 @@ module veda.authorization.az_client;
 
 private
 {
-    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string, core.time, std.outbuffer;
+    import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string, core.time, std.outbuffer, std.json;
     import url;
     import veda.common.type, veda.core.common.define, veda.storage.authorization;
     import veda.common.logger, veda.util.module_info;
@@ -33,7 +33,8 @@ class ClientAuthorization : Authorization
         log = _log;
     }
 
-    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group, OutBuffer _trace_info)
+    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
+                    OutBuffer _trace_info)
     {
         ubyte res;
 
@@ -71,7 +72,7 @@ class ClientAuthorization : Authorization
             string req = buff.toString();
 
             bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
-            stderr.writefln("AZCL send [%d](%s)", req.length, req);
+            //stderr.writefln("AZCL send [%d](%s)", req.length, req);
             bytes = nn_recv(sock, &buf, NN_MSG, 0);
             if (bytes > 0)
             {
@@ -80,8 +81,40 @@ class ClientAuthorization : Authorization
 
                 if (rep.length > 4 && rep[ 0 ] == '[' && rep[ 1 ] == '"')
                 {
-                    rep = rep[ 2..$ - 2 ];
-                    stderr.writefln("AZCL rep (%s)", rep);
+                    //stderr.writefln("AZCL rep (%s)", rep);
+
+                    if (_trace_acl !is null || _trace_group !is null || _trace_info !is null)
+                    {
+                        JSONValue jsn;
+
+                        try
+                        {
+                            jsn = parseJSON(rep);
+                        }
+                        catch (Throwable tr)
+                        {
+                            stderr.writefln("ERR! az_client: fail parse rep=%s, err=%s", rep, tr.msg);
+                        }
+
+                        if (jsn.type == JSON_TYPE.ARRAY)
+                        {
+                            int idx = 1;
+                            rep = jsn.array[ 0 ].str;
+
+                            if (_trace_acl !is null)
+                                _trace_acl.write(jsn.array[ idx++ ].str);
+
+                            if (_trace_group !is null)
+                                _trace_group.write(jsn.array[ idx++ ].str);
+
+                            if (_trace_info !is null)
+                                _trace_info.write(jsn.array[ idx++ ].str);
+                        }
+                    }
+                    else
+                    {
+                        rep = rep[ 2..$ - 2 ];
+                    }
 
                     res = access_from_pretty_string(rep);
                 }
