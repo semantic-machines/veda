@@ -5,6 +5,7 @@ module veda.authorization.az_server;
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string;
+import kaleidic.nanomsg.nano, commando;
 import veda.common.logger, veda.storage.authorization, veda.storage.lmdb.lmdb_acl, veda.storage.common, veda.common.type;
 
 static this()
@@ -159,15 +160,29 @@ private string az_prepare(string request, Authorization acl_indexes)
     return cast(string)response[ 0..response_offset ];
 }
 
-
 long   count;
 
 Logger log;
-import kaleidic.nanomsg.nano;
-void main()
+void main(string[] args)
 {
+	
+    string bind_url = "tcp://127.0.0.1:22000";
+    try
+    {
+        ArgumentParser.parse(args, (ArgumentSyntax syntax)
+                             {
+                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
+                                 syntax.option('b', "bind", &bind_url, Required.no,
+                                               "Set binding url, example: --bind=tcp://127.0.0.1:22000");
+                             });
+    }
+    catch (ArgumentParserException ex)
+    {
+        stderr.writefln(ex.msg);
+        return;
+    }	
+	
     int    sock;
-    string url = "tcp://127.0.0.1:22000\0";
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
@@ -175,12 +190,12 @@ void main()
         stderr.writefln("ERR! cannot create socket");
         return;
     }
-    if (nn_bind(sock, cast(char *)url) < 0)
+    if (nn_bind(sock, cast(char *)(bind_url ~ "\0")) < 0)
     {
-        stderr.writefln("ERR! cannot bind to socket, url=%s", url);
+        stderr.writefln("ERR! cannot bind to socket, url=%s", bind_url);
         return;
     }
-    stderr.writefln("success bind to %s", url);
+    stderr.writefln("success bind to %s", bind_url);
 
     log = new Logger("veda-authorization", "log", "");
     Authorization acl_indexes;
