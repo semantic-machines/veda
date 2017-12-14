@@ -145,14 +145,14 @@
     <script type="html/template" id="link-control-template">
       <div class="scrollable-typeahead">
         <div class="input-group">
-          <div class="input-group-addon btn btn-default" id="tree">
+          <div class="input-group-addon btn btn-default tree">
             <i class="fa fa-sitemap"></i>
           </div>
-          <input type="text" class="form-control" id="fulltext"/>
-          <div class="input-group-addon btn btn-default" id="dropdown">
+          <input type="text" class="form-control fulltext"/>
+          <div class="input-group-addon btn btn-default dropdown">
             <i class="caret"></i>
           </div>
-          <div class="input-group-addon btn btn-default" id="create">
+          <div class="input-group-addon btn btn-default create">
             <i class="glyphicon glyphicon-plus"></i>
           </div>
         </div>
@@ -277,25 +277,13 @@
       </div>
     </script>
 
-    <!-- File control template with ajax support -->
-    <script type="html/template" id="file-control-template-ajax">
+    <!-- File control template -->
+    <script type="html/template" id="file-control-template">
       <div>
-        <input id="file" type="file" style="display:none"/>
-        <button id="btn" class="btn btn-default">
+        <input class="file" type="file" style="display:none"/>
+        <button class="btn btn-default">
           Browse...<strong class="indicator-percentage"></strong><span class="indicator-spinner fa fa-spinner fa-pulse fa-lg fa-fw text-info" style="display:none"></span>
         </button>
-      </div>
-    </script>
-
-    <!-- File control template using iframe -->
-    <script type="html/template" id="file-control-template-iframe">
-      <div>
-        <form action="/files" method="post" enctype="multipart/form-data">
-          <input type="file" id="file" name="file"/>
-          <input type="hidden" id="path" name="path"/>
-          <input type="hidden" id="uri" name="uri"/>
-        </form>
-        <iframe src="#" style="display:none"></iframe>
       </div>
     </script>
 
