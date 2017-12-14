@@ -48,8 +48,7 @@ abstract class ImplAuthorization : Authorization
 
         string uri = _uri.idup;
 
-        //log.trace("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, ticket.user_uri,
-        //          access_to_pretty_string(request_access));
+        //log.trace("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, user_uri, access_to_pretty_string(request_access));
 
         if (open() == false)
             return calc_right_res;
