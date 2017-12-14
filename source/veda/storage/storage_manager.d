@@ -14,21 +14,6 @@ private
     import veda.bind.libwebsocketd, veda.util.properd;
 }
 
-string lmdb_mode;
-public string get_lmdb_mode()
-{
-    if (lmdb_mode is null)
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        lmdb_mode  = properties.as!(string)("lmdb_mode");
-
-        writefln("lmdb_mode=%s", lmdb_mode);
-    }
-
-    return lmdb_mode;
-}
-
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
 Logger _log;
@@ -163,28 +148,20 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     KeyValueDB                   storage = null;
     string                       db_path;
 
-    if (get_lmdb_mode() == "as_server")
+    if (_storage_id == P_MODULE.subject_manager)
     {
-        log.trace(
-                  "LMDB_MODE=AS_SERVER, individuals_manager %s", _storage_id);
+        storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
+        db_path = individuals_db_path;
     }
-    else
+    else if (_storage_id == P_MODULE.ticket_manager)
     {
-        if (_storage_id == P_MODULE.subject_manager)
-        {
-            storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
-            db_path = individuals_db_path;
-        }
-        else if (_storage_id == P_MODULE.ticket_manager)
-        {
-            storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
-            db_path = tickets_db_path;
-        }
-
-        long count = storage.count_entries();
-
-        log.trace("COUNT INDIVIDUALS=%d", count);
+        storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
+        db_path = tickets_db_path;
     }
+
+    long count = storage.count_entries();
+
+    log.trace("COUNT INDIVIDUALS=%d", count);
 
     int            size_bin_log         = 0;
     int            max_size_bin_log     = 10_000_000;
