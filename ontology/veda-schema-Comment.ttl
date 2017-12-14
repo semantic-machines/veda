@@ -150,6 +150,12 @@ v-s:SingleCommentTemplate
   rdfs:label "Template for v-s:Comment class"@en ;
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   v-ui:template """
+<script>
+  $(".action", template).click(function (e) {
+    e.preventDefault();
+    template.trigger(this.id);
+  });
+</script>
 <div class="panel panel-default" style="margin-top: 20px">
   <div class="panel-body">
     <em about="rdfs:comment" property="rdfs:label"></em>
@@ -162,10 +168,7 @@ v-s:SingleCommentTemplate
     <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
     <br>
-    <button class="btn btn-primary action view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"></button>
-    <button class="btn btn-success action -view edit -search" id="save">Ok</button>
-    <button class="btn btn-default action -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"></button>
-    <button class="btn btn-link action view -edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete">
   </div>
 </div>
   """ ;
@@ -181,6 +184,13 @@ v-s:RecursiveCommentTemplate
   if (!individual.rights.hasValue("v-s:canUpdate", true)) {
     actions.remove();
   }
+  $(".action", template).click(function (e) {
+    e.preventDefault();
+    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    if ( this.id === "delete" && !confirm(warning) ) { return; }
+    template.trigger(this.id);
+  });
+
   individual.on("v-s:hasComment", commentHandler);
   individual.on("v-s:linkedObject", linkedHandler);
   template.one("remove", function () {
