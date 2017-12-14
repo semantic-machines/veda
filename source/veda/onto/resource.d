@@ -9,7 +9,7 @@ import veda.onto.lang;
 import veda.common.type;
 
 alias Resource[] Resources;
-alias Resource *[ string ]  MapResource;
+alias Resource [ string ]  MapResource;
 Resources        _empty_Resources = Resources.init;
 
 public Resources get_disappeared(ref Resources A, ref Resources B)
@@ -38,7 +38,7 @@ public Resources get_disappeared(ref Resources A, ref Resources B)
 public void setMapResources(ref Resources rss, ref MapResource hrss)
 {
     foreach (rs; rss)
-        hrss[ rs.get!string ] = &rs;
+        hrss[ rs.get!string ] = rs;
 }
 
 public string[] getAsArrayStrings(ref Resources rss)
