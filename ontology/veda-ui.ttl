@@ -804,7 +804,7 @@ v-ui:LinkTemplateGreenButtonWithoutTrue
   v-ui:template """
 <div>
   <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton"></div>
+  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton" data-embedded="true"></div>
   <br>
   <button class="btn btn-success view -edit -search" id="add-hasLink" about="v-s:hasLink" property="rdfs:label"></button>
 </div>
@@ -3122,19 +3122,19 @@ v-ui:Graph
     });
   }
 
-  function addInLinks (id, query) {
-    var q = query || "'*'=='{id}'";
+  function addInLinks (id, queryStr) {
+    var q = queryStr || "'*'=='{id}'";
     q = q.replace("{id}", id);
-    var s = new veda.SearchModel(q, null);
-    Object.getOwnPropertyNames(s.results).map(function (uri) {
-      var res = s.results[uri];
+    var s = query(veda.ticket, q);
+    s.result.forEach(function (uri) {
+      var res = new veda.IndividualModel(uri);
       addNode(res);
       var to = id;
       var from = res.id;
       Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
         if (property_uri === "@") { return; }
         if ( res.hasValue(property_uri, id) ) {
-          var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
+          var label = new veda.IndividualModel(property_uri)["rdfs:label"].join(", ");
           var options = {
             filter: function (item) {
               return  item.from === from &&

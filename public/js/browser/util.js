@@ -481,16 +481,16 @@ veda.Module(function Util(veda) { "use strict";
       $('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
       veda.Util.redirectToReport(individual, reportId);
     } else {
-      var s = new veda.SearchModel("'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'", null);
-      if (Object.getOwnPropertyNames(s.results).length == 0) {
+      var s = query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'");
+      if (s.result.length === 0) {
         alert('Нет отчета. Меня жизнь к такому не готовила.');
-      } else if (Object.getOwnPropertyNames(s.results).length == 1) {
+      } else if (s.result.length === 1) {
         $('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
-        veda.Util.redirectToReport(individual, Object.getOwnPropertyNames(s.results)[0]);
+        veda.Util.redirectToReport(individual, s.result[0]);
       } else {
         var reportsDropdown = $('[resource="'+individual.id+'"] #chooseReport + .dropdown-menu');
         if (reportsDropdown.html()== '') {
-          Object.getOwnPropertyNames(s.results).forEach( function (res_id) {
+          s.result.forEach( function (res_id) {
             $("<li/>", {
               "style" : "cursor:pointer",
               "html" : "<a href='#'>" + new veda.IndividualModel(res_id)["rdfs:label"].join(" ") + "</a>",

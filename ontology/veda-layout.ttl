@@ -250,8 +250,6 @@ v-l:MainMenu
   v-l:menuItem v-l:Find ;
   v-l:menuItem v-l:Drafts ;
   v-l:menuItem v-l:Divider ;
-  v-l:menuItem v-l:Search ;
-  v-l:menuItem v-l:Divider ;
   v-l:menuItem v-l:Graph ;
   v-l:menuItem v-l:Tests ;
   v-l:menuItem v-l:Divider ;
@@ -300,12 +298,6 @@ v-l:Drafts
   rdfs:label "Drafts"@en ;
   rdfs:label "Черновики"@ru ;
   v-l:staticLink "#/drafts"^^xsd:string ;
-.
-v-l:Search
-  rdf:type v-l:Menu ;
-  rdfs:label "Search"@en ;
-  rdfs:label "Поиск"@ru ;
-  v-l:staticLink "#/search"^^xsd:string ;
 .
 v-l:Graph
   rdf:type v-l:Menu ;

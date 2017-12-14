@@ -66,12 +66,12 @@ public ResultCode flush(bool is_wait)
 
 void acl_manager(string thread_name)
 {
-    core.thread.Thread.getThis().name    = thread_name;
-        
-    KeyValueDB storage = new LmdbDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+    core.thread.Thread.getThis().name = thread_name;
 
-    long l_op_id;
-    long committed_op_id;
+    KeyValueDB                   storage = new LmdbDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+
+    long                         l_op_id;
+    long                         committed_op_id;
 
     // SEND ready
     receive((Tid tid_response_reciever)
