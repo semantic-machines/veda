@@ -26,7 +26,7 @@ const byte TRACE_ACL   = 1;
 const byte TRACE_GROUP = 2;
 const byte TRACE_INFO  = 3;
 
-private nothrow string az_prepare(string request, Authorization acl_indexes)
+private nothrow string az_prepare(string request, Authorization acl_indexes, Logger log)
 {
     try
     {
@@ -47,7 +47,7 @@ private nothrow string az_prepare(string request, Authorization acl_indexes)
         try { jsn = parseJSON(request); }
         catch (Throwable tr)
         {
-            stderr.writefln("ERR! az_server: fail parse request=%s, err=%s", request, tr.msg);
+            log.trace("ERR! az_server: fail parse request=%s, err=%s", request, tr.msg);
             return "[\"err:invalid request\"]";
         }
 
@@ -129,9 +129,9 @@ private nothrow string az_prepare(string request, Authorization acl_indexes)
         }
         else
         {
-            stderr.writefln("ERR! bad request: unknown json");
+            log.trace("ERR! bad request: unknown json");
             return "[\"err:unknown json\"]";
-        }    
+        }
 
         //stderr.writefln ("res_trace=%s", res_trace);
 
@@ -164,7 +164,7 @@ private nothrow string az_prepare(string request, Authorization acl_indexes)
     }
     catch (Throwable tr)
     {
-        try{ stderr.writefln("ERR! az_prepare %s", tr.msg); } catch (Throwable tr) {}
+        try{ log.trace("ERR! az_prepare %s", tr.msg); } catch (Throwable tr) {}
         return "[\"err:exception:" ~ tr.msg ~ "\"]";
     }
 }
@@ -192,20 +192,21 @@ void main(string[] args)
 
     int sock;
 
+    log = new Logger("veda-core-authorization", "log", "");
+
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
     {
-        stderr.writefln("ERR! cannot create socket");
+        log.trace("ERR! cannot create socket");
         return;
     }
     if (nn_bind(sock, cast(char *)(bind_url ~ "\0")) < 0)
     {
-        stderr.writefln("ERR! cannot bind to socket, url=%s", bind_url);
+        log.trace("ERR! cannot bind to socket, url=%s", bind_url);
         return;
     }
-    stderr.writefln("success bind to %s", bind_url);
+    log.trace("success bind to %s", bind_url);
 
-    log = new Logger("veda-authorization", "log", "");
     Authorization acl_indexes;
     if (acl_indexes is null)
         acl_indexes = new LmdbAuthorization(DBMode.R, "acl", log);
@@ -223,7 +224,7 @@ void main(string[] args)
                 string req = cast(string)buf[ 0..bytes ];
                 //stderr.writefln("RECEIVED [%d](%s) cont=%d", bytes, req, count);
 
-                string rep = az_prepare(req, acl_indexes);
+                string rep = az_prepare(req, acl_indexes, log);
 
                 nn_freemsg(buf);
 

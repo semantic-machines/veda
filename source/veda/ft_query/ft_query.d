@@ -3,7 +3,7 @@
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
-import std.stdio, std.socket, std.conv, std.array, std.outbuffer;
+import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
@@ -27,61 +27,62 @@ private nothrow string req_prepare(string request, Context context)
     try
     {
         SearchResult res;
+        Logger       log = context.get_logger();
+        JSONValue    jsn;
 
-        string[]     els = request.split('�');
-        if (els.length == 8)
+        try { jsn = parseJSON(request); }
+        catch (Throwable tr)
         {
-            //context.get_logger.trace ("query: %s", els);
-
-            string _ticket    = els[ 0 ];
-            string _query     = els[ 1 ];
-            string _sort      = els[ 2 ];
-            string _databases = els[ 3 ];
-            bool   _reopen    = false;
-            int    _top       = 10;
-            int    _limit     = 100;
-            int    _from      = 0;
-            //
-            if (els[ 4 ].length > 0)
-                _reopen = to!bool(els[ 4 ]);
-
-            if (els[ 5 ].length > 0)
-                _top = to!int (els[ 5 ]);
-
-            if (els[ 6 ].length > 0)
-                _limit = to!int (els[ 6 ]);
-
-            if (els[ 7 ].length > 0)
-                _from = to!int (els[ 7 ]);
-
-            Ticket *ticket;
-            ticket = context.get_storage().get_ticket(_ticket, false);
-
-            if (ticket !is null)
-            {
-                try
-                {
-                    res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
-                    //context.get_logger.trace("res=%s", res);
-                }
-                catch (Throwable tr)
-                {
-                    context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                }
-            }
-            else
-            {
-                context.get_logger.trace("ERR! ticket is null: ticket_id = %s", _ticket);
-            }
+            log.trace("ERR! ft_query: fail parse request=%s, err=%s", request, tr.msg);
+            return "[\"err:invalid request\"]";
         }
 
+        if (jsn.type == JSON_TYPE.ARRAY)
+        {
+            if (jsn.array.length == 8)
+            {
+                //context.get_logger.trace ("query: %s", els);
+
+                string _ticket    = jsn.array[ 0 ].str;
+                string _query     = jsn.array[ 1 ].str;
+                string _sort      = jsn.array[ 2 ].str;
+                string _databases = jsn.array[ 3 ].str;
+                bool   _reopen    = false;
+                if (jsn.array[ 4 ].type == JSON_TYPE.TRUE)
+                    _reopen = true;
+
+                int    _top   = cast(int)jsn.array[ 5 ].integer;
+                int    _limit = cast(int)jsn.array[ 6 ].integer;
+                int    _from  = cast(int)jsn.array[ 7 ].integer;
+
+                Ticket *ticket;
+                ticket = context.get_storage().get_ticket(_ticket, false);
+
+                if (ticket !is null)
+                {
+                    try
+                    {
+                        res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
+                        //context.get_logger.trace("res=%s", res);
+                    }
+                    catch (Throwable tr)
+                    {
+                        context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
+                    }
+                }
+                else
+                {
+                    context.get_logger.trace("ERR! ticket is null: ticket_id = %s", _ticket);
+                }
+            }
+        }
         string response = to_json_str(res);
         return response;
     }
     catch (Throwable tr)
     {
         //printPrettyTrace(stderr);
-        try { stderr.writefln("ERR! ft_query request prepare %s", tr.msg); } catch (Throwable tr) {}
+        try { log.trace("ERR! ft_query request prepare %s", tr.msg); } catch (Throwable tr) {}
         return "ERR";
     }
 }
@@ -133,21 +134,21 @@ void main(string[] args)
     }
 
     int sock;
+    log = new Logger("veda-core-ft-query", "log", "");
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
     {
-        stderr.writefln("ERR! cannot create socket");
+        log.trace("ERR! cannot create socket");
         return;
     }
     if (nn_bind(sock, cast(char *)(bind_url ~ "\0")) < 0)
     {
-        stderr.writefln("ERR! cannot bind to socket, url=%s", bind_url);
+        log.trace("ERR! cannot bind to socket, url=%s", bind_url);
         return;
     }
-    stderr.writefln("success bind to %s", bind_url);
+    log.trace("success bind to %s", bind_url);
 
-    log = new Logger("veda-ft-query", "log", "");
     Ticket  systicket;
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
