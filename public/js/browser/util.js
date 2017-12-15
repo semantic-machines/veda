@@ -22,14 +22,13 @@ veda.Module(function Util(veda) { "use strict";
 
     function fetchResult(cursor) {
       var from = cursor || 0;
-      query({
+      veda.Backend.query({
         ticket: veda.ticket,
         query: q,
         sort: "'v-s:created' desc",
         from: from,
         top: delta,
-        //limit: limit,
-        async: true
+        limit: limit
       }).then(function (query_result) {
         var cursor = query_result.cursor;
         var estimated = query_result.estimated;
