@@ -404,7 +404,6 @@ veda.Module(function Util(veda) { "use strict";
     if (modal) {
       veda.Util.showModal(startForm, undefined, 'edit');
     } else {
-      //startForm.present('#main', undefined, 'edit');
       riot.route("#/" + startForm.id + "///edit");
     }
   }
@@ -416,45 +415,17 @@ veda.Module(function Util(veda) { "use strict";
    */
   veda.Util.send = function (individual, template, transformId, modal) {
     if ( transformId ) {
-      if ( !individual.isSync() ) template.trigger('save');
-      var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
-      veda.Util.showModal(startForm, undefined, 'edit');
+      template.trigger("save");
+      return new veda.IndividualModel(transformId).load().then(function (transform) {
+        var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
+        veda.Util.showModal(startForm, undefined, "edit");
+      });
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
-      var results = query(veda.ticket, "'rdf:type' == 'v-s:DocumentLinkRules' && 'v-s:classFrom' == '" + individual["rdf:type"][0].id + "'").result;
-      if ( results.length === 0 ) {
-        $("#send.action", template).remove();
-        $("#edit.action", template).remove();
-        $("#save.action", template).remove();
-        $("#cancel.action", template).remove();
-        $("#delete.action", template).remove();
-        template.trigger('save');
-        template.closest(".modal").modal("hide").remove();
-        var notify = veda.Notify ? new veda.Notify() : function () {};
-        notify("success", {name: "Успешно отправлено / Successfully sent"});
-      } else if ( results.length === 1 ) {
-        template.trigger('save');
-        results.forEach( function (res_id) {
-          var res = new veda.IndividualModel(res_id);
-          var startForm = veda.Util.buildStartFormByTransformation(individual, res['v-s:hasTransformation'][0]);
-          veda.Util.showModal(startForm, undefined, 'edit');
-        });
-      } else {
-        var sendDropdown = $('[resource="' + individual.id + '"] #send + .dropdown-menu');
-        sendDropdown.addClass('dropup').addClass('dropdown-toggle');
-        if (sendDropdown.html() === '') {
-          results.forEach( function (res_id) {
-            var res = new veda.IndividualModel(res_id);
-            $("<li/>", {
-              "style": "cursor:pointer",
-              "html" : "<a>" + new veda.IndividualModel(res_id)['rdfs:label'][0] + "</a>",
-              "click": (function (e) {
-                veda.Util.send(individual, template, res['v-s:hasTransformation'][0].id);
-              })
-            }).appendTo(sendDropdown);
-          });
-        }
-      }
+      template.trigger("save");
+      template.closest(".modal").modal("hide").remove();
+      var notify = veda.Notify ? new veda.Notify() : function () {};
+      notify("success", {name: "Успешно отправлено / Successfully sent"});
     }
   }
 
