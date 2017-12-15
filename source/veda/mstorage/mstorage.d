@@ -389,7 +389,7 @@ private Ticket authenticate(string login, string password)
     login = replaceAll(login, regex(r"[-]", "g"), " +");
 
     Individual[] candidate_users;
-    vql_r.get(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    vql_r.get(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
     foreach (user; candidate_users)
     {
         string user_id = user.getFirstResource(veda_schema__owner).uri;
@@ -1159,7 +1159,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket(ctx);
-            Individual[] candidate_users = ctx.get_individuals_via_query(&sticket, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", OptAuthorize.NO);
+            Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", OptAuthorize.NO);
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;

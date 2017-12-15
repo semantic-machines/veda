@@ -153,7 +153,7 @@ class FanoutProcess : VedaModule
         else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
         {
             Individual[] l_individuals = context.get_individuals_via_query(
-                                                                           &sticket,
+                                                                           sticket.user_uri,
                                                                            "'rdf:type' == 'v-s:Appointment' && 'v-s:occupation' == '" ~ indv.uri ~
                                                                            "'", OptAuthorize.NO, 10000, 10000);
 

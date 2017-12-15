@@ -114,7 +114,7 @@ void main(char[][] args)
     }
 
     string[] uris =
-        context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, OptAuthorize.NO, false).result;
+        context.get_individuals_ids_via_query(sticket.user_uri, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, OptAuthorize.NO, false).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -134,7 +134,7 @@ void main(char[][] args)
             context.update(-1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         }
 
-        uris = context.get_individuals_ids_via_query(&sticket, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, OptAuthorize.NO, false).result;
+        uris = context.get_individuals_ids_via_query(sticket.user_uri, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, OptAuthorize.NO, false).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);

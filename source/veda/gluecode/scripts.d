@@ -270,7 +270,7 @@ class ScriptProcess : VedaModule
 
         vql.reopen_db();
 
-        vql.get(&sticket,
+        vql.get(sticket.user_uri,
                 "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
                 res, OptAuthorize.NO, false);
 

@@ -53,7 +53,7 @@ class VQL
         xr.reopen_db();
     }
 
-    public int get(Ticket *ticket, string filter, string freturn, string sort, int top, int limit,
+    public int get(string user_uri, string filter, string freturn, string sort, int top, int limit,
                    ref Individual[] individuals, OptAuthorize op_auth, bool trace)
     {
         int                       res_count;
@@ -69,7 +69,7 @@ class VQL
 
             Individual individual = Individual();
 
-            string     data = context.get_storage().get_from_individual_storage(ticket.user_uri, uri);
+            string     data = context.get_storage().get_from_individual_storage(user_uri, uri);
 
             if (data is null)
             {
@@ -89,13 +89,13 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, 0, top, limit, dg, op_auth, null, trace);
+        SearchResult sr = xr.get(user_uri, filter, freturn, sort, 0, top, limit, dg, op_auth, null, trace);
         res_count = sr.count;
 
         return res_count;
     }
 
-    public SearchResult get(Ticket *ticket, string filter, string freturn, string sort, int from, int top, int limit,
+    public SearchResult get(string user_uri, string filter, string freturn, string sort, int from, int top, int limit,
                             void delegate(string uri) prepare_element_event,
                             OptAuthorize op_auth, bool trace)
     {
@@ -113,7 +113,7 @@ class VQL
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.get(ticket, filter, freturn, sort, from, top, limit, dg, op_auth, prepare_element_event, trace);
+        SearchResult sr = xr.get(user_uri, filter, freturn, sort, from, top, limit, dg, op_auth, prepare_element_event, trace);
 
         if (sr.result_code == ResultCode.OK)
             sr.result = res;
@@ -121,7 +121,7 @@ class VQL
         return sr;
     }
 
-    public int get(Ticket *ticket, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace)
+    public int get(string user_uri, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace)
     {
         split_on_section(query_str);
         int top = 10000;
@@ -161,7 +161,7 @@ class VQL
                     res = res.init;
                     return;
                 }
-                string data = context.get_storage().get_from_individual_storage(ticket.user_uri, uri);
+                string data = context.get_storage().get_from_individual_storage(user_uri, uri);
 
                 if (data is null)
                 {
@@ -179,7 +179,7 @@ class VQL
                     {
                         //writeln("ERR! invalid individual=", uri);
                         context.reopen_ro_individuals_storage_db();
-                        data = context.get_storage().get_from_individual_storage(ticket.user_uri, uri);
+                        data = context.get_storage().get_from_individual_storage(user_uri, uri);
                         if (ind.deserialize(data) > 0)
                         {
                             res ~= ind;
@@ -193,7 +193,7 @@ class VQL
             }
             dg = &collect_subject;
 
-            SearchResult sr = xr.get(ticket, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, op_auth, null, trace);
+            SearchResult sr = xr.get(user_uri, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, op_auth, null, trace);
             res_count = sr.count;
         }
 
