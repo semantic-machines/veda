@@ -437,8 +437,14 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
 
         Ticket   *ticket = g_context.get_storage().get_ticket(ticket_id, false);
 
+		if (ticket is null)
+		{
+	        log.trace("ERR! [query] ticket not found, id=%s", ticket_id);
+	        return null;
+	    }
+		
         string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false).result;
+        icb = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false).result;
         res = text(icb);
 
         if (icb !is null)

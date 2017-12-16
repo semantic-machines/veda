@@ -150,7 +150,7 @@ class UserModuleInfo
         context.reopen_ro_fulltext_indexer_db();
 
         SearchResult sr =
-            context.get_individuals_ids_via_query(&sticket, "'rdf:type' === 'v-s:Module'", "'rdf:type' asc", "base,system", 0, 100000,
+            context.get_individuals_ids_via_query(sticket.user_uri, "'rdf:type' === 'v-s:Module'", "'rdf:type' asc", "base,system", 0, 100000,
                                                   10000,
                                                   null, OptAuthorize.NO,
                                                   false);
@@ -273,7 +273,7 @@ class UserModuleInfo
             log.trace("UNINSTALL MODULE [%s][%s], check result=%s", module_id, ver, operation_result);
 
             SearchResult sr =
-                context.get_individuals_ids_via_query(&sticket, "'rdfs:isDefinedBy' === '" ~ module_id ~ "'", "'rdfs:isDefinedBy' asc",
+                context.get_individuals_ids_via_query(sticket.user_uri, "'rdfs:isDefinedBy' === '" ~ module_id ~ "'", "'rdfs:isDefinedBy' asc",
                                                       "base,system,deleted", 0, 100000,
                                                       10000,
                                                       null, OptAuthorize.NO,

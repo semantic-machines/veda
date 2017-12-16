@@ -688,7 +688,7 @@ class XapianVQL
         }
     }
 
-    public SearchResult exec_xapian_query_and_queue_authorize(Ticket *ticket,
+    public SearchResult exec_xapian_query_and_queue_authorize(string user_uri,
                                                               XapianEnquire xapian_enquire,
                                                               int from,
                                                               int top,
@@ -714,9 +714,9 @@ class XapianVQL
 
         byte err;
 
-        if (ticket is null)
+        if (user_uri is null)
         {
-            log.trace("exec_xapian_query_and_queue_authorize:ticket is null");
+            log.trace("exec_xapian_query_and_queue_authorize:user_uri is null");
             sr.result_code = ResultCode.Ticket_not_found;
             return sr;
         }
@@ -778,7 +778,7 @@ class XapianVQL
                 if (trace)
                     log.trace("found subject_id:[%s]", subject_id);
 
-                if (op_auth == OptAuthorize.NO || context.get_storage().authorize(subject_id, ticket, Access.can_read, acl_db_reopen))
+                if (op_auth == OptAuthorize.NO || context.get_storage().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen))
                 {
                     //log.trace("found subject_id:[%s] authorized", subject_id);
 
@@ -789,7 +789,7 @@ class XapianVQL
                 }
                 else
                 {
-                    log.trace("subject_id:[%s] not authorized, ticket=[%s], user_uri=[%s]", subject_id, ticket.id, ticket.user_uri);
+                    log.trace("subject_id:[%s] not authorized, user_uri=[%s]", subject_id, user_uri);
                 }
 
                 acl_db_reopen = false;

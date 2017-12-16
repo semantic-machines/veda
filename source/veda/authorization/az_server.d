@@ -26,147 +26,155 @@ const byte TRACE_ACL   = 1;
 const byte TRACE_GROUP = 2;
 const byte TRACE_INFO  = 3;
 
-private string az_prepare(string request, Authorization acl_indexes)
+private nothrow string az_prepare(string request, Authorization acl_indexes, Logger log)
 {
-    OutBuffer trace_acl;
-    OutBuffer trace_group;
-    OutBuffer trace_info;
-
-    long      response_offset = 0;
-
-    char[]    response = new char[ request.length ];
-    byte[ 3 ] order_trace;
-
-    string user_uri;
-    //stderr.writefln("request=|%s| len=%d", request, request.length);
-
-    JSONValue jsn;
-
     try
     {
-        jsn = parseJSON(request);
+        OutBuffer trace_acl;
+        OutBuffer trace_group;
+        OutBuffer trace_info;
+
+        long      response_offset = 0;
+
+        char[]    response = new char[ request.length ];
+        byte[ 3 ] order_trace;
+
+        string user_uri;
+        //stderr.writefln("request=|%s| len=%d", request, request.length);
+
+        JSONValue jsn;
+
+        try { jsn = parseJSON(request); }
+        catch (Throwable tr)
+        {
+            log.trace("ERR! az_server: fail parse request=%s, err=%s", request, tr.msg);
+            return "[\"err:invalid request\"]";
+        }
+
+        response[ response_offset++ ] = '[';
+
+        if (jsn.type == JSON_TYPE.ARRAY)
+        {
+            foreach (idx, el; jsn.array)
+            {
+                string uri;
+                ubyte  request_access;
+
+                if (idx == 0)
+                {
+                    if (el.type != JSON_TYPE.STRING)
+                    {
+                        break;
+                    }
+                    user_uri = el.str;
+                }
+                else
+                {
+                    if (idx > 1)
+                        response[ response_offset++ ] = ',';
+                    response[ response_offset++ ] = '"';
+                    if (el.type == JSON_TYPE.ARRAY)
+                    {
+                        if (el.array.length >= 2 && el.array.length <= 5)
+                        {
+                            uri = el.array[ 0 ].str;
+
+                            string s_access = el.array[ 1 ].str;
+                            ubyte  access;
+
+                            if (el.array.length > 2)
+                            {
+                                for (int ii = 2; ii < el.array.length; ii++)
+                                {
+                                    if (el.array[ ii ].str == "TRACE-ACL")
+                                    {
+                                        order_trace[ ii - 2 ] = TRACE_ACL;
+                                        trace_acl             = new OutBuffer();
+                                    }
+                                    else if (el.array[ ii ].str == "TRACE-GROUP")
+                                    {
+                                        order_trace[ ii - 2 ] = TRACE_GROUP;
+                                        trace_group           = new OutBuffer();
+                                    }
+                                    else if (el.array[ ii ].str == "TRACE-INFO")
+                                    {
+                                        order_trace[ ii - 2 ] = TRACE_INFO;
+                                        trace_info            = new OutBuffer();
+                                    }
+                                }
+                            }
+
+                            ubyte res = acl_indexes.authorize(uri, user_uri, access_from_pretty_string(
+                                                                                                       s_access), true, trace_acl, trace_group,
+                                                              trace_info);
+
+                            //stderr.writefln("uri=%s user_uri=%s response_access=%s", uri, user_uri, access_to_pretty_string(res));
+
+                            if (res & Access.can_create)
+                                response[ response_offset++ ] = 'C';
+                            if (res & Access.can_read)
+                                response[ response_offset++ ] = 'R';
+                            if (res & Access.can_update)
+                                response[ response_offset++ ] = 'U';
+                            if (res & Access.can_delete)
+                                response[ response_offset++ ] = 'D';
+                        }
+                        else
+                        {
+                        }
+                    }
+                    response[ response_offset++ ] = '"';
+                }
+            }
+        }
+        else
+        {
+            log.trace("ERR! bad request: unknown json");
+            return "[\"err:unknown json\"]";
+        }
+
+        //stderr.writefln ("res_trace=%s", res_trace);
+
+        if (trace_group !is null || trace_acl !is null || trace_info !is null)
+        {
+            string[] all_res;
+
+            all_res ~= cast(string)response[ 2..response_offset - 1 ];
+
+            foreach (oo; order_trace)
+            {
+                if (oo > 0)
+                {
+                    if (oo == TRACE_ACL)
+                        all_res ~= trace_acl.toString();
+                    else if (oo == TRACE_GROUP)
+                        all_res ~= trace_group.toString();
+                    else if (oo == TRACE_INFO)
+                        all_res ~= trace_info.toString();
+                }
+            }
+            JSONValue jout = JSONValue(all_res);
+            string    sout = jout.toString();
+            return sout;
+        }
+
+        response[ response_offset++ ] = ']';
+        response[ response_offset++ ] = 0;
+        return cast(string)response[ 0..response_offset ];
     }
     catch (Throwable tr)
     {
-        stderr.writefln("ERR! az_server: fail parse request=%s, err=%s", request, tr.msg);
+        try{ log.trace("ERR! az_prepare %s", tr.msg); } catch (Throwable tr) {}
+        return "[\"err:exception:" ~ tr.msg ~ "\"]";
     }
-
-    response[ response_offset++ ] = '[';
-
-    if (jsn.type == JSON_TYPE.ARRAY)
-    {
-        foreach (idx, el; jsn.array)
-        {
-            string uri;
-            ubyte  request_access;
-
-            if (idx == 0)
-            {
-                if (el.type != JSON_TYPE.STRING)
-                {
-                    break;
-                }
-                user_uri = el.str;
-            }
-            else
-            {
-                if (idx > 1)
-                    response[ response_offset++ ] = ',';
-                response[ response_offset++ ] = '"';
-                if (el.type == JSON_TYPE.ARRAY)
-                {
-                    if (el.array.length >= 2 && el.array.length <= 5)
-                    {
-                        uri = el.array[ 0 ].str;
-
-                        string s_access = el.array[ 1 ].str;
-                        ubyte  access;
-
-                        if (el.array.length > 2)
-                        {
-                            for (int ii = 2; ii < el.array.length; ii++)
-                            {
-                                if (el.array[ ii ].str == "TRACE-ACL")
-                                {
-                                    order_trace[ ii - 2 ] = TRACE_ACL;
-                                    trace_acl             = new OutBuffer();
-                                }
-                                else if (el.array[ ii ].str == "TRACE-GROUP")
-                                {
-                                    order_trace[ ii - 2 ] = TRACE_GROUP;
-                                    trace_group           = new OutBuffer();
-                                }
-                                else if (el.array[ ii ].str == "TRACE-INFO")
-                                {
-                                    order_trace[ ii - 2 ] = TRACE_INFO;
-                                    trace_info            = new OutBuffer();
-                                }
-                            }
-                        }
-
-                        ubyte res = acl_indexes.authorize(uri, user_uri, access_from_pretty_string(
-                                                                                                   s_access), true, trace_acl, trace_group,
-                                                          trace_info);
-
-                        //stderr.writefln("uri=%s user_uri=%s response_access=%s", uri, user_uri, access_to_pretty_string(res));
-
-                        if (res & Access.can_create)
-                            response[ response_offset++ ] = 'C';
-                        if (res & Access.can_read)
-                            response[ response_offset++ ] = 'R';
-                        if (res & Access.can_update)
-                            response[ response_offset++ ] = 'U';
-                        if (res & Access.can_delete)
-                            response[ response_offset++ ] = 'D';
-                    }
-                    else
-                    {
-                    }
-                }
-                response[ response_offset++ ] = '"';
-            }
-        }
-    }
-    else
-        stderr.writefln("ERR! bad request: unknown json");
-
-    //stderr.writefln ("res_trace=%s", res_trace);
-
-    if (trace_group !is null || trace_acl !is null || trace_info !is null)
-    {
-        string[] all_res;
-
-        all_res ~= cast(string)response[ 2..response_offset - 1 ];
-
-        foreach (oo; order_trace)
-        {
-            if (oo > 0)
-            {
-                if (oo == TRACE_ACL)
-                    all_res ~= trace_acl.toString();
-                else if (oo == TRACE_GROUP)
-                    all_res ~= trace_group.toString();
-                else if (oo == TRACE_INFO)
-                    all_res ~= trace_info.toString();
-            }
-        }
-        JSONValue jout = JSONValue(all_res);
-        string    sout = jout.toString();
-        return sout;
-    }
-
-    response[ response_offset++ ] = ']';
-    response[ response_offset++ ] = 0;
-    return cast(string)response[ 0..response_offset ];
 }
 
-long   count;
-
-Logger log;
+private long   count;
+private Logger log;
 void main(string[] args)
 {
-	
     string bind_url = "tcp://127.0.0.1:22000";
+
     try
     {
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
@@ -180,24 +188,25 @@ void main(string[] args)
     {
         stderr.writefln(ex.msg);
         return;
-    }	
-	
-    int    sock;
+    }
+
+    int sock;
+
+    log = new Logger("veda-core-authorization", "log", "");
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
     {
-        stderr.writefln("ERR! cannot create socket");
+        log.trace("ERR! cannot create socket");
         return;
     }
     if (nn_bind(sock, cast(char *)(bind_url ~ "\0")) < 0)
     {
-        stderr.writefln("ERR! cannot bind to socket, url=%s", bind_url);
+        log.trace("ERR! cannot bind to socket, url=%s", bind_url);
         return;
     }
-    stderr.writefln("success bind to %s", bind_url);
+    log.trace("success bind to %s", bind_url);
 
-    log = new Logger("veda-authorization", "log", "");
     Authorization acl_indexes;
     if (acl_indexes is null)
         acl_indexes = new LmdbAuthorization(DBMode.R, "acl", log);
@@ -215,7 +224,7 @@ void main(string[] args)
                 string req = cast(string)buf[ 0..bytes ];
                 //stderr.writefln("RECEIVED [%d](%s) cont=%d", bytes, req, count);
 
-                string rep = az_prepare(req, acl_indexes);
+                string rep = az_prepare(req, acl_indexes, log);
 
                 nn_freemsg(buf);
 

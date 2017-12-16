@@ -3,7 +3,8 @@
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
-import std.stdio, std.socket, std.conv, std.array, std.outbuffer;
+import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
+import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
 
@@ -19,58 +20,40 @@ extern (C) void handleTermination3(int _signal)
     stderr.writefln("!SYS: caught signal: %s", text(_signal));
 
     f_listen_exit = true;
-    listener.close();
-
-    thread_term();
-    Runtime.terminate();
 }
 
-class HandlerThread : Thread
+private nothrow string req_prepare(string request, Context context)
 {
-    Socket                           socket;
-    veda.core.common.context.Context context;
-
-public:
-    this(Socket socket, Context context)
+    try
     {
-        this.socket  = socket;
-        this.context = context;
-        super(&run);
-    }
+        SearchResult res;
+        Logger       log = context.get_logger();
+        JSONValue    jsn;
 
-private:
-    void run()
-    {
-        try
+        try { jsn = parseJSON(request); }
+        catch (Throwable tr)
         {
-            SearchResult res;
-            string       request = _recv(socket);
+            log.trace("ERR! ft_query: fail parse request=%s, err=%s", request, tr.msg);
+            return "[\"err:invalid request\"]";
+        }
 
-            string[]     els = request.split('�');
-            if (els.length == 8)
+        if (jsn.type == JSON_TYPE.ARRAY)
+        {
+            if (jsn.array.length == 8)
             {
                 //context.get_logger.trace ("query: %s", els);
 
-                string _ticket    = els[ 0 ];
-                string _query     = els[ 1 ];
-                string _sort      = els[ 2 ];
-                string _databases = els[ 3 ];
+                string _ticket    = jsn.array[ 0 ].str;
+                string _query     = jsn.array[ 1 ].str;
+                string _sort      = jsn.array[ 2 ].str;
+                string _databases = jsn.array[ 3 ].str;
                 bool   _reopen    = false;
-                int    _top       = 10;
-                int    _limit     = 100;
-                int    _from      = 0;
-                //
-                if (els[ 4 ].length > 0)
-                    _reopen = to!bool(els[ 4 ]);
+                if (jsn.array[ 4 ].type == JSON_TYPE.TRUE)
+                    _reopen = true;
 
-                if (els[ 5 ].length > 0)
-                    _top = to!int (els[ 5 ]);
-
-                if (els[ 6 ].length > 0)
-                    _limit = to!int (els[ 6 ]);
-
-                if (els[ 7 ].length > 0)
-                    _from = to!int (els[ 7 ]);
+                int    _top   = cast(int)jsn.array[ 5 ].integer;
+                int    _limit = cast(int)jsn.array[ 6 ].integer;
+                int    _from  = cast(int)jsn.array[ 7 ].integer;
 
                 Ticket *ticket;
                 ticket = context.get_storage().get_ticket(_ticket, false);
@@ -79,7 +62,7 @@ private:
                 {
                     try
                     {
-                        res = context.get_individuals_ids_via_query(ticket, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
+                        res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
                         //context.get_logger.trace("res=%s", res);
                     }
                     catch (Throwable tr)
@@ -92,20 +75,15 @@ private:
                     context.get_logger.trace("ERR! ticket is null: ticket_id = %s", _ticket);
                 }
             }
-
-            string response = to_json_str(res);
-            _send(socket, response);
-
-            socket.close();
-
-            ctx_pool.free_context(context);
         }
-        catch (Exception ex)
-        {
-            //printPrettyTrace(stderr);
-            stderr.writefln("@ERR QUERY HANDLER %s", ex.msg);
-            socket.close();
-        }
+        string response = to_json_str(res);
+        return response;
+    }
+    catch (Throwable tr)
+    {
+        //printPrettyTrace(stderr);
+        try { log.trace("ERR! ft_query request prepare %s", tr.msg); } catch (Throwable tr) {}
+        return "ERR";
     }
 }
 
@@ -132,103 +110,73 @@ private string to_json_str(SearchResult res)
     return bb.toString();
 }
 
-private string _recv(Socket socket)
-{
-    ubyte[] buf          = new ubyte[ 4 ];
-    long    request_size = 0;
-    socket.receive(buf);
-    for (int i = 0; i < 4; i++)
-        request_size = (request_size << 8) + buf[ i ];
 
-    ubyte[] request = new ubyte[ request_size ];
-    socket.receive(request);
-    stderr.writefln("@REQ [%s]", cast(string)request);
-
-    return cast(string)request;
-}
-
-private void _send(Socket socket, string data)
-{
-    ubyte[] buf           = new ubyte[ 4 ];
-    long    response_size = data.length;
-    stderr.writefln("RESP %s", data);
-    buf                    = new ubyte[ 4 + response_size ];
-    buf[ 0 ]               = cast(byte)((response_size >> 24) & 0xFF);
-    buf[ 1 ]               = cast(byte)((response_size >> 16) & 0xFF);
-    buf[ 2 ]               = cast(byte)((response_size >> 8) & 0xFF);
-    buf[ 3 ]               = cast(byte)(response_size & 0xFF);
-    buf[ 4 .. buf.length ] = cast(ubyte[])data;
-    socket.send(buf);
-}
-
-
-void handle_request()
-{
-}
-
+private long   count;
 private Logger log;
 
-class ContextPool
+void main(string[] args)
 {
-	string main_module_url = null;
-    private shared bool[ Context ] pool;
+    string bind_url = "tcp://127.0.0.1:23000";
 
-    synchronized Context allocate_context()
-    {
-        foreach (ctx, state; pool)
-        {
-            if (state == false)
-            {
-                pool[ ctx ] = true;
-                stderr.writefln("return exists context %X", &ctx);
-                return ctx;
-            }
-        }
-        Ticket  systicket;
-        Context new_ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, main_module_url);
-        
-        stderr.writefln("create new context %X", &new_ctx);
-        pool[ new_ctx ] = true;
-        return new_ctx;
-    }
-
-    synchronized void free_context(Context ctx)
-    {
-        pool[ ctx ] = false;
-    }
-}
-
-shared ContextPool ctx_pool;
-TcpSocket          listener;
-
-void main()
-{
-    listener = new TcpSocket();
-
-    listener.bind(getAddress("localhost", 11112)[ 0 ]);
-    listener.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, 1);
-    listener.listen(65535);
-
-    log = new Logger("veda-core-ft-query", "log", "");
-
-    ctx_pool = new ContextPool();
-    Context context = ctx_pool.allocate_context();
-    ctx_pool.free_context(context);
     try
     {
-        while (!f_listen_exit)
-        {
-            Socket socket = listener.accept();
-            context = ctx_pool.allocate_context();
-            auto   ht = new HandlerThread(socket, context);
-            ht.start();
-        }
+        ArgumentParser.parse(args, (ArgumentSyntax syntax)
+                             {
+                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
+                                 syntax.option('b', "bind", &bind_url, Required.no,
+                                               "Set binding url, example: --bind=tcp://127.0.0.1:23000");
+                             });
     }
-    catch (Exception ex)
+    catch (ArgumentParserException ex)
     {
-        //printPrettyTrace(stderr);
-        stderr.writefln("@ERR IN FT_QUERY %s", ex.msg);
-        listener.close();
+        stderr.writefln(ex.msg);
+        return;
+    }
+
+    int sock;
+    log = new Logger("veda-core-ft-query", "log", "");
+
+    sock = nn_socket(AF_SP, NN_REP);
+    if (sock < 0)
+    {
+        log.trace("ERR! cannot create socket");
+        return;
+    }
+    if (nn_bind(sock, cast(char *)(bind_url ~ "\0")) < 0)
+    {
+        log.trace("ERR! cannot bind to socket, url=%s", bind_url);
+        return;
+    }
+    log.trace("success bind to %s", bind_url);
+
+    Ticket  systicket;
+    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
+
+    while (!f_listen_exit)
+    {
+        try
+        {
+            count++;
+
+            char *buf  = cast(char *)0;
+            int  bytes = nn_recv(sock, &buf, NN_MSG, 0);
+            if (bytes >= 0)
+            {
+                string req = cast(string)buf[ 0..bytes ];
+                //stderr.writefln("RECEIVED [%d](%s) cont=%d", bytes, req, count);
+
+                string rep = req_prepare(req, ctx);
+
+                nn_freemsg(buf);
+
+                bytes = nn_send(sock, cast(char *)rep, rep.length, 0);
+                //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
+            }
+        }
+        catch (Throwable tr)
+        {
+            log.trace("ERR! MAIN LOOP", tr.info);
+        }
     }
 }
 

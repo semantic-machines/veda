@@ -370,18 +370,8 @@ class PThreadContext : Context
     }
 
     // //////////////////////////////////////////// INDIVIDUALS IO /////////////////////////////////////
-    public Individual[] get_individuals_via_query(Ticket *ticket, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000)
+    public Individual[] get_individuals_via_query(string user_uri, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000)
     {
-//        StopWatch sw; sw.start;
-
-        if (trace_msg[ T_API_130 ] == 1)
-        {
-            if (ticket !is null)
-                log.trace("get_individuals_via_query: start, query_str=%s, ticket=%s", query_str, ticket.id);
-            else
-                log.trace("get_individuals_via_query: start, query_str=%s, ticket=null", query_str);
-        }
-
         Individual[] res;
 
         try
@@ -394,7 +384,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(ticket, query_str, null, null, top, limit, res, op_auth, false);
+            _vql.get(user_uri, query_str, null, null, top, limit, res, op_auth, false);
             return res;
         }
         finally
@@ -456,7 +446,7 @@ class PThreadContext : Context
                                            null);
     }
 
-    public SearchResult get_individuals_ids_via_query(Ticket *ticket, string query_str, string sort_str, string db_str, int from, int top, int limit,
+    public SearchResult get_individuals_ids_via_query(string user_uri, string query_str, string sort_str, string db_str, int from, int top, int limit,
                                                       void delegate(string uri) prepare_element_event, OptAuthorize op_auth, bool trace)
     {
         SearchResult sr;
@@ -464,7 +454,7 @@ class PThreadContext : Context
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.get(ticket, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+        sr = _vql.get(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
 
         return sr;
     }

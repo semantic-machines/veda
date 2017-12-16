@@ -26,15 +26,15 @@ public abstract class Storage
     abstract KeyValueDB get_inividuals_storage_r();
 
     import backtrace.backtrace, Backtrace = backtrace.backtrace;
-    bool authorize(string uri, Ticket *ticket, ubyte request_acess, bool is_check_for_reload)
+    bool authorize(string uri, string user_uri, ubyte request_acess, bool is_check_for_reload)
     {
-        if (ticket is null)
+        if (user_uri is null)
         {
             printPrettyTrace(stderr);
             return false;
         }
 
-        ubyte res = get_acl_client().authorize(uri, ticket.user_uri, request_acess, is_check_for_reload, null, null, null);
+        ubyte res = get_acl_client().authorize(uri, user_uri, request_acess, is_check_for_reload, null, null, null);
 
         return request_acess == res;
     }

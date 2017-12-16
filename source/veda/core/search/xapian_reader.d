@@ -15,7 +15,7 @@ protected byte err;
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 interface SearchReader
 {
-    public SearchResult get(Ticket *ticket, string str_query, string str_sort, string db_names, int from, int top, int limit,
+    public SearchResult get(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event, bool trace);
 
     public void reopen_db();
@@ -130,7 +130,7 @@ class XapianReader : SearchReader
         return key2slot;
     }
 
-    public SearchResult get(Ticket *ticket, string str_query, string str_sort, string _db_names, int from, int top, int limit,
+    public SearchResult get(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event, bool trace)
     {
         SearchResult sr;
@@ -277,7 +277,7 @@ class XapianReader : SearchReader
 
             while (sr.result_code != ResultCode.OK)
             {
-                sr = xpnvql.exec_xapian_query_and_queue_authorize(ticket, xapian_enquire, from, top, limit, add_out_element,
+                sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
                                                                   context, prepare_element_event, trace, op_auth);
                 if (sr.result_code != ResultCode.OK)
                 {

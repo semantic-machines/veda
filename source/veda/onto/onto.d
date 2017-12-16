@@ -167,7 +167,7 @@ class Onto
         Ticket       sticket = context.sys_ticket();
 
         Individual[] l_individuals = context.get_individuals_via_query(
-                                                                       &sticket,
+                                                                       sticket.user_uri,
                                                                        "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
                                                                        OptAuthorize.NO, 10000, 10000);
 
