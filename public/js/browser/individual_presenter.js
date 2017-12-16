@@ -119,7 +119,9 @@ veda.Module(function (veda) { "use strict";
       template = processTemplate (individual, container, template, mode, specs);
 
       container.append(template);
+
       template.trigger(mode);
+
       post_render.call(individual, veda, individual, container, template, mode, specs);
 
       // Watch individual updates on server

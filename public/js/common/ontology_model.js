@@ -15,6 +15,7 @@ veda.Module(function (veda) { "use strict";
     this.classes = {};
     this.properties = {};
     this.specifications = {};
+    this.models = {};
     this.classTree = {};
 
     return veda.OntologyModel.prototype._singletonInstance = this;
@@ -113,7 +114,8 @@ veda.Module(function (veda) { "use strict";
           /* Property specifications */
           "'rdf:type' === 'v-ui:PropertySpecification' || " +
           "'rdf:type' === 'v-ui:DatatypePropertySpecification' || " +
-          "'rdf:type' === 'v-ui:ObjectPropertySpecification'";
+          "'rdf:type' === 'v-ui:ObjectPropertySpecification' || " +
+          "'rdf:type' === 'v-ui:ClassModel'";
       return veda.Backend.query(veda.ticket, query).then(function (query_results) {
         var ontology_uris = query_results.result;
         return veda.Backend.get_individuals(veda.ticket, ontology_uris);
@@ -135,6 +137,7 @@ veda.Module(function (veda) { "use strict";
     var properties = this.properties;
     var specifications = this.specifications;
     var classTree = this.classTree;
+    var models = this.models;
 
     // Allocate ontology objects
     var ontologyPromises = Object.keys(ontology).map( function (uri) {
@@ -172,6 +175,9 @@ veda.Module(function (veda) { "use strict";
             break;
           case "rdfs:Datatype" :
             datatypes[uri] = individual;
+            break;
+          case "v-ui:ClassModel" :
+            models[uri] = individual;
             break;
         }
       });
