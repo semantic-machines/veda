@@ -229,9 +229,9 @@ veda.Module(function (veda) { "use strict";
             $(".recover", deletedAlert).click(function () {
               template.trigger("recover");
             });
-            template.addClass("deleted");
           });
         }
+        template.addClass("deleted");
       } else {
         template.removeClass("deleted");
         if ( container.prop("id") === "main" ) {
