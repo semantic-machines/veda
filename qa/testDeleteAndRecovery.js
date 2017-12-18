@@ -91,12 +91,12 @@ basic.getDrivers().forEach(function(drv){
     //PHASE#4: Recovery
     driver.findElement({css:'a[resource="v-fs:FulltextSearch"]'}).click()
       .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on full text search icon");});
-    basic.isVisible(driver, 'input[name="*"]', SLOW_OPERATION, 4);
+    basic.isVisible(driver, 'input[name="*"]', basic.SLOW_OPERATION, 4);
     basic.execute(driver, 'sendKeys', 'input[name="*"]', '****** PHASE#4 > RECOVERY : ERROR = Cannot fill query string',
         "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");
     clickButton(driver, "button.search-button", 4);
     basic.execute(driver, 'click', 'tr[typeof="v-wf:StartForm"] td a', "****** PHASE#4 > RECOVERY : ERROR = Cannot click on search result link");
-    basic.isVisible(driver, '#deleted-alert .recover', SLOW_OPERATION, 4);
+    basic.isVisible(driver, '#deleted-alert .recover', basic.SLOW_OPERATION, 4);
     basic.execute(driver, 'click', '#deleted-alert .recover',
         "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'Recovery' button");
     check(driver, 1, 5);
