@@ -1050,6 +1050,13 @@ v-s:hasProject
   rdfs:domain v-s:Projectable ;
   rdfs:range v-s:Initiative ;
 .
+v-s:developer
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Developer"@en ;
+  rdfs:label "Разработчик"@ru ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Projectable ;
+.
 ### ------------------------------------------------------------
 v-s:Deliverable2
   rdf:type owl:Class ;
