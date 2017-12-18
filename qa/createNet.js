@@ -12,7 +12,7 @@ var webdriver = require('selenium-webdriver'),
 */
 
 function choose(driver, type, valueToSearch, valueToChoose, phase) {
-    basic.execute(driver, 'sendKeys', 'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input.fulltext',
+    basic.execute(driver, 'sendKeys', 'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input.fulltext.tt-input',
         "****** PHASE#" + phase + " : ERROR = Cannot find attribute " + type, valueToSearch);
     driver.sleep(basic.FAST_OPERATION);
     driver.wait
