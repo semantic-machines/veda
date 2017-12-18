@@ -3,9 +3,9 @@ module veda.storage.lmdb.lmdb_acl;
 private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string;
-    import veda.common.type, veda.storage.lmdb.lmdb_header, veda.storage.lmdb.lmdb_driver, veda.core.common.define;
-    import veda.common.logger, veda.util.module_info, veda.storage.authorization;
-    import veda.storage.right_set, veda.storage.common;
+    import veda.common.type, veda.core.common.define, veda.common.logger, veda.util.module_info;
+    import veda.storage.right_set, veda.storage.common, veda.storage.authorization;
+    import veda.storage.lmdb.lmdb_header, veda.storage.lmdb.lmdb_driver;
 }
 
 const string acl_indexes_db_path = "./data/acl-indexes";
@@ -18,7 +18,7 @@ static this()
 /// Хранение, чтение PermissionStatement, Membership
 class LmdbAuthorization : ImplAuthorization
 {
-    LmdbDriver lmdb_driver;
+    LmdbDriver driver;
 
     // short life time vars
     MDB_val key;
@@ -29,25 +29,25 @@ class LmdbAuthorization : ImplAuthorization
     this(DBMode mode, string _parent_thread_name, Logger _log)
     {
         log         = _log;
-        lmdb_driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
+        driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 
     bool open()
     {
-        if (lmdb_driver.db_is_opened == false)
-            lmdb_driver.open();
+        if (driver.db_is_opened == false)
+            driver.open();
 
-        return lmdb_driver.db_is_opened;
+        return driver.db_is_opened;
     }
 
     void reopen()
     {
-        lmdb_driver.reopen();
+        driver.reopen();
     }
 
     void close()
     {
-        lmdb_driver.close();
+        driver.close();
     }
 
     override string get_in_current_transaction(string in_key)
@@ -67,7 +67,7 @@ class LmdbAuthorization : ImplAuthorization
     {
         if (txn_r != null)
         {
-            mdb_dbi_close(lmdb_driver.env, dbi);
+            mdb_dbi_close(driver.env, dbi);
             mdb_txn_abort(txn_r);
         }
     }
@@ -77,21 +77,21 @@ class LmdbAuthorization : ImplAuthorization
         if (is_check_for_reload)
             acl_check_for_reload(&reopen, log);
 
-        rc = mdb_txn_begin(lmdb_driver.env, null, MDB_RDONLY, &txn_r);
+        rc = mdb_txn_begin(driver.env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
         {
-            log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", lmdb_driver.path);
+            log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
             for (int i = 0; i < 10 && rc != 0; i++)
             {
                 mdb_txn_abort(txn_r);
 
                 if (i > 3)
                 {
-                    log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", lmdb_driver.path);
+                    log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
                     core.thread.Thread.sleep(dur!("msecs")(10));
                 }
 
-                rc = mdb_txn_begin(lmdb_driver.env, null, MDB_RDONLY, &txn_r);
+                rc = mdb_txn_begin(driver.env, null, MDB_RDONLY, &txn_r);
             }
         }
 
@@ -99,26 +99,26 @@ class LmdbAuthorization : ImplAuthorization
         {
             if (rc == MDB_MAP_RESIZED)
             {
-                log.trace("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) %s", lmdb_driver.path, fromStringz(mdb_strerror(rc)));
+                log.trace("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) %s", driver.path, fromStringz(mdb_strerror(rc)));
                 reopen();
-                rc = mdb_txn_begin(lmdb_driver.env, null, MDB_RDONLY, &txn_r);
+                rc = mdb_txn_begin(driver.env, null, MDB_RDONLY, &txn_r);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
-                log.trace("WARN! 2: find:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", lmdb_driver.path);
+                log.trace("WARN! 2: find:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?
                 //core.thread.Thread.sleep(dur!("msecs")(1));
                 //rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
                 reopen();
-                rc = mdb_txn_begin(lmdb_driver.env, null, MDB_RDONLY, &txn_r);
+                rc = mdb_txn_begin(driver.env, null, MDB_RDONLY, &txn_r);
             }
         }
 
         if (rc != 0)
         {
-            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) ERR! %s", lmdb_driver.path, fromStringz(mdb_strerror(rc)));
+            log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ",%s) ERR! %s", driver.path, fromStringz(mdb_strerror(rc)));
             return false;
         }
 

@@ -135,7 +135,7 @@ public class LmdbDriver : KeyValueDB
                     hash_str = "0";
 
                 summ_hash_this_db = BigInt("0x" ~ hash_str);
-                //log.trace("open db %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
+                log.trace("open db %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
                 db_is_opened = true;
             }
         }

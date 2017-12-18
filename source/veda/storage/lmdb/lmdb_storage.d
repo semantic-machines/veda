@@ -4,7 +4,7 @@
 module veda.storage.lmdb.lmdb_storage;
 
 import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
-import veda.common.type, veda.storage.common, veda.core.common.transaction, veda.storage.storage;
+import veda.common.type, veda.storage.common, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.storage.authorization;
 
 const string individuals_db_path = "./data/lmdb-individuals";
