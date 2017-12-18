@@ -350,8 +350,8 @@ module.exports = {
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Create template was not opened")});
 
         // Вводим запрашиваемый тип документа
-        driver.findElement({css:'.fulltext'}).clear();
-        driver.findElement({css:'.fulltext'}).sendKeys(templateName)
+        driver.findElement({css:'input.fulltext'}).clear();
+        driver.findElement({css:'input.fulltext'}).sendKeys(templateName)
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot enter template name")});
 
         driver.sleep(FAST_OPERATION);
