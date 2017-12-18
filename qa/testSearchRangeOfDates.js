@@ -13,7 +13,8 @@ function search(driver, query, count, phase) {
     driver.findElement({css:'a[resource="v-fs:FulltextSearch"]'}).click()
       .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on full text search icon");});
     basic.isVisible(driver, 'input[name="*"]', basic.SLOW_OPERATION, phase);
-    basic.execute(driver, 'sendKeys', 'input[name="*"]', '****** PHASE#4 > RECOVERY : ERROR = Cannot fill query string', query);
+    driver.findElement({css:'input[name="*"]'}).clear();
+    basic.execute(driver, 'sendKeys', 'input[name="*"]', '****** PHASE#' + phase + ' : ERROR = Cannot fill query string', query);
     driver.wait
     (
         function () {
