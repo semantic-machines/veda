@@ -200,6 +200,7 @@ v-s:Status
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
+  v-ui:hasTemplate v-ui:StatusTemplate; 
 .
 ### ------------------------------------------------------
 v-s:Sector
