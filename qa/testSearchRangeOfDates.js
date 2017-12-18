@@ -4,23 +4,22 @@ var basic = require('./basic.js'),
 /**
  * Проверка поиска
  * @param driver
- * @param somethingUnique - поисковый запрос;
+ * @param query - поисковый запрос;
  * @param count - количество элементов, которое должно быть в результате;
  * @param phase - текущая фаза теста
 */
 
-function search(driver, somethingUnique, count, phase) {
-    basic.menu(driver, 'Search', phase);
-    basic.execute(driver, 'sendKeys', '#q', "****** PHASE#" + phase + " : ERROR = Cannot fill input field", somethingUnique);
-    driver.executeScript("document.querySelector('button[id=\"search-submit\"]').scrollIntoView(true);")
-        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to search-submit button");});
-    basic.isEnabled(driver, 'button[id="search-submit"]', basic.SLOW_OPERATION, phase);
+function search(driver, query, count, phase) {
+    driver.findElement({css:'a[resource="v-fs:FulltextSearch"]'}).click()
+      .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on full text search icon");});
+    basic.isVisible(driver, 'input[name="*"]', basic.SLOW_OPERATION, phase);
+    basic.execute(driver, 'sendKeys', 'input[name="*"]', '****** PHASE#4 > RECOVERY : ERROR = Cannot fill query string', query);
     driver.wait
     (
         function () {
-            driver.findElement({css:'#search-submit'}).click();
-            driver.sleep(basic.FAST_OPERATION); // Иначе слишком часто щелкает поиск
-            return driver.findElement({css:'#results_count'}).getText().then(function (text) {
+            driver.findElement({css:'button.search-button'}).click();
+            driver.sleep(basic.SLOW_OPERATION);
+            return driver.findElement({css:'.stats-top .total-found'}).getText().then(function (text) {
                 return text == count;
             });
         },
@@ -32,7 +31,7 @@ function search(driver, somethingUnique, count, phase) {
  * 0.Open page -> login(as karpovrt);
  * 1.Create Person1 -> Create Person2 -> Create Person3 -> Create Person4;
  * 2.Search requests and checking results;
- * 
+ *
  * 0.Открываем страницу -> Входим в систему под karpovrt;
  * 1.Создаем Персону1 -> Создаем Персону2 -> Создаем Персону3-> Создаем Персону4;
  * 2.Поисковые запросы и проверка результатов;
