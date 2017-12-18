@@ -428,7 +428,8 @@ private Ticket authenticate(string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             op_res            = add_to_transaction(
-                                                   l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "", OptFreeze.NONE,
+                                                   l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "",
+                                                   OptFreeze.NONE,
                                                    OptAuthorize.YES,
                                                    OptTrace.NONE);
 
@@ -528,7 +529,8 @@ public string execute_json(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
-                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems, event_id.str,
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems,
+                                                       event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -550,7 +552,9 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.ADD_IN, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.ADD_IN, &individual,
+                                                       assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -570,7 +574,9 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.SET_IN, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.SET_IN, &individual,
+                                                       assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -591,7 +597,8 @@ public string execute_json(string in_msg, Context ctx)
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
-                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual, assigned_subsystems,
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual,
+                                                       assigned_subsystems,
                                                        event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
@@ -612,7 +619,9 @@ public string execute_json(string in_msg, Context ctx)
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.is_autocommit = true;
-                    OpResult ires = add_to_transaction(ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE, &individual, assigned_subsystems, event_id.str,
+                    OpResult ires = add_to_transaction(
+                                                       ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE, &individual,
+                                                       assigned_subsystems, event_id.str,
                                                        OptFreeze.NONE, OptAuthorize.YES,
                                                        OptTrace.NONE);
 
@@ -738,7 +747,8 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             OpResult opres = add_to_transaction(
-                                                ctx.get_storage().get_acl_client(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv", OptFreeze.NONE,
+                                                ctx.get_storage().get_acl_client(), tnx, &ticket, INDV_OP.PUT, &sys_account_permission, false, "srv",
+                                                OptFreeze.NONE,
                                                 OptAuthorize.NO,
                                                 OptTrace.NONE);
 
@@ -1159,7 +1169,8 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
             Ticket       sticket         = sys_ticket(ctx);
-            Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", OptAuthorize.NO);
+            Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'",
+                                                                         OptAuthorize.NO);
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource(veda_schema__owner).uri;
