@@ -5,8 +5,9 @@ module veda.authorization.az_server;
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string;
-import kaleidic.nanomsg.nano, commando;
-import veda.common.logger, veda.storage.authorization, veda.storage.lmdb.lmdb_acl, veda.storage.common, veda.common.type;
+import kaleidic.nanomsg.nano, commando, veda.util.properd;
+import veda.common.logger, veda.storage.authorization, veda.storage.common, veda.common.type;
+import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl;
 
 static this()
 {
@@ -26,7 +27,7 @@ const byte TRACE_ACL   = 1;
 const byte TRACE_GROUP = 2;
 const byte TRACE_INFO  = 3;
 
-private nothrow string az_prepare(string request, Authorization acl_indexes, Logger log)
+private nothrow string az_prepare(string request, Authorization athrz, Logger log)
 {
     try
     {
@@ -104,7 +105,7 @@ private nothrow string az_prepare(string request, Authorization acl_indexes, Log
                                 }
                             }
 
-                            ubyte res = acl_indexes.authorize(uri, user_uri, access_from_pretty_string(
+                            ubyte res = athrz.authorize(uri, user_uri, access_from_pretty_string(
                                                                                                        s_access), true, trace_acl, trace_group,
                                                               trace_info);
 
@@ -207,9 +208,20 @@ void main(string[] args)
     }
     log.trace("success bind to %s", bind_url);
 
-    Authorization acl_indexes;
-    if (acl_indexes is null)
-        acl_indexes = new LmdbAuthorization(DBMode.R, "acl", log);
+    Authorization athrz;
+
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        string tarantool_url        = properties.as!(string)("tarantool_url") ~ "\0";
+
+	if (tarantool_url is null)
+	{
+		athrz = new TarantoolAuthorization(log);
+	}
+	else
+	{	
+        athrz = new LmdbAuthorization(DBMode.R, "acl", log);
+	}    
 
     while (!f_listen_exit)
     {
@@ -224,7 +236,7 @@ void main(string[] args)
                 string req = cast(string)buf[ 0..bytes ];
                 //stderr.writefln("RECEIVED [%d](%s) cont=%d", bytes, req, count);
 
-                string rep = az_prepare(req, acl_indexes, log);
+                string rep = az_prepare(req, athrz, log);
 
                 nn_freemsg(buf);
 

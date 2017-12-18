@@ -26,7 +26,7 @@ function updateVersion(driver, task, label, valueToSearch, valueToChoose, phase)
         "****** PHASE#" + phase + " : ERROR = Cannot fill 'rdfs:label' field", label);
     driver.executeScript("document.querySelector('strong[about=\"v-s:responsible\"]').scrollIntoView(true);")
         .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to 'responsible' field");});
-    basic.execute(driver, 'clear', 'div[rel="v-s:responsible"] + veda-control input[id="fulltext"]',
+    basic.execute(driver, 'clear', 'div[rel="v-s:responsible"] + veda-control input.fulltext',
         "****** PHASE#" + phase + " : ERROR = Cannot find attribute `v-s:responsible`");
     basic.chooseFromDropdown(driver, 'v-s:responsible', valueToSearch, valueToChoose);
     driver.executeScript("document.querySelector('#save').scrollIntoView(true);")

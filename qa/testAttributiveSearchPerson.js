@@ -71,7 +71,7 @@ basic.getDrivers().forEach(function (drv) {
     basic.menu(driver, 'Find', 2);
     basic.isVisible(driver, 'div[resource="v-fs:Search"]', basic.FAST_OPERATION, 2);
     basic.execute(driver, 'click', 'a[href*="attributive-search"]', "****** PHASE#2 : ERROR = Cannot click on `Attributive` button");
-    basic.execute(driver, 'sendKeys', 'div[typeof="v-fs:AttributiveRequest"] input[id="fulltext"]',
+    basic.execute(driver, 'sendKeys', 'div[typeof="v-fs:AttributiveRequest"] input.fulltext',
         "****** PHASE#2 : ERROR = Cannot input templateName", 'Персона');
     driver.sleep(basic.FAST_OPERATION);
     driver.wait
