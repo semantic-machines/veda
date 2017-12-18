@@ -123,7 +123,7 @@ module.exports = {
      * @param phase - текущая фаза теста
      */
     chooseFromDropdown: function(driver, attribute, valueToSearch, valueToChoose, phase) {
-        driver.findElement({css:'div[rel="'+attribute+'"] + veda-control input[id="fulltext"]'}).sendKeys(valueToSearch)
+        driver.findElement({css:'div[rel="'+attribute+'"] + veda-control input.fulltext'}).sendKeys(valueToSearch)
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot find attribute `"+attribute+"`")});
         driver.sleep(FAST_OPERATION);
         // Проверяем что запрашивамый объект появился в выпадающем списке
@@ -350,8 +350,8 @@ module.exports = {
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Create template was not opened")});
 
         // Вводим запрашиваемый тип документа
-        driver.findElement({id:'fulltext'}).clear();
-        driver.findElement({id:'fulltext'}).sendKeys(templateName)
+        driver.findElement({css:'.fulltext'}).clear();
+        driver.findElement({css:'.fulltext'}).sendKeys(templateName)
             .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot enter template name")});
 
         driver.sleep(FAST_OPERATION);
@@ -420,8 +420,8 @@ module.exports = {
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Search template was not opened")});
 
         // Вводим запрашиваемый тип документа
-        driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).clear();
-        driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input[id="fulltext"]'}).sendKeys(templateName);
+        driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input.fulltext'}).clear();
+        driver.findElement({css:'div[typeof="v-fs:FulltextRequest"] input.fulltext'}).sendKeys(templateName);
 
         driver.sleep(FAST_OPERATION);
         // Проверяем что запрашиваемый тип появился в выпадающем списке

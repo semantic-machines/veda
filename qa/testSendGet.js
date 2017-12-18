@@ -45,7 +45,7 @@ basic.getThreeDrivers().forEach(function (drv) {
         profile.setPreference("browser.helperApps.neverAsk.saveToDisk","text/turtle");
         profile.setPreference("browser.helperApps.neverAsk.openFile","text/turtle");
         profile.setPreference("browser.helperApps.alwaysAsk.force", false);
-        profile.setPreference("browser.download.manager.showAlertOnComplete", false); 
+        profile.setPreference("browser.download.manager.showAlertOnComplete", false);
         profile.setPreference("browser.download.manager.closeWhenDone", false);
         profile.updatePreferences(drv.browser);
         var driver = basic.getDriver(drv);
@@ -80,7 +80,7 @@ basic.getThreeDrivers().forEach(function (drv) {
             webdriver.until.elementTextContains(driver.findElement({id:'user-info'}), lastName),
             basic.FAST_OPERATION
         ).thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#1 : ERROR = Login:Cannot find user last name")});
-        
+
         //PHASE#1: Download file
         basic.execute(driver, 'click', '#user-info', "****** PHASE#1 : ERROR = Cannot click on 'user-info' button");
         driver.sleep(basic.SLOW_OPERATION);
@@ -108,8 +108,8 @@ basic.getThreeDrivers().forEach(function (drv) {
             webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fc:Create"]'})),
             basic.FAST_OPERATION
         ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Create template was not opened")});
-        driver.findElement({id:'fulltext'}).clear();
-        driver.findElement({id:'fulltext'}).sendKeys('Отчет')
+        driver.findElement({css:'.fulltext'}).clear();
+        driver.findElement({css:'.fulltext'}).sendKeys('Отчет')
             .thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot enter template name")});
         driver.sleep(basic.FAST_OPERATION);
         driver.wait
@@ -145,7 +145,7 @@ basic.getThreeDrivers().forEach(function (drv) {
         basic.openPage(driver, drv);
         driver.sleep(basic.SLOW_OPERATION);
         basic.login(driver, 'karpovrt', '123', '2', 'Администратор2');
-        
+
         basic.execute(driver, 'click', '#user-info', "Cannot click on 'user-info' button");
         basic.execute(driver, 'click', 'a[href="#/td:RomanKarpov//v-ui:Graph"]', "Cannot click on 'glyphicon-link'");
         driver.sleep(basic.FAST_OPERATION);

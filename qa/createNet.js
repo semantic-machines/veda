@@ -12,7 +12,7 @@ var webdriver = require('selenium-webdriver'),
 */
 
 function choose(driver, type, valueToSearch, valueToChoose, phase) {
-    basic.execute(driver, 'sendKeys', 'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input[id="fulltext"]',
+    basic.execute(driver, 'sendKeys', 'veda-control[class="'+ type +' fulltext dropdown create properties-editor"] input.fulltext',
         "****** PHASE#" + phase + " : ERROR = Cannot find attribute " + type, valueToSearch);
     driver.sleep(basic.FAST_OPERATION);
     driver.wait
@@ -55,7 +55,7 @@ module.exports = {
         basic.openCreateDocumentForm(driver, 'Сеть', 'v-wf:Net', phase);
         basic.isVisible(driver, '.workflow-canvas-wrapper', basic.FAST_OPERATION, phase);
         var startPoint = driver.findElement({css:'.glyphicon-play'});
-        var actionSequence = webdriver.ActionSequence;        
+        var actionSequence = webdriver.ActionSequence;
         var act = new actionSequence(driver);
         act.mouseMove(startPoint, {x: 200, y: 0}).click().perform();
         basic.isVisible(driver, 'span[about="v-wf:Net"]', basic.FAST_OPERATION, phase);
@@ -64,7 +64,7 @@ module.exports = {
         driver.sleep(basic.FAST_OPERATION * 2);
     },
     /**
-     * Запуск функции choose 
+     * Запуск функции choose
      * @param driver
      * @param type - аттрибут
      * @param valueToSearch - значение, которое нужно искать
