@@ -108,8 +108,8 @@ basic.getThreeDrivers().forEach(function (drv) {
             webdriver.until.elementIsVisible(driver.findElement({css:'div[resource="v-fc:Create"]'})),
             basic.FAST_OPERATION
         ).thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Create template was not opened")});
-        driver.findElement({css:'input.fulltext'}).clear();
-        driver.findElement({css:'input.fulltext'}).sendKeys('Отчет')
+        driver.findElement({css:'input.fulltext.tt-input'}).clear();
+        driver.findElement({css:'input.fulltext.tt-input'}).sendKeys('Отчет')
             .thenCatch(function (e) {basic.errorHandler(e, "****** PHASE#2 : ERROR = Cannot enter template name")});
         driver.sleep(basic.FAST_OPERATION);
         driver.wait
