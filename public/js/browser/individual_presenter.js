@@ -14,9 +14,7 @@ veda.Module(function (veda) { "use strict";
         container = $(container).empty();
       }
 
-      mode = mode || "view";
-
-      return present(individual, container, template, mode);
+      return present(individual, container, template, mode || "view");
 
     }).catch(function (error) {
 

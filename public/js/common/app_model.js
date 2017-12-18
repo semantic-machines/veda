@@ -31,15 +31,6 @@
       self.trigger("logout");
     };
 
-    self.load = function (page, params) {
-      switch (page) {
-        default:
-          if (!params[0]) { params[0] = "#main"; }
-          var individual = new veda.IndividualModel(page);
-          individual.present.apply(individual, params);
-      }
-    };
-
     // Load ontology
     self.init = function () {
       self.ontology = new veda.OntologyModel();

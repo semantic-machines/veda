@@ -100,10 +100,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
       riot.route( function (hash) {
         if ( !hash ) { return welcome.present("#main"); }
         if ( hash.indexOf("#/") < 0 ) { return; }
-        var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
-        var page = hash_tokens[0];
+        var hash_tokens = decodeURIComponent(hash.slice(2)).split("/");
+        var uri = hash_tokens[0];
         var params = hash_tokens.slice(1);
-        page ? veda.load(page, params) : welcome.present("#main");
+        if (!params[0]) { params[0] = "#main"; }
+        var individual = uri ? new veda.IndividualModel(uri) : welcome ;
+        individual.present.apply(individual, params);
       });
       riot.route(location.hash);
     }).catch( function (err) {
