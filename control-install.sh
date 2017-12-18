@@ -3,8 +3,8 @@
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
-GO_VER=go1.9
-TARANTOOL_VER=1.7.5
+GO_VER=go1.9.2
+TARANTOOL_VER=1.7.6
 MSGPUCK_VER=2.0
 
 # Get other dependencies
@@ -25,8 +25,10 @@ F_UL=0
 ### RUST LANG ###
 
 if ! rustc -V; then
+    echo "--- INSTALL RUST ---"
     curl https://sh.rustup.rs -sSf | sh -s -- -y
 else
+    echo "--- UPDATE RUST ---"
     rustup update stable
 fi
 
@@ -38,6 +40,7 @@ cargo -V
 
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
+    echo "--- INSTALL DMD ---"
     wget http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
     sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
     rm dmd_$DMD_VER-0_amd64.deb
@@ -46,6 +49,7 @@ fi
 
 # Get right version of DUB
 if ! dub --version | grep $DUB_VER ; then
+    echo "--- INSTALL DUB ---"
     wget http://code.dlang.org/files/dub-$DUB_VER-linux-x86_64.tar.gz
     tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz    
     sudo cp ./dub /usr/bin/dub
@@ -55,9 +59,10 @@ fi
 
 ### GO LANG ###
 
+    echo "--- INSTALL GOLANG ---"
     mkdir tmp
     cd tmp
-    wget -q https://storage.googleapis.com/golang/$GO_VER.linux-amd64.tar.gz
+    wget https://storage.googleapis.com/golang/$GO_VER.linux-amd64.tar.gz
     tar -xf $GO_VER.linux-amd64.tar.gz
 
     if env | grep -q ^GOROOT=

@@ -106,8 +106,8 @@ private nothrow string az_prepare(string request, Authorization athrz, Logger lo
                             }
 
                             ubyte res = athrz.authorize(uri, user_uri, access_from_pretty_string(
-                                                                                                       s_access), true, trace_acl, trace_group,
-                                                              trace_info);
+                                                                                                 s_access), true, trace_acl, trace_group,
+                                                        trace_info);
 
                             //stderr.writefln("uri=%s user_uri=%s response_access=%s", uri, user_uri, access_to_pretty_string(res));
 
@@ -210,18 +210,18 @@ void main(string[] args)
 
     Authorization athrz;
 
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        string tarantool_url        = properties.as!(string)("tarantool_url") ~ "\0";
+    string[ string ] properties;
+    properties = readProperties("./veda.properties");
+    string tarantool_url = properties.as!(string)("tarantool_url");
 
-	if (tarantool_url is null)
-	{
-		athrz = new TarantoolAuthorization(log);
-	}
-	else
-	{	
+    if (tarantool_url !is null)
+    {
+        athrz = new TarantoolAuthorization(log);
+    }
+    else
+    {
         athrz = new LmdbAuthorization(DBMode.R, "acl", log);
-	}    
+    }
 
     while (!f_listen_exit)
     {

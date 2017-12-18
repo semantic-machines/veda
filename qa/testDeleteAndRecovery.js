@@ -36,12 +36,12 @@ function check(driver, count, phase) {
  * @param phase - текущая фаза теста
  */
 
-function clickButton(driver, button, phase) {
-    driver.sleep(basic.FAST_OPERATION);
-    driver.executeScript("document.querySelector('button[id="+button+"]').scrollIntoView(true);")
-        .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to " + button + " button");});
-    basic.execute(driver, 'click', 'button[id="'+ button +'"]', "****** PHASE#" + phase + " : ERROR = Cannot click on "  + button +  " button");
-    driver.sleep(basic.FAST_OPERATION);
+function clickButton(driver, selector, phase) {
+  driver.sleep(basic.FAST_OPERATION);
+  driver.executeScript("document.querySelector('" + selector + "').scrollIntoView(true);")
+    .thenCatch(function(e) {basic.errorHandler(e, "****** PHASE#" + phase + " : ERROR = Cannot scroll to " + selector + " button");});
+  basic.execute(driver, 'click', selector, "****** PHASE#" + phase + " : ERROR = Cannot click on "  + selector +  " button");
+  driver.sleep(basic.FAST_OPERATION);
 }
 
 /**
@@ -76,24 +76,27 @@ basic.getDrivers().forEach(function(drv){
         "****** PHASE#1 > CREATE : ERROR = Cannot click on 'rdfs:label' field");
     basic.execute(driver, 'sendKeys', 'veda-control[data-type="multilingualString"] input[type="text"]',
         "****** PHASE#1 > CREATE : ERROR = Cannot fill 'rdfs:label' field", timeStamp);
-    clickButton(driver, "save", 1);
+    clickButton(driver, "button#save", 1);
     driver.sleep(basic.FAST_OPERATION);
 
     //PHASE#2: Delete
     check(driver, 1, 2);
     basic.execute(driver, 'click', 'span[typeof="v-wf:StartForm"]', "****** PHASE#2 > DELETE : ERROR = Cannot click on 'StartForm' button");
-    clickButton(driver, "delete", 2);
+    clickButton(driver, "button#delete", 2);
     driver.switchTo().alert().accept();
 
     //PHASE#3: Checking
     check(driver, 0, 3);
 
     //PHASE#4: Recovery
-    basic.menu(driver, 'Search', 4);
-    basic.execute(driver, 'sendKeys', '#q', '****** PHASE#4 > RECOVERY : ERROR = Cannot fill input field',
+    driver.findElement({css:'a[resource="v-fs:FulltextSearch"]'}).click()
+      .thenCatch(function (e) {errrorHandlerFunction(e, "****** PHASE#" + phase + " : ERROR = Cannot click on full text search icon");});
+    basic.isVisible(driver, 'input[name="*"]', basic.SLOW_OPERATION, 4);
+    basic.execute(driver, 'sendKeys', 'input[name="*"]', '****** PHASE#4 > RECOVERY : ERROR = Cannot fill query string',
         "'rdfs:label' == '"+ timeStamp + "' && 'v-s:deleted' == 'true'");
-    clickButton(driver, "search-submit", 5);
-    basic.execute(driver, 'click', 'span[id="individual-label"]', "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'individual-label'");
+    clickButton(driver, "button.search-button", 4);
+    basic.execute(driver, 'click', 'tr[typeof="v-wf:StartForm"] td a', "****** PHASE#4 > RECOVERY : ERROR = Cannot click on search result link");
+    basic.isVisible(driver, '#deleted-alert .recover', basic.SLOW_OPERATION, 4);
     basic.execute(driver, 'click', '#deleted-alert .recover',
         "****** PHASE#4 > RECOVERY : ERROR = Cannot click on 'Recovery' button");
     check(driver, 1, 5);

@@ -20,6 +20,9 @@ killall -9 veda-ft-query
 killall -9 veda-lmdb-server
 killall -9 veda-authorization
 
+tarantoolctl stop init_tarantool.lua
+pkill tarantool
+
 rm .veda-pid
 rm data/module-info/*.lock
 rm data/queue/*.lock
