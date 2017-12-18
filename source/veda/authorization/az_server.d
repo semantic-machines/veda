@@ -212,7 +212,7 @@ void main(string[] args)
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
-    string tarantool_url = properties.as!(string)("tarantool_url") ~ "\0";
+    string tarantool_url = properties.as!(string)("tarantool_url");
 
     if (tarantool_url !is null)
     {

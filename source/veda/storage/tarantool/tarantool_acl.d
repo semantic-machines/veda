@@ -11,7 +11,7 @@ class TarantoolAuthorization : ImplAuthorization
     this(Logger _log)
     {
         log    = _log;
-        driver = new TarantoolDriver(log);
+        driver = new TarantoolDriver(log, "acl-indexes", 513);
     }
 
 

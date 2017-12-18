@@ -3,34 +3,119 @@
  */
 module veda.storage.tarantool.tarantool_driver;
 
-import std.conv, std.stdio, std.string;
-import veda.util.properd;
+import std.conv, std.stdio, std.string, std.conv;
+import veda.util.properd, veda.bind.msgpuck;
 import veda.common.logger, veda.common.type;
 import veda.storage.common;
 import veda.bind.tarantool.tnt_stream, veda.bind.tarantool.tnt_net, veda.bind.tarantool.tnt_opt, veda.bind.tarantool.tnt_ping, veda.bind.tarantool.tnt_reply;
+import veda.bind.tarantool.tnt_insert, veda.bind.tarantool.tnt_object, veda.bind.tarantool.tnt_select;
 
 public class TarantoolDriver : KeyValueDB
 {
     Logger     log;
     string     uri;
     tnt_stream *tnt;
-    bool       db_is_opened;
+    bool       db_is_opened = false;
+    string     space_name;
+    int        space_id;
 
-    this(Logger _log)
+    this(Logger _log, string _space_name, int _space_id)
     {
+        log = _log;
         string[ string ] properties;
         properties = readProperties("./veda.properties");
         uri        = properties.as!(string)("tarantool_url") ~ "\0";
+
+        space_name = _space_name;
+        space_id   = _space_id;
     }
 
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {
-        return null;
+        if (db_is_opened != true)
+        {
+            open();
+            if (db_is_opened != true)
+                return null;
+        }
+
+        tnt_stream *tuple = tnt_object(null);
+
+        tnt_object_format(tuple, "[%s]", (uri ~ "\0").ptr);
+        tnt_select(tnt, space_id, 0, (2 ^ 32) - 1, 0, 0, tuple);
+        tnt_flush(tnt);
+        tnt_reply_ reply;
+        tnt_reply_init(&reply);
+        tnt.read_reply(tnt, &reply);
+        tnt_stream_free(tuple);
+        if (reply.code != 0)
+        {
+            log.trace("Select [%s] failed", uri);
+            return null;
+        }
+
+        mp_type field_type = mp_typeof(*reply.data);
+
+        if (field_type != mp_type.MP_ARRAY)
+        {
+            log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s", uri);
+            return null;
+        }
+
+        uint tuple_count = mp_decode_array(&reply.data);
+        if (tuple_count != 1)
+        {
+            log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s", uri);
+            return null;
+        }
+
+        field_type = mp_typeof(*reply.data);
+        if (field_type != mp_type.MP_ARRAY)
+        {
+            log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s", uri);
+            return null;
+        }
+
+        uint field_count = mp_decode_array(&reply.data);
+
+        char *str_value;
+        uint str_value_length;
+        str_value = mp_decode_str(&reply.data, &str_value_length);
+        str_value = mp_decode_str(&reply.data, &str_value_length);
+
+        stderr.writefln("@ TarantoolDriver.find: FOUND %s->[%s]", uri, cast(string)str_value[ 0..str_value_length ]);
+
+        return cast(string)str_value[ 0..str_value_length ];
     }
 
     public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id)
     {
-        return ResultCode.Not_Implemented;
+        if (db_is_opened != true)
+        {
+            open();
+            if (db_is_opened != true)
+                return ResultCode.Connect_Error;
+        }
+
+        tnt_stream *tuple = tnt_object(null);
+        //tnt_object_format(tuple, "[%s%s]", (in_key ~ "\0").ptr, (in_value ~ "\0").ptr);
+        tnt_object_add_array(tuple, 2);
+        tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
+        tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
+        tnt_insert(tnt, space_id, tuple);
+        tnt_flush(tnt);
+        tnt_stream_free(tuple);
+
+        tnt_reply_ reply;
+        tnt_reply_init(&reply);
+        tnt.read_reply(tnt, &reply);
+        if (reply.code != 0)
+        {
+            log.trace("Insert failed %lu", reply.code);
+            return ResultCode.Internal_Server_Error;
+        }
+
+        return ResultCode.OK;
     }
 
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
@@ -45,17 +130,29 @@ public class TarantoolDriver : KeyValueDB
 
     public void open()
     {
-        tnt_stream *tnt = tnt_net(null);
+        tnt = tnt_net(null);
 
         tnt_set(tnt, tnt_opt_type.TNT_OPT_URI, uri.ptr);
         tnt_set(tnt, tnt_opt_type.TNT_OPT_SEND_BUF, 0);
         tnt_set(tnt, tnt_opt_type.TNT_OPT_RECV_BUF, 0);
-        tnt_connect(tnt);
-        tnt_ping(tnt);
-        tnt_reply_ *reply = tnt_reply_init(null);
-        tnt.read_reply(tnt, reply);
-        tnt_reply_free(reply);
-        db_is_opened = true;
+        int res = tnt_connect(tnt);
+        if (res == 0)
+        {
+            tnt_ping(tnt);
+            tnt_reply_ *reply = tnt_reply_init(null);
+            tnt.read_reply(tnt, reply);
+            tnt_reply_free(reply);
+            if (reply.code == 0)
+            {
+                log.trace("SUCCESS CONNECT TO TARANTOOL %s", uri);
+                db_is_opened = true;
+            }
+        }
+        else
+        {
+            stderr.writeln("$12");
+            log.trace("FAIL CONNECT TO TARANTOOL %s", uri);
+        }
     }
 
     public void reopen()
