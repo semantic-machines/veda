@@ -108,8 +108,8 @@ class ClientAuthorization : Authorization
 
                 nn_freemsg(buf);
             }
-            nn_close(sock);
-            sock = -1;
+            //nn_close(sock);
+            //sock = -1;
         }
         //stderr.writefln("AZCL _request_access (%d), res (%d)", _request_access, res);
         return res;
@@ -121,8 +121,7 @@ class ClientAuthorization : Authorization
 
     bool open()
     {
-        writefln("az_client: connect to %s", acl_service_url);
-
+    	int prev_sock = sock; 
         if (sock >= 0)
             return true;
 
@@ -135,17 +134,20 @@ class ClientAuthorization : Authorization
         else if (nn_connect(sock, cast(char *)(acl_service_url ~ "\0")) < 0)
         {
             log.trace("ERR! cannot connect socket to %s", acl_service_url);
+            sock = -1;
             return false;
         }
         else
         {
-            log.trace("success connect %s", acl_service_url);
+            log.trace("success connection %s, sock_id=%d, %d", acl_service_url, sock, prev_sock);
             return true;
         }
     }
 
     void close()
     {
+        log.trace("close connection %s, sock_id=%d", acl_service_url, sock);
         nn_close(sock);
+        sock = -1;
     }
 }

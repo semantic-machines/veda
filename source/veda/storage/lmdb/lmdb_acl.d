@@ -28,7 +28,7 @@ class LmdbAuthorization : ImplAuthorization
 
     this(DBMode mode, string _parent_thread_name, Logger _log)
     {
-        log         = _log;
+        log    = _log;
         driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 

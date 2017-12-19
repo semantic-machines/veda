@@ -451,15 +451,7 @@ public class LmdbDriver : KeyValueDB
         return count;
     }
 
-    public bool is_exists(string uri)
-    {
-        if (find(OptAuthorize.NO, null, uri, false) !is null)
-            return true;
-        else
-            return false;
-    }
-
-    public string find(OptAuthorize op_auth, string user_uri, string _uri, bool return_value = true)
+    public string find(OptAuthorize op_auth, string user_uri, string _uri)
     {
         string uri = _uri.idup;
 
@@ -539,15 +531,9 @@ public class LmdbDriver : KeyValueDB
             swA.start();
             //      log.trace ("lmdb.find.mdb_get START uri=%s", _uri);
 
-
             rc = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
-            {
-                if (return_value)
-                    str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-                else
-                    str = "?";
-            }
+                str = cast(string)(data.mv_data[ 0..data.mv_size ]);
 
             swA.stop();
             long tA = cast(long)swA.peek().usecs;
@@ -573,6 +559,3 @@ public class LmdbDriver : KeyValueDB
             return str;
     }
 }
-
-
-
