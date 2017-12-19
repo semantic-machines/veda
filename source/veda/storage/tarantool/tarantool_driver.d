@@ -3,11 +3,12 @@
  */
 module veda.storage.tarantool.tarantool_driver;
 
-import std.conv, std.stdio, std.string, std.conv;
+import std.conv, std.stdio, std.string, std.conv, std.datetime;
 import veda.util.properd, veda.bind.msgpuck;
 import veda.common.logger, veda.common.type;
 import veda.storage.common;
-import veda.bind.tarantool.tnt_stream, veda.bind.tarantool.tnt_net, veda.bind.tarantool.tnt_opt, veda.bind.tarantool.tnt_ping, veda.bind.tarantool.tnt_reply;
+import veda.bind.tarantool.tnt_stream, veda.bind.tarantool.tnt_net, veda.bind.tarantool.tnt_opt, veda.bind.tarantool.tnt_ping,
+       veda.bind.tarantool.tnt_reply;
 import veda.bind.tarantool.tnt_insert, veda.bind.tarantool.tnt_object, veda.bind.tarantool.tnt_select;
 
 public class TarantoolDriver : KeyValueDB
@@ -32,6 +33,9 @@ public class TarantoolDriver : KeyValueDB
 
     public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
     {
+        if (uri is null || uri.length < 2)
+            return null;
+
         if (db_is_opened != true)
         {
             open();
@@ -39,53 +43,68 @@ public class TarantoolDriver : KeyValueDB
                 return null;
         }
 
-        tnt_stream *tuple = tnt_object(null);
-
-        tnt_object_format(tuple, "[%s]", (uri ~ "\0").ptr);
-        tnt_select(tnt, space_id, 0, (2 ^ 32) - 1, 0, 0, tuple);
-        tnt_flush(tnt);
         tnt_reply_ reply;
         tnt_reply_init(&reply);
-        tnt.read_reply(tnt, &reply);
-        tnt_stream_free(tuple);
-        if (reply.code != 0)
+
+        try
         {
-            log.trace("Select [%s] failed", uri);
-            return null;
+            tnt_stream *tuple = tnt_object(null);
+
+            tnt_object_format(tuple, "[%s]", (uri ~ "\0").ptr);
+            tnt_select(tnt, space_id, 0, (2 ^ 32) - 1, 0, 0, tuple);
+            tnt_flush(tnt);
+            tnt_stream_free(tuple);
+
+            tnt.read_reply(tnt, &reply);
+            if (reply.code != 0)
+            {
+                log.trace("Select [%s] failed", uri);
+                return null;
+            }
+
+            mp_type field_type = mp_typeof(*reply.data);
+
+            if (field_type != mp_type.MP_ARRAY)
+            {
+                log.trace("VALUE CONTENT INVALID FORMAT [], KEY=%s, field_type=%s", uri, field_type);
+                return null;
+            }
+
+            uint tuple_count = mp_decode_array(&reply.data);
+            if (tuple_count == 0)
+            {
+                return null;
+            }
+
+            if (tuple_count != 1)
+            {
+                log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s, tuple_count=%d", uri, tuple_count);
+                return null;
+            }
+
+            field_type = mp_typeof(*reply.data);
+            if (field_type != mp_type.MP_ARRAY)
+            {
+                log.trace("VALUE CONTENT INVALID FORMAT [[]], KEY=%s, field_type=%s", uri, field_type);
+                return null;
+            }
+
+            uint field_count = mp_decode_array(&reply.data);
+
+            char *str_value;
+            uint str_value_length;
+            str_value = mp_decode_str(&reply.data, &str_value_length);
+            str_value = mp_decode_str(&reply.data, &str_value_length);
+
+            //stderr.writefln("@ TarantoolDriver.find: FOUND %s->[%s]", uri, cast(string)str_value[ 0..str_value_length ]);
+
+            string res = cast(string)str_value[ 0..str_value_length ].dup;
+            return res;
         }
-
-        mp_type field_type = mp_typeof(*reply.data);
-
-        if (field_type != mp_type.MP_ARRAY)
+        finally
         {
-            log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s", uri);
-            return null;
+            tnt_reply_free(&reply);
         }
-
-        uint tuple_count = mp_decode_array(&reply.data);
-        if (tuple_count != 1)
-        {
-            log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s", uri);
-            return null;
-        }
-
-        field_type = mp_typeof(*reply.data);
-        if (field_type != mp_type.MP_ARRAY)
-        {
-            log.trace("VALUE CONTENT INVALID FORMAT, KEY=%s", uri);
-            return null;
-        }
-
-        uint field_count = mp_decode_array(&reply.data);
-
-        char *str_value;
-        uint str_value_length;
-        str_value = mp_decode_str(&reply.data, &str_value_length);
-        str_value = mp_decode_str(&reply.data, &str_value_length);
-
-        stderr.writefln("@ TarantoolDriver.find: FOUND %s->[%s]", uri, cast(string)str_value[ 0..str_value_length ]);
-
-        return cast(string)str_value[ 0..str_value_length ];
     }
 
     public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id)
@@ -98,11 +117,10 @@ public class TarantoolDriver : KeyValueDB
         }
 
         tnt_stream *tuple = tnt_object(null);
-        //tnt_object_format(tuple, "[%s%s]", (in_key ~ "\0").ptr, (in_value ~ "\0").ptr);
         tnt_object_add_array(tuple, 2);
         tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
         tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
-        tnt_insert(tnt, space_id, tuple);
+        tnt_replace(tnt, space_id, tuple);
         tnt_flush(tnt);
         tnt_stream_free(tuple);
 
@@ -111,10 +129,12 @@ public class TarantoolDriver : KeyValueDB
         tnt.read_reply(tnt, &reply);
         if (reply.code != 0)
         {
-            log.trace("Insert failed %lu", reply.code);
+            log.trace("Insert failed [%s][%s] errcode=%s", in_key, in_value, reply.code);
+            tnt_reply_free(&reply);
             return ResultCode.Internal_Server_Error;
         }
 
+        tnt_reply_free(&reply);
         return ResultCode.OK;
     }
 
@@ -150,8 +170,10 @@ public class TarantoolDriver : KeyValueDB
         }
         else
         {
-            stderr.writeln("$12");
             log.trace("FAIL CONNECT TO TARANTOOL %s", uri);
+            log.trace("SLEEP AND REPEAT");
+            core.thread.Thread.sleep(dur!("seconds")(1));
+            return open();
         }
     }
 
