@@ -1152,6 +1152,19 @@ v-ui:SavedSearchTemplate
   """ ;
 .
 
+v-ui:StatusTemplate 
+  rdf:type v-ui:ClassTemplate ; 
+  rdfs:label "Шаблон для класса Статус"@ru ; 
+  rdfs:label "Template for Status class"@en ; 
+  v-ui:forClass v-s:Status ; 
+  v-ui:template """ 
+  <span class="label" property="rdfs:label"></span> 
+  <script> 
+    template.addClass("label-"+individual["v-s:tag"]); 
+  </script> 
+  """ ; 
+. 
+
 ####### TEST UI #######
 
 v-ui:TestUIClass
