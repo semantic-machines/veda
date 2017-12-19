@@ -88,15 +88,25 @@ veda.Module(function AppPresenter(veda) { "use strict";
     var welcome_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
     var welcome_param = new veda.IndividualModel( welcome_param_uri );
 
-    layout_param.load().then(function (layout_param) {
+    layout_param.load()
+
+    .then(function (layout_param) {
       return layout_param["rdf:value"][0].load();
-    }).then(function (layout) {
+    })
+
+    .then(function (layout) {
       layout.present("#app");
-    }).then(function () {
+    })
+
+    .then(function () {
       return welcome_param.load();
-    }).then(function (welcome_param) {
+    })
+
+    .then(function (welcome_param) {
       return welcome_param["rdf:value"][0].load();
-    }).then(function (welcome) {
+    })
+
+    .then(function (welcome) {
       riot.route( function (hash) {
         if ( !hash ) { return welcome.present("#main"); }
         if ( hash.indexOf("#/") < 0 ) { return; }
@@ -108,7 +118,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
         individual.present.apply(individual, params);
       });
       riot.route(location.hash);
-    }).catch( function (err) {
+    })
+
+    .catch( function (err) {
       var notify = new veda.Notify();
       notify("danger", err);
     });
