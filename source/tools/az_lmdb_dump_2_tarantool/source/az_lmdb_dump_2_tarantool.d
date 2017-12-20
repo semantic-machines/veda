@@ -31,21 +31,23 @@ void main(string[] args)
     bool   is_prepare = false;
     string line;
 
+    long counter = 0;
+
     while ((line = file.readln()) !is null)
     {
         if (line == " summ_hash_this_db\n")
             is_prepare = false;
         if (is_prepare)
         {
+	    counter++;
             string key   = line;
             string value = file.readln();
             
             key = key[ 1..$ - 1 ];
             value = value[ 1..$ - 1 ];
             
-            writeln("");
-            writefln("KEY=[%s]", key);
-            writefln("VALUE=[%s]", value);
+            writefln("%d KEY=[%s]", counter, key);
+            //writefln("VALUE=[%s]", value);
             
             storage.put (OptAuthorize.NO, null, key, value, -1);
         }
