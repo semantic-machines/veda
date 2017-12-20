@@ -522,10 +522,7 @@ v-ui:StandardButtonsTemplate
 <div class="standard-actions">
   <style>
     .standard-actions {
-      margin: 0 3px;
-    }
-    .standard-actions:first-child {
-      margin-left: 0px;
+      margin: 0 3px 0 0;
     }
   </style>
   <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
@@ -1242,18 +1239,18 @@ v-ui:SavedSearchTemplate
   """ ;
 .
 
-v-ui:StatusTemplate 
-  rdf:type v-ui:ClassTemplate ; 
-  rdfs:label "Шаблон для класса Статус"@ru ; 
-  rdfs:label "Template for Status class"@en ; 
-  v-ui:forClass v-s:Status ; 
-  v-ui:template """ 
-  <span class="label" property="rdfs:label"></span> 
-  <script> 
-    template.addClass("label-"+individual["v-s:tag"]); 
-  </script> 
-  """ ; 
-. 
+v-ui:StatusTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса Статус"@ru ;
+  rdfs:label "Template for Status class"@en ;
+  v-ui:forClass v-s:Status ;
+  v-ui:template """
+  <span class="label" property="rdfs:label"></span>
+  <script>
+    template.addClass("label-"+individual["v-s:tag"]);
+  </script>
+  """ ;
+.
 
 ####### TEST UI #######
 

@@ -507,12 +507,8 @@ v-s:LetterRegistrationRecordTemplate
 </div>
 <script>
   var self = this;
-  function register() {
+  function date() {
     if ( this.is("v-s:Enumerated") && !this.hasValue("v-s:registrationNumber") ) {
-      var numerator = new veda.IndividualModel("v-s:SimpleNumeration", false);
-      var scope = eval(numerator['v-s:numerationScope'][0].toString())(veda.ticket, this);
-      var number = eval(numerator['v-s:numerationGetNextValue'][0].toString())(veda.ticket, scope);
-      this["v-s:registrationNumber"] = [ number ];
       var today = new Date();
       today.setHours(0);
       today.setMinutes(0);
@@ -520,9 +516,9 @@ v-s:LetterRegistrationRecordTemplate
       this["v-s:registrationDate"] = [ today ];
     }
   }
-  this.on("beforeSave", register);
+  this.on("beforeSave", date);
   template.one("remove", function () {
-    self.off("beforeSave", register);
+    self.off("beforeSave", date);
   });
 
   if ( mode === "edit" ) {
