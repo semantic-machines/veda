@@ -158,12 +158,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("draft", draftHandler);
 
-    function showRightsHandler (e) {
-      individual.trigger("showRights");
-      e.stopPropagation();
-    }
-    template.on("showRights", showRightsHandler);
-
     function cancelHandler (e) {
       template.trigger("view");
       individual.reset()
@@ -229,43 +223,44 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("recover", recoverHandler);
 
     // Draft label
-    var draftLabel = null;
-    var Draft = (new veda.IndividualModel("v-s:Draft"))["rdfs:comment"].join(" ");
-    function isDraftHandler(property_uri) {
-      if (property_uri === "v-s:isDraft") {
-        // If individual is draft
-        if ( individual.hasValue("v-s:isDraft", true) ) {
-          if ( !template.parent().closest("[resource='" + individual.id + "']").length && !draftLabel ) {
-            draftLabel = $("<div class='label label-default label-draft'></div>").text(Draft);
-            if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
-              var cell = template.children().first();
-              cell.css("position", "relative").append(draftLabel);
-            } else {
-              template.css("position", "relative");
-              // It is important to skip script element in template!
-              template.not("script").append(draftLabel);
-            }
-          }
-        } else {
-          if (draftLabel) {
-            draftLabel.remove();
-            draftLabel = null;
-          }
-        }
-      } else {
-        if ( mode === "edit" && individual.is("v-s:UserThing") ) {
-          individual.draft();
-        }
+    var draftable, showLabel, draftLabel;
+
+    function isDraftHandler() {
+      if ( mode === "edit" && draftable && !individual.isSync() ) {
+        individual.draft();
+      }
+      // If individual is draft
+      if ( individual.isDraft() && showLabel ) {
+        draftLabel.show();
+      } else if ( draftLabel ) {
+        draftLabel.hide();
       }
     }
-    individual.on("propertyModified", isDraftHandler);
+    individual.on("propertyModified afterSave afterReset", isDraftHandler);
     template.one("remove", function () {
       individual.off("propertyModified", isDraftHandler);
-      draftLabel = null;
+      individual.off("afterSave", isDraftHandler);
+      individual.off("afterReset", isDraftHandler);
     });
 
     setTimeout( function () {
-      isDraftHandler("v-s:isDraft");
+      draftable = individual.is("v-s:UserThing");
+      if (draftable) {
+        showLabel = !template.parent().closest("[resource='" + individual.id + "']").length;
+        if (showLabel) {
+          var Draft = new veda.IndividualModel("v-s:Draft")["rdfs:comment"].join(" ");
+          draftLabel = $("<div class='label label-default label-draft'></div>").text(Draft).hide();
+          if (template.css("display") === "table-row" || template.prop("tagName") === "TR") {
+            var cell = template.children().first();
+            cell.css("position", "relative").append(draftLabel);
+          } else {
+            template.css("position", "relative");
+            // It is important to skip script element in template!
+            template.not("script").append(draftLabel);
+          }
+          isDraftHandler();
+        }
+      }
     }, 100);
 
     // Process RDFa compliant template
