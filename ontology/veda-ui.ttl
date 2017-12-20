@@ -500,7 +500,7 @@ v-ui:StandardButtonsTemplate
   var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft")["rdfs:label"].join(" ");
   var Cancel = new veda.IndividualModel("v-s:Cancel")["rdfs:label"].join(" ");
   function isDraftHandler() {
-    if ( individual.hasValue("v-s:isDraft", true) ) {
+    if ( individual.isDraft() ) {
       //Rename "Edit" -> "Continue edit"
       $(".action#edit", template).text(ContinueEdit);
       //Rename "Cancel" -> "Delete draft"
@@ -512,11 +512,13 @@ v-ui:StandardButtonsTemplate
       $(".action#cancel", template).text(Cancel);
     }
   }
-  individual.on("v-s:isDraft", isDraftHandler);
+  individual.on("propertyModified afterSave afterReset", isDraftHandler);
   template.one("remove", function () {
-    individual.off("v-s:isDraft", isDraftHandler);
+    individual.off("propertyModified", isDraftHandler);
+    individual.off("afterSave", isDraftHandler);
+    individual.off("afterReset", isDraftHandler);
   });
-  isDraftHandler("v-s:isDraft");
+  isDraftHandler();
   //# sourceURL=v-ui:StandardButtonsTemplate_pre
 </script>
 <div class="standard-actions">
