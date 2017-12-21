@@ -27,7 +27,10 @@
         "../../veda/authorization/az_client.d",
         "../../veda/storage/common.d",
         "../../veda/storage/storage.d",
-        "../../veda/storage/binlog_tools.d"
+        "../../veda/storage/binlog_tools.d",
+        "../../veda/storage/authorization.d", 
+        "../../veda/storage/right_set.d", 
+        "../../veda/storage/storage_manager.d"
  	],
 	"sourcePaths":[
 	    "../../veda/mstorage", 
@@ -36,7 +39,6 @@
 	    "../../veda/onto", 
             "../../veda/onto/bj8individual",
             "../../veda/vmodule",
-	    "../../veda/storage",
 	    "../../veda/storage/lmdb",
 	    "../../veda/storage/tarantool",
 	    "../../veda/bind/tarantool"
