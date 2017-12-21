@@ -491,6 +491,8 @@ v-ui:StandardButtonsTemplate
       veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true);
     } else if (task === "v-s:Coordination") {
       veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true);
+    } else if (task === "v-s:Sign") {
+      veda.Util.send(individual, template, 'v-wf:signRouteStartForm', true);
     }
   });
 
@@ -546,6 +548,7 @@ v-ui:StandardButtonsTemplate
       <li><a href="#" about="v-s:Introduction" property="rdfs:label"></a></li>
       <li><a href="#" about="v-s:Distribution" property="rdfs:label"></a></li>
       <li><a href="#" about="v-s:Coordination" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-s:Sign" property="rdfs:label"></a></li>
     </ul>
   </div>
 </div>
