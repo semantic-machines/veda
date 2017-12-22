@@ -592,8 +592,7 @@ v-ui:StandardButtonsTemplate
 
   // Respect validation state of parent template
   var closest = template.parent().closest("[resource='" + individual.id + "']");
-  closest.on("internal-validated", function (e) {
-    var validation = $(this).data("validation");
+  closest.on("internal-validated", function (e, validation) {
     if (validation.state) {
       $(".action#save", template).removeAttr("disabled");
       $(".action#send", template).removeAttr("disabled");

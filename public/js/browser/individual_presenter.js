@@ -580,7 +580,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var embeddedValidation = embeddedTemplate.data("validation");
           return embeddedValidation ? acc && embeddedValidation.state : acc;
         }, true);
-        template.trigger("internal-validated");
+        template.trigger("internal-validated", [validation]);
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded
       if ( !template.data("isEmbedded") ) {
@@ -631,7 +631,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       // Initial validation state
       validation[property_uri] = {state: true, cause: []};
 
-      function validatedHandler(e) {
+      function validatedHandler(e, validation) {
         if ( validation.state || !validation[property_uri] || validation[property_uri].state === true ) {
           control.removeClass("has-error");
           control.popover("destroy");
@@ -696,7 +696,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       // Initial validation state
       validation[rel_uri] = {state: true, cause: []};
 
-      function validatedHandler(e) {
+      function validatedHandler(e, validation) {
         if ( validation.state || !validation[rel_uri] || validation[rel_uri].state === true) {
           control.removeClass("has-error");
           control.popover("destroy");

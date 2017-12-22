@@ -1477,8 +1477,7 @@
             }
             newVal.present(cntr, tmpl, "edit");
             var template = cntr.children("[resource]");
-            template.on("internal-validated", function () {
-              var validation = template.data("validation");
+            template.on("internal-validated", function (e, validation) {
               validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
             });
           } else {
