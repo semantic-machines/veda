@@ -1356,7 +1356,7 @@ v-fs:AttributiveSearchTemplate
     var mainTop = main.offset().top;
     var mainHeight = main.height();
     var windowHeight = window.innerHeight;
-    var windowTop = window.scrollY;
+    var windowTop = window.scrollY || window.pageYOffset;
     var actionsStaticTop = placeholder.offset().top;
     var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
     var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
