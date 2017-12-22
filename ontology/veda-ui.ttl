@@ -554,21 +554,22 @@ v-ui:StandardButtonsTemplate
 </div>
 <script>
   // Make position fixed for buttons bar that doesn't fit the window
-  function checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder) {
+  function checkOffset(main, actions, actionsStaticHeight, placeholder) {
     var mainTop = main.offset().top;
     var mainHeight = main.height();
     var windowHeight = window.innerHeight;
     var windowTop = window.scrollY || window.pageYOffset;
+    var actionsStaticTop = placeholder.offset().top;
     var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
     var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
     if ( !actions_inside_viewport && main_inside_viewport )  {
       if ( !actions.hasClass("actions-fixed") ) {
-        placeholder.insertBefore(actions);
+        placeholder.css("height", actionsStaticHeight);
         actions.addClass("actions-fixed");
       }
     } else {
       if ( actions.hasClass("actions-fixed") ) {
-         placeholder.remove();
+        placeholder.css("height", 0);
         actions.removeClass("actions-fixed");
       }
     }
@@ -577,16 +578,15 @@ v-ui:StandardButtonsTemplate
     var main = template.parent().closest("[resource='" + individual.id + "']");
     var actions = template.closest(".actions");
     if (!actions.length) { return; }
-    var actionsStaticTop = actions.offset().top;
     var actionsStaticHeight = actions.height();
-    var placeholder = $("<div>&nbsp;</div>").css("height", actionsStaticHeight);
-    checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+    var placeholder = $("<div></div>").insertBefore(actions);
+    checkOffset(main, actions, actionsStaticHeight, placeholder);
     $(window).on("scroll", scrollHandler);
     template.one("remove", function () {
       $(window).off("scroll", scrollHandler);
     });
     function scrollHandler () {
-      checkOffset(main, actions, actionsStaticTop, actionsStaticHeight, placeholder);
+      checkOffset(main, actions, actionsStaticHeight, placeholder);
     }
   }, 500);
 
