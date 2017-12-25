@@ -245,8 +245,8 @@ v-s:hasDescriptionOfChange
 .
 v-s:hasAddendum
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Addendum local regulatory document"@en ;
-  rdfs:label "Приложение ЛНД"@ru ;
+  rdfs:label "Addendum"@en ;
+  rdfs:label "Приложение"@ru ;
   rdfs:range v-s:Addendum ;
   rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
 .

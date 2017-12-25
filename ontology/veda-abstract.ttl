@@ -771,6 +771,13 @@ v-s:registrationNumber
   rdfs:range xsd:string ;
   rdfs:domain v-s:Registered ;
 .
+v-s:inventoryNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Inventory number"@en ;
+  rdfs:label "Инвентарный номер"@ru ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Registered ;
+.
 v-s:registrationDateIn
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Registration date"@en ;
