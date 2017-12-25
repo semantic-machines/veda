@@ -62,6 +62,7 @@ v-fs:fulltextQuery
   rdfs:label "Query"@en ;
   rdfs:label "Запрос"@ru ;
   rdfs:domain v-fs:FulltextRequest ;
+  rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:string ;
 .
 v-fs:sortOrder
@@ -1970,13 +1971,13 @@ v-fs:FulltextSearch
   v-fs:searchBlank v-fs:FulltextBlank ;
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
+  v-fs:fulltextQuery "'rdf:type'=='v-s:UserThing'" ;
 .
 
 v-fs:FulltextBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Тестовый бланк"@ru ;
   rdfs:label "Test blank"@en ;
-#  v-fc:targetType v-s:UserThing ;
 .
 
 v-fs:FulltextBlankTemplate
