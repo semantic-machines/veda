@@ -42,14 +42,14 @@ v-s:Comment_BaseUser
   rdfs:label "Основные пользователи Comment" ;
 .
 
-v-s:Comment_permission1
-  rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:Comment ;
-  v-s:permissionObject v-s:Comment_group ;
-  v-s:permissionSubject v-s:Comment_BaseUser ;
-  v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "R. Все пользователи. Индивиды Comment" ;
-.
+#v-s:Comment_permission1
+#  rdf:type v-s:PermissionStatement ;
+#  v-s:permissionObject v-s:Comment ;
+#  v-s:permissionObject v-s:Comment_group ;
+#  v-s:permissionSubject v-s:Comment_BaseUser ;
+#  v-s:canRead "true"^^xsd:boolean ;
+#  rdfs:label "R. Все пользователи. Индивиды Comment" ;
+#.
 
 v-s:Comment_permission2
   rdf:type v-s:PermissionStatement ;
