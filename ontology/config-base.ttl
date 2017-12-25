@@ -1233,8 +1233,10 @@ cfg:Event_16
       backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
     }
   }
-  put_individual(ticket, backwardTarget, _event_id);
-  //print( "BL target updated =", JSON.stringify(backwardTarget) );
+  if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
+    put_individual(ticket, backwardTarget, _event_id);
+    //print( "BL target updated =", JSON.stringify(backwardTarget) );
+  }
   """ ;
 .
 
