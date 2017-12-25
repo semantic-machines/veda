@@ -33,6 +33,11 @@ v-s:Back
   rdfs:label "Назад"@ru ;
   rdfs:label "Back"@en ;
 .
+v-s:Add
+  rdf:type v-s:Bundle ;
+  rdfs:label "Добавить"@ru ;
+  rdfs:label "Add"@en ;
+.
 v-s:Forward
   rdf:type v-s:Bundle ;
   rdfs:label "Вперед"@ru ;

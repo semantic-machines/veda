@@ -608,6 +608,71 @@ v-ui:StandardButtonsTemplate
 </script>
 """ ;
 .
+v-ui:IconButtonsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с набором стандартных кнопок"@ru ;
+  rdfs:label "Template with standard buttons"@en ;
+  v-ui:template """
+<script>
+  // var allButtons = "edit save cancel delete";
+  var defaultButtons = "edit save cancel delete";
+  var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
+  var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
+  var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
+  enabledButtons.forEach(function (id) {
+    if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
+    if ( !canUpdate && (id === "delete") ) { return; }
+    $("#" + id, template).removeClass("rm");
+  });
+  $(".rm", template).remove();
+  template.on("click", "#edit, #save, #cancel, #delete", function (e) {
+    e.preventDefault();
+    var action = this.id;
+    if (action === "delete") {
+      var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+      if ( !confirm(warning) ) { return; }
+    }
+    template.parent().closest("[resource='" + individual.id + "']").trigger(action);
+  });
+  //# sourceURL=v-ui:StandardButtonsTemplate_pre
+</script>
+<div class="standard-actions">
+  <style>
+    .standard-actions {
+      margin: 0 3px 0 0;
+    }
+  </style>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Edit" type="button" class="rm action btn btn-xs btn-default view -edit -search glyphicon glyphicon-pencil" id="edit"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Save" type="button" class="rm action btn btn-xs btn-success -view edit -search glyphicon glyphicon-ok" id="save"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Cancel" type="button" class="rm action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Delete" type="button" class="rm action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
+</div>
+<script>
+  $('[data-toggle="tooltip"]').tooltip({
+    title: function () {
+      var titleUri = $(this).data("title");
+      return new veda.IndividualModel(titleUri)["rdfs:label"].join(" ");
+    }
+  });
+
+  // Respect validation state of parent template
+  var closest = template.parent().closest("[resource='" + individual.id + "']");
+  closest.on("internal-validated", function (e, validation) {
+    if (validation.state) {
+      $(".action#save", template).removeAttr("disabled");
+      $(".action#send", template).removeAttr("disabled");
+      $(".action#task-button", template).removeAttr("disabled");
+    } else {
+      $(".action#save", template).attr("disabled", "disabled");
+      $(".action#send", template).attr("disabled", "disabled");
+      $(".action#task-button", template).attr("disabled", "disabled");
+    }
+    e.stopPropagation();
+  });
+  //# sourceURL=v-ui:StandardButtonsTemplate_post
+</script>
+""" ;
+.
 v-ui:VersionTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:Version"@ru ;
@@ -709,46 +774,64 @@ v-ui:PSFromToForLink
   v-ui:maxCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
 .
-v-ui:LinkTemplate
+
+v-ui:LinksTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон со связью"@ru ;
-  rdfs:label "Template with link"@en ;
+  rdfs:label "Шаблон для управлениями произвольными связями документа"@ru ;
+  rdfs:label "Template to manage generic document links"@en ;
   v-ui:template """
 <script>
-  individual.on("v-s:hasLink", linkHandler);
-  template.one("remove", function () {
-    individual.off("v-s:hasLink", linkHandler);
-  });
-  var linksTable = $("links-table", template);
-  function linkHandler(values) {
-    //Hide table if there are no links
-    if ( !values.length ) {
-      linksTable.addClass("hidden");
-    } else {
-      linksTable.removeClass("hidden");
+  var isMutual = container.attr("data-mutual") === "true";
+  var rowTmpl = $("tbody", template).html();
+
+  $("#add-link", template).click(function () {
+    $(".links-table", template).removeClass("hidden");
+    var cntr = $("[rel='v-s:hasLink']", template),
+        _class = new veda.IndividualModel("v-s:Link"),
+        Link = new veda.IndividualModel();
+    Link["rdf:type"] = [_class];
+    Link["v-s:from"] = [individual];
+    if (isMutual) {
+      Link["v-s:mutualMembership"] = [ true ];
     }
-    //Assign v-s:from for new link from this document
-    values.map(function (item) {
-      if ( item.isNew() && !item.hasValue("v-s:from") ) {
-        item["v-s:from"] = [individual];
-      }
+    var newRow = Link.present(cntr, rowTmpl, "edit");
+    Link.one("beforeReset", function () {
+      newRow.remove();
     });
+    Link.one("afterSave", function () {
+      newRow.remove();
+    });
+  });
+
+  individual.on("v-s:hasLink", linksHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasLink", linksHandler);
+  });
+  linksHandler();
+  function linksHandler () {
+    if ( individual.hasValue("v-s:hasLink") ) {
+      $(".links-table", template).removeClass("hidden");
+    } else {
+      $(".links-table", template).addClass("hidden");
+    }
   }
-  linkHandler( individual["v-s:hasLink"] );
-//#sourceURL=v-ui:LinkTemplate_pre
+
+//# sourceURL=v-ui:LinkTemplate_pre
 </script>
 <div>
+  <hr>
   <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <table class="links-table table table-condensed table-striped">
+  <table class="hidden links-table table table-condensed table-striped">
     <thead>
       <tr>
-        <th width="20%" about="v-s:Document" property="rdfs:label"></th>
-        <th width="20%" about="rdfs:comment" property="rdfs:label"></th>
+        <th width="30%" about="v-s:Document" property="rdfs:label"></th>
+        <th width="30%" about="rdfs:comment" property="rdfs:label"></th>
         <th width="10%" about="v-s:mutualMembership" property="rdfs:label"></th>
         <th width="20%" about="v-s:creator" property="rdfs:label"></th>
+        <th width="10%"></th>
       </tr>
     </thead>
-    <tbody rel="v-s:hasLink" data-embedded="true">
+    <tbody rel="v-s:hasLink">
       <script>
         var displayedDoc = container.closest("[resource]").attr("resource");
         if ( this.hasValue("v-s:from", displayedDoc) ) {
@@ -777,119 +860,51 @@ v-ui:LinkTemplate
         <td>
           <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
         </td>
+        <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
       </tr>
     </tbody>
   </table>
-  <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
+  <button class="btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
 </div>
 """ ;
 .
 
-v-ui:LinkTemplateGreenButtonWithTrue
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон со связью для зелёной кнопки с ободными правами"@ru ;
-  rdfs:label "Template with link for green buton with mutual membership"@en ;
-  v-ui:template """
-<div>
-  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton" data-embedded="true"></div>
-  <br>
-  <button class="btn btn-success view -edit -search" id="add-hasLink" about="v-s:hasLink" property="rdfs:label"></button>
-</div>
-<script>
-  $("#add-hasLink", template).click(function () {
-    var LinkBtn = $(this).hide();
-    var cntr = $("[rel='v-s:hasLink']", template),
-        _class = new veda.IndividualModel("v-s:Link"),
-        Link = new veda.IndividualModel(),
-        tmpl = new veda.IndividualModel("v-ui:LinkTemplateForGreenButton");
-    tmpl = $( tmpl["v-ui:template"][0].toString() );
-    Link["rdf:type"] = [_class];
-    Link.present(cntr, tmpl, "edit");
-    Link["v-s:from"] = [individual];
-    Link["v-s:mutualMembership"] = [ true ] ;
-    Link.one("beforeReset", function () {
-      LinkBtn.show();
-      tmpl.remove();
-    });
-    Link.one("afterSave", function () {
-      LinkBtn.show();
-      tmpl.remove();
-    });
-  });
-  //# sourceURL=v-ui:LinkTemplateGreenButton
-</script>
-""" ;
-.
-
-v-ui:LinkTemplateGreenButtonWithoutTrue
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон со связью для зелёной кнопки без ободных прав"@ru ;
-  rdfs:label "Template with link for green buton without mutual membership"@en ;
-  v-ui:template """
-<div>
-  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <div class="row" rel="v-s:hasLink" data-template="v-ui:LinkTemplateForGreenButton" data-embedded="true"></div>
-  <br>
-  <button class="btn btn-success view -edit -search" id="add-hasLink" about="v-s:hasLink" property="rdfs:label"></button>
-</div>
-<script>
-  $("#add-hasLink", template).click(function () {
-    var LinkBtn = $(this).hide();
-    var cntr = $("[rel='v-s:hasLink']", template),
-        _class = new veda.IndividualModel("v-s:Link"),
-        Link = new veda.IndividualModel(),
-        tmpl = new veda.IndividualModel("v-ui:LinkTemplateForGreenButton");
-    tmpl = $( tmpl["v-ui:template"][0].toString() );
-    Link["rdf:type"] = [_class];
-    Link.present(cntr, tmpl, "edit");
-    Link["v-s:from"] = [individual];
-    Link.one("beforeReset", function () {
-      LinkBtn.show();
-      tmpl.remove();
-    });
-    Link.one("afterSave", function () {
-      LinkBtn.show();
-      tmpl.remove();
-    });
-  });
-</script>
-""" ;
-.
-
-v-ui:LinkTemplateForGreenButton
+v-ui:LinkRowTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для зелёной кнопки"@ru ;
   rdfs:label "Template For Green Button"@en ;
   v-ui:template """
-<div class="col-md-6">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-      <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-      <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
-      <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
-      <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
-      <div class="view -edit -search">
-        <span class="fa fa-long-arrow-down"></span> <strong property="rdfs:comment" class="view -edit -search"></strong>
-      </div>
-      <span rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
-      <div class="view -edit -search" style="font-style:italic">
-        <small property="v-s:creator"></small><small property="v-s:created"></small>
-      </div>
-      <i class="checkbox disabled">
-        <label>
-          <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
-          <small about="v-s:mutualMembership" property="rdfs:label"></small>
-        </label>
-      </i>
-      <div class="actions">
-        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel delete"></div>
-      </div>
+<script>
+  var displayedDoc = container.closest("[resource]").attr("resource");
+  if ( this.hasValue("v-s:from", displayedDoc) ) {
+    $(".link-from", template).remove();
+  } else if ( this.hasValue("v-s:to", displayedDoc) ) {
+    $(".link-to", template).remove();
+  }
+</script>
+<tr>
+  <td>
+    <div class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    <div class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
+  </td>
+  <td>
+    <div class="view -edit -search" about="@" property="rdfs:comment"></div>
+    <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+  </td>
+  <td about="@" class="form-inline">
+    <div class="checkbox disabled">
+      <label>
+        <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
+      </label>
     </div>
-  </div>
-</div>
-""" ;
+  </td>
+  <td>
+    <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
+  </td>
+  <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
+</tr>
+  """ ;
 .
 
 v-ui:IconPersonTemplate
@@ -2410,8 +2425,8 @@ td:PersonTemplate1
   <br>
   <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   <br>
-  <div about="@" data-template="v-ui:LinkTemplateGreenButtonWithoutTrue" data-embedded="true"></div>
-  <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
+  <div about="@" class="view -edit -search" data-template="v-ui:LinksTemplate" data-mutual="true"></div>
+  <div about="@" class="view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
 
 """ ;
