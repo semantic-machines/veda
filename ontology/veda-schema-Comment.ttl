@@ -75,9 +75,8 @@ v-s:CommentsTemplate
 <div>
   <hr>
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
-  <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
+  <div class="margin-md" about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
-  <br>
   <button class="btn btn-info" id="add-comment" about="v-s:LeaveComment" property="rdfs:label"></button>
 </div>
 <script>
