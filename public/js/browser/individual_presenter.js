@@ -4,11 +4,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
   //var c = 0;
 
-  veda.on("individual:loaded", function (individual, container, template, mode) {
+  veda.IndividualModel.prototype.present = function (container, template, mode) {
 
     try {
 
-      //console.log(individual.id, "presenter count:", ++c);
+      //console.log(this.id, "presenter count:", ++c);
 
       if (typeof container === "string") {
         container = $(container).empty();
@@ -17,7 +17,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       if (container.prop("id") === "main") { container.hide(); }
 
-      present(individual, container, template, mode);
+      template = present(this, container, template, mode);
 
       if (container.prop("id") === "main") { container.show("fade", 250); }
 
@@ -25,7 +25,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       console.log(err);
     }
 
-  });
+    return template;
+  };
 
   function present(individual, container, template, mode) {
 
@@ -46,21 +47,21 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         template = new veda.IndividualModel(template);
         template = $( template["v-ui:template"][0].toString() );
       }
-      renderTemplate(individual, container, template, mode, specs);
+      return renderTemplate(individual, container, template, mode, specs);
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0];
         template = $( template["v-ui:template"][0].toString() );
-        renderTemplate(individual, container, template, mode, specs);
+        return renderTemplate(individual, container, template, mode, specs);
       } else {
-        individual["rdf:type"].map(function (type) {
+        return individual["rdf:type"].map(function (type) {
           if ( type.hasValue("v-ui:hasTemplate") ) {
             template = type["v-ui:hasTemplate"][0];
           } else {
             template = new veda.IndividualModel("v-ui:generic");
           }
           template = $( template["v-ui:template"][0].toString() );
-          renderTemplate(individual, container, template, mode, specs);
+          return renderTemplate(individual, container, template, mode, specs);
         });
       }
     }
@@ -99,6 +100,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         post_render.call(individual, veda, individual, container, template, mode, specs);
       }
     }, 0);
+
+    return template;
   }
 
   function processTemplate (individual, container, template, mode, specs) {

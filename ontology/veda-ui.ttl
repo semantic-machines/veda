@@ -1065,15 +1065,10 @@ v-ui:IconModalTemplate
     cntr.on("invalid", function () {
     ok.attr("disabled", "disabled");
     });
- // var tmpl = individual["rdf:type"][0].template ? $( individual["rdf:type"][0].template["v-ui:template"][0].toString() ) : undefined;
-    var tmpl = individual["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( individual["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
 
+    var tmpl = individual.present(cntr, undefined, newMode);
     if (newMode === "edit") {
-      individual.present(cntr, tmpl, newMode);
       $(".actions", tmpl).remove();
-    } else {
-      $("#cancel", tmpl).addClass("viev").removeClass("-view");
-      individual.present(cntr, tmpl, newMode);
     }
     individual.one("beforeReset", function () {
       modal.modal("hide").remove();
