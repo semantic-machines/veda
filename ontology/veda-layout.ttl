@@ -137,7 +137,7 @@ v-l:MenuItemViewTemplate
   }
   //# sourceURL=v-l:MenuItemViewTemplate
 </script>
-<li> <!-- rel="v-l:objectLink" class="divider" class="dropdown" -->
+<li>
   <a id="static">
     <span property="rdfs:label"></span>
   </a>

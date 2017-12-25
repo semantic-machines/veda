@@ -576,7 +576,7 @@ v-fs:FulltextRequestTemplate
           var container = $("<li>").appendTo(resultsList);
           var result = new veda.IndividualModel( self.result[i] );
           var tmpl = genericTemplate(result);
-          result.present(container, $(tmpl));
+          result.present(container, tmpl);
         }, 0);
       }(i));
     }
@@ -863,7 +863,7 @@ v-fs:AttributiveRequestTemplate
       head = gen_head(types[0]);
       genericHead.html(head);
       customHead.empty();
-      var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, $('<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>'));
+      var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>');
     }
     tHead.html( head.clone() );
 
@@ -1007,9 +1007,8 @@ v-fs:AttributiveRequestTemplate
       (function (i) {
         setTimeout(function () {
           var _tmpl = tmpl.replace("###", i+1);
-          var $tmpl = $(_tmpl);
           var result = new veda.IndividualModel( self.result[i] );
-          result.present(tBody, $tmpl);
+          var $tmpl = result.present(tBody, _tmpl);
           $tmpl.dblclick(function (e) {
             riot.route("#/" + result.id);
           });
@@ -1057,7 +1056,7 @@ v-fs:AttributiveRequestTemplate
       (function (i) {
         var _tmpl = tmpl.replace("###", i+1);
         var result = new veda.IndividualModel( self.result[i] );
-        result.present($("tbody", tbl), $(_tmpl));
+        result.present($("tbody", tbl), _tmpl);
       }(i));
     }
     setTimeout(function () {
@@ -1673,9 +1672,9 @@ v-fs:AttributiveSearchTemplate
       var delta = resultDelta.length;
       // Render each result
       resultDelta.map(function (uri, i) {
-        var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
+        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
             item = new veda.IndividualModel(uri);
-        item.present(resultContainer, tmpl);
+        tmpl = item.present(resultContainer, tmpl);
         if (item.id === self.marked) {
           tmpl.addClass("warning");
         }
@@ -1698,7 +1697,6 @@ v-fs:AttributiveSearchTemplate
               });
             }
           });
-          tmpl.show();
         }, 300);
       });
     });
@@ -2453,9 +2451,9 @@ v-fs:AttributiveSearchInlineTemplate
       var delta = resultDelta.length;
       // Render each result
       resultDelta.map(function (uri, i) {
-        var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
+        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
             item = new veda.IndividualModel(uri);
-        item.present(resultContainer, tmpl);
+        tmpl = item.present(resultContainer, tmpl);
         if (item.id === self.marked) {
           tmpl.addClass("warning");
         }
@@ -2478,7 +2476,6 @@ v-fs:AttributiveSearchInlineTemplate
               });
             }
           });
-          tmpl.show();
         }, 300);
       });
     });

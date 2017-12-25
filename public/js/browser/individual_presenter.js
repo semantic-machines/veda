@@ -2,13 +2,9 @@
 
 veda.Module(function IndividualPresenter(veda) { "use strict";
 
-  //var c = 0;
-
   veda.IndividualModel.prototype.present = function (container, template, mode) {
 
     try {
-
-      //console.log(this.id, "presenter count:", ++c);
 
       if (typeof container === "string") {
         container = $(container).empty();
@@ -42,25 +38,29 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     if (template) {
       if (template instanceof veda.IndividualModel) {
-        template = $( template["v-ui:template"][0].toString() );
-      } else if (typeof template === "string") {
+        template = template["v-ui:template"][0].toString();
+      // if template is uri
+      } else if (typeof template === "string" && (/^(\w|-)+:.*?$/g).test(template) ) {
         template = new veda.IndividualModel(template);
-        template = $( template["v-ui:template"][0].toString() );
+        template = template["v-ui:template"][0].toString();
+      } else if (template instanceof HTMLElement) {
+        template = template.outerHTML;
       }
+      template = template.trim();
       return renderTemplate(individual, container, template, mode, specs);
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
-        template = individual["v-ui:hasCustomTemplate"][0];
-        template = $( template["v-ui:template"][0].toString() );
+        template = individual["v-ui:hasCustomTemplate"][0]["v-ui:template"][0].toString();
+        template = template.trim();
         return renderTemplate(individual, container, template, mode, specs);
       } else {
         return individual["rdf:type"].map(function (type) {
           if ( type.hasValue("v-ui:hasTemplate") ) {
-            template = type["v-ui:hasTemplate"][0];
+            template = type["v-ui:hasTemplate"][0]["v-ui:template"][0].toString();
           } else {
-            template = new veda.IndividualModel("v-ui:generic");
+            template = new veda.IndividualModel("v-ui:generic")["v-ui:template"][0].toString();
           }
-          template = $( template["v-ui:template"][0].toString() );
+          template = template.trim();
           return renderTemplate(individual, container, template, mode, specs);
         });
       }
@@ -68,22 +68,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
   }
 
   function renderTemplate(individual, container, template, mode, specs) {
-    var pre_render_src,
+    var match,
+        pre_render_src,
         pre_render,
         post_render_src,
         post_render;
 
-    template = template.filter(function () { return this.nodeType === 1 });
+    match = template.match(/^(<script>(.*?)<\/script>)?(.*?)(<script>(.*?)<\/script>)?$/is);
+    pre_render_src = match[2];
+    template = $( match[3] );
+    post_render_src = match[5];
 
-    if (template.first().is("script")) {
-      pre_render_src = template.first().text();
+    if (pre_render_src) {
       pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
     }
-    if (template.last().is("script")) {
-      post_render_src = template.last().text();
+    if (post_render_src) {
       post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
     }
-    template = template.filter("*:not(script)");
 
     if (pre_render) {
       pre_render.call(individual, veda, individual, container, template, mode, specs);
@@ -381,11 +382,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
 
       if ( rel_template_uri ) {
-        var templateIndividual = new veda.IndividualModel( rel_template_uri );
-        relTemplate = templateIndividual["v-ui:template"][0].toString();
+        relTemplate = new veda.IndividualModel( rel_template_uri );
       } else if ( rel_inline_template.length ) {
         relTemplate = rel_inline_template;
       }
+      relContainer.empty();
 
       template.on("view edit search", function (e) {
         if (e.type === "view") {
@@ -415,8 +416,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
 
       var values = about.get(rel_uri), rendered = {}, counter = 0;
-
-      relContainer.empty();
 
       propertyModifiedHandler(values);
       about.on(rel_uri, propertyModifiedHandler);
@@ -484,26 +483,23 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     $("[about]:not([rel]):not([property])", wrapper).map( function () {
       var aboutContainer = $(this),
           about_template_uri = aboutContainer.attr("data-template"),
-          about_inline_template = aboutContainer.children(),
+          about_inline_template = aboutContainer.html().trim(),
           isEmbedded = aboutContainer.attr("data-embedded") === "true",
           about, aboutTemplate;
       if ( about_template_uri ) {
-        var templateIndividual = new veda.IndividualModel( about_template_uri );
-        aboutTemplate = $( templateIndividual["v-ui:template"][0].toString() );
+        aboutTemplate = new veda.IndividualModel( about_template_uri );
+      } else if ( about_inline_template.length ) {
+        aboutTemplate = about_inline_template;
       }
-      if ( about_inline_template.length ) {
-        aboutTemplate = about_inline_template.remove();
-      }
+      aboutContainer.empty();
       if (aboutContainer.attr("about") === "@") {
         about = individual;
         aboutContainer.attr("about", about.id);
       } else {
         about = new veda.IndividualModel(aboutContainer.attr("about"));
       }
-      aboutContainer.empty();
-      about.present(aboutContainer, aboutTemplate);
+      aboutTemplate = about.present(aboutContainer, aboutTemplate);
       if (isEmbedded) {
-        aboutTemplate = $("[resource='" + about.id + "']", aboutContainer);
         aboutTemplate.data("isEmbedded", true);
         embedded.push(aboutTemplate);
       }
@@ -795,21 +791,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }).mouseleave(function () {
         valueHolder.removeClass("blue-outline");
       });
-      //valueHolder.after( wrapper );
       valueHolder.append( wrapper );
     });
   }
 
   function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
-    var valTemplate;
+    var valTemplate = value.present(relContainer, relTemplate, isEmbedded ? mode : "view");
+    // TODO: valTemplate may be array!
     if (isEmbedded) {
-      if (relTemplate) {
-        valTemplate = $(relTemplate);
-        value.present(relContainer, valTemplate, mode);
-      } else {
-        value.present(relContainer, undefined, mode);
-      }
-      valTemplate = $("[resource='" + value.id + "']", relContainer).first();
       valTemplate.data("isEmbedded", true);
       embedded.push(valTemplate);
       valTemplate.one("remove", function () {
@@ -818,14 +807,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           if ( index >= 0 ) embedded.splice(index, 1);
         }
       });
-    } else {
-      if (relTemplate) {
-        valTemplate = $(relTemplate);
-        value.present(relContainer, valTemplate);
-      } else {
-        value.present(relContainer);
-      }
-      valTemplate = $("[resource='" + value.id + "']", relContainer).first();
     }
     if (!isAbout) {
       var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
