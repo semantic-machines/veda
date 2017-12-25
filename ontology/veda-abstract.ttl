@@ -214,8 +214,8 @@ v-s:hasClassifiedAttachment
 .
 v-s:hasLink
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Linked object"@en ;
-  rdfs:label "Связанный документ"@ru ;
+  rdfs:label "Linked documents"@en ;
+  rdfs:label "Связанные документы"@ru ;
   rdfs:range v-s:Link ;
   rdfs:domain v-s:Thing ;
 .
