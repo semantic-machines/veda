@@ -680,7 +680,7 @@ v-ui:VersionedTemplate
     var row = tmpl.replace("#", counter);
     if (current.id === actual.id) { row = row.replace("<tr>", "<tr class='info'>"); }
     if (current.id === individual.id) { row = row.replace(/td/g, "th").replace("v-ui:LabelLinkTemplate", "v-ui:LabelTemplate"); }
-    current.present(tbody, $(row));
+    current.present(tbody, row);
     renderVersion(previous, ++counter, --limit);
   }
   //# sourceURL=v-ui:VersionedTemplate
@@ -714,50 +714,74 @@ v-ui:LinkTemplate
   rdfs:label "Шаблон со связью"@ru ;
   rdfs:label "Template with link"@en ;
   v-ui:template """
-<div>
-  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <div class="row" rel="v-s:hasLink" data-embedded="true">
-    <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
-          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-          <em about="v-s:hasLink" property="rdfs:label" class="-view edit search"></em>
-          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
-          <span rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
-          <div class="view -edit -search">
-            <span class="fa fa-long-arrow-down"></span> <strong property="rdfs:comment" class="view -edit -search"></strong>
-          </div>
-          <span rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></span>
-          <div class="view -edit -search" style="font-style:italic">
-            <small property="v-s:creator"></small><small property="v-s:created"></small>
-          </div>
-          <i class="checkbox disabled">
-            <label>
-              <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
-              <small about="v-s:mutualMembership" property="rdfs:label"></small>
-            </label>
-          </i>
-        </div>
-      </div>
-    </div>
-  </div>
-  <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
-</div>
 <script>
   individual.on("v-s:hasLink", linkHandler);
   template.one("remove", function () {
     individual.off("v-s:hasLink", linkHandler);
   });
-  function linkHandler (values) {
+  var linksTable = $("links-table", template);
+  function linkHandler(values) {
+    //Hide table if there are no links
+    if ( !values.length ) {
+      linksTable.addClass("hidden");
+    } else {
+      linksTable.removeClass("hidden");
+    }
+    //Assign v-s:from for new link from this document
     values.map(function (item) {
-      if (!item.hasValue("v-s:from")) {
+      if ( item.isNew() && !item.hasValue("v-s:from") ) {
         item["v-s:from"] = [individual];
       }
     });
   }
-  //# sourceURL=v-ui:LinkTemplate
+  linkHandler( individual["v-s:hasLink"] );
+//#sourceURL=v-ui:LinkTemplate_pre
 </script>
+<div>
+  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
+  <table class="links-table table table-condensed table-striped">
+    <thead>
+      <tr>
+        <th width="20%" about="v-s:Document" property="rdfs:label"></th>
+        <th width="20%" about="rdfs:comment" property="rdfs:label"></th>
+        <th width="10%" about="v-s:mutualMembership" property="rdfs:label"></th>
+        <th width="20%" about="v-s:creator" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasLink" data-embedded="true">
+      <script>
+        var displayedDoc = container.closest("[resource]").attr("resource");
+        if ( this.hasValue("v-s:from", displayedDoc) ) {
+          $(".link-from", template).remove();
+        } else if ( this.hasValue("v-s:to", displayedDoc) ) {
+          $(".link-to", template).remove();
+        }
+      </script>
+      <tr>
+        <td>
+          <div class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          <div class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
+        </td>
+        <td>
+          <div class="view -edit -search" about="@" property="rdfs:comment"></div>
+          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+        </td>
+        <td about="@" class="form-inline">
+          <div class="checkbox disabled">
+            <label>
+              <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
+            </label>
+          </div>
+        </td>
+        <td>
+          <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <veda-control data-type="link" rel="v-s:hasLink" class="-view edit search create"></veda-control>
+</div>
 """ ;
 .
 
@@ -1840,7 +1864,6 @@ v-ui:SimplifiedJournalTemplate
         tasks.forEach(function (task, index) {
           var task_individual = new veda.IndividualModel(task);
           var tmpl = task_template.replace("###", index + 1).replace("$$$", "#/@")
-          tmpl = $( tmpl );
           task_individual.present(tbody, tmpl);
         });
       });
@@ -2212,9 +2235,9 @@ v-ui:TreeTemplate
 
     function render(item) {
       var cont = $("<div>"),
-        tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
+          tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
       $(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
-      item.present(cont, tmpl);
+      tmpl = item.present(cont, tmpl[0].outerHTML);
 
       var hasValue = individual.hasValue(rel_uri, item);
       $("input", tmpl).prop("checked", hasValue);
@@ -2271,6 +2294,7 @@ v-ui:TreeTemplate
 
   individual.treeConfig.root.map( function (root) {
     var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
+    tmpl = root.present(tbody, tmpl[0].outerHTML);
 
     var hasValue = individual.hasValue(rel_uri, root);
     $("input", tmpl).prop("checked", hasValue);
@@ -2282,7 +2306,6 @@ v-ui:TreeTemplate
     } else if (selectableClassIds.length && selectableClassIds.indexOf(root["rdf:type"][0].id) < 0) {
       $("input", tmpl).remove();
     }
-    root.present(tbody, tmpl);
   });
 
   function getOut(self) {
@@ -2387,7 +2410,7 @@ td:PersonTemplate1
   <br>
   <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   <br>
-  <div about="@" data-template="v-ui:LinkTemplate" data-embedded="true"></div>
+  <div about="@" data-template="v-ui:LinkTemplateGreenButtonWithoutTrue" data-embedded="true"></div>
   <div class="view -edit -search" about="@" data-template="v-s:CommentsTemplate"></div>
 </div>
 
