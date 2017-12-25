@@ -176,22 +176,22 @@ v-s:Link
 v-s:from
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Link ;
-  rdfs:label "from"@en ;
-  rdfs:label "от"@ru ;
+  rdfs:label "Source"@en ;
+  rdfs:label "Источник"@ru ;
   rdfs:range v-s:Thing ;
 .
 v-s:to
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Link ;
-  rdfs:label "to"@en ;
-  rdfs:label "к"@ru ;
+  rdfs:label "Target"@en ;
+  rdfs:label "Цель"@ru ;
   rdfs:range v-s:Thing ;
 .
 v-s:mutualMembership
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Link ;
-  rdfs:label "Provide mutual rights?"@en ;
-  rdfs:label "Предоставить обоюдные права?"@ru ;
+  rdfs:label "Mutual rights"@en ;
+  rdfs:label "Обоюдные права"@ru ;
   rdfs:range xsd:boolean ;
 .
 ### ------------------------------------------------------
@@ -200,7 +200,7 @@ v-s:Status
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
-  v-ui:hasTemplate v-ui:StatusTemplate; 
+  v-ui:hasTemplate v-ui:StatusTemplate;
 .
 ### ------------------------------------------------------
 v-s:Sector
