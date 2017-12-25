@@ -1472,9 +1472,7 @@
               modal.modal("hide").remove();
             });
             var template = newVal.present(cntr, undefined, "edit");
-            if (template) {
-              $(".action", template).remove();
-            }
+            $(".action", template).remove();
             template.on("internal-validated", function (e, validation) {
               validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
             });
