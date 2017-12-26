@@ -258,6 +258,8 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     Resources removed_resource = get_disappeared(prev_resource, resource);
     Resources removed_in_set   = get_disappeared(prev_in_set, in_set);
 
+    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
+
     if (removed_resource.length > 0)
     {
         log.trace ("- removed_resource=%s", removed_resource);
@@ -353,4 +355,5 @@ void prepare_permission_statement(ref Individual prev_ind, ref Individual new_in
 
     prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
 }
+
 
