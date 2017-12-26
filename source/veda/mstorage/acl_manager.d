@@ -255,33 +255,20 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     Resources prev_resource = prev_ind.getResources(p_resource);
     Resources prev_in_set   = prev_ind.getResources(p_in_set);
 
-    Resources delta_resource = get_disappeared(prev_resource, resource);
-    Resources delta_in_set   = get_disappeared(prev_in_set, in_set);
+    Resources removed_resource = get_disappeared(prev_resource, resource);
+    Resources removed_in_set   = get_disappeared(prev_in_set, in_set);
 
-    if (delta_resource.length > 0)
+    if (removed_resource.length > 0)
     {
-        //	    log.trace ("- delta_resource=%s", delta_resource);
-        //	    log.trace ("- delta_in_set=%s", delta_in_set);
-
-        update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-        update_right_set(delta_resource, in_set, true, useFilter, prefix, access, op_id, storage);
-    }
-    else
-    {
-        delta_resource = get_disappeared(resource, prev_resource);
-        delta_in_set   = get_disappeared(in_set, prev_in_set);
-
-        //	    log.trace ("+ delta_resource=%s", delta_resource);
-        //	    log.trace ("+ delta_in_set=%s", delta_in_set);
-
-        update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-        //update_right_set(delta_resource, delta_in_set, false, useFilter, prefix, access, op_id, storage);
+        log.trace ("- removed_resource=%s", removed_resource);
+        update_right_set(removed_resource, in_set, true, useFilter, prefix, access, op_id, storage);
     }
 
-/*
-    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
-    update_right_set(delta_resource, delta_in_set, true, useFilter, prefix, access, op_id, storage);
- */
+    if (removed_in_set.length > 0)
+    {
+        log.trace ("- removed_in_set=%s", removed_in_set);
+        update_right_set(resource, removed_in_set, true, useFilter, prefix, access, op_id, storage);
+    }
 }
 
 private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
@@ -295,7 +282,10 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
 
         string   prev_data_str = storage.find(OptAuthorize.NO, null, prefix ~ rs.uri);
         if (prev_data_str !is null)
+        {
+	        //log.trace("prev_data_str %s[%s]", rs.uri, prev_data_str);
             rights_from_string(prev_data_str, new_right_set);
+        }    
 
         foreach (mb; in_set)
         {
@@ -306,12 +296,13 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
                 rr.is_deleted                = is_deleted;
                 rr.access                    = rr.access | access;
                 new_right_set.data[ mb.uri ] = rr;
-                //writeln ("@3.1 rr=", rr);
+		        //log.trace(" UPDATE [%s]", mb.uri);
             }
             else
             {
                 Right *nrr = new Right(mb.uri, access, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
+		        //log.trace(" NEW [%s]", mb.uri);
             }
         }
 
@@ -329,8 +320,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
 
         ResultCode res = storage.put(OptAuthorize.NO, null, key, new_record, op_id);
 
-        if (trace_msg[ 101 ] == 1)
-            log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
+        //log.trace("[acl index] (%s) new right set: %s : [%s]", text(res), rs.uri, new_record);
     }
 }
 
