@@ -419,12 +419,12 @@ class PThreadContext : Context
 
     // ////////// external ////////////
 
-    public ubyte get_rights(Ticket *ticket, string uri)
+    public ubyte get_rights(Ticket *ticket, string uri, ubyte access)
     {
         if (ticket is null)
             return 0;
 
-        return storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, null,
+        return storage.get_acl_client().authorize(uri, ticket.user_uri, access, true, null, null,
                                                   null);
     }
 
