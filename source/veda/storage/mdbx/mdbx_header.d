@@ -1494,7 +1494,3 @@ int mdbx_get_attr(MDBX_txn *txn, MDBX_dbi dbi, MDBX_val *key,
                   MDBX_val *data, mdbx_attr_t *attrptr);
 }
 
-void main()
-{
-    return;
-}
