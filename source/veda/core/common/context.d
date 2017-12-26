@@ -124,7 +124,7 @@ interface Context
        Returns:
                 байт содержащий установленные биты (type.Access)
      */
-    public ubyte get_rights(Ticket *ticket, string uri);
+    public ubyte get_rights(Ticket *ticket, string uri, ubyte access);
 
 
     /**
