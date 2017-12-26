@@ -78,6 +78,8 @@ v-s:BugReportTemplate
   <i about="@" property="v-s:errorMessage"></i>
   <em about="v-s:errorStack" property="rdfs:label"></em>
   <pre about="@" property="v-s:errorStack" style="border:none; background-color:transparent;"></pre>
+
+  <hr>
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
 </div>
   """ ;

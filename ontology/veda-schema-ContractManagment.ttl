@@ -538,9 +538,7 @@ v-s:ContractorTemplate
   <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext"></veda-control>
 
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">

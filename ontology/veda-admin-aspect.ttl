@@ -188,8 +188,9 @@ v-s:UserScriptTemplate
     </div>
   </div>
 
-  <div class="-view -edit search" about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
   <div class="actions view edit -search clearfix">
     <div about="@" class="pull-left" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
     <div class="pull-right">

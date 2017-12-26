@@ -688,10 +688,9 @@ v-s:OrganizationTemplate
       <span about="mnd-s:ContractorCreateChangeRequest" property="rdfs:label"></span>
     </button>
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">
@@ -853,12 +852,10 @@ v-s:SubsidiaryTemplate
     <em about="rdfs:comment" property="rdfs:label"></em>
     <div property="rdfs:comment" class="view -edit -search"></div>
     <veda-control data-type="text" rows="3" property="rdfs:comment" class="-view edit search"></veda-control>
-
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">
@@ -916,10 +913,9 @@ v-s:DepartmentTemplate
     <div property="v-s:postalAddress" class="view -edit -search"></div>
     <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">

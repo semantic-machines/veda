@@ -435,10 +435,9 @@ v-s:DeliveryTemplate
       <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
     </div>
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <div class="actions view edit -search">
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></div>
