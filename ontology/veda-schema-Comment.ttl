@@ -73,11 +73,10 @@ v-s:CommentsTemplate
   rdfs:label "Шаблон для отображения комментариев"@ru ;
   v-ui:template """
 <div>
-  <hr>
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
-  <div class="margin-md" about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
+  <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
-  <button class="btn btn-info" id="add-comment" about="v-s:LeaveComment" property="rdfs:label"></button>
+  <button class="margin-sm btn btn-success" id="add-comment" about="v-s:Add" property="rdfs:label"></button>
 </div>
 <script>
   $("#add-comment", template).click(function () {

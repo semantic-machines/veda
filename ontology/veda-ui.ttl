@@ -819,7 +819,6 @@ v-ui:LinksTemplate
 //# sourceURL=v-ui:LinkTemplate_pre
 </script>
 <div>
-  <hr>
   <h3 about="v-s:hasLink" property="rdfs:label"></h3>
   <table class="hidden links-table table table-condensed table-striped">
     <thead>
@@ -864,7 +863,7 @@ v-ui:LinksTemplate
       </tr>
     </tbody>
   </table>
-  <button class="btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
+  <button class="margin-sm btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
 </div>
 """ ;
 .
@@ -2331,66 +2330,68 @@ td:PersonTemplate1
   rdfs:label "Person template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-<div class="container sheet">
-  <div class="text-right">
-    <a href="#/@"><span property="@">ID</span></a>
-    <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
-      <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
-      <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
+<div>
+  <div class="container sheet">
+    <div class="text-right">
+      <a href="#/@"><span property="@">ID</span></a>
+      <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
     </div>
-    <div class="col-md-10">
-      <h3>
-        <span property="rdfs:label"></span>
-        <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-      </h3>
-      <div class="row">
-        <div class="col-md-3">
-          <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-          <div property="v-s:lastName"></div>
-          <veda-control property="v-s:lastName" data-type="string" class="-view edit search"></veda-control>
-        </div>
-        <div class="col-md-3">
-          <em about="v-s:firstName" property="rdfs:label">Имя</em>
-          <div property="v-s:firstName"></div>
-          <veda-control property="v-s:firstName" data-type="string" class="-view edit search"></veda-control>
-        </div>
-        <div class="col-md-3">
-          <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-          <div property="v-s:middleName"></div>
-          <veda-control property="v-s:middleName" data-type="string" class="-view edit search"></veda-control>
-        </div>
+    <div class="row">
+      <div class="col-md-2">
+        <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
+        <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
+      </div>
+      <div class="col-md-10">
+        <h3>
+          <span property="rdfs:label"></span>
+          <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+        </h3>
+        <div class="row">
           <div class="col-md-3">
-          <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-          <div property="v-s:birthday"></div>
-          <veda-control property="v-s:birthday" data-type="dateTime" class="-view edit search"></veda-control>
+            <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
+            <div property="v-s:lastName"></div>
+            <veda-control property="v-s:lastName" data-type="string" class="-view edit search"></veda-control>
+          </div>
+          <div class="col-md-3">
+            <em about="v-s:firstName" property="rdfs:label">Имя</em>
+            <div property="v-s:firstName"></div>
+            <veda-control property="v-s:firstName" data-type="string" class="-view edit search"></veda-control>
+          </div>
+          <div class="col-md-3">
+            <em about="v-s:middleName" property="rdfs:label">Отчество</em>
+            <div property="v-s:middleName"></div>
+            <veda-control property="v-s:middleName" data-type="string" class="-view edit search"></veda-control>
+          </div>
+            <div class="col-md-3">
+            <em about="v-s:birthday" property="rdfs:label">День рождения</em>
+            <div property="v-s:birthday"></div>
+            <veda-control property="v-s:birthday" data-type="dateTime" class="-view edit search"></veda-control>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <hr />
-  <div class="row">
-    <div class="col-md-6">
-      <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1" data-embedded="true"></div>
-      <veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
+    <hr />
+    <div class="row">
+      <div class="col-md-6">
+        <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1" data-embedded="true"></div>
+        <veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
+      </div>
+      <div class="col-md-6">
+        <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1" data-embedded="true"></div>
+        <veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
+        <br>
+        <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1" data-embedded="true"></div>
+        <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
+      </div>
     </div>
-    <div class="col-md-6">
-      <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1" data-embedded="true"></div>
-      <veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-      <br>
-      <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1" data-embedded="true"></div>
-      <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-    </div>
+    <br>
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
   <br>
-  <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+  <div about="@" class="container sheet view -edit -search" data-template="v-ui:LinksTemplate"></div>
   <br>
-  <div about="@" class="view -edit -search" data-template="v-ui:LinksTemplate" data-mutual="true"></div>
-  <div about="@" class="view -edit -search" data-template="v-s:CommentsTemplate"></div>
+  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-
 """ ;
 .
 td:PsHasAppointmentPerson
