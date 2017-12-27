@@ -10,12 +10,12 @@ import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.com
        veda.core.common.know_predicates;
 import veda.core.common.log_msg, veda.storage.common, veda.core.util.utils, veda.common.logger, veda.util.module_info, veda.core.impl.thread_context;
 import veda.storage.common, veda.storage.right_set;
-import veda.storage.lmdb.lmdb_acl, veda.storage.lmdb.lmdb_driver;
+import veda.storage.lmdb.lmdb_acl, veda.storage.lmdb.lmdb_driver, veda.storage.mdbx.mdbx_acl, veda.storage.mdbx.mdbx_driver;
 import veda.storage.tarantool.tarantool_driver;
 
 // ////////////// ACLManager
 protected byte err;
-
+protected long count;
 // ////// Logger ///////////////////////////////////////////
 Logger _log;
 Logger log()
@@ -80,7 +80,12 @@ void acl_manager(string thread_name)
     }
     else
     {
-        storage = new LmdbDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+        string authorization_db_type = properties.as!(string)("authorization_db_type");
+
+        if (authorization_db_type == "mdbx")
+            storage = new MdbxDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
+        else
+            storage = new LmdbDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
     }
 
 
@@ -124,6 +129,11 @@ void acl_manager(string thread_name)
                     {
                         if (cmd == CMD_PUT)
                         {
+							count++;
+							
+							if (count % 1000 == 0)
+                                    log.trace("INFO! count prepare: %d", count);								
+							                        	
                             try
                             {
                                 Individual new_ind;
@@ -158,10 +168,10 @@ void acl_manager(string thread_name)
                             finally
                             {
                                 l_op_id = op_id;
-                                
+
                                 if (tarantool_url !is null)
-	                                committed_op_id = l_op_id;
-                                
+                                    committed_op_id = l_op_id;
+
                                 module_info.put_info(l_op_id, committed_op_id);
                             }
                         }
@@ -262,13 +272,13 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
 
     if (removed_resource.length > 0)
     {
-        log.trace ("- removed_resource=%s", removed_resource);
+        log.trace("- removed_resource=%s", removed_resource);
         update_right_set(removed_resource, in_set, true, useFilter, prefix, access, op_id, storage);
     }
 
     if (removed_in_set.length > 0)
     {
-        log.trace ("- removed_in_set=%s", removed_in_set);
+        log.trace("- removed_in_set=%s", removed_in_set);
         update_right_set(resource, removed_in_set, true, useFilter, prefix, access, op_id, storage);
     }
 }
@@ -285,9 +295,9 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
         string   prev_data_str = storage.find(OptAuthorize.NO, null, prefix ~ rs.uri);
         if (prev_data_str !is null)
         {
-	        //log.trace("prev_data_str %s[%s]", rs.uri, prev_data_str);
+            //log.trace("prev_data_str %s[%s]", rs.uri, prev_data_str);
             rights_from_string(prev_data_str, new_right_set);
-        }    
+        }
 
         foreach (mb; in_set)
         {
@@ -298,13 +308,13 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
                 rr.is_deleted                = is_deleted;
                 rr.access                    = rr.access | access;
                 new_right_set.data[ mb.uri ] = rr;
-		        //log.trace(" UPDATE [%s]", mb.uri);
+                //log.trace(" UPDATE [%s]", mb.uri);
             }
             else
             {
                 Right *nrr = new Right(mb.uri, access, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
-		        //log.trace(" NEW [%s]", mb.uri);
+                //log.trace(" NEW [%s]", mb.uri);
             }
         }
 
@@ -355,5 +365,4 @@ void prepare_permission_statement(ref Individual prev_ind, ref Individual new_in
 
     prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
 }
-
 

@@ -66,38 +66,37 @@ struct MDBX_envinfo
 alias iovec MDBX_val;
 
 /* Environment Flags */
-enum
-{
+
 /* no environment directory */
-    MDBX_NOSUBDIR            = 0x4000u,
+const MDBX_NOSUBDIR = 0x4000u;
 /* don't fsync after commit */
-    MDBX_NOSYNC              = 0x10000u,
+const MDBX_NOSYNC = 0x10000u;
 /* read only */
-    MDBX_RDONLY              = 0x20000u,
+const MDBX_RDONLY = 0x20000u;
 /* don't fsync metapage after commit */
-    MDBX_NOMETASYNC          = 0x40000u,
+const MDBX_NOMETASYNC = 0x40000u;
 /* use writable mmap */
-    MDBX_WRITEMAP            = 0x80000u,
+const MDBX_WRITEMAP = 0x80000u;
 /* use asynchronous msync when MDBX_WRITEMAP is used */
-    MDBX_MAPASYNC            = 0x100000u,
+const MDBX_MAPASYNC = 0x100000u;
 /* tie reader locktable slots to MDBX_txn objects instead of to threads */
-    MDBX_NOTLS               = 0x200000u,
+const MDBX_NOTLS = 0x200000u;
 /* don't do any locking, caller must manage their own locks
  * WARNING: libmdbx don't support this mode. */
-    MDBX_NOLOCK__UNSUPPORTED = 0x400000u,
+const MDBX_NOLOCK__UNSUPPORTED = 0x400000u;
 /* don't do readahead */
-    MDBX_NORDAHEAD           = 0x800000u,
+const MDBX_NORDAHEAD = 0x800000u;
 /* don't initialize malloc'd memory before writing to datafile */
-    MDBX_NOMEMINIT           = 0x1000000u,
+const MDBX_NOMEMINIT = 0x1000000u;
 /* aim to coalesce FreeDB records */
-    MDBX_COALESCE            = 0x2000000u,
+const MDBX_COALESCE = 0x2000000u;
 /* LIFO policy for reclaiming FreeDB records */
-    MDBX_LIFORECLAIM         = 0x4000000u,
+const MDBX_LIFORECLAIM = 0x4000000u;
 /* make a steady-sync only on close and explicit env-sync */
-    MDBX_UTTERLY_NOSYNC      = (MDBX_NOSYNC | MDBX_MAPASYNC),
+const MDBX_UTTERLY_NOSYNC = (MDBX_NOSYNC | MDBX_MAPASYNC);
 /* debuging option, fill/perturb released pages */
-    MDBX_PAGEPERTURB         = 0x8000000u
-}
+const MDBX_PAGEPERTURB = 0x8000000u;
+
 
 /* Database Flags */
 /* use reverse string keys */
@@ -1493,4 +1492,3 @@ int mdbx_cursor_get_attr(MDBX_cursor *mc, MDBX_val *key,
 int mdbx_get_attr(MDBX_txn *txn, MDBX_dbi dbi, MDBX_val *key,
                   MDBX_val *data, mdbx_attr_t *attrptr);
 }
-

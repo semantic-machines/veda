@@ -272,3 +272,26 @@ if ! ldconfig -p | grep libtarantool; then
 
 fi
 
+if ! ldconfig -p | grep libmdbx; then
+
+    TTC=24a8bdec49ee360bf0412631ff8931de91e109fc
+
+    mkdir tmp
+    cd tmp
+
+    wget https://github.com/leo-yuriev/libmdbx/archive/$TTC.tar.gz -P .
+    tar -xvzf $TTC.tar.gz
+
+    cd libmdbx-$TTC
+
+    make
+
+    cp src/tools/*.1 ./
+
+    sudo make install
+    sudo ldconfig
+
+    cd ..
+
+fi
+
