@@ -608,8 +608,8 @@ v-s:PsInitiatorAuthorCoathorForInitiative
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация инициатора для класса Идея"@ru ;
   rdfs:label "Initiator specification for Idea class"@en ;
 .
@@ -656,8 +656,8 @@ v-s:PsHasKpiGroup
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:KpiGroup')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of Kpi class"@en ;
   v-ui:tooltip "Введите целевой показатель/показатели на который влияет данный проект. Они являются основой для подсчета окупаемости проекта"@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Kpi class"@en ;
   rdfs:label "Спецификация целевого показателя для класса Эффект"@ru ;
   rdfs:label "Kpi property specification for Effect class"@en ;
 .
@@ -668,8 +668,8 @@ v-s:PsHasEffect
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Effect')"^^xsd:string ;
-  v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
   v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Эффект."@ru ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of Effect class"@en ;
   rdfs:label "Спецификация эффекта для класса Инициатива"@ru ;
   rdfs:label "hasEffect property specification for Initiative class"@en ;
 .
@@ -681,8 +681,8 @@ v-s:PsHasEffectList
   v-ui:maxCardinality 50 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:EffectList')"^^xsd:string ;
-  v-ui:tooltip "Non-required, multy value. Link to instance of EffectList class"@en ;
   v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса список эффектов."@ru ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of EffectList class"@en ;
   rdfs:label "Спецификация списка эффектов для класса Инициатива"@ru ;
   rdfs:label "hasEffectList property specification for Initiative class"@en ;
 .
@@ -693,8 +693,8 @@ v-s:PsHasStatus
   v-ui:maxCardinality 30 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Status')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of Status class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Статус инициативы."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Status class"@en ;
   rdfs:label "Спецификация статуса Инициативы"@ru ;
   rdfs:label "Status property specification for Initiative class"@en ;
 .
@@ -705,8 +705,8 @@ v-s:PsHasSector
   v-ui:maxCardinality 30 ;
   v-ui:minCardinality 0 ;
   v-ui:alternativeName "Область применения"@ru ;
-  v-ui:tooltip "Select functional areas which are covered by your initiative"@en ;
   v-ui:tooltip "Выберите сферы деятельности, на которые распространяется Ваша идея."@ru ;
+  v-ui:tooltip "Select functional areas which are covered by your initiative"@en ;
   rdfs:label "Спецификация области применения для класса Инициатива"@ru ;
   rdfs:label "hasSector specification for Initiative class"@en ;
 .
@@ -716,8 +716,8 @@ v-s:PsHasDocumentKind
   v-ui:forProperty v-s:hasFileContentClassifier ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-required, single value. Link to instance of DocumentKind class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Вид документа."@ru ;
+  v-ui:tooltip "Non-required, single value. Link to instance of DocumentKind class"@en ;
   rdfs:label "Спецификация свойства Вид документа для класса классифицированное вложение"@ru ;
   rdfs:label "Document kind property specification for classifiedAttachment class"@en ;
 .
@@ -727,8 +727,8 @@ v-s:PsHasParentLink
   v-ui:forProperty v-s:hasParentLink ;
   v-ui:maxCardinality 100 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-Required, multiply value. Link to instance of v-s:FileContentClassifier class"@en ;
   v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса v-s:FileContentClassifier."@ru ;
+  v-ui:tooltip "Non-Required, multiply value. Link to instance of v-s:FileContentClassifier class"@en ;
   rdfs:label "Спецификация ссылки на родтельский документ для класса v-s:FileContentClassifier"@ru ;
   rdfs:label "Link to ParentLink specification for v-s:FileContentClassifier class"@en ;
 .
@@ -740,8 +740,8 @@ v-s:PsProjectManager
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-  v-ui:tooltip "non-Required, simple value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Укажите руководителя проекта (если он уже известен)"@ru ;
+  v-ui:tooltip "non-Required, simple value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация Руководителя проекта для класса Инициатива"@ru ;
   rdfs:label "ProjectManager specification for Initiative class"@en ;
 .
@@ -753,8 +753,8 @@ v-s:PsProjectStage
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectStage')"^^xsd:string ;
-  v-ui:tooltip "Required, simple value. Link to instance of ProjectStage class"@en ;
   v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Стадия проекта."@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of ProjectStage class"@en ;
   rdfs:label "Спецификация стадии Идеи или Проекта"@ru ;
   rdfs:label "Stage property specification for Project class"@en ;
 .
@@ -765,8 +765,8 @@ v-s:PsHasProjectKind
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectKind')"^^xsd:string ;
-  v-ui:tooltip "Required, simple value. Link to instance of ProjectKind class"@en ;
   v-ui:tooltip "Необязательное единичное значение. Ссылка на объект класса ProjectKind"@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of ProjectKind class"@en ;
   rdfs:label "Спецификация вид проекта"@ru ;
   rdfs:label "Kind property specification for Project class"@en ;
 .
@@ -776,8 +776,8 @@ v-s:PsDescriptionForInitiative
   v-ui:forProperty v-s:description ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Describe the point of your idea fully in detail. Keep in mind that the idea should be new, rational and feasible"@en ;
   v-ui:tooltip "Подробно и максимально понятно опишите суть Вашей инициативы."@ru ;
+  v-ui:tooltip "Describe the point of your idea fully in detail. Keep in mind that the idea should be new, rational and feasible"@en ;
   rdfs:label "Спецификация краткого наименования для класса Инициатива"@ru ;
   rdfs:label "Description property specification for Initiative class"@en ;
 .
@@ -787,8 +787,8 @@ v-s:PsTitleForInitiative
   v-ui:forProperty v-s:title ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
-  v-ui:tooltip "Please enter short title of the initiative"@en ;
   v-ui:tooltip "Введите, пожалуйста, краткое название идеи."@ru ;
+  v-ui:tooltip "Please enter short title of the initiative"@en ;
   rdfs:label "Спецификация краткого наименования для класса Инициатива"@ru ;
   rdfs:label "IdeaName property specification for initiative class"@en ;
 .
@@ -798,8 +798,8 @@ v-s:PsActualState
   v-ui:forProperty v-s:actualState ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Describe current status of the facility requiring changes"@en ;
   v-ui:tooltip "Введите информацию о текущем статусе объекта, на который направлены изменения"@ru ;
+  v-ui:tooltip "Describe current status of the facility requiring changes"@en ;
   rdfs:label "Спецификация  описания актуального для класса Инициативы"@ru ;
   rdfs:label "actualState property specification for Initiaitve class"@en ;
 .
@@ -809,8 +809,8 @@ v-s:PsGoalState
   v-ui:forProperty v-s:goalState ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Describe goal status of the facility requiring changes"@en ;
   v-ui:tooltip "Введите описание вашего предложения"@ru ;
+  v-ui:tooltip "Describe goal status of the facility requiring changes"@en ;
   rdfs:label "Спецификация  описания предложения для класса Инициативы"@ru ;
   rdfs:label "goalState property specification for Initiaitve class"@en ;
 .
@@ -820,8 +820,8 @@ v-s:PsBackgroundToChange
   v-ui:forProperty v-s:backgroundToChange ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
-  v-ui:tooltip "Required, single Text"@en ;
   v-ui:tooltip "Описание текущей ситуации, описание проблемы."@ru ;
+  v-ui:tooltip "Required, single Text"@en ;
   rdfs:label "Спецификация предпосылок к изменениям класса Инициатива"@ru ;
   rdfs:label "BackgroundToChange propertys specification for Initiative class"@en ;
 .
@@ -831,8 +831,8 @@ v-s:PsGoal
   v-ui:forProperty v-s:goal ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Required, single Text"@en ;
   v-ui:tooltip "Цели инициативы."@ru ;
+  v-ui:tooltip "Required, single Text"@en ;
   rdfs:label "Спецификация целей к классу Инициатива"@ru ;
   rdfs:label "Goal property specification for Initiative class"@en ;
 .
@@ -843,8 +843,8 @@ v-s:PsOwner
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-  v-ui:tooltip "Required, simple value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Введите заказчика (ответственного лица)"@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация Владельца для класса Инициатива"@ru ;
   rdfs:label "Owner specification for Intiative class"@en ;
 .
@@ -854,8 +854,8 @@ v-s:PsStakeholder
   v-ui:forProperty v-s:stakeholder ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Required, simple value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Введите заинтересованную сторону"@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация заинтересованной стороны для класса Инициатива"@ru ;
   rdfs:label "Stakeholder specification for Intiative class"@en ;
 .
@@ -883,8 +883,8 @@ v-s:PsMember
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Person')"^^xsd:string ;
-  v-ui:tooltip "Non-required, multy value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Введите участников проекта"@ru ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация свойства Участник рабочей группы для класса MemberOfWorkGroup"@ru ;
   rdfs:label "Member property specification for MemberOfWorkGroup class"@en ;
 .
@@ -894,8 +894,8 @@ v-s:PsTimeeffort
   v-ui:forProperty v-s:timeEffort ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-required, single integer value."@en ;
   v-ui:tooltip "Оцените предполагаемое время работы на данной стадии текущего проекта"@ru ;
+  v-ui:tooltip "non-required, single integer value."@en ;
   rdfs:label "Спецификация количества времени работы для класса membersWorktime"@ru ;
   rdfs:label "Members worktime specification for membersWorktime class"@en ;
 .
@@ -906,8 +906,8 @@ v-s:PsMemberOfWorkGroup
   v-ui:maxCardinality 100 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:MemberOfWorkGroup')"^^xsd:string ;
-  v-ui:tooltip "Non-required, multy value. Link to instance of MemberOfWorkGroup class"@en ;
   v-ui:tooltip "Необязательно к заполнению, множественное значение. Ссылка на объект класса Член рабочей группы."@ru ;
+  v-ui:tooltip "Non-required, multy value. Link to instance of MemberOfWorkGroup class"@en ;
   rdfs:label "Спецификация свойства Участник рабочей группы для класса Проекта"@ru ;
   rdfs:label "MemberOfWorkGroup property specification for Project class"@en ;
 .
@@ -918,8 +918,8 @@ v-s:PsHasAddInitiative
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Initiative')"^^xsd:string ;
-  v-ui:tooltip "non-Required, simple value. Link to instance of hasAddInitiative class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Initiative."@ru ;
+  v-ui:tooltip "non-Required, simple value. Link to instance of hasAddInitiative class"@en ;
   rdfs:label "Спецификация hasAddinitiative для класса Инициатива"@ru ;
   rdfs:label "AddInitiative specification for initiative class"@en ;
 .
@@ -929,8 +929,8 @@ v-s:PsScope
   v-ui:forProperty v-s:scope ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Описание рамок проекта"@ru ;
+  v-ui:tooltip "non-Required, single Text"@en ;
   rdfs:label "Спецификация описания рамок проекта класса Проект"@ru ;
   rdfs:label "Scope description property specification for Project class"@en ;
 .
@@ -940,8 +940,8 @@ v-s:PsAlternativeScope
   v-ui:forProperty v-s:alternativeScope ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-required, single integer value."@en ;
   v-ui:tooltip ""@ru ;
+  v-ui:tooltip "non-required, single integer value."@en ;
   rdfs:label "Спецификация альтернативных решений и выводов для класса Проект"@ru ;
   rdfs:label "Alternative decision property specification for Project class"@en ;
 .
@@ -951,8 +951,8 @@ v-s:PsOutOfScope
   v-ui:forProperty v-s:outOfScope ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Не входит в рамки проекта"@ru ;
+  v-ui:tooltip "non-Required, single Text"@en ;
   rdfs:label "Спецификация описания не входит в рамки проекта класса Проект"@ru ;
   rdfs:label "OutOfScope description property specification for Project class"@en ;
 .
@@ -973,8 +973,8 @@ v-s:PsDatesInProjectPhase
   v-ui:forProperty v-s:dateFact ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-required, single dateTime value."@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение даты."@ru ;
+  v-ui:tooltip "Non-required, single dateTime value."@en ;
   rdfs:label "Спецификация cвойств даты для класса ProjectPhase "@ru ;
   rdfs:label "Dates property specification for ProjectPhase class"@en ;
 .
@@ -986,8 +986,8 @@ v-s:PsCompletion
   v-ui:forProperty v-s:completion ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-required, single integer value."@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное целочисленное значение."@ru ;
+  v-ui:tooltip "Non-required, single integer value."@en ;
   rdfs:label "Спецификация cвойства процент выполнения для класса ProjectPhase"@ru ;
   rdfs:label "Completion of Project phase property specification for ProjectPhase class"@en ;
 .
@@ -999,8 +999,8 @@ v-s:PsCommentForProjectPhase
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
+  v-ui:tooltip "non-Required, single Text"@en ;
   rdfs:label "Спецификация комментария класса ProjectPhase"@ru ;
   rdfs:label "Comment property specification for ProjectPhase class"@en ;
 .
@@ -1012,8 +1012,8 @@ v-s:PsProjectPhaseKind
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseKind')"^^xsd:string ;
-  v-ui:tooltip "Required, simple value. Link to instance of ProjectKind class"@en ;
   v-ui:tooltip "Вид фазы проекта"@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of ProjectKind class"@en ;
   rdfs:label "Спецификация вид фазы проекта для класса фаза проекта"@ru ;
   rdfs:label "Project phase kind property specification for ProjectPhase class"@en ;
 .
@@ -1024,8 +1024,8 @@ v-s:PsProjectPhaseCost
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseCost')"^^xsd:string ;
-  v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseCost class"@en ;
   v-ui:tooltip "Затраты на фазу проекта"@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseCost class"@en ;
   rdfs:label "Спецификация затрат фазы проекта для класса фаза проекта"@ru ;
   rdfs:label "Project phase costs property specification for ProjectPhase class"@en ;
 .
@@ -1036,8 +1036,8 @@ v-s:PsProjectPhaseRisk
   v-ui:maxCardinality "1"^^xsd:integer ;
   v-ui:minCardinality "1"^^xsd:integer ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhaseRisk')"^^xsd:string ;
-  v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseRisk class"@en ;
   v-ui:tooltip "Риски фазы проекта"@ru ;
+  v-ui:tooltip "Required, simple value. Link to instance of ProjectPhaseRisk class"@en ;
   rdfs:label "Спецификация рисков фазы проекта для класса фаза проекта"@ru ;
   rdfs:label "Project phase risks property specification for ProjectPhase class"@en ;
 .
@@ -1048,8 +1048,8 @@ v-s:PsSum
   v-ui:forProperty v-s:sum ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-required, single decimal value."@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное десятичное значение."@ru ;
+  v-ui:tooltip "non-required, single decimal value."@en ;
   rdfs:label "Спецификация суммы для класса ProjectPhase"@ru ;
   rdfs:label "Sum property specification for ProjectPhase class"@en ;
 .
@@ -1059,8 +1059,8 @@ v-s:PsCommentForProjectPhaseCost
   v-ui:forProperty rdfs:comment ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
+  v-ui:tooltip "non-Required, single Text"@en ;
   rdfs:label "Спецификация комментария класса ProjectPhaseCost"@ru ;
   rdfs:label "Comment property specification for ProjectPhaseCost class"@en ;
 .
@@ -1071,8 +1071,8 @@ v-s:PsHasCurrency
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Currency')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of Currency class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Currency class"@en ;
   rdfs:label "Спецификация валюты для класса ProjectPhase"@ru ;
   rdfs:label "Currency specification for ProjectPhase class"@en ;
 .
@@ -1083,8 +1083,8 @@ v-s:PsProjectPhases
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectPhase')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса ProjectPhase."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   rdfs:label "Спецификация cвойств затрат на реализацию проекта для класса Проект"@ru ;
   rdfs:label "Costs property specification for Project class"@en ;
 .
@@ -1095,8 +1095,8 @@ v-s:PsProjectMilestones
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:ProjectMilestone')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса ProjectPhase."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of ProjectPhase class"@en ;
   rdfs:label "Спецификация cвойств затрат на реализацию проекта для класса Проект"@ru ;
   rdfs:label "Costs property specification for Project class"@en ;
 .
@@ -1107,8 +1107,8 @@ v-s:PsHasMaintenanceKind
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:MaintenanceKind')"^^xsd:string ;
-  v-ui:tooltip "Non-required, single value. Link to instance of MaintenanceKind class"@en ;
   v-ui:tooltip "Пожалуйста, проставьте идентификатор по необходимости останова оборудования. "@ru ;
+  v-ui:tooltip "Non-required, single value. Link to instance of MaintenanceKind class"@en ;
   rdfs:label "Спецификация обслуживания оборудования для класса Проект"@ru ;
   rdfs:label "Maintenance kind property specification for Project class"@en ;
 .
@@ -1119,8 +1119,8 @@ v-s:PsInitiativeSnapshot
   v-ui:maxCardinality 20 ;
   v-ui:minCardinality 0 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Initiative')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of Initiative class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Инициатива."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Initiative class"@en ;
   rdfs:label "Спецификации ссылок на проект на разных стадиях"@ru ;
   rdfs:label "Link to Project in all stages property specification for Initiative class"@en ;
 .

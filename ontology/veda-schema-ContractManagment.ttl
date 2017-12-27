@@ -100,8 +100,8 @@ v-s:PsHasCurrency_CurrencyExchangeRate
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
-  v-ui:placeholder "Select currency"@en ;
   v-ui:placeholder "Выберите валюту"@ru ;
+  v-ui:placeholder "Select currency"@en ;
   rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
   rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
 .

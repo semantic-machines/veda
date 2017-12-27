@@ -481,8 +481,8 @@ v-s:PsDisplayName
   v-ui:forProperty v-s:displayName ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
+  v-ui:tooltip "non-Required, single Text"@en ;
   rdfs:label "Спецификация имя правила для класса Правило связи двух документов."@ru ;
   rdfs:label "Display name property specification for DocumentLinkRules class"@en ;
 .

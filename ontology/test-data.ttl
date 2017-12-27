@@ -336,8 +336,8 @@ td:AndreyBychin
   rdf:type v-s:Person ;
   v-s:actualVersion td:AndreyBychin ;
   v-s:birthday "1976-05-03"^^xsd:dateTime ;
-  v-s:firstName "4"@en ;
   v-s:firstName "4"@ru ;
+  v-s:firstName "4"@en ;
   v-s:hasAccount td:BychinAT ;
   v-s:lastName "Администратор4"@ru ;
   v-s:lastName "Administrator4"@en ;
@@ -366,8 +366,8 @@ td:RomanKarpov
   rdf:type v-s:Person ;
   v-s:actualVersion td:RomanKarpov ;
   v-s:birthday "1981-01-09T00:00:00Z"^^xsd:dateTime ;
-  v-s:firstName "2"@en ;
   v-s:firstName "2"@ru ;
+  v-s:firstName "2"@en ;
   v-s:hasAccount td:KarpovRT ;
   v-s:lastName "Администратор2"@ru ;
   v-s:lastName "Administrator2"@en ;
@@ -413,8 +413,8 @@ td:AleksandraKhvostikova
   rdf:type v-s:Person ;
   v-s:actualVersion td:AleksandraKhvostikova ;
   v-s:birthday "1984-04-28"^^xsd:dateTime ;
-  v-s:firstName "1"@en ;
   v-s:firstName "1"@ru ;
+  v-s:firstName "1"@en ;
   v-s:hasAccount td:KhvostiAT ;
   v-s:lastName "Администратор1"@ru ;
   v-s:lastName "Administrator1"@en ;
@@ -444,8 +444,8 @@ td:ValeriyBushenev
   rdf:type v-s:Person ;
   v-s:actualVersion td:ValeriyBushenev ;
   v-s:birthday "1973-05-09"^^xsd:dateTime ;
-  v-s:firstName "3"@en ;
   v-s:firstName "3"@ru ;
+  v-s:firstName "3"@en ;
   v-s:hasAccount td:BushenevVT ;
   v-s:lastName "Администратор3"@ru ;
   v-s:lastName "Administrator3"@en ;

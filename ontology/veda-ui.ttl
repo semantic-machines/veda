@@ -17,7 +17,7 @@
 .
 v-ui:AvailableLanguage
   rdf:type rdfs:Resource ;
-  rdf:value v-ui:EN, v-ui:RU ;
+  rdf:value v-ui:RU, v-ui:EN ;
   rdfs:label "Доступный язык"@ru ;
   rdfs:label "Available language"@en ;
 .

@@ -284,8 +284,8 @@ v-s:AdministrationAspect1
   rdfs:label "Администрирование"@ru ;
   rdfs:label "Administration"@en ;
   rdfs:comment "All your base are belong to us ©" ;
-  v-s:shortLabel "Administration"@en ;
   v-s:shortLabel "Администрирование"@ru ;
+  v-s:shortLabel "Administration"@en ;
   v-s:hasImage v-s:AdministrationImage ;
 .
 

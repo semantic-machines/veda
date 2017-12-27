@@ -22,8 +22,8 @@
 cfg:Guest
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
-  v-s:firstName "Guest"@en ;
   v-s:firstName "Гость"@ru ;
+  v-s:firstName "Guest"@en ;
   v-s:hasAccount cfg:GuestAccount ;
   rdfs:label "Гость"@ru ;
   rdfs:label "Guest"@en ;
@@ -47,8 +47,8 @@ cfg:GuestAppointment
 cfg:ImportDMSToVeda
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
-  v-s:firstName "Import DMS to Veda"@en ;
   v-s:firstName "Утилита импорта DMS to Veda"@ru ;
+  v-s:firstName "Import DMS to Veda"@en ;
   v-s:hasAccount cfg:ImportDMSToVedaAccount ;
   rdfs:label "Утилита DMS to Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
@@ -76,8 +76,8 @@ cfg:ImportDMSToVedaAppointment
 cfg:VedaNTLMFilter
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
-  v-s:firstName "Veda NTLM Filter"@en ;
   v-s:firstName "Veda NTLM Фильтр"@ru ;
+  v-s:firstName "Veda NTLM Filter"@en ;
   v-s:hasAccount cfg:VedaNTLMFilterAccount ;
   rdfs:label "Veda NTLM Фильтр"@ru ;
   rdfs:label "Veda NTLM Filter"@en ;
@@ -109,11 +109,11 @@ cfg:VedaSystem
   v-s:author cfg:VedaSystem ;
   v-s:actualVersion cfg:VedaSystem ;
   v-s:birthday "2014-03-05"^^xsd:dateTime ;
-  v-s:firstName "Veda"@en ;
   v-s:firstName "Веда"@ru ;
+  v-s:firstName "Veda"@en ;
   v-s:hasAccount cfg:VedaSystemAccount ;
-  v-s:lastName "System"@en ;
   v-s:lastName "Система"@ru ;
+  v-s:lastName "System"@en ;
   rdfs:label "Система Веда"@ru ;
   rdfs:label "Veda System"@en ;
 .
@@ -141,8 +141,8 @@ cfg:Administrator
   v-s:author cfg:VedaSystem ;
   v-s:actualVersion cfg:Administrator ;
   v-s:birthday "2014-03-05"^^xsd:dateTime ;
-  v-s:firstName "Administrator"@en ;
   v-s:firstName "Администратор"@ru ;
+  v-s:firstName "Administrator"@en ;
   v-s:hasAccount cfg:AdministratorAccount ;
   rdfs:label "Администратор"@ru ;
   rdfs:label "Administrator"@en ;
