@@ -397,7 +397,6 @@ class VedaStorageRest : VedaStorageRest_API
             OutBuffer trace_acl = new OutBuffer();
 
             context.get_rights_origin_from_acl(ticket, uri, trace_acl, trace_info);
-
             indv_info.addResource("rdfs:comment", Resource(trace_info.toString()));
             res ~= indv_info;
 
@@ -427,6 +426,9 @@ class VedaStorageRest : VedaStorageRest_API
                     json ~= individual_to_json(indv_res);
                 }
             }
+            
+            foreach (individual; res)
+                json ~= individual_to_json(individual);            
 
             return json;
         }
