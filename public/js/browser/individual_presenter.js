@@ -74,8 +74,8 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template = template.trim();
 
     // Extract pre script, template and post script
-    match = template.match(/^(?:<script[^>]*>([\s\S]*?)<\/script>)?([\s\S]*?)(?:<script[^>]*>(?![\s\S]*<script[^>]*>)([\s\S]*)<\/script>)?$/i);
-
+    // match = template.match(/^(?:<script[^>]*>([\s\S]*?)<\/script>)?([\s\S]*?)(?:<script[^>]*>(?![\s\S]*<script[^>]*>)([\s\S]*)<\/script>)?$/i);
+    match = preProcess(template);
     pre_render_src = match[1];
     template = $( match[2] );
     post_render_src = match[3];
@@ -104,6 +104,28 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }, 0);
 
     return template;
+  }
+
+  function preProcess(template) {
+    var pre,
+        preStart = template.indexOf("<script>") + 8,
+        preEnd = template.indexOf("</script>"),
+        hasPre = preStart === 8;
+    if (hasPre) {
+      pre = template.substring(preStart, preEnd);
+      template = template.substring(preEnd + 9);
+    }
+
+    var post,
+        postStart = template.lastIndexOf("<script>") + 8,
+        postEnd = template.lastIndexOf("</script>"),
+        hasPost = postEnd === template.length - 9;
+    if (hasPost) {
+      post = template.substring(postStart, postEnd);
+      template = template.substring(0, postStart - 8);
+    }
+    // Compatible with regexp
+    return [undefined, pre, template, post];
   }
 
   function processTemplate (individual, container, template, mode, specs) {
