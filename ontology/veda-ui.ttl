@@ -10,22 +10,22 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 <http://semantic-machines.com/veda/veda-ui>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system user interface ontology"@en ;
   rdfs:label "Онтология пользовательского интерфейса системы Веда"@ru ;
+  rdfs:label "Veda system user interface ontology"@en ;
 #  owl:versionInfo "3.4" ;
   v-s:loadPriority 8 ;
 .
 v-ui:AvailableLanguage
   rdf:type rdfs:Resource ;
   rdf:value v-ui:EN, v-ui:RU ;
-  rdfs:label "Available language"@en ;
   rdfs:label "Доступный язык"@ru ;
+  rdfs:label "Available language"@en ;
 .
 v-ui:DefaultLanguage
   rdf:type rdfs:Resource ;
   rdf:value v-ui:RU ;
-  rdfs:label "Default language"@en ;
   rdfs:label "Язык по-умолчанию"@ru ;
+  rdfs:label "Default language"@en ;
 .
 v-ui:EN
   rdf:type v-ui:Language ;
@@ -40,8 +40,8 @@ v-ui:RU
 v-ui:preferredLanguage
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:Preferences ;
-  rdfs:label "Preferred language"@en ;
   rdfs:label "Предпочитаемый язык"@ru ;
+  rdfs:label "Preferred language"@en ;
   rdfs:range v-ui:Language ;
 .
 v-ui:forClass
@@ -49,73 +49,73 @@ v-ui:forClass
   rdfs:domain v-ui:ClassTemplate ;
   rdfs:domain v-ui:ClassModel ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "For class"@en ;
   rdfs:label "Для класса"@ru ;
+  rdfs:label "For class"@en ;
   rdfs:range owl:Class ;
 .
 v-ui:forProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:PropertySpecification ;
-  rdfs:label "For property"@en ;
   rdfs:label "Для свойства"@ru ;
+  rdfs:label "For property"@en ;
   rdfs:range owl:DatatypeProperty, owl:ObjectProperty, rdf:Property ;
 .
 v-ui:hasTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "Template"@en ;
   rdfs:label "Шаблон"@ru ;
+  rdfs:label "Template"@en ;
   rdfs:range v-ui:ClassTemplate ;
 .
 v-ui:hasModel
   rdf:type owl:ObjectProperty ;
   rdfs:domain owl:Class ;
   rdfs:domain rdfs:Class ;
-  rdfs:label "Model"@en ;
   rdfs:label "Модель"@ru ;
+  rdfs:label "Model"@en ;
   rdfs:range v-ui:ClassModel ;
 .
 v-ui:hasCustomTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Thing ;
-  rdfs:label "Custom template"@en ;
   rdfs:label "Частный шаблон"@ru ;
+  rdfs:label "Custom template"@en ;
   rdfs:range v-ui:ClassTemplate ;
 .
 v-ui:hasCustomModel
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Thing ;
-  rdfs:label "Custom model"@en ;
   rdfs:label "Частная модель"@ru ;
+  rdfs:label "Custom model"@en ;
   rdfs:range v-ui:ClassModel ;
 .
 v-ui:ClassModel
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Class model"@en ;
   rdfs:label "Модель класса"@ru ;
+  rdfs:label "Class model"@en ;
   v-ui:hasTemplate v-ui:ClassModelTemplate ;
 .
 v-ui:template
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:ClassTemplate ;
-  rdfs:label "Template"@en ;
   rdfs:label "Шаблон"@ru ;
+  rdfs:label "Template"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:ClassTemplate
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Template"@en ;
   rdfs:label "Шаблон"@ru ;
+  rdfs:label "Template"@en ;
   v-ui:hasTemplate v-ui:ClassTemplateTemplate ;
 .
 v-ui:PropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Property specification"@en ;
   rdfs:label "Спецификация свойства"@ru ;
+  rdfs:label "Property specification"@en ;
   v-ui:hasTemplate v-ui:PropertySpecificationTemplate ;
 .
 v-ui:tooltip
@@ -174,8 +174,8 @@ v-ui:optionValue
 v-ui:DatatypePropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "Datatype property specification"@en ;
   rdfs:label "Спецификация литерального свойства"@ru ;
+  rdfs:label "Datatype property specification"@en ;
   v-ui:hasTemplate v-ui:DatatypePropertySpecificationTemplate ;
 .
 v-ui:regexp
@@ -226,8 +226,8 @@ v-ui:maxLength
 v-ui:ObjectPropertySpecification
   rdf:type owl:Class ;
   rdfs:subClassOf v-ui:PropertySpecification ;
-  rdfs:label "Object property specification"@en ;
   rdfs:label "Спецификация объектного свойства"@ru ;
+  rdfs:label "Object property specification"@en ;
   v-ui:hasTemplate v-ui:ObjectPropertySpecificationTemplate ;
 .
 v-ui:rangeRestriction
@@ -307,21 +307,21 @@ v-ui:treeDisplayedProperty
 v-ui:Language
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Language"@en ;
   rdfs:label "Язык"@ru ;
+  rdfs:label "Language"@en ;
 .
 v-ui:Preferences
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Preferences"@en ;
   rdfs:label "Предпочтения"@ru ;
+  rdfs:label "Preferences"@en ;
 .
 v-ui:hasPreferences
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Person ;
-  rdfs:label "Preferences"@en ;
   rdfs:label "Предпочтения"@ru ;
+  rdfs:label "Preferences"@en ;
   rdfs:range v-ui:Preferences ;
 .
 v-ui:displayedElements

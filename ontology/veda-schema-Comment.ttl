@@ -9,8 +9,8 @@
 
 <http://semantic-machines.com/veda/mondi-schema-Comment/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. Comment"@en ;
   rdfs:label "Онтология системы Veda. Комментарии"@ru ;
+  rdfs:label "Veda system ontology. Comment"@en ;
   v-s:loadPriority 11 ;
 .
 #-- Классы --
@@ -19,8 +19,8 @@ v-s:Comment
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Comment"@en ;
   rdfs:label "Комментарий "@ru ;
+  rdfs:label "Comment"@en ;
   v-ui:hasTemplate v-s:SingleCommentTemplate ;
 .
 
@@ -32,8 +32,8 @@ v-s:PsLinkedObjectForComment
   v-ui:forProperty v-s:linkedObject ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
-  rdfs:label "v-s:linkedObject property specification for v-s:Comment class"@en ;
   rdfs:label "Спецификация свойства v-s:linkedObject для класса v-s:Comment"@ru ;
+  rdfs:label "v-s:linkedObject property specification for v-s:Comment class"@en ;
 .
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
@@ -69,8 +69,8 @@ v-s:AllUsersGroup_CommentBaseUser_membership
 
 v-s:CommentsTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Template for comments rendering"@en ;
   rdfs:label "Шаблон для отображения комментариев"@ru ;
+  rdfs:label "Template for comments rendering"@en ;
   v-ui:template """
 <div>
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
@@ -134,8 +134,8 @@ v-s:CommentsTemplate
 v-s:SingleCommentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Comment ;
-  rdfs:label "Template for v-s:Comment class"@en ;
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
+  rdfs:label "Template for v-s:Comment class"@en ;
   v-ui:template """
 <script>
   $(".action", template).click(function (e) {
@@ -163,8 +163,8 @@ v-s:SingleCommentTemplate
 
 v-s:RecursiveCommentTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Template for v-s:Comment class"@en ;
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
+  rdfs:label "Template for v-s:Comment class"@en ;
   v-ui:template """
 <script>
   var actions = $("#edit-comment, #delete", template);

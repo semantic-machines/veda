@@ -11,16 +11,16 @@
 
 <http://semantic-machines.com/veda/veda-ontology-editor>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology editor"@en ;
   rdfs:label "Редактор онтологии системы Веда"@ru ;
+  rdfs:label "Veda system ontology editor"@en ;
 #  owl:versionInfo "3.4" ;
   v-s:loadPriority 8 ;
 .
 
 v-ui:PropertyClassModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "Property class model"@en ;
   rdfs:label "Модель класса Property"@ru ;
+  rdfs:label "Property class model"@en ;
   v-ui:forClass rdf:Property ;
   v-ui:forClass owl:DatatypeProperty ;
   v-ui:forClass owl:ObjectProperty ;
@@ -110,8 +110,8 @@ v-ui:PropertyClassModel
 
 v-ui:ClassClassModel
   rdf:type v-ui:ClassModel;
-  rdfs:label "Class class model"@en ;
   rdfs:label "Модель класса Class"@ru ;
+  rdfs:label "Class class model"@en ;
   v-ui:forClass owl:Class ;
   v-ui:forClass rdfs:Class ;
   v-s:script """
@@ -150,23 +150,23 @@ v-ui:ClassClassModel
 
 v-s:PropertiesBundle
   rdf:type v-s:Bundle;
-  rdfs:label "Properties"@en ;
   rdfs:label "Свойства"@ru ;
+  rdfs:label "Properties"@en ;
 .
 v-s:SuperClassesBundle
   rdf:type v-s:Bundle;
-  rdfs:label "Super classes"@en ;
   rdfs:label "Супер классы"@ru ;
+  rdfs:label "Super classes"@en ;
 .
 v-s:SuperPropertiesBundle
   rdf:type v-s:Bundle;
-  rdfs:label "Super properties"@en ;
   rdfs:label "Супер свойства"@ru ;
+  rdfs:label "Super properties"@en ;
 .
 v-s:SpecificationsBundle
   rdf:type v-s:Bundle;
-  rdfs:label "Specifications"@en ;
   rdfs:label "Спецификации"@ru ;
+  rdfs:label "Specifications"@en ;
 .
 
 v-s:ClassLabelSpec
@@ -210,8 +210,8 @@ v-s:PropertySpecificationSearchBlank
 
 v-ui:CommonOntologyTemplate
   rdf:type v-ui:ClassTemplate;
-  rdfs:label "Common ontology template"@en ;
   rdfs:label "Общий шаблон онтологии"@ru ;
+  rdfs:label "Common ontology template"@en ;
   v-ui:template """
 <script>
   if ( this.isNew() ) {
@@ -243,8 +243,8 @@ v-ui:CommonOntologyTemplate
 
 v-ui:ClassClassTemplate
   rdf:type v-ui:ClassTemplate;
-  rdfs:label "Class class template"@en ;
   rdfs:label "Шаблон класса Class"@ru ;
+  rdfs:label "Class class template"@en ;
   v-ui:forClass owl:Class ;
   v-ui:forClass rdfs:Class ;
   v-ui:template """
@@ -401,8 +401,8 @@ v-ui:PsTypeClassSpec
 
 v-ui:PropertyClassTemplate
   rdf:type v-ui:ClassTemplate;
-  rdfs:label "rdf:Property class template"@en ;
   rdfs:label "Шаблон класса rdf:Property"@ru ;
+  rdfs:label "rdf:Property class template"@en ;
   v-ui:forClass rdf:Property ;
   v-ui:forClass owl:DatatypeProperty ;
   v-ui:forClass owl:ObjectProperty ;
@@ -452,8 +452,8 @@ v-ui:PsTypePropertySpec
 
 v-ui:PropertySpecificationTemplate
   rdf:type v-ui:ClassTemplate;
-  rdfs:label "v-ui:PropertySpecification class template"@en ;
   rdfs:label "Шаблон класса v-ui:PropertySpecification"@ru ;
+  rdfs:label "v-ui:PropertySpecification class template"@en ;
   v-ui:forClass v-ui:PropertySpecification ;
   v-ui:template """
 <div class="container sheet">
@@ -558,8 +558,8 @@ v-ui:PropertySpecificationTemplate
 
 v-ui:DatatypePropertySpecificationTemplate
   rdf:type v-ui:ClassTemplate;
-  rdfs:label "v-ui:PropertySpecification class template"@en ;
   rdfs:label "Шаблон класса v-ui:PropertySpecification"@ru ;
+  rdfs:label "v-ui:PropertySpecification class template"@en ;
   v-ui:forClass v-ui:DatatypePropertySpecification ;
   v-ui:template """
 <div class="container sheet">
@@ -713,8 +713,8 @@ v-ui:DatatypePropertySpecificationTemplate
 .
 v-ui:ObjectPropertySpecificationTemplate
   rdf:type v-ui:ClassTemplate;
-  rdfs:label "v-ui:PropertySpecification class template"@en ;
   rdfs:label "Шаблон класса v-ui:PropertySpecification"@ru ;
+  rdfs:label "v-ui:PropertySpecification class template"@en ;
   v-ui:forClass v-ui:ObjectPropertySpecification ;
   v-ui:template """
 <div class="container sheet">

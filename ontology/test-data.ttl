@@ -15,8 +15,8 @@
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
-  rdfs:label "data tests"@en ;
   rdfs:label "данные для тестов"@ru ;
+  rdfs:label "data tests"@en ;
 .
 
 td:arg1
@@ -58,50 +58,50 @@ td:khvostiaImage
 td:Analyst1
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
+  rdfs:label "Analyst"@en ;
 .
 
 td:Analyst2
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Analyst"@en ;
   rdfs:label "Аналитик"@ru ;
+  rdfs:label "Analyst"@en ;
 .
 
 td:CommercialDirector
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
-  rdfs:label "Commercial director"@en ;
   rdfs:label "Коммерческий директор"@ru ;
+  rdfs:label "Commercial director"@en ;
 .
 
 td:CommercialDirector2
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
-  rdfs:label "Commercial director"@en ;
   rdfs:label "Коммерческий директор"@ru ;
+  rdfs:label "Commercial director"@en ;
 .
 
 td:ExecutiveDirector
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
-  rdfs:label "Executive director"@en ;
   rdfs:label "Исполнительный директор"@ru ;
+  rdfs:label "Executive director"@en ;
 .
 
 td:TechnicalDirector
   rdf:type v-s:Position ;
   v-s:parentUnit d:org_RU1121001280 ;
-  rdfs:label "Technical director"@en ;
   rdfs:label "Технический директор"@ru ;
+  rdfs:label "Technical director"@en ;
 .
 
 td:Programmer1
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  rdfs:label "Programmer"@en ;
   rdfs:label "Программист"@ru ;
+  rdfs:label "Programmer"@en ;
 .
 
 td:BB-semantic_machines
@@ -148,108 +148,108 @@ td:KhvostiAT
 
 td:UserGroup_1
   rdf:type v-s:Group ;
-  rdfs:label "Test user group 1"@en ;
   rdfs:label "Тестовая пользовательская группа 1"@ru ;
+  rdfs:label "Test user group 1"@en ;
 .
 
 td:UserGroup_2
   rdf:type v-s:Group ;
-  rdfs:label "Test user group 2"@en ;
   rdfs:label "Тестовая пользовательская группа 2"@ru ;
+  rdfs:label "Test user group 2"@en ;
 .
 
 td:ResGroup_1
   rdf:type v-s:Group ;
-  rdfs:label "Test resource group 1"@en ;
   rdfs:label "Тестовая группа для ресуров 1"@ru ;
+  rdfs:label "Test resource group 1"@en ;
 .
 td:ResGroup_2
   rdf:type v-s:Group ;
-  rdfs:label "Test resource group 2"@en ;
   rdfs:label "Тестовая группа для ресуров 2"@ru ;
+  rdfs:label "Test resource group 2"@en ;
 .
 
 td:Membership_1
   rdf:type v-s:Membership ;
   v-s:memberOf td:UserGroup_2 ;
   v-s:resource td:AndreyBychin ;
-  rdfs:label "Membership_1"@en ;
   rdfs:label "Членство_1"@ru ;
+  rdfs:label "Membership_1"@en ;
 .
 
 td:Membership_4
   rdf:type v-s:Membership ;
   v-s:memberOf td:UserGroup_1 ;
   v-s:resource td:ValeriyBushenev ;
-  rdfs:label "Membership_4"@en ;
   rdfs:label "Членство_4"@ru ;
+  rdfs:label "Membership_4"@en ;
 .
 
 td:Membership_50_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource td:RomanKarpov ;
-  rdfs:label "Membership_50"@en ;
   rdfs:label "Членство_50"@ru ;
+  rdfs:label "Membership_50"@en ;
 .
 td:Membership_51_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource td:AleksandraKhvostikova ;
-  rdfs:label "Membership_51"@en ;
   rdfs:label "Членство_51"@ru ;
+  rdfs:label "Membership_51"@en ;
 .
 td:Membership_52_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource d:mondi_employee_00056698 ;
-  rdfs:label "Membership_52"@en ;
   rdfs:label "Членство_52"@ru ;
+  rdfs:label "Membership_52"@en ;
 .
 td:Membership_53_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource d:mondi_employee_00068722 ;
-  rdfs:label "Membership_53"@en ;
   rdfs:label "Членство_53"@ru ;
+  rdfs:label "Membership_53"@en ;
 .
 td:Membership_54_su
   rdf:type v-s:Membership ;
   v-s:memberOf cfg:SuperUser ;
   v-s:resource d:mondi_employee_00061407 ;
-  rdfs:label "Membership_54"@en ;
   rdfs:label "Членство_54"@ru ;
+  rdfs:label "Membership_54"@en ;
 .
 td:Membership_6
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
   v-s:resource td:AdministrativeDocument_2 ;
-  rdfs:label "Membership_6"@en ;
   rdfs:label "Членство_6"@ru ;
+  rdfs:label "Membership_6"@en ;
 .
 
 td:Membership_7
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
   v-s:resource cfg:Event_1 ;
-  rdfs:label "Membership_7"@en ;
   rdfs:label "Членство_7"@ru ;
+  rdfs:label "Membership_7"@en ;
 .
 
 td:Membership_9
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_2 ;
   v-s:resource td:AndreyBychin ;
-  rdfs:label "Membership_9"@en ;
   rdfs:label "Членство_9"@ru ;
+  rdfs:label "Membership_9"@en ;
 .
 
 td:Membership_10
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
   v-s:resource td:ValeriyBushenev ;
-  rdfs:label "Membership_10"@en ;
   rdfs:label "Членство_10"@ru ;
+  rdfs:label "Membership_10"@en ;
 .
 
 td:Membership_11_1
@@ -263,8 +263,8 @@ td:Membership_13
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_2 ;
   v-s:resource td:PersonTemplate1 ;
-  rdfs:label "Membership_12"@en ;
   rdfs:label "Членство_12"@ru ;
+  rdfs:label "Membership_12"@en ;
 .
 
 td:Permission_2
@@ -276,8 +276,8 @@ td:Permission_2
   v-s:permissionSubject td:UserGroup_1 ;
   v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
-  rdfs:label "Permissions record_2"@en ;
   rdfs:label "Запись о выдаче прав_2"@ru ;
+  rdfs:label "Permissions record_2"@en ;
 .
 
 td:Permission_2_vb
@@ -296,8 +296,8 @@ td:Permission_3
   v-s:permissionSubject td:UserGroup_2 ;
   v-s:published "2014-01-30T16:45:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T16:45:33"^^xsd:dateTime ;
-  rdfs:label "Permissions record_3"@en ;
   rdfs:label "Запись о выдаче прав_3"@ru ;
+  rdfs:label "Permissions record_3"@en ;
 .
 
 td:Preferences_AndreyBychin
@@ -681,8 +681,8 @@ v-s:PersonalAspectKarpovr
 
 v-wf:UserTaskForm1
   rdf:type s-wf:UserTaskForm ;
-  rdfs:label "Example"@en ;
   rdfs:label "Экземпляр"@ru ;
+  rdfs:label "Example"@en ;
   v-wf:possibleDecisionClass v-wf:DecisionApprove ;
   v-wf:possibleDecisionClass v-wf:DecisionRemake ;
   v-wf:possibleDecisionClass v-wf:DecisionRejected ;
@@ -725,8 +725,8 @@ d:Membership_71014133_71025564
   rdf:type v-s:Membership ;
   v-s:memberOf d:mondi_position_71025564 ;
   v-s:resource d:mondi_position_71014133 ;
-  rdfs:label "Начальник управления - в группу Начальник службы"@en ;
   rdfs:label "Начальник управления - в группу Начальник службы"@ru ;
+  rdfs:label "Начальник управления - в группу Начальник службы"@en ;
 .
 
 

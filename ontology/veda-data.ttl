@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/veda-data>
   rdf:type owl:Ontology ;
-  rdfs:label "Data ontology"@en ;
   rdfs:label "Онтология данных"@ru ;
+  rdfs:label "Data ontology"@en ;
 # owl:versionInfo "1.3" ;
 .
 

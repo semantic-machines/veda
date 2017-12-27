@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/veda-schema-Action/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. Action"@en ;
   rdfs:label "Онтология системы Veda. Задача"@ru ;
+  rdfs:label "Veda system ontology. Action"@en ;
   v-s:loadPriority 11 ;
 .
 
@@ -25,13 +25,13 @@ v-s:Action
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
-  rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
+  rdfs:label "Action"@en ;
 .
 v-s:hasTerm
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Term"@en ;
   rdfs:label "Срок"@ru ;
+  rdfs:label "Term"@en ;
   rdfs:range v-s:Term ;
   rdfs:domain v-s:Action ;
 .
@@ -39,7 +39,7 @@ v-s:hasTerm
 #---------------------------------------------------------
 v-s:Term
   rdf:type owl:Class ;
-  rdfs:label "Term"@en ;
   rdfs:label "Срок"@ru ;
+  rdfs:label "Term"@en ;
   rdfs:subClassOf v-s:UserThing ;
 .

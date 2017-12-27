@@ -25,8 +25,8 @@ rdf:List a rdfs:Class ;
     rdfs:subClassOf rdfs:Resource .
 
 rdf:Property a rdfs:Class ;
-    rdfs:label "Property"@en ;
     rdfs:label "Свойство"@ru ;
+    rdfs:label "Property"@en ;
     rdfs:comment "The class of RDF properties." ;
     rdfs:isDefinedBy rdf: ;
     rdfs:subClassOf rdfs:Resource ;
@@ -39,22 +39,22 @@ rdf:Seq a rdfs:Class ;
     rdfs:subClassOf rdfs:Container .
 
 rdf:Statement a rdfs:Class ;
-    rdfs:label "Statement"@en ;
     rdfs:label "Утверждение"@ru ;
+    rdfs:label "Statement"@en ;
     rdfs:comment "The class of RDF statements." ;
     rdfs:isDefinedBy rdf: ;
     rdfs:subClassOf rdfs:Resource .
 
 rdf:PlainLiteral a rdfs:Datatype ;
-    rdfs:label "Plain literal"@en ;
     rdfs:label "Простой литерал"@ru ;
+    rdfs:label "Plain literal"@en ;
     rdfs:comment "The class of plain (i.e. untyped) literal values." ;
     rdfs:isDefinedBy <http://www.w3.org/TR/rdf-plain-literal/> ;
     rdfs:subClassOf rdfs:Literal .
 
 rdf:XMLLiteral a rdfs:Datatype ;
-    rdfs:label "XMLLiteral"@en ;
     rdfs:label "XML литерал"@ru ;
+    rdfs:label "XMLLiteral"@en ;
     rdfs:comment "The class of XML literal values." ;
     rdfs:isDefinedBy rdf: ;
     rdfs:subClassOf rdfs:Literal .
@@ -100,8 +100,8 @@ rdf:subject a rdf:Property ;
     rdfs:range rdfs:Resource .
 
 rdf:type a rdf:Property ;
-    rdfs:label "Type"@en ;
     rdfs:label "Tип"@ru ;
+    rdfs:label "Type"@en ;
     rdfs:comment "The subject is an instance of a class." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdf: ;
@@ -117,8 +117,8 @@ rdf:value a rdf:Property ;
 rdf: a owl:Ontology ;
     dc:description "This is the RDF Schema for the RDF vocabulary defined in the RDF namespace." ;
     dc:title "The RDF Vocabulary (RDF)" ;
-    rdfs:label "The RDF Vocabulary (RDF)"@en ;
     rdfs:label "Словарь RDF"@ru ;
+    rdfs:label "The RDF Vocabulary (RDF)"@en ;
     rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> ;
     v-s:loadPriority 4 ;
     .

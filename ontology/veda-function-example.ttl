@@ -8,37 +8,37 @@
 @prefix v-fe: <http://semantic-machines.com/veda/veda-function-example/> .
 <http://semantic-machines.com/veda/veda-function-example>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system example function ontology"@en ;
   rdfs:label "Онтология функции-примера системы Веда"@ru ;
+  rdfs:label "Veda system example function ontology"@en ;
   owl:versionInfo "3.9" ;
   v-s:loadPriority 9 ;
 .
 v-fe:FunctionExample
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Example function"@en ;
   rdfs:label "Функция-пример"@ru ;
+  rdfs:label "Example function"@en ;
   v-ui:hasModel v-fe:FunctionExampleModel ;
   v-ui:hasTemplate v-fe:FunctionExampleTemplate ;
 .
 v-fe:FunctionExample1
   rdf:type v-fe:FunctionExample ;
-  rdfs:label "Instance of Example function"@en ;
   rdfs:label "Экземпляр Функции-примера"@ru ;
+  rdfs:label "Instance of Example function"@en ;
   v-fe:exampleProperty "example value 1"^^xsd:string ;
   v-fe:exampleProperty "example value 2"^^xsd:string ;
 .
 v-fe:exampleProperty
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Example property"@en ;
   rdfs:label "Свойство-пример"@ru ;
+  rdfs:label "Example property"@en ;
   rdfs:domain v-fe:FunctionExample ;
   rdfs:range xsd:string ;
 .
 v-fe:FunctionExampleModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "Example function model"@en ;
   rdfs:label "Модель Функции-примера"@ru ;
+  rdfs:label "Example function model"@en ;
   v-ui:forClass v-fe:FunctionExample ;
   v-s:script """
   var self = this;
@@ -50,8 +50,8 @@ v-fe:FunctionExampleModel
 .
 v-fe:FunctionExampleTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Function example template"@en ;
   rdfs:label "Шаблон Функции-примера"@ru ;
+  rdfs:label "Function example template"@en ;
   v-ui:forClass v-fe:FunctionExample ;
   v-ui:template """
     <div class="container sheet">

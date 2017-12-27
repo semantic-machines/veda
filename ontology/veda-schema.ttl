@@ -9,8 +9,8 @@
 
 <http://semantic-machines.com/veda/veda-schema>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology"@en ;
   rdfs:label "Онтология системы Veda"@ru ;
+  rdfs:label "Veda system ontology"@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
@@ -20,101 +20,101 @@ v-s:SavedSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Saved search"@en ;
   rdfs:label "Сохраненный запрос"@ru ;
+  rdfs:label "Saved search"@en ;
   v-ui:hasTemplate v-ui:SavedSearchTemplate ;
 .
 
 ### veda-function-search
 v-s:Empty
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Empty"@en ;
   rdfs:label "Пусто"@ru ;
+  rdfs:label "Empty"@en ;
 .
 
 ### veda-function-search
 v-s:LastMonth
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Last month"@en ;
   rdfs:label "Прошлый месяц"@ru ;
+  rdfs:label "Last month"@en ;
 .
 
 ### veda-function-search
 v-s:LastQuarter
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Last quarter"@en ;
   rdfs:label "Прошлый квартал"@ru ;
+  rdfs:label "Last quarter"@en ;
 .
 
 ### veda-function-search
 v-s:LastWeek
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Last week"@en ;
   rdfs:label "Прошлая неделя"@ru ;
+  rdfs:label "Last week"@en ;
 .
 
 ### veda-function-search
 v-s:LastYear
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Last year"@en ;
   rdfs:label "Прошлый год"@ru ;
+  rdfs:label "Last year"@en ;
 .
 
 ### veda-function-search
 v-s:NotEmpty
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Not empty"@en ;
   rdfs:label "Не пусто"@ru ;
+  rdfs:label "Not empty"@en ;
 .
 
 ### veda-function-search
 v-s:SpecialSearchValues
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Logical operator"@en ;
   rdfs:label "Логический оператор"@ru ;
+  rdfs:label "Logical operator"@en ;
 .
 
 ### veda-function-search
 v-s:ThisMonth
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "This month"@en ;
   rdfs:label "Этот месяц"@ru ;
+  rdfs:label "This month"@en ;
 .
 
 ### veda-function-search
 v-s:ThisQuarter
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "This quarter"@en ;
   rdfs:label "Этот квартал"@ru ;
+  rdfs:label "This quarter"@en ;
 .
 
 ### veda-function-search
 v-s:ThisWeek
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "This week"@en ;
   rdfs:label "Эта неделя"@ru ;
+  rdfs:label "This week"@en ;
 .
 
 ### veda-function-search
 v-s:ThisYear
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "This year"@en ;
   rdfs:label "Этот год"@ru ;
+  rdfs:label "This year"@en ;
 .
 
 ### veda-function-search
 v-s:Today
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Today"@en ;
   rdfs:label "Сегодня"@ru ;
+  rdfs:label "Today"@en ;
 .
 
 ### veda-function-search
 v-s:Yesterday
   rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Yesterday"@en ;
   rdfs:label "Вчера"@ru ;
+  rdfs:label "Yesterday"@en ;
 .
 
 
@@ -125,29 +125,29 @@ v-s:File
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "File"@en ;
   rdfs:label "Файл"@ru ;
+  rdfs:label "File"@en ;
   v-ui:hasTemplate v-ui:FileTemplateWithComment ;
 .
 v-s:fileName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
-  rdfs:label "File name"@en ;
   rdfs:label "Имя файла"@ru ;
+  rdfs:label "File name"@en ;
   rdfs:range xsd:string ;
 .
 v-s:fileSize
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
-  rdfs:label "File size"@en ;
   rdfs:label "Размер файла"@ru ;
+  rdfs:label "File size"@en ;
   rdfs:range xsd:integer ;
 .
 v-s:thumbnail
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:File ;
-  rdfs:label "Thumbnail"@en ;
   rdfs:label "Миниатюра"@ru ;
+  rdfs:label "Thumbnail"@en ;
   rdfs:range v-s:File ;
 .
 # ------------------------------------------------------------
@@ -155,51 +155,51 @@ v-s:ClassifiedFile
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:File ;
   rdfs:subClassOf v-s:Temporal ;
-  rdfs:label "Classified file"@en ;
   rdfs:label "Классифицированный Файл"@ru ;
+  rdfs:label "Classified file"@en ;
 .
 ### ------------------------------------------------------
 v-s:Level
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Level"@en ;
   rdfs:label "Уровень"@ru ;
+  rdfs:label "Level"@en ;
 .
 ### ------------------------------------------------------
 v-s:Link
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Exportable ;
-  rdfs:label "Link"@en ;
   rdfs:label "Связь"@ru ;
+  rdfs:label "Link"@en ;
 .
 v-s:from
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Link ;
-  rdfs:label "Source"@en ;
   rdfs:label "Источник"@ru ;
+  rdfs:label "Source"@en ;
   rdfs:range v-s:Thing ;
 .
 v-s:to
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Link ;
-  rdfs:label "Target"@en ;
   rdfs:label "Цель"@ru ;
+  rdfs:label "Target"@en ;
   rdfs:range v-s:Thing ;
 .
 v-s:mutualMembership
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Link ;
-  rdfs:label "Mutual rights"@en ;
   rdfs:label "Обоюдные права"@ru ;
+  rdfs:label "Mutual rights"@en ;
   rdfs:range xsd:boolean ;
 .
 ### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Status"@en ;
   rdfs:label "Статус"@ru ;
+  rdfs:label "Status"@en ;
   v-ui:hasTemplate v-ui:StatusTemplate;
 .
 ### ------------------------------------------------------
@@ -207,15 +207,15 @@ v-s:Sector
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Sector"@en ;
   rdfs:label "Отрасль экономической деятельности"@ru ;
+  rdfs:label "Sector"@en ;
 .
 ### ------------------------------------------------------
 v-s:DocumentKind
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Document kind"@en ;
   rdfs:label "Вид документа"@ru ;
+  rdfs:label "Document kind"@en ;
 .
 ### veda-workflow
 
@@ -224,8 +224,8 @@ v-s:DocumentKind
 v-s:query
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:SavedSearch ;
-  rdfs:label "Query"@en ;
   rdfs:label "Запрос"@ru ;
+  rdfs:label "Query"@en ;
   rdfs:range xsd:string ;
 .
 
@@ -236,8 +236,8 @@ v-s:ReportsForClass
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Reports list"@en ;
   rdfs:label "Список отчетов"@ru ;
+  rdfs:label "Reports list"@en ;
 .
 v-ui:forClass
   rdfs:domain v-s:ReportsForClass ;
@@ -245,8 +245,8 @@ v-ui:forClass
 
 v-s:fileFormat
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "File format"@en ;
   rdfs:label "Формат файла"@ru ;
+  rdfs:label "File format"@en ;
   rdfs:domain v-s:ReportsForClass ;
   rdfs:domain v-s:Report ;
   rdfs:range xsd:string ;
@@ -256,16 +256,16 @@ v-s:Report
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Report"@en ;
   rdfs:label "Отчет"@ru ;
+  rdfs:label "Report"@en ;
 .
 
 v-s:ReportParametersForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Report parameters form"@en ;
   rdfs:label "Форма параметров отчета"@ru ;
+  rdfs:label "Report parameters form"@en ;
 .
 
 ################################ REPORTS END ####################################################
@@ -279,8 +279,8 @@ v-s:Journal
   rdfs:comment "A journal"@en ;
   rdfs:comment "Журнал"@ru ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Journal"@en ;
   rdfs:label "Журнал"@ru ;
+  rdfs:label "Journal"@en ;
   v-ui:hasTemplate v-ui:SimplifiedJournalTemplate ;
 .
 v-s:childRecord
@@ -308,8 +308,8 @@ v-s:onDocument
   rdfs:isDefinedBy v-s: ;
   rdfs:domain v-s:JournalRecord ;
   rdfs:domain v-s:Journal ;
-  rdfs:label "On document"@en ;
   rdfs:label "К документу"@ru ;
+  rdfs:label "On document"@en ;
   rdfs:range v-s:Thing ;
 .
 v-s:subJournal
@@ -327,8 +327,8 @@ v-s:Journaling
 v-s:actor
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
-  rdfs:label "Actor"@en ;
   rdfs:label "Действующее лицо"@ru ;
+  rdfs:label "Actor"@en ;
   rdfs:range v-s:Appointment ;
 .
 
@@ -384,8 +384,8 @@ v-s:Journal_printBlank
   v-ui:forClass v-s:Document ;
   v-s:filePath "/Subreports/Unidoc_Journal" ;
   v-s:fileFormat "pdf";
-  rdfs:label "Journal print blank"@en ;
   rdfs:label "Печатная форма журнала"@ru ;
+  rdfs:label "Journal print blank"@en ;
 #  rdfs:label "pdf"@en ;
 #  rdfs:label "pdf"@ru ;
 .
@@ -471,8 +471,8 @@ v-s:PsTransformation
 v-s:displayName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:DocumentLinkRules ;
-  rdfs:label "Display name"@en ;
   rdfs:label "Отображаемое имя правила"@ru ;
+  rdfs:label "Display name"@en ;
   rdfs:range xsd:string ;
 .
 v-s:PsDisplayName
@@ -483,28 +483,28 @@ v-s:PsDisplayName
   v-ui:minCardinality 0 ;
   v-ui:tooltip "non-Required, single Text"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Текст без ограничений."@ru ;
-  rdfs:label "Display name property specification for DocumentLinkRules class"@en ;
   rdfs:label "Спецификация имя правила для класса Правило связи двух документов."@ru ;
+  rdfs:label "Display name property specification for DocumentLinkRules class"@en ;
 .
 v-s:unique
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:DocumentLinkRules ;
-  rdfs:label "Unique"@en ;
   rdfs:label "Уникальное правило"@ru ;
+  rdfs:label "Unique"@en ;
   rdfs:range xsd:boolean ;
 .
 v-s:isRoute
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:DocumentLinkRules ;
-  rdfs:label "Is route"@en ;
   rdfs:label "Правило типа маршрут"@ru ;
+  rdfs:label "Is route"@en ;
   rdfs:range xsd:boolean ;
 .
 v-s:isClone
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:DocumentLinkRules ;
-  rdfs:label "Is clone"@en ;
   rdfs:label "Правило типа clone"@ru ;
+  rdfs:label "Is clone"@en ;
   rdfs:range xsd:boolean ;
 .
 v-s:PsRulesBooleanProperty

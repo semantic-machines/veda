@@ -7,8 +7,8 @@
 @prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 <http://semantic-machines.com/veda/veda-bundle>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system bundle ontology "@en ;
   rdfs:label "Онтология строк системы Веда"@ru ;
+  rdfs:label "Veda system bundle ontology "@en ;
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
@@ -106,8 +106,8 @@ v-s:Reply
 .
 v-s:LeaveComment
   rdf:type v-s:Bundle ;
-  rdfs:label "Commment"@en ;
   rdfs:label "Комментировать"@ru ;
+  rdfs:label "Commment"@en ;
 .
 v-s:Drafts
   rdf:type v-s:Bundle ;

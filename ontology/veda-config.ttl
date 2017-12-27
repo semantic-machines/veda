@@ -7,8 +7,8 @@
 @prefix vsrv: <http://semantic-machines.com/veda/veda-server/> .
 <http://semantic-machines.com/veda/veda-server>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda server properties ontology"@en ;
   rdfs:label "Онтология настроек сервера системы Веда"@ru ;
+  rdfs:label "Veda server properties ontology"@en ;
 #  owl:versionInfo "1.0" ;
   v-s:loadPriority 2 ;
 .
@@ -16,8 +16,8 @@
 v-s:loadPriority
   rdf:type owl:DatatypeProperty ;
   rdfs:domain owl:Ontology ;
-  rdfs:label "Ontology load priority"@en ;
   rdfs:label "Приоритет загрузки онтологии"@ru ;
+  rdfs:label "Ontology load priority"@en ;
   rdfs:comment "Приоритет загрузки используется сервером при чтении ttl-файлов для определения порядка загрузки онтологий в базу данных"@ru ;
   rdfs:comment "Load proprity is used by server when reading ttl files to determine ontology load sequence to DB"@en ;
   rdfs:range xsd:integer ;
@@ -27,8 +27,8 @@ v-s:Node
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Node"@en ;
   rdfs:label "Нода"@ru ;
+  rdfs:label "Node"@en ;
 .
 
 v-s:count_thread
@@ -102,8 +102,8 @@ v-s:Connection
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Connection"@en ;
   rdfs:label "Соединение"@ru ;
+  rdfs:label "Connection"@en ;
 .
 
 v-s:transport
