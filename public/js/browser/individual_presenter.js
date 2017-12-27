@@ -40,18 +40,16 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (template instanceof veda.IndividualModel) {
         template = template["v-ui:template"][0].toString();
       // if template is uri
-      } else if (typeof template === "string" && (/^(\w|-)+:.*?$/g).test(template) ) {
+      } else if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
         template = new veda.IndividualModel(template);
         template = template["v-ui:template"][0].toString();
       } else if (template instanceof HTMLElement) {
         template = template.outerHTML;
       }
-      template = template.trim();
       return renderTemplate(individual, container, template, mode, specs);
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0]["v-ui:template"][0].toString();
-        template = template.trim();
         return renderTemplate(individual, container, template, mode, specs);
       } else {
         return individual["rdf:type"].map(function (type) {
@@ -60,7 +58,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           } else {
             template = new veda.IndividualModel("v-ui:generic")["v-ui:template"][0].toString();
           }
-          template = template.trim();
           return renderTemplate(individual, container, template, mode, specs);
         });
       }
@@ -74,10 +71,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         post_render_src,
         post_render;
 
-    match = template.match(/^(<script>(.*?)<\/script>)?(.*?)(<script>(.*?)<\/script>)?$/is);
-    pre_render_src = match[2];
-    template = $( match[3] );
-    post_render_src = match[5];
+    template = template.trim();
+
+    // Extract pre script, template and post script
+    match = template.match(/^(?:<script[^>]*>([\s\S]*?)<\/script>)?([\s\S]*?)(?:<script[^>]*>(?![\s\S]*<script[^>]*>)([\s\S]*)<\/script>)?$/i);
+
+    pre_render_src = match[1];
+    template = $( match[2] );
+    post_render_src = match[3];
 
     if (pre_render_src) {
       pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
