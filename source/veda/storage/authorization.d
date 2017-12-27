@@ -323,11 +323,11 @@ abstract class ImplAuthorization : Authorization
             if (groups_str != null)
                 rights_from_string(groups_str, result_set);
 
-            if (trace_info !is null)
-            {
-                foreach (el; res)
-                    trace_info(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
-            }
+            //if (trace_info !is null)
+            //{
+            //    foreach (el; result_set)
+            //        trace_info.write(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
+            //}
 
             long res_lenght = result_set.length;
 
