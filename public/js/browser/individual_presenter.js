@@ -2,18 +2,23 @@
 
 veda.Module(function IndividualPresenter(veda) { "use strict";
 
-  veda.IndividualModel.prototype.present = function (container, template, mode) {
+  veda.IndividualModel.prototype.present = function (container, template, mode, extra) {
+
+    //if (extra) { console.log(extra); }
 
     try {
+
+      // Defaults
+      container = container || "#main";
+      mode = mode || "view";
 
       if (typeof container === "string") {
         container = $(container).empty();
       }
-      mode = mode || "view";
 
       if (container.prop("id") === "main") { container.hide(); }
 
-      template = present(this, container, template, mode);
+      template = present(this, container, template, mode, extra);
 
       if (container.prop("id") === "main") { container.show("fade", 250); }
 
@@ -24,7 +29,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return template;
   };
 
-  function present(individual, container, template, mode) {
+  function present(individual, container, template, mode, extra) {
 
     var ontology = new veda.OntologyModel();
 
@@ -46,11 +51,11 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       } else if (template instanceof HTMLElement) {
         template = template.outerHTML;
       }
-      return renderTemplate(individual, container, template, mode, specs);
+      return renderTemplate(individual, container, template, mode, extra, specs);
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0]["v-ui:template"][0].toString();
-        return renderTemplate(individual, container, template, mode, specs);
+        return renderTemplate(individual, container, template, mode, extra, specs);
       } else {
         return individual["rdf:type"].map(function (type) {
           if ( type.hasValue("v-ui:hasTemplate") ) {
@@ -58,13 +63,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           } else {
             template = new veda.IndividualModel("v-ui:generic")["v-ui:template"][0].toString();
           }
-          return renderTemplate(individual, container, template, mode, specs);
+          return renderTemplate(individual, container, template, mode, extra, specs);
         });
       }
     }
   }
 
-  function renderTemplate(individual, container, template, mode, specs) {
+  function renderTemplate(individual, container, template, mode, extra, specs) {
     var match,
         pre_render_src,
         pre_render,
@@ -81,17 +86,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     post_render_src = match[3];
 
     if (pre_render_src) {
-      pre_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + pre_render_src);
+      pre_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + pre_render_src);
     }
     if (post_render_src) {
-      post_render = new Function("veda", "individual", "container", "template", "mode", "specs", "\"use strict\";" + post_render_src);
+      post_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + post_render_src);
     }
 
     if (pre_render) {
-      pre_render.call(individual, veda, individual, container, template, mode, specs);
+      pre_render.call(individual, veda, individual, container, template, mode, extra);
     }
 
-    template = processTemplate (individual, container, template, mode, specs);
+    template = processTemplate (individual, container, template, mode, extra, specs);
     container.append(template);
     individual.trigger("individual:templateReady", template);
 
@@ -99,7 +104,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     setTimeout(function () {
       template.trigger(mode);
       if (post_render) {
-        post_render.call(individual, veda, individual, container, template, mode, specs);
+        post_render.call(individual, veda, individual, container, template, mode, extra);
       }
     }, 0);
 
@@ -128,7 +133,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     return [undefined, pre, template, post];
   }
 
-  function processTemplate (individual, container, template, mode, specs) {
+  function processTemplate (individual, container, template, mode, extra, specs) {
 
     template.attr({
       "resource": individual.id,
