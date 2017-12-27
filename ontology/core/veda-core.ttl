@@ -363,8 +363,8 @@ v-s:runAt
 v-s:Group
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:comment "Group of resources"@en ;
   rdfs:comment "Группа ресурсов"@ru ;
+  rdfs:comment "Group of resources"@en ;
   rdfs:label "Группа"@ru ;
   rdfs:label "Group"@en ;
   v-ui:hasTemplate v-ui:GroupTemplate ;
@@ -464,8 +464,8 @@ v-s:resource
 v-s:PermissionStatement
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:comment "Запись о выдаче прав описывает права индивидов одного класса по отношению к индивидам другого класса."@ru ;
+  rdfs:comment "Permissions record defines access rigths for individuals of one class to individuals of another class."@en ;
   rdfs:label "Запись о выдаче прав"@ru ;
   rdfs:label "Permissions record"@en ;
   v-ui:hasTemplate v-ui:PermissionStatementTemplate ;
@@ -475,8 +475,8 @@ v-s:PermissionStatement
 
 v-s:permissionObject
   rdf:type owl:ObjectProperty ;
-  rdfs:comment "An object to which rights are granted."@en ;
   rdfs:comment "Объект, на который выдаются права."@ru ;
+  rdfs:comment "An object to which rights are granted."@en ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:label "Объект полномочий (что)"@ru ;
   rdfs:label "Permission object (what)"@en ;
@@ -484,8 +484,8 @@ v-s:permissionObject
 .
 v-s:permissionSubject
   rdf:type owl:ObjectProperty ;
-  rdfs:comment "Subject whom rights are granted."@en ;
   rdfs:comment "Субъект, которому предоставляются права."@ru ;
+  rdfs:comment "Subject whom rights are granted."@en ;
   rdfs:domain v-s:PermissionStatement ;
   rdfs:label "Субъект полномочий (кто)"@ru ;
   rdfs:label "Permission subject (who)"@en ;

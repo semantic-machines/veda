@@ -1108,8 +1108,8 @@ v-s:copyTo
 .
 v-s:mailbox
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Mailbox"@en ;
   rdfs:comment "Адрес электронной почты"@ru ;
+  rdfs:comment "Mailbox"@en ;
   rdfs:label "Адрес эл. почты"@ru ;
   rdfs:label "Mailbox"@en ;
   rdfs:range xsd:string ;
@@ -1117,8 +1117,8 @@ v-s:mailbox
 .
 v-s:fax
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Fax"@en ;
   rdfs:comment "Номер факса"@ru ;
+  rdfs:comment "Fax"@en ;
   rdfs:label "Номер факса"@ru ;
   rdfs:label "Fax"@en ;
   rdfs:range xsd:string ;
@@ -1126,8 +1126,8 @@ v-s:fax
 .
 v-s:phone
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Phone"@en ;
   rdfs:comment "Номер телефона"@ru ;
+  rdfs:comment "Phone"@en ;
   rdfs:label "Номер телефона"@ru ;
   rdfs:label "Phone"@en ;
   rdfs:range xsd:string ;

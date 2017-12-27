@@ -24,8 +24,8 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
+  rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:label "Организационная единица"@ru ;
   rdfs:label "Organization unit"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
@@ -39,8 +39,8 @@ v-s:OrganizationUnitModel
   v-ui:forClass v-s:Department ;
   v-ui:forClass v-s:Position ;
   v-ui:forClass v-s:Appointment ;
-  rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
   rdfs:comment "Модель для класса v-s:OrganizationUnit"@ru ;
+  rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
   rdfs:label "Модель организационной единицы"@ru ;
   rdfs:label "Organization unit model"@en ;
   v-s:script """
@@ -267,8 +267,8 @@ v-s:Person
 .
 v-s:birthday
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The birthday of this Person."@en ;
   rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:comment "The birthday of this Person."@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Дата рождения"@ru ;
@@ -277,8 +277,8 @@ v-s:birthday
 .
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Personnel number"@en ;
   rdfs:comment "Табельный номер"@ru ;
+  rdfs:comment "Personnel number"@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Табельный номер"@ru ;
@@ -287,8 +287,8 @@ v-s:tabNumber
 .
 v-s:firstName
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The first name of a person."@en ;
   rdfs:comment "Имя персоны."@ru ;
+  rdfs:comment "The first name of a person."@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Имя"@ru ;
@@ -297,8 +297,8 @@ v-s:firstName
 .
 v-s:lastName
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The last name of a person."@en ;
   rdfs:comment "Фамилия персоны"@ru ;
+  rdfs:comment "The last name of a person."@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Фамилия"@ru ;
@@ -411,8 +411,8 @@ v-s:NonUniqueTaxId
   rdf:type v-s:Bundle ;
   rdfs:label "Сообщение не уникальный ИНН"@ru ;
   rdfs:label "Non unique tax id message"@en ;
-  rdfs:comment "Organization with this tax number already exists"@en ;
   rdfs:comment "Организация с таким ИНН уже существует"@ru ;
+  rdfs:comment "Organization with this tax number already exists"@en ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --

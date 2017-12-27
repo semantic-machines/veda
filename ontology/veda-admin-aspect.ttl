@@ -274,8 +274,8 @@ v-s:AdministrationAspect
   rdfs:subClassOf v-s:BusinessAspect ;
   rdfs:label "Администрирование"@ru ;
   rdfs:label "Administration"@en ;
-  rdfs:comment "Administration aspect"@en ;
   rdfs:comment "Аспект администрирования"@ru ;
+  rdfs:comment "Administration aspect"@en ;
   v-ui:hasTemplate v-ui:AdministrationAspectTemplate ;
 .
 

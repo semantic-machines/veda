@@ -86,8 +86,8 @@ v-s:ClassAuthorized
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Ресурс авторизуемый по классу"@ru ;
   rdfs:label "Class authorized resource"@en ;
-  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
   rdfs:comment "Superclass for classes whose individuals should be authorized by class"@ru ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
 .
 ### ------------------------------------------------------
 v-s:Embedded

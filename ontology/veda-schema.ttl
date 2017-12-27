@@ -276,8 +276,8 @@ v-s:Journal
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:comment "A journal"@en ;
   rdfs:comment "Журнал"@ru ;
+  rdfs:comment "A journal"@en ;
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Журнал"@ru ;
   rdfs:label "Journal"@en ;
