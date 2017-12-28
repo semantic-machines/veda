@@ -79,9 +79,9 @@ fi
     echo 'export GOPATH=$HOME/go'  >> $HOME/.bashrc
     source ~/.bashrc
 
-#    sudo rm -rf /usr/local/go
-#    sudo rm -rf /usr/bin/go
-#    sudo rm -rf /usr/bin/gofmt
+    sudo rm -rf /usr/local/go
+    sudo rm -rf /usr/bin/go
+    sudo rm -rf /usr/bin/gofmt
     sudo mv go $GOROOT
 
     go version
