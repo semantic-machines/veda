@@ -8,50 +8,50 @@
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 <http://semantic-machines.com/veda/veda-index>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system data index ontology"@en ;
   rdfs:label "Онтология индексирования данных системы Веда"@ru ;
+  rdfs:label "Veda system data index ontology"@en ;
   owl:versionInfo "3.7" ;
   v-s:loadPriority 0 ;
 .
 vdi:ClassIndex
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Class index"@en ;
   rdfs:label "Индекс класса"@ru ;
+  rdfs:label "Class index"@en ;
 .
 vdi:forClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "For class"@en ;
   rdfs:label "Для класса"@ru ;
+  rdfs:label "For class"@en ;
   rdfs:range owl:Class ;
 .
 vdi:forProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "For property"@en ;
   rdfs:label "Для свойства"@ru ;
+  rdfs:label "For property"@en ;
   rdfs:range owl:Class ;
 .
 vdi:inherited_index
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "Inherited index"@en ;
   rdfs:label "Наследуемый индекс"@ru ;
+  rdfs:label "Inherited index"@en ;
   rdfs:range rdfs:Resource ;
 .
 vdi:domain
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "index domain"@en ;
   rdfs:label "домен индекса"@ru ;
+  rdfs:label "index domain"@en ;
   rdfs:range rdfs:Resource ;
 .
 vdi:indexed_field
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "Indexed field"@en ;
   rdfs:label "Индексируемое поле"@ru ;
+  rdfs:label "Indexed field"@en ;
   rdfs:range rdfs:Resource ;
 .
 vdi:indexed_field_as_fwildcard
@@ -63,8 +63,8 @@ vdi:indexed_field_as_fwildcard
 vdi:indexed_to
   rdf:type owl:DatatypeProperty ;
   rdfs:domain vdi:ClassIndex ;
-  rdfs:label "Indexed to"@en ;
   rdfs:label "Индексировать в"@ru ;
+  rdfs:label "Indexed to"@en ;
   rdfs:range xsd:string ;
 .
 #---------------------------------------------

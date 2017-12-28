@@ -11,8 +11,8 @@
 <http://semantic-machines.com/veda/veda-workflow>
   rdfs:isDefinedBy v-wf: ;
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system workflow ontology"@en ;
   rdfs:label "Онтология потоков работ системы Veda"@ru ;
+  rdfs:label "Veda system workflow ontology"@en ;
 #  owl:DversionInfo "1.2" ;
   v-s:loadPriority 7 ;
 .
@@ -29,93 +29,93 @@ v-wf:Net
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Net"@en ;
   rdfs:label "Сеть"@ru ;
+  rdfs:label "Net"@en ;
   v-ui:hasTemplate v-wf:NetTemplate ;
 .
 v-wf:NetElement
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Net element"@en ;
   rdfs:label "Элемент сети"@ru ;
+  rdfs:label "Net element"@en ;
 .
 v-wf:Condition
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:NetElement ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Condition"@en ;
   rdfs:label "Состояние"@ru ;
+  rdfs:label "Condition"@en ;
   v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:InputCondition
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Condition ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Input condition"@en ;
   rdfs:label "Входное состояние"@ru ;
+  rdfs:label "Input condition"@en ;
   v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:OutputCondition
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:Condition ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Output condition"@en ;
   rdfs:label "Выходное состояние"@ru ;
+  rdfs:label "Output condition"@en ;
   v-ui:hasTemplate v-wf:ConditionTemplateAsProperties ;
 .
 v-wf:Task
   rdf:type owl:Class ;
   rdfs:subClassOf v-wf:NetElement ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Task"@en ;
   rdfs:label "Задача"@ru ;
+  rdfs:label "Task"@en ;
   v-ui:hasTemplate v-wf:TaskTemplateAsProperties ;
 .
 v-wf:Flow
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Flow"@en ;
   rdfs:label "Поток"@ru ;
+  rdfs:label "Flow"@en ;
   v-ui:hasTemplate v-wf:FlowTemplateAsProperties ;
 .
 v-wf:ExecutorDefinition
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Executor definition"@en ;
   rdfs:label "Выбор исполнителя"@ru ;
+  rdfs:label "Executor definition"@en ;
 .
 v-wf:TransitionBehavior
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Transition behavior"@en ;
   rdfs:label "Тип перехода"@ru ;
+  rdfs:label "Transition behavior"@en ;
 .
 
 v-wf:belongsTo
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Belongs to..."@en ;
   rdfs:label "Принадлежит к..."@ru ;
+  rdfs:label "Belongs to..."@en ;
   rdfs:domain v-wf:NetElement ;
   rdfs:range v-wf:Net .
 
 v-wf:hasFlow
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Has flow"@en ;
   rdfs:label "Имеет поток"@ru ;
+  rdfs:label "Has flow"@en ;
   rdfs:domain v-wf:NetElement ;
   rdfs:range v-wf:Flow ;
 .
 v-wf:consistsOf
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Consists Of"@en ;
   rdfs:label "Состоит из"@ru ;
+  rdfs:label "Consists Of"@en ;
   rdfs:domain v-wf:Net ;
   rdfs:range v-wf:NetElement ;
   rdfs:range v-wf:Flow ;
@@ -124,16 +124,16 @@ v-wf:consistsOf
 v-wf:locationX
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Location X"@en ;
   rdfs:label "Позиция по Х"@ru ;
+  rdfs:label "Location X"@en ;
   rdfs:domain v-wf:NetElement ;
   rdfs:range xsd:integer ;
 .
 v-wf:locationY
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Location Y"@en ;
   rdfs:label "Позиция по Y"@ru ;
+  rdfs:label "Location Y"@en ;
   rdfs:domain v-wf:NetElement ;
   rdfs:range xsd:integer ;
 .
@@ -162,16 +162,16 @@ v-wf:None
 v-wf:subNet
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Subnet"@en ;
   rdfs:label "Подсеть"@ru ;
+  rdfs:label "Subnet"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:Net ;
 .
 v-wf:inputVariable
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Input variable"@en ;
   rdfs:label "Входная переменная"@ru ;
+  rdfs:label "Input variable"@en ;
   rdfs:domain v-wf:Net ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:VarDefine ;
@@ -179,8 +179,8 @@ v-wf:inputVariable
 v-wf:outputVariable
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Output variable"@en ;
   rdfs:label "Выходная переменная"@ru ;
+  rdfs:label "Output variable"@en ;
   rdfs:domain v-wf:Net ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:VarDefine ;
@@ -188,8 +188,8 @@ v-wf:outputVariable
 v-wf:localVariable
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Local variable"@en ;
   rdfs:label "Локальная переменная"@ru ;
+  rdfs:label "Local variable"@en ;
   rdfs:domain v-wf:Net ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:VarDefine ;
@@ -197,16 +197,16 @@ v-wf:localVariable
 v-wf:taskDecisionForm
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Decision form"@en ;
   rdfs:label "Форма задачи"@ru ;
+  rdfs:label "Decision form"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:DecisionForm ;
 .
 v-wf:expectedResultType
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Expected result type"@en ;
   rdfs:label "Ожидаемый тип результата"@ru ;
+  rdfs:label "Expected result type"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range owl:Class ;
 .
@@ -230,8 +230,8 @@ v-wf:completeDecisionTransform
 v-wf:inputOutputVariable
   rdfs:isDefinedBy v-wf: ;
   rdf:type rdf:Property ;
-  rdfs:label "Input/output variable"@en ;
   rdfs:label "Входная / выходная переменная"@ru ;
+  rdfs:label "Input/output variable"@en ;
   rdfs:domain v-wf:Net ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:VarDefine ;
@@ -240,8 +240,8 @@ v-wf:inputOutputVariable
 v-wf:split
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Split"@en ;
   rdfs:label "Разветвление"@ru ;
+  rdfs:label "Split"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:TransitionBehavior ;
 .
@@ -249,8 +249,8 @@ v-wf:split
 v-wf:join
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Join"@en ;
   rdfs:label "Объединение"@ru ;
+  rdfs:label "Join"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:TransitionBehavior ;
 .
@@ -258,8 +258,8 @@ v-wf:join
 v-wf:flowsInto
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Flows into"@en ;
   rdfs:label "Направление потока"@ru ;
+  rdfs:label "Flows into"@en ;
   rdfs:domain v-wf:Flow ;
   rdfs:range v-wf:NetElement ;
 .
@@ -267,8 +267,8 @@ v-wf:flowsInto
 v-wf:predicate
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Flow predicate"@en ;
   rdfs:label "Предикат потока"@ru ;
+  rdfs:label "Flow predicate"@en ;
   rdfs:domain v-wf:Flow ;
   rdfs:range xsd:string ;
 .
@@ -276,8 +276,8 @@ v-wf:predicate
 v-wf:startingMapping
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Starting mapping"@en ;
   rdfs:label "Стартовое преобразование"@ru ;
+  rdfs:label "Starting mapping"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:Mapping ;
 .
@@ -285,8 +285,8 @@ v-wf:startingMapping
 v-wf:completedMapping
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Completed mapping"@en ;
   rdfs:label "Конечное преобразование"@ru ;
+  rdfs:label "Completed mapping"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:Mapping ;
 .
@@ -294,8 +294,8 @@ v-wf:completedMapping
 v-wf:wosResultsMapping
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Work orders results mapping"@en ;
   rdfs:label "Преобразование результатов рабочих заданий"@ru ;
+  rdfs:label "Work orders results mapping"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:range v-wf:Mapping ;
 .
@@ -303,8 +303,8 @@ v-wf:wosResultsMapping
 v-wf:executor
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Executor"@en ;
   rdfs:label "Исполнитель"@ru ;
+  rdfs:label "Executor"@en ;
   rdfs:domain v-wf:Task ;
   rdfs:domain v-wf:WorkOrder ;
   rdfs:domain v-wf:Process ;
@@ -316,8 +316,8 @@ v-wf:executor
 v-wf:executorExpression
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Executor choice expression"@en ;
   rdfs:label "Выражение выбора исполнителя"@ru ;
+  rdfs:label "Executor choice expression"@en ;
   rdfs:domain v-wf:ExecutorDefinition ;
   rdfs:range xsd:string ;
 .
@@ -327,15 +327,15 @@ v-wf:VarDefine
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Variable"@en ;
   rdfs:label "Определение переменой"@ru ;
+  rdfs:label "Variable"@en ;
 .
 
 v-wf:varDefineName
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Variable name"@en ;
   rdfs:label "Имя определяемой переменной"@ru ;
+  rdfs:label "Variable name"@en ;
   rdfs:domain v-wf:VarDefine ;
   rdfs:range xsd:string ;
 .
@@ -354,16 +354,16 @@ v-wf:Variable
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Variable"@en ;
   rdfs:label "Переменная"@ru ;
+  rdfs:label "Variable"@en ;
   v-ui:hasTemplate v-wf:VariableTemplate ;
 .
 
 v-wf:variableName
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Variable name"@en ;
   rdfs:label "Имя переменной"@ru ;
+  rdfs:label "Variable name"@en ;
   rdfs:domain v-wf:Variable ;
   rdfs:range xsd:string ;
 .
@@ -371,8 +371,8 @@ v-wf:variableName
 v-wf:variableValue
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Variable value"@en ;
   rdfs:label "Значение переменной"@ru ;
+  rdfs:label "Variable value"@en ;
   rdfs:domain v-wf:Variable ;
   rdfs:range rdfs:Resource ;
 .
@@ -1629,8 +1629,8 @@ v-wf:DecisionForm
 v-wf:onWorkOrder
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "On work order"@en ;
   rdfs:label "По рабочему заданию"@ru ;
+  rdfs:label "On work order"@en ;
   rdfs:domain v-wf:DecisionForm ;
   rdfs:range v-s:WorkOrder ;
 .
@@ -1772,22 +1772,22 @@ v-wf:Mapping
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Mapping"@en ;
   rdfs:label "Преобразование"@ru ;
+  rdfs:label "Mapping"@en ;
 .
 v-wf:mappingExpression
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Mapping expression"@en ;
   rdfs:label "Выражение преобразования"@ru ;
+  rdfs:label "Mapping expression"@en ;
   rdfs:domain v-wf:Mapping ;
   rdfs:range xsd:string ;
 .
 v-wf:mapToVariable
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Maps to variable"@en ;
   rdfs:label "Преобразуется в переменную"@ru ;
+  rdfs:label "Maps to variable"@en ;
   rdfs:domain v-wf:Mapping ;
   rdfs:range v-wf:VarDefine ;
 .
@@ -1972,8 +1972,8 @@ v-wf:previousWorkItem
 v-wf:isCompleted
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Is completed"@en ;
   rdfs:label "Завершено"@ru ;
+  rdfs:label "Is completed"@en ;
   rdfs:domain v-wf:WorkItem ;
   rdfs:domain v-wf:Process ;
   rdfs:domain v-wf:DecisionForm ;
@@ -1983,8 +1983,8 @@ v-wf:isCompleted
 v-wf:isStopped
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Is stopped"@en ;
   rdfs:label "Остановлено"@ru ;
+  rdfs:label "Is stopped"@en ;
   rdfs:domain v-wf:Process ;
   rdfs:domain v-wf:DecisionForm ;
   rdfs:range xsd:boolean ;
@@ -1995,8 +1995,8 @@ v-wf:WorkOrder
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Work order"@en ;
   rdfs:label "Рабочее задание"@ru ;
+  rdfs:label "Work order"@en ;
   v-ui:hasTemplate v-wf:WorkOrderTemplate ;
 .
 
@@ -2216,8 +2216,8 @@ v-wf:Decision
   rdfs:subClassOf v-s:Exportable ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Decision"@en ;
   rdfs:label "Решение"@ru ;
+  rdfs:label "Decision"@en ;
 .
 
 v-wf:startingJournalMap
@@ -2271,8 +2271,8 @@ v-wf:onProcess
   rdf:type owl:ObjectProperty ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:domain v-s:JournalRecord, v-s:Journal, v-s:ProcessStarted ;
-  rdfs:label "On process"@en ;
   rdfs:label "К процессу"@ru ;
+  rdfs:label "On process"@en ;
   rdfs:range v-wf:Process ;
 .
 
@@ -2299,8 +2299,8 @@ v-wf:isProcess
 .
 v-wf:hasStatusWorkflow
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Status workflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
+  rdfs:label "Status workflow"@en ;
   rdfs:range v-wf:StatusWorkflow ;
   rdfs:domain v-s:Thing ;
 .
@@ -2394,8 +2394,8 @@ v-wf:takenDecision
 
 v-wf:WorkflowReadUser
   rdf:type v-s:Group ;
-  rdfs:label "Workflow Read User"@en ;
   rdfs:label "Пользователи имеющие право на чтение обьектов workflow"@ru ;
+  rdfs:label "Workflow Read User"@en ;
 .
 
 v-wf:traceJournal
@@ -2661,38 +2661,38 @@ v-wf:TraceRecordTemplate
 v-wf:StatusWorkflow
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "StatusWorkflow"@en ;
   rdfs:label "Статус документооборота"@ru ;
+  rdfs:label "StatusWorkflow"@en ;
 .
 
 v-wf:ToBeSent
   rdf:type v-wf:StatusWorkflow ;
-  rdfs:label "To be sent"@en ;
   rdfs:label "Ожидает отправки"@ru ;
+  rdfs:label "To be sent"@en ;
 .
 
 v-wf:IsSent
   rdf:type v-wf:StatusWorkflow ;
-  rdfs:label "Is sent"@en ;
   rdfs:label "Отправлено"@ru ;
+  rdfs:label "Is sent"@en ;
 .
 
 v-wf:Interrupted
   rdf:type v-wf:StatusWorkflow ;
-  rdfs:label "Is interrupted"@en ;
   rdfs:label "Прервано"@ru ;
+  rdfs:label "Is interrupted"@en ;
 .
 
 v-wf:Completed
   rdf:type v-wf:StatusWorkflow ;
-  rdfs:label "Was completed"@en ;
   rdfs:label "Выполнено"@ru ;
+  rdfs:label "Was completed"@en ;
 .
 
 v-wf:DoNotSend
   rdf:type v-wf:StatusWorkflow ;
-  rdfs:label "Do Not Send"@en ;
   rdfs:label "Не отправлять"@ru ;
+  rdfs:label "Do Not Send"@en ;
 .
 
 v-wf:TaskTemplateAsModal

@@ -9,7 +9,7 @@
 	},
 	"versions": ["isMStorage"],	
         "libs": [
-                    "websockets", "nanomsg", "tarantool"
+                    "websockets", "nanomsg", "tarantool", "mdbx"
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
@@ -40,6 +40,7 @@
             "../../veda/onto/bj8individual",
             "../../veda/vmodule",
 	    "../../veda/storage/lmdb",
+	    "../../veda/storage/mdbx",
 	    "../../veda/storage/tarantool",
 	    "../../veda/bind/tarantool"
 	],

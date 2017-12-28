@@ -121,7 +121,8 @@ class ClientAuthorization : Authorization
 
     bool open()
     {
-    	int prev_sock = sock; 
+        int prev_sock = sock;
+
         if (sock >= 0)
             return true;
 

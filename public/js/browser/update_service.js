@@ -18,7 +18,8 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var self = riot.observable(this);
 
-    var address0 = ["ws://", location.host, "/ccus"].join(""),
+    var address0 = "ws://" + location.host + "/ccus",
+        address1 = "ws://" + location.hostname + ":8088/ccus",
         socket,
         msgTimeout,
         msgDelay = 1000,
@@ -28,42 +29,15 @@ veda.Module(function UpdateService(veda) { "use strict";
         connectDelay = 10000,
         maxConnectDelay = 60000,
         list = {},
-        delta = {},
-        ready;
-
-    var	address1 = "ws://" + location.hostname + ":8088/ccus",
-        socket,
-        msgTimeout,
-        msgDelay = 1000,
-        connectTimeout,
-        connectTries = 0,
-        initialDelay = Math.round(1000 + 4000 * Math.random()),
-        connectDelay = 10000,
-        maxConnectDelay = 60000,
-        list = {},
-        delta = {},
-        ready;
+        delta = {};
 
     var address = address0;
-
-    this.ready = function () {
-      return !!ready;
-    }
-    this.start = function () {
-      //console.log("update service started");
-      return ready = true;
-    }
-    this.stop = function () {
-      //console.log("update service stopped");
-      return ready = false;
-    }
 
     this.list = function () {
       return list;
     }
 
     this.synchronize = function() {
-      //if (!self.ready()) { return }
       if (msgTimeout) {
         msgTimeout = clearTimeout(msgTimeout);
       }
@@ -76,7 +50,6 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.subscribe = function(uri) {
-      //if (!self.ready()) { return }
       if (!uri) { return }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
@@ -98,7 +71,6 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     this.unsubscribe = function (uri) {
-      //if (!self.ready()) { return }
       if (uri === "*" || !uri) {
         if (msgTimeout) {
           msgTimeout = clearTimeout(msgTimeout);
@@ -179,13 +151,6 @@ veda.Module(function UpdateService(veda) { "use strict";
       var uris = Object.keys(list);
       self.synchronize();
       uris.map(self.subscribe);
-      /*uris.map(function (uri) {
-        var i = new veda.IndividualModel(uri);
-        if ( !i.isSync() && !i.isNew() && !i.hasValue("v-s:isDraft", true) ) {
-          i.reset();
-        }
-        self.subscribe(uri);
-      });*/
     }
 
     function closedHandler(event) {
@@ -194,12 +159,11 @@ veda.Module(function UpdateService(veda) { "use strict";
       //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
-
-	if (address == address0)
-	    address = address1;
-	else
-	    address = address0;
-
+        if (address == address0) {
+          address = address1;
+        } else {
+          address = address0;
+        }
         socket = initSocket();
       }, delay);
     }
@@ -210,7 +174,6 @@ veda.Module(function UpdateService(veda) { "use strict";
     }
 
     function messageHandler(event) {
-      if (!self.ready()) { return }
       var msg = event.data,
           uris;
       //console.log("server -> client:", msg);
@@ -230,7 +193,7 @@ veda.Module(function UpdateService(veda) { "use strict";
               updateCounter = parseInt(tmp[1]),
               individual = new veda.IndividualModel(uri),
               list = self.list();
-          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.hasValue("v-s:isDraft", true) ) { continue; }
+          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.isDraft() ) { continue; }
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
           }

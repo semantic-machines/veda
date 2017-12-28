@@ -9,8 +9,8 @@
 
 <http://semantic-machines.com/veda/mondi-schema-ContractManagment/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. ContractManagment"@en ;
   rdfs:label "Онтология системы Veda. Управление контрактами"@ru ;
+  rdfs:label "Veda system ontology. ContractManagment"@en ;
   v-s:loadPriority 11 ;
 .
 # ------------------------------------------------------------ КЛАССЫ --
@@ -22,14 +22,14 @@ v-s:Contractor
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Contractor"@en ;
   rdfs:label "Контрагент"@ru ;
+  rdfs:label "Contractor"@en ;
   v-ui:hasTemplate v-s:ContractorTemplate ;
 .
 v-s:linkedOrganization
   rdf:type owl:ObjectProperty ;
-  rdfs:label "linked organization"@en ;
   rdfs:label "Связанная организация"@ru ;
+  rdfs:label "linked organization"@en ;
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Contractor ;
 .
@@ -43,8 +43,8 @@ v-s:ContractorProfile
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:label "Contractor profile"@en ;
   rdfs:label "Досье контрагента"@ru ;
+  rdfs:label "Contractor profile"@en ;
   v-ui:hasTemplate mnd-s:ContractorProfileTemplate ;
 .
 # ------------------------------------------------------------
@@ -52,8 +52,8 @@ v-s:ContractorProfileFile
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:File ;
   rdfs:subClassOf v-s:Temporal ;
-  rdfs:label "Contractor profile file"@en ;
   rdfs:label "Файл досье контрагента"@ru ;
+  rdfs:label "Contractor profile file"@en ;
 .
 # ------------------------------------------------------------
 v-s:InternalAccountingDocument
@@ -64,8 +64,8 @@ v-s:InternalAccountingDocument
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Contractual ;
-  rdfs:label "InternalAccountingDocument"@en ;
   rdfs:label "Внутренний бухгалтерский документ"@ru ;
+  rdfs:label "InternalAccountingDocument"@en ;
 .
 #v-s:attachment
 
@@ -75,8 +75,8 @@ v-s:PsAttachmentForInternalAccountingDocument
   v-ui:forProperty v-s:attachment ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
-  rdfs:label "Attachments specification for InternalAccountingDocument class"@en ;
   rdfs:label "Спецификация файлов для класса Внутренний бухгалтерский документ"@ru ;
+  rdfs:label "Attachments specification for InternalAccountingDocument class"@en ;
 .
 
 # ------------------------------------------------------------
@@ -100,10 +100,10 @@ v-s:PsHasCurrency_CurrencyExchangeRate
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
-  v-ui:placeholder "Select currency"@en ;
   v-ui:placeholder "Выберите валюту"@ru ;
-  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
+  v-ui:placeholder "Select currency"@en ;
   rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
 .
 v-s:PsRate_CurrencyExchangeRate
   rdf:type v-ui:PropertySpecification ;
@@ -112,14 +112,14 @@ v-s:PsRate_CurrencyExchangeRate
   v-ui:forProperty v-s:date ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
-  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
   rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
 .
 
 v-s:hasCurrencyExchangeRatePurpose
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Purpose"@en ;
   rdfs:label "Назначение"@ru ;
+  rdfs:label "Purpose"@en ;
   rdfs:range v-s:CurrencyExchangeRatePurpose ;
   rdfs:domain  v-s:CurrencyExchangeRate;
 .
@@ -127,8 +127,8 @@ v-s:hasCurrencyExchangeRatePurpose
 v-s:CurrencyExchangeRatePurpose
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Currency exchange rate purpose"@en ;
   rdfs:label "Назначение курса обмена валюты"@ru ;
+  rdfs:label "Currency exchange rate purpose"@en ;
 .
 
 v-s:PsRate_CurrencyExchangeRate
@@ -137,8 +137,8 @@ v-s:PsRate_CurrencyExchangeRate
   v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
-  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
   rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
 .
 
 # ------------------------------------------------------------
@@ -148,8 +148,8 @@ v-s:Price
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Price"@en ;
   rdfs:label "Стоимость"@ru ;
+  rdfs:label "Price"@en ;
 .
 # v-s:sum
 # v-s:hasCurrency
@@ -158,8 +158,8 @@ v-s:Price
 
 v-s:sumRuble
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Sum in rubles"@en ;
   rdfs:label "Сумма в рублях"@ru ;
+  rdfs:label "Sum in rubles"@en ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Price ;
 .
@@ -171,8 +171,8 @@ v-s:PSsumPrice
   v-ui:maxCardinality 1 ;
   v-ui:placeholder "Введите число"@ru ;
   v-ui:placeholder "Sum"@en ;
-  rdfs:label "v-s:sum specification for v-s:Price class"@en ;
   rdfs:label "Спецификация свойства v-s:cost для класса v-s:Price"@ru ;
+  rdfs:label "v-s:sum specification for v-s:Price class"@en ;
 .
 v-s:PShasCurrencyPrice
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -182,8 +182,8 @@ v-s:PShasCurrencyPrice
   v-ui:maxCardinality 1 ;
   v-ui:placeholder "Валюта"@ru ;
   v-ui:placeholder "Currency"@en ;
-  rdfs:label "v-s:hasCurrency specification for v-s:Price class"@en ;
   rdfs:label "Спецификация свойства v-s:hasCurrency для класса v-s:Price"@ru ;
+  rdfs:label "v-s:hasCurrency specification for v-s:Price class"@en ;
 .
 
 v-s:PSBoleanAllContractor
@@ -196,8 +196,8 @@ v-s:PSBoleanAllContractor
   v-ui:forProperty v-s:linkedOrganization ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
   rdfs:label "Спецификация свойства BoleanAllContractor для класса v-s:Contractor"@ru ;
+  rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
 .
 
 # ------------------------------------------------------------
@@ -206,8 +206,8 @@ v-s:Cost
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:BackwardLink;
   rdfs:subClassOf v-s:Financial;
-  rdfs:label "Cost"@en ;
   rdfs:label "Закупка"@ru ;
+  rdfs:label "Cost"@en ;
 .
 # v-s:hasPrice
 v-s:PShasPriceCost
@@ -216,8 +216,8 @@ v-s:PShasPriceCost
   v-ui:forProperty v-s:hasPrice ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  rdfs:label "v-s:hasPrice specification for v-s:Cost class"@en ;
   rdfs:label "Спецификация свойства v-s:hasPrice для класса v-s:Cost"@ru ;
+  rdfs:label "v-s:hasPrice specification for v-s:Cost class"@en ;
 .
 
 # v-s:description
@@ -238,13 +238,13 @@ v-s:Contract
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Projectable ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:label "Contract"@en ;
   rdfs:label "Контракт"@ru ;
+  rdfs:label "Contract"@en ;
 .
 v-s:hasRequestContractDetail
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Request contract detail"@en ;
   rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:label "Request contract detail"@en ;
   rdfs:range v-s:RequestContractDetail ;
   rdfs:domain v-s:Contractual ;
 .
@@ -253,8 +253,8 @@ v-s:AdditionalAgreement
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Contract ;
   rdfs:subClassOf v-s:BackwardLink;
-  rdfs:label "Additional agreement"@en ;
   rdfs:label "Дополнительное соглашение"@ru ;
+  rdfs:label "Additional agreement"@en ;
 .
 # ------------------------------------------------------------
 v-s:ContractRequest
@@ -263,47 +263,47 @@ v-s:ContractRequest
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Financial ;
   rdfs:subClassOf v-s:Projectable ;
-  rdfs:label "ContractRequest"@en ;
   rdfs:label "Заявка на контракт"@ru ;
+  rdfs:label "ContractRequest"@en ;
 .
 # ------------------------------------------------------------
 v-s:ClassifierOKVED
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Classifier OKVED"@en ;
   rdfs:label "Классификатор ОКВЭД"@ru ;
+  rdfs:label "Classifier OKVED"@en ;
 .
 # ------------------------------------------------------------
 v-s:ClassifierCountry
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Country"@en ;
   rdfs:label "Страна"@ru ;
+  rdfs:label "Country"@en ;
 .
 # ------------------------------------------------------------
 v-s:ClassifierLegalForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Legal form classifier"@en ;
   rdfs:label "Организационно правовая форма"@ru ;
+  rdfs:label "Legal form classifier"@en ;
 .
 # ------------------------------------------------------------
 v-s:BudgetCategory
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Budget category"@en ;
   rdfs:label "Категория бюджета"@ru ;
+  rdfs:label "Budget category"@en ;
 .
 
 #-------------------------------------------------
 v-s:ContractScope
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Contract scope"@en ;
   rdfs:label "Характер контракта"@ru ;
+  rdfs:label "Contract scope"@en ;
 .
 
 #----------------------------------------------
@@ -311,8 +311,8 @@ v-s:PaymentConditions
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Payment conditions"@en ;
   rdfs:label "Условия платежа"@ru ;
+  rdfs:label "Payment conditions"@en ;
 .
 # v-s:registrationNumber
 # rdfs:comment
@@ -322,8 +322,8 @@ v-s:PaymentConditions
 v-s:PaymentForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Payment form"@en ;
   rdfs:label "Форма оплаты"@ru ;
+  rdfs:label "Payment form"@en ;
 .
 # rdfs:label
 
@@ -332,8 +332,8 @@ v-s:DeliveryConditions
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Delivery conditions"@en ;
   rdfs:label "Условия поставки"@ru ;
+  rdfs:label "Delivery conditions"@en ;
 .
 # v-s:registrationNumber
 # v-s:title
@@ -348,8 +348,8 @@ v-s:ContractPassport
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:BackwardLink;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Contract passport"@en ;
   rdfs:label "Паспорт сделки"@ru ;
+  rdfs:label "Contract passport"@en ;
 .
 # v-s:hasContract
 
@@ -359,30 +359,30 @@ v-s:RequestContractDetail
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Request contract detail"@en ;
   rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:label "Request contract detail"@en ;
 .
 # v-s:hasSector
 # v-s:hasAsset
 
 v-s:hasPts
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Pts"@en ;
   rdfs:label "Паспорт транспортного средства"@ru ;
+  rdfs:label "Pts"@en ;
   rdfs:range v-s:Pts ;
   rdfs:domain  v-s:RequestContractDetail;
 .
 v-s:hasPsm
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Psm"@en ;
   rdfs:label "Паспорт самоходной машины"@ru ;
+  rdfs:label "Psm"@en ;
   rdfs:range v-s:Psm ;
   rdfs:domain  v-s:RequestContractDetail;
 .
 v-s:hasRegistrationCertificate
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Registration сertificate"@en ;
   rdfs:label "Свидетельство о регистрации"@ru ;
+  rdfs:label "Registration сertificate"@en ;
   rdfs:range v-s:RegistrationCertificate ;
   rdfs:domain  v-s:RequestContractDetail;
 .
@@ -393,15 +393,15 @@ v-s:MaterialGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Material group"@en ;
   rdfs:label "Группа материалов"@ru ;
+  rdfs:label "Material group"@en ;
 .
 # ------------------------------------------------------------
 v-s:ClaimCircumstance
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Claim circumstance"@en ;
   rdfs:label "Обстоятельства претензии"@ru ;
+  rdfs:label "Claim circumstance"@en ;
 .
 #-------------------------------------------------
 v-s:AccountingDoc
@@ -411,16 +411,16 @@ v-s:AccountingDoc
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Financial ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Accounting document"@en ;
   rdfs:label "Первичный документ"@ru ;
+  rdfs:label "Accounting document"@en ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 v-s:ContractorTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Contractor ;
-  rdfs:label "Template for v-s:Contractor class"@en ;
   rdfs:label "Шаблон для класса v-s:Contractor"@ru ;
+  rdfs:label "Template for v-s:Contractor class"@en ;
   v-ui:template """
 <div class="container sheet">
   <h2>
@@ -538,9 +538,7 @@ v-s:ContractorTemplate
   <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext"></veda-control>
 
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">
@@ -553,8 +551,8 @@ v-s:ContractorTemplate
 v-s:CurrencyExchangeRateTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:CurrencyExchangeRate ;
-  rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
   rdfs:label "Шаблон для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
   v-ui:template """
 <div class="container sheet">
   <h2>

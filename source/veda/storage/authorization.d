@@ -60,7 +60,7 @@ abstract class ImplAuthorization : Authorization
         }
 
         if (trace_info !is null)
-            trace_info.write(format("%d authorize uri=%s, user=%s, request_access=%s", str_num++, uri, user_uri, access_to_pretty_string(request_access)));
+            trace_info.write(format("%d authorize uri=%s, user=%s, request_access=%s\n", str_num++, uri, user_uri, access_to_pretty_string(request_access)));
 
         //if (db_is_open.get(path, false) == false)
         //    return res;
@@ -78,11 +78,11 @@ abstract class ImplAuthorization : Authorization
                 filter_value = get_in_current_transaction(filter);
 
                 if (trace_info !is null)
-                    trace_info.write(format("%d user_uri=%s", str_num++, user_uri));
+                    trace_info.write(format("%d user_uri=%s\n", str_num++, user_uri));
 
                 // читаем группы subject (ticket.user_uri)
                 if (trace_info !is null)
-                    trace_info.write(format("\n%d READ SUBJECT GROUPS", str_num++));
+                    trace_info.write(format("\n%d READ SUBJECT GROUPS\n", str_num++));
 
                 ubyte[ string ] walked_groups;
                 Right *[] groups;
@@ -91,11 +91,11 @@ abstract class ImplAuthorization : Authorization
 
                 subject_groups.data[ user_uri ] = new Right(user_uri, 15, false);
                 if (trace_info !is null)
-                    trace_info.write(format("%d subject_groups=%s", str_num++, subject_groups));
+                    trace_info.write(format("%d subject_groups=%s\n", str_num++, subject_groups));
 
                 // читаем группы object (uri)
                 if (trace_info !is null)
-                    trace_info.write(format("\n%d READ OBJECT GROUPS", str_num++));
+                    trace_info.write(format("\n%d PREPARE OBJECT GROUPS\n", str_num++));
 
                 ubyte[ string ] walked_groups1;
                 Right *[] groups1;
@@ -103,7 +103,7 @@ abstract class ImplAuthorization : Authorization
                 if (prepare_group(veda_schema__AllResourcesGroup, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
                 {
                     if (trace_info !is null)
-                        trace_info.write(format("\n%d RETURN MY BE ASAP", str_num++));
+                        trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
 
                     return calc_right_res;
                 }
@@ -111,18 +111,19 @@ abstract class ImplAuthorization : Authorization
                 if (prepare_group(uri, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
                 {
                     if (trace_info !is null)
-                        trace_info.write(format("\n%d RETURN MY BE ASAP", str_num++));
+                        trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
 
                     return calc_right_res;
                 }
 
                 if (get_resource_groups(true, membership_prefix ~ uri, 15, groups1, walked_groups1,
-                                        0) == true && trace_info is null && trace_group is null && trace_acl is null)
+                                        0) == true)
                 {
                     if (trace_info !is null)
-                        trace_info.write(format("\n%d RETURN MY BE ASAP", str_num++));
+                        trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
 
-                    return calc_right_res;
+					if (trace_info is null && trace_group is null && trace_acl is null)
+	                    return calc_right_res;
                 }
 
                 if (trace_info is null && trace_group is null && trace_acl is null)
@@ -136,7 +137,7 @@ abstract class ImplAuthorization : Authorization
                     //object_groups.data[ uri ]                            = new Right(uri, 15, false);
                     //object_groups.data[ veda_schema__AllResourcesGroup ] = new Right(veda_schema__AllResourcesGroup, 15, false);
                     if (trace_info !is null)
-                        trace_info.write(format("%d object_groups=%s", str_num++, object_groups));
+                        trace_info.write(format("%d object_groups=%s\n", str_num++, object_groups));
 
                     foreach (object_group; object_groups.data)
                     {
@@ -144,7 +145,7 @@ abstract class ImplAuthorization : Authorization
                                           object_group.access) == true && trace_info is null && trace_group is null && trace_acl is null)
                         {
                             if (trace_info !is null)
-                                trace_info.write(format("\n%d RETURN MY BE ASAP", str_num++));
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
                             return calc_right_res;
                         }
                     }
@@ -160,7 +161,7 @@ abstract class ImplAuthorization : Authorization
             abort_transaction();
 
             if (trace_info !is null)
-                trace_info.write(format("%d authorize %s, request=%s, answer=[%s]", str_num++, uri, access_to_pretty_string(request_access),
+                trace_info.write(format("%d authorize %s, request=%s, answer=[%s]\n", str_num++, uri, access_to_pretty_string(request_access),
                                   access_to_pretty_string(calc_right_res)));
         }
     }
@@ -199,7 +200,7 @@ abstract class ImplAuthorization : Authorization
             acl_key = permission_prefix ~ object_group_id;
 
         if (trace_info !is null)
-            trace_info.write(format("%d look acl_key: [%s]", str_num++, acl_key));
+            trace_info.write(format("%d look acl_key: [%s]\n", str_num++, acl_key));
 
         str = get_in_current_transaction(acl_key);
         if (str != null)
@@ -219,7 +220,7 @@ abstract class ImplAuthorization : Authorization
                         Right *permission = permissions.data.get(perm_key, null);
 
                         if (trace_info !is null)
-                            trace_info.write(format("%d restriction=%s %s, permission=%s, request=%s", str_num++, object_group_id,
+                            trace_info.write(format("%d restriction=%s %s, permission=%s, request=%s\n", str_num++, object_group_id,
                                               access_to_pretty_string(object_group_access),
                                               *permission,
                                               access_to_pretty_string(request_access)));
@@ -252,7 +253,7 @@ abstract class ImplAuthorization : Authorization
                                     if ((calc_right_res & request_access) == request_access)
                                     {
                                         if (trace_info !is null)
-                                            trace_info.write(format("%d EXIT? request_access=%s, res=%s", str_num++,
+                                            trace_info.write(format("%d EXIT? request_access=%s, res=%s\n", str_num++,
                                                               access_to_pretty_string(request_access),
                                                               access_to_pretty_string(calc_right_res)));
                                         else if (trace_group is null)
@@ -260,13 +261,11 @@ abstract class ImplAuthorization : Authorization
                                     }
 
                                     if (trace_info !is null)
-                                        trace_info.write(format("%d set_bit=%s, res=%s", str_num++, access_to_pretty_string(set_bit),
+                                        trace_info.write(format("%d set_bit=%s, res=%s\n", str_num++, access_to_pretty_string(set_bit),
                                                           access_to_pretty_string(calc_right_res)));
 
                                     if (trace_acl !is null)
-                                    {
                                         trace_acl.write(format("%s;%s;%s\n", obj_key, perm_key, access_list_predicates[ idx ]));
-                                    }
                                 }
                             }
                         }
@@ -275,13 +274,13 @@ abstract class ImplAuthorization : Authorization
             }
 
             if (trace_info !is null)
-                trace_info.write(format("%d for [%s] found %s", str_num++, acl_key, permissions));
+                trace_info.write(format("%d for [%s] found %s\n", str_num++, acl_key, permissions));
         }
 
         if ((calc_right_res & request_access) == request_access)
         {
             if (trace_info !is null)
-                trace_info.write(format("%d EXIT? request_access=%s, res=%s", str_num++, access_to_pretty_string(request_access),
+                trace_info.write(format("%d EXIT? request_access=%s, res=%s\n", str_num++, access_to_pretty_string(request_access),
                                   access_to_pretty_string(calc_right_res)));
 
             if (trace_info is null && trace_group is null && trace_acl is null)
@@ -302,7 +301,9 @@ abstract class ImplAuthorization : Authorization
 
         if (level > 32)
         {
-            log.trace("ERR! level down > 32, uri=%s", uri);
+	        if (trace_info !is null)
+	            trace_info.write(format("%d ERR! level down > 32, uri=%s\n", str_num++, uri));
+        	
             return false;
         }
 
@@ -324,8 +325,8 @@ abstract class ImplAuthorization : Authorization
 
             //if (trace_info !is null)
             //{
-            //    foreach (el; res)
-            //        trace_info(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
+            //    foreach (el; result_set)
+            //        trace_info.write(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
             //}
 
             long res_lenght = result_set.length;
@@ -350,7 +351,7 @@ abstract class ImplAuthorization : Authorization
                     if (preur_access == new_access)
                     {
                         if (trace_info !is null)
-                            trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED", str_num++, ll, level, group.id,
+                            trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED\n", str_num++, ll, level, group.id,
                                               access_to_pretty_string(preur_access)));
 
                         continue;
@@ -360,14 +361,14 @@ abstract class ImplAuthorization : Authorization
                 walked_groups[ group.id ] = new_access;
 
                 if (trace_info !is null)
-                    trace_info.write(format("%d %s (%d)GROUP [%s] %s-> %s", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
+                    trace_info.write(format("%d %s (%d)GROUP [%s] %s-> %s\n", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
                                       access_to_pretty_string(new_access)));
 
                 string group_key = membership_prefix ~ group.id;
                 if (uri == group_key)
                 {
                     if (trace_info !is null)
-                        trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key", str_num++, ll, level, group.id,
+                        trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key\n", str_num++, ll, level, group.id,
                                           access_to_pretty_string(orig_access)));
                     continue;
                 }
@@ -410,6 +411,10 @@ abstract class ImplAuthorization : Authorization
         catch (Throwable ex)
         {
             log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
+
+	        if (trace_info !is null)
+	            trace_info.write(format("%d ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]\n", str_num++,level, ex.line, ex.file, ex.info));
+            
             return false;
         }
 

@@ -11,8 +11,8 @@
 @prefix v-cal: <http://semantic-machines.com/veda/veda-function-calendar/> .
 <http://semantic-machines.com/veda/veda-function-calendar>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system function 'Calendar' ontology"@en ;
   rdfs:label "Онтология функции 'Календарь' системы Веда"@ru ;
+  rdfs:label "Veda system function 'Calendar' ontology"@en ;
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
@@ -22,8 +22,8 @@
 v-cal:FunctionCalendar
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Function 'Tasks'"@en ;
   rdfs:label "Функция 'Задачи'"@ru ;
+  rdfs:label "Function 'Tasks'"@en ;
   v-ui:hasModel v-cal:FunctionCalendarModel ;
   v-ui:hasTemplate v-cal:FunctionCalendarTemplate ;
 .
@@ -39,8 +39,8 @@ v-cal:sortOrder
 .
 v-cal:FunctionCalendarModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "v-cal:FunctionCalendar class template"@en ;
   rdfs:label "Шаблон для класса v-cal:FunctionCalendar"@ru ;
+  rdfs:label "v-cal:FunctionCalendar class template"@en ;
   v-ui:forClass v-cal:FunctionCalendar ;
   v-s:script """
   var tasks = new veda.IndividualModel();
@@ -107,15 +107,15 @@ v-cal:FunctionCalendarModel
 .
 v-cal:TasksCalendar
   rdf:type v-cal:FunctionCalendar ;
-  rdfs:label "Tasks calendar"@en ;
   rdfs:label "Календарь задач"@ru ;
+  rdfs:label "Tasks calendar"@en ;
   v-cal:query "'rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:dateGiven' == [{1},{2}] && 'v-wf:to' == '{3}'"^^xsd:string ;
   v-cal:sortOrder "'v-wf:dateGiven' desc"^^xsd:string ;
 .
 v-cal:FunctionCalendarTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-cal:FunctionCalendar class template"@en ;
   rdfs:label "Шаблон для класса v-cal:FunctionCalendar"@ru ;
+  rdfs:label "v-cal:FunctionCalendar class template"@en ;
   v-ui:forClass v-cal:FunctionCalendar ;
   v-ui:template """
 <div class="container-fluid sheet">
@@ -175,8 +175,8 @@ v-cal:FunctionCalendarTemplate
 
 v-cal:FunctionCalendarIndicatorTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-cal:FunctionCalendar indicator template"@en ;
   rdfs:label "Шаблон индикатора для v-cal:FunctionCalendar"@ru ;
+  rdfs:label "v-cal:FunctionCalendar indicator template"@en ;
   v-ui:template """
 <script>
   var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");

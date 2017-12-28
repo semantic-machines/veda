@@ -7,8 +7,8 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 rdfs:Class a rdfs:Class ;
-    rdfs:label "RDFS Class"@en ;
     rdfs:label "RDFS Класс"@ru ;
+    rdfs:label "RDFS Class"@en ;
     rdfs:comment "The class of classes." ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:subClassOf rdfs:Resource ;
@@ -16,8 +16,8 @@ rdfs:Class a rdfs:Class ;
     v-ui:hasModel v-ui:ClassClassModel .
 
 rdfs:Container a rdfs:Class ;
-    rdfs:label "Container"@en ;
     rdfs:label "Контейнер"@ru ;
+    rdfs:label "Container"@en ;
     rdfs:comment "The class of RDF containers." ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:subClassOf rdfs:Resource .
@@ -36,38 +36,38 @@ rdfs:Datatype a rdfs:Class ;
     rdfs:subClassOf rdfs:Class .
 
 rdfs:Literal a rdfs:Class ;
-    rdfs:label "Literal"@en ;
     rdfs:label "Литерал"@ru ;
+    rdfs:label "Literal"@en ;
     rdfs:comment "The class of literal values, eg. textual strings and integers." ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:subClassOf rdfs:Resource .
 
 rdfs:Resource a rdfs:Class ;
-    rdfs:label "Resource"@en ;
     rdfs:label "Ресурс"@ru ;
+    rdfs:label "Resource"@en ;
     rdfs:comment "The class resource, everything." ;
     rdfs:isDefinedBy rdfs: ;
     v-ui:hasTemplate v-ui:ResourceTemplate .
 
 rdfs:comment a rdf:Property ;
-    rdfs:label "Сomment"@en ;
     rdfs:label "Комментарий"@ru ;
+    rdfs:label "Сomment"@en ;
     rdfs:comment "A description of the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Literal .
 
 rdfs:domain a rdf:Property ;
-    rdfs:label "Domain"@en ;
     rdfs:label "Домен"@ru ;
+    rdfs:label "Domain"@en ;
     rdfs:comment "A domain of the subject property." ;
     rdfs:domain rdf:Property ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Class .
 
 rdfs:isDefinedBy a rdf:Property ;
-    rdfs:label "isDefinedBy"@en ;
     rdfs:label "определен в"@ru ;
+    rdfs:label "isDefinedBy"@en ;
     rdfs:comment "The defininition of the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
@@ -75,8 +75,8 @@ rdfs:isDefinedBy a rdf:Property ;
     rdfs:subPropertyOf rdfs:seeAlso .
 
 rdfs:label a rdf:Property ;
-    rdfs:label "Label"@en ;
     rdfs:label "Наименование"@ru ;
+    rdfs:label "Label"@en ;
     rdfs:comment "A human-readable name for the subject." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
@@ -90,32 +90,32 @@ rdfs:member a rdf:Property ;
     rdfs:range rdfs:Resource .
 
 rdfs:range a rdf:Property ;
-    rdfs:label "Range"@en ;
     rdfs:label "Область значений"@ru ;
+    rdfs:label "Range"@en ;
     rdfs:comment "A range of the subject property." ;
     rdfs:domain rdf:Property ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Class .
 
 rdfs:subClassOf a rdf:Property ;
-    rdfs:label "SubClassOf"@en ;
     rdfs:label "Подкласс класса"@ru ;
+    rdfs:label "SubClassOf"@en ;
     rdfs:comment "The subject is a subclass of a class." ;
     rdfs:domain rdfs:Class ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdfs:Class .
 
 rdfs:subPropertyOf a rdf:Property ;
-    rdfs:label "SubPropertyOf"@en ;
     rdfs:label "Подсвойство свойства"@ru ;
+    rdfs:label "SubPropertyOf"@en ;
     rdfs:comment "The subject is a subproperty of a property." ;
     rdfs:domain rdf:Property ;
     rdfs:isDefinedBy rdfs: ;
     rdfs:range rdf:Property .
 
 rdfs:seeAlso a rdf:Property ;
-    rdfs:label "SeeAlso"@en ;
     rdfs:label "Cмотрите также"@ru ;
+    rdfs:label "SeeAlso"@en ;
     rdfs:comment "Further information about the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;
@@ -123,8 +123,8 @@ rdfs:seeAlso a rdf:Property ;
 
 rdfs: a owl:Ontology ;
     dc:title "The RDF Schema vocabulary (RDFS)" ;
-    rdfs:label "The RDF Schema vocabulary (RDFS)"@en ;
     rdfs:label "Словарь RDF Schema (RDFS)"@ru ;
+    rdfs:label "The RDF Schema vocabulary (RDFS)"@en ;
     owl:versionInfo "1.1" ;
     rdfs:seeAlso <http://www.w3.org/2000/01/rdf-schema-more> ;
     v-s:loadPriority 4 ;

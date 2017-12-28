@@ -32,18 +32,6 @@
       self.trigger("logout");
     };
 
-    self.load = function (page, params) {
-      switch (page) {
-        case "drafts":
-          self.trigger.apply(self, ["load:drafts"].concat(params));
-          break;
-        default:
-          if (!params[0]) { params[0] = "#main"; }
-          var individual = new veda.IndividualModel(page);
-          individual.present.apply(individual, params);
-      }
-    };
-
     // Load ontology
     self.init = function () {
       try {
@@ -64,14 +52,6 @@
       self.user = new veda.UserModel(self.user_uri);
       self.status = "started";
       self.trigger("started");
-    };
-
-    function construct (constr, args) {
-      function F() {
-        return constr.apply(this, args);
-      }
-      F.prototype = constr.prototype;
-      return new F();
     };
 
     return self;

@@ -9,8 +9,8 @@
 
 <http://semantic-machines.com/veda/veda-numeration>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system numeration ontology"@en ;
   rdfs:label "Онтология нумерации системы Veda"@ru ;
+  rdfs:label "Veda system numeration ontology"@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 7 ;
 .
@@ -26,8 +26,8 @@ v-s:Numeration
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:subClassOf v-s:ClassAuthorized ;
-  rdfs:label "Numeration"@en ;
   rdfs:label "Нумерация"@ru ;
+  rdfs:label "Numeration"@en ;
 .
 v-s:hasNumerationRule
   rdf:type owl:ObjectProperty ;
@@ -46,14 +46,14 @@ v-s:enumeratedProperty
 v-s:Enumerated
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Enumerated thing"@en ;
   rdfs:label "Перечисляемая сущность"@ru ;
+  rdfs:label "Enumerated thing"@en ;
 .
 v-s:NumerationRule
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Numeration rule"@en ;
   rdfs:label "Правило автонумерации"@ru ;
+  rdfs:label "Numeration rule"@en ;
 .
 v-s:numerationScope
   rdf:type owl:DatatypeProperty ;
@@ -73,22 +73,22 @@ v-s:NumerationScopeClass
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:subClassOf v-s:ClassAuthorized ;
-  rdfs:label "Numeration scope"@en ;
   rdfs:label "Пространство автонумерации"@ru ;
+  rdfs:label "Numeration scope"@en ;
 .
 v-s:numerationCommitedInterval
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:NumerationScopeClass ;
   rdfs:range v-s:NumerationCommitedIntervalClass;
-  rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
+  rdfs:label "Numeration commited interval"@en ;
 .
 v-s:NumerationCommitedIntervalClass
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
   rdfs:subClassOf v-s:ClassAuthorized ;
-  rdfs:label "Numeration commited interval"@en ;
   rdfs:label "Занятый интервал"@ru ;
+  rdfs:label "Numeration commited interval"@en ;
 .
 v-s:numerationCommitedIntervalBegin
   rdf:type owl:DatatypeProperty ;
@@ -243,8 +243,8 @@ v-s:Permission1602021330
   v-s:created "2016-02-02T13:31:33"^^xsd:dateTime ;
   v-s:published "2016-02-02T13:31:33"^^xsd:dateTime ;
   v-s:startTime "2016-02-02T13:31:33"^^xsd:dateTime ;
-  rdfs:label "Read. All read user. All NumerationScopeClass."@en ;
   rdfs:label "Чтение. Все пользователи. Все документы класса Пространство автонумерации"@ru ;
+  rdfs:label "Read. All read user. All NumerationScopeClass."@en ;
   rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Пространство автонумерации" ;
 .
 v-s:Permission1602021335
@@ -255,7 +255,7 @@ v-s:Permission1602021335
   v-s:created "2016-02-02T13:35:33"^^xsd:dateTime ;
   v-s:published "2016-02-02T13:35:33"^^xsd:dateTime ;
   v-s:startTime "2016-02-02T13:35:33"^^xsd:dateTime ;
-  rdfs:label "Read. All read user. All NumerationCommitedIntervalClass."@en ;
   rdfs:label "Чтение. Все пользователи. Все документы класса Занятый интервал"@ru ;
+  rdfs:label "Read. All read user. All NumerationCommitedIntervalClass."@en ;
   rdfs:comment "Запись о выдаче прав группе всех пользователей на чтение группы всех документов класса Занятый интервал" ;
 .

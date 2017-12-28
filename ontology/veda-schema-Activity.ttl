@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/veda-schema-Activity/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. Activity"@en ;
   rdfs:label "Онтология системы Veda. Мероприятие"@ru ;
+  rdfs:label "Veda system ontology. Activity"@en ;
   v-s:loadPriority 11 ;
 .
 #---------------------------------------------------------
@@ -25,49 +25,49 @@ v-s:Activity
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:WorkGroup ;
-  rdfs:label "Activity"@en ;
   rdfs:label "Активность"@ru ;
+  rdfs:label "Activity"@en ;
 .
 v-s:topic
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Topic"@en ;
   rdfs:label "Предмет"@ru ;
+  rdfs:label "Topic"@en ;
   rdfs:range v-s:Thing ;
   rdfs:domain v-s:Activity ;
 .
 v-s:hasActivity
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Has activity"@en ;
   rdfs:label "Активность"@ru ;
+  rdfs:label "Has activity"@en ;
   rdfs:range v-s:Activity ;
   rdfs:domain v-s:Activity ;
 .
 v-s:hasAction
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Action"@en ;
   rdfs:label "Мероприятие"@ru ;
+  rdfs:label "Action"@en ;
   rdfs:range v-s:Action ;
   rdfs:subPropertyOf v-s:hasActivity ;
   rdfs:domain v-s:Activity ;
 .
 v-s:activityApprover
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Approver"@en ;
   rdfs:label "Утверждающий"@ru ;
+  rdfs:label "Approver"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Activity ;
 .
 v-s:activityCoordinator
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Coordinator"@en ;
   rdfs:label "Согласующий"@ru ;
+  rdfs:label "Coordinator"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Activity ;
 .
 v-s:participant
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Participant"@en ;
   rdfs:label "Участник"@ru ;
+  rdfs:label "Participant"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Activity ;
 .
@@ -76,14 +76,14 @@ v-s:participant
 v-s:isActivityAccidental
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Activity ;
-  rdfs:label "is activity accidental"@en ;
   rdfs:label "Нарушение существенное?"@ru ;
+  rdfs:label "is activity accidental"@en ;
   rdfs:range xsd:boolean ;
 .
 v-s:hasThirdPartyParticipant
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Third-party participant"@en ;
   rdfs:label "Сторонние участники"@ru ;
+  rdfs:label "Third-party participant"@en ;
   rdfs:range v-s:ThirdPartyParticipant ;
   rdfs:domain v-s:Activity ;
 .
@@ -93,27 +93,27 @@ v-s:Meeting
   rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:subClassOf v-s:Deliverable2 ;
-  rdfs:label "Meeting"@en ;
   rdfs:label "Встреча"@ru ;
+  rdfs:label "Meeting"@en ;
 .
 v-s:agenda
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Agenda"@en ;
   rdfs:label "Повестка"@ru ;
+  rdfs:label "Agenda"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Meeting ;
 .
 v-s:meetingDecision
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Decision"@en ;
   rdfs:label "Решение"@ru ;
+  rdfs:label "Decision"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Meeting ;
 .
 v-s:moderator
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Moderator"@en ;
   rdfs:label "Модератор"@ru ;
+  rdfs:label "Moderator"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Meeting ;
 .
@@ -122,21 +122,21 @@ v-s:Audit
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
-  rdfs:label "Audit"@en ;
   rdfs:label "Аудит"@ru ;
+  rdfs:label "Audit"@en ;
 .
 v-s:auditor
   rdf:type owl:ObjectProperty ;
   rdfs:range v-s:Appointment ;
-  rdfs:label "Auditor"@en ;
   rdfs:label "Аудитор"@ru ;
+  rdfs:label "Auditor"@en ;
   rdfs:domain v-s:Audit ;
 .
 v-s:chiefAuditor
   rdf:type owl:ObjectProperty ;
   rdfs:range v-s:Appointment ;
-  rdfs:label "Chief auditor"@en ;
   rdfs:label "Ведущий аудитор"@ru ;
+  rdfs:label "Chief auditor"@en ;
   rdfs:domain v-s:Audit ;
 .
 
@@ -146,8 +146,8 @@ v-s:PsAuditorForAudit
   v-ui:forProperty v-s:auditor ;
   v-ui:maxCardinality 10 ;
   v-ui:minCardinality 0 ;
-  rdfs:label "v-s:auditor property specification for v-s:Audit class"@en ;
   rdfs:label "Спецификация свойства v-s:auditor для класса v-s:Audit"@ru ;
+  rdfs:label "v-s:auditor property specification for v-s:Audit class"@en ;
 .
 
 #---------------------------------------------------------
@@ -155,16 +155,16 @@ v-s:Investigation
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
-  rdfs:label "Investigation"@en ;
   rdfs:label "Расследование"@ru ;
+  rdfs:label "Investigation"@en ;
 .
 #---------------------------------------------------------
 v-s:ActionPlan
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Enumerated ;
   rdfs:subClassOf v-s:Activity ;
-  rdfs:label "Action plan"@en ;
   rdfs:label "План мероприятий"@ru ;
+  rdfs:label "Action plan"@en ;
 .
 #-- Спецификации Аттрибутов ---------------------------
 
@@ -174,10 +174,10 @@ v-s:PsDateToForAction
   v-ui:forProperty v-s:dateTo ;
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 0 ;
-  v-ui:tooltip "Non-Required, single value."@en ;
   v-ui:tooltip "Небязательно к заполнению, единичное значение."@ru ;
-  rdfs:label "Preferences property specification for dateTo in Action class"@en ;
+  v-ui:tooltip "Non-Required, single value."@en ;
   rdfs:label "Спецификация даты окончания для класса Action"@ru ;
+  rdfs:label "Preferences property specification for dateTo in Action class"@en ;
 .
 
 v-s:PsResponsibleForAction
@@ -187,10 +187,10 @@ v-s:PsResponsibleForAction
   v-ui:maxCardinality 1 ;
   v-ui:minCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
   v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
-  rdfs:label "Responsible property specification for Action class"@en ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация свойства responsible для класса Action"@ru ;
+  rdfs:label "Responsible property specification for Action class"@en ;
 .
 
 

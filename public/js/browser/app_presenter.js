@@ -70,12 +70,29 @@ veda.Module(function AppPresenter(veda) { "use strict";
     riot.route( function (hash) {
       if ( !hash ) { return welcome.present("#main"); }
       if ( hash.indexOf("#/") < 0 ) { return; }
-      var hash_tokens = decodeURIComponent(hash).slice(2).split("/");
-      var page = hash_tokens[0];
-      var params = hash_tokens.slice(1);
-      page ? veda.load(page, params) : welcome.present("#main");
+      var tokens = decodeURI(hash).slice(2).split("/"),
+          uri = tokens[0],
+          container = tokens[1],
+          template = tokens[2],
+          mode = tokens[3],
+          extra = tokens[4];
+      if (extra) {
+        extra = extra.split("&").reduce(function (acc, pair) {
+          var split = pair.split("="),
+              name  = split[0] || "",
+              value = split[1] || "";
+          acc[name] = value;
+          return acc;
+        }, {});
+      }
+      if (uri === "drafts") {
+        return veda.trigger("load:drafts");
+      }
+      var individual = uri ? new veda.IndividualModel(uri) : welcome;
+      individual.present(container, template, mode, extra);
     });
   });
+
   veda.on("started", function () {
     var layout;
     if (veda.user.hasValue("v-s:origin", "External User")) {

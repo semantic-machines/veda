@@ -8,8 +8,8 @@
 
 <http://semantic-machines.com/veda/mondi-schema-ClaimManagment/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. ClaimManagment"@en ;
   rdfs:label "Онтология системы Veda. Управление претензиями"@ru ;
+  rdfs:label "Veda system ontology. ClaimManagment"@en ;
   v-s:loadPriority 11 ;
 .
 # ------------------------------------------------------------ КЛАССЫ --
@@ -23,76 +23,76 @@ v-s:Claim
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Claim"@en ;
   rdfs:label "Претензия"@ru ;
+  rdfs:label "Claim"@en ;
 .
 v-s:claimDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Claim description"@en ;
   rdfs:label "Описание обстоятельств претензии"@ru ;
+  rdfs:label "Claim description"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
 v-s:claimObjectDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Claim description"@en ;
   rdfs:label "Описание объекта претензии"@ru ;
+  rdfs:label "Claim description"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
 v-s:claimObject
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Claim object"@en ;
   rdfs:label "Объект претензии"@ru ;
+  rdfs:label "Claim object"@en ;
   rdfs:range v-s:MaterialGroup ;
   rdfs:domain v-s:Claim ;
 .
 v-s:hasClaimObject
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Claim object"@en ;
   rdfs:label "Объект претензии"@ru ;
+  rdfs:label "Claim object"@en ;
   rdfs:range v-s:MaterialGroup ;
   rdfs:domain v-s:Claim ;
 .
 v-s:claimRequirement
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Claim requirement"@en ;
   rdfs:label "Требование претензии"@ru ;
+  rdfs:label "Claim requirement"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
 v-s:claimCircumstanceDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Claim circumstance description"@en ;
   rdfs:label "Описание обстоятельств претензии"@ru ;
+  rdfs:label "Claim circumstance description"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Claim ;
 .
 v-s:claimVolume
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Claim volume"@en ;
   rdfs:label "Объем претензии"@ru ;
+  rdfs:label "Claim volume"@en ;
   rdfs:range xsd:decimal ;
   rdfs:domain v-s:Claim ;
 .
 v-s:requirementSum
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Requirement sum"@en ;
   rdfs:label "Требуемая сумма"@ru ;
+  rdfs:label "Requirement sum"@en ;
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Claim ;
 .
 v-s:compensationSum
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Compaensation sum"@en ;
   rdfs:label "Возмещенная сумма"@ru ;
+  rdfs:label "Compaensation sum"@en ;
   rdfs:range v-s:Price ;
   rdfs:domain v-s:Claim ;
 .
 v-s:hasClaimCircumstance
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Claim circumstancem"@en ;
   rdfs:label "Обстоятельства претензии"@ru ;
+  rdfs:label "Claim circumstancem"@en ;
   rdfs:range v-s:ClaimCircumstance ;
   rdfs:domain v-s:Claim ;
 .

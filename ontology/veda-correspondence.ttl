@@ -11,8 +11,8 @@
 
 <http://semantic-machines.com/veda/veda-correspondence>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. Correspondence"@en ;
   rdfs:label "Онтология системы Veda. Корреспонденция"@ru ;
+  rdfs:label "Veda system ontology. Correspondence"@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
@@ -27,29 +27,29 @@ v-s:Correspondent
 .
 v-s:correspondentOrganization
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Correspondent ;
 .
 v-s:correspondentOrganizationDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Sender organization (text)"@en ;
   rdfs:label "Организация отправитель (текст)"@ru ;
+  rdfs:label "Sender organization (text)"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Correspondent ;
 .
 v-s:correspondentDepartment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
+  rdfs:label "Department"@en ;
   rdfs:range v-s:Department ;
   rdfs:domain v-s:Correspondent ;
 .
 v-s:correspondentDepartmentDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Department (text)"@en ;
   rdfs:label "Подразделение (текст)"@ru ;
+  rdfs:label "Department (text)"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Correspondent ;
 .
@@ -62,8 +62,8 @@ v-s:correspondentPerson
 .
 v-s:correspondentPersonDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Person (text)"@en ;
   rdfs:label "Персона (текст)"@ru ;
+  rdfs:label "Person (text)"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Correspondent ;
 .
@@ -74,8 +74,8 @@ v-s:Letter
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Letter"@en ;
   rdfs:label "Письмо"@ru ;
+  rdfs:label "Letter"@en ;
   v-ui:hasTemplate v-s:LetterTemplate ;
 .
 v-s:hasLetterRegistrationRecordSender
@@ -174,8 +174,8 @@ v-s:LetterRegistrationRecordRecipient
 v-s:ThirdPartyParticipant
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Correspondent ;
-  rdfs:label "Third-party participant"@en ;
   rdfs:label "Сторонние участники"@ru ;
+  rdfs:label "Third-party participant"@en ;
   v-ui:hasTemplate mnd-s:ThirdPartyParticipantTemplate ;
 .
 # v-s:correspondentOrganization
@@ -189,8 +189,8 @@ v-s:PsHasDocumentKindForLetter
   v-ui:forProperty v-s:hasDocumentKind ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
-  rdfs:label "v-s:hasDocumentKind specification for v-s:Letter class"@en ;
   rdfs:label "Спецификация v-s:hasDocumentKind для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasDocumentKind specification for v-s:Letter class"@en ;
 .
 v-s:PsHasDeliveryKindForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -198,8 +198,8 @@ v-s:PsHasDeliveryKindForLetter
   v-ui:forProperty v-s:hasDelivery ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 10 ;
-  rdfs:label "v-s:hasDelivery specification for v-s:Letter class"@en ;
   rdfs:label "Спецификация v-s:hasDelivery для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasDelivery specification for v-s:Letter class"@en ;
 .
 v-s:PsSenderRecipientForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -208,8 +208,8 @@ v-s:PsSenderRecipientForLetter
   v-ui:forProperty v-s:recipient ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 10 ;
-  rdfs:label "v-s:sender, v-s:recipient specification for v-s:Letter class"@en ;
   rdfs:label "Спецификация v-s:sender, v-s:recipient для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:sender, v-s:recipient specification for v-s:Letter class"@en ;
 .
 v-s:PsRegistrationRecordForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -218,8 +218,8 @@ v-s:PsRegistrationRecordForLetter
   v-ui:forProperty v-s:hasLetterRegistrationRecordRecipient ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  rdfs:label "v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient specification for v-s:Letter class"@en ;
   rdfs:label "Спецификация v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient specification for v-s:Letter class"@en ;
 .
 v-s:PsOrganizationForCorrespondent
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -228,8 +228,8 @@ v-s:PsOrganizationForCorrespondent
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
   v-ui:queryPrefix "('rdf:type'=='v-s:Organization') || ('rdf:type'=='v-s:Subsidiary')"^^xsd:string ;
-  rdfs:label "v-s:correspondentOrganization specification for v-s:Correspondent class"@en ;
   rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
+  rdfs:label "v-s:correspondentOrganization specification for v-s:Correspondent class"@en ;
 .
 
 v-s:PsDepartmentForCorrespondent
@@ -239,8 +239,8 @@ v-s:PsDepartmentForCorrespondent
   v-ui:forProperty v-s:correspondentPerson ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
-  rdfs:label "v-s:correspondentDepartment specification for v-s:Correspondent class"@en ;
   rdfs:label "Спецификация v-s:correspondentDepartment для класса v-s:Correspondent"@ru ;
+  rdfs:label "v-s:correspondentDepartment specification for v-s:Correspondent class"@en ;
 .
 
 v-s:PsDeliveryMethodForDelivery
@@ -250,8 +250,8 @@ v-s:PsDeliveryMethodForDelivery
   v-ui:forProperty v-s:date ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
   rdfs:label "Спецификация v-s:deliverBy, v-s:date  для класса v-s:Delivery"@ru ;
+  rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
 .
 
 
@@ -277,8 +277,8 @@ v-s:ManuallyBundle
 v-s:LetterTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Letter ;
-  rdfs:label "Template for v-s:Letter class"@en ;
   rdfs:label "Шаблон для класса v-s:Letter"@ru ;
+  rdfs:label "Template for v-s:Letter class"@en ;
   v-ui:template """
 <script>
   var self = this;
@@ -369,8 +369,8 @@ v-s:LetterTemplate
 
 v-s:CorrespondentTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Correspondent template"@en ;
   rdfs:label "Шаблон корреспондента"@ru ;
+  rdfs:label "Correspondent template"@en ;
   v-ui:template """
 <div class="panel">
   <div class="panel-body">
@@ -408,8 +408,8 @@ v-s:CorrespondentTemplate
 
 v-s:DeliveryTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Delivery template"@en ;
   rdfs:label "Шаблон доставки"@ru ;
+  rdfs:label "Delivery template"@en ;
   v-ui:template """
 <div>
   <h3>
@@ -435,10 +435,9 @@ v-s:DeliveryTemplate
       <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
     </div>
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <div class="actions view edit -search">
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></div>
@@ -450,8 +449,8 @@ v-s:DeliveryTemplate
 
 v-s:DeliveryEmbededTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Delivery template"@en ;
   rdfs:label "Вложенный шаблон доставки"@ru ;
+  rdfs:label "Delivery template"@en ;
   v-ui:template """
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -486,8 +485,8 @@ v-s:DeliveryEmbededTemplate
 
 v-s:LetterRegistrationRecordTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Letter registration record template"@en ;
   rdfs:label "Шаблон регистрационной записи для письма"@ru ;
+  rdfs:label "Letter registration record template"@en ;
   v-ui:template """
 <div class="panel">
   <div class="panel-body">
