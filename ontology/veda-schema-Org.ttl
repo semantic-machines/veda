@@ -263,7 +263,7 @@ v-s:Person
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
   v-ui:hasTemplate td:PersonTemplate1 ;
-#  v-s:labelPattern "{rdf:type.rdfs:label}: {v-s:firstName} {v-s:lastName}" ;
+#  v-s:labelPattern "{@.rdf:type.rdfs:label}: {@.v-s:firstName} {@.v-s:lastName}" ;
 .
 v-s:birthday
   rdf:type owl:DatatypeProperty ;

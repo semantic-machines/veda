@@ -1254,8 +1254,10 @@ function clone(obj)
 
 function complexLabel(individual) {
 
+  individual = individual.properties || individual;
   var cache = {};
-  cache[individual["@"]] = individual;
+  cache[ individual["@"] ] = individual;
+  var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
   function get (uri) {
     return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
   }
@@ -1263,8 +1265,6 @@ function complexLabel(individual) {
   //print("INDIVIDUAL =", JSON.stringify(individual));
 
   try {
-
-    var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
 
     var availableLanguages = get("v-ui:AvailableLanguage");
     var languages = availableLanguages["rdf:value"].map(function (languageValue) {
@@ -1281,7 +1281,10 @@ function complexLabel(individual) {
       var result = languages.map(function (language) {
         var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
           var chain = group.split(".");
-          return get_localized_chain.apply({}, [language, individual["@"]].concat(chain));
+          if (chain[0] === "@") {
+            chain[0] = individual["@"];
+          }
+          return get_localized_chain.apply({}, [language].concat(chain));
         });
         return {
           data: replaced,
