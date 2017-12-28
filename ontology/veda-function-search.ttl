@@ -1477,6 +1477,13 @@ v-fs:AttributiveSearchTemplate
         searchBlank.object.off("search", formHandler);
       });
 
+      // Populate blank with extra parameters from URL
+      if (extra) {
+        for (var property_uri in extra) {
+          searchBlank.object[property_uri] = extra[property_uri];
+        }
+      }
+
       function formHandler () {
         self.top = veda.user.displayedElements || 10;
         search();
